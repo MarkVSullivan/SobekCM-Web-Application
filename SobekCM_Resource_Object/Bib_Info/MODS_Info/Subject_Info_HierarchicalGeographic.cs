@@ -31,12 +31,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             get
             {
-                if ((!String.IsNullOrEmpty(continent)) || (!String.IsNullOrEmpty(country)) || (!String.IsNullOrEmpty(province)) || (!String.IsNullOrEmpty(region)) || (!String.IsNullOrEmpty(state)) ||
-                    (!String.IsNullOrEmpty(territory)) || (!String.IsNullOrEmpty(county)) || (!String.IsNullOrEmpty(city)) || (!String.IsNullOrEmpty(island)) || (!String.IsNullOrEmpty(area)) || (!String.IsNullOrEmpty(citysection)))
-                    return true;
-
-
-                return false;
+                return (!String.IsNullOrEmpty(continent)) || (!String.IsNullOrEmpty(country)) || (!String.IsNullOrEmpty(province)) || (!String.IsNullOrEmpty(region)) || (!String.IsNullOrEmpty(state)) ||
+                       (!String.IsNullOrEmpty(territory)) || (!String.IsNullOrEmpty(county)) || (!String.IsNullOrEmpty(city)) || (!String.IsNullOrEmpty(island)) || (!String.IsNullOrEmpty(area)) || (!String.IsNullOrEmpty(citysection));
             }
         }
 
@@ -209,14 +205,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 }
 
                 string toString = returnValue.ToString();
-                if (toString.Length > 0)
-                {
-                    return base.Convert_String_To_XML_Safe(toString);
-                }
-                else
-                {
-                    return String.Empty;
-                }
+                return toString.Length > 0 ? Convert_String_To_XML_Safe(toString) : String.Empty;
             }
         }
 
@@ -233,75 +222,75 @@ namespace SobekCM.Resource_Object.Bib_Info
             return Spatial_XML;
         }
 
-        internal override void Add_MODS(TextWriter results)
+        internal override void Add_MODS(TextWriter Results)
         {
             if (!hasData)
                 return;
 
-            results.Write("<mods:subject");
-            base.Add_ID(results);
+            Results.Write("<mods:subject");
+            Add_ID(Results);
             if (!String.IsNullOrEmpty(language))
-                results.Write(" lang=\"" + language + "\"");
+                Results.Write(" lang=\"" + language + "\"");
             if (!String.IsNullOrEmpty(authority))
-                results.Write(" authority=\"" + authority + "\"");
-            results.Write(">\r\n<mods:hierarchicalGeographic>\r\n");
+                Results.Write(" authority=\"" + authority + "\"");
+            Results.Write(">\r\n<mods:hierarchicalGeographic>\r\n");
 
             if (!String.IsNullOrEmpty(continent))
             {
-                results.Write("<mods:continent>" + base.Convert_String_To_XML_Safe(continent) + "</mods:continent>\r\n");
+                Results.Write("<mods:continent>" + Convert_String_To_XML_Safe(continent) + "</mods:continent>\r\n");
             }
 
             if (!String.IsNullOrEmpty(country))
             {
-                results.Write("<mods:country>" + base.Convert_String_To_XML_Safe(country) + "</mods:country>\r\n");
+                Results.Write("<mods:country>" + Convert_String_To_XML_Safe(country) + "</mods:country>\r\n");
             }
 
             if (!String.IsNullOrEmpty(province))
             {
-                results.Write("<mods:province>" + base.Convert_String_To_XML_Safe(province) + "</mods:province>\r\n");
+                Results.Write("<mods:province>" + Convert_String_To_XML_Safe(province) + "</mods:province>\r\n");
             }
 
             if (!String.IsNullOrEmpty(state))
             {
-                results.Write("<mods:state>" + base.Convert_String_To_XML_Safe(state) + "</mods:state>\r\n");
+                Results.Write("<mods:state>" + Convert_String_To_XML_Safe(state) + "</mods:state>\r\n");
             }
 
             if (!String.IsNullOrEmpty(territory))
             {
-                results.Write("<mods:territory>" + base.Convert_String_To_XML_Safe(territory) + "</mods:territory>\r\n");
+                Results.Write("<mods:territory>" + Convert_String_To_XML_Safe(territory) + "</mods:territory>\r\n");
             }
 
             if (!String.IsNullOrEmpty(county))
             {
-                results.Write("<mods:county>" + base.Convert_String_To_XML_Safe(county) + "</mods:county>\r\n");
+                Results.Write("<mods:county>" + Convert_String_To_XML_Safe(county) + "</mods:county>\r\n");
             }
 
             if (!String.IsNullOrEmpty(city))
             {
-                results.Write("<mods:city>" + base.Convert_String_To_XML_Safe(city) + "</mods:city>\r\n");
+                Results.Write("<mods:city>" + Convert_String_To_XML_Safe(city) + "</mods:city>\r\n");
             }
 
             if (!String.IsNullOrEmpty(citysection))
             {
-                results.Write("<mods:citySection>" + base.Convert_String_To_XML_Safe(citysection) + "</mods:citySection>\r\n");
+                Results.Write("<mods:citySection>" + Convert_String_To_XML_Safe(citysection) + "</mods:citySection>\r\n");
             }
 
             if (!String.IsNullOrEmpty(region))
             {
-                results.Write("<mods:region>" + base.Convert_String_To_XML_Safe(region) + "</mods:region>\r\n");
+                Results.Write("<mods:region>" + Convert_String_To_XML_Safe(region) + "</mods:region>\r\n");
             }
 
             if (!String.IsNullOrEmpty(island))
             {
-                results.Write("<mods:island>" + base.Convert_String_To_XML_Safe(island) + "</mods:island>\r\n");
+                Results.Write("<mods:island>" + Convert_String_To_XML_Safe(island) + "</mods:island>\r\n");
             }
 
             if (!String.IsNullOrEmpty(area))
             {
-                results.Write("<mods:area>" + base.Convert_String_To_XML_Safe(area) + "</mods:area>\r\n");
+                Results.Write("<mods:area>" + Convert_String_To_XML_Safe(area) + "</mods:area>\r\n");
             }
 
-            results.Write("</mods:hierarchicalGeographic>\r\n</mods:subject>\r\n");
+            Results.Write("</mods:hierarchicalGeographic>\r\n</mods:subject>\r\n");
         }
 
 

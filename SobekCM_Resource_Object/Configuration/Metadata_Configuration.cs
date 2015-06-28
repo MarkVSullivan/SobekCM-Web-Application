@@ -93,7 +93,11 @@ namespace SobekCM.Resource_Object.Configuration
                 if ( defaultWritingProfile != null )
                     return defaultWritingProfile;
                 if (metsWritingProfiles.Count > 0)
-                    return metsWritingProfiles[metsWritingProfiles.Keys.FirstOrDefault()];
+                {
+                    string first = metsWritingProfiles.Keys.FirstOrDefault();
+                    if ( first != null )
+                        return metsWritingProfiles[first];
+                }
                 return null;
             }
         }
@@ -321,78 +325,78 @@ namespace SobekCM.Resource_Object.Configuration
             Add_Metadata_File_ReaderWriter(oaiFile);
 
             // Add the MODS section reader/writer
-            METS_Section_ReaderWriter_Config modsSection = new METS_Section_ReaderWriter_Config {ID = "MODS", Label = "MODS", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "MODS_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            METS_Section_ReaderWriter_Config modsSection = new METS_Section_ReaderWriter_Config {ID = "MODS", Label = "MODS", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "MODS_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.DmdSec};
             modsSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("MODS", "MODS Metadata", true));
             modsSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("Metadata Object Description Standard", false ));
             Add_METS_Section_ReaderWriter(modsSection);
 
             // Add the dublin core section reader/writer
-            METS_Section_ReaderWriter_Config dcSection = new METS_Section_ReaderWriter_Config {ID = "DC", Label = "Dublin Core", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "DC_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            METS_Section_ReaderWriter_Config dcSection = new METS_Section_ReaderWriter_Config {ID = "DC", Label = "Dublin Core", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "DC_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.DmdSec};
             dcSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("DC", "Dublin Core Metadata", true));
             dcSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("DUBLIN CORE", false));
             Add_METS_Section_ReaderWriter(dcSection);
 
             // Add the MarcXML section reader/writer
-            METS_Section_ReaderWriter_Config marcXMLSection = new METS_Section_ReaderWriter_Config {ID = "MARCXML", Label = "MARCXML", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "MarcXML_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            METS_Section_ReaderWriter_Config marcXMLSection = new METS_Section_ReaderWriter_Config {ID = "MARCXML", Label = "MARCXML", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "MarcXML_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.DmdSec};
             marcXMLSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("MARCXML", "MarcXML Metadata", true));
             Add_METS_Section_ReaderWriter(marcXMLSection);
 
             // Add the DarwinCore section reader/writer
-            METS_Section_ReaderWriter_Config darwinSection = new METS_Section_ReaderWriter_Config {ID = "DARWIN", Label = "DarwinCore", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "DarwinCore_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            METS_Section_ReaderWriter_Config darwinSection = new METS_Section_ReaderWriter_Config {ID = "DARWIN", Label = "DarwinCore", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "DarwinCore_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.DmdSec};
             darwinSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "DARWINCORE", "DarwinCore Zoological Taxonomic Information", true));
             Add_METS_Section_ReaderWriter(darwinSection);
 
 			// Add the ETD section reader/writer
-			METS_Section_ReaderWriter_Config etdSection = new METS_Section_ReaderWriter_Config {ID = "ETD", Label = "ETD", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "ETD_SobekCM_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+			METS_Section_ReaderWriter_Config etdSection = new METS_Section_ReaderWriter_Config {ID = "ETD", Label = "ETD", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "ETD_SobekCM_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.DmdSec};
             etdSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "SOBEK_ETD", "SobekCM ETD Extension", true));
 			Add_METS_Section_ReaderWriter(etdSection);
 
             // Add the ETD section reader/writer
-            METS_Section_ReaderWriter_Config etd2Section = new METS_Section_ReaderWriter_Config {ID = "ETD2", Label = "ETD2", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "ETD_PALMM_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            METS_Section_ReaderWriter_Config etd2Section = new METS_Section_ReaderWriter_Config {ID = "ETD2", Label = "ETD2", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "ETD_PALMM_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.DmdSec};
             etd2Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "PALMM", "PALMM ETD Extension", true));
             etd2Section.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "PALMM Extensions", "PALMM ETD Extension", false));
             Add_METS_Section_ReaderWriter(etd2Section);
 
             // Add the SobekCM section reader/writer
-            METS_Section_ReaderWriter_Config sobekCMSection = new METS_Section_ReaderWriter_Config {ID = "SOBEK1", Label = "SobekCM", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "SobekCM_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            METS_Section_ReaderWriter_Config sobekCMSection = new METS_Section_ReaderWriter_Config {ID = "SOBEK1", Label = "SobekCM", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "SobekCM_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.DmdSec};
             sobekCMSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "SOBEKCM", "SobekCM Custom Metadata", true));
             sobekCMSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "UFDC", "SobekCM Custom Metadata", false));
             sobekCMSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "DLOC", "SobekCM Custom Metadata", false));
             Add_METS_Section_ReaderWriter(sobekCMSection);
 
             // Add the SobekCM Map section reader/writer
-            METS_Section_ReaderWriter_Config sobekCMMapSection = new METS_Section_ReaderWriter_Config {ID = "SOBEK2", Label = "SobekCM Map", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "SobekCM_Map_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            METS_Section_ReaderWriter_Config sobekCMMapSection = new METS_Section_ReaderWriter_Config {ID = "SOBEK2", Label = "SobekCM Map", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "SobekCM_Map_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.DmdSec};
             sobekCMMapSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "SOBEK_MAP", "SobekCM Custom Map Authority Metadata", true));
             sobekCMMapSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "UFDC_MAP", "SobekCM Custom Map Authority Metadata", false));
             Add_METS_Section_ReaderWriter(sobekCMMapSection);
 
             // Add the DAITSS section reader/writer
-            METS_Section_ReaderWriter_Config daitssSection = new METS_Section_ReaderWriter_Config {ID = "DAITSS", Label = "DAITSS", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "DAITSS_METS_amdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.amdSec, amdSecType = METS_amdSec_Type_Enum.digiProvMD};
+            METS_Section_ReaderWriter_Config daitssSection = new METS_Section_ReaderWriter_Config {ID = "DAITSS", Label = "DAITSS", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "DAITSS_METS_amdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.AmdSec, AmdSecType = METS_amdSec_Type_Enum.DigiProvMD};
             daitssSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "DAITSS", "DAITSS Archiving Information", true));
             Add_METS_Section_ReaderWriter(daitssSection);
 
             // Add the RightsMD section reader/writer
-            METS_Section_ReaderWriter_Config rightsSection = new METS_Section_ReaderWriter_Config {ID = "RIGHTS", Label = "RightsMD", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "RightsMD_METS_amdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.amdSec, amdSecType = METS_amdSec_Type_Enum.rightsMD};
+            METS_Section_ReaderWriter_Config rightsSection = new METS_Section_ReaderWriter_Config {ID = "RIGHTS", Label = "RightsMD", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "RightsMD_METS_amdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.AmdSec, AmdSecType = METS_amdSec_Type_Enum.RightsMD};
             rightsSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "RIGHTSMD", "Rights Information", true));
             Add_METS_Section_ReaderWriter(rightsSection);
 
             // Add the SobekCM fileinfo section reader/writer
-            METS_Section_ReaderWriter_Config sobekCMFileSection = new METS_Section_ReaderWriter_Config {ID = "SOBEK3", Label = "SobekCM FileInfo", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "SobekCM_FileInfo_METS_amdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.amdSec, amdSecType = METS_amdSec_Type_Enum.techMD};
+            METS_Section_ReaderWriter_Config sobekCMFileSection = new METS_Section_ReaderWriter_Config {ID = "SOBEK3", Label = "SobekCM FileInfo", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "SobekCM_FileInfo_METS_amdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.AmdSec, AmdSecType = METS_amdSec_Type_Enum.TechMD};
             sobekCMFileSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "SOBEKCM", "SobekCM File Technical Details", true));
             Add_METS_Section_ReaderWriter(sobekCMFileSection);
 
             // Add the GML section reader/writer
-            METS_Section_ReaderWriter_Config gmlSection = new METS_Section_ReaderWriter_Config {ID = "GML", Label = "GML Coordinate", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "GML_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            METS_Section_ReaderWriter_Config gmlSection = new METS_Section_ReaderWriter_Config {ID = "GML", Label = "GML Coordinate", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "GML_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.DmdSec};
             gmlSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "GML", "Geographic Markup Language", true));
             Add_METS_Section_ReaderWriter(gmlSection);
 
             // Add the IEEE-LOM section reader/writer
-            METS_Section_ReaderWriter_Config lomSection = new METS_Section_ReaderWriter_Config {ID = "IEEE-LOM", Label = "IEEE-LOM: Learning Object Metadata", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "LOM_IEEE_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            METS_Section_ReaderWriter_Config lomSection = new METS_Section_ReaderWriter_Config {ID = "IEEE-LOM", Label = "IEEE-LOM: Learning Object Metadata", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "LOM_IEEE_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.DmdSec};
             lomSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "IEEE-LOM", "Learning Object Metadata", true));
             Add_METS_Section_ReaderWriter(lomSection);
 
             // Add the VRACore section reader/writer
-            METS_Section_ReaderWriter_Config vraSection = new METS_Section_ReaderWriter_Config {ID = "VRACORE", Label = "VRACore Visual Resource Metadata", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "VRACore_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.dmdSec};
+            METS_Section_ReaderWriter_Config vraSection = new METS_Section_ReaderWriter_Config {ID = "VRACORE", Label = "VRACore Visual Resource Metadata", Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.METS_Sec_ReaderWriters", Code_Class = "VRACore_METS_dmdSec_ReaderWriter", isActive = true, METS_Section = METS_Section_Type_Enum.DmdSec};
             vraSection.Add_Mapping(new METS_Section_ReaderWriter_Mapping("OTHER", "VRACore", "VRACore Visual Resource Metadata", true));
             Add_METS_Section_ReaderWriter(vraSection);
 
@@ -485,14 +489,8 @@ namespace SobekCM.Resource_Object.Configuration
                     if (fileConfig.Code_Assembly.Length > 0)
                         writer.Write("assembly=\"" + Convert_String_To_XML_Safe(fileConfig.Code_Assembly) + "\" ");
 
-                    if (fileConfig.canRead)
-                        writer.Write("canRead=\"true\" ");
-                    else
-                        writer.Write("canRead=\"false\" ");
-                    if (fileConfig.canWrite)
-                        writer.Write("canWrite=\"true\" ");
-                    else
-                        writer.Write("canWrite=\"false\" ");
+                    writer.Write(fileConfig.canRead ? "canRead=\"true\" " : "canRead=\"false\" ");
+                    writer.Write(fileConfig.canWrite ? "canWrite=\"true\" " : "canWrite=\"false\" ");
                     if (fileConfig.Options.Count > 0)
                     {
                         writer.WriteLine(">");
@@ -519,34 +517,31 @@ namespace SobekCM.Resource_Object.Configuration
                     if (fileConfig.Code_Assembly.Length > 0)
                         writer.Write("assembly=\"" + Convert_String_To_XML_Safe(fileConfig.Code_Assembly) + "\" ");
 
-                    if (fileConfig.isActive)
-                        writer.Write("isActive=\"true\" ");
-                    else
-                        writer.Write("isActive=\"false\" ");
+                    writer.Write(fileConfig.isActive ? "isActive=\"true\" " : "isActive=\"false\" ");
 
                     switch (fileConfig.METS_Section)
                     {
-                        case METS_Section_Type_Enum.dmdSec:
+                        case METS_Section_Type_Enum.DmdSec:
                             writer.Write("section=\"dmdSec\" ");
                             break;
 
-                        case METS_Section_Type_Enum.amdSec:
+                        case METS_Section_Type_Enum.AmdSec:
                             writer.Write("section=\"amdSec\" ");
-                            switch (fileConfig.amdSecType)
+                            switch (fileConfig.AmdSecType)
                             {
-                                case METS_amdSec_Type_Enum.digiProvMD:
+                                case METS_amdSec_Type_Enum.DigiProvMD:
                                     writer.Write("amdSecType=\"digiProvMD\" ");
                                     break;
 
-                                case METS_amdSec_Type_Enum.rightsMD:
+                                case METS_amdSec_Type_Enum.RightsMD:
                                     writer.Write("amdSecType=\"rightsMD\" ");
                                     break;
 
-                                case METS_amdSec_Type_Enum.sourceMD:
+                                case METS_amdSec_Type_Enum.SourceMD:
                                     writer.Write("amdSecType=\"sourceMD\" ");
                                     break;
 
-                                case METS_amdSec_Type_Enum.techMD:
+                                case METS_amdSec_Type_Enum.TechMD:
                                     writer.Write("amdSecType=\"techMD\" ");
                                     break;
                             }
@@ -725,13 +720,13 @@ namespace SobekCM.Resource_Object.Configuration
             int i = xml_safe.IndexOf("&");
             while (i >= 0)
             {
-                if ((i != xml_safe.IndexOf("&amp;", i)) && (i != xml_safe.IndexOf("&quot;", i)) &&
-                    (i != xml_safe.IndexOf("&gt;", i)) && (i != xml_safe.IndexOf("&lt;", i)))
+                if ((i != xml_safe.IndexOf("&amp;", i, StringComparison.Ordinal)) && (i != xml_safe.IndexOf("&quot;", i, StringComparison.Ordinal)) &&
+                    (i != xml_safe.IndexOf("&gt;", i, StringComparison.Ordinal)) && (i != xml_safe.IndexOf("&lt;", i, StringComparison.Ordinal)))
                 {
                     xml_safe = xml_safe.Substring(0, i + 1) + "amp;" + xml_safe.Substring(i + 1);
                 }
 
-                i = xml_safe.IndexOf("&", i + 1);
+                i = xml_safe.IndexOf("&", i + 1, StringComparison.Ordinal);
             }
             return xml_safe.Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;");
         }
@@ -944,25 +939,25 @@ namespace SobekCM.Resource_Object.Configuration
                 switch (ReaderXml.Value.ToLower())
                 {
                     case "amdsec":
-                        returnValue.METS_Section = METS_Section_Type_Enum.amdSec;
+                        returnValue.METS_Section = METS_Section_Type_Enum.AmdSec;
                         if (ReaderXml.MoveToAttribute("amdSecType"))
                         {
                             switch( ReaderXml.Value.ToLower())
                             {
                                 case "techmd":
-                                    returnValue.amdSecType = METS_amdSec_Type_Enum.techMD;
+                                    returnValue.AmdSecType = METS_amdSec_Type_Enum.TechMD;
                                     break;
 
                                 case "rightsmd":
-                                    returnValue.amdSecType = METS_amdSec_Type_Enum.rightsMD;
+                                    returnValue.AmdSecType = METS_amdSec_Type_Enum.RightsMD;
                                     break;
 
                                 case "digiprovmd":
-                                    returnValue.amdSecType = METS_amdSec_Type_Enum.digiProvMD;
+                                    returnValue.AmdSecType = METS_amdSec_Type_Enum.DigiProvMD;
                                     break;
 
                                 case "sourcemd":
-                                    returnValue.amdSecType = METS_amdSec_Type_Enum.sourceMD;
+                                    returnValue.AmdSecType = METS_amdSec_Type_Enum.SourceMD;
                                     break;
 
                             }
@@ -970,7 +965,7 @@ namespace SobekCM.Resource_Object.Configuration
                         break;
 
                     case "dmdsec":
-                        returnValue.METS_Section = METS_Section_Type_Enum.dmdSec;
+                        returnValue.METS_Section = METS_Section_Type_Enum.DmdSec;
                         break;
                 }
             }

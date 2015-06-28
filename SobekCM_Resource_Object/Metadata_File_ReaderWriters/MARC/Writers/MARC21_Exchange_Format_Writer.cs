@@ -27,17 +27,19 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using SobekCM.Resource_Object.MARC;
 
 #endregion
 
-namespace SobekCM.Resource_Object.MARC.Writers
+namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters.MARC.Writers
 {
+    /// <summary> MARC21 exchange format writer  </summary>
     public class MARC21_Exchange_Format_Writer : IDisposable
     {
         // Constants used when writing the Marc21 stream
-        private const char Group_Seperator = (char) 29;
-        private const char Record_Seperator = (char) 30;
-        private const char Unit_Seperator = (char) 31;
+        private const char GROUP_SEPERATOR = (char) 29;
+        private const char RECORD_SEPERATOR = (char) 30;
+        private const char UNIT_SEPERATOR = (char) 31;
 
         private StreamWriter writer;
 
@@ -60,9 +62,9 @@ namespace SobekCM.Resource_Object.MARC.Writers
         /// <param name="Records">Collection of records to append </param>
         public void AppendRecords(IEnumerable<MARC_Record> Records)
         {
-            foreach (MARC_Record Record in Records)
+            foreach (MARC_Record record in Records)
             {
-                writer.Write(To_Machine_Readable_Record(Record));
+                writer.Write(To_Machine_Readable_Record(record));
             }
         }
 
@@ -111,7 +113,7 @@ namespace SobekCM.Resource_Object.MARC.Writers
                 {
                     if (!String.IsNullOrEmpty(thisEntry.Control_Field_Value))
                     {
-                        completeLine.Append(int_to_string(thisEntry.Tag, 3) + Record_Seperator);
+                        completeLine.Append(int_to_string(thisEntry.Tag, 3) + RECORD_SEPERATOR);
                         completeLine.Append(thisEntry.Control_Field_Value);
                         overallRecord.Add(completeLine.ToString());
                     }
@@ -120,9 +122,9 @@ namespace SobekCM.Resource_Object.MARC.Writers
                 {
                     // Start this tag and add the indicator, if there is one
                     if (thisEntry.Indicators.Length == 0)
-                        completeLine.Append(int_to_string(thisEntry.Tag, 3) + Record_Seperator);
+                        completeLine.Append(int_to_string(thisEntry.Tag, 3) + RECORD_SEPERATOR);
                     else
-                        completeLine.Append(int_to_string(thisEntry.Tag, 3) + Record_Seperator + thisEntry.Indicators);
+                        completeLine.Append(int_to_string(thisEntry.Tag, 3) + RECORD_SEPERATOR + thisEntry.Indicators);
 
                     // Build the complete line
                     foreach (MARC_Subfield thisSubfield in thisEntry.Subfields)
@@ -132,11 +134,11 @@ namespace SobekCM.Resource_Object.MARC.Writers
                             if (thisEntry.Indicators.Length == 0)
                                 completeLine.Append(thisSubfield.Data);
                             else
-                                completeLine.Append(Unit_Seperator.ToString() + thisSubfield.Data);
+                                completeLine.Append(UNIT_SEPERATOR.ToString() + thisSubfield.Data);
                         }
                         else
                         {
-                            completeLine.Append(Unit_Seperator.ToString() + thisSubfield.Subfield_Code + thisSubfield.Data);
+                            completeLine.Append(UNIT_SEPERATOR.ToString() + thisSubfield.Subfield_Code + thisSubfield.Data);
                         }
                     }
 
@@ -160,7 +162,7 @@ namespace SobekCM.Resource_Object.MARC.Writers
             int directory_length = directory.Length;
 
             // Compile the return value
-            directory.Append(completefields.ToString() + Record_Seperator + Group_Seperator);
+            directory.Append(completefields.ToString() + RECORD_SEPERATOR + GROUP_SEPERATOR);
 
             // Get the leader
             string leader = Record.Leader;
@@ -173,20 +175,20 @@ namespace SobekCM.Resource_Object.MARC.Writers
                    leader.Substring(17) + directory;
         }
 
-        private static string int_to_string(int number, int length_required)
+        private static string int_to_string(int Number, int LengthRequired)
         {
             // Verify the number fits
-            if (number.ToString().Length > length_required)
+            if (Number.ToString().Length > LengthRequired)
                 throw new ApplicationException("Number too large for field length!  Record may be too large!");
 
             // Return the value
-            return number.ToString().PadLeft(length_required, '0');
+            return Number.ToString().PadLeft(LengthRequired, '0');
         }
 
-        private static int adjusted_length(string line)
+        private static int adjusted_length(string Line)
         {
             int length = 0;
-            foreach (char thisChar in line)
+            foreach (char thisChar in Line)
             {
                 double ascii = thisChar;
                 if (ascii < 128)

@@ -1,5 +1,8 @@
+#region Using directives
+
 using System.Reflection;
-using System.Runtime.CompilerServices;
+
+#endregion
 
 //
 // General Information about an assembly is controlled through the following 
@@ -56,4 +59,4 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDelaySign(false)]
 [assembly: AssemblyKeyFile("")]
 [assembly: AssemblyKeyName("")]
-[assembly: AssemblyFileVersionAttribute("4.8.7")]
+[assembly: AssemblyFileVersion("4.8.7")]

@@ -112,12 +112,9 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             get
             {
-                if ((!String.IsNullOrEmpty(term)) || (!String.IsNullOrEmpty(university)) || (!String.IsNullOrEmpty(campus)) || (!String.IsNullOrEmpty(college)) ||
-                    (!String.IsNullOrEmpty(unit)) || (!String.IsNullOrEmpty(department)) || (!String.IsNullOrEmpty(institute)) || (!String.IsNullOrEmpty(center)) ||
-                    (!String.IsNullOrEmpty(section)) || (!String.IsNullOrEmpty(subsection)))
-                    return true;
-                else
-                    return false;
+                return (!String.IsNullOrEmpty(term)) || (!String.IsNullOrEmpty(university)) || (!String.IsNullOrEmpty(campus)) || (!String.IsNullOrEmpty(college)) ||
+                       (!String.IsNullOrEmpty(unit)) || (!String.IsNullOrEmpty(department)) || (!String.IsNullOrEmpty(institute)) || (!String.IsNullOrEmpty(center)) ||
+                       (!String.IsNullOrEmpty(section)) || (!String.IsNullOrEmpty(subsection));
             }
         }
 
@@ -127,7 +124,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             get
             {
                 if (!String.IsNullOrEmpty(term))
-                    return base.Convert_String_To_XML_Safe(term);
+                    return Convert_String_To_XML_Safe(term);
 
                 StringBuilder returnVal = new StringBuilder();
 
@@ -180,87 +177,85 @@ namespace SobekCM.Resource_Object.Bib_Info
                 {
                     return String.Empty;
                 }
-                else
-                {
-                    string returnString = returnVal.ToString();
-                    returnString = returnString.Substring(3).Trim();
-                    return base.Convert_String_To_XML_Safe(returnString);
-                }
+                
+                string returnString = returnVal.ToString();
+                returnString = returnString.Substring(3).Trim();
+                return Convert_String_To_XML_Safe(returnString);
             }
         }
 
         /// <summary> Writes this affiliation information as SobekCM-formatted XML </summary>
-        /// <param name="sobekcm_namespace"> Namespace to use for the SobekCM custom schema ( usually 'sobekcm' )</param>
-        /// <param name="results"> Stream to write this affiliation information as SobekCM-formatted XML</param>
-        internal void Add_SobekCM_Metadata(string sobekcm_namespace, TextWriter results)
+        /// <param name="SobekcmNamespace"> Namespace to use for the SobekCM custom schema ( usually 'sobekcm' )</param>
+        /// <param name="Results"> Stream to write this affiliation information as SobekCM-formatted XML</param>
+        internal void Add_SobekCM_Metadata(string SobekcmNamespace, TextWriter Results)
         {
             if (!hasData)
                 return;
 
             if (!String.IsNullOrEmpty(nameref))
             {
-                results.Write("<" + sobekcm_namespace + ":Affiliation nameid=\"" + nameref + "\">\r\n");
+                Results.Write("<" + SobekcmNamespace + ":Affiliation nameid=\"" + nameref + "\">\r\n");
             }
             else
             {
-                results.Write("<" + sobekcm_namespace + ":Affiliation>\r\n");
+                Results.Write("<" + SobekcmNamespace + ":Affiliation>\r\n");
             }
             if (!String.IsNullOrEmpty(term))
             {
-                results.Write("<" + sobekcm_namespace + ":AffiliationTerm>" + base.Convert_String_To_XML_Safe(term) + "</" + sobekcm_namespace + ":AffiliationTerm>\r\n");
+                Results.Write("<" + SobekcmNamespace + ":AffiliationTerm>" + Convert_String_To_XML_Safe(term) + "</" + SobekcmNamespace + ":AffiliationTerm>\r\n");
             }
             else
             {
-                results.Write("<" + sobekcm_namespace + ":HierarchicalAffiliation>\r\n");
+                Results.Write("<" + SobekcmNamespace + ":HierarchicalAffiliation>\r\n");
 
                 if (!String.IsNullOrEmpty(university))
                 {
-                    results.Write("<" + sobekcm_namespace + ":University>" + base.Convert_String_To_XML_Safe(university) + "</" + sobekcm_namespace + ":University>\r\n");
+                    Results.Write("<" + SobekcmNamespace + ":University>" + Convert_String_To_XML_Safe(university) + "</" + SobekcmNamespace + ":University>\r\n");
                 }
 
                 if (!String.IsNullOrEmpty(campus))
                 {
-                    results.Write("<" + sobekcm_namespace + ":Campus>" + base.Convert_String_To_XML_Safe(campus) + "</" + sobekcm_namespace + ":Campus>\r\n");
+                    Results.Write("<" + SobekcmNamespace + ":Campus>" + Convert_String_To_XML_Safe(campus) + "</" + SobekcmNamespace + ":Campus>\r\n");
                 }
 
                 if (!String.IsNullOrEmpty(college))
                 {
-                    results.Write("<" + sobekcm_namespace + ":College>" + base.Convert_String_To_XML_Safe(college) + "</" + sobekcm_namespace + ":College>\r\n");
+                    Results.Write("<" + SobekcmNamespace + ":College>" + Convert_String_To_XML_Safe(college) + "</" + SobekcmNamespace + ":College>\r\n");
                 }
 
                 if (!String.IsNullOrEmpty(unit))
                 {
-                    results.Write("<" + sobekcm_namespace + ":Unit>" + base.Convert_String_To_XML_Safe(unit) + "</" + sobekcm_namespace + ":Unit>\r\n");
+                    Results.Write("<" + SobekcmNamespace + ":Unit>" + Convert_String_To_XML_Safe(unit) + "</" + SobekcmNamespace + ":Unit>\r\n");
                 }
 
                 if (!String.IsNullOrEmpty(department))
                 {
-                    results.Write("<" + sobekcm_namespace + ":Department>" + base.Convert_String_To_XML_Safe(department) + "</" + sobekcm_namespace + ":Department>\r\n");
+                    Results.Write("<" + SobekcmNamespace + ":Department>" + Convert_String_To_XML_Safe(department) + "</" + SobekcmNamespace + ":Department>\r\n");
                 }
 
                 if (!String.IsNullOrEmpty(institute))
                 {
-                    results.Write("<" + sobekcm_namespace + ":Institute>" + base.Convert_String_To_XML_Safe(institute) + "</" + sobekcm_namespace + ":Institute>\r\n");
+                    Results.Write("<" + SobekcmNamespace + ":Institute>" + Convert_String_To_XML_Safe(institute) + "</" + SobekcmNamespace + ":Institute>\r\n");
                 }
 
                 if (!String.IsNullOrEmpty(center))
                 {
-                    results.Write("<" + sobekcm_namespace + ":Center>" + base.Convert_String_To_XML_Safe(center) + "</" + sobekcm_namespace + ":Center>\r\n");
+                    Results.Write("<" + SobekcmNamespace + ":Center>" + Convert_String_To_XML_Safe(center) + "</" + SobekcmNamespace + ":Center>\r\n");
                 }
 
                 if (!String.IsNullOrEmpty(section))
                 {
-                    results.Write("<" + sobekcm_namespace + ":Section>" + base.Convert_String_To_XML_Safe(section) + "</" + sobekcm_namespace + ":Section>\r\n");
+                    Results.Write("<" + SobekcmNamespace + ":Section>" + Convert_String_To_XML_Safe(section) + "</" + SobekcmNamespace + ":Section>\r\n");
                 }
 
                 if (!String.IsNullOrEmpty(subsection))
                 {
-                    results.Write("<" + sobekcm_namespace + ":Subsection>" + base.Convert_String_To_XML_Safe(subsection) + "</" + sobekcm_namespace + ":Subsection>\r\n");
+                    Results.Write("<" + SobekcmNamespace + ":Subsection>" + Convert_String_To_XML_Safe(subsection) + "</" + SobekcmNamespace + ":Subsection>\r\n");
                 }
 
-                results.Write("</" + sobekcm_namespace + ":HierarchicalAffiliation>\r\n");
+                Results.Write("</" + SobekcmNamespace + ":HierarchicalAffiliation>\r\n");
             }
-            results.Write("</" + sobekcm_namespace + ":Affiliation>\r\n");
+            Results.Write("</" + SobekcmNamespace + ":Affiliation>\r\n");
         }
 
         /// <summary> Writes this affiliation as a XML-safe string </summary>

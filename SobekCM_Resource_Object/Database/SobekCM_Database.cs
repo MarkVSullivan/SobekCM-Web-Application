@@ -1,19 +1,24 @@
+#region Using directives
+
 using System;
-using System.IO;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.ApplicationBlocks.Data;
-using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Behaviors;
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Database.DataSets;
+using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Resource_Object.OAI.Writer;
+
+#endregion
 
 namespace SobekCM.Resource_Object.Database
 {
@@ -117,7 +122,7 @@ namespace SobekCM.Resource_Object.Database
                 // Return the first table from the returned dataset
                 return true;
             }
-            catch (Exception ee)
+            catch
             {
                 return false;
             }
@@ -164,15 +169,15 @@ namespace SobekCM.Resource_Object.Database
             // Get the spatial display and subjects information
             StringBuilder spatialDisplayBuilder = new StringBuilder();
             StringBuilder subjectsDisplayBuilder = new StringBuilder();
-            foreach (Bib_Info.Subject_Info subject in ThisPackage.Bib_Info.Subjects)
+            foreach (Subject_Info subject in ThisPackage.Bib_Info.Subjects)
             {
-                if (subject.Class_Type == Bib_Info.Subject_Info_Type.Hierarchical_Spatial)
+                if (subject.Class_Type == Subject_Info_Type.Hierarchical_Spatial)
                 {
                 }
 
-                if (subject.Class_Type == Bib_Info.Subject_Info_Type.Standard)
+                if (subject.Class_Type == Subject_Info_Type.Standard)
                 {
-                    Bib_Info.Subject_Info_Standard standardSubject = (Bib_Info.Subject_Info_Standard)subject;
+                    Subject_Info_Standard standardSubject = (Subject_Info_Standard)subject;
                     string subjectText = standardSubject.ToString(false);
                     if (subjectsDisplayBuilder.Length > 0)
                         subjectsDisplayBuilder.Append("|");
@@ -182,7 +187,7 @@ namespace SobekCM.Resource_Object.Database
 
             // Get the publishers
             StringBuilder publisher_builder = new StringBuilder();
-            foreach (Bib_Info.Publisher_Info thisPublisher in ThisPackage.Bib_Info.Publishers)
+            foreach (Publisher_Info thisPublisher in ThisPackage.Bib_Info.Publishers)
             {
                 if (publisher_builder.Length > 0)
                 {
@@ -205,7 +210,7 @@ namespace SobekCM.Resource_Object.Database
             }
             if (ThisPackage.Bib_Info.Names_Count > 0)
             {
-                foreach (Bib_Info.Name_Info thisAuthor in ThisPackage.Bib_Info.Names)
+                foreach (Name_Info thisAuthor in ThisPackage.Bib_Info.Names)
                 {
                     string thisAuthorString = thisAuthor.ToString();
                     if ((thisAuthorString.Length > 0) && (thisAuthorString.IndexOf("unknown") < 0))
@@ -781,8 +786,7 @@ namespace SobekCM.Resource_Object.Database
 
             //for each page
             List<abstract_TreeNode> pages = ThisPackage.Divisions.Physical_Tree.Pages_PreOrder;
-            for (int i = 0; i < pages.Count; i++)
-            {
+            foreach (abstract_TreeNode t in pages) {
                 //GeoSpatial_Information geoInfo = pages[i].Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
                 //string error_message;
                 //Save_Item_Metadata(geoInfo);
@@ -792,14 +796,12 @@ namespace SobekCM.Resource_Object.Database
                 //geoInfo.Save_Additional_Info_To_Database(ThisPackage.Web.ItemID, connectionString, ThisPackage, out error_message);
 
                 //Step through all the metadata modules and allow the modules to save to the database
-                if (pages[i].Metadata_Modules != null)
+                if (t.Metadata_Modules != null)
                 {
-                    foreach (iMetadata_Module thisModule in pages[i].Metadata_Modules)
+                    foreach (iMetadata_Module thisModule in t.Metadata_Modules)
                     {
-                        GeoSpatial_Information geoInfo = pages[i].Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
                         string error_message;
-                        geoInfo.Save_Additional_Info_To_Database(ThisPackage.Web.ItemID, connectionString, ThisPackage, out error_message);
-                        //thisModule.Save_Additional_Info_To_Database(ThisPackage.Web.ItemID, connectionString, ThisPackage, out error_message);
+                        thisModule.Save_Additional_Info_To_Database(ThisPackage.Web.ItemID, connectionString, ThisPackage, out error_message);
                     }
                 }
             }
@@ -1210,6 +1212,7 @@ namespace SobekCM.Resource_Object.Database
             }
         }
 
+
         private static bool Lock_Digital_Resource(int ItemID)
         {
             try
@@ -1380,10 +1383,10 @@ namespace SobekCM.Resource_Object.Database
             if ((ThisPackage.Bib_Info.Identifiers_Count > 0) && (primary_alternate_id.Length == 0) || (primary_alternate_type.Length == 0))
             {
                 // Get the type here
-                bool artifact = ThisPackage.Bib_Info.SobekCM_Type == Bib_Info.TypeOfResource_SobekCM_Enum.Artifact;
+                bool artifact = ThisPackage.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Artifact;
 
                 // Step through the identifiers
-                foreach (Bib_Info.Identifier_Info thisIdentifier in ThisPackage.Bib_Info.Identifiers)
+                foreach (Identifier_Info thisIdentifier in ThisPackage.Bib_Info.Identifiers)
                 {
                     if (thisIdentifier.Type.IndexOf("*") >= 0)
                     {
@@ -1425,8 +1428,8 @@ namespace SobekCM.Resource_Object.Database
             bool aleph_or_oclc_exists = false;
             if (ThisPackage.Bib_Info.Identifiers_Count > 0)
             {
-                ReadOnlyCollection<Bib_Info.Identifier_Info> identifiers = ThisPackage.Bib_Info.Identifiers;
-                foreach (Bib_Info.Identifier_Info identifier in identifiers)
+                ReadOnlyCollection<Identifier_Info> identifiers = ThisPackage.Bib_Info.Identifiers;
+                foreach (Identifier_Info identifier in identifiers)
                 {
                     string identifier_type_upper = identifier.Type.ToUpper();
                     bool added = false;
@@ -1509,6 +1512,7 @@ namespace SobekCM.Resource_Object.Database
         /// <param name="ThisPackage"></param>
         /// <param name="GroupID"></param>
         /// <param name="CreateDate"> Day this item was created </param>
+        /// <param name="Options"> Instance wide options related to saving this item </param>
         /// <returns>TRUE if successful, otherwise FALSE </returns>
         private static bool Save_Item_Information(SobekCM_Item ThisPackage, int GroupID, DateTime CreateDate, Dictionary<string, object> Options)
         {
@@ -1536,11 +1540,11 @@ namespace SobekCM.Resource_Object.Database
             // Get the spatial display and subjects information
             StringBuilder spatialDisplayBuilder = new StringBuilder();
             StringBuilder subjectsDisplayBuilder = new StringBuilder();
-            foreach (Bib_Info.Subject_Info subject in ThisPackage.Bib_Info.Subjects)
+            foreach (Subject_Info subject in ThisPackage.Bib_Info.Subjects)
             {
-                if (subject.Class_Type == Bib_Info.Subject_Info_Type.Standard)
+                if (subject.Class_Type == Subject_Info_Type.Standard)
                 {
-                    Bib_Info.Subject_Info_Standard standardSubject = (Bib_Info.Subject_Info_Standard)subject;
+                    Subject_Info_Standard standardSubject = (Subject_Info_Standard)subject;
                     string subjectText = standardSubject.ToString(false);
                     if (subjectsDisplayBuilder.Length > 0)
                         subjectsDisplayBuilder.Append("|");
@@ -1550,7 +1554,7 @@ namespace SobekCM.Resource_Object.Database
 
             // Get the publishers
             StringBuilder publisher_builder = new StringBuilder();
-            foreach (Bib_Info.Publisher_Info thisPublisher in ThisPackage.Bib_Info.Publishers)
+            foreach (Publisher_Info thisPublisher in ThisPackage.Bib_Info.Publishers)
             {
                 if (publisher_builder.Length > 0)
                 {
@@ -1573,7 +1577,7 @@ namespace SobekCM.Resource_Object.Database
             }
             if (ThisPackage.Bib_Info.Names_Count > 0)
             {
-                foreach (Bib_Info.Name_Info thisAuthor in ThisPackage.Bib_Info.Names)
+                foreach (Name_Info thisAuthor in ThisPackage.Bib_Info.Names)
                 {
                     string thisAuthorString = thisAuthor.ToString();
                     if ((thisAuthorString.Length > 0) && (thisAuthorString.IndexOf("unknown") < 0))
@@ -1621,10 +1625,8 @@ namespace SobekCM.Resource_Object.Database
                     institutionDisplayBuilder.Append(ThisPackage.Bib_Info.Source.Statement);
             }
 
-            string purl = String.Empty;
             if (ThisPackage.Bib_Info.hasLocationInformation)
             {
-                purl = ThisPackage.Bib_Info.Location.PURL;
                 holding_code = ThisPackage.Bib_Info.Location.Holding_Code;
                 if ((holding_code.ToUpper().IndexOf("UF") != 0) && (holding_code.ToUpper().IndexOf("IUF") != 0))
                 {
@@ -1689,6 +1691,9 @@ namespace SobekCM.Resource_Object.Database
             return true;
         }
 
+        /// <summary> Saves the OAI-PMH information associated with an item </summary>
+        /// <param name="ThisPackage"> Package to save as various OAI-PMH enabled formats </param>
+        /// <param name="Options"> System options </param>
         public static void Save_OAI_Information(SobekCM_Item ThisPackage, Dictionary<string, object> Options)
         {
             List<Tuple<string, string>> oai_records = OAI_PMH_Metadata_Writers.Get_OAI_PMH_Metadata_Records(ThisPackage, Options);
@@ -2059,13 +2064,13 @@ namespace SobekCM.Resource_Object.Database
             }
 
             // Call the stored procedure
-            SobekCM_Database.Save_Serial_Hierarchy(GroupID, ItemID, level1_text, level1_index, level2_text, level2_index, level3_text, level3_index, level4_text, level4_index, level5_text, level5_index, builder.ToString());
+            Save_Serial_Hierarchy(GroupID, ItemID, level1_text, level1_index, level2_text, level2_index, level3_text, level3_index, level4_text, level4_index, level5_text, level5_index, builder.ToString());
         }
 
         private static bool Save_Item_Metadata_Information(SobekCM_Item ThisPackage)
         {
             // Clear any existing item metadata
-            SobekCM_Database.Clear_Item_Metadata(ThisPackage.Web.ItemID, false);
+            Clear_Item_Metadata(ThisPackage.Web.ItemID, false);
 
             // Build lists of the metadata now
             List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
@@ -2155,7 +2160,7 @@ namespace SobekCM.Resource_Object.Database
             while ((current_index + 10) <= metadataTerms.Count)
             {
                 // Save the next ten values
-                SobekCM_Database.Save_Item_Metadata(ThisPackage.Web.ItemID,
+                Save_Item_Metadata(ThisPackage.Web.ItemID,
                     metadataTerms[current_index].Key, metadataTerms[current_index].Value,
                     metadataTerms[current_index + 1].Key, metadataTerms[current_index + 1].Value,
                     metadataTerms[current_index + 2].Key, metadataTerms[current_index + 2].Value,
@@ -3855,16 +3860,16 @@ namespace SobekCM.Resource_Object.Database
         /// <summary> Returns the list of items currently loaded to a SobekCM instance </summary>
         /// <param name="SobekCM_Base_URL">Base SobekCM URL</param>
         /// <returns>DataSet</returns>
-        public static DataSets.SobekCM_All_Items Current_SobekCM_Items(string SobekCM_Base_URL)
+        public static SobekCM_All_Items Current_SobekCM_Items(string SobekCM_Base_URL)
         {
             try
             {
                 // Create the return value data set
-                DataSets.SobekCM_All_Items returnVal = new DataSets.SobekCM_All_Items();
+                SobekCM_All_Items returnVal = new SobekCM_All_Items();
 
                 // Create the stream to get the information from the web
                 WebResponse objResponse;
-                WebRequest objRequest = System.Net.HttpWebRequest.Create(SobekCM_Base_URL);
+                WebRequest objRequest = HttpWebRequest.Create(SobekCM_Base_URL);
                 objRequest.Timeout = 15000;
                 objResponse = objRequest.GetResponse();
 
@@ -3881,15 +3886,15 @@ namespace SobekCM.Resource_Object.Database
         }
 
         /// <summary> Downloads a METS file from the SobekCM web page </summary>
-        /// <param name="package_resource_url">URL for this packages resources</param>
-        /// <param name="bibid">Bib ID for this package</param>
-        /// <param name="vid">VID for this package</param>
+        /// <param name="PackageResourceURL">URL for this packages resources</param>
+        /// <param name="BIBID">Bib ID for this package</param>
+        /// <param name="VID">VID for this package</param>
         /// <returns>METS file as a string</returns>
-        public static string Download_METS(string package_resource_url, string bibid, string vid)
+        public static string Download_METS(string PackageResourceURL, string BIBID, string VID)
         {
             try
             {
-                string download_url = package_resource_url + "/" + bibid + "_" + vid + ".METS_Header.xml";
+                string download_url = PackageResourceURL + "/" + BIBID + "_" + VID + ".METS_Header.xml";
                 string mets_file = GetHtmlPage(download_url, 15);
                 return mets_file;
             }
@@ -3910,7 +3915,7 @@ namespace SobekCM.Resource_Object.Database
                 // the html retrieved from the page
                 String strResult;
                 WebResponse objResponse;
-                WebRequest objRequest = System.Net.HttpWebRequest.Create(strURL);
+                WebRequest objRequest = HttpWebRequest.Create(strURL);
                 objRequest.Timeout = Seconds_to_TimeOut * 1000;
                 objResponse = objRequest.GetResponse();
                 // the using keyword will automatically dispose the object 
@@ -3937,7 +3942,7 @@ namespace SobekCM.Resource_Object.Database
         /// <param name="Aggregation_Code"> Code for the item aggregation of interest, or an empty string</param>
         /// <returns> Dataset with the simple list of items, including BibID, VID, Title, CreateDate, and Resource Link </returns>
         /// <remarks> This calls the 'SobekCM_Simple_Item_List' stored procedure in the main database</remarks> 
-        public static DataSets.SobekCM_All_Items Simple_Item_List(string Aggregation_Code)
+        public static SobekCM_All_Items Simple_Item_List(string Aggregation_Code)
         {
             try
             {
@@ -3955,7 +3960,7 @@ namespace SobekCM.Resource_Object.Database
                 adapter.TableMappings.Add("Table", "SobekCM_Item");
 
                 // Create the strongly-typed dataset
-                Database.DataSets.SobekCM_All_Items itemList = new Database.DataSets.SobekCM_All_Items();
+                SobekCM_All_Items itemList = new SobekCM_All_Items();
 
                 // Fill the strongly typed dataset
                 adapter.Fill(itemList);
@@ -3998,9 +4003,9 @@ namespace SobekCM.Resource_Object.Database
 
         #region Quality Control related methods
         /// <summary> Get the list of all the QC Page errors for a single item </summary>
-        /// <param name="itemID">ItemID</param>
+        /// <param name="ItemID">ItemID</param>
         /// <returns></returns>
-        public static DataTable Get_QC_Errors_For_Item(int itemID)
+        public static DataTable Get_QC_Errors_For_Item(int ItemID)
         {
             try
             {
@@ -4008,7 +4013,7 @@ namespace SobekCM.Resource_Object.Database
 
                 //Create the command
                 SqlCommand command = new SqlCommand("SobekCM_QC_Get_Errors", connection) { CommandType = CommandType.StoredProcedure };
-                command.Parameters.AddWithValue("@itemID", itemID);
+                command.Parameters.AddWithValue("@itemID", ItemID);
 
                 //Open the connection
                 connection.Open();
@@ -4033,16 +4038,14 @@ namespace SobekCM.Resource_Object.Database
         }
 
         /// <summary> Save QC error for a single page of a single item </summary>
-        /// <param name="itemID">ItemID</param>
-        /// <param name="filename">Root filename of this page</param>
-        /// <param name="errorCode">Error Code for this error</param>
-        /// <param name="description">Error Description</param>
+        /// <param name="ItemID">ItemID</param>
+        /// <param name="Filename">Root filename of this page</param>
+        /// <param name="ErrorCode">Error Code for this error</param>
+        /// <param name="Description">Error Description</param>
         /// <param name="isVolumeError">Indicates if this error is a Volume error or not</param>
         /// <returns></returns>
-        public static int Save_QC_Error(int itemID, string filename, string errorCode, string description, bool isVolumeError)
+        public static int Save_QC_Error(int ItemID, string Filename, string ErrorCode, string Description, bool isVolumeError)
         {
-            int errorID;
-
             try
             {
                 //Create the connection
@@ -4055,10 +4058,10 @@ namespace SobekCM.Resource_Object.Database
                 connect.Open();
 
                 //Add the parameters to this command
-                command.Parameters.AddWithValue("@itemID", itemID);
-                command.Parameters.AddWithValue("@filename", filename);
-                command.Parameters.AddWithValue("@errorCode", errorCode);
-                command.Parameters.AddWithValue("@description", description);
+                command.Parameters.AddWithValue("@itemID", ItemID);
+                command.Parameters.AddWithValue("@filename", Filename);
+                command.Parameters.AddWithValue("@errorCode", ErrorCode);
+                command.Parameters.AddWithValue("@description", Description);
                 command.Parameters.AddWithValue("@isVolumeError", isVolumeError);
 
                 //Add the output parameter
@@ -4066,6 +4069,7 @@ namespace SobekCM.Resource_Object.Database
                 output_errorID.Direction = ParameterDirection.Output;
 
                 command.ExecuteNonQuery();
+                int errorID;
                 Int32.TryParse(output_errorID.Value.ToString(), out errorID);
 
                 connect.Close();

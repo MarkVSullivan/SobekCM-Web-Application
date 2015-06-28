@@ -89,16 +89,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         /// <summary> Gets flag indicating if this has any data </summary>
         internal bool hasData
         {
-            get
-            {
-                if ((!String.IsNullOrEmpty(date)) || (!String.IsNullOrEmpty(performance)) || (Performers_Count > 0))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+            get {
+                return (!String.IsNullOrEmpty(date)) || (!String.IsNullOrEmpty(performance)) || (Performers_Count > 0);
             }
         }
 
@@ -119,24 +111,16 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         /// <summary> Gets the number of performers linked to this digital object </summary>
         public int Performers_Count
         {
-            get
-            {
-                if (performers == null)
-                    return 0;
-                else
-                    return performers.Count;
+            get {
+                return performers == null ? 0 : performers.Count;
             }
         }
 
         /// <summary> Gets the collection of performers for this item </summary>
         public ReadOnlyCollection<Performer> Performers
         {
-            get
-            {
-                if (performers == null)
-                    return new ReadOnlyCollection<Performer>(new List<Performer>());
-                else
-                    return new ReadOnlyCollection<Performer>(performers);
+            get {
+                return performers == null ? new ReadOnlyCollection<Performer>(new List<Performer>()) : new ReadOnlyCollection<Performer>(performers);
             }
         }
 

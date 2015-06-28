@@ -25,16 +25,23 @@
 
 using System;
 using System.IO;
+using SobekCM.Resource_Object.MARC;
 using SobekCM.Resource_Object.MARC.Parsers;
 using Zoom.Net;
 using Zoom.Net.YazSharp;
 
 #endregion
 
-namespace SobekCM.Resource_Object.MARC
+namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters.MARC.Z3950
 {
+    /// <summary> CLass is used to retrieve MARC records via Z39.50 from an external catalog </summary>
     public class MARC_Record_Z3950_Retriever
     {
+        /// <summary> Get the MARC record related to an item, by specifying the primary identifier for the item in the catalog </summary>
+        /// <param name="Primary_Identifier"> Primary identifier for the record in the catalog </param>
+        /// <param name="Z3950_Server"> Z39.50 server endpoint information </param>
+        /// <param name="Message"> Return message from the server </param>
+        /// <returns> MARC record, if retrievable by primary identifier </returns>
         public static MARC_Record Get_Record_By_Primary_Identifier(string Primary_Identifier, Z3950_Endpoint Z3950_Server, out string Message)
         {
             // Initially set the message to empty
@@ -47,20 +54,15 @@ namespace SobekCM.Resource_Object.MARC
             // http://lists.indexdata.dk/pipermail/yazlist/2007-June/002080.html
             // http://fclaweb.fcla.edu/content/z3950-access-aleph
 
-            const string prefix = "@attrset Bib-1 @attr 1=12 ";
+            const string PREFIX = "@attrset Bib-1 @attr 1=12 ";
 
             try
             {
-                IConnection connection; //	zoom db connector
-                IPrefixQuery query; //	zoom query
-                IRecord record; //	one zoom record
-                IResultSet records; //	collection of records	
-
                 //	allocate MARC tools
                 MARC21_Exchange_Format_Parser parser = new MARC21_Exchange_Format_Parser();
 
                 //	establish connection
-                connection = new Connection(Z3950_Server.URI, Convert.ToInt32(Z3950_Server.Port));
+                IConnection connection = new Connection(Z3950_Server.URI, Convert.ToInt32(Z3950_Server.Port));
                 connection.DatabaseName = Z3950_Server.Database_Name;
 
                 // Any authentication here?
@@ -73,21 +75,18 @@ namespace SobekCM.Resource_Object.MARC
                 connection.Syntax = RecordSyntax.USMARC;
 
                 //	call the Z39.50 server
-                query = new PrefixQuery(prefix + Primary_Identifier);
-                records = connection.Search(query);
+                IPrefixQuery query = new PrefixQuery(PREFIX + Primary_Identifier);
+                IResultSet records = connection.Search(query);
 
                 // If the record count is not one, return a message
                 if (records.Count != 1)
                 {
-                    if (records.Count == 0)
-                        Message = "ERROR: No matching record found in Z39.50 endpoint";
-                    else
-                        Message = "ERROR: More than one matching record found in Z39.50 endpoint by primary identifier";
+                    Message = records.Count == 0 ? "ERROR: No matching record found in Z39.50 endpoint" : "ERROR: More than one matching record found in Z39.50 endpoint by primary identifier";
                     return null;
                 }
 
                 //	capture the byte stream
-                record = records[0];
+                IRecord record = records[0];
                 MemoryStream ms = new MemoryStream(record.Content);
 
                 //	display while debugging
@@ -127,7 +126,12 @@ namespace SobekCM.Resource_Object.MARC
             }
         }
 
-
+        /// <summary> Gets a MARC record from a Z39.50 server, by performaing a search </summary>
+        /// <param name="Attribute_Number"> Z39.50 attribute number which indicates against which metadata field search should occur </param>
+        /// <param name="Search_Term"> Term to search for within the attribute number </param>
+        /// <param name="Z3950_Server"> Z39.50 server endpoint information </param>
+        /// <param name="Message"> Return message from the server </param>
+        /// <returns> MARC record, if retrievable by search </returns>
         public static MARC_Record Get_Record(int Attribute_Number, string Search_Term, Z3950_Endpoint Z3950_Server, out string Message)
         {
             // Initially set the message to empty
@@ -144,16 +148,11 @@ namespace SobekCM.Resource_Object.MARC
 
             try
             {
-                IConnection connection; //	zoom db connector
-                IPrefixQuery query; //	zoom query
-                IRecord record; //	one zoom record
-                IResultSet records; //	collection of records	
-
                 //	allocate MARC tools
                 MARC21_Exchange_Format_Parser parser = new MARC21_Exchange_Format_Parser();
 
                 //	establish connection
-                connection = new Connection(Z3950_Server.URI, Convert.ToInt32(Z3950_Server.Port));
+                IConnection connection = new Connection(Z3950_Server.URI, Convert.ToInt32(Z3950_Server.Port));
                 connection.DatabaseName = Z3950_Server.Database_Name;
 
                 // Any authentication here?
@@ -166,21 +165,18 @@ namespace SobekCM.Resource_Object.MARC
                 connection.Syntax = RecordSyntax.USMARC;
 
                 //	call the Z39.50 server
-                query = new PrefixQuery(prefix + Search_Term);
-                records = connection.Search(query);
+                IPrefixQuery query = new PrefixQuery(prefix + Search_Term);
+                IResultSet records = connection.Search(query);
 
                 // If the record count is not one, return a message
                 if (records.Count != 1)
                 {
-                    if (records.Count == 0)
-                        Message = "ERROR: No matching record found in Z39.50 endpoint";
-                    else
-                        Message = "ERROR: More than one matching record found in Z39.50 endpoint by ISBN";
+                    Message = records.Count == 0 ? "ERROR: No matching record found in Z39.50 endpoint" : "ERROR: More than one matching record found in Z39.50 endpoint by ISBN";
                     return null;
                 }
 
                 //	capture the byte stream
-                record = records[0];
+                IRecord record = records[0];
                 MemoryStream ms = new MemoryStream(record.Content);
 
                 //	display while debugging

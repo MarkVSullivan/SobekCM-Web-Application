@@ -24,11 +24,11 @@ namespace SobekCM.Resource_Object.Divisions
         private string hashResult;
 
         /// <summary>Constuctor for a new instance of this object</summary>
-        /// <param name="fileName"></param>
-        public FileSHA1(string fileName)
+        /// <param name="FileName"></param>
+        public FileSHA1(string FileName)
         {
-            this.fileName = fileName;
-            computeChecksum();
+            fileName = FileName;
+            ComputeChecksum();
         }
 
         /// <summary>Constuctor for a new instance of this object</summary>
@@ -45,7 +45,7 @@ namespace SobekCM.Resource_Object.Divisions
             set
             {
                 fileName = value;
-                computeChecksum();
+                ComputeChecksum();
             }
         }
 
@@ -62,7 +62,7 @@ namespace SobekCM.Resource_Object.Divisions
         }
 
         /// <summary> Private method used to calculate the sha1 check summ</summary>
-        private void computeChecksum()
+        private void ComputeChecksum()
         {
             try
             {

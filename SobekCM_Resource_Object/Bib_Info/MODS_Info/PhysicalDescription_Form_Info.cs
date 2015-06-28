@@ -53,12 +53,8 @@ namespace SobekCM.Resource_Object.Bib_Info
 
         internal bool hasData
         {
-            get
-            {
-                if (!String.IsNullOrEmpty(form))
-                    return true;
-                else
-                    return false;
+            get {
+                return !String.IsNullOrEmpty(form);
             }
         }
 

@@ -4,11 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using SobekCM.Resource_Object.Behaviors;
-using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
 
 #endregion
@@ -24,7 +20,7 @@ namespace SobekCM.Resource_Object
     [Serializable]
     public class Web_Info
     {
-        private Behaviors_Info behaviors;
+        private readonly Behaviors_Info behaviors;
 
         private List<Related_Titles> related_titles_collection;
 
@@ -48,6 +44,7 @@ namespace SobekCM.Resource_Object
         private string vid;
         private Dictionary<string, SobekCM_File_Info> viewer_to_file;
 
+        /// <summary> Flag indicates additional work is needed </summary>
         public bool Additional_Work_Needed { get; set; }
         
         /// <summary> Constructor for a new instance of the Behaviors_Info class </summary>
@@ -76,38 +73,32 @@ namespace SobekCM.Resource_Object
         {
             get
             {
-                if ((assocFilePath == null) || (assocFilePath.Length == 0))
+                if (String.IsNullOrEmpty(assocFilePath))
                 {
                     assocFilePath = bibid.Substring(0, 2) + "/" + bibid.Substring(2, 2) + "/" + bibid.Substring(4, 2) + "/" + bibid.Substring(6, 2) + "/" + bibid.Substring(8, 2) + "/" + vid;
                 }
-                string assocFilePath_URLstyle = assocFilePath.Replace("\\", "/");
-                if ((assocFilePath_URLstyle.Length > 0) && (assocFilePath_URLstyle[assocFilePath_URLstyle.Length - 1] == '/'))
+                string assocFilePathUrLstyle = assocFilePath.Replace("\\", "/");
+                if ((assocFilePathUrLstyle.Length > 0) && (assocFilePathUrLstyle[assocFilePathUrLstyle.Length - 1] == '/'))
                 {
-                    assocFilePath_URLstyle = assocFilePath_URLstyle.Substring(0, assocFilePath_URLstyle.Length - 1);
+                    assocFilePathUrLstyle = assocFilePathUrLstyle.Substring(0, assocFilePathUrLstyle.Length - 1);
                 }
                 if (imageRoot != null)
                 {
-                    if (imageRoot.IndexOf(assocFilePath_URLstyle) >= 0)
+                    if (imageRoot.IndexOf(assocFilePathUrLstyle) >= 0)
                         return imageRoot;
-                    else
-                        return imageRoot + assocFilePath_URLstyle;
+                    
+                    return imageRoot + assocFilePathUrLstyle;
                 }
-                else
-                {
-                    return assocFilePath_URLstyle;
-                }
+                
+                return assocFilePathUrLstyle;
             }
         }
 
         /// <summary> Gets the collection of pages by sequence </summary>
         public ReadOnlyCollection<Page_TreeNode> Pages_By_Sequence
         {
-            get
-            {
-                if (pages_by_seq == null)
-                    return new ReadOnlyCollection<Page_TreeNode>(new List<Page_TreeNode>());
-                else
-                    return new ReadOnlyCollection<Page_TreeNode>(pages_by_seq);
+            get {
+                return pages_by_seq == null ? new ReadOnlyCollection<Page_TreeNode>(new List<Page_TreeNode>()) : new ReadOnlyCollection<Page_TreeNode>(pages_by_seq);
             }
         }
 
@@ -147,18 +138,18 @@ namespace SobekCM.Resource_Object
 
 
         /// <summary> Gets a valid viewer code for this item, based on the requested viewer code and page </summary>
-        /// <param name="viewer_code"> Requested viewer code </param>
-        /// <param name="page"> Requested page </param>
+        /// <param name="ViewerCode"> Requested viewer code </param>
+        /// <param name="Page"> Requested page </param>
         /// <returns> Valid viewer code and page </returns>
         /// <remarks> The requested viewer code and page are validated, and if valid, returned.  Otherwise, the closest valid viewer code to the one requested is returned. </remarks>
-        public string Get_Valid_Viewer_Code(string viewer_code, int page)
+        public string Get_Valid_Viewer_Code(string ViewerCode, int Page)
         {
             string lower_code = String.Empty;
-            if (!String.IsNullOrEmpty(viewer_code))
-                lower_code = viewer_code.ToLower();
+            if (!String.IsNullOrEmpty(ViewerCode))
+                lower_code = ViewerCode.ToLower();
 
             // If this is 'RES' for restricted, taht is always valid
-            if (viewer_code == "res")
+            if (ViewerCode == "res")
                 return "res";
 
             // Is this in the item level viewer list?
@@ -243,13 +234,13 @@ namespace SobekCM.Resource_Object
             {
 	            if (behaviors.Item_Level_Page_Views.Contains(behaviors.Default_View))
 	            {
-					foreach (SobekCM_File_Info thisFile in pages_by_seq[page - 1].Files)
+					foreach (SobekCM_File_Info thisFile in pages_by_seq[Page - 1].Files)
 					{
 						if (thisFile.Get_Viewer() != null)
 						{
 							if (thisFile.Get_Viewer().View_Type == behaviors.Default_View.View_Type)
 							{
-								return page.ToString() + thisFile.Get_Viewer().Viewer_Codes[0];
+								return Page.ToString() + thisFile.Get_Viewer().Viewer_Codes[0];
 							}
 						}
 					}
@@ -258,13 +249,13 @@ namespace SobekCM.Resource_Object
 					// default to any of the item level page views
 					foreach (View_Object itemTaggedView in behaviors.Item_Level_Page_Views)
 					{
-						foreach (SobekCM_File_Info thisFile in pages_by_seq[page - 1].Files)
+						foreach (SobekCM_File_Info thisFile in pages_by_seq[Page - 1].Files)
 						{
 							if (thisFile.Get_Viewer() != null)
 							{
 								if (thisFile.Get_Viewer().View_Type == itemTaggedView.View_Type)
 								{
-									return page.ToString() + thisFile.Get_Viewer().Viewer_Codes[0];
+									return Page.ToString() + thisFile.Get_Viewer().Viewer_Codes[0];
 								}
 							}
 						}
@@ -298,11 +289,11 @@ namespace SobekCM.Resource_Object
         }
 
         /// <summary> Gets the view object from this item based on the requested viewer code  </summary>
-        /// <param name="viewer_code"> Viewer code for the viewer requested </param>
+        /// <param name="ViewerCode"> Viewer code for the viewer requested </param>
         /// <returns> Valid view object from this item, based on requested viewer code, or NULL </returns>
-        public View_Object Get_Viewer(string viewer_code)
+        public View_Object Get_Viewer(string ViewerCode)
         {
-            string lower_code = viewer_code.ToLower();
+            string lower_code = ViewerCode.ToLower();
 
             // If this is for the restricted viewer, that is always valid
             if (lower_code == "res")
@@ -374,24 +365,15 @@ namespace SobekCM.Resource_Object
         /// <summary> Gets the number of related titles from the SobekCM database </summary>
         public int Related_Titles_Count
         {
-            get
-            {
-                if (related_titles_collection == null)
-                    return 0;
-                else
-                    return related_titles_collection.Count;
+            get {
+                return related_titles_collection == null ? 0 : related_titles_collection.Count;
             }
         }
 
         /// <summary> Gets the related titles collection </summary>
         public List<Related_Titles> All_Related_Titles
         {
-            get
-            {
-                if (related_titles_collection == null)
-                    related_titles_collection = new List<Related_Titles>();
-                return related_titles_collection;
-            }
+            get { return related_titles_collection ?? (related_titles_collection = new List<Related_Titles>()); }
         }
 
         #endregion

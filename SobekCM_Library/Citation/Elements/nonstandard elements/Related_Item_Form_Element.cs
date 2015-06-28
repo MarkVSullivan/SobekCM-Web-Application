@@ -109,23 +109,23 @@ namespace SobekCM.Library.Citation.Elements
                             string relation = String.Empty;
                             switch (thisItem.Relationship)
                             {
-                                case Related_Item_Type_Enum.succeeding:
+                                case Related_Item_Type_Enum.Succeeding:
                                     relation = "( <i>Succeeded by</i> ) ";
                                     break;
 
-                                case Related_Item_Type_Enum.otherVersion:
+                                case Related_Item_Type_Enum.OtherVersion:
                                     relation = "( <i>Other Version</i> ) ";
                                     break;
 
-                                case Related_Item_Type_Enum.otherFormat:
+                                case Related_Item_Type_Enum.OtherFormat:
                                     relation = "( <i>Other Format</i> ) ";
                                     break;
 
-                                case Related_Item_Type_Enum.preceding:
+                                case Related_Item_Type_Enum.Preceding:
                                     relation = "( <i>Preceded by</i> ) ";
                                     break;
 
-                                case Related_Item_Type_Enum.host:
+                                case Related_Item_Type_Enum.Host:
                                     relation = "( <i>Host</i> ) ";
                                     break;
                             }
@@ -154,23 +154,23 @@ namespace SobekCM.Library.Citation.Elements
                                                   ? "<option value=\"\" selected=\"selected\" >&nbsp;</option>"
                                                   : "<option value=\"\">&nbsp;</option>");
 
-                    PopupFormBuilder.Append(thisItem.Relationship == Related_Item_Type_Enum.host
+                    PopupFormBuilder.Append(thisItem.Relationship == Related_Item_Type_Enum.Host
                                                   ? "<option value=\"host\" selected=\"selected\" >Host</option>"
                                                   : "<option value=\"host\">Host</option>");
 
-                    PopupFormBuilder.Append(thisItem.Relationship == Related_Item_Type_Enum.otherFormat
+                    PopupFormBuilder.Append(thisItem.Relationship == Related_Item_Type_Enum.OtherFormat
                                                   ? "<option value=\"other_format\" selected=\"selected\" >Other Format</option>"
                                                   : "<option value=\"other_format\">Other Format</option>");
 
-                    PopupFormBuilder.Append(thisItem.Relationship == Related_Item_Type_Enum.otherVersion
+                    PopupFormBuilder.Append(thisItem.Relationship == Related_Item_Type_Enum.OtherVersion
                                                   ? "<option value=\"other_version\" selected=\"selected\" >Other Version</option>"
                                                   : "<option value=\"other_version\">Other Version</option>");
 
-                    PopupFormBuilder.Append(thisItem.Relationship == Related_Item_Type_Enum.preceding
+                    PopupFormBuilder.Append(thisItem.Relationship == Related_Item_Type_Enum.Preceding
                                                   ? "<option value=\"preceding\" selected=\"selected\" >Preceding</option>"
                                                   : "<option value=\"preceding\">Preceding</option>");
 
-                    PopupFormBuilder.Append(thisItem.Relationship == Related_Item_Type_Enum.succeeding
+                    PopupFormBuilder.Append(thisItem.Relationship == Related_Item_Type_Enum.Succeeding
                                                   ? "<option value=\"succeeding\" selected=\"selected\" >Succeeding</option>"
                                                   : "<option value=\"succeeding\">Succeeding</option>");
 
@@ -284,23 +284,23 @@ namespace SobekCM.Library.Citation.Elements
                         switch (relation)
                         {
                             case "host":
-                                newItem.Relationship = Related_Item_Type_Enum.host;
+                                newItem.Relationship = Related_Item_Type_Enum.Host;
                                 break;
 
                             case "other_format":
-                                newItem.Relationship = Related_Item_Type_Enum.otherFormat;
+                                newItem.Relationship = Related_Item_Type_Enum.OtherFormat;
                                 break;
 
                             case "other_version":
-                                newItem.Relationship = Related_Item_Type_Enum.otherVersion;
+                                newItem.Relationship = Related_Item_Type_Enum.OtherVersion;
                                 break;
 
                             case "preceding":
-                                newItem.Relationship = Related_Item_Type_Enum.preceding;
+                                newItem.Relationship = Related_Item_Type_Enum.Preceding;
                                 break;
 
                             case "succeeding":
-                                newItem.Relationship = Related_Item_Type_Enum.succeeding;
+                                newItem.Relationship = Related_Item_Type_Enum.Succeeding;
                                 break;
                         }
                         newItem.URL_Display_Label = display;

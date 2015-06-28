@@ -9,7 +9,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
     /// <summary> Collection of OAI-PMH records from the OAI-PMH repository </summary>
     public class OAI_Repository_Records_List
     {
-        private List<OAI_Repository_DublinCore_Record> records;
+        private readonly List<OAI_Repository_DublinCore_Record> records;
 
         /// <summary> Constructor for a new instance of the OAI_Repository_Records_List class </summary>
         public OAI_Repository_Records_List()

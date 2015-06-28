@@ -29,11 +29,13 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml.Linq;
+using SobekCM.Resource_Object.MARC;
 
 #endregion
 
-namespace SobekCM.Resource_Object.MARC.Writers
+namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters.MARC.Writers
 {
+    /// <summary> MarcXML base writer  </summary>
     public class MARCXML_Writer : IDisposable
     {
         private StreamWriter writer;
@@ -46,12 +48,12 @@ namespace SobekCM.Resource_Object.MARC.Writers
             writer = new StreamWriter(FileName, false, Encoding.UTF8);
 
             // Start the file
-            const string indent = "    ";
+            const string INDENT = "    ";
             writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
             writer.WriteLine("<collection xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
-            writer.WriteLine(indent + "xsi:schemaLocation=\"http://www.loc.gov/MARC21/slim");
-            writer.WriteLine(indent + indent + "http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd\"");
-            writer.WriteLine(indent + "xmlns=\"http://www.loc.gov/MARC21/slim\">");
+            writer.WriteLine(INDENT + "xsi:schemaLocation=\"http://www.loc.gov/MARC21/slim");
+            writer.WriteLine(INDENT + INDENT + "http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd\"");
+            writer.WriteLine(INDENT + "xmlns=\"http://www.loc.gov/MARC21/slim\">");
         }
 
         /// <summary> Append a single record to the file </summary>
@@ -110,12 +112,12 @@ namespace SobekCM.Resource_Object.MARC.Writers
             // Add the MARC XML header and start this collection
             if (Include_Start_End_Tags)
             {
-                const string indent = "    ";
+                const string INDENT = "    ";
                 returnValue.AppendLine("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
                 returnValue.AppendLine("<collection xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
-                returnValue.AppendLine(indent + "xsi:schemaLocation=\"http://www.loc.gov/MARC21/slim");
-                returnValue.AppendLine(indent + indent + "http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd\"");
-                returnValue.AppendLine(indent + "xmlns=\"http://www.loc.gov/MARC21/slim\">");
+                returnValue.AppendLine(INDENT + "xsi:schemaLocation=\"http://www.loc.gov/MARC21/slim");
+                returnValue.AppendLine(INDENT + INDENT + "http://www.loc.gov/standards/marcxml/schema/MARC21slim.xsd\"");
+                returnValue.AppendLine(INDENT + "xmlns=\"http://www.loc.gov/MARC21/slim\">");
             }
 
             // Begin this record and add the leader
@@ -162,7 +164,7 @@ namespace SobekCM.Resource_Object.MARC.Writers
             }
 
             // Add the XML text to the string builder
-            returnValue.Append(record_root.ToString());
+            returnValue.Append(record_root);
 
             // Close this collection, if requested
             if (Include_Start_End_Tags)

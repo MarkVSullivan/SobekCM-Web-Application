@@ -12,9 +12,10 @@ using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 
 namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 {
+    /// <summary> Reader that operates against a single custom SobekCM descriptive METS section  </summary>
     public class SobekCM_METS_dmdSec_ReaderWriter : XML_Writing_Base_Type, iPackage_dmdSec_ReaderWriter
     {
-        private string sobekcm_namespace;
+        private readonly string sobekcm_namespace;
 
 
         /// <summary> Constructor for a new instance of the SobekCM_METS_dmdSec_ReaderWriter class </summary>
@@ -66,11 +67,11 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                 // Add all the custom SobekCM specific data
                 if (oralInfo.Interviewee.Length > 0)
-                    Output_Stream.WriteLine("<oral:Interviewee>" + base.Convert_String_To_XML_Safe(oralInfo.Interviewee) + "</oral:Interviewee>");
+                    Output_Stream.WriteLine("<oral:Interviewee>" + Convert_String_To_XML_Safe(oralInfo.Interviewee) + "</oral:Interviewee>");
                 if (oralInfo.Interviewer.Length > 0)
-                    Output_Stream.WriteLine("<oral:Interviewer>" + base.Convert_String_To_XML_Safe(oralInfo.Interviewer) + "</oral:Interviewer>");
+                    Output_Stream.WriteLine("<oral:Interviewer>" + Convert_String_To_XML_Safe(oralInfo.Interviewer) + "</oral:Interviewer>");
                 if (oralInfo.Interview_Date.Length > 0)
-                    Output_Stream.WriteLine("<oral:InterviewDate>" + base.Convert_String_To_XML_Safe(oralInfo.Interview_Date) + "</oral:InterviewDate>");
+                    Output_Stream.WriteLine("<oral:InterviewDate>" + Convert_String_To_XML_Safe(oralInfo.Interview_Date) + "</oral:InterviewDate>");
 
                 // End the Administrative section
                 Output_Stream.WriteLine("</oral:interview>");
@@ -90,26 +91,26 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                     {
                         Output_Stream.Write("<part:Performer");
                         if (thisPerformer.LifeSpan.Length > 0)
-                            Output_Stream.Write(" lifespan=\"" + base.Convert_String_To_XML_Safe(thisPerformer.LifeSpan) + "\"");
+                            Output_Stream.Write(" lifespan=\"" + Convert_String_To_XML_Safe(thisPerformer.LifeSpan) + "\"");
                         if (thisPerformer.Title.Length > 0)
-                            Output_Stream.Write(" title=\"" + base.Convert_String_To_XML_Safe(thisPerformer.Title) + "\"");
+                            Output_Stream.Write(" title=\"" + Convert_String_To_XML_Safe(thisPerformer.Title) + "\"");
                         if (thisPerformer.Occupation.Length > 0)
-                            Output_Stream.Write(" occupation=\"" + base.Convert_String_To_XML_Safe(thisPerformer.Occupation) + "\"");
+                            Output_Stream.Write(" occupation=\"" + Convert_String_To_XML_Safe(thisPerformer.Occupation) + "\"");
                         if (thisPerformer.Sex.Length > 0)
                             Output_Stream.Write(" sex=\"" + thisPerformer.Sex + "\"");
-                        Output_Stream.WriteLine(">" + base.Convert_String_To_XML_Safe(thisPerformer.Name) + "</part:Performer>");
+                        Output_Stream.WriteLine(">" + Convert_String_To_XML_Safe(thisPerformer.Name) + "</part:Performer>");
                     }
                 }
 
                 // Add the performance information
                 if ((!String.IsNullOrEmpty(partInfo.Performance)) || (!String.IsNullOrEmpty(partInfo.Performance_Date)))
                 {
-                    string performanceName = base.Convert_String_To_XML_Safe(partInfo.Performance);
+                    string performanceName = Convert_String_To_XML_Safe(partInfo.Performance);
                     if (performanceName.Length == 0)
                         performanceName = "Unknown";
                     Output_Stream.Write("<part:Performance");
                     if (!String.IsNullOrEmpty(partInfo.Performance_Date))
-                        Output_Stream.Write(" date=\"" + base.Convert_String_To_XML_Safe(partInfo.Performance_Date) + "\"");
+                        Output_Stream.Write(" date=\"" + Convert_String_To_XML_Safe(partInfo.Performance_Date) + "\"");
                     Output_Stream.WriteLine(">" + performanceName + "</part:Performance>");
                 }
 

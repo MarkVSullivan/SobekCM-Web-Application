@@ -58,42 +58,39 @@ namespace SobekCM.Resource_Object.Bib_Info
         #region IEquatable<Temporal_Info> Members
 
         /// <summary> Compares this object with another similarly typed object </summary>
-        /// <param name="other">Similarly types object </param>
+        /// <param name="Other">Similarly types object </param>
         /// <returns>TRUE if the two objects are sufficiently similar</returns>
-        public bool Equals(Temporal_Info other)
+        public bool Equals(Temporal_Info Other)
         {
-            if ((!String.IsNullOrEmpty(timeperiod)) && (timeperiod == other.TimePeriod))
+            if ((!String.IsNullOrEmpty(timeperiod)) && ( String.Compare(timeperiod, Other.TimePeriod, StringComparison.Ordinal) == 0))
                 return true;
 
-            if ((String.IsNullOrEmpty(timeperiod)) && (other.Start_Year == start_year) && (other.end_year == end_year))
-                return true;
-
-            return false;
+            return (String.IsNullOrEmpty(timeperiod)) && (Other.Start_Year == start_year) && (Other.end_year == end_year);
         }
 
         #endregion
 
         /// <summary> Writes this temporal subject as SobekCM-formatted XML </summary>
-        /// <param name="sobekcm_namespace"> Namespace to use for the SobekCM custom schema ( usually 'sobekcm' )</param>
-        /// <param name="results"> Stream to write this temporal subject as SobekCM-formatted XML</param>
-        internal void Add_SobekCM_Metadata(string sobekcm_namespace, TextWriter results)
+        /// <param name="SobekcmNamespace"> Namespace to use for the SobekCM custom schema ( usually 'sobekcm' )</param>
+        /// <param name="Results"> Stream to write this temporal subject as SobekCM-formatted XML</param>
+        internal void Add_SobekCM_Metadata(string SobekcmNamespace, TextWriter Results)
         {
-            results.Write("<" + sobekcm_namespace + ":period");
+            Results.Write("<" + SobekcmNamespace + ":period");
 
             // Add the start year?
             if (start_year > 0)
             {
-                results.Write(" start=\"" + start_year + "\"");
+                Results.Write(" start=\"" + start_year + "\"");
             }
 
             // Add the end year?
             if (end_year > 0)
             {
-                results.Write(" end=\"" + end_year + "\"");
+                Results.Write(" end=\"" + end_year + "\"");
             }
 
             // Go on to the period part
-            results.Write(">" + base.Convert_String_To_XML_Safe(timeperiod) + "</" + sobekcm_namespace + ":period>\r\n");
+            Results.Write(">" + Convert_String_To_XML_Safe(timeperiod) + "</" + SobekcmNamespace + ":period>\r\n");
         }
     }
 }

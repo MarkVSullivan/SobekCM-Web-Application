@@ -1,10 +1,8 @@
 #region Using directives
 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using SobekCM.Resource_Object.Behaviors;
 
 #endregion
@@ -121,14 +119,7 @@ namespace SobekCM.Resource_Object.Divisions
             set
             {
                 systemname = value;
-                if (systemname.IndexOf("http://", StringComparison.InvariantCultureIgnoreCase) >= 0)
-                {
-                    filetype = SobekCM_File_Info_Type_Enum.URL;
-                }
-                else
-                {
-                    filetype = SobekCM_File_Info_Type_Enum.SYSTEM;
-                }
+                filetype = systemname.IndexOf("http://", StringComparison.InvariantCultureIgnoreCase) >= 0 ? SobekCM_File_Info_Type_Enum.URL : SobekCM_File_Info_Type_Enum.SYSTEM;
             }
         }
 
@@ -160,23 +151,15 @@ namespace SobekCM.Resource_Object.Divisions
         {
             get
             {
-                try
-                {
-
-                    if (String.IsNullOrEmpty(systemname))
-                        return string.Empty;
-                    int last_slash_index = Math.Max(systemname.LastIndexOfAny("\\/".ToCharArray()), 0);
-                    int last_period_index = systemname.LastIndexOf('.', systemname.Length - 1, systemname.Length - last_slash_index);
-                    if (last_period_index < 0)
-                        return String.Empty;
-                    if (last_period_index + 1 >= systemname.Length)
-                        return String.Empty;
-                    return systemname.Substring(last_period_index + 1).ToUpper();
-                }
-                catch (Exception ee)
-                {
-                    throw ee;
-                }
+                if (String.IsNullOrEmpty(systemname))
+                    return string.Empty;
+                int last_slash_index = Math.Max(systemname.LastIndexOfAny("\\/".ToCharArray()), 0);
+                int last_period_index = systemname.LastIndexOf('.', systemname.Length - 1, systemname.Length - last_slash_index);
+                if (last_period_index < 0)
+                    return String.Empty;
+                if (last_period_index + 1 >= systemname.Length)
+                    return String.Empty;
+                return systemname.Substring(last_period_index + 1).ToUpper();
             }
         }
 
@@ -262,7 +245,7 @@ namespace SobekCM.Resource_Object.Divisions
             if (Extenstion.Length == 0)
                 return String.Empty;
 
-            string Resource_Type = String.Empty;
+            string resourceType = String.Empty;
 
             // Handle the most common cases first, to avoid the long switch/case for speed optimization
             if ((Extenstion == "TIF") || (Extenstion == "TIFF"))
@@ -685,9 +668,9 @@ namespace SobekCM.Resource_Object.Divisions
                 case "MP2":
                 case "MPG":
                 case "MPA":
-                    return Resource_Type.ToUpper().IndexOf("VIDEO") < 0 ? "audio/mpeg" : "video/mpeg";
+                    return resourceType.ToUpper().IndexOf("VIDEO") < 0 ? "audio/mpeg" : "video/mpeg";
                 case "MP3":
-                    return Resource_Type.ToUpper().IndexOf("VIDEO") < 0 ? "audio/mpeg3" : "video/mpeg";
+                    return resourceType.ToUpper().IndexOf("VIDEO") < 0 ? "audio/mpeg3" : "video/mpeg";
                 case "MPC":
                     return "application/x-project";
                 case "MPE":
@@ -1251,13 +1234,13 @@ namespace SobekCM.Resource_Object.Divisions
             return false;
         }
 
-        private bool get_attributes_from_jpeg2000(string file)
+        private bool get_attributes_from_jpeg2000(string File)
         {
             try
             {
                 // Get the height and width of this JPEG file
-                FileStream reader = new FileStream(file, FileMode.Open, FileAccess.Read);
-                int[] previousValues = new int[] {0, 0, 0, 0};
+                FileStream reader = new FileStream(File, FileMode.Open, FileAccess.Read);
+                int[] previousValues = {0, 0, 0, 0};
                 int bytevalue = reader.ReadByte();
                 int count = 1;
                 while (bytevalue != -1)
@@ -1274,25 +1257,21 @@ namespace SobekCM.Resource_Object.Divisions
                     {
                         break;
                     }
-                    else
+                    
+                    // Is this the first four bytes and does it match the output from Kakadu 3-2?
+                    if ((count == 4) && (previousValues[0] == 255) && (previousValues[1] == 79) &&
+                        (previousValues[2] == 255) && (previousValues[3] == 81))
                     {
-                        // Is this the first four bytes and does it match the output from Kakadu 3-2?
-                        if ((count == 4) && (previousValues[0] == 255) && (previousValues[1] == 79) &&
-                            (previousValues[2] == 255) && (previousValues[3] == 81))
-                        {
-                            reader.ReadByte();
-                            reader.ReadByte();
-                            reader.ReadByte();
-                            reader.ReadByte();
-                            break;
-                        }
-                        else
-                        {
-                            // Read the next byte
-                            bytevalue = reader.ReadByte();
-                            count++;
-                        }
+                        reader.ReadByte();
+                        reader.ReadByte();
+                        reader.ReadByte();
+                        reader.ReadByte();
+                        break;
                     }
+                        
+                    // Read the next byte
+                    bytevalue = reader.ReadByte();
+                    count++;
                 }
 
                 // Now, read ahead for the height and width

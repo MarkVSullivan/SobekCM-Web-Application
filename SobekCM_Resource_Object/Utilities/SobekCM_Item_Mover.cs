@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region Using directives
+
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
+
+#endregion
 
 namespace SobekCM.Resource_Object.Utilities
 {

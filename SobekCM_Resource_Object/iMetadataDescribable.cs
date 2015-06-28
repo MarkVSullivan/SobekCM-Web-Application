@@ -9,6 +9,8 @@ using SobekCM.Resource_Object.Metadata_Modules;
 
 namespace SobekCM.Resource_Object
 {
+    /// <summary> Base interface for all elements of the METS hierarchy that can have metadata sections
+    /// associated with it </summary>
     public interface iMetadataDescribable
     {
         #region Code to cover metadata module extensions

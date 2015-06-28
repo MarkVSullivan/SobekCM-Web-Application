@@ -54,25 +54,64 @@ namespace SobekCM.Resource_Object.Bib_Info
     /// <summary> Enumeration of the different resource types recognized by SobekCM web application </summary>
     public enum TypeOfResource_SobekCM_Enum : byte
     {
+        /// <summary> Unknown resource type (default) </summary>
         UNKNOWN,
+
+        /// <summary> Aerial photography </summary>
         Aerial,
+
+        /// <summary> Archival material </summary>
         Archival,
+
+        /// <summary> Artifact type material </summary>
         Artifact,
+
+        /// <summary> Audio material (musical or nonmusical)  </summary>
         Audio,
+
+        /// <summary> Book type material   </summary>
         Book,
+
+        /// <summary> DataSet or tabular data  </summary>
 		Dataset,
+
+        /// <summary> Encoded Archival Descriptor  </summary>
         EAD,
+
+        /// <summary> Learning object </summary>
         Learning_Object,
+
+        /// <summary> Cartographic material </summary>
         Map,
+
+        /// <summary> Beta map material type? </summary>
         Map_Beta,
+
+        /// <summary> Mixed material (often also classified as Archival) </summary>
         Mixed_Material,
+
+        /// <summary> Multi-volume type </summary>
         Multivolume,
+
+        /// <summary> Newspaper issue  </summary>
         Newspaper,
+
+        /// <summary> Notated musical score </summary>
         Notated_Music,
+
+        /// <summary> Photographic material  </summary>
         Photograph,
+
+        /// <summary> Special SobekCM reserved type for PROJECT, or default metadata set </summary>
         Project,
+
+        /// <summary> Serial type material </summary>
         Serial,
+
+        /// <summary> Software or multimedia type material </summary>
         Software_Multimedia,
+
+        /// <summary> Video </summary>
         Video
     }
 

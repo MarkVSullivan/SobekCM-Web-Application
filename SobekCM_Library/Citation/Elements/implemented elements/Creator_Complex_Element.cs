@@ -134,7 +134,7 @@ namespace SobekCM.Library.Citation.Elements
             if (Bib.Bib_Info.hasMainEntityName )
             {
                 creator.Add(Bib.Bib_Info.Main_Entity_Name.ToString(false));
-                if (Bib.Bib_Info.Main_Entity_Name.Name_Type == Name_Info_Type_Enum.conference)
+                if (Bib.Bib_Info.Main_Entity_Name.Name_Type == Name_Info_Type_Enum.Conference)
                 {
                     roles.Add("Conference");
                 }
@@ -145,7 +145,7 @@ namespace SobekCM.Library.Citation.Elements
                         bool found = false;
                         foreach (Name_Info_Role thisRole in Bib.Bib_Info.Main_Entity_Name.Roles)
                         {
-                            if (thisRole.Role_Type == Name_Info_Role_Type_Enum.text)
+                            if (thisRole.Role_Type == Name_Info_Role_Type_Enum.Text)
                             {
                                 roles.Add(thisRole.Role);
                                 found = true;
@@ -165,7 +165,7 @@ namespace SobekCM.Library.Citation.Elements
                 if (thisName.hasData)
                 {
                     creator.Add(thisName.ToString(false));
-                    if (thisName.Name_Type == Name_Info_Type_Enum.conference)
+                    if (thisName.Name_Type == Name_Info_Type_Enum.Conference)
                     {
                         roles.Add("Conference");
                     }
@@ -176,7 +176,7 @@ namespace SobekCM.Library.Citation.Elements
                             bool found = false;
                             foreach (Name_Info_Role thisRole in thisName.Roles)
                             {
-                                if (thisRole.Role_Type == Name_Info_Role_Type_Enum.text)
+                                if (thisRole.Role_Type == Name_Info_Role_Type_Enum.Text)
                                 {
                                     roles.Add(thisRole.Role);
                                     found = true;

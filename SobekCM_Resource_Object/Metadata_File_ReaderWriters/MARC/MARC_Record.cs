@@ -31,7 +31,7 @@ using System.Text;
 using System.Xml;
 using SobekCM.Resource_Object.MARC.ErrorHandling;
 using SobekCM.Resource_Object.MARC.Parsers;
-using SobekCM.Resource_Object.MARC.Writers;
+using SobekCM.Resource_Object.Metadata_File_ReaderWriters.MARC.Writers;
 
 #endregion
 
@@ -43,7 +43,7 @@ namespace SobekCM.Resource_Object.MARC
     {
         private string controlNumber;
         private List<MARC_Record_Parsing_Error> errors;
-        private SortedList<int, List<MARC_Field>> fields;
+        private readonly SortedList<int, List<MARC_Field>> fields;
         private string leader;
         private List<MARC_Record_Parsing_Warning> warnings;
 
@@ -292,7 +292,7 @@ namespace SobekCM.Resource_Object.MARC
                 writer.Close();
                 returnValue = true;
             }
-            catch (Exception ee)
+            catch 
             {
                 returnValue = false;
             }

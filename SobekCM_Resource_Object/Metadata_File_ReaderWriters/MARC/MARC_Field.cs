@@ -38,7 +38,7 @@ namespace SobekCM.Resource_Object.MARC
     public class MARC_Field
     {
         private string data;
-        private List<MARC_Subfield> subfields;
+        private readonly List<MARC_Subfield> subfields;
 
         #region Constructors
 

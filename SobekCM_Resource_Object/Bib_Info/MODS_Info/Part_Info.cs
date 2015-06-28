@@ -65,21 +65,23 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <returns></returns>
         public Part_Info Copy()
         {
-            Part_Info copy = new Part_Info();
-            copy.Day = day;
-            copy.Day_Index = Day_Index;
-            copy.Enum1 = Enum1;
-            copy.Enum1_Index = Enum1_Index;
-            copy.Enum2 = Enum2;
-            copy.Enum2_Index = Enum2_Index;
-            copy.Enum3 = Enum3;
-            copy.Enum3_Index = Enum3_Index;
-            copy.Enum4 = Enum4;
-            copy.Enum4_Index = Enum4_Index;
-            copy.Month = Month;
-            copy.Month_Index = Month_Index;
-            copy.Year = Year;
-            copy.Year_Index = Year_Index;
+            Part_Info copy = new Part_Info
+            {
+                Day = day, 
+                Day_Index = Day_Index, 
+                Enum1 = Enum1, 
+                Enum1_Index = Enum1_Index, 
+                Enum2 = Enum2, 
+                Enum2_Index = Enum2_Index, 
+                Enum3 = Enum3, 
+                Enum3_Index = Enum3_Index, 
+                Enum4 = Enum4, 
+                Enum4_Index = Enum4_Index, 
+                Month = Month, 
+                Month_Index = Month_Index, 
+                Year = Year, 
+                Year_Index = Year_Index
+            };
             return copy;
         }
 
@@ -90,102 +92,97 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             get
             {
-                if ((!String.IsNullOrEmpty(enum1)) || (!String.IsNullOrEmpty(enum2)) || (!String.IsNullOrEmpty(enum3)) || (!String.IsNullOrEmpty(enum4)) ||
-                    (!String.IsNullOrEmpty(year)) || (!String.IsNullOrEmpty(month)) || (!String.IsNullOrEmpty(day)))
-                {
-                    return true;
-                }
-
-                return false;
+                return (!String.IsNullOrEmpty(enum1)) || (!String.IsNullOrEmpty(enum2)) || (!String.IsNullOrEmpty(enum3)) || (!String.IsNullOrEmpty(enum4)) ||
+                       (!String.IsNullOrEmpty(year)) || (!String.IsNullOrEmpty(month)) || (!String.IsNullOrEmpty(day));
             }
         }
 
 
-        internal void Add_MODS(TextWriter results)
+        internal void Add_MODS(TextWriter Results)
         {
             if (!hasData)
                 return;
 
-            results.Write("<mods:part>\r\n");
+            Results.Write("<mods:part>\r\n");
 
             if (!String.IsNullOrEmpty(enum1))
             {
-                results.Write("<mods:detail type=\"Enum1\">\r\n");
-                results.Write("<mods:caption>" + base.Convert_String_To_XML_Safe(enum1) + "</mods:caption>\r\n");
+                Results.Write("<mods:detail type=\"Enum1\">\r\n");
+                Results.Write("<mods:caption>" + Convert_String_To_XML_Safe(enum1) + "</mods:caption>\r\n");
                 if (enum1_index >= 0)
                 {
-                    results.Write("<mods:number>" + enum1_index + "</mods:number>\r\n");
+                    Results.Write("<mods:number>" + enum1_index + "</mods:number>\r\n");
                 }
-                results.Write("</mods:detail>\r\n");
+                Results.Write("</mods:detail>\r\n");
             }
 
             if (!String.IsNullOrEmpty(enum2))
             {
-                results.Write("<mods:detail type=\"Enum2\">\r\n");
-                results.Write("<mods:caption>" + base.Convert_String_To_XML_Safe(enum2) + "</mods:caption>\r\n");
+                Results.Write("<mods:detail type=\"Enum2\">\r\n");
+                Results.Write("<mods:caption>" + Convert_String_To_XML_Safe(enum2) + "</mods:caption>\r\n");
                 if (enum2_index >= 0)
                 {
-                    results.Write("<mods:number>" + enum2_index + "</mods:number>\r\n");
+                    Results.Write("<mods:number>" + enum2_index + "</mods:number>\r\n");
                 }
-                results.Write("</mods:detail>\r\n");
+                Results.Write("</mods:detail>\r\n");
             }
 
             if (!String.IsNullOrEmpty(enum3))
             {
-                results.Write("<mods:detail type=\"Enum3\">\r\n");
-                results.Write("<mods:caption>" + base.Convert_String_To_XML_Safe(enum3) + "</mods:caption>\r\n");
+                Results.Write("<mods:detail type=\"Enum3\">\r\n");
+                Results.Write("<mods:caption>" + Convert_String_To_XML_Safe(enum3) + "</mods:caption>\r\n");
                 if (enum3_index >= 0)
                 {
-                    results.Write("<mods:number>" + enum3_index + "</mods:number>\r\n");
+                    Results.Write("<mods:number>" + enum3_index + "</mods:number>\r\n");
                 }
-                results.Write("</mods:detail>\r\n");
+                Results.Write("</mods:detail>\r\n");
             }
 
             if (!String.IsNullOrEmpty(enum4))
             {
-                results.Write("<mods:detail type=\"Enum1\">\r\n");
-                results.Write("<mods:caption>" + base.Convert_String_To_XML_Safe(enum4) + "</mods:caption>\r\n");
+                Results.Write("<mods:detail type=\"Enum1\">\r\n");
+                Results.Write("<mods:caption>" + Convert_String_To_XML_Safe(enum4) + "</mods:caption>\r\n");
                 if (enum4_index >= 0)
                 {
-                    results.Write("<mods:number>" + enum4_index + "</mods:number>\r\n");
+                    Results.Write("<mods:number>" + enum4_index + "</mods:number>\r\n");
                 }
-                results.Write("</mods:detail>\r\n");
+                Results.Write("</mods:detail>\r\n");
             }
 
             if (!String.IsNullOrEmpty(year))
             {
-                results.Write("<mods:detail type=\"Year\">\r\n");
-                results.Write("<mods:caption>" + base.Convert_String_To_XML_Safe(year) + "</mods:caption>\r\n");
+                Results.Write("<mods:detail type=\"Year\">\r\n");
+                Results.Write("<mods:caption>" + Convert_String_To_XML_Safe(year) + "</mods:caption>\r\n");
                 if (year_index >= 0)
                 {
-                    results.Write("<mods:number>" + year_index + "</mods:number>\r\n");
+                    Results.Write("<mods:number>" + year_index + "</mods:number>\r\n");
                 }
-                results.Write("</mods:detail>\r\n");
+                Results.Write("</mods:detail>\r\n");
             }
 
             if (!String.IsNullOrEmpty(month))
             {
-                results.Write("<mods:detail type=\"Month\">\r\n");
-                results.Write("<mods:caption>" + base.Convert_String_To_XML_Safe(month) + "</mods:caption>\r\n");
+                Results.Write("<mods:detail type=\"Month\">\r\n");
+                Results.Write("<mods:caption>" + Convert_String_To_XML_Safe(month) + "</mods:caption>\r\n");
                 if (month_index >= 0)
                 {
-                    results.Write("<mods:number>" + month_index + "</mods:number>\r\n");
+                    Results.Write("<mods:number>" + month_index + "</mods:number>\r\n");
                 }
-                results.Write("</mods:detail>\r\n");
+                Results.Write("</mods:detail>\r\n");
             }
 
             if (!String.IsNullOrEmpty(day))
             {
-                results.Write("<mods:detail type=\"Day\">\r\n");
-                results.Write("<mods:caption>" + base.Convert_String_To_XML_Safe(day) + "</mods:caption>\r\n");
+                Results.Write("<mods:detail type=\"Day\">\r\n");
+                Results.Write("<mods:caption>" + Convert_String_To_XML_Safe(day) + "</mods:caption>\r\n");
                 if (day_index >= 0)
                 {
-                    results.Write("<mods:number>" + day_index + "</mods:number>\r\n");
+                    Results.Write("<mods:number>" + day_index + "</mods:number>\r\n");
                 }
-                results.Write("</mods:detail>\r\n");
+                Results.Write("</mods:detail>\r\n");
             }
 
-            results.Write("</mods:part>\r\n");
+            Results.Write("</mods:part>\r\n");
         }
 
         #endregion

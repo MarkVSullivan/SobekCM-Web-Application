@@ -59,15 +59,12 @@ namespace SobekCM.Resource_Object.Behaviors
         #region IEquatable<Wordmark_Info> Members
 
         /// <summary> Checks to see if this wordmark/icon is equal to another wordmark/icon </summary>
-        /// <param name="other"> Other wordmark/icon to verify equality with </param>
+        /// <param name="Other"> Other wordmark/icon to verify equality with </param>
         /// <returns> TRUE if they equal, otherwise FALSE</returns>
         /// <remarks> Two wordmark/icons are considered equal if their codes are identical </remarks>
-        public bool Equals(Wordmark_Info other)
+        public bool Equals(Wordmark_Info Other)
         {
-            if (other.Code.ToUpper() == Code.ToUpper())
-                return true;
-            else
-                return false;
+            return String.Compare(Other.Code, Code, StringComparison.OrdinalIgnoreCase) == 0;
         }
 
         #endregion

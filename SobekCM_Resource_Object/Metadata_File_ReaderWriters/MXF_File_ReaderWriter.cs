@@ -10,9 +10,7 @@ using SobekCM.Resource_Object.Bib_Info;
 
 namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 {
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <summary> MXF metadata reader/writer </summary>
     /// <remarks>MXF files were used by PALMM for many years to submit bibliographic packages.  This has now been replaced by METS, but many legacy files still remain. </remarks>
     public class MXF_File_ReaderWriter : iMetadata_File_ReaderWriter
     {
@@ -496,7 +494,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                             {
                                 if (thisPackage.Bib_Info.Names[creatorRole].Roles.Count == 0)
                                 {
-                                    thisPackage.Bib_Info.Names[creatorRole].Roles.Add(new Name_Info_Role(read_text_node(nodeReader), Name_Info_Role_Type_Enum.text));
+                                    thisPackage.Bib_Info.Names[creatorRole].Roles.Add(new Name_Info_Role(read_text_node(nodeReader), Name_Info_Role_Type_Enum.Text));
                                 }
                                 else
                                 {
@@ -575,7 +573,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
         #region MXF_Element class is used internally
 
         /// <summary>Basic MXF element </summary>
-        /// <remarks>This class is used temporarily while parsing an existing MXF files by the <see cref="MXF_Reader"/> <br /> <br />
+        /// <remarks>This class is used temporarily while parsing an existing MXF files by the <see cref="MXF_File_ReaderWriter"/> <br /> <br />
         /// Object created by Mark V Sullivan (2006) for University of Florida's Digital Library Center.</remarks>
         public class MXF_Element
         {

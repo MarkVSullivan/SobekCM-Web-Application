@@ -16,16 +16,16 @@ namespace SobekCM.Resource_Object.Configuration
         UNSPECIFIED,
 
         /// <summary> digiProvMD amdSec</summary>
-        digiProvMD,
+        DigiProvMD,
 
         /// <summary> rightsMD amdSec </summary>
-        rightsMD,
+        RightsMD,
 
         /// <summary> sourceMD amdSec </summary>
-        sourceMD,
+        SourceMD,
 
         /// <summary> techMD amdSec </summary>
-        techMD
+        TechMD
     }
 
     /// <summary> Type of METS section supported by this reader/writer </summary>
@@ -35,10 +35,10 @@ namespace SobekCM.Resource_Object.Configuration
         UNSPECIFIED,
 
         /// <summary> Administrative section </summary>
-        amdSec,
+        AmdSec,
 
         /// <summary> Descriptive (bibliographic) section </summary>
-        dmdSec,
+        DmdSec,
     }
 
     /// <summary> Configuration information about a reader/writer class used to read or
@@ -60,7 +60,7 @@ namespace SobekCM.Resource_Object.Configuration
             Code_Assembly = String.Empty;
             ID = String.Empty;
             METS_Section = METS_Section_Type_Enum.UNSPECIFIED;
-            amdSecType = METS_amdSec_Type_Enum.UNSPECIFIED;
+            AmdSecType = METS_amdSec_Type_Enum.UNSPECIFIED;
 
             // instantiate collections
             mappings = new List<METS_Section_ReaderWriter_Mapping>();
@@ -91,7 +91,7 @@ namespace SobekCM.Resource_Object.Configuration
         public bool isActive { get; set; }
 
         /// <summary> If this reader/writer targets an amdSec, the type of amdSec </summary>
-        public METS_amdSec_Type_Enum amdSecType { get; set; }
+        public METS_amdSec_Type_Enum AmdSecType { get; set; }
 
         /// <summary> Which METS section this reader/writer targets </summary>
         public METS_Section_Type_Enum METS_Section { get; set; }

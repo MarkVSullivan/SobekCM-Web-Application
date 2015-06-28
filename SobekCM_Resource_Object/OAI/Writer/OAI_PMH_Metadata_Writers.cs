@@ -1,17 +1,19 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using SobekCM.Resource_Object.Metadata_Modules;
+
+#endregion
 
 namespace SobekCM.Resource_Object.OAI.Writer
 {
+    /// <summary> Collection of OAI-PMH writers for this SobekCM instance </summary>
     public static class OAI_PMH_Metadata_Writers
     {
         private static readonly List<Tuple<string, iOAI_PMH_Metadata_Type_Writer>> writers;
 
+        /// <summary> Initializes the <see cref="OAI_PMH_Metadata_Writers"/> class </summary>
         static OAI_PMH_Metadata_Writers()
         {
             writers = new List<Tuple<string, iOAI_PMH_Metadata_Type_Writer>>();

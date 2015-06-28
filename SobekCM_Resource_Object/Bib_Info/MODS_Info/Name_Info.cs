@@ -17,13 +17,13 @@ namespace SobekCM.Resource_Object.Bib_Info
         UNKNOWN = -1,
 
         /// <summary> Name of a personal person </summary>
-        personal = 1,
+        Personal = 1,
 
         /// <summary> Name of a corporate entity </summary>
-        corporate,
+        Corporate,
 
         /// <summary> Name of a conference </summary>
-        conference
+        Conference
     }
 
     /// <summary> Controlled list of name role term types associated with a <see cref="Name_Info_Role"/> object. </summary>
@@ -33,10 +33,10 @@ namespace SobekCM.Resource_Object.Bib_Info
         UNSPECIFIED = -1,
 
         /// <summary> Name role is a code </summary>
-        code = 1,
+        Code = 1,
 
         /// <summary> Name role is textual </summary>
-        text
+        Text
     }
 
     #region Name_Info_Role class
@@ -121,7 +121,6 @@ namespace SobekCM.Resource_Object.Bib_Info
         private bool main_entity;
         private Name_Info_Type_Enum name_type;
 
-        private List<Name_Info_Role> roles;
         private string terms_of_address;
 
         /// <summary> Constructor creates a new instance of the Name_Info class</summary>
@@ -130,7 +129,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             name_type = Name_Info_Type_Enum.UNKNOWN;
             main_entity = false;
 
-            roles = new List<Name_Info_Role>();
+            Roles = new List<Name_Info_Role>();
         }
 
         /// <summary>Constructor creates a new instance of the Name_Info class</summary>
@@ -142,10 +141,10 @@ namespace SobekCM.Resource_Object.Bib_Info
             main_entity = false;
 
             full_name = Full_Name;
-            roles = new List<Name_Info_Role>();
+            Roles = new List<Name_Info_Role>();
             if (Role.Length > 0)
             {
-                roles.Add(new Name_Info_Role(Role, Name_Info_Role_Type_Enum.text));
+                Roles.Add(new Name_Info_Role(Role, Name_Info_Role_Type_Enum.Text));
             }
         }
 
@@ -217,20 +216,14 @@ namespace SobekCM.Resource_Object.Bib_Info
         }
 
         /// <summary> Gets the collection of roles for this entity </summary>
-        public List<Name_Info_Role> Roles
-        {
-            get { return roles; }
-        }
+        public List<Name_Info_Role> Roles { get; private set; }
 
         /// <summary> Gets value specifying if there is data for this name object </summary>
         public bool hasData
         {
             get
             {
-                if ((!String.IsNullOrEmpty(full_name)) || (!String.IsNullOrEmpty(given_name)) || (!String.IsNullOrEmpty(family_name)))
-                    return true;
-
-                return false;
+                return (!String.IsNullOrEmpty(full_name)) || (!String.IsNullOrEmpty(given_name)) || (!String.IsNullOrEmpty(family_name));
             }
         }
 
@@ -257,12 +250,12 @@ namespace SobekCM.Resource_Object.Bib_Info
                     string text_from_code = Name_Info_MarcRelator_Code.Text_From_Code(Role);
                     if (text_from_code.Length > 0)
                     {
-                        roles.Add(new Name_Info_Role(text_from_code, String.Empty, Name_Info_Role_Type_Enum.text));
-                        roles.Add(new Name_Info_Role(Role, "marcrelator", Name_Info_Role_Type_Enum.code));
+                        Roles.Add(new Name_Info_Role(text_from_code, String.Empty, Name_Info_Role_Type_Enum.Text));
+                        Roles.Add(new Name_Info_Role(Role, "marcrelator", Name_Info_Role_Type_Enum.Code));
                     }
                     else
                     {
-                        roles.Add(new Name_Info_Role(Role, String.Empty, Name_Info_Role_Type_Enum.code));
+                        Roles.Add(new Name_Info_Role(Role, String.Empty, Name_Info_Role_Type_Enum.Code));
                     }
                 }
                 else
@@ -270,18 +263,18 @@ namespace SobekCM.Resource_Object.Bib_Info
                     string code_from_text = Name_Info_MarcRelator_Code.Code_From_Text(Role);
                     if (code_from_text.Length > 0)
                     {
-                        roles.Add(new Name_Info_Role(code_from_text, "marcrelator", Name_Info_Role_Type_Enum.code));
-                        roles.Add(new Name_Info_Role(Role, String.Empty, Name_Info_Role_Type_Enum.text));
+                        Roles.Add(new Name_Info_Role(code_from_text, "marcrelator", Name_Info_Role_Type_Enum.Code));
+                        Roles.Add(new Name_Info_Role(Role, String.Empty, Name_Info_Role_Type_Enum.Text));
                     }
                     else
                     {
-                        roles.Add(new Name_Info_Role(Role, String.Empty, Name_Info_Role_Type_Enum.text));
+                        Roles.Add(new Name_Info_Role(Role, String.Empty, Name_Info_Role_Type_Enum.Text));
                     }
                 }
             }
             else
             {
-                roles.Add(new Name_Info_Role(Role, Authority));
+                Roles.Add(new Name_Info_Role(Role, Authority));
             }
         }
 
@@ -292,7 +285,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <param name="Role_Type">Type of role</param>
         public void Add_Role(string Role, string Authority, Name_Info_Role_Type_Enum Role_Type)
         {
-            roles.Add(new Name_Info_Role(Role, Authority, Role_Type));
+            Roles.Add(new Name_Info_Role(Role, Authority, Role_Type));
         }
 
         #endregion
@@ -302,12 +295,12 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             get
             {
-                if ((roles != null) && (roles.Count > 0))
+                if ((Roles != null) && (Roles.Count > 0))
                 {
                     List<string> temp_role_text = new List<string>();
-                    foreach (Name_Info_Role thisRole in roles)
+                    foreach (Name_Info_Role thisRole in Roles)
                     {
-                        if (((thisRole.Role_Type == Name_Info_Role_Type_Enum.text) || (thisRole.Role_Type == Name_Info_Role_Type_Enum.UNSPECIFIED)) && ((thisRole.Role.ToUpper() != "MAIN ENTITY") && (thisRole.Role.ToUpper() != "CREATOR")))
+                        if (((thisRole.Role_Type == Name_Info_Role_Type_Enum.Text) || (thisRole.Role_Type == Name_Info_Role_Type_Enum.UNSPECIFIED)) && ((thisRole.Role.ToUpper() != "MAIN ENTITY") && (thisRole.Role.ToUpper() != "CREATOR")))
                             temp_role_text.Add(thisRole.Role);
                     }
                     if (temp_role_text.Count == 0)
@@ -359,7 +352,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             description = null;
             main_entity = false;
 
-            roles.Clear();
+            Roles.Clear();
         }
 
         /// <summary> Returns this name as a general string for display purposes </summary>
@@ -371,9 +364,9 @@ namespace SobekCM.Resource_Object.Bib_Info
         }
 
         /// <summary> Returns this identifier as a general string for display purposes </summary>
-        /// <param name="includeRole"> Flag indicates whether to include the role(s) in this string </param>
+        /// <param name="IncludeRole"> Flag indicates whether to include the role(s) in this string </param>
         /// <returns> This object in string format </returns>
-        public string ToString(bool includeRole)
+        public string ToString(bool IncludeRole)
         {
             StringBuilder nameBuilder = new StringBuilder();
             if (!String.IsNullOrEmpty(full_name))
@@ -395,26 +388,19 @@ namespace SobekCM.Resource_Object.Bib_Info
                 }
                 else
                 {
-                    if (!String.IsNullOrEmpty(given_name))
-                    {
-                        nameBuilder.Append(Convert_String_To_XML_Safe(given_name));
-                    }
-                    else
-                    {
-                        nameBuilder.Append("unknown");
-                    }
+                    nameBuilder.Append(!String.IsNullOrEmpty(given_name) ? Convert_String_To_XML_Safe(given_name) : "unknown");
                 }
             }
             if (!String.IsNullOrEmpty(display_form))
                 nameBuilder.Append(" ( " + Convert_String_To_XML_Safe(display_form) + " )");
             if (!String.IsNullOrEmpty(dates))
                 nameBuilder.Append(", " + Convert_String_To_XML_Safe(dates));
-            if ((includeRole) && (roles != null))
+            if ((IncludeRole) && (Roles != null))
             {
                 bool role_started = false;
-                foreach (Name_Info_Role thisRole in roles)
+                foreach (Name_Info_Role thisRole in Roles)
                 {
-                    if (((thisRole.Role_Type == Name_Info_Role_Type_Enum.text) || (thisRole.Role_Type == Name_Info_Role_Type_Enum.UNSPECIFIED)) && ((thisRole.Role.ToUpper() != "MAIN ENTITY") && (thisRole.Role.ToUpper() != "CREATOR")))
+                    if (((thisRole.Role_Type == Name_Info_Role_Type_Enum.Text) || (thisRole.Role_Type == Name_Info_Role_Type_Enum.UNSPECIFIED)) && ((thisRole.Role.ToUpper() != "MAIN ENTITY") && (thisRole.Role.ToUpper() != "CREATOR")))
                     {
                         if (!role_started)
                         {
@@ -434,108 +420,108 @@ namespace SobekCM.Resource_Object.Bib_Info
         }
 
         /// <summary> Writes this location as MODS to a writer writing to a stream ( either a file or web response stream )</summary>
-        /// <param name="main_entity"> Flag indicates if this is the main entity / primary author associated with a digital resource </param>
-        /// <param name="returnValue"> Writer to the MODS building stream </param>
-        internal void Add_MODS(bool main_entity, TextWriter returnValue)
+        /// <param name="MainEntityFlag"> Flag indicates if this is the main entity / primary author associated with a digital resource </param>
+        /// <param name="ReturnValue"> Writer to the MODS building stream </param>
+        internal void Add_MODS(bool MainEntityFlag, TextWriter ReturnValue)
         {
-            returnValue.Write("<mods:name");
+            ReturnValue.Write("<mods:name");
             switch (name_type)
             {
-                case Name_Info_Type_Enum.personal:
-                    returnValue.Write(" type=\"personal\"");
+                case Name_Info_Type_Enum.Personal:
+                    ReturnValue.Write(" type=\"personal\"");
                     break;
 
-                case Name_Info_Type_Enum.conference:
-                    returnValue.Write(" type=\"conference\"");
+                case Name_Info_Type_Enum.Conference:
+                    ReturnValue.Write(" type=\"conference\"");
                     break;
 
-                case Name_Info_Type_Enum.corporate:
-                    returnValue.Write(" type=\"corporate\"");
+                case Name_Info_Type_Enum.Corporate:
+                    ReturnValue.Write(" type=\"corporate\"");
                     break;
             }
-            base.Add_ID(returnValue);
-            returnValue.Write(">\r\n");
+            Add_ID(ReturnValue);
+            ReturnValue.Write(">\r\n");
 
             if (!String.IsNullOrEmpty(full_name))
             {
-                returnValue.Write("<mods:namePart>" + base.Convert_String_To_XML_Safe(full_name) + "</mods:namePart>\r\n");
+                ReturnValue.Write("<mods:namePart>" + Convert_String_To_XML_Safe(full_name) + "</mods:namePart>\r\n");
             }
 
             if (!String.IsNullOrEmpty(given_name))
             {
-                returnValue.Write("<mods:namePart type=\"given\">" + base.Convert_String_To_XML_Safe(given_name) + "</mods:namePart>\r\n");
+                ReturnValue.Write("<mods:namePart type=\"given\">" + Convert_String_To_XML_Safe(given_name) + "</mods:namePart>\r\n");
             }
 
             if (!String.IsNullOrEmpty(family_name))
             {
-                returnValue.Write("<mods:namePart type=\"family\">" + base.Convert_String_To_XML_Safe(family_name) + "</mods:namePart>\r\n");
+                ReturnValue.Write("<mods:namePart type=\"family\">" + Convert_String_To_XML_Safe(family_name) + "</mods:namePart>\r\n");
             }
 
             if (!String.IsNullOrEmpty(dates))
             {
-                returnValue.Write("<mods:namePart type=\"date\">" + base.Convert_String_To_XML_Safe(dates) + "</mods:namePart>\r\n");
+                ReturnValue.Write("<mods:namePart type=\"date\">" + Convert_String_To_XML_Safe(dates) + "</mods:namePart>\r\n");
             }
 
             if (!String.IsNullOrEmpty(terms_of_address))
             {
-                returnValue.Write("<mods:namePart type=\"termsOfAddress\">" + base.Convert_String_To_XML_Safe(terms_of_address) + "</mods:namePart>\r\n");
+                ReturnValue.Write("<mods:namePart type=\"termsOfAddress\">" + Convert_String_To_XML_Safe(terms_of_address) + "</mods:namePart>\r\n");
             }
 
             if (!String.IsNullOrEmpty(display_form))
             {
-                returnValue.Write("<mods:displayForm>" + base.Convert_String_To_XML_Safe(display_form) + "</mods:displayForm>\r\n");
+                ReturnValue.Write("<mods:displayForm>" + Convert_String_To_XML_Safe(display_form) + "</mods:displayForm>\r\n");
             }
 
             if (!String.IsNullOrEmpty(affiliation))
             {
-                returnValue.Write("<mods:affiliation>" + base.Convert_String_To_XML_Safe(affiliation) + "</mods:affiliation>\r\n");
+                ReturnValue.Write("<mods:affiliation>" + Convert_String_To_XML_Safe(affiliation) + "</mods:affiliation>\r\n");
             }
 
             if (!String.IsNullOrEmpty(description))
             {
-                returnValue.Write("<mods:description>" + base.Convert_String_To_XML_Safe(description) + "</mods:description>\r\n");
+                ReturnValue.Write("<mods:description>" + Convert_String_To_XML_Safe(description) + "</mods:description>\r\n");
             }
 
-            if (((roles != null) && (roles.Count > 0)) || (main_entity))
+            if (((Roles != null) && (Roles.Count > 0)) || (MainEntityFlag))
             {
-                returnValue.Write("<mods:role>\r\n");
-                if (main_entity)
+                ReturnValue.Write("<mods:role>\r\n");
+                if (MainEntityFlag)
                 {
-                    returnValue.Write("<mods:roleTerm>Main Entity</mods:roleTerm>\r\n");
+                    ReturnValue.Write("<mods:roleTerm>Main Entity</mods:roleTerm>\r\n");
                 }
-                if (roles != null)
+                if (Roles != null)
                 {
-                    foreach (Name_Info_Role thisRole in roles)
+                    foreach (Name_Info_Role thisRole in Roles)
                     {
-                        returnValue.Write("<mods:roleTerm");
+                        ReturnValue.Write("<mods:roleTerm");
                         switch (thisRole.Role_Type)
                         {
-                            case Name_Info_Role_Type_Enum.code:
-                                returnValue.Write(" type=\"code\"");
+                            case Name_Info_Role_Type_Enum.Code:
+                                ReturnValue.Write(" type=\"code\"");
                                 break;
 
-                            case Name_Info_Role_Type_Enum.text:
-                                returnValue.Write(" type=\"text\"");
+                            case Name_Info_Role_Type_Enum.Text:
+                                ReturnValue.Write(" type=\"text\"");
                                 break;
                         }
                         if (thisRole.Authority.Length > 0)
                         {
-                            returnValue.Write(" authority=\"" + thisRole.Authority + "\"");
+                            ReturnValue.Write(" authority=\"" + thisRole.Authority + "\"");
                         }
 
-                        returnValue.Write(">" + base.Convert_String_To_XML_Safe(thisRole.Role) + "</mods:roleTerm>\r\n");
+                        ReturnValue.Write(">" + Convert_String_To_XML_Safe(thisRole.Role) + "</mods:roleTerm>\r\n");
                     }
                 }
-                returnValue.Write("</mods:role>\r\n");
+                ReturnValue.Write("</mods:role>\r\n");
             }
 
-            returnValue.Write("</mods:name>\r\n");
+            ReturnValue.Write("</mods:name>\r\n");
         }
 
         /// <summary> Writes this abstract as a MARC tag for aggregation into a MARC record </summary>
-        /// <param name="excludeRelatorCodes"> Flag indicates to exclude the relator codes </param>
+        /// <param name="ExcludeRelatorCodes"> Flag indicates to exclude the relator codes </param>
         /// <returns> Built MARC tag </returns>
-        internal MARC_Field to_MARC_HTML(bool excludeRelatorCodes)
+        internal MARC_Field to_MARC_HTML(bool ExcludeRelatorCodes)
         {
             MARC_Field returnValue = new MARC_Field();
             StringBuilder fieldBuilder = new StringBuilder();
@@ -545,23 +531,23 @@ namespace SobekCM.Resource_Object.Bib_Info
             List<string> role_texts = new List<string>();
 
             // Collect the codes first
-            if (roles != null)
+            if (Roles != null)
             {
-                foreach (Name_Info_Role thisRole in roles)
+                foreach (Name_Info_Role thisRole in Roles)
                 {
-                    if ((thisRole.Role_Type == Name_Info_Role_Type_Enum.code) && (thisRole.Authority == "marcrelator"))
+                    if ((thisRole.Role_Type == Name_Info_Role_Type_Enum.Code) && (thisRole.Authority == "marcrelator"))
                     {
                         role_codes.Add(thisRole.Role.ToLower());
                     }
                 }
 
                 // Collect the text next
-                foreach (Name_Info_Role thisRole in roles)
+                foreach (Name_Info_Role thisRole in Roles)
                 {
-                    if (((thisRole.Role_Type == Name_Info_Role_Type_Enum.text) || (thisRole.Role_Type == Name_Info_Role_Type_Enum.UNSPECIFIED)) && (thisRole.Role.ToUpper() != "MAIN ENTITY") && (thisRole.Role.ToUpper() != "CREATOR"))
+                    if (((thisRole.Role_Type == Name_Info_Role_Type_Enum.Text) || (thisRole.Role_Type == Name_Info_Role_Type_Enum.UNSPECIFIED)) && (thisRole.Role.ToUpper() != "MAIN ENTITY") && (thisRole.Role.ToUpper() != "CREATOR"))
                     {
                         string code_from_text = Name_Info_MarcRelator_Code.Code_From_Text(thisRole.Role);
-                        if ((code_from_text.Length > 0) && (!excludeRelatorCodes))
+                        if ((code_from_text.Length > 0) && (!ExcludeRelatorCodes))
                         {
                             if (!role_codes.Contains(code_from_text))
                             {
@@ -578,7 +564,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
             switch (name_type)
             {
-                case Name_Info_Type_Enum.corporate:
+                case Name_Info_Type_Enum.Corporate:
 
                     returnValue.Indicators = "2 ";
 
@@ -611,7 +597,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
                     fieldBuilder.Append(". ");
 
-                    if (!excludeRelatorCodes)
+                    if (!ExcludeRelatorCodes)
                     {
                         foreach (string thisRoleCode in role_codes)
                         {
@@ -622,7 +608,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     returnValue.Control_Field_Value = fieldBuilder.ToString().Replace("  ", " ").Replace(" ,", ",").Replace(",,", ",").Replace("..", ".").Replace(" .", ".").Trim();
                     return returnValue;
 
-                case Name_Info_Type_Enum.conference:
+                case Name_Info_Type_Enum.Conference:
 
                     returnValue.Indicators = "2 ";
 
@@ -647,7 +633,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
                     fieldBuilder.Append(". ");
 
-                    if (!excludeRelatorCodes)
+                    if (!ExcludeRelatorCodes)
                     {
                         foreach (string thisRoleCode in role_codes)
                         {
@@ -748,7 +734,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     fieldBuilder.Append(". ");
 
 
-                    if (!excludeRelatorCodes)
+                    if (!ExcludeRelatorCodes)
                     {
                         foreach (string thisRoleCode in role_codes)
                         {
@@ -770,11 +756,11 @@ namespace SobekCM.Resource_Object.Bib_Info
     public class Name_Info_MarcRelator_Code
     {
         /// <summary> Convert from the role text to the corresponding MARC Relator Code </summary>
-        /// <param name="text"> Role text </param>
+        /// <param name="Text"> Role text </param>
         /// <returns> MARC relator code, or the empty string if this does not match LC's controlled list</returns>
-        public static string Code_From_Text(string text)
+        public static string Code_From_Text(string Text)
         {
-            string text_upper = text.ToUpper();
+            string text_upper = Text.ToUpper();
             string code = String.Empty;
             switch (text_upper)
             {
@@ -1359,11 +1345,11 @@ namespace SobekCM.Resource_Object.Bib_Info
         }
 
         /// <summary> Convert to the role text from the corresponding MARC Relator Code </summary>
-        /// <param name="code"> MARC Relator Code </param>
+        /// <param name="Code"> MARC Relator Code </param>
         /// <returns> Role text, or the empty string if this does not match LC's controlled list</returns>
-        public static string Text_From_Code(string code)
+        public static string Text_From_Code(string Code)
         {
-            string code_upper = code.ToUpper();
+            string code_upper = Code.ToUpper();
             string text = String.Empty;
             switch (code_upper)
             {

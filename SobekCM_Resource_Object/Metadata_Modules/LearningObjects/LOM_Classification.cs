@@ -1,8 +1,10 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
+
+#endregion
 
 namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
 {
@@ -11,7 +13,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
     [Serializable]
     public class LOM_Classification
     {
-        private List<LOM_TaxonPath> taxonPaths;
+        private readonly List<LOM_TaxonPath> taxonPaths;
 
         /// <summary> The purpose of classifying this learning object (i.e., discipline, idea, educational objective, skill level, etc..)  ( IEEE-LOM 9.1 ) </summary>
         public LOM_VocabularyState Purpose { get; set; }

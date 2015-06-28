@@ -16,7 +16,7 @@ namespace SobekCM.Resource_Object.Divisions
     public class Division_TreeNode : abstract_TreeNode
     {
         /// <summary> Stores the children for this node </summary>
-        private List<abstract_TreeNode> children;
+        private readonly List<abstract_TreeNode> children;
 
         /// <summary> Constructor for a new instance of the Division_TreeNode class </summary>
         /// <param name="Type">Node type</param>
@@ -51,10 +51,10 @@ namespace SobekCM.Resource_Object.Divisions
         }
 
         /// <summary> Add a new child node under this tree node </summary>
-        /// <param name="childNode"> New node to add </param>
-        public void Add_Child(abstract_TreeNode childNode)
+        /// <param name="ChildNode"> New node to add </param>
+        public void Add_Child(abstract_TreeNode ChildNode)
         {
-            children.Add(childNode);
+            children.Add(ChildNode);
         }
 
         /// <summary> Clears all of the children under this node </summary>
@@ -90,34 +90,28 @@ namespace SobekCM.Resource_Object.Divisions
             }
         }
 
-        private string shorten(string longLabel)
+        private string shorten(string LongLabel)
         {
-            const int shortLength = 30;
-            if (longLabel.Length > shortLength)
+            const int SHORT_LENGTH = 30;
+            if (LongLabel.Length > SHORT_LENGTH)
             {
                 // See if there is a space somewhere convenient
-                int spaceLocation = longLabel.IndexOf(" ", shortLength);
+                int spaceLocation = LongLabel.IndexOf(" ", SHORT_LENGTH, StringComparison.Ordinal);
                 if (spaceLocation >= 0)
                 {
-                    return longLabel.Substring(0, spaceLocation) + "...";
+                    return LongLabel.Substring(0, spaceLocation) + "...";
                 }
-                else
+                
+                spaceLocation = LongLabel.IndexOf(" ", SHORT_LENGTH - 5, StringComparison.Ordinal);
+                if ((spaceLocation >= 0) && (spaceLocation <= SHORT_LENGTH + 5))
                 {
-                    spaceLocation = longLabel.IndexOf(" ", shortLength - 5);
-                    if ((spaceLocation >= 0) && (spaceLocation <= shortLength + 5))
-                    {
-                        return longLabel.Substring(0, spaceLocation) + "...";
-                    }
-                    else
-                    {
-                        return longLabel.Substring(0, shortLength) + "...";
-                    }
+                    return LongLabel.Substring(0, spaceLocation) + "...";
                 }
+                
+                return LongLabel.Substring(0, SHORT_LENGTH) + "...";
             }
-            else
-            {
-                return longLabel;
-            }
+            
+            return LongLabel;
         }
     }
 }

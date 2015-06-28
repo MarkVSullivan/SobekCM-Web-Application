@@ -12,7 +12,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
     [Serializable]
     public class Map_Corporation
     {
-        private StringCollection altNames;
+        private readonly StringCollection altNames;
         private long corpid;
         private string primName;
 

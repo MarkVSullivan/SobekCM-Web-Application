@@ -31,14 +31,11 @@ namespace SobekCM.Resource_Object.Behaviors
         #region IEquatable<Aggregation_Info> Members
 
         /// <summary> Determines if this aggregation is equal to another aggregation object </summary>
-        /// <param name="other"> Object to compare this aggregation to </param>
+        /// <param name="Other"> Object to compare this aggregation to </param>
         /// <returns> TRUE if the aggregation codes are the same, otherwise FALSE </returns>
-        public bool Equals(Aggregation_Info other)
+        public bool Equals(Aggregation_Info Other)
         {
-            if (Code == other.Code)
-                return true;
-            else
-                return false;
+            return Code == Other.Code;
         }
 
         #endregion

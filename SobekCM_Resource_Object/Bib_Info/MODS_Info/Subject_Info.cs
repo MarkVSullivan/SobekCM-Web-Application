@@ -42,7 +42,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         protected string language;
 
         /// <summary> Constructor for the abstract class Subject_Info </summary>
-        public Subject_Info()
+        protected Subject_Info()
         {
             id = String.Empty;
         }
@@ -66,9 +66,9 @@ namespace SobekCM.Resource_Object.Bib_Info
 
         /// <summary> Analyzes this subject to determine the indicator based on the authority/source 
         /// when converting this subject into the equivalent MARC </summary>
-        /// <param name="returnValue"> MARC Tag to add the indicator to </param>
-        /// <param name="fieldBuilder"> Field builder to which the |2 source may be added if the source is not represented in the indicator </param>
-        protected void Add_Source_Indicator(MARC_Field returnValue, StringBuilder fieldBuilder)
+        /// <param name="ReturnValue"> MARC Tag to add the indicator to </param>
+        /// <param name="FieldBuilder"> Field builder to which the |2 source may be added if the source is not represented in the indicator </param>
+        protected void Add_Source_Indicator(MARC_Field ReturnValue, StringBuilder FieldBuilder)
         {
             string second_indicator = " ";
             if (!String.IsNullOrEmpty(authority))
@@ -109,13 +109,13 @@ namespace SobekCM.Resource_Object.Bib_Info
                         break;
 
                     default:
-                        fieldBuilder.Append("|2 " + authority + " ");
+                        FieldBuilder.Append("|2 " + authority + " ");
                         second_indicator = "7";
                         break;
                 }
             }
 
-            returnValue.Indicators = returnValue.Indicators.Substring(0, 1) + second_indicator;
+            ReturnValue.Indicators = ReturnValue.Indicators.Substring(0, 1) + second_indicator;
         }
 
         /// <summary> Writes this subject as a simple string </summary>
@@ -123,7 +123,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <returns> This subject returned as a simple string </returns>
         public abstract string ToString(bool Include_Scheme);
 
-        internal abstract void Add_MODS(TextWriter results);
+        internal abstract void Add_MODS(TextWriter Results);
 
         internal abstract MARC_Field to_MARC_HTML();
     }

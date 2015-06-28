@@ -84,9 +84,9 @@ namespace SobekCM.Resource_Object.Bib_Info
             set { ead_name = value; }
         }
 
-        private void set_code(string newCode)
+        private void set_code(string NewCode)
         {
-            holding_code = newCode;
+            holding_code = NewCode;
             switch (holding_code.ToUpper())
             {
                 case "AM":
@@ -176,49 +176,49 @@ namespace SobekCM.Resource_Object.Bib_Info
         }
 
         /// <summary> Writes this location as MODS to a writer writing to a stream ( either a file or web response stream )</summary>
-        /// <param name="returnValue"> Writer to the MODS building stream </param>
-        internal void Add_MODS(TextWriter returnValue)
+        /// <param name="ReturnValue"> Writer to the MODS building stream </param>
+        internal void Add_MODS(TextWriter ReturnValue)
         {
             if ((String.IsNullOrEmpty(holding_code)) && (String.IsNullOrEmpty(holding_name)) && (String.IsNullOrEmpty(other_url)) && (String.IsNullOrEmpty(purl)) && (String.IsNullOrEmpty(ead_url)))
                 return;
 
-            returnValue.Write("<mods:location>\r\n");
+            ReturnValue.Write("<mods:location>\r\n");
 
             if (!String.IsNullOrEmpty(holding_name))
-                returnValue.Write("<mods:physicalLocation>" + base.Convert_String_To_XML_Safe(holding_name) + "</mods:physicalLocation>\r\n");
+                ReturnValue.Write("<mods:physicalLocation>" + Convert_String_To_XML_Safe(holding_name) + "</mods:physicalLocation>\r\n");
 
             if (!String.IsNullOrEmpty(holding_code))
-                returnValue.Write("<mods:physicalLocation type=\"code\">" + holding_code + "</mods:physicalLocation>\r\n");
+                ReturnValue.Write("<mods:physicalLocation type=\"code\">" + holding_code + "</mods:physicalLocation>\r\n");
 
             if (!String.IsNullOrEmpty(purl))
-                returnValue.Write("<mods:url access=\"object in context\">" + base.Convert_String_To_XML_Safe(purl) + "</mods:url>\r\n");
+                ReturnValue.Write("<mods:url access=\"object in context\">" + Convert_String_To_XML_Safe(purl) + "</mods:url>\r\n");
 
             if (!String.IsNullOrEmpty(other_url))
             {
-                returnValue.Write("<mods:url");
+                ReturnValue.Write("<mods:url");
 
                 if (!String.IsNullOrEmpty(other_url_label))
-                    returnValue.Write(" displayLabel=\"" + base.Convert_String_To_XML_Safe(other_url_label) + "\"");
+                    ReturnValue.Write(" displayLabel=\"" + Convert_String_To_XML_Safe(other_url_label) + "\"");
                 else
-                    returnValue.Write(" displayLabel=\"Related URL\"");
+                    ReturnValue.Write(" displayLabel=\"Related URL\"");
 
                 if (!String.IsNullOrEmpty(other_url_note))
-                    returnValue.Write(" note=\"" + base.Convert_String_To_XML_Safe(other_url_note) + "\"");
+                    ReturnValue.Write(" note=\"" + Convert_String_To_XML_Safe(other_url_note) + "\"");
 
-                returnValue.Write(">" + base.Convert_String_To_XML_Safe(other_url) + "</mods:url>\r\n");
+                ReturnValue.Write(">" + Convert_String_To_XML_Safe(other_url) + "</mods:url>\r\n");
             }
 
             if (!String.IsNullOrEmpty(ead_url))
             {
-                returnValue.Write("<mods:url displayLabel=\"Finding Guide\"");
+                ReturnValue.Write("<mods:url displayLabel=\"Finding Guide\"");
 
                 if (!String.IsNullOrEmpty(ead_name))
-                    returnValue.Write(" note=\"" + base.Convert_String_To_XML_Safe(ead_name) + "\"");
+                    ReturnValue.Write(" note=\"" + Convert_String_To_XML_Safe(ead_name) + "\"");
 
-                returnValue.Write(">" + base.Convert_String_To_XML_Safe(ead_url) + "</mods:url>\r\n");
+                ReturnValue.Write(">" + Convert_String_To_XML_Safe(ead_url) + "</mods:url>\r\n");
             }
 
-            returnValue.Write("</mods:location>\r\n");
+            ReturnValue.Write("</mods:location>\r\n");
         }
     }
 }

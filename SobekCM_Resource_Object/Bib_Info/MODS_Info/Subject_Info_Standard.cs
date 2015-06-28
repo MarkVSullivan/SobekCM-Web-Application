@@ -28,8 +28,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <param name="Authority">Authority for this topic subject keyword</param>
         public Subject_Info_Standard(string Topic, string Authority)
         {
-            topics = new List<string>();
-            topics.Add(Topic);
+            topics = new List<string> { Topic };
             authority = Authority;
         }
 
@@ -38,10 +37,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             get
             {
-                if ((base.hasData) || ((occupations != null) && (occupations.Count > 0)))
-                    return true;
-
-                return false;
+                return (base.hasData) || ((occupations != null) && (occupations.Count > 0));
             }
         }
 
@@ -50,12 +46,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no occupational subjects, the Occupations property creates a readonly collection to pass back out.</remarks>
         public int Occupations_Count
         {
-            get
-            {
-                if (occupations == null)
-                    return 0;
-                else
-                    return occupations.Count;
+            get {
+                return occupations == null ? 0 : occupations.Count;
             }
         }
 
@@ -64,12 +56,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no occupational subjects, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> Occupations
         {
-            get
-            {
-                if (occupations == null)
-                    return new ReadOnlyCollection<string>(new List<string>());
-                else
-                    return new ReadOnlyCollection<string>(occupations);
+            get {
+                return occupations == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(occupations);
             }
         }
 
@@ -127,7 +115,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 }
             }
 
-            builder.Append(base.To_Base_String());
+            builder.Append(To_Base_String());
 
             if (Include_Scheme)
             {
@@ -138,7 +126,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             return Convert_String_To_XML_Safe(builder.ToString());
         }
 
-        internal override void Add_MODS(TextWriter results)
+        internal override void Add_MODS(TextWriter Results)
         {
             if (((occupations == null) || (occupations.Count == 0)) &&
                 ((genres == null) || (genres.Count == 0)) &&
@@ -147,25 +135,25 @@ namespace SobekCM.Resource_Object.Bib_Info
                 ((geographics == null) || (geographics.Count == 0)))
                 return;
 
-            results.Write("<mods:subject");
-            base.Add_ID(results);
+            Results.Write("<mods:subject");
+            Add_ID(Results);
             if (!String.IsNullOrEmpty(language))
-                results.Write(" lang=\"" + language + "\"");
+                Results.Write(" lang=\"" + language + "\"");
             if (!String.IsNullOrEmpty(authority))
-                results.Write(" authority=\"" + authority + "\"");
-            results.Write(">\r\n");
+                Results.Write(" authority=\"" + authority + "\"");
+            Results.Write(">\r\n");
 
-            base.Add_Base_MODS(results);
+            Add_Base_MODS(Results);
 
             if (occupations != null)
             {
                 foreach (string thisElement in occupations)
                 {
-                    results.Write("<mods:occupation>" + base.Convert_String_To_XML_Safe(thisElement) + "</mods:occupation>\r\n");
+                    Results.Write("<mods:occupation>" + Convert_String_To_XML_Safe(thisElement) + "</mods:occupation>\r\n");
                 }
             }
 
-            results.Write("</mods:subject>\r\n");
+            Results.Write("</mods:subject>\r\n");
         }
 
 
@@ -239,21 +227,21 @@ namespace SobekCM.Resource_Object.Bib_Info
                     first_field_assigned = assign_genres(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2);
                     first_field_assigned = assign_topics(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2, ref scale);
                     first_field_assigned = assign_geographics(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2);
-                    first_field_assigned = assign_temporals(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2);
+                    assign_temporals(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2);
                     break;
 
                 case 691:
                     first_field_assigned = assign_genres(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2);
                     first_field_assigned = assign_geographics(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2);
                     first_field_assigned = assign_topics(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2, ref scale);
-                    first_field_assigned = assign_temporals(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2);
+                    assign_temporals(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2);
                     break;
 
                 default:
                     first_field_assigned = assign_geographics(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2);
                     first_field_assigned = assign_temporals(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2);
                     first_field_assigned = assign_topics(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2, ref scale);
-                    first_field_assigned = assign_genres(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2);
+                   assign_genres(first_field_assigned, returnValue.Tag, fieldBuilder, fieldBuilder2);
                     break;
             }
 
@@ -262,7 +250,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 fieldBuilder2.Append("|x " + scale + " ");
             }
 
-            fieldBuilder.Append(fieldBuilder2.ToString());
+            fieldBuilder.Append(fieldBuilder2);
             if (fieldBuilder.Length > 2)
             {
                 fieldBuilder.Remove(fieldBuilder.Length - 1, 1);
@@ -270,99 +258,95 @@ namespace SobekCM.Resource_Object.Bib_Info
                     fieldBuilder.Append(". ");
             }
 
-            base.Add_Source_Indicator(returnValue, fieldBuilder);
+            Add_Source_Indicator(returnValue, fieldBuilder);
 
-            if (returnValue.Tag == 653)
-                returnValue.Control_Field_Value = fieldBuilder.ToString().Trim().Replace("|x ", "|a ");
-            else
-                returnValue.Control_Field_Value = fieldBuilder.ToString().Trim();
+            returnValue.Control_Field_Value = returnValue.Tag == 653 ? fieldBuilder.ToString().Trim().Replace("|x ", "|a ") : fieldBuilder.ToString().Trim();
 
             return returnValue;
         }
 
-        private bool assign_geographics(bool first_field_assigned, int tag, StringBuilder fieldBuilder, StringBuilder fieldBuilder2)
+        private bool assign_geographics(bool FirstFieldAssigned, int Tag, StringBuilder FieldBuilder, StringBuilder FieldBuilder2)
         {
-            if (geographics != null)
+            if (geographics == null) return FirstFieldAssigned;
+
+            foreach (string geo in geographics)
             {
-                foreach (string geo in geographics)
+                if ((!FirstFieldAssigned) && ((Tag == 651) || (Tag == 691)))
                 {
-                    if ((!first_field_assigned) && ((tag == 651) || (tag == 691)))
-                    {
-                        fieldBuilder.Append("|a " + geo + " ");
-                        first_field_assigned = true;
-                    }
-                    else
-                    {
-                        fieldBuilder2.Append("|z " + geo + " ");
-                    }
+                    FieldBuilder.Append("|a " + geo + " ");
+                    FirstFieldAssigned = true;
+                }
+                else
+                {
+                    FieldBuilder2.Append("|z " + geo + " ");
                 }
             }
-            return first_field_assigned;
+            return FirstFieldAssigned;
         }
 
-        private bool assign_temporals(bool first_field_assigned, int tag, StringBuilder fieldBuilder, StringBuilder fieldBuilder2)
+        private bool assign_temporals(bool FirstFieldAssigned, int Tag, StringBuilder FieldBuilder, StringBuilder FieldBuilder2)
         {
             if (temporals != null)
             {
                 foreach (string temporal in temporals)
                 {
-                    if ((!first_field_assigned) && (tag == 648))
+                    if ((!FirstFieldAssigned) && (Tag == 648))
                     {
-                        fieldBuilder.Append("|a " + temporal + " ");
-                        first_field_assigned = true;
+                        FieldBuilder.Append("|a " + temporal + " ");
+                        FirstFieldAssigned = true;
                     }
                     else
                     {
-                        fieldBuilder2.Append("|y " + temporal + " ");
+                        FieldBuilder2.Append("|y " + temporal + " ");
                     }
                 }
             }
-            return first_field_assigned;
+            return FirstFieldAssigned;
         }
 
-        private bool assign_topics(bool first_field_assigned, int tag, StringBuilder fieldBuilder, StringBuilder fieldBuilder2, ref string scale)
+        private bool assign_topics(bool FirstFieldAssigned, int Tag, StringBuilder FieldBuilder, StringBuilder FieldBuilder2, ref string Scale)
         {
             if (topics != null)
             {
                 foreach (string topic in topics)
                 {
                     if ((topic.IndexOf("1:") == 0) || topic.IndexOf(" scale") >= 0)
-                        scale = topic;
+                        Scale = topic;
                     else
                     {
-                        if ((!first_field_assigned) && ((tag == 690) || (tag == 650) || (tag == 654) || (tag == 657)))
+                        if ((!FirstFieldAssigned) && ((Tag == 690) || (Tag == 650) || (Tag == 654) || (Tag == 657)))
                         {
-                            fieldBuilder.Append("|a " + topic + " ");
-                            first_field_assigned = true;
+                            FieldBuilder.Append("|a " + topic + " ");
+                            FirstFieldAssigned = true;
                         }
                         else
                         {
-                            fieldBuilder2.Append("|x " + topic + " ");
+                            FieldBuilder2.Append("|x " + topic + " ");
                         }
                     }
                 }
             }
-            return first_field_assigned;
+            return FirstFieldAssigned;
         }
 
-        private bool assign_genres(bool first_field_assigned, int tag, StringBuilder fieldBuilder, StringBuilder fieldBuilder2)
+        private bool assign_genres(bool FirstFieldAssigned, int Tag, StringBuilder FieldBuilder, StringBuilder FieldBuilder2)
         {
             if (genres != null)
             {
                 foreach (string form in genres)
                 {
-                    if ((!first_field_assigned) && ((tag == 655) || (tag == 690)))
+                    if ((!FirstFieldAssigned) && ((Tag == 655) || (Tag == 690)))
                     {
-                        fieldBuilder.Append("|a " + form + " ");
-                        first_field_assigned = true;
+                        FieldBuilder.Append("|a " + form + " ");
+                        FirstFieldAssigned = true;
                     }
                     else
                     {
-                        fieldBuilder2.Append("|v " + form + " ");
+                        FieldBuilder2.Append("|v " + form + " ");
                     }
                 }
             }
-            return first_field_assigned;
+            return FirstFieldAssigned;
         }
     }
 }

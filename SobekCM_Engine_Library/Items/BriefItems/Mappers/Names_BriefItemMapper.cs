@@ -26,7 +26,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             if (Original.Bib_Info.hasMainEntityName) 
             {
                 // Is this a conference?
-                if (Original.Bib_Info.Main_Entity_Name.Name_Type == Name_Info_Type_Enum.conference)
+                if (Original.Bib_Info.Main_Entity_Name.Name_Type == Name_Info_Type_Enum.Conference)
                 {
                     if (!String.IsNullOrWhiteSpace(Original.Bib_Info.Main_Entity_Name.Full_Name))
                         New.Add_Description("Conference", Original.Bib_Info.Main_Entity_Name.ToString());
@@ -80,7 +80,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 foreach (Name_Info thisName in Original.Bib_Info.Names)
                 {
                     // Is this a conference?
-                    if (thisName.Name_Type == Name_Info_Type_Enum.conference)
+                    if (thisName.Name_Type == Name_Info_Type_Enum.Conference)
                     {
                         if (!String.IsNullOrWhiteSpace(thisName.Full_Name))
                             New.Add_Description("Conference", thisName.ToString());

@@ -96,11 +96,11 @@ namespace SobekCM.Resource_Object.Bib_Info
 
             if (!String.IsNullOrEmpty(type))
             {
-                return base.Convert_String_To_XML_Safe(identifier + " (" + type + ")");
+                return Convert_String_To_XML_Safe(identifier + " (" + type + ")");
             }
             else
             {
-                return base.Convert_String_To_XML_Safe(identifier);
+                return Convert_String_To_XML_Safe(identifier);
             }
         }
 
@@ -124,7 +124,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 returnValue.Write(" type=\"" + type + "\"");
             if (!String.IsNullOrEmpty(displayLabel))
                 returnValue.Write(" displayLabel=\"" + displayLabel + "\"");
-            returnValue.Write(">" + base.Convert_String_To_XML_Safe(identifier) + "</mods:identifier>\r\n");
+            returnValue.Write(">" + Convert_String_To_XML_Safe(identifier) + "</mods:identifier>\r\n");
         }
     }
 }

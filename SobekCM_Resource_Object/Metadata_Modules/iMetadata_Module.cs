@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace SobekCM.Resource_Object.Metadata_Modules
 {
+    /// <summary> Base interface used for all metadata modules that can be attached to parts of the METS file structure </summary>
     public interface iMetadata_Module
     {
         /// <summary> Name for this metadata module </summary>

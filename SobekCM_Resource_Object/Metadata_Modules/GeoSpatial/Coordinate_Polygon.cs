@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 
 #endregion
 
@@ -14,8 +13,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
     public class Coordinate_Polygon
     {
         private List<Coordinate_Point> bounding_box;
-        private List<Coordinate_Point> edge_points;
-        private List<Coordinate_Point> internal_points;
+        private readonly List<Coordinate_Point> edge_points;
+        private readonly List<Coordinate_Point> internal_points;
         private string id;
         private string label;
         private ushort pageSequence;

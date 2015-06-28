@@ -127,7 +127,7 @@ namespace SobekCM.Library.Citation.Elements
                 string personal_values_display = "none";
                 string description_location_display = "Location";
                 string form_class = "name_popup_div";
-                if ((thisName.Name_Type == Name_Info_Type_Enum.personal) || ( thisName.Name_Type == Name_Info_Type_Enum.UNKNOWN ))
+                if ((thisName.Name_Type == Name_Info_Type_Enum.Personal) || ( thisName.Name_Type == Name_Info_Type_Enum.UNKNOWN ))
                 {
                     personal_values_display = "inline";
                     description_location_display = "Description";
@@ -146,15 +146,15 @@ namespace SobekCM.Library.Citation.Elements
                 PopupFormBuilder.AppendLine("      <td>Name Type:</td>");
                 PopupFormBuilder.AppendLine("      <td>");
                 PopupFormBuilder.AppendLine("        <select class=\"form_name_select\" id=\"form_name_type_" + name_count + "\" name=\"form_name_type_" + name_count + "\" onChange=\"name_type_changed('" + name_count + "');\" >");
-                PopupFormBuilder.AppendLine(thisName.Name_Type == Name_Info_Type_Enum.conference
+                PopupFormBuilder.AppendLine(thisName.Name_Type == Name_Info_Type_Enum.Conference
                                                   ? "          <option value=\"conference\" selected=\"selected\" >Conference</option>"
                                                   : "          <option value=\"conference\">Conference</option>");
 
-                PopupFormBuilder.AppendLine(thisName.Name_Type == Name_Info_Type_Enum.corporate
+                PopupFormBuilder.AppendLine(thisName.Name_Type == Name_Info_Type_Enum.Corporate
                                                   ? "          <option value=\"corporate\" selected=\"selected\" >Corporate</option>"
                                                   : "          <option value=\"corporate\">Corporate</option>");
 
-                if (( thisName.Name_Type == Name_Info_Type_Enum.personal ) || ( thisName.Name_Type == Name_Info_Type_Enum.UNKNOWN ))
+                if (( thisName.Name_Type == Name_Info_Type_Enum.Personal ) || ( thisName.Name_Type == Name_Info_Type_Enum.UNKNOWN ))
                     PopupFormBuilder.AppendLine("          <option value=\"personal\" selected=\"selected\" >Personal</option>");
                 else
                     PopupFormBuilder.AppendLine("          <option value=\"personal\">Personal</option>");
@@ -201,7 +201,7 @@ namespace SobekCM.Library.Citation.Elements
                 int role_index = 1;
                 foreach (Name_Info_Role thisRole in thisName.Roles)
                 {
-                    if ((thisRole.Role.Length > 0) && (thisRole.Role_Type == Name_Info_Role_Type_Enum.text))
+                    if ((thisRole.Role.Length > 0) && (thisRole.Role_Type == Name_Info_Role_Type_Enum.Text))
                     {
                         switch (role_index)
                         {
@@ -313,19 +313,19 @@ namespace SobekCM.Library.Citation.Elements
                         switch (type)
                         {
                             case "corporate":
-                                newName.Name_Type = Name_Info_Type_Enum.corporate;
+                                newName.Name_Type = Name_Info_Type_Enum.Corporate;
                                 break;
 
                             case "conference":
-                                newName.Name_Type = Name_Info_Type_Enum.conference;
+                                newName.Name_Type = Name_Info_Type_Enum.Conference;
                                 break;
 
                             default:
-                                newName.Name_Type = Name_Info_Type_Enum.personal;
+                                newName.Name_Type = Name_Info_Type_Enum.Personal;
                                 break;
                         }
                         newName.Full_Name = full;
-                        if (newName.Name_Type == Name_Info_Type_Enum.personal)
+                        if (newName.Name_Type == Name_Info_Type_Enum.Personal)
                         {
                             newName.Given_Name = given;
                             newName.Family_Name = family;

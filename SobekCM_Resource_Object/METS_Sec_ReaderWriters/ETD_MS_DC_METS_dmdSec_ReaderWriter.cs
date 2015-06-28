@@ -1,11 +1,15 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.IO;
 using SobekCM.Resource_Object.Metadata_Modules;
+
+#endregion
 
 namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 {
+    /// <summary> Special ETD MS dublin core METS section reader/writer </summary>
 	public class ETD_MS_DC_METS_dmdSec_ReaderWriter : DC_METS_dmdSec_ReaderWriter
 	{
 		/// <summary> Writes the dmdSec for the entire package to the text writer </summary>
@@ -14,7 +18,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 		/// <param name="Options"> Dictionary of any options which this METS section writer may utilize</param>
 		/// <returns>TRUE if successful, otherwise FALSE </returns>
 		/// <remarks>This utilized the DC writer in the base class and just adds the ETD information </remarks>
-		public override bool Write_dmdSec(System.IO.TextWriter Output_Stream, SobekCM_Item METS_Item, Dictionary<string, object> Options)
+		public override bool Write_dmdSec(TextWriter Output_Stream, SobekCM_Item METS_Item, Dictionary<string, object> Options)
 		{
 			// Write the base stuff
 			base.Write_dmdSec(Output_Stream, METS_Item, Options);

@@ -38,12 +38,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no physical description notes, the Notes property creates a readonly collection to pass back out.</remarks>
         public int Notes_Count
         {
-            get
-            {
-                if (notes == null)
-                    return 0;
-                else
-                    return notes.Count;
+            get {
+                return notes == null ? 0 : notes.Count;
             }
         }
 
@@ -52,48 +48,31 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no notes, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> Notes
         {
-            get
-            {
-                if (notes == null)
-                    return new ReadOnlyCollection<string>(new List<string>());
-                else
-                    return new ReadOnlyCollection<string>(notes);
+            get {
+                return notes == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(notes);
             }
         }
 
         /// <summary> Returns the form information associated with this physical description object </summary>
         public PhysicalDescription_Form_Info Form_Info
         {
-            get
-            {
-                if (form == null)
-                    form = new PhysicalDescription_Form_Info();
-                return form;
-            }
+            get { return form ?? (form = new PhysicalDescription_Form_Info()); }
         }
 
         /// <summary> Returns a flag that indicates if this physical description object contains
         /// form information </summary>
         public bool hasFormInformation
         {
-            get
-            {
-                if ((form == null) || (!form.hasData))
-                    return false;
-                else
-                    return true;
+            get {
+                return (form != null) && (form.hasData);
             }
         }
 
         /// <summary> Returns flag which indicates this physical description has data </summary>
         internal bool hasData
         {
-            get
-            {
-                if ((String.IsNullOrEmpty(extent)) && ((notes == null) || (notes.Count == 0)) && ((form == null) || (!form.hasData)))
-                    return false;
-                else
-                    return true;
+            get {
+                return (!String.IsNullOrEmpty(extent)) || ((notes != null) && (notes.Count != 0)) || ((form != null) && (form.hasData));
             }
         }
 
@@ -122,35 +101,35 @@ namespace SobekCM.Resource_Object.Bib_Info
             notes.Add(Note);
         }
 
-        internal void Add_MODS(TextWriter results)
+        internal void Add_MODS(TextWriter Results)
         {
             if ((String.IsNullOrEmpty(extent)) && ((notes == null) || (notes.Count == 0)) && ((form == null) || (!form.hasData)))
                 return;
 
-            results.Write("<mods:physicalDescription>\r\n");
+            Results.Write("<mods:physicalDescription>\r\n");
 
             if ((form != null) && (form.hasData))
             {
-                results.Write("<mods:form");
+                Results.Write("<mods:form");
                 if (form.Authority.Length > 0)
-                    results.Write(" authority=\"" + form.Authority + "\"");
+                    Results.Write(" authority=\"" + form.Authority + "\"");
                 if (form.Type.Length > 0)
-                    results.Write(" type=\"" + form.Type + "\"");
-                results.Write(">" + base.Convert_String_To_XML_Safe(form.Form) + "</mods:form>\r\n");
+                    Results.Write(" type=\"" + form.Type + "\"");
+                Results.Write(">" + Convert_String_To_XML_Safe(form.Form) + "</mods:form>\r\n");
             }
 
             if (!String.IsNullOrEmpty(extent))
-                results.Write("<mods:extent>" + base.Convert_String_To_XML_Safe(extent) + "</mods:extent>\r\n");
+                Results.Write("<mods:extent>" + Convert_String_To_XML_Safe(extent) + "</mods:extent>\r\n");
 
             if (notes != null)
             {
                 foreach (string thisNote in notes)
                 {
-                    results.Write("<mods:note>" + base.Convert_String_To_XML_Safe(thisNote) + "</mods:note>\r\n");
+                    Results.Write("<mods:note>" + Convert_String_To_XML_Safe(thisNote) + "</mods:note>\r\n");
                 }
             }
 
-            results.Write("</mods:physicalDescription>\r\n");
+            Results.Write("</mods:physicalDescription>\r\n");
         }
     }
 }

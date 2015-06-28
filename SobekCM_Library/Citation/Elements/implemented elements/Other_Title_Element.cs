@@ -95,19 +95,19 @@ namespace SobekCM.Library.Citation.Elements
                     titles.Add(thisTitle.Title);
                     switch (thisTitle.Title_Type)
                     {
-                        case Title_Type_Enum.abbreviated:
+                        case Title_Type_Enum.Abbreviated:
                             types.Add("Abbreviated Title");
                             break;
 
-                        case Title_Type_Enum.alternative:
+                        case Title_Type_Enum.Alternative:
                             types.Add("Alternative Title");
                             break;
 
-                        case Title_Type_Enum.translated:
+                        case Title_Type_Enum.Translated:
                             types.Add("Translated Title");
                             break;
 
-                        case Title_Type_Enum.uniform:
+                        case Title_Type_Enum.Uniform:
                             types.Add("Uniform Title");
                             break;
 
@@ -156,19 +156,19 @@ namespace SobekCM.Library.Citation.Elements
                         switch (title_type)
                         {
                             case "abbreviated":
-                                Bib.Bib_Info.Add_Other_Title(title_text, Title_Type_Enum.abbreviated);
+                                Bib.Bib_Info.Add_Other_Title(title_text, Title_Type_Enum.Abbreviated);
                                 break;
 
                             case "alternate":
-                                Bib.Bib_Info.Add_Other_Title(title_text, Title_Type_Enum.alternative);
+                                Bib.Bib_Info.Add_Other_Title(title_text, Title_Type_Enum.Alternative);
                                 break;
 
                             case "translated":
-                                Bib.Bib_Info.Add_Other_Title(title_text, Title_Type_Enum.translated);
+                                Bib.Bib_Info.Add_Other_Title(title_text, Title_Type_Enum.Translated);
                                 break;
 
                             case "uniform":
-                                Bib.Bib_Info.Add_Other_Title(title_text, Title_Type_Enum.uniform);
+                                Bib.Bib_Info.Add_Other_Title(title_text, Title_Type_Enum.Uniform);
                                 break;
 
                             case "series":

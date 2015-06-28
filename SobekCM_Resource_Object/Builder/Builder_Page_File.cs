@@ -26,33 +26,33 @@ namespace SobekCM.Resource_Object.Builder
         #region Constructors and Constructor Helpers
 
         /// <summary> Constructor for a new instance of the Builder_Page_File class </summary>
-        /// <param name="file_location">Directory within which to find the files </param>
-        public Builder_Page_File(string file_location)
+        /// <param name="FileLocation">Directory within which to find the files </param>
+        public Builder_Page_File(string FileLocation)
         {
-            constructor2_helper(file_location, String.Empty, false);
+            constructor2_helper(FileLocation, String.Empty, false);
         }
 
         /// <summary> Constructor for a new instance of the Builder_Page_File class </summary>
-        /// <param name="file_location">Directory within which to find the files </param>
-        /// <param name="split_name">Flag indicates if the file names should be split for sorting</param>
-        public Builder_Page_File(string file_location, bool split_name)
+        /// <param name="FileLocation">Directory within which to find the files </param>
+        /// <param name="SplitName">Flag indicates if the file names should be split for sorting</param>
+        public Builder_Page_File(string FileLocation, bool SplitName)
         {
-            constructor2_helper(file_location, String.Empty, split_name);
+            constructor2_helper(FileLocation, String.Empty, SplitName);
         }
 
         /// <summary> Constructor for a new instance of the Builder_Page_File class </summary>
-        /// <param name="file_location">Directory within which to find the files </param>
-        /// <param name="relative_directory">Relative directory of this file from the digital resource's main source directory</param>
-        /// <param name="split_name">Flag indicates if the file names should be split for sorting</param>
-        public Builder_Page_File(string file_location, string relative_directory, bool split_name)
+        /// <param name="FileLocation">Directory within which to find the files </param>
+        /// <param name="RelativeDirectory">Relative directory of this file from the digital resource's main source directory</param>
+        /// <param name="SplitName">Flag indicates if the file names should be split for sorting</param>
+        public Builder_Page_File(string FileLocation, string RelativeDirectory, bool SplitName)
         {
-            constructor2_helper(file_location, relative_directory, split_name);
+            constructor2_helper(FileLocation, RelativeDirectory, SplitName);
         }
 
-        private void constructor2_helper(string file_location, string relative_directory, bool split_name)
+        private void constructor2_helper(string FileLocation, string RelativeDirParam, bool SplitName)
         {
             // Create the FileInfo object
-            FileInfo fileInfo = new FileInfo(file_location);
+            FileInfo fileInfo = new FileInfo(FileLocation);
 
             // Populate all the date from that
             fileid = String.Empty;
@@ -64,13 +64,10 @@ namespace SobekCM.Resource_Object.Builder
             fileerrortype = -1;
             pageid = String.Empty;
             present = true;
-            this.relative_directory = relative_directory;
+            relative_directory = RelativeDirParam;
 
             // split the file name for sorting purposes
-            if (split_name)
-                splitName = new Builder_SplitFileName(filename);
-            else
-                splitName = null;
+            splitName = SplitName ? new Builder_SplitFileName(filename) : null;
         }
 
         #endregion
@@ -104,8 +101,8 @@ namespace SobekCM.Resource_Object.Builder
                 // Make sure there is a value to return
                 if (splitName != null)
                     return splitName;
-                else
-                    throw new ApplicationException("SplitFileName not configured!\n\nChange constructor");
+                
+                throw new ApplicationException("SplitFileName not configured!\n\nChange constructor");
             }
         }
 
@@ -138,8 +135,8 @@ namespace SobekCM.Resource_Object.Builder
             {
                 if (relative_directory.Length == 0)
                     return filename + "." + extension;
-                else
-                    return relative_directory + "\\" + filename + "." + extension;
+                
+                return relative_directory + "\\" + filename + "." + extension;
             }
         }
 
@@ -176,15 +173,15 @@ namespace SobekCM.Resource_Object.Builder
         #region Methods which load the image, draw the file, and clear the image
 
         /// <summary> Loads the quality control thumbnail into a Bitmap object </summary>
-        /// <param name="directory"> Location where the files reside </param>
+        /// <param name="Directory"> Location where the files reside </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public bool Load_Image(string directory)
+        public bool Load_Image(string Directory)
         {
-            if (File.Exists(directory + FileName + ".QC.jpg"))
+            if (File.Exists(Directory + FileName + ".QC.jpg"))
             {
                 try
                 {
-                    thisImage = (Bitmap) Bitmap.FromFile(directory + FileName + ".QC.jpg");
+                    thisImage = (Bitmap) System.Drawing.Image.FromFile(Directory + FileName + ".QC.jpg");
                     return true;
                 }
                 catch
@@ -192,10 +189,8 @@ namespace SobekCM.Resource_Object.Builder
                     return false;
                 }
             }
-            else
-            {
-                return false;
-            }
+            
+            return false;
         }
 
         /// <summary> Clears the loaded quality control thumbnail image from the Bitmap object when complete </summary>
@@ -209,36 +204,36 @@ namespace SobekCM.Resource_Object.Builder
 
         /// <summary> Draws the current page with the quality control background and writes any existing
         /// error on the image </summary>
-        /// <param name="g"> Graphics object used to draw upon </param>
-        /// <param name="borderPen"> Pen to use for the border and for the text </param>
-        /// <param name="x"> X location within the container </param>
-        /// <param name="y"> Y location within the container</param>
-        /// <param name="scale"> Scale to draw the quality control thumbnail, used to control size</param>
-        public void Draw(Graphics g, Pen borderPen, int x, int y, float scale)
+        /// <param name="G"> Graphics object used to draw upon </param>
+        /// <param name="BorderPen"> Pen to use for the border and for the text </param>
+        /// <param name="X"> X location within the container </param>
+        /// <param name="Y"> Y location within the container</param>
+        /// <param name="Scale"> Scale to draw the quality control thumbnail, used to control size</param>
+        public void Draw(Graphics G, Pen BorderPen, int X, int Y, float Scale)
         {
-            int currWidth = (int) (scale*thisImage.Width);
-            int currHeight = (int) (scale*thisImage.Height);
+            int currWidth = (int) (Scale*thisImage.Width);
+            int currHeight = (int) (Scale*thisImage.Height);
 
             // Draw the image first
-            g.DrawImage(thisImage, x, y, currWidth, currHeight);
+            G.DrawImage(thisImage, X, Y, currWidth, currHeight);
 
             // If there was any errors, show that now
             if (fileerrortype >= 0)
             {
                 // Create the necessary objects to draw this error
                 Brush errorBrush = new SolidBrush(Color.Tomato);
-                int fontsize = (int) (45*scale);
+                int fontsize = (int) (45*Scale);
                 Font errorFont = new Font("Tahoma", fontsize, FontStyle.Bold);
 
                 if ((fileerrortype == 4) || (fileerrortype == 6))
                 {
-                    fontsize = (int) (30*scale);
+                    fontsize = (int) (30*Scale);
                     errorFont = new Font("Tahoma", fontsize, FontStyle.Bold);
                 }
 
                 if (fileerrortype == 3)
                 {
-                    fontsize = (int) (40*scale);
+                    fontsize = (int) (40*Scale);
                     errorFont = new Font("Tahoma", fontsize, FontStyle.Bold);
                 }
 
@@ -246,30 +241,30 @@ namespace SobekCM.Resource_Object.Builder
                 switch (fileerrortype)
                 {
                     case 2:
-                        g.DrawString(" CROP", errorFont, errorBrush, new Rectangle(x + 10, (int) (y + (currHeight/2) - (fontsize*1.5)), currWidth, fontsize*2));
-                        g.DrawString("ERROR", errorFont, errorBrush, new Rectangle(x + 10, (int) (y + (currHeight/2) + (fontsize*0.5)), currWidth, fontsize*2));
+                        G.DrawString(" CROP", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) - (fontsize*1.5)), currWidth, fontsize*2));
+                        G.DrawString("ERROR", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) + (fontsize*0.5)), currWidth, fontsize*2));
                         break;
 
                     case 3:
-                        g.DrawString("  IMAGE", errorFont, errorBrush, new Rectangle(x + 10, (int) (y + (currHeight/2) - (fontsize*2.5)), currWidth, fontsize*2));
-                        g.DrawString("QUALITY", errorFont, errorBrush, new Rectangle(x + 10, (int) (y + (currHeight/2) - (fontsize*0.5)), currWidth, fontsize*2));
-                        g.DrawString("  ERROR", errorFont, errorBrush, new Rectangle(x + 10, (int) (y + (currHeight/2) + (fontsize*1.5)), currWidth, fontsize*2));
+                        G.DrawString("  IMAGE", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) - (fontsize*2.5)), currWidth, fontsize*2));
+                        G.DrawString("QUALITY", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) - (fontsize*0.5)), currWidth, fontsize*2));
+                        G.DrawString("  ERROR", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) + (fontsize*1.5)), currWidth, fontsize*2));
                         break;
 
                     case 4:
-                        g.DrawString("ORIENTATION", errorFont, errorBrush, new Rectangle(x + 10, (int) (y + (currHeight/2) - (fontsize*1.5)), currWidth, fontsize*2));
-                        g.DrawString("  ERROR", errorFont, errorBrush, new Rectangle(x + 10, (int) (y + (currHeight/2) + (fontsize*0.5)), currWidth, fontsize*2));
+                        G.DrawString("ORIENTATION", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) - (fontsize*1.5)), currWidth, fontsize*2));
+                        G.DrawString("  ERROR", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) + (fontsize*0.5)), currWidth, fontsize*2));
                         break;
 
                     case 5:
-                        g.DrawString(" SKEW", errorFont, errorBrush, new Rectangle(x + 10, (int) (y + (currHeight/2) - (fontsize*1.5)), currWidth, fontsize*2));
-                        g.DrawString("ERROR", errorFont, errorBrush, new Rectangle(x + 10, (int) (y + (currHeight/2) + (fontsize*0.5)), currWidth, fontsize*2));
+                        G.DrawString(" SKEW", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) - (fontsize*1.5)), currWidth, fontsize*2));
+                        G.DrawString("ERROR", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) + (fontsize*0.5)), currWidth, fontsize*2));
                         break;
 
                     case 6:
-                        g.DrawString("TECHNICAL", errorFont, errorBrush, new Rectangle(x + 10, (int) (y + (currHeight/2) - (fontsize*2.5)), currWidth, fontsize*2));
-                        g.DrawString("  SPEC", errorFont, errorBrush, new Rectangle(x + 10, (int) (y + (currHeight/2) - (fontsize*0.5)), currWidth, fontsize*2));
-                        g.DrawString("  ERROR", errorFont, errorBrush, new Rectangle(x + 10, (int) (y + (currHeight/2) + (fontsize*1.5)), currWidth, fontsize*2));
+                        G.DrawString("TECHNICAL", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) - (fontsize*2.5)), currWidth, fontsize*2));
+                        G.DrawString("  SPEC", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) - (fontsize*0.5)), currWidth, fontsize*2));
+                        G.DrawString("  ERROR", errorFont, errorBrush, new Rectangle(X + 10, (int) (Y + (currHeight/2) + (fontsize*1.5)), currWidth, fontsize*2));
                         break;
                 }
 
@@ -279,7 +274,7 @@ namespace SobekCM.Resource_Object.Builder
             }
 
             // Draw the border around the image as well
-            g.DrawRectangle(borderPen, x, y, currWidth, currHeight);
+            G.DrawRectangle(BorderPen, X, Y, currWidth, currHeight);
         }
 
         #endregion
@@ -287,21 +282,22 @@ namespace SobekCM.Resource_Object.Builder
         #region IComparable Members
 
         /// <summary> Check to see if these two files are equivalent </summary>
-        /// <param name="obj"> Object to compare to </param>
+        /// <param name="Obj"> Object to compare to </param>
         /// <returns> Returns -1, 0, or 1, depending on how this object ranks in comparison to the testing object </returns>
-        public int CompareTo(object obj)
+        public int CompareTo(object Obj)
         {
             // Check for null
-            if (obj == null)
+            if (Obj == null)
                 return 1;
 
             // Perform comparison
             int result = 0;
 
-            if (obj is Builder_Page_File)
+            var obj = Obj as Builder_Page_File;
+            if (obj != null)
             {
                 // Same object types, so cast
-                Builder_Page_File compareToObj = (Builder_Page_File) obj;
+                Builder_Page_File compareToObj = obj;
 
                 // Check for comparison between all the parts
                 int maximum_part_checks = Math.Min(Sorter.NameParts.Length, compareToObj.Sorter.NameParts.Length);
@@ -325,17 +321,14 @@ namespace SobekCM.Resource_Object.Builder
                     {
                         return 1;
                     }
-                    else
-                    {
-                        return -1;
-                    }
+                    
+                    return -1;
                 }
 
                 return result;
             }
-            else
-                // comparing apples and oranges serves no one
-                return 0;
+            
+            return 0;
         }
 
         #endregion
@@ -388,27 +381,20 @@ namespace SobekCM.Resource_Object.Builder
         #endregion
 
         /// <summary> Check to see if these two files have the same name </summary>
-        /// <param name="compareTo"> Object to compare to </param>
+        /// <param name="CompareTo"> Object to compare to </param>
         /// <returns>TRUE if they have the same name, otherwise FALSE </returns>
-        public bool Same_Name(Builder_Page_File compareTo)
+        public bool Same_Name(Builder_Page_File CompareTo)
         {
-            if (FullName.ToUpper() == compareTo.FullName.ToUpper())
-                return true;
-            else
-                return false;
+            return String.Compare(FullName, CompareTo.FullName, StringComparison.OrdinalIgnoreCase) == 0;
         }
 
         /// <summary> Check to see if these two files are equivalent </summary>
-        /// <param name="compareTo"> Object to compare to </param>
+        /// <param name="CompareTo"> Object to compare to </param>
         /// <returns> TRUE if equal, otherwise FALSE </returns>
-        public bool Equals(Builder_Page_File compareTo)
+        public bool Equals(Builder_Page_File CompareTo)
         {
             // Must have same name, first of all
-            if (!Same_Name(compareTo))
-                return false;
-
-            // Made it past all these checks
-            return true;
+            return Same_Name(CompareTo);
         }
     }
 }

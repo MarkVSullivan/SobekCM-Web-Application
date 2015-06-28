@@ -65,45 +65,44 @@ namespace SobekCM.Resource_Object.Bib_Info
             return ToString();
         }
 
-        internal override void Add_MODS(TextWriter results)
+        internal override void Add_MODS(TextWriter Results)
         {
             if ((String.IsNullOrEmpty(scale)) && (String.IsNullOrEmpty(coordinates)) && (String.IsNullOrEmpty(projection)))
                 return;
 
-            results.Write("<mods:subject");
-            base.Add_ID(results);
+            Results.Write("<mods:subject");
+            Add_ID(Results);
             if (!String.IsNullOrEmpty(language))
-                results.Write(" lang=\"" + language + "\"");
+                Results.Write(" lang=\"" + language + "\"");
             if (!String.IsNullOrEmpty(authority))
-                results.Write(" authority=\"" + authority + "\"");
+                Results.Write(" authority=\"" + authority + "\"");
 
-            results.Write(">\r\n");
+            Results.Write(">\r\n");
             if (!String.IsNullOrEmpty(coordinates))
             {
-                results.Write("<mods:cartographics>\r\n");
-                results.Write("<mods:coordinates>" + coordinates + "</mods:coordinates>\r\n");
-                results.Write("</mods:cartographics>\r\n");
+                Results.Write("<mods:cartographics>\r\n");
+                Results.Write("<mods:coordinates>" + coordinates + "</mods:coordinates>\r\n");
+                Results.Write("</mods:cartographics>\r\n");
             }
 
             if ((!String.IsNullOrEmpty(scale)) || (!String.IsNullOrEmpty(projection)))
             {
-                results.Write("<mods:cartographics>\r\n");
+                Results.Write("<mods:cartographics>\r\n");
                 if (!String.IsNullOrEmpty(scale))
-                    results.Write("<mods:scale>" + base.Convert_String_To_XML_Safe(scale) + "</mods:scale>\r\n");
+                    Results.Write("<mods:scale>" + Convert_String_To_XML_Safe(scale) + "</mods:scale>\r\n");
 
                 if (!String.IsNullOrEmpty(projection))
-                    results.Write("<mods:projection>" + base.Convert_String_To_XML_Safe(projection) + "</mods:projection>\r\n");
-                results.Write("</mods:cartographics>\r\n");
+                    Results.Write("<mods:projection>" + Convert_String_To_XML_Safe(projection) + "</mods:projection>\r\n");
+                Results.Write("</mods:cartographics>\r\n");
             }
-            results.Write("</mods:subject>\r\n");
+            Results.Write("</mods:subject>\r\n");
         }
 
         internal override MARC_Field to_MARC_HTML()
         {
-            MARC_Field returnValue = new MARC_Field();
+            MARC_Field returnValue = new MARC_Field { Tag = 255 };
 
             // Set the tag
-            returnValue.Tag = 255;
             if ((id.IndexOf("SUBJ") == 0) && (id.Length >= 7))
             {
                 string possible_tag = id.Substring(4, 3);

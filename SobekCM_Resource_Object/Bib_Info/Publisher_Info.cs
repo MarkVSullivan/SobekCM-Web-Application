@@ -42,12 +42,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no places, the SubCollections property creates a readonly collection to pass back out.</remarks>
         public int Places_Count
         {
-            get
-            {
-                if (places == null)
-                    return 0;
-                else
-                    return places.Count;
+            get {
+                return places == null ? 0 : places.Count;
             }
         }
 
@@ -56,26 +52,19 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no places, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Origin_Info_Place> Places
         {
-            get
-            {
-                if (places == null)
-                    return new ReadOnlyCollection<Origin_Info_Place>(new List<Origin_Info_Place>());
-                else
-                    return new ReadOnlyCollection<Origin_Info_Place>(places);
+            get {
+                return places == null ? new ReadOnlyCollection<Origin_Info_Place>(new List<Origin_Info_Place>()) : new ReadOnlyCollection<Origin_Info_Place>(places);
             }
         }
 
         #region IEquatable<Publisher_Info> Members
 
         /// <summary> Compares this object with another similarly typed object </summary>
-        /// <param name="other">Similarly types object </param>
+        /// <param name="Other">Similarly types object </param>
         /// <returns>TRUE if the two objects are sufficiently similar</returns>
-        public bool Equals(Publisher_Info other)
+        public bool Equals(Publisher_Info Other)
         {
-            if (other.Name == Name)
-                return true;
-
-            return false;
+            return String.Compare(Other.Name, Name, StringComparison.Ordinal) == 0;
         }
 
         #endregion
@@ -116,7 +105,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             StringBuilder builder = new StringBuilder();
             if (!String.IsNullOrEmpty(name))
             {
-                builder.Append(base.Convert_String_To_XML_Safe(name));
+                builder.Append(Convert_String_To_XML_Safe(name));
             }
             if ((places != null) && (places.Count > 0))
             {
@@ -125,7 +114,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 {
                     if (thisPlace.Place_Text.Length > 0)
                     {
-                        builder.Append(base.Convert_String_To_XML_Safe(thisPlace.Place_Text) + ", ");
+                        builder.Append(Convert_String_To_XML_Safe(thisPlace.Place_Text) + ", ");
                     }
                 }
                 builder.Append(")");
@@ -134,38 +123,37 @@ namespace SobekCM.Resource_Object.Bib_Info
         }
 
         /// <summary> Writes this publisher as SobekCM-formatted XML </summary>
-        /// <param name="sobekcm_namespace"> Namespace to use for the SobekCM custom schema ( usually 'sobekcm' )</param>
-        /// <param name="results"> Stream to write this publisher as SobekCM-formatted XML</param>
-        /// <param name="type"> Type indicates if this is a publisher or a manufacturer of the digital resource </param>
-        internal void Add_SobekCM_Metadata(string sobekcm_namespace, string type, TextWriter results)
+        /// <param name="SobekcmNamespace"> Namespace to use for the SobekCM custom schema ( usually 'sobekcm' )</param>
+        /// <param name="Results"> Stream to write this publisher as SobekCM-formatted XML</param>
+        /// <param name="Type"> Type indicates if this is a publisher or a manufacturer of the digital resource </param>
+        internal void Add_SobekCM_Metadata(string SobekcmNamespace, string Type, TextWriter Results)
         {
-            if (!String.IsNullOrEmpty(name))
+            if (String.IsNullOrEmpty(name)) return;
+
+            Results.Write("<" + SobekcmNamespace + ":" + Type);
+            Add_ID(Results);
+            Results.WriteLine(">");
+
+            Results.WriteLine("<" + SobekcmNamespace + ":Name>" + Convert_String_To_XML_Safe(name) + "</" + SobekcmNamespace + ":Name>");
+
+            // Step through all the publication places
+            if (places != null)
             {
-                results.Write("<" + sobekcm_namespace + ":" + type);
-                base.Add_ID(results);
-                results.WriteLine(">");
-
-                results.WriteLine("<" + sobekcm_namespace + ":Name>" + base.Convert_String_To_XML_Safe(name) + "</" + sobekcm_namespace + ":Name>");
-
-                // Step through all the publication places
-                if (places != null)
+                foreach (Origin_Info_Place place in places)
                 {
-                    foreach (Origin_Info_Place place in places)
+                    if ((place.Place_ISO3166.Length > 0) || (place.Place_MarcCountry.Length > 0) || (place.Place_Text.Length > 0))
                     {
-                        if ((place.Place_ISO3166.Length > 0) || (place.Place_MarcCountry.Length > 0) || (place.Place_Text.Length > 0))
-                        {
-                            if (place.Place_Text.Length > 0)
-                                results.WriteLine("<" + sobekcm_namespace + ":PlaceTerm type=\"text\">" + base.Convert_String_To_XML_Safe(place.Place_Text) + "</" + sobekcm_namespace + ":PlaceTerm>");
-                            if (place.Place_MarcCountry.Length > 0)
-                                results.WriteLine("<" + sobekcm_namespace + ":PlaceTerm type=\"code\" authority=\"marccountry\">" + place.Place_MarcCountry + "</" + sobekcm_namespace + ":PlaceTerm>");
-                            if (place.Place_ISO3166.Length > 0)
-                                results.WriteLine("<" + sobekcm_namespace + ":PlaceTerm type=\"code\" authority=\"iso3166\">" + place.Place_ISO3166 + "</" + sobekcm_namespace + ":PlaceTerm>");
-                        }
+                        if (place.Place_Text.Length > 0)
+                            Results.WriteLine("<" + SobekcmNamespace + ":PlaceTerm type=\"text\">" + Convert_String_To_XML_Safe(place.Place_Text) + "</" + SobekcmNamespace + ":PlaceTerm>");
+                        if (place.Place_MarcCountry.Length > 0)
+                            Results.WriteLine("<" + SobekcmNamespace + ":PlaceTerm type=\"code\" authority=\"marccountry\">" + place.Place_MarcCountry + "</" + SobekcmNamespace + ":PlaceTerm>");
+                        if (place.Place_ISO3166.Length > 0)
+                            Results.WriteLine("<" + SobekcmNamespace + ":PlaceTerm type=\"code\" authority=\"iso3166\">" + place.Place_ISO3166 + "</" + SobekcmNamespace + ":PlaceTerm>");
                     }
                 }
-
-                results.WriteLine("</" + sobekcm_namespace + ":" + type + ">");
             }
+
+            Results.WriteLine("</" + SobekcmNamespace + ":" + Type + ">");
         }
     }
 }

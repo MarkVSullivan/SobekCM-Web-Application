@@ -67,7 +67,7 @@ namespace SobekCM.Library.Citation.Elements
             List<string> instanceValues = new List<string>();
             if (Bib.Bib_Info.Notes_Count > 0)
             {
-                instanceValues.AddRange(from thisNote in Bib.Bib_Info.Notes where (thisNote.Note_Type != Note_Type_Enum.publication_status) && (thisNote.Note_Type != Note_Type_Enum.funding) && (thisNote.Note_Type != Note_Type_Enum.acquisition) && (thisNote.Note_Type != Note_Type_Enum.default_type) select thisNote.ToString().Replace("<b>", "(").Replace("</b>", ")"));
+                instanceValues.AddRange(from thisNote in Bib.Bib_Info.Notes where (thisNote.Note_Type != Note_Type_Enum.PublicationStatus) && (thisNote.Note_Type != Note_Type_Enum.Funding) && (thisNote.Note_Type != Note_Type_Enum.Acquisition) && (thisNote.Note_Type != Note_Type_Enum.DefaultType) select thisNote.ToString().Replace("<b>", "(").Replace("</b>", ")"));
             }
 
             render_helper(Output, instanceValues, Skin_Code, IsMozilla, Current_User, CurrentLanguage, Translator, Base_URL);
@@ -81,7 +81,7 @@ namespace SobekCM.Library.Citation.Elements
         {
             if (Bib.Bib_Info.Notes_Count > 0)
             {
-                List<Note_Info> deleteNotes = Bib.Bib_Info.Notes.Where(thisNote => (thisNote.Note_Type != Note_Type_Enum.publication_status) && (thisNote.Note_Type != Note_Type_Enum.funding) && (thisNote.Note_Type != Note_Type_Enum.acquisition) && (thisNote.Note_Type != Note_Type_Enum.default_type)).ToList();
+                List<Note_Info> deleteNotes = Bib.Bib_Info.Notes.Where(thisNote => (thisNote.Note_Type != Note_Type_Enum.PublicationStatus) && (thisNote.Note_Type != Note_Type_Enum.Funding) && (thisNote.Note_Type != Note_Type_Enum.Acquisition) && (thisNote.Note_Type != Note_Type_Enum.DefaultType)).ToList();
                 foreach (Note_Info thisNote in deleteNotes)
                 {
                     Bib.Bib_Info.Remove_Note(thisNote);

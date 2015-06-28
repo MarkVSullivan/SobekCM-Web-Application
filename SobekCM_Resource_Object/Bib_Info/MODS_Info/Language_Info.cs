@@ -104,81 +104,71 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             get
             {
-                if ((!String.IsNullOrEmpty(language_text)) || (!String.IsNullOrEmpty(language_iso_code)) || (!String.IsNullOrEmpty(language_rfc_code)))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return (!String.IsNullOrEmpty(language_text)) || (!String.IsNullOrEmpty(language_iso_code)) || (!String.IsNullOrEmpty(language_rfc_code));
             }
         }
 
         #region IEquatable<Language_Info> Members
 
         /// <summary> Compares this object with another similarly typed object </summary>
-        /// <param name="other">Similarly types object </param>
+        /// <param name="Other">Similarly types object </param>
         /// <returns>TRUE if the two objects are sufficiently similar</returns>
-        public bool Equals(Language_Info other)
+        public bool Equals(Language_Info Other)
         {
-            if ((Language_Text.Length > 0) && (Language_Text == other.Language_Text))
+            if (( !String.IsNullOrEmpty(Language_Text)) && ( String.Compare(Language_Text, Other.Language_Text, StringComparison.Ordinal) == 0 ))
                 return true;
 
-            if ((Language_RFC_Code.Length > 0) && (Language_RFC_Code == other.Language_RFC_Code))
+            if ((!String.IsNullOrEmpty(Language_RFC_Code)) && (String.Compare(Language_RFC_Code, Other.Language_RFC_Code, StringComparison.Ordinal) == 0))
                 return true;
 
-            if ((Language_ISO_Code.Length > 0) && (Language_ISO_Code == other.Language_ISO_Code))
-                return true;
-
-            return false;
+            return (!String.IsNullOrEmpty(Language_ISO_Code)) && (String.Compare(Language_ISO_Code, Other.Language_ISO_Code, StringComparison.Ordinal) == 0);
         }
 
         #endregion
 
         /// <summary> Writes this language as MODS to a writer writing to a stream ( either a file or web response stream )</summary>
-        /// <param name="returnValue"> Writer to the MODS building stream </param>
-        internal void Add_MODS(TextWriter returnValue)
+        /// <param name="ReturnValue"> Writer to the MODS building stream </param>
+        internal void Add_MODS(TextWriter ReturnValue)
         {
             if (!hasData)
                 return;
 
-            returnValue.Write("<mods:language");
-            returnValue.Write(">\r\n");
+            ReturnValue.Write("<mods:language");
+            ReturnValue.Write(">\r\n");
 
             if (!String.IsNullOrEmpty(language_text))
             {
-                returnValue.Write("<mods:languageTerm type=\"text\">" + base.Convert_String_To_XML_Safe(language_text) + "</mods:languageTerm>\r\n");
+                ReturnValue.Write("<mods:languageTerm type=\"text\">" + Convert_String_To_XML_Safe(language_text) + "</mods:languageTerm>\r\n");
             }
 
             if (!String.IsNullOrEmpty(language_iso_code))
             {
-                returnValue.Write("<mods:languageTerm type=\"code\" authority=\"iso639-2b\">" + base.Convert_String_To_XML_Safe(language_iso_code) + "</mods:languageTerm>\r\n");
+                ReturnValue.Write("<mods:languageTerm type=\"code\" authority=\"iso639-2b\">" + Convert_String_To_XML_Safe(language_iso_code) + "</mods:languageTerm>\r\n");
             }
 
             if (!String.IsNullOrEmpty(language_rfc_code))
             {
-                returnValue.Write("<mods:languageTerm type=\"code\" authority=\"rfc3066\">" + base.Convert_String_To_XML_Safe(language_rfc_code) + "</mods:languageTerm>\r\n");
+                ReturnValue.Write("<mods:languageTerm type=\"code\" authority=\"rfc3066\">" + Convert_String_To_XML_Safe(language_rfc_code) + "</mods:languageTerm>\r\n");
             }
-            returnValue.Write("</mods:language>\r\n");
+            ReturnValue.Write("</mods:language>\r\n");
         }
 
         #region Code to get the language text from the ISO code
 
         /// <summary> Get the language text from the ISO code </summary>
-        /// <param name="code_check"> ISO code to convert to language name </param>
+        /// <param name="CodeCheck"> ISO code to convert to language name </param>
         /// <returns> The associated language name or an empty string </returns>
-        public string Get_Language_By_Code(string code_check)
+        public string Get_Language_By_Code(string CodeCheck)
         {
-            return Get_Language_By_Code_Static(code_check);
+            return Get_Language_By_Code_Static(CodeCheck);
         }
 
         /// <summary> Get the language text from the ISO code </summary>
-        /// <param name="code_check"> ISO code to convert to language name </param>
+        /// <param name="CodeCheck"> ISO code to convert to language name </param>
         /// <returns> The associated language name or an empty string </returns>
-        public static string Get_Language_By_Code_Static(string code_check)
+        public static string Get_Language_By_Code_Static(string CodeCheck)
         {
-            string code_upper = code_check.ToUpper();
+            string code_upper = CodeCheck.ToUpper();
             string text = String.Empty;
             switch (code_upper)
             {
@@ -1696,19 +1686,19 @@ namespace SobekCM.Resource_Object.Bib_Info
         #region Code to get the ISO code from the language text
 
         /// <summary> Gets the ISO code from the language text </summary>
-        /// <param name="language_check"> Name of the language to check for ISO code </param>
+        /// <param name="LanguageCheck"> Name of the language to check for ISO code </param>
         /// <returns> Associated ISO code, or an empty string </returns>
-        private string Get_Code_By_Language(string language_check)
+        private string Get_Code_By_Language(string LanguageCheck)
         {
-            return Get_Code_By_Language_Static(language_check);
+            return Get_Code_By_Language_Static(LanguageCheck);
         }
 
         /// <summary> Gets the ISO code from the language text </summary>
-        /// <param name="language_check"> Name of the language to check for ISO code </param>
+        /// <param name="LanguageCheck"> Name of the language to check for ISO code </param>
         /// <returns> Associated ISO code, or an empty string </returns>
-        private static string Get_Code_By_Language_Static(string language_check)
+        private static string Get_Code_By_Language_Static(string LanguageCheck)
         {
-            string language_upper = language_check.ToUpper();
+            string language_upper = LanguageCheck.ToUpper();
             string code = String.Empty;
             switch (language_upper)
             {

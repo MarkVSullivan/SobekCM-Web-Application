@@ -536,7 +536,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         [DebuggerStepThrough()]
         public class Corporation_LinkRow : DataRow
         {
-            private Corporation_LinkDataTable tableCorporation_Link;
+            private readonly Corporation_LinkDataTable tableCorporation_Link;
 
             internal Corporation_LinkRow(DataRowBuilder rb) :
                 base(rb)
@@ -570,8 +570,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         [DebuggerStepThrough()]
         public class Corporation_LinkRowChangeEvent : EventArgs
         {
-            private DataRowAction eventAction;
-            private Corporation_LinkRow eventRow;
+            private readonly DataRowAction eventAction;
+            private readonly Corporation_LinkRow eventRow;
 
             public Corporation_LinkRowChangeEvent(Corporation_LinkRow row, DataRowAction action)
             {
@@ -838,7 +838,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         [DebuggerStepThrough()]
         public class FeatureRow : DataRow
         {
-            private FeatureDataTable tableFeature;
+            private readonly FeatureDataTable tableFeature;
 
             internal FeatureRow(DataRowBuilder rb) :
                 base(rb)
@@ -1031,8 +1031,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         [DebuggerStepThrough()]
         public class FeatureRowChangeEvent : EventArgs
         {
-            private DataRowAction eventAction;
-            private FeatureRow eventRow;
+            private readonly DataRowAction eventAction;
+            private readonly FeatureRow eventRow;
 
             public FeatureRowChangeEvent(FeatureRow row, DataRowAction action)
             {
@@ -1246,7 +1246,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         [DebuggerStepThrough()]
         public class Person_LinkRow : DataRow
         {
-            private Person_LinkDataTable tablePerson_Link;
+            private readonly Person_LinkDataTable tablePerson_Link;
 
             internal Person_LinkRow(DataRowBuilder rb) :
                 base(rb)
@@ -1306,8 +1306,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         [DebuggerStepThrough()]
         public class Person_LinkRowChangeEvent : EventArgs
         {
-            private DataRowAction eventAction;
-            private Person_LinkRow eventRow;
+            private readonly DataRowAction eventAction;
+            private readonly Person_LinkRow eventRow;
 
             public Person_LinkRowChangeEvent(Person_LinkRow row, DataRowAction action)
             {
@@ -1532,7 +1532,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         [DebuggerStepThrough()]
         public class Sheet_LinkRow : DataRow
         {
-            private Sheet_LinkDataTable tableSheet_Link;
+            private readonly Sheet_LinkDataTable tableSheet_Link;
 
             internal Sheet_LinkRow(DataRowBuilder rb) :
                 base(rb)
@@ -1618,8 +1618,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         [DebuggerStepThrough()]
         public class Sheet_LinkRowChangeEvent : EventArgs
         {
-            private DataRowAction eventAction;
-            private Sheet_LinkRow eventRow;
+            private readonly DataRowAction eventAction;
+            private readonly Sheet_LinkRow eventRow;
 
             public Sheet_LinkRowChangeEvent(Sheet_LinkRow row, DataRowAction action)
             {
@@ -1882,7 +1882,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         [DebuggerStepThrough()]
         public class StreetRow : DataRow
         {
-            private StreetDataTable tableStreet;
+            private readonly StreetDataTable tableStreet;
 
             internal StreetRow(DataRowBuilder rb) :
                 base(rb)
@@ -2086,8 +2086,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
         [DebuggerStepThrough()]
         public class StreetRowChangeEvent : EventArgs
         {
-            private DataRowAction eventAction;
-            private StreetRow eventRow;
+            private readonly DataRowAction eventAction;
+            private readonly StreetRow eventRow;
 
             public StreetRowChangeEvent(StreetRow row, DataRowAction action)
             {

@@ -24,6 +24,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
         /// <summary> Flag indicates if this active reader/writer will write a dmdSec </summary>
         /// <param name="METS_Item"> Package with all the metadata to save</param>
+        /// <param name="Options"> Instance wide options related to saving this item </param>
         /// <returns> TRUE if the package has data to be written, otherwise fALSE </returns>
         public bool Include_dmdSec(SobekCM_Item METS_Item, Dictionary<string, object> Options)
         {
@@ -51,14 +52,14 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             {
                 foreach (string thisValue in vraInfo.Cultural_Contexts)
                 {
-                    Output_Stream.WriteLine("<vra:culturalContext>" + base.Convert_String_To_XML_Safe(thisValue) + "</vra:culturalContext>");
+                    Output_Stream.WriteLine("<vra:culturalContext>" + Convert_String_To_XML_Safe(thisValue) + "</vra:culturalContext>");
                 }
             }
             if (vraInfo.Inscription_Count > 0)
             {
                 foreach (string thisValue in vraInfo.Inscriptions)
                 {
-                    Output_Stream.WriteLine("<vra:inscription>" + base.Convert_String_To_XML_Safe(thisValue) + "</vra:inscription>");
+                    Output_Stream.WriteLine("<vra:inscription>" + Convert_String_To_XML_Safe(thisValue) + "</vra:inscription>");
                 }
             }
             if (vraInfo.Material_Count > 0)
@@ -67,11 +68,11 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 {
                     if (thisValue.Type.Length > 0)
                     {
-                        Output_Stream.WriteLine("<vra:material type=\"" + base.Convert_String_To_XML_Safe(thisValue.Type) + "\">" + base.Convert_String_To_XML_Safe(thisValue.Materials) + "</vra:material>");
+                        Output_Stream.WriteLine("<vra:material type=\"" + Convert_String_To_XML_Safe(thisValue.Type) + "\">" + Convert_String_To_XML_Safe(thisValue.Materials) + "</vra:material>");
                     }
                     else
                     {
-                        Output_Stream.WriteLine("<vra:material>" + base.Convert_String_To_XML_Safe(thisValue.Materials) + "</vra:material>");
+                        Output_Stream.WriteLine("<vra:material>" + Convert_String_To_XML_Safe(thisValue.Materials) + "</vra:material>");
                     }
                 }
             }
@@ -81,11 +82,11 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 {
                     if (thisValue.Units.Length > 0)
                     {
-                        Output_Stream.WriteLine("<vra:measurements unit=\"" + base.Convert_String_To_XML_Safe(thisValue.Units) + "\">" + base.Convert_String_To_XML_Safe(thisValue.Measurements) + "</vra:measurements>");
+                        Output_Stream.WriteLine("<vra:measurements unit=\"" + Convert_String_To_XML_Safe(thisValue.Units) + "\">" + Convert_String_To_XML_Safe(thisValue.Measurements) + "</vra:measurements>");
                     }
                     else
                     {
-                        Output_Stream.WriteLine("<vra:measurements>" + base.Convert_String_To_XML_Safe(thisValue.Measurements) + "</vra:measurements>");
+                        Output_Stream.WriteLine("<vra:measurements>" + Convert_String_To_XML_Safe(thisValue.Measurements) + "</vra:measurements>");
                     }
                 }
             }
@@ -93,21 +94,21 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             {
                 foreach (string thisValue in vraInfo.State_Editions)
                 {
-                    Output_Stream.WriteLine("<vra:stateEdition>" + base.Convert_String_To_XML_Safe(thisValue) + "</vra:stateEdition>");
+                    Output_Stream.WriteLine("<vra:stateEdition>" + Convert_String_To_XML_Safe(thisValue) + "</vra:stateEdition>");
                 }
             }
             if (vraInfo.Style_Period_Count > 0)
             {
                 foreach (string thisValue in vraInfo.Style_Periods)
                 {
-                    Output_Stream.WriteLine("<vra:stylePeriod>" + base.Convert_String_To_XML_Safe(thisValue) + "</vra:stylePeriod>");
+                    Output_Stream.WriteLine("<vra:stylePeriod>" + Convert_String_To_XML_Safe(thisValue) + "</vra:stylePeriod>");
                 }
             }
             if (vraInfo.Technique_Count > 0)
             {
                 foreach (string thisValue in vraInfo.Techniques)
                 {
-                    Output_Stream.WriteLine("<vra:technique>" + base.Convert_String_To_XML_Safe(thisValue) + "</vra:technique>");
+                    Output_Stream.WriteLine("<vra:technique>" + Convert_String_To_XML_Safe(thisValue) + "</vra:technique>");
                 }
             }
             Output_Stream.WriteLine("</vra:vra>");

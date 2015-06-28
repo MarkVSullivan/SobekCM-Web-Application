@@ -1,8 +1,10 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
+
+#endregion
 
 namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
 {
@@ -11,8 +13,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
     [Serializable]
     public class LOM_TaxonPath
     {
-        private List<LOM_Taxon> taxons;
-        private List<LOM_LanguageString> sourceNames;
+        private readonly List<LOM_Taxon> taxons;
+        private readonly List<LOM_LanguageString> sourceNames;
 
         /// <summary> Constructor for a new instance of the LOM_TaxonPath class </summary>
         public LOM_TaxonPath()

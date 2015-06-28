@@ -68,7 +68,7 @@ namespace SobekCM.Library.Citation.Elements
             {
                 foreach (Note_Info thisNote in Bib.Bib_Info.Notes)
                 {
-                    if (thisNote.Note_Type == Note_Type_Enum.funding)
+                    if (thisNote.Note_Type == Note_Type_Enum.Funding)
                     {
                         attribution = thisNote.Note;
                         break;
@@ -96,7 +96,7 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (thisKey.IndexOf(html_element_name.Replace("_", "")) == 0)
                 {
-                    Bib.Bib_Info.Add_Note(HttpContext.Current.Request.Form[thisKey], Note_Type_Enum.funding);
+                    Bib.Bib_Info.Add_Note(HttpContext.Current.Request.Form[thisKey], Note_Type_Enum.Funding);
                     return;
                 }
             }
@@ -113,7 +113,7 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     foreach (Note_Info thisNote in Bib.Bib_Info.Notes)
                     {
-                        if (thisNote.Note_Type == Note_Type_Enum.funding)
+                        if (thisNote.Note_Type == Note_Type_Enum.Funding)
                         {
                             thisNote.Note = default_values[0];
                             return;
@@ -122,7 +122,7 @@ namespace SobekCM.Library.Citation.Elements
                 }
 
                 // None was found, so just add it
-                Bib.Bib_Info.Add_Note(default_values[0], Note_Type_Enum.funding);
+                Bib.Bib_Info.Add_Note(default_values[0], Note_Type_Enum.Funding);
             }
         }
     }

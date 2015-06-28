@@ -10,12 +10,12 @@ namespace SobekCM.Resource_Object.Solr
     /// the basic attributes and full text available for Solr indexing </summary>
     public class SolrPage
     {
-        private string bibid;
-        private string pagename;
-        private int pageorder;
-        private string pagetext;
-        private string thumbnail;
-        private string vid;
+        private readonly string bibid;
+        private readonly string pagename;
+        private readonly int pageorder;
+        private readonly string pagetext;
+        private readonly string thumbnail;
+        private readonly string vid;
 
         /// <summary> Constructor creates a new instance of the SolrPage class </summary>
         public SolrPage()

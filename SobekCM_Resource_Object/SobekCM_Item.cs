@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Configuration;
 using SobekCM.Resource_Object.Divisions;
@@ -12,7 +13,6 @@ using SobekCM.Resource_Object.MARC;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.OAI.Reader;
-using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Tracking;
 using SobekCM.Resource_Object.Utilities;
 
@@ -26,11 +26,11 @@ namespace SobekCM.Resource_Object
     public class SobekCM_Item : MetadataDescribableBase
     {
         // Variables hold all the main information about a digital resource
-        private METS_Header_Info metsInfo;
+        private readonly METS_Header_Info metsInfo;
         private Division_Info divInfo;        
-        private Behaviors_Info behaviorInfo;
+        private readonly Behaviors_Info behaviorInfo;
         private Tracking_Info trackingInfo;
-        private Web_Info web;
+        private readonly Web_Info web;
 
         private int total_order;
         //       private string main_thumbnail;
@@ -50,7 +50,7 @@ namespace SobekCM.Resource_Object
             metsInfo = new METS_Header_Info();
             behaviorInfo = new Behaviors_Info();
             divInfo = new Division_Info();
-            bibInfo = new Bibliographic_Info();
+            BIBInfo = new Bibliographic_Info();
             web = new Web_Info(behaviorInfo);
             analyzed_for_complex_content = false;
             contains_complex_content = false;
@@ -79,7 +79,7 @@ namespace SobekCM.Resource_Object
             metsInfo = new METS_Header_Info();
             behaviorInfo = new Behaviors_Info();
             divInfo = new Division_Info();
-            bibInfo = new Bibliographic_Info();
+            BIBInfo = new Bibliographic_Info();
             web = new Web_Info(behaviorInfo);
             analyzed_for_complex_content = false;
             contains_complex_content = false;
@@ -206,7 +206,7 @@ namespace SobekCM.Resource_Object
                 {
                     if (Bib_Info.Main_Title.ToString().Length > 0)
                     {
-                        Bib_Info.Add_Other_Title(thistitle, Title_Type_Enum.alternative);
+                        Bib_Info.Add_Other_Title(thistitle, Title_Type_Enum.Alternative);
                     }
                     else
                     {
@@ -262,16 +262,16 @@ namespace SobekCM.Resource_Object
             {
                 if (!analyzed_for_complex_content)
                 {
-                    if (bibInfo.EncodingLevel.Length > 0)
+                    if (BIBInfo.EncodingLevel.Length > 0)
                     {
                         contains_complex_content = true;
                         analyzed_for_complex_content = true;
                         return true;
                     }
 
-                    if (bibInfo.Subjects_Count > 0)
+                    if (BIBInfo.Subjects_Count > 0)
                     {
-                        foreach (Subject_Info thisSubject in bibInfo.Subjects)
+                        foreach (Subject_Info thisSubject in BIBInfo.Subjects)
                         {
                             if (thisSubject.Class_Type == Subject_Info_Type.TitleInfo)
                             {
@@ -318,9 +318,9 @@ namespace SobekCM.Resource_Object
                         return true;
                     }
 
-                    if (bibInfo.Names_Count > 0)
+                    if (BIBInfo.Names_Count > 0)
                     {
-                        if (bibInfo.Names.Any(thisName => (thisName.Roles.Count > 1) || (thisName.Terms_Of_Address.Length > 0) || (thisName.Dates.Length > 0) || (thisName.Description.Length > 0) || (thisName.Display_Form.Length > 0) || (thisName.Family_Name.Length > 0) || (thisName.Given_Name.Length > 0)))
+                        if (BIBInfo.Names.Any(thisName => (thisName.Roles.Count > 1) || (thisName.Terms_Of_Address.Length > 0) || (thisName.Dates.Length > 0) || (thisName.Description.Length > 0) || (thisName.Display_Form.Length > 0) || (thisName.Family_Name.Length > 0) || (thisName.Given_Name.Length > 0)))
                         {
                             contains_complex_content = true;
                             analyzed_for_complex_content = true;
@@ -328,16 +328,16 @@ namespace SobekCM.Resource_Object
                         }
                     }
 
-                    if ((bibInfo.Main_Title.Authority.Length > 0) || (bibInfo.Main_Title.Display_Label.Length > 0) || (bibInfo.Main_Title.NonSort.Length > 0) || (bibInfo.Main_Title.Part_Names_Count > 0) || (bibInfo.Main_Title.Part_Numbers_Count > 0) || (bibInfo.Main_Title.Subtitle.Length > 0))
+                    if ((BIBInfo.Main_Title.Authority.Length > 0) || (BIBInfo.Main_Title.Display_Label.Length > 0) || (BIBInfo.Main_Title.NonSort.Length > 0) || (BIBInfo.Main_Title.Part_Names_Count > 0) || (BIBInfo.Main_Title.Part_Numbers_Count > 0) || (BIBInfo.Main_Title.Subtitle.Length > 0))
                     {
                         contains_complex_content = true;
                         analyzed_for_complex_content = true;
                         return true;
                     }
 
-                    if (bibInfo.Other_Titles_Count > 0)
+                    if (BIBInfo.Other_Titles_Count > 0)
                     {
-                        if (bibInfo.Other_Titles.Any(thisTitle => (thisTitle.Authority.Length > 0) || (thisTitle.Display_Label.Length > 0) || (thisTitle.NonSort.Length > 0) || (thisTitle.Part_Names_Count > 0) || (thisTitle.Part_Numbers_Count > 0) || (thisTitle.Subtitle.Length > 0)))
+                        if (BIBInfo.Other_Titles.Any(thisTitle => (thisTitle.Authority.Length > 0) || (thisTitle.Display_Label.Length > 0) || (thisTitle.NonSort.Length > 0) || (thisTitle.Part_Names_Count > 0) || (thisTitle.Part_Numbers_Count > 0) || (thisTitle.Subtitle.Length > 0)))
                         {
                             contains_complex_content = true;
                             analyzed_for_complex_content = true;
@@ -369,37 +369,37 @@ namespace SobekCM.Resource_Object
                 if (behaviorInfo.GroupTitle.Length > 0)
                     return behaviorInfo.GroupTitle;
 
-                if (bibInfo.SobekCM_Type == TypeOfResource_SobekCM_Enum.Newspaper)
+                if (BIBInfo.SobekCM_Type == TypeOfResource_SobekCM_Enum.Newspaper)
                 {
-                    if (bibInfo.Other_Titles_Count > 0)
+                    if (BIBInfo.Other_Titles_Count > 0)
                     {
-                        foreach (Title_Info otherTitle in bibInfo.Other_Titles)
+                        foreach (Title_Info otherTitle in BIBInfo.Other_Titles)
                         {
-                            if (otherTitle.Title_Type == Title_Type_Enum.uniform)
+                            if (otherTitle.Title_Type == Title_Type_Enum.Uniform)
                             {
                                 return otherTitle.ToString();
                             }
                         }
                     }
-                    if ((bibInfo.hasSeriesTitle) && (bibInfo.SeriesTitle.ToString().Length > 0))
-                        return bibInfo.SeriesTitle.ToString();
+                    if ((BIBInfo.hasSeriesTitle) && (BIBInfo.SeriesTitle.ToString().Length > 0))
+                        return BIBInfo.SeriesTitle.ToString();
                 }
                 else
                 {
-                    if ((bibInfo.hasSeriesTitle) && (bibInfo.SeriesTitle.ToString().Length > 0))
-                        return bibInfo.SeriesTitle.ToString();
-                    if (bibInfo.Other_Titles_Count > 0)
+                    if ((BIBInfo.hasSeriesTitle) && (BIBInfo.SeriesTitle.ToString().Length > 0))
+                        return BIBInfo.SeriesTitle.ToString();
+                    if (BIBInfo.Other_Titles_Count > 0)
                     {
-                        foreach (Title_Info otherTitle in bibInfo.Other_Titles)
+                        foreach (Title_Info otherTitle in BIBInfo.Other_Titles)
                         {
-                            if (otherTitle.Title_Type == Title_Type_Enum.uniform)
+                            if (otherTitle.Title_Type == Title_Type_Enum.Uniform)
                             {
                                 return otherTitle.ToString();
                             }
                         }
                     }
                 }
-                return bibInfo.Main_Title.ToString();
+                return BIBInfo.Main_Title.ToString();
             }
         }
 
@@ -408,7 +408,7 @@ namespace SobekCM.Resource_Object
         /// <param name="SobekCM_URL"> SobekCM URL for this material </param>
         public void Set_PURL(string SobekCM_URL)
         {
-            Bib_Info.Location.PURL = SobekCM_URL + "?b=" + bibInfo.BibID + "&amp;v=" + bibInfo.VID.Replace("VID", "");
+            Bib_Info.Location.PURL = SobekCM_URL + "?b=" + BIBInfo.BibID + "&amp;v=" + BIBInfo.VID.Replace("VID", "");
         }
 
         /// <summary> Saves the data stored in this instance of the 
@@ -473,21 +473,21 @@ namespace SobekCM.Resource_Object
         /// <summary> Gets and sets the Bibliographic Identifier (BibID) associated with this resource </summary>
         public string BibID
         {
-            get { return bibInfo.BibID; }
+            get { return BIBInfo.BibID; }
             set
             {
                 web.BibID = value.ToUpper();
-                bibInfo.BibID = value.ToUpper();
+                BIBInfo.BibID = value.ToUpper();
 
                 if (value.Length > 0)
                 {
-                    if (bibInfo.VID.Length > 0)
+                    if (BIBInfo.VID.Length > 0)
                     {
-                        METS_Header.ObjectID = bibInfo.BibID + "_" + bibInfo.VID;
+                        METS_Header.ObjectID = BIBInfo.BibID + "_" + BIBInfo.VID;
                     }
                     else
                     {
-                        METS_Header.ObjectID = bibInfo.BibID;
+                        METS_Header.ObjectID = BIBInfo.BibID;
                     }
                 }
             }
@@ -496,15 +496,15 @@ namespace SobekCM.Resource_Object
         /// <summary> Gets and sets the Volume Identifier (VID) associated with this resource </summary>
         public string VID
         {
-            get { return bibInfo.VID; }
+            get { return BIBInfo.VID; }
             set
             {
                 web.VID = value;
-                bibInfo.VID = value;
+                BIBInfo.VID = value;
 
                 if (value.Length > 0)
                 {
-                    METS_Header.ObjectID = bibInfo.BibID + "_" + bibInfo.VID;
+                    METS_Header.ObjectID = BIBInfo.BibID + "_" + BIBInfo.VID;
                 }
             }
         }
@@ -1182,9 +1182,9 @@ namespace SobekCM.Resource_Object
             // If there is an interview date, use that to calculate the sort safe date
             // Ensure this metadata module extension exists and has data
             Oral_Interview_Info oralInfo = Get_Metadata_Module("OralInterview") as Oral_Interview_Info;
-            if ((oralInfo != null) && (oralInfo.Interview_Date.Length > 0) && (bibInfo.SortDate > 0))
+            if ((oralInfo != null) && (oralInfo.Interview_Date.Length > 0) && (BIBInfo.SortDate > 0))
             {
-                bibInfo.SortDate = bibInfo.SortSafeDate(oralInfo.Interview_Date);
+                BIBInfo.SortDate = BIBInfo.SortSafeDate(oralInfo.Interview_Date);
             }
 
             // Save this to the METS file format
@@ -1211,9 +1211,9 @@ namespace SobekCM.Resource_Object
             // If there is an interview date, use that to calculate the sort safe date
             // Ensure this metadata module extension exists and has data
             Oral_Interview_Info oralInfo = Get_Metadata_Module("OralInterview") as Oral_Interview_Info;
-            if ((oralInfo != null) && (oralInfo.Interview_Date.Length > 0) && (bibInfo.SortDate > 0))
+            if ((oralInfo != null) && (oralInfo.Interview_Date.Length > 0) && (BIBInfo.SortDate > 0))
             {
-                bibInfo.SortDate = bibInfo.SortSafeDate(oralInfo.Interview_Date);
+                BIBInfo.SortDate = BIBInfo.SortSafeDate(oralInfo.Interview_Date);
             }
 
             // Save this to the METS file format
@@ -1232,9 +1232,9 @@ namespace SobekCM.Resource_Object
             // If there is an interview date, use that to calculate the sort safe date
             // Ensure this metadata module extension exists and has data
             Oral_Interview_Info oralInfo = Get_Metadata_Module("OralInterview") as Oral_Interview_Info;
-            if ((oralInfo != null) && (oralInfo.Interview_Date.Length > 0) && (bibInfo.SortDate > 0))
+            if ((oralInfo != null) && (oralInfo.Interview_Date.Length > 0) && (BIBInfo.SortDate > 0))
             {
-                bibInfo.SortDate = bibInfo.SortSafeDate(oralInfo.Interview_Date);
+                BIBInfo.SortDate = BIBInfo.SortSafeDate(oralInfo.Interview_Date);
             }
 
             // Save this to the METS file format
@@ -1438,7 +1438,7 @@ namespace SobekCM.Resource_Object
             MARC_Record tags = new MARC_Record();
 
             // Compute the sobekcm type, which will be used for some of these mappings
-            TypeOfResource_SobekCM_Enum sobekcm_type = bibInfo.SobekCM_Type;
+            TypeOfResource_SobekCM_Enum sobekcm_type = BIBInfo.SobekCM_Type;
 
             // Build a hashtable of all the pertinent genres
             Dictionary<string, string> genreHash = new Dictionary<string, string>();
@@ -1525,15 +1525,15 @@ namespace SobekCM.Resource_Object
 
                 switch (Bib_Info.Main_Entity_Name.Name_Type)
                 {
-                    case Name_Info_Type_Enum.personal:
+                    case Name_Info_Type_Enum.Personal:
                         main_entity_marc.Tag = 100;
                         break;
 
-                    case Name_Info_Type_Enum.corporate:
+                    case Name_Info_Type_Enum.Corporate:
                         main_entity_marc.Tag = 110;
                         break;
 
-                    case Name_Info_Type_Enum.conference:
+                    case Name_Info_Type_Enum.Conference:
                         main_entity_marc.Tag = 111;
                         break;
 
@@ -1555,15 +1555,15 @@ namespace SobekCM.Resource_Object
 
                         switch (name.Name_Type)
                         {
-                            case Name_Info_Type_Enum.personal:
+                            case Name_Info_Type_Enum.Personal:
                                 name_marc.Tag = 700;
                                 break;
 
-                            case Name_Info_Type_Enum.corporate:
+                            case Name_Info_Type_Enum.Corporate:
                                 name_marc.Tag = 710;
                                 break;
 
-                            case Name_Info_Type_Enum.conference:
+                            case Name_Info_Type_Enum.Conference:
                                 name_marc.Tag = 711;
                                 break;
 
@@ -1584,15 +1584,15 @@ namespace SobekCM.Resource_Object
 
                 switch (Bib_Info.Donor.Name_Type)
                 {
-                    case Name_Info_Type_Enum.personal:
+                    case Name_Info_Type_Enum.Personal:
                     case Name_Info_Type_Enum.UNKNOWN:
                         donor_marc.Indicators = donor_marc.Indicators[0] + "3";
                         donor_marc.Tag = 796;
                         tags.Add_Field(donor_marc);
                         break;
 
-                    case Name_Info_Type_Enum.corporate:
-                    case Name_Info_Type_Enum.conference:
+                    case Name_Info_Type_Enum.Corporate:
+                    case Name_Info_Type_Enum.Conference:
                         donor_marc.Indicators = donor_marc.Indicators[0] + "3";
                         donor_marc.Tag = 797;
                         tags.Add_Field(donor_marc);
@@ -1754,7 +1754,7 @@ namespace SobekCM.Resource_Object
             bool another_version_exists = false;
             if (Bib_Info.RelatedItems_Count > 0)
             {
-                if (Bib_Info.RelatedItems.Where(relatedItem => relatedItem.URL.Length > 0).Any(relatedItem => relatedItem.Relationship == Related_Item_Type_Enum.otherVersion))
+                if (Bib_Info.RelatedItems.Where(relatedItem => relatedItem.URL.Length > 0).Any(relatedItem => relatedItem.Relationship == Related_Item_Type_Enum.OtherVersion))
                 {
                     another_version_exists = true;
                 }
@@ -1770,16 +1770,16 @@ namespace SobekCM.Resource_Object
                 {
                     switch (thisNote.Note_Type)
                     {
-                        case Note_Type_Enum.statement_of_responsibility:
+                        case Note_Type_Enum.StatementOfResponsibility:
                             statement_of_responsibility = thisNote.Note;
                             break;
 
-                        case Note_Type_Enum.electronic_access:
+                        case Note_Type_Enum.ElectronicAccess:
                             electronic_access_note = thisNote.Note;
                             break;
 
-                        case Note_Type_Enum.publication_status:
-                        case Note_Type_Enum.internal_comments:
+                        case Note_Type_Enum.PublicationStatus:
+                        case Note_Type_Enum.InternalComments:
                             // DO nothing 
                             break;
 
@@ -1828,7 +1828,7 @@ namespace SobekCM.Resource_Object
                     if (relatedItem.URL.Length > 0)
                     {
                         MARC_Field linking_tag = new MARC_Field {Tag = 856, Indicators = "42"};
-                        if (relatedItem.Relationship == Related_Item_Type_Enum.otherVersion)
+                        if (relatedItem.Relationship == Related_Item_Type_Enum.OtherVersion)
                             linking_tag.Indicators = "41";
 
                         StringBuilder linking856_builder = new StringBuilder();
@@ -1840,23 +1840,23 @@ namespace SobekCM.Resource_Object
                         {
                             switch (relatedItem.Relationship)
                             {
-                                case Related_Item_Type_Enum.host:
+                                case Related_Item_Type_Enum.Host:
                                     linking856_builder.Append("|3 Host material ");
                                     break;
 
-                                case Related_Item_Type_Enum.otherFormat:
+                                case Related_Item_Type_Enum.OtherFormat:
                                     linking856_builder.Append("|3 Other format ");
                                     break;
 
-                                case Related_Item_Type_Enum.otherVersion:
+                                case Related_Item_Type_Enum.OtherVersion:
                                     linking856_builder.Append("|3 Other version ");
                                     break;
 
-                                case Related_Item_Type_Enum.preceding:
+                                case Related_Item_Type_Enum.Preceding:
                                     linking856_builder.Append("|3 Preceded by ");
                                     break;
 
-                                case Related_Item_Type_Enum.succeeding:
+                                case Related_Item_Type_Enum.Succeeding:
                                     linking856_builder.Append("|3 Succeeded by ");
                                     break;
 
@@ -1972,8 +1972,8 @@ namespace SobekCM.Resource_Object
                     catSourceBuilder.Append("|a " + CatalogingSourceCode.Trim() + " |c " + CatalogingSourceCode.Trim());
                 }
 
-                if (bibInfo.Record.Description_Standard.Length > 0)
-                    catSourceBuilder.Append(" |e " + bibInfo.Record.Description_Standard.ToLower());
+                if (BIBInfo.Record.Description_Standard.Length > 0)
+                    catSourceBuilder.Append(" |e " + BIBInfo.Record.Description_Standard.ToLower());
                 catSource.Control_Field_Value = catSourceBuilder.ToString();
                 tags.Add_Field(catSource);
             }

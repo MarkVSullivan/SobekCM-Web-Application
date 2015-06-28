@@ -957,7 +957,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					switch (thisTitle.Title_Type)
 					{
 						case Title_Type_Enum.UNSPECIFIED:
-						case Title_Type_Enum.alternative:
+						case Title_Type_Enum.Alternative:
 							string titleType = thisTitle.Display_Label;
 							if ((titleType.Length == 0) || (titleType.ToUpper() == "OTHER TITLE"))
 								titleType = "Alternate Title";
@@ -974,15 +974,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 							break;
 
-						case Title_Type_Enum.uniform:
+						case Title_Type_Enum.Uniform:
 							uniform_titles.Add(search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(thisTitle.Title).Replace(",", "").Replace("&amp;","&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "TI") + Convert_String_To_XML_Safe(thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim() + search_link_end);
 							break;
 
-						case Title_Type_Enum.translated:
+						case Title_Type_Enum.Translated:
 							translated_titles.Add((Convert_String_To_XML_Safe(thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle) + " ( <em>" + thisTitle.Language + "</em> )").Trim());
 							break;
 
-						case Title_Type_Enum.abbreviated:
+						case Title_Type_Enum.Abbreviated:
 							abbreviated_titles.Add(Convert_String_To_XML_Safe(thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim());
 							break;
 					}
@@ -1133,7 +1133,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		        Note_Info statementOfResponsibility = null;
 		        foreach (Note_Info thisNote in CurrentItem.Bib_Info.Notes)
 		        {
-		            if (thisNote.Note_Type == Note_Type_Enum.statement_of_responsibility)
+		            if (thisNote.Note_Type == Note_Type_Enum.StatementOfResponsibility)
 		            {
                         statementOfResponsibility = thisNote;
                         break;
@@ -1154,7 +1154,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			List<string> conferences = new List<string>();
 			if (CurrentItem.Bib_Info.hasMainEntityName) 
 			{
-				if (CurrentItem.Bib_Info.Main_Entity_Name.Name_Type == Name_Info_Type_Enum.conference)
+				if (CurrentItem.Bib_Info.Main_Entity_Name.Name_Type == Name_Info_Type_Enum.Conference)
 				{
 					conferences.Add(CurrentItem.Bib_Info.Main_Entity_Name.ToString());
 				}
@@ -1199,7 +1199,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				foreach (Name_Info thisName in CurrentItem.Bib_Info.Names)
 				{
-					if (thisName.Name_Type == Name_Info_Type_Enum.conference)
+					if (thisName.Name_Type == Name_Info_Type_Enum.Conference)
 					{
 						conferences.Add(thisName.ToString());
 					}
@@ -1977,7 +1977,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						valid_notes_exist = true;
 					else
 					{
-                        if (CurrentItem.Bib_Info.Notes.Any(ThisNote => (ThisNote.Note_Type != Note_Type_Enum.internal_comments) && (ThisNote.Note_Type != Note_Type_Enum.statement_of_responsibility)))
+                        if (CurrentItem.Bib_Info.Notes.Any(ThisNote => (ThisNote.Note_Type != Note_Type_Enum.InternalComments) && (ThisNote.Note_Type != Note_Type_Enum.StatementOfResponsibility)))
 						{
 						    valid_notes_exist = true;
 						}
@@ -2008,9 +2008,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							if (thisNote.Note_Type != Note_Type_Enum.NONE)
 							{
                                 // Statement of responsibilty will be printed at the very end
-							    if (thisNote.Note_Type != Note_Type_Enum.statement_of_responsibility)
+							    if (thisNote.Note_Type != Note_Type_Enum.StatementOfResponsibility)
 							    {
-							        if ((thisNote.Note_Type != Note_Type_Enum.internal_comments) || (internalUser))
+							        if ((thisNote.Note_Type != Note_Type_Enum.InternalComments) || (internalUser))
 							        {
 							            result.Append(Single_Citation_HTML_Row(thisNote.Note_Type_Display_String, "<span itemprop=\"notes\">" + Convert_String_To_XML_Safe(thisNote.Note) + "</span>", INDENT));
 							        }
@@ -2241,23 +2241,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					string label = related_items;
 					switch (relatedItem.Relationship)
 					{
-						case Related_Item_Type_Enum.host:
+						case Related_Item_Type_Enum.Host:
 							label = "Host material";
 							break;
 
-						case Related_Item_Type_Enum.otherFormat:
+						case Related_Item_Type_Enum.OtherFormat:
 							label = "Other format";
 							break;
 
-						case Related_Item_Type_Enum.otherVersion:
+						case Related_Item_Type_Enum.OtherVersion:
 							label = "Other version";
 							break;
 
-						case Related_Item_Type_Enum.preceding:
+						case Related_Item_Type_Enum.Preceding:
 							label = "Preceded by";
 							break;
 
-						case Related_Item_Type_Enum.succeeding:
+						case Related_Item_Type_Enum.Succeeding:
 							label = "Succeeded by";
 							break;
 					}

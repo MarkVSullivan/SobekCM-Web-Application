@@ -16,14 +16,14 @@ namespace SobekCM.Resource_Object.Metadata_Modules.Maps
     [Serializable]
     public class Map_Info : iMetadata_Module
     {
-        private Hashtable corpHash;
+        private readonly Hashtable corpHash;
         private string date;
-        private ArrayList indexCollection;
-        private Map_Info_Tables mainTbls;
+        private readonly ArrayList indexCollection;
+        private readonly Map_Info_Tables mainTbls;
         private string mapid;
         private string mets_id;
-        private Hashtable personHash;
-        private Hashtable sheetHash;
+        private readonly Hashtable personHash;
+        private readonly Hashtable sheetHash;
 
         /// <summary> Constructor for a new instance of the Map_Info class </summary>
         public Map_Info()

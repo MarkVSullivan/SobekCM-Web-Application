@@ -54,19 +54,19 @@ namespace SobekCM.Library.Email
                         switch (thisTitle.Title_Type)
                         {
                             case Title_Type_Enum.UNSPECIFIED:
-                            case Title_Type_Enum.alternative:
+                            case Title_Type_Enum.Alternative:
                                 alternative_titles.Add(thisTitle.ToString());
                                 break;
 
-                            case Title_Type_Enum.uniform:
+                            case Title_Type_Enum.Uniform:
                                 uniform_titles.Add(thisTitle.ToString());
                                 break;
 
-                            case Title_Type_Enum.translated:
+                            case Title_Type_Enum.Translated:
                                 translated_titles.Add(thisTitle.ToString());
                                 break;
 
-                            case Title_Type_Enum.abbreviated:
+                            case Title_Type_Enum.Abbreviated:
                                 abbreviated_titles.Add(thisTitle.ToString());
                                 break;
                         }
@@ -351,19 +351,19 @@ namespace SobekCM.Library.Email
                         switch (thisTitle.Title_Type)
                         {
                             case Title_Type_Enum.UNSPECIFIED:
-                            case Title_Type_Enum.alternative:
+                            case Title_Type_Enum.Alternative:
                                 alternative_titles.Add(thisTitle.ToString());
                                 break;
 
-                            case Title_Type_Enum.uniform:
+                            case Title_Type_Enum.Uniform:
                                 uniform_titles.Add(thisTitle.ToString());
                                 break;
 
-                            case Title_Type_Enum.translated:
+                            case Title_Type_Enum.Translated:
                                 translated_titles.Add(thisTitle.ToString());
                                 break;
 
-                            case Title_Type_Enum.abbreviated:
+                            case Title_Type_Enum.Abbreviated:
                                 abbreviated_titles.Add(thisTitle.ToString());
                                 break;
                         }

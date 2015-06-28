@@ -27,16 +27,9 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         {
             get
             {
-                if (((interviewee != null) && (interviewee.Length > 0)) ||
-                    ((interviewer != null) && (interviewer.Length > 0)) ||
-                    ((interviewDate != null) && (interviewDate.Length > 0)))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                return !string.IsNullOrEmpty(interviewee) ||
+                       !string.IsNullOrEmpty(interviewer) ||
+                       !string.IsNullOrEmpty(interviewDate);
             }
         }
 

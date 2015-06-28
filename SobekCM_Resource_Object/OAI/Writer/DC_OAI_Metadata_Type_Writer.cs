@@ -1,7 +1,12 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
+
+#endregion
 
 namespace SobekCM.Resource_Object.OAI.Writer
 {
@@ -28,7 +33,7 @@ namespace SobekCM.Resource_Object.OAI.Writer
             writer.WriteLine("http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">");
 
             // Add the dublin core
-            METS_Sec_ReaderWriters.DC_METS_dmdSec_ReaderWriter.Write_Simple_Dublin_Core(writer, Item_To_Save.Bib_Info);
+            DC_METS_dmdSec_ReaderWriter.Write_Simple_Dublin_Core(writer, Item_To_Save.Bib_Info);
 
             // Add the URL as the identifier
             if (Item_To_Save.Bib_Info.Location.PURL.Length > 0)

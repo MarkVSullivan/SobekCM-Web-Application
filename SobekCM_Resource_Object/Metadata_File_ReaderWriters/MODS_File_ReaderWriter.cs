@@ -11,6 +11,7 @@ using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 
 namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 {
+    /// <summary> MODS (Metadata Object Description Standard) metadata file reader/writer </summary>
     public class MODS_File_ReaderWriter : iMetadata_File_ReaderWriter
     {
         #region iMetadata_File_ReaderWriter Members
@@ -141,7 +142,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
                 return true;
             }
-            catch (Exception ee)
+            catch
             {
                 Error_Message = "Error saving MODS metadata to output stream";
                 return false;

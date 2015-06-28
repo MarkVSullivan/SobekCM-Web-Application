@@ -114,13 +114,10 @@ namespace SobekCM.Resource_Object.Metadata_Modules
         {
             get
             {
-                if ((!String.IsNullOrEmpty(scientificName)) || (!String.IsNullOrEmpty(higherClassification)) ||
-                    (!String.IsNullOrEmpty(kingdom)) || (!String.IsNullOrEmpty(phylum)) || (!String.IsNullOrEmpty(classs)) ||
-                    (!String.IsNullOrEmpty(order)) || (!String.IsNullOrEmpty(family)) || (!String.IsNullOrEmpty(genus)) ||
-                    (!String.IsNullOrEmpty(specificEpithet)) || (!String.IsNullOrEmpty(taxonRank)) || (!String.IsNullOrEmpty(commonName)))
-                    return true;
-                else
-                    return false;
+                return (!String.IsNullOrEmpty(scientificName)) || (!String.IsNullOrEmpty(higherClassification)) ||
+                       (!String.IsNullOrEmpty(kingdom)) || (!String.IsNullOrEmpty(phylum)) || (!String.IsNullOrEmpty(classs)) ||
+                       (!String.IsNullOrEmpty(order)) || (!String.IsNullOrEmpty(family)) || (!String.IsNullOrEmpty(genus)) ||
+                       (!String.IsNullOrEmpty(specificEpithet)) || (!String.IsNullOrEmpty(taxonRank)) || (!String.IsNullOrEmpty(commonName));
             }
         }
 

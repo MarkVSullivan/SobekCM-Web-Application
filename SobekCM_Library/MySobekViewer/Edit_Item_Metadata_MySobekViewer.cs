@@ -202,12 +202,12 @@ namespace SobekCM.Library.MySobekViewer
 		        {
 			        case "name":
 				        delayed_popup = "name";
-				        item.Bib_Info.Add_Named_Entity(String.Empty).Name_Type = Name_Info_Type_Enum.personal;
+				        item.Bib_Info.Add_Named_Entity(String.Empty).Name_Type = Name_Info_Type_Enum.Personal;
 				        break;
 
 			        case "title":
 				        delayed_popup = "title";
-				        item.Bib_Info.Add_Other_Title(String.Empty, Title_Type_Enum.alternative);
+				        item.Bib_Info.Add_Other_Title(String.Empty, Title_Type_Enum.Alternative);
 				        break;
 
 			        case "subject":

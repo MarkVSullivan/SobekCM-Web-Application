@@ -227,7 +227,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             {
                 if ((thisTag.Tag >= 1) && (thisTag.Tag <= 8))
                 {
-                    Output_Stream.WriteLine("    <controlfield tag=\"" + thisTag.Tag.ToString().PadLeft(3, '0') + "\">" + base.Convert_String_To_XML_Safe(thisTag.Control_Field_Value).Replace("&amp;bar;", "|") + "</controlfield>");
+                    Output_Stream.WriteLine("    <controlfield tag=\"" + thisTag.Tag.ToString().PadLeft(3, '0') + "\">" + Convert_String_To_XML_Safe(thisTag.Control_Field_Value).Replace("&amp;bar;", "|") + "</controlfield>");
                 }
                 else
                 {
@@ -238,7 +238,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     {
                         if (subfield.Length > 2)
                         {
-                            Output_Stream.WriteLine("      <subfield code=\"" + subfield[0] + "\">" + base.Convert_String_To_XML_Safe(subfield.Substring(2).Trim()).Replace("&amp;bar;", "|") + "</subfield>");
+                            Output_Stream.WriteLine("      <subfield code=\"" + subfield[0] + "\">" + Convert_String_To_XML_Safe(subfield.Substring(2).Trim()).Replace("&amp;bar;", "|") + "</subfield>");
                         }
                     }
 

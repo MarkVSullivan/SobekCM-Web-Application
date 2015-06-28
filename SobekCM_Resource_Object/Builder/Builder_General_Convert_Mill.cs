@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 namespace SobekCM.Resource_Object.Builder
 {
     /// <summary> Enum specified the roman numerals </summary>
-    internal enum Roman_numerals
+    internal enum RomanNumeralsEnum
     {
         I = 1,
         V = 5,
@@ -35,9 +35,12 @@ namespace SobekCM.Resource_Object.Builder
             // Empty static constructor
         }
 
-        public static int Convert_Roman_To_Numbers(char thisChar)
+        /// <summary> Convert the roman numeral character to decimal  </summary>
+        /// <param name="ThisChar"> Roman numeral character </param>
+        /// <returns> Roman numeral character, as decima </returns>
+        public static int Convert_Roman_To_Numbers(char ThisChar)
         {
-            switch (thisChar.ToString().ToUpper())
+            switch (ThisChar.ToString().ToUpper())
             {
                 case "I":
                     return 1;
@@ -58,61 +61,59 @@ namespace SobekCM.Resource_Object.Builder
             }
         }
 
-        public static int Convert_Roman_To_Numbers(string romanNum)
+        /// <summary> Converts a roman numeral string to the equivalent decimal value  </summary>
+        /// <param name="RomanNum"> Roman number </param>
+        /// <returns> Equivalent decimal value </returns>
+        public static int Convert_Roman_To_Numbers(string RomanNum)
         {
-            romanNum = romanNum.ToUpper();
+            RomanNum = RomanNum.ToUpper();
             int returnNum = 0;
-            int Biggest = 0;
-            int thisNum = 0;
-            for (int i = romanNum.Length - 1; i >= 0; i--)
+            int biggest = 0;
+            for (int i = RomanNum.Length - 1; i >= 0; i--)
             {
-                thisNum = Convert_Roman_To_Numbers(romanNum[i]);
+                int thisNum = Convert_Roman_To_Numbers(RomanNum[i]);
 
-                ////				if ((int)Enum.Parse.typeof(Roman_numerals),romanNum[i].ToString() < Biggest))
-                if (thisNum < Biggest)
+                ////				if ((int)Enum.Parse.typeof(RomanNumeralsEnum),romanNum[i].ToString() < Biggest))
+                if (thisNum < biggest)
                     returnNum = returnNum - thisNum;
                 else
                 {
                     returnNum = returnNum + thisNum;
-                    Biggest = thisNum;
+                    biggest = thisNum;
                 }
             }
             return returnNum;
         }
 
-        public static File_String_Type Convert_FileString_To_Type(string fileName, bool checkRoman)
+        /// <summary> Checks the new page name to determine if it is roman numerals, or something special  </summary>
+        /// <param name="FileName"> Name of the page </param>
+        /// <param name="CheckRoman"> Flag on whether to check for roman numerals or not </param>
+        /// <returns> Information about how the file or page was named </returns>
+        public static File_String_Type Convert_FileString_To_Type(string FileName, bool CheckRoman)
         {
-            if (fileName.ToUpper() == "COVER")
+            if (FileName.ToUpper() == "COVER")
                 return File_String_Type.COVER;
-            if (fileName.ToUpper() == "COPYRIGHT")
+            if (FileName.ToUpper() == "COPYRIGHT")
                 return File_String_Type.COPYRIGHT;
-            if ((checkRoman) && (IsRomanNumerals(fileName)))
+            if ((CheckRoman) && (IsRomanNumerals(FileName)))
                 return File_String_Type.ROMAN_NUMERALS;
-            if (IsNumeric(fileName))
+            if (IsNumeric(FileName))
                 return File_String_Type.NUMBERS;
             // Default
             return File_String_Type.LETTERS;
         }
 
 
-        private static bool IsRomanNumerals(string strToTest)
+        private static bool IsRomanNumerals(string StrToTest)
         {
-            return (Regex.Match(strToTest, @"^[ivxlcdm]+$", RegexOptions.IgnoreCase).Success);
+            return (Regex.Match(StrToTest, @"^[ivxlcdm]+$", RegexOptions.IgnoreCase).Success);
 ////			return (!Regex.IsMatch(strToTest,@"^[^ivxlcdm]$",System.Text.RegularExpressions.RegexOptions.IgnoreCase));
         }
 
-        private static bool IsNumeric(string strToTest)
+        private static bool IsNumeric(string StrToTest)
         {
-            try
-            {
-                Convert.ToInt32(strToTest);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-            //return (! Regex.IsMatch(strToTest,@"^[^0-9]$") );
+                int test;
+                return Int32.TryParse(StrToTest, out test);
         }
     }
 }

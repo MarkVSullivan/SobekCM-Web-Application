@@ -77,7 +77,7 @@ namespace SobekCM.Library.Citation.Elements
                 thisType = String.Empty;
                 if (Bib.Bib_Info.Notes_Count > 0)
                 {
-                    foreach (Note_Info thisNote in Bib.Bib_Info.Notes.Where(thisNote => thisNote.Note_Type == Note_Type_Enum.default_type))
+                    foreach (Note_Info thisNote in Bib.Bib_Info.Notes.Where(thisNote => thisNote.Note_Type == Note_Type_Enum.DefaultType))
                     {
                         thisType = thisNote.Note;
                         break;
@@ -108,7 +108,7 @@ namespace SobekCM.Library.Citation.Elements
                 if (Bib.Bib_Info.Notes_Count > 0)
                 {
                     Note_Info deleteNote = null;
-                    foreach (Note_Info thisNote in Bib.Bib_Info.Notes.Where(thisNote => thisNote.Note_Type == Note_Type_Enum.default_type))
+                    foreach (Note_Info thisNote in Bib.Bib_Info.Notes.Where(thisNote => thisNote.Note_Type == Note_Type_Enum.DefaultType))
                     {
                         deleteNote = thisNote;
                     }
@@ -137,7 +137,7 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     if (thisType.Length > 0)
                     {
-                        Bib.Bib_Info.Add_Note(thisType, Note_Type_Enum.default_type);
+                        Bib.Bib_Info.Add_Note(thisType, Note_Type_Enum.DefaultType);
                     }
                 }
                 else

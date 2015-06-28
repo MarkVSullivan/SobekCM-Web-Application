@@ -13,8 +13,8 @@ namespace SobekCM.Resource_Object.OAI.Reader
     /// the repository with Identity, ListSets, ListMetadataPrefixes. </remarks>
     public class OAI_Repository_Information
     {
-        private List<string> metadataformats;
-        private List<KeyValuePair<string, string>> sets;
+        private readonly List<string> metadataformats;
+        private readonly List<KeyValuePair<string, string>> sets;
 
         /// <summary> Constructor for a new instance of OAI_Repository_Information class </summary>
         /// <param name="URL"> URL for the OAI-PMH repository </param>

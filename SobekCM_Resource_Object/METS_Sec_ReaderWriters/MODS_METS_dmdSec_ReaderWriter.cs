@@ -12,6 +12,7 @@ using SobekCM.Resource_Object.Metadata_Modules.VRACore;
 
 namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 {
+    /// <summary> Metadata Object Description Standard (MODS) reader that operates against a single METS section  </summary>
     public class MODS_METS_dmdSec_ReaderWriter : XML_Writing_Base_Type, iPackage_dmdSec_ReaderWriter
     {
         #region iPackage_dmdSec_ReaderWriter Members
@@ -94,101 +95,102 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
         #region Static methods to read the MODS section
 
         /// <summary> Reads the MODS-compliant section of XML and stores the data in the provided digital resource </summary>
-        /// <param name="r"> XmlTextReader from which to read the MODS data </param>
-        /// <param name="package"> Digital resource object to save the data to </param>
-        public static void Read_MODS_Info(XmlReader r, Bibliographic_Info thisBibInfo, SobekCM_Item Return_Item)
+        /// <param name="R"> XmlTextReader from which to read the MODS data </param>
+        /// <param name="ThisBibInfo"> Digital resource object to save the data to </param>
+        /// <param name="Return_Item"> Return item to have the MODS information populated </param>
+        public static void Read_MODS_Info(XmlReader R, Bibliographic_Info ThisBibInfo, SobekCM_Item Return_Item)
         {
-            while (r.Read())
+            while (R.Read())
             {
-                if ((r.NodeType == XmlNodeType.EndElement) && ((r.Name == "METS:mdWrap") || (r.Name == "mdWrap") || (r.Name == "mods")))
+                if ((R.NodeType == XmlNodeType.EndElement) && ((R.Name == "METS:mdWrap") || (R.Name == "mdWrap") || (R.Name == "mods")))
                     return;
 
-                if (r.NodeType == XmlNodeType.Element)
+                if (R.NodeType == XmlNodeType.Element)
                 {
-                    switch (r.Name)
+                    switch (R.Name)
                     {
                         case "mods:abstract":
                         case "abstract":
                             Abstract_Info thisAbstract = new Abstract_Info();
-                            if (r.MoveToAttribute("ID"))
-                                thisAbstract.ID = r.Value;
-                            if (r.MoveToAttribute("type"))
-                                thisAbstract.Type = r.Value;
-                            if (r.MoveToAttribute("displayLabel"))
-                                thisAbstract.Display_Label = r.Value;
-                            if (r.MoveToAttribute("lang"))
-                                thisAbstract.Language = r.Value;
-                            r.Read();
-                            if (r.NodeType == XmlNodeType.Text)
+                            if (R.MoveToAttribute("ID"))
+                                thisAbstract.ID = R.Value;
+                            if (R.MoveToAttribute("type"))
+                                thisAbstract.Type = R.Value;
+                            if (R.MoveToAttribute("displayLabel"))
+                                thisAbstract.Display_Label = R.Value;
+                            if (R.MoveToAttribute("lang"))
+                                thisAbstract.Language = R.Value;
+                            R.Read();
+                            if (R.NodeType == XmlNodeType.Text)
                             {
-                                thisAbstract.Abstract_Text = r.Value;
-                                thisBibInfo.Add_Abstract(thisAbstract);
+                                thisAbstract.Abstract_Text = R.Value;
+                                ThisBibInfo.Add_Abstract(thisAbstract);
                             }
                             break;
 
                         case "mods:accessCondition":
                         case "accessCondition":
-                            if (r.MoveToAttribute("ID"))
-                                thisBibInfo.Access_Condition.ID = r.Value;
-                            if (r.MoveToAttribute("type"))
-                                thisBibInfo.Access_Condition.Type = r.Value;
-                            if (r.MoveToAttribute("displayLabel"))
-                                thisBibInfo.Access_Condition.Display_Label = r.Value;
-                            if (r.MoveToAttribute("lang"))
-                                thisBibInfo.Access_Condition.Language = r.Value;
-                            r.Read();
-                            if (r.NodeType == XmlNodeType.Text)
+                            if (R.MoveToAttribute("ID"))
+                                ThisBibInfo.Access_Condition.ID = R.Value;
+                            if (R.MoveToAttribute("type"))
+                                ThisBibInfo.Access_Condition.Type = R.Value;
+                            if (R.MoveToAttribute("displayLabel"))
+                                ThisBibInfo.Access_Condition.Display_Label = R.Value;
+                            if (R.MoveToAttribute("lang"))
+                                ThisBibInfo.Access_Condition.Language = R.Value;
+                            R.Read();
+                            if (R.NodeType == XmlNodeType.Text)
                             {
-                                thisBibInfo.Access_Condition.Text = r.Value;
+                                ThisBibInfo.Access_Condition.Text = R.Value;
                             }
                             break;
 
                         case "mods:classification":
                         case "classification":
                             Classification_Info thisClassification = new Classification_Info();
-                            if (r.MoveToAttribute("edition"))
-                                thisClassification.Edition = r.Value;
-                            if (r.MoveToAttribute("authority"))
-                                thisClassification.Authority = r.Value;
-                            if (r.MoveToAttribute("displayLabel"))
-                                thisClassification.Display_Label = r.Value;
-                            r.Read();
-                            if (r.NodeType == XmlNodeType.Text)
+                            if (R.MoveToAttribute("edition"))
+                                thisClassification.Edition = R.Value;
+                            if (R.MoveToAttribute("authority"))
+                                thisClassification.Authority = R.Value;
+                            if (R.MoveToAttribute("displayLabel"))
+                                thisClassification.Display_Label = R.Value;
+                            R.Read();
+                            if (R.NodeType == XmlNodeType.Text)
                             {
-                                thisClassification.Classification = r.Value;
-                                thisBibInfo.Add_Classification(thisClassification);
+                                thisClassification.Classification = R.Value;
+                                ThisBibInfo.Add_Classification(thisClassification);
                             }
                             break;
 
                         case "mods:identifier":
                         case "identifier":
                             Identifier_Info thisIdentifier = new Identifier_Info();
-                            if (r.MoveToAttribute("type"))
-                                thisIdentifier.Type = r.Value;
-                            if (r.MoveToAttribute("displayLabel"))
-                                thisIdentifier.Display_Label = r.Value;
-                            r.Read();
-                            if (r.NodeType == XmlNodeType.Text)
+                            if (R.MoveToAttribute("type"))
+                                thisIdentifier.Type = R.Value;
+                            if (R.MoveToAttribute("displayLabel"))
+                                thisIdentifier.Display_Label = R.Value;
+                            R.Read();
+                            if (R.NodeType == XmlNodeType.Text)
                             {
-                                thisIdentifier.Identifier = r.Value;
-                                thisBibInfo.Add_Identifier(thisIdentifier);
+                                thisIdentifier.Identifier = R.Value;
+                                ThisBibInfo.Add_Identifier(thisIdentifier);
                             }
                             break;
 
                         case "mods:genre":
                         case "genre":
                             Genre_Info thisGenre = new Genre_Info();
-                            if (r.MoveToAttribute("ID"))
-                                thisGenre.ID = r.Value;
-                            if (r.MoveToAttribute("authority"))
-                                thisGenre.Authority = r.Value;
-                            if (r.MoveToAttribute("lang"))
-                                thisGenre.Language = r.Value;
-                            r.Read();
-                            if (r.NodeType == XmlNodeType.Text)
+                            if (R.MoveToAttribute("ID"))
+                                thisGenre.ID = R.Value;
+                            if (R.MoveToAttribute("authority"))
+                                thisGenre.Authority = R.Value;
+                            if (R.MoveToAttribute("lang"))
+                                thisGenre.Language = R.Value;
+                            R.Read();
+                            if (R.NodeType == XmlNodeType.Text)
                             {
-                                thisGenre.Genre_Term = r.Value;
-                                thisBibInfo.Add_Genre(thisGenre);
+                                thisGenre.Genre_Term = R.Value;
+                                ThisBibInfo.Add_Genre(thisGenre);
                             }
                             break;
 
@@ -198,43 +200,43 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             string language_rfc_code = String.Empty;
                             string language_iso_code = String.Empty;
                             string language_id = String.Empty;
-                            if (r.MoveToAttribute("ID"))
-                                language_id = r.Value;
-                            while (r.Read())
+                            if (R.MoveToAttribute("ID"))
+                                language_id = R.Value;
+                            while (R.Read())
                             {
-                                if ((r.NodeType == XmlNodeType.Element) && ((r.Name == "mods:languageTerm") || (r.Name == "languageTerm")))
+                                if ((R.NodeType == XmlNodeType.Element) && ((R.Name == "mods:languageTerm") || (R.Name == "languageTerm")))
                                 {
-                                    if (r.MoveToAttribute("type"))
+                                    if (R.MoveToAttribute("type"))
                                     {
-                                        switch (r.Value)
+                                        switch (R.Value)
                                         {
                                             case "code":
-                                                if (r.MoveToAttribute("authority"))
+                                                if (R.MoveToAttribute("authority"))
                                                 {
-                                                    if (r.Value == "rfc3066")
+                                                    if (R.Value == "rfc3066")
                                                     {
-                                                        r.Read();
-                                                        if (r.NodeType == XmlNodeType.Text)
+                                                        R.Read();
+                                                        if (R.NodeType == XmlNodeType.Text)
                                                         {
-                                                            language_rfc_code = r.Value;
+                                                            language_rfc_code = R.Value;
                                                         }
                                                     }
-                                                    else if (r.Value == "iso639-2b")
+                                                    else if (R.Value == "iso639-2b")
                                                     {
-                                                        r.Read();
-                                                        if (r.NodeType == XmlNodeType.Text)
+                                                        R.Read();
+                                                        if (R.NodeType == XmlNodeType.Text)
                                                         {
-                                                            language_iso_code = r.Value;
+                                                            language_iso_code = R.Value;
                                                         }
                                                     }
                                                 }
                                                 break;
 
                                             case "text":
-                                                r.Read();
-                                                if (r.NodeType == XmlNodeType.Text)
+                                                R.Read();
+                                                if (R.NodeType == XmlNodeType.Text)
                                                 {
-                                                    language_text = r.Value;
+                                                    language_text = R.Value;
                                                 }
                                                 // Quick check for a change we started in 2010
                                                 if (language_text == "governmental publication")
@@ -242,25 +244,25 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                                 break;
 
                                             default:
-                                                r.Read();
-                                                if (r.NodeType == XmlNodeType.Text)
+                                                R.Read();
+                                                if (R.NodeType == XmlNodeType.Text)
                                                 {
-                                                    language_text = r.Value;
+                                                    language_text = R.Value;
                                                 }
                                                 break;
                                         }
                                     }
                                     else
                                     {
-                                        r.Read();
-                                        if (r.NodeType == XmlNodeType.Text)
+                                        R.Read();
+                                        if (R.NodeType == XmlNodeType.Text)
                                         {
-                                            language_text = r.Value;
+                                            language_text = R.Value;
                                         }
                                     }
                                 }
 
-                                if ((r.NodeType == XmlNodeType.EndElement) && ((r.Name == "mods:language") || (r.Name == "language")))
+                                if ((R.NodeType == XmlNodeType.EndElement) && ((R.Name == "mods:language") || (R.Name == "language")))
                                 {
                                     break;
                                 }
@@ -268,82 +270,82 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                             if ((language_text.Length > 0) || (language_rfc_code.Length > 0) || (language_iso_code.Length > 0))
                             {
-                                thisBibInfo.Add_Language(language_text, language_iso_code, language_rfc_code);
+                                ThisBibInfo.Add_Language(language_text, language_iso_code, language_rfc_code);
                             }
                             break;
 
                         case "mods:location":
                         case "location":
-                            while (r.Read())
+                            while (R.Read())
                             {
-                                if ((r.NodeType == XmlNodeType.EndElement) && ((r.Name == "mods:location") || (r.Name == "location")))
+                                if ((R.NodeType == XmlNodeType.EndElement) && ((R.Name == "mods:location") || (R.Name == "location")))
                                     break;
 
-                                if (r.NodeType == XmlNodeType.Element)
+                                if (R.NodeType == XmlNodeType.Element)
                                 {
-                                    if ((r.Name == "mods:physicalLocation") || (r.Name == "physicalLocation"))
+                                    if ((R.Name == "mods:physicalLocation") || (R.Name == "physicalLocation"))
                                     {
-                                        if (r.MoveToAttribute("type"))
+                                        if (R.MoveToAttribute("type"))
                                         {
-                                            if (r.Value == "code")
+                                            if (R.Value == "code")
                                             {
-                                                r.Read();
-                                                if (r.NodeType == XmlNodeType.Text)
+                                                R.Read();
+                                                if (R.NodeType == XmlNodeType.Text)
                                                 {
-                                                    thisBibInfo.Location.Holding_Code = r.Value;
+                                                    ThisBibInfo.Location.Holding_Code = R.Value;
                                                 }
                                             }
                                         }
                                         else
                                         {
-                                            r.Read();
-                                            if (r.NodeType == XmlNodeType.Text)
+                                            R.Read();
+                                            if (R.NodeType == XmlNodeType.Text)
                                             {
-                                                thisBibInfo.Location.Holding_Name = r.Value;
+                                                ThisBibInfo.Location.Holding_Name = R.Value;
                                             }
                                         }
                                     }
-                                    if ((r.Name == "mods:url") || (r.Name == "url"))
+                                    if ((R.Name == "mods:url") || (R.Name == "url"))
                                     {
                                         // TEST
-                                        if (r.MoveToAttribute("access"))
+                                        if (R.MoveToAttribute("access"))
                                         {
-                                            if (r.Value == "object in context")
+                                            if (R.Value == "object in context")
                                             {
-                                                r.Read();
-                                                if (r.NodeType == XmlNodeType.Text)
+                                                R.Read();
+                                                if (R.NodeType == XmlNodeType.Text)
                                                 {
-                                                    thisBibInfo.Location.PURL = r.Value;
+                                                    ThisBibInfo.Location.PURL = R.Value;
                                                 }
                                             }
                                         }
                                         else
                                         {
-                                            string url_displayLabel = r.GetAttribute("displayLabel");
-                                            string url_note = r.GetAttribute("note");
-                                            r.Read();
-                                            if (r.NodeType == XmlNodeType.Text)
+                                            string url_displayLabel = R.GetAttribute("displayLabel");
+                                            string url_note = R.GetAttribute("note");
+                                            R.Read();
+                                            if (R.NodeType == XmlNodeType.Text)
                                             {
                                                 if ((url_displayLabel != null) && (url_displayLabel == "Finding Guide"))
                                                 {
                                                     if (url_note != null)
                                                     {
-                                                        thisBibInfo.Location.EAD_Name = url_note;
+                                                        ThisBibInfo.Location.EAD_Name = url_note;
                                                     }
-                                                    thisBibInfo.Location.EAD_URL = r.Value;
+                                                    ThisBibInfo.Location.EAD_URL = R.Value;
                                                 }
                                                 else
                                                 {
                                                     if (url_displayLabel != null)
                                                     {
-                                                        thisBibInfo.Location.Other_URL_Display_Label = url_displayLabel;
+                                                        ThisBibInfo.Location.Other_URL_Display_Label = url_displayLabel;
                                                     }
 
                                                     if (url_note != null)
                                                     {
-                                                        thisBibInfo.Location.Other_URL_Note = url_note;
+                                                        ThisBibInfo.Location.Other_URL_Note = url_note;
                                                     }
-                                                    thisBibInfo.Location.Other_URL = r.Value;
+                                                    ThisBibInfo.Location.Other_URL = R.Value;
                                                 }
                                             }
                                         }
@@ -354,9 +356,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                         case "mods:name":
                         case "name":
-                            Name_Info tempNewName = read_name_object(r);
+                            Name_Info tempNewName = read_name_object(R);
                             if (tempNewName.Main_Entity)
-                                thisBibInfo.Main_Entity_Name = tempNewName;
+                                ThisBibInfo.Main_Entity_Name = tempNewName;
                             else
                             {
                                 bool donor = false;
@@ -370,11 +372,11 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 }
                                 if (donor)
                                 {
-                                    thisBibInfo.Donor = tempNewName;
+                                    ThisBibInfo.Donor = tempNewName;
                                 }
                                 else
                                 {
-                                    thisBibInfo.Add_Named_Entity(tempNewName);
+                                    ThisBibInfo.Add_Named_Entity(tempNewName);
                                 }
                             }
                             break;
@@ -382,17 +384,17 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                         case "mods:note":
                         case "note":
                             Note_Info newNote = new Note_Info();
-                            if (r.MoveToAttribute("ID"))
-                                newNote.ID = r.Value;
-                            if (r.MoveToAttribute("type"))
-                                newNote.Note_Type_String = r.Value;
-                            if (r.MoveToAttribute("displayLabel"))
-                                newNote.Display_Label = r.Value;
-                            r.Read();
-                            if (r.NodeType == XmlNodeType.Text)
+                            if (R.MoveToAttribute("ID"))
+                                newNote.ID = R.Value;
+                            if (R.MoveToAttribute("type"))
+                                newNote.Note_Type_String = R.Value;
+                            if (R.MoveToAttribute("displayLabel"))
+                                newNote.Display_Label = R.Value;
+                            R.Read();
+                            if (R.NodeType == XmlNodeType.Text)
                             {
-                                newNote.Note = r.Value;
-                                thisBibInfo.Add_Note(newNote);
+                                newNote.Note = R.Value;
+                                ThisBibInfo.Add_Note(newNote);
                             }
                             break;
 
@@ -400,22 +402,22 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                         case "Origin_Info":
                         case "mods:originInfo":
                         case "originInfo":
-                            while (r.Read())
+                            while (R.Read())
                             {
-                                if ((r.NodeType == XmlNodeType.EndElement) && ((r.Name == "mods:Origin_Info") || (r.Name == "Origin_Info") || (r.Name == "mods:originInfo") || (r.Name == "originInfo")))
+                                if ((R.NodeType == XmlNodeType.EndElement) && ((R.Name == "mods:Origin_Info") || (R.Name == "Origin_Info") || (R.Name == "mods:originInfo") || (R.Name == "originInfo")))
                                     break;
 
-                                if (r.NodeType == XmlNodeType.Element)
+                                if (R.NodeType == XmlNodeType.Element)
                                 {
-                                    switch (r.Name)
+                                    switch (R.Name)
                                     {
                                         case "mods:publisher":
                                         case "publisher":
-                                            r.Read();
-                                            if (r.NodeType == XmlNodeType.Text)
+                                            R.Read();
+                                            if (R.NodeType == XmlNodeType.Text)
                                             {
-                                                thisBibInfo.Origin_Info.Add_Publisher(r.Value);
-                                                thisBibInfo.Add_Publisher(r.Value);
+                                                ThisBibInfo.Origin_Info.Add_Publisher(R.Value);
+                                                ThisBibInfo.Add_Publisher(R.Value);
                                             }
                                             break;
 
@@ -424,29 +426,29 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                             string place_text = String.Empty;
                                             string place_marc = String.Empty;
                                             string place_iso = String.Empty;
-                                            while ((r.Read()) && (!(((r.Name == "mods:place") || (r.Name == "place")) && (r.NodeType == XmlNodeType.EndElement))))
+                                            while ((R.Read()) && (!(((R.Name == "mods:place") || (R.Name == "place")) && (R.NodeType == XmlNodeType.EndElement))))
                                             {
-                                                if ((r.NodeType == XmlNodeType.Element) && ((r.Name == "mods:placeTerm") || (r.Name == "placeTerm")))
+                                                if ((R.NodeType == XmlNodeType.Element) && ((R.Name == "mods:placeTerm") || (R.Name == "placeTerm")))
                                                 {
-                                                    if ((r.MoveToAttribute("type")) && (r.Value == "code"))
+                                                    if ((R.MoveToAttribute("type")) && (R.Value == "code"))
                                                     {
-                                                        if (r.MoveToAttribute("authority"))
+                                                        if (R.MoveToAttribute("authority"))
                                                         {
-                                                            switch (r.Value)
+                                                            switch (R.Value)
                                                             {
                                                                 case "marccountry":
-                                                                    r.Read();
-                                                                    if (r.NodeType == XmlNodeType.Text)
+                                                                    R.Read();
+                                                                    if (R.NodeType == XmlNodeType.Text)
                                                                     {
-                                                                        place_marc = r.Value;
+                                                                        place_marc = R.Value;
                                                                     }
                                                                     break;
 
                                                                 case "iso3166":
-                                                                    r.Read();
-                                                                    if (r.NodeType == XmlNodeType.Text)
+                                                                    R.Read();
+                                                                    if (R.NodeType == XmlNodeType.Text)
                                                                     {
-                                                                        place_iso = r.Value;
+                                                                        place_iso = R.Value;
                                                                     }
                                                                     break;
                                                             }
@@ -454,119 +456,119 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                                     }
                                                     else
                                                     {
-                                                        r.Read();
-                                                        if (r.NodeType == XmlNodeType.Text)
+                                                        R.Read();
+                                                        if (R.NodeType == XmlNodeType.Text)
                                                         {
-                                                            place_text = r.Value;
+                                                            place_text = R.Value;
                                                         }
                                                     }
                                                 }
                                             }
                                             if ((place_text.Length > 0) || (place_marc.Length > 0) || (place_iso.Length > 0))
                                             {
-                                                thisBibInfo.Origin_Info.Add_Place(place_text, place_marc, place_iso);
+                                                ThisBibInfo.Origin_Info.Add_Place(place_text, place_marc, place_iso);
                                             }
                                             break;
 
                                         case "mods:dateIssued":
                                         case "dateIssued":
-                                            if ((r.MoveToAttribute("encoding")) && (r.Value == "marc"))
+                                            if ((R.MoveToAttribute("encoding")) && (R.Value == "marc"))
                                             {
-                                                if (r.MoveToAttribute("point"))
+                                                if (R.MoveToAttribute("point"))
                                                 {
-                                                    if (r.Value == "start")
+                                                    if (R.Value == "start")
                                                     {
-                                                        r.Read();
-                                                        if (r.NodeType == XmlNodeType.Text)
+                                                        R.Read();
+                                                        if (R.NodeType == XmlNodeType.Text)
                                                         {
-                                                            thisBibInfo.Origin_Info.MARC_DateIssued_Start = r.Value;
+                                                            ThisBibInfo.Origin_Info.MARC_DateIssued_Start = R.Value;
                                                         }
                                                     }
-                                                    else if (r.Value == "end")
+                                                    else if (R.Value == "end")
                                                     {
-                                                        r.Read();
-                                                        if (r.NodeType == XmlNodeType.Text)
+                                                        R.Read();
+                                                        if (R.NodeType == XmlNodeType.Text)
                                                         {
-                                                            thisBibInfo.Origin_Info.MARC_DateIssued_End = r.Value;
+                                                            ThisBibInfo.Origin_Info.MARC_DateIssued_End = R.Value;
                                                         }
                                                     }
                                                 }
                                                 else
                                                 {
-                                                    r.Read();
-                                                    if (r.NodeType == XmlNodeType.Text)
+                                                    R.Read();
+                                                    if (R.NodeType == XmlNodeType.Text)
                                                     {
-                                                        thisBibInfo.Origin_Info.MARC_DateIssued = r.Value;
+                                                        ThisBibInfo.Origin_Info.MARC_DateIssued = R.Value;
                                                     }
                                                 }
                                             }
                                             else
                                             {
-                                                r.Read();
-                                                if (r.NodeType == XmlNodeType.Text)
+                                                R.Read();
+                                                if (R.NodeType == XmlNodeType.Text)
                                                 {
-                                                    thisBibInfo.Origin_Info.Date_Issued = r.Value;
+                                                    ThisBibInfo.Origin_Info.Date_Issued = R.Value;
                                                 }
                                             }
                                             break;
 
                                         case "mods:dateCreated":
                                         case "dateCreated":
-                                            r.Read();
-                                            if (r.NodeType == XmlNodeType.Text)
+                                            R.Read();
+                                            if (R.NodeType == XmlNodeType.Text)
                                             {
-                                                thisBibInfo.Origin_Info.Date_Created = r.Value;
+                                                ThisBibInfo.Origin_Info.Date_Created = R.Value;
                                             }
                                             break;
 
                                         case "mods:copyrightDate":
                                         case "copyrightDate":
-                                            r.Read();
-                                            if (r.NodeType == XmlNodeType.Text)
+                                            R.Read();
+                                            if (R.NodeType == XmlNodeType.Text)
                                             {
-                                                thisBibInfo.Origin_Info.Date_Copyrighted = r.Value;
+                                                ThisBibInfo.Origin_Info.Date_Copyrighted = R.Value;
                                             }
                                             break;
 
                                         case "mods:dateOther":
                                         case "dateOther":
-                                            if ((r.MoveToAttribute("type")) && (r.Value == "reprint"))
+                                            if ((R.MoveToAttribute("type")) && (R.Value == "reprint"))
                                             {
-                                                r.Read();
-                                                if (r.NodeType == XmlNodeType.Text)
+                                                R.Read();
+                                                if (R.NodeType == XmlNodeType.Text)
                                                 {
-                                                    thisBibInfo.Origin_Info.Date_Reprinted = r.Value;
+                                                    ThisBibInfo.Origin_Info.Date_Reprinted = R.Value;
                                                 }
                                             }
                                             break;
 
                                         case "mods:edition":
                                         case "edition":
-                                            r.Read();
-                                            if (r.NodeType == XmlNodeType.Text)
+                                            R.Read();
+                                            if (R.NodeType == XmlNodeType.Text)
                                             {
-                                                thisBibInfo.Origin_Info.Edition = r.Value;
+                                                ThisBibInfo.Origin_Info.Edition = R.Value;
                                             }
                                             break;
 
                                         case "mods:frequency":
                                         case "frequency":
                                             string freq_authority = String.Empty;
-                                            if (r.MoveToAttribute("authority"))
-                                                freq_authority = r.Value;
-                                            r.Read();
-                                            if (r.NodeType == XmlNodeType.Text)
+                                            if (R.MoveToAttribute("authority"))
+                                                freq_authority = R.Value;
+                                            R.Read();
+                                            if (R.NodeType == XmlNodeType.Text)
                                             {
-                                                thisBibInfo.Origin_Info.Add_Frequency(r.Value, freq_authority);
+                                                ThisBibInfo.Origin_Info.Add_Frequency(R.Value, freq_authority);
                                             }
                                             break;
 
                                         case "mods:issuance":
                                         case "issuance":
-                                            r.Read();
-                                            if (r.NodeType == XmlNodeType.Text)
+                                            R.Read();
+                                            if (R.NodeType == XmlNodeType.Text)
                                             {
-                                                thisBibInfo.Origin_Info.Add_Issuance(r.Value);
+                                                ThisBibInfo.Origin_Info.Add_Issuance(R.Value);
                                             }
                                             break;
                                     }
@@ -577,68 +579,68 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                         case "mods:physicalDescription":
                         case "physicalDescription":
-                            read_physical_description(r, thisBibInfo.Original_Description);
+                            read_physical_description(R, ThisBibInfo.Original_Description);
                             break;
 
                         case "mods:recordInfo":
                         case "recordInfo":
-                            while (r.Read())
+                            while (R.Read())
                             {
-                                if ((r.NodeType == XmlNodeType.EndElement) && ((r.Name == "mods:recordInfo") || (r.Name == "recordInfo")))
+                                if ((R.NodeType == XmlNodeType.EndElement) && ((R.Name == "mods:recordInfo") || (R.Name == "recordInfo")))
                                 {
                                     break;
                                 }
 
-                                if (r.NodeType == XmlNodeType.Element)
+                                if (R.NodeType == XmlNodeType.Element)
                                 {
-                                    switch (r.Name)
+                                    switch (R.Name)
                                     {
                                         case "mods:recordCreationDate":
                                         case "recordCreationDate":
-                                            if ((r.MoveToAttribute("encoding")) && (r.Value == "marc"))
+                                            if ((R.MoveToAttribute("encoding")) && (R.Value == "marc"))
                                             {
-                                                r.Read();
-                                                thisBibInfo.Record.MARC_Creation_Date = r.Value;
+                                                R.Read();
+                                                ThisBibInfo.Record.MARC_Creation_Date = R.Value;
                                             }
                                             break;
 
                                         case "mods:recordIdentifier":
                                         case "recordIdentifier":
                                             string source = String.Empty;
-                                            if (r.MoveToAttribute("source"))
+                                            if (R.MoveToAttribute("source"))
                                             {
-                                                thisBibInfo.Record.Main_Record_Identifier.Type = r.Value;
+                                                ThisBibInfo.Record.Main_Record_Identifier.Type = R.Value;
                                             }
-                                            r.Read();
-                                            thisBibInfo.Record.Main_Record_Identifier.Identifier = r.Value;
+                                            R.Read();
+                                            ThisBibInfo.Record.Main_Record_Identifier.Identifier = R.Value;
                                             break;
 
                                         case "mods:recordOrigin":
                                         case "recordOrigin":
-                                            r.Read();
-                                            thisBibInfo.Record.Record_Origin = r.Value;
+                                            R.Read();
+                                            ThisBibInfo.Record.Record_Origin = R.Value;
                                             break;
 
                                         case "mods:descriptionStandard":
                                         case "descriptionStandard":
-                                            r.Read();
-                                            thisBibInfo.Record.Description_Standard = r.Value;
+                                            R.Read();
+                                            ThisBibInfo.Record.Description_Standard = R.Value;
                                             break;
 
                                         case "mods:recordContentSource":
                                         case "recordContentSource":
-                                            if (r.MoveToAttribute("authority"))
+                                            if (R.MoveToAttribute("authority"))
                                             {
-                                                if (r.Value == "marcorg")
+                                                if (R.Value == "marcorg")
                                                 {
-                                                    r.Read();
-                                                    thisBibInfo.Record.Add_MARC_Record_Content_Sources(r.Value);
+                                                    R.Read();
+                                                    ThisBibInfo.Record.Add_MARC_Record_Content_Sources(R.Value);
                                                 }
                                             }
                                             else
                                             {
-                                                r.Read();
-                                                thisBibInfo.Source.Statement = r.Value;
+                                                R.Read();
+                                                ThisBibInfo.Source.Statement = R.Value;
                                             }
                                             break;
 
@@ -648,67 +650,67 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                             string cat_language_rfc_code = String.Empty;
                                             string cat_language_iso_code = String.Empty;
                                             string cat_language_id = String.Empty;
-                                            while (r.Read())
+                                            while (R.Read())
                                             {
-                                                if ((r.NodeType == XmlNodeType.Element) && ((r.Name == "mods:languageTerm") || (r.Name == "languageTerm")))
+                                                if ((R.NodeType == XmlNodeType.Element) && ((R.Name == "mods:languageTerm") || (R.Name == "languageTerm")))
                                                 {
-                                                    if (r.MoveToAttribute("ID"))
-                                                        cat_language_id = r.Value;
+                                                    if (R.MoveToAttribute("ID"))
+                                                        cat_language_id = R.Value;
 
-                                                    if (r.MoveToAttribute("type"))
+                                                    if (R.MoveToAttribute("type"))
                                                     {
-                                                        switch (r.Value)
+                                                        switch (R.Value)
                                                         {
                                                             case "code":
-                                                                if (r.MoveToAttribute("authority"))
+                                                                if (R.MoveToAttribute("authority"))
                                                                 {
-                                                                    if (r.Value == "rfc3066")
+                                                                    if (R.Value == "rfc3066")
                                                                     {
-                                                                        r.Read();
-                                                                        if (r.NodeType == XmlNodeType.Text)
+                                                                        R.Read();
+                                                                        if (R.NodeType == XmlNodeType.Text)
                                                                         {
-                                                                            cat_language_rfc_code = r.Value;
+                                                                            cat_language_rfc_code = R.Value;
                                                                         }
                                                                     }
-                                                                    else if (r.Value == "iso639-2b")
+                                                                    else if (R.Value == "iso639-2b")
                                                                     {
-                                                                        r.Read();
-                                                                        if (r.NodeType == XmlNodeType.Text)
+                                                                        R.Read();
+                                                                        if (R.NodeType == XmlNodeType.Text)
                                                                         {
-                                                                            cat_language_iso_code = r.Value;
+                                                                            cat_language_iso_code = R.Value;
                                                                         }
                                                                     }
                                                                 }
                                                                 break;
 
                                                             case "text":
-                                                                r.Read();
-                                                                if (r.NodeType == XmlNodeType.Text)
+                                                                R.Read();
+                                                                if (R.NodeType == XmlNodeType.Text)
                                                                 {
-                                                                    cat_language_text = r.Value;
+                                                                    cat_language_text = R.Value;
                                                                 }
                                                                 break;
 
                                                             default:
-                                                                r.Read();
-                                                                if (r.NodeType == XmlNodeType.Text)
+                                                                R.Read();
+                                                                if (R.NodeType == XmlNodeType.Text)
                                                                 {
-                                                                    cat_language_text = r.Value;
+                                                                    cat_language_text = R.Value;
                                                                 }
                                                                 break;
                                                         }
                                                     }
                                                     else
                                                     {
-                                                        r.Read();
-                                                        if (r.NodeType == XmlNodeType.Text)
+                                                        R.Read();
+                                                        if (R.NodeType == XmlNodeType.Text)
                                                         {
-                                                            cat_language_text = r.Value;
+                                                            cat_language_text = R.Value;
                                                         }
                                                     }
                                                 }
 
-                                                if ((r.NodeType == XmlNodeType.EndElement) && ((r.Name == "mods:languageOfCataloging") || (r.Name == "languageOfCataloging")))
+                                                if ((R.NodeType == XmlNodeType.EndElement) && ((R.Name == "mods:languageOfCataloging") || (R.Name == "languageOfCataloging")))
                                                 {
                                                     break;
                                                 }
@@ -717,7 +719,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                             if ((cat_language_text.Length > 0) || (cat_language_rfc_code.Length > 0) || (cat_language_iso_code.Length > 0))
                                             {
                                                 Language_Info newCatLanguage = new Language_Info(cat_language_text, cat_language_iso_code, cat_language_rfc_code);
-                                                thisBibInfo.Record.Add_Catalog_Language(newCatLanguage);
+                                                ThisBibInfo.Record.Add_Catalog_Language(newCatLanguage);
                                             }
                                             break;
                                     }
@@ -729,22 +731,22 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                         case "mods:relatedItem":
                         case "relatedItem":
                             string relatedItemType = String.Empty;
-                            if (r.MoveToAttribute("type"))
-                                relatedItemType = r.Value.ToLower();
+                            if (R.MoveToAttribute("type"))
+                                relatedItemType = R.Value.ToLower();
 
                             switch (relatedItemType)
                             {
                                 case "original":
-                                    while (r.Read())
+                                    while (R.Read())
                                     {
-                                        if ((r.NodeType == XmlNodeType.EndElement) && ((r.Name == "mods:relatedItem") || (r.Name == "relatedItem")))
+                                        if ((R.NodeType == XmlNodeType.EndElement) && ((R.Name == "mods:relatedItem") || (R.Name == "relatedItem")))
                                             break;
 
-                                        if (r.NodeType == XmlNodeType.Element)
+                                        if (R.NodeType == XmlNodeType.Element)
                                         {
-                                            if ((r.Name == "mods:physicalDescription") || (r.Name == "physicalDescription"))
+                                            if ((R.Name == "mods:physicalDescription") || (R.Name == "physicalDescription"))
                                             {
-                                                read_physical_description(r, thisBibInfo.Original_Description);
+                                                read_physical_description(R, ThisBibInfo.Original_Description);
                                             }
                                         }
                                     }
@@ -755,52 +757,52 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                     string part_caption = String.Empty;
                                     string part_number = String.Empty;
 
-                                    while (r.Read())
+                                    while (R.Read())
                                     {
-                                        if ((r.NodeType == XmlNodeType.EndElement) && ((r.Name == "mods:relatedItem") || (r.Name == "mods:relatedItem")))
+                                        if ((R.NodeType == XmlNodeType.EndElement) && ((R.Name == "mods:relatedItem") || (R.Name == "mods:relatedItem")))
                                         {
                                             break;
                                         }
 
-                                        if ((r.NodeType == XmlNodeType.EndElement) && ((r.Name == "mods:detail") || (r.Name == "detail")))
+                                        if ((R.NodeType == XmlNodeType.EndElement) && ((R.Name == "mods:detail") || (R.Name == "detail")))
                                         {
                                             try
                                             {
                                                 switch (part_type)
                                                 {
                                                     case "Enum1":
-                                                        thisBibInfo.Series_Part_Info.Enum1 = part_caption;
-                                                        thisBibInfo.Series_Part_Info.Enum1_Index = Convert.ToInt32(part_number);
+                                                        ThisBibInfo.Series_Part_Info.Enum1 = part_caption;
+                                                        ThisBibInfo.Series_Part_Info.Enum1_Index = Convert.ToInt32(part_number);
                                                         break;
 
                                                     case "Enum2":
-                                                        thisBibInfo.Series_Part_Info.Enum2 = part_caption;
-                                                        thisBibInfo.Series_Part_Info.Enum2_Index = Convert.ToInt32(part_number);
+                                                        ThisBibInfo.Series_Part_Info.Enum2 = part_caption;
+                                                        ThisBibInfo.Series_Part_Info.Enum2_Index = Convert.ToInt32(part_number);
                                                         break;
 
                                                     case "Enum3":
-                                                        thisBibInfo.Series_Part_Info.Enum3 = part_caption;
-                                                        thisBibInfo.Series_Part_Info.Enum3_Index = Convert.ToInt32(part_number);
+                                                        ThisBibInfo.Series_Part_Info.Enum3 = part_caption;
+                                                        ThisBibInfo.Series_Part_Info.Enum3_Index = Convert.ToInt32(part_number);
                                                         break;
 
                                                     case "Enum4":
-                                                        thisBibInfo.Series_Part_Info.Enum4 = part_caption;
-                                                        thisBibInfo.Series_Part_Info.Enum4_Index = Convert.ToInt32(part_number);
+                                                        ThisBibInfo.Series_Part_Info.Enum4 = part_caption;
+                                                        ThisBibInfo.Series_Part_Info.Enum4_Index = Convert.ToInt32(part_number);
                                                         break;
 
                                                     case "Year":
-                                                        thisBibInfo.Series_Part_Info.Year = part_caption;
-                                                        thisBibInfo.Series_Part_Info.Year_Index = Convert.ToInt32(part_number);
+                                                        ThisBibInfo.Series_Part_Info.Year = part_caption;
+                                                        ThisBibInfo.Series_Part_Info.Year_Index = Convert.ToInt32(part_number);
                                                         break;
 
                                                     case "Month":
-                                                        thisBibInfo.Series_Part_Info.Month = part_caption;
-                                                        thisBibInfo.Series_Part_Info.Month_Index = Convert.ToInt32(part_number);
+                                                        ThisBibInfo.Series_Part_Info.Month = part_caption;
+                                                        ThisBibInfo.Series_Part_Info.Month_Index = Convert.ToInt32(part_number);
                                                         break;
 
                                                     case "Day":
-                                                        thisBibInfo.Series_Part_Info.Day = part_caption;
-                                                        thisBibInfo.Series_Part_Info.Day_Index = Convert.ToInt32(part_number);
+                                                        ThisBibInfo.Series_Part_Info.Day = part_caption;
+                                                        ThisBibInfo.Series_Part_Info.Day_Index = Convert.ToInt32(part_number);
                                                         break;
                                                 }
                                             }
@@ -813,38 +815,38 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                             part_number = String.Empty;
                                         }
 
-                                        if (r.NodeType == XmlNodeType.Element)
+                                        if (R.NodeType == XmlNodeType.Element)
                                         {
-                                            switch (r.Name)
+                                            switch (R.Name)
                                             {
                                                 case "mods:titleInfo":
                                                 case "titleInfo":
-                                                    thisBibInfo.SeriesTitle = read_title_object(r);
+                                                    ThisBibInfo.SeriesTitle = read_title_object(R);
                                                     break;
 
                                                 case "mods:detail":
                                                 case "detail":
-                                                    if (r.MoveToAttribute("type"))
+                                                    if (R.MoveToAttribute("type"))
                                                     {
-                                                        part_type = r.Value;
+                                                        part_type = R.Value;
                                                     }
                                                     break;
 
                                                 case "mods:caption":
                                                 case "caption":
-                                                    r.Read();
-                                                    if (r.NodeType == XmlNodeType.Text)
+                                                    R.Read();
+                                                    if (R.NodeType == XmlNodeType.Text)
                                                     {
-                                                        part_caption = r.Value;
+                                                        part_caption = R.Value;
                                                     }
                                                     break;
 
                                                 case "mods:number":
                                                 case "number":
-                                                    r.Read();
-                                                    if (r.NodeType == XmlNodeType.Text)
+                                                    R.Read();
+                                                    if (R.NodeType == XmlNodeType.Text)
                                                     {
-                                                        part_number = r.Value;
+                                                        part_number = R.Value;
                                                     }
                                                     break;
                                             }
@@ -854,115 +856,115 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                                 default:
                                     Related_Item_Info newRelated = new Related_Item_Info();
-                                    thisBibInfo.Add_Related_Item(newRelated);
+                                    ThisBibInfo.Add_Related_Item(newRelated);
                                     switch (relatedItemType)
                                     {
                                         case "preceding":
-                                            newRelated.Relationship = Related_Item_Type_Enum.preceding;
+                                            newRelated.Relationship = Related_Item_Type_Enum.Preceding;
                                             break;
 
                                         case "succeeding":
-                                            newRelated.Relationship = Related_Item_Type_Enum.succeeding;
+                                            newRelated.Relationship = Related_Item_Type_Enum.Succeeding;
                                             break;
 
                                         case "otherVersion":
-                                            newRelated.Relationship = Related_Item_Type_Enum.otherVersion;
+                                            newRelated.Relationship = Related_Item_Type_Enum.OtherVersion;
                                             break;
 
                                         case "otherFormat":
-                                            newRelated.Relationship = Related_Item_Type_Enum.otherFormat;
+                                            newRelated.Relationship = Related_Item_Type_Enum.OtherFormat;
                                             break;
 
                                         case "host":
-                                            newRelated.Relationship = Related_Item_Type_Enum.host;
+                                            newRelated.Relationship = Related_Item_Type_Enum.Host;
                                             break;
                                     }
-                                    if (r.MoveToAttribute("ID"))
-                                        newRelated.ID = r.Value;
+                                    if (R.MoveToAttribute("ID"))
+                                        newRelated.ID = R.Value;
 
-                                    while (r.Read())
+                                    while (R.Read())
                                     {
-                                        if ((r.NodeType == XmlNodeType.EndElement) && ((r.Name == "mods:relatedItem") || (r.Name == "relatedItem")))
+                                        if ((R.NodeType == XmlNodeType.EndElement) && ((R.Name == "mods:relatedItem") || (R.Name == "relatedItem")))
                                         {
                                             break;
                                         }
 
-                                        if (r.NodeType == XmlNodeType.Element)
+                                        if (R.NodeType == XmlNodeType.Element)
                                         {
-                                            switch (r.Name)
+                                            switch (R.Name)
                                             {
                                                 case "mods:titleInfo":
                                                 case "titleInfo":
-                                                    newRelated.Set_Main_Title(read_title_object(r));
+                                                    newRelated.Set_Main_Title(read_title_object(R));
                                                     break;
 
                                                 case "mods:identifier":
                                                 case "identifier":
                                                     Identifier_Info thisRIdentifier = new Identifier_Info();
-                                                    if (r.MoveToAttribute("type"))
-                                                        thisRIdentifier.Type = r.Value;
-                                                    if (r.MoveToAttribute("displayLabel"))
-                                                        thisRIdentifier.Display_Label = r.Value;
-                                                    r.Read();
-                                                    if (r.NodeType == XmlNodeType.Text)
+                                                    if (R.MoveToAttribute("type"))
+                                                        thisRIdentifier.Type = R.Value;
+                                                    if (R.MoveToAttribute("displayLabel"))
+                                                        thisRIdentifier.Display_Label = R.Value;
+                                                    R.Read();
+                                                    if (R.NodeType == XmlNodeType.Text)
                                                     {
-                                                        thisRIdentifier.Identifier = r.Value;
+                                                        thisRIdentifier.Identifier = R.Value;
                                                         newRelated.Add_Identifier(thisRIdentifier);
                                                     }
                                                     break;
 
                                                 case "mods:name":
                                                 case "name":
-                                                    newRelated.Add_Name(read_name_object(r));
+                                                    newRelated.Add_Name(read_name_object(R));
                                                     break;
 
                                                 case "mods:note":
                                                 case "note":
                                                     Note_Info newRNote = new Note_Info();
-                                                    if (r.MoveToAttribute("ID"))
-                                                        newRNote.ID = r.Value;
-                                                    if (r.MoveToAttribute("type"))
-                                                        newRNote.Note_Type_String = r.Value;
-                                                    if (r.MoveToAttribute("displayLabel"))
-                                                        newRNote.Display_Label = r.Value;
-                                                    r.Read();
-                                                    if (r.NodeType == XmlNodeType.Text)
+                                                    if (R.MoveToAttribute("ID"))
+                                                        newRNote.ID = R.Value;
+                                                    if (R.MoveToAttribute("type"))
+                                                        newRNote.Note_Type_String = R.Value;
+                                                    if (R.MoveToAttribute("displayLabel"))
+                                                        newRNote.Display_Label = R.Value;
+                                                    R.Read();
+                                                    if (R.NodeType == XmlNodeType.Text)
                                                     {
-                                                        newRNote.Note = r.Value;
+                                                        newRNote.Note = R.Value;
                                                         newRelated.Add_Note(newRNote);
                                                     }
                                                     break;
 
                                                 case "mods:url":
                                                 case "url":
-                                                    if (r.MoveToAttribute("displayLabel"))
-                                                        newRelated.URL_Display_Label = r.Value;
-                                                    r.Read();
-                                                    if (r.NodeType == XmlNodeType.Text)
+                                                    if (R.MoveToAttribute("displayLabel"))
+                                                        newRelated.URL_Display_Label = R.Value;
+                                                    R.Read();
+                                                    if (R.NodeType == XmlNodeType.Text)
                                                     {
-                                                        newRelated.URL = r.Value;
+                                                        newRelated.URL = R.Value;
                                                     }
                                                     break;
 
                                                 case "mods:publisher":
                                                 case "publisher":
-                                                    r.Read();
-                                                    if (r.NodeType == XmlNodeType.Text)
+                                                    R.Read();
+                                                    if (R.NodeType == XmlNodeType.Text)
                                                     {
-                                                        newRelated.Publisher = r.Value;
+                                                        newRelated.Publisher = R.Value;
                                                     }
                                                     break;
 
                                                 case "mods:recordIdentifier":
                                                 case "recordIdentifier":
-                                                    if (r.MoveToAttribute("source"))
+                                                    if (R.MoveToAttribute("source"))
                                                     {
-                                                        if ((r.Value == "ufdc") || (r.Value == "dloc") || (r.Value.ToLower() == "sobekcm"))
+                                                        if ((R.Value == "ufdc") || (R.Value == "dloc") || (R.Value.ToLower() == "sobekcm"))
                                                         {
-                                                            r.Read();
-                                                            if (r.NodeType == XmlNodeType.Text)
+                                                            R.Read();
+                                                            if (R.NodeType == XmlNodeType.Text)
                                                             {
-                                                                newRelated.SobekCM_ID = r.Value;
+                                                                newRelated.SobekCM_ID = R.Value;
                                                             }
                                                         }
                                                     }
@@ -970,22 +972,22 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                                                 case "mods:dateIssued":
                                                 case "dateIssued":
-                                                    if (r.MoveToAttribute("point"))
+                                                    if (R.MoveToAttribute("point"))
                                                     {
-                                                        if (r.Value == "start")
+                                                        if (R.Value == "start")
                                                         {
-                                                            r.Read();
-                                                            if (r.NodeType == XmlNodeType.Text)
+                                                            R.Read();
+                                                            if (R.NodeType == XmlNodeType.Text)
                                                             {
-                                                                newRelated.Start_Date = r.Value;
+                                                                newRelated.Start_Date = R.Value;
                                                             }
                                                         }
-                                                        else if (r.Value == "end")
+                                                        else if (R.Value == "end")
                                                         {
-                                                            r.Read();
-                                                            if (r.NodeType == XmlNodeType.Text)
+                                                            R.Read();
+                                                            if (R.NodeType == XmlNodeType.Text)
                                                             {
-                                                                newRelated.End_Date = r.Value;
+                                                                newRelated.End_Date = R.Value;
                                                             }
                                                         }
                                                     }
@@ -999,48 +1001,48 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                         case "mods:subject":
                         case "subject":
-                            read_subject_object(r, thisBibInfo);
+                            read_subject_object(R, ThisBibInfo);
                             break;
 
                         case "mods:targetAudience":
                         case "targetAudience":
                             TargetAudience_Info newTarget = new TargetAudience_Info();
-                            if (r.MoveToAttribute("ID"))
-                                newTarget.ID = r.Value;
-                            if (r.MoveToAttribute("authority"))
-                                newTarget.Authority = r.Value;
-                            r.Read();
-                            if (r.NodeType == XmlNodeType.Text)
+                            if (R.MoveToAttribute("ID"))
+                                newTarget.ID = R.Value;
+                            if (R.MoveToAttribute("authority"))
+                                newTarget.Authority = R.Value;
+                            R.Read();
+                            if (R.NodeType == XmlNodeType.Text)
                             {
-                                newTarget.Audience = r.Value;
-                                thisBibInfo.Add_Target_Audience(newTarget);
+                                newTarget.Audience = R.Value;
+                                ThisBibInfo.Add_Target_Audience(newTarget);
                             }
                             break;
 
                         case "mods:tableOfContents":
                         case "tableOfContents":
-                            r.Read();
-                            if (r.NodeType == XmlNodeType.Text)
+                            R.Read();
+                            if (R.NodeType == XmlNodeType.Text)
                             {
-                                thisBibInfo.TableOfContents = r.Value;
+                                ThisBibInfo.TableOfContents = R.Value;
                             }
                             break;
 
                         case "mods:titleInfo":
                         case "titleInfo":
-                            Title_Info thisTitle = read_title_object(r);
+                            Title_Info thisTitle = read_title_object(R);
                             if (thisTitle.Title_Type == Title_Type_Enum.UNSPECIFIED)
-                                thisBibInfo.Main_Title = thisTitle;
+                                ThisBibInfo.Main_Title = thisTitle;
                             else
-                                thisBibInfo.Add_Other_Title(thisTitle);
+                                ThisBibInfo.Add_Other_Title(thisTitle);
                             break;
 
                         case "mods:typeOfResource":
                         case "typeOfResource":
-                            r.Read();
-                            if (r.NodeType == XmlNodeType.Text)
+                            R.Read();
+                            if (R.NodeType == XmlNodeType.Text)
                             {
-                                thisBibInfo.Type.Add_Uncontrolled_Type(r.Value);
+                                ThisBibInfo.Type.Add_Uncontrolled_Type(R.Value);
                             }
                             break;
 
@@ -1048,22 +1050,22 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                         case "extension":
                             string schema = String.Empty;
                             string alias = String.Empty;
-                            if (r.HasAttributes)
+                            if (R.HasAttributes)
                             {
-                                for (int i = 0; i < r.AttributeCount; i++)
+                                for (int i = 0; i < R.AttributeCount; i++)
                                 {
-                                    r.MoveToAttribute(i);
-                                    if (r.Name.IndexOf("xmlns") == 0)
+                                    R.MoveToAttribute(i);
+                                    if (R.Name.IndexOf("xmlns") == 0)
                                     {
-                                        alias = r.Name.Replace("xmlns:", "");
-                                        schema = r.Value;
+                                        alias = R.Name.Replace("xmlns:", "");
+                                        schema = R.Value;
                                         break;
                                     }
                                 }
                             }
                             if (schema.IndexOf("vra.xsd") > 0)
                             {
-                                read_vra_core_extensions(r, thisBibInfo, alias, Return_Item);
+                                read_vra_core_extensions(R, ThisBibInfo, alias, Return_Item);
                             }
                             break;
                     }
@@ -1639,19 +1641,19 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 switch (r.Value)
                 {
                     case "alternative":
-                        returnVal.Title_Type = Title_Type_Enum.alternative;
+                        returnVal.Title_Type = Title_Type_Enum.Alternative;
                         break;
 
                     case "translated":
-                        returnVal.Title_Type = Title_Type_Enum.translated;
+                        returnVal.Title_Type = Title_Type_Enum.Translated;
                         break;
 
                     case "uniform":
-                        returnVal.Title_Type = Title_Type_Enum.uniform;
+                        returnVal.Title_Type = Title_Type_Enum.Uniform;
                         break;
 
                     case "abbreviated":
-                        returnVal.Title_Type = Title_Type_Enum.abbreviated;
+                        returnVal.Title_Type = Title_Type_Enum.Abbreviated;
                         break;
                 }
             }
@@ -1732,11 +1734,11 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             if (r.MoveToAttribute("type"))
             {
                 if (r.Value == "personal")
-                    returnValue.Name_Type = Name_Info_Type_Enum.personal;
+                    returnValue.Name_Type = Name_Info_Type_Enum.Personal;
                 if (r.Value == "corporate")
-                    returnValue.Name_Type = Name_Info_Type_Enum.corporate;
+                    returnValue.Name_Type = Name_Info_Type_Enum.Corporate;
                 if (r.Value == "conference")
-                    returnValue.Name_Type = Name_Info_Type_Enum.conference;
+                    returnValue.Name_Type = Name_Info_Type_Enum.Conference;
             }
 
             if (r.MoveToAttribute("ID"))
@@ -1827,11 +1829,11 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 switch (role_type)
                                 {
                                     case "code":
-                                        returnValue.Add_Role(r.Value, role_authority, Name_Info_Role_Type_Enum.code);
+                                        returnValue.Add_Role(r.Value, role_authority, Name_Info_Role_Type_Enum.Code);
                                         break;
 
                                     case "text":
-                                        returnValue.Add_Role(r.Value, role_authority, Name_Info_Role_Type_Enum.text);
+                                        returnValue.Add_Role(r.Value, role_authority, Name_Info_Role_Type_Enum.Text);
                                         break;
 
                                     default:

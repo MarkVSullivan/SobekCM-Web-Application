@@ -168,21 +168,21 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                     // Add the name
                     if ( !String.IsNullOrWhiteSpace( thisRequirement.Name.Source ))
-                        Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "name source=\"" + base.Convert_String_To_XML_Safe(thisRequirement.Name.Source) + "\">" + base.Convert_String_To_XML_Safe(thisRequirement.Name.Value) + "</" + lom_namespace + "name>");
+                        Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "name source=\"" + Convert_String_To_XML_Safe(thisRequirement.Name.Source) + "\">" + Convert_String_To_XML_Safe(thisRequirement.Name.Value) + "</" + lom_namespace + "name>");
                     else
-                        Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "name>" + base.Convert_String_To_XML_Safe(thisRequirement.Name.Value) + "</" + lom_namespace + "name>");
+                        Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "name>" + Convert_String_To_XML_Safe(thisRequirement.Name.Value) + "</" + lom_namespace + "name>");
 
 
                     // Add the minimum version, if one exists
                     if (!String.IsNullOrWhiteSpace(thisRequirement.MinimumVersion))
                     {
-                        Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "minimumversion>" + base.Convert_String_To_XML_Safe(thisRequirement.MinimumVersion) + "</" + lom_namespace + "minimumversion>");
+                        Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "minimumversion>" + Convert_String_To_XML_Safe(thisRequirement.MinimumVersion) + "</" + lom_namespace + "minimumversion>");
                     }
 
                     // Add the maximum version, if one exists
                     if (!String.IsNullOrWhiteSpace(thisRequirement.MaximumVersion))
                     {
-                        Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "maximumversion>" + base.Convert_String_To_XML_Safe(thisRequirement.MaximumVersion) + "</" + lom_namespace + "maximumversion>");
+                        Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "maximumversion>" + Convert_String_To_XML_Safe(thisRequirement.MaximumVersion) + "</" + lom_namespace + "maximumversion>");
                     }
 
                     Output_Stream.WriteLine(indent + indent + indent + "</" + lom_namespace + "orcomposite>");
@@ -221,9 +221,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 foreach (LOM_VocabularyState thisType in lomInfo.LearningResourceTypes)
                 {
                     if ( String.IsNullOrWhiteSpace( thisType.Source ))
-                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "learningresourcetype>" + base.Convert_String_To_XML_Safe( thisType.Value ) + "</" + lom_namespace + "learningresourcetype>");
+                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "learningresourcetype>" + Convert_String_To_XML_Safe( thisType.Value ) + "</" + lom_namespace + "learningresourcetype>");
                     else
-                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "learningresourcetype source=\"" + base.Convert_String_To_XML_Safe( thisType.Source ) + "\">" + base.Convert_String_To_XML_Safe(thisType.Value) + "</" + lom_namespace + "learningresourcetype>");
+                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "learningresourcetype source=\"" + Convert_String_To_XML_Safe( thisType.Source ) + "\">" + Convert_String_To_XML_Safe(thisType.Value) + "</" + lom_namespace + "learningresourcetype>");
                  }
 
                 // Add the interactivity level
@@ -280,9 +280,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 foreach (LOM_VocabularyState thisContext in lomInfo.Contexts)
                 {
                     if (String.IsNullOrWhiteSpace(thisContext.Source))
-                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "context>" + base.Convert_String_To_XML_Safe(thisContext.Value) + "</" + lom_namespace + "context>");
+                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "context>" + Convert_String_To_XML_Safe(thisContext.Value) + "</" + lom_namespace + "context>");
                     else
-                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "context source=\"" + base.Convert_String_To_XML_Safe(thisContext.Source) + "\">" + base.Convert_String_To_XML_Safe(thisContext.Value) + "</" + lom_namespace + "context>");
+                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "context source=\"" + Convert_String_To_XML_Safe(thisContext.Source) + "\">" + Convert_String_To_XML_Safe(thisContext.Value) + "</" + lom_namespace + "context>");
                 }
 
                 // Add the typical age range information(s)
@@ -293,9 +293,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                     foreach( LOM_LanguageString thisRange in lomInfo.TypicalAgeRanges )
                     {
                         if (String.IsNullOrWhiteSpace(thisRange.Language))
-                            Output_Stream.WriteLine(indent + indent + indent +"<" + lom_namespace + "langstring>" + base.Convert_String_To_XML_Safe(thisRange.Value) + "</" + lom_namespace +  "langstring>");
+                            Output_Stream.WriteLine(indent + indent + indent +"<" + lom_namespace + "langstring>" + Convert_String_To_XML_Safe(thisRange.Value) + "</" + lom_namespace +  "langstring>");
                         else
-                            Output_Stream.WriteLine(indent + indent + indent + "<" + lom_namespace + "langstring lang=\"" + base.Convert_String_To_XML_Safe(thisRange.Language) + "\">" + base.Convert_String_To_XML_Safe(thisRange.Value) + "</" + lom_namespace + "langstring>");
+                            Output_Stream.WriteLine(indent + indent + indent + "<" + lom_namespace + "langstring lang=\"" + Convert_String_To_XML_Safe(thisRange.Language) + "\">" + Convert_String_To_XML_Safe(thisRange.Value) + "</" + lom_namespace + "langstring>");
                     }
 
                     Output_Stream.WriteLine( indent + indent + "</" + lom_namespace + "typicalagerange>");
@@ -332,7 +332,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 if ( !String.IsNullOrWhiteSpace( lomInfo.TypicalLearningTime ))
                 {
                     Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "typicallearningtime>");
-                    Output_Stream.WriteLine(indent + indent + indent + "<" + lom_namespace + "duration>" + base.Convert_String_To_XML_Safe(lomInfo.TypicalLearningTime) + "</" + lom_namespace + "duration>");
+                    Output_Stream.WriteLine(indent + indent + indent + "<" + lom_namespace + "duration>" + Convert_String_To_XML_Safe(lomInfo.TypicalLearningTime) + "</" + lom_namespace + "duration>");
                     Output_Stream.WriteLine(indent + indent + "</" + lom_namespace + "typicallearningtime>");
                 }
 
@@ -348,9 +348,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                 if ( !String.IsNullOrWhiteSpace( thisClassification.Purpose.Value ))
                 {
                     if ( !String.IsNullOrWhiteSpace( thisClassification.Purpose.Source ))
-                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "purpose source=\"" + base.Convert_String_To_XML_Safe(thisClassification.Purpose.Source) + "\">" + base.Convert_String_To_XML_Safe( thisClassification.Purpose.Value ) + "</" + lom_namespace + "purpose>");
+                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "purpose source=\"" + Convert_String_To_XML_Safe(thisClassification.Purpose.Source) + "\">" + Convert_String_To_XML_Safe( thisClassification.Purpose.Value ) + "</" + lom_namespace + "purpose>");
                     else
-                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "purpose>" + base.Convert_String_To_XML_Safe(thisClassification.Purpose.Value) + "</" + lom_namespace + "purpose>");
+                        Output_Stream.WriteLine(indent + indent + "<" + lom_namespace + "purpose>" + Convert_String_To_XML_Safe(thisClassification.Purpose.Value) + "</" + lom_namespace + "purpose>");
                 }
 
                 // Add the taxon path(s)
@@ -367,9 +367,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                         foreach( LOM_LanguageString thisSource in thisPath.SourceNames )
                         {
                             if (String.IsNullOrWhiteSpace(thisSource.Language))
-                                Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "langstring>" + base.Convert_String_To_XML_Safe(thisSource.Value) + "</" + lom_namespace + "langstring>");
+                                Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "langstring>" + Convert_String_To_XML_Safe(thisSource.Value) + "</" + lom_namespace + "langstring>");
                             else
-                                Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "langstring lang=\"" + base.Convert_String_To_XML_Safe(thisSource.Language) + "\">" + base.Convert_String_To_XML_Safe(thisSource.Value) + "</" + lom_namespace + "langstring>");
+                                Output_Stream.WriteLine(indent + indent + indent + indent + "<" + lom_namespace + "langstring lang=\"" + Convert_String_To_XML_Safe(thisSource.Language) + "\">" + Convert_String_To_XML_Safe(thisSource.Value) + "</" + lom_namespace + "langstring>");
                         }
 
                         Output_Stream.WriteLine( indent + indent + indent + "</" + lom_namespace + "source>");
@@ -383,7 +383,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                         // Add the ID
                         if ( !String.IsNullOrWhiteSpace( thisTaxon.ID ))
                         {
-                            Output_Stream.WriteLine( indent + indent + indent + indent + "<" + lom_namespace + "id>" + base.Convert_String_To_XML_Safe( thisTaxon.ID) + "</" + lom_namespace + "id>");
+                            Output_Stream.WriteLine( indent + indent + indent + indent + "<" + lom_namespace + "id>" + Convert_String_To_XML_Safe( thisTaxon.ID) + "</" + lom_namespace + "id>");
                         }
 
                         // Add the entries
@@ -395,9 +395,9 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             foreach( LOM_LanguageString thisSource in thisTaxon.Entries )
                             {
                                 if (String.IsNullOrWhiteSpace(thisSource.Language))
-                                    Output_Stream.WriteLine(indent + indent + indent + indent + indent + indent + "<" + lom_namespace + "langstring>" + base.Convert_String_To_XML_Safe(thisSource.Value) + "</" + lom_namespace + "langstring>");
+                                    Output_Stream.WriteLine(indent + indent + indent + indent + indent + indent + "<" + lom_namespace + "langstring>" + Convert_String_To_XML_Safe(thisSource.Value) + "</" + lom_namespace + "langstring>");
                                 else
-                                    Output_Stream.WriteLine(indent + indent + indent + indent + indent + indent + "<" + lom_namespace + "langstring lang=\"" + base.Convert_String_To_XML_Safe(thisSource.Language) + "\">" + base.Convert_String_To_XML_Safe(thisSource.Value) + "</" + lom_namespace + "langstring>");
+                                    Output_Stream.WriteLine(indent + indent + indent + indent + indent + indent + "<" + lom_namespace + "langstring lang=\"" + Convert_String_To_XML_Safe(thisSource.Language) + "\">" + Convert_String_To_XML_Safe(thisSource.Value) + "</" + lom_namespace + "langstring>");
                             }
 
                             Output_Stream.WriteLine( indent + indent + indent + indent + "</" + lom_namespace + "entry>");

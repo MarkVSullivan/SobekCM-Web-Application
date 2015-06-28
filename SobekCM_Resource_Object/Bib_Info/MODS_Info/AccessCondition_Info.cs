@@ -62,21 +62,21 @@ namespace SobekCM.Resource_Object.Bib_Info
         }
 
         /// <summary> Writes this access condition as MODS to a writer writing to a stream ( either a file or web response stream )</summary>
-        /// <param name="returnValue"> Writer to the MODS building stream </param>
-        internal void Add_MODS(TextWriter returnValue)
+        /// <param name="ReturnValue"> Writer to the MODS building stream </param>
+        internal void Add_MODS(TextWriter ReturnValue)
         {
             if (String.IsNullOrEmpty(rights_text))
                 return;
 
-            returnValue.Write("<mods:accessCondition");
-            base.Add_ID(returnValue);
+            ReturnValue.Write("<mods:accessCondition");
+            Add_ID(ReturnValue);
             if (!String.IsNullOrEmpty(rights_type))
-                returnValue.Write(" type=\"" + base.Convert_String_To_XML_Safe(rights_type) + "\"");
+                ReturnValue.Write(" type=\"" + Convert_String_To_XML_Safe(rights_type) + "\"");
             if (!String.IsNullOrEmpty(displayLabel))
-                returnValue.Write(" displayLabel=\"" + base.Convert_String_To_XML_Safe(displayLabel) + "\"");
+                ReturnValue.Write(" displayLabel=\"" + Convert_String_To_XML_Safe(displayLabel) + "\"");
             if (!String.IsNullOrEmpty(language))
-                returnValue.Write(" lang=\"" + language + "\"");
-            returnValue.Write(">" + base.Convert_String_To_XML_Safe(rights_text) + "</mods:accessCondition>\r\n");
+                ReturnValue.Write(" lang=\"" + language + "\"");
+            ReturnValue.Write(">" + Convert_String_To_XML_Safe(rights_text) + "</mods:accessCondition>\r\n");
         }
     }
 }

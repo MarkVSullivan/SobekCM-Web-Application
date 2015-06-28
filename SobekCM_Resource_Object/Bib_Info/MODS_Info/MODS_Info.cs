@@ -164,12 +164,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no abstracts, the Abstracts property creates a readonly collection to pass back out.</remarks>
         public int Abstracts_Count
         {
-            get
-            {
-                if (abstracts == null)
-                    return 0;
-                else
-                    return abstracts.Count;
+            get {
+                return abstracts == null ? 0 : abstracts.Count;
             }
         }
 
@@ -178,12 +174,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no abstracts, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Abstract_Info> Abstracts
         {
-            get
-            {
-                if (abstracts == null)
-                    return new ReadOnlyCollection<Abstract_Info>(new List<Abstract_Info>());
-                else
-                    return new ReadOnlyCollection<Abstract_Info>(abstracts);
+            get {
+                return abstracts == null ? new ReadOnlyCollection<Abstract_Info>(new List<Abstract_Info>()) : new ReadOnlyCollection<Abstract_Info>(abstracts);
             }
         }
 
@@ -192,12 +184,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no related items, the RelatedItems property creates a readonly collection to pass back out.</remarks>
         public int RelatedItems_Count
         {
-            get
-            {
-                if (relatedItems == null)
-                    return 0;
-                else
-                    return relatedItems.Count;
+            get {
+                return relatedItems == null ? 0 : relatedItems.Count;
             }
         }
 
@@ -206,12 +194,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no related items, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Related_Item_Info> RelatedItems
         {
-            get
-            {
-                if (relatedItems == null)
-                    return new ReadOnlyCollection<Related_Item_Info>(new List<Related_Item_Info>());
-                else
-                    return new ReadOnlyCollection<Related_Item_Info>(relatedItems);
+            get {
+                return relatedItems == null ? new ReadOnlyCollection<Related_Item_Info>(new List<Related_Item_Info>()) : new ReadOnlyCollection<Related_Item_Info>(relatedItems);
             }
         }
 
@@ -220,12 +204,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no genres, the Genres property creates a readonly collection to pass back out.</remarks>
         public int Genres_Count
         {
-            get
-            {
-                if (genres == null)
-                    return 0;
-                else
-                    return genres.Count;
+            get {
+                return genres == null ? 0 : genres.Count;
             }
         }
 
@@ -234,12 +214,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no genres, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Genre_Info> Genres
         {
-            get
-            {
-                if (genres == null)
-                    return new ReadOnlyCollection<Genre_Info>(new List<Genre_Info>());
-                else
-                    return new ReadOnlyCollection<Genre_Info>(genres);
+            get {
+                return genres == null ? new ReadOnlyCollection<Genre_Info>(new List<Genre_Info>()) : new ReadOnlyCollection<Genre_Info>(genres);
             }
         }
 
@@ -248,12 +224,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no other titles, the Other_Titles property creates a readonly collection to pass back out.</remarks>
         public int Other_Titles_Count
         {
-            get
-            {
-                if (otherTitles == null)
-                    return 0;
-                else
-                    return otherTitles.Count;
+            get {
+                return otherTitles == null ? 0 : otherTitles.Count;
             }
         }
 
@@ -262,12 +234,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no other titles, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Title_Info> Other_Titles
         {
-            get
-            {
-                if (otherTitles == null)
-                    return new ReadOnlyCollection<Title_Info>(new List<Title_Info>());
-                else
-                    return new ReadOnlyCollection<Title_Info>(otherTitles);
+            get {
+                return otherTitles == null ? new ReadOnlyCollection<Title_Info>(new List<Title_Info>()) : new ReadOnlyCollection<Title_Info>(otherTitles);
             }
         }
 
@@ -277,12 +245,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no languages, the Languages property creates a readonly collection to pass back out.</remarks>
         public int Languages_Count
         {
-            get
-            {
-                if (languages == null)
-                    return 0;
-                else
-                    return languages.Count;
+            get {
+                return languages == null ? 0 : languages.Count;
             }
         }
 
@@ -291,12 +255,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no languages, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Language_Info> Languages
         {
-            get
-            {
-                if (languages == null)
-                    return new ReadOnlyCollection<Language_Info>(new List<Language_Info>());
-                else
-                    return new ReadOnlyCollection<Language_Info>(languages);
+            get {
+                return languages == null ? new ReadOnlyCollection<Language_Info>(new List<Language_Info>()) : new ReadOnlyCollection<Language_Info>(languages);
             }
         }
 
@@ -305,12 +265,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no classifications, the Classifications property creates a readonly collection to pass back out.</remarks>
         public int Classifications_Count
         {
-            get
-            {
-                if (classifications == null)
-                    return 0;
-                else
-                    return classifications.Count;
+            get {
+                return classifications == null ? 0 : classifications.Count;
             }
         }
 
@@ -319,12 +275,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no classifications, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Classification_Info> Classifications
         {
-            get
-            {
-                if (classifications == null)
-                    return new ReadOnlyCollection<Classification_Info>(new List<Classification_Info>());
-                else
-                    return new ReadOnlyCollection<Classification_Info>(classifications);
+            get {
+                return classifications == null ? new ReadOnlyCollection<Classification_Info>(new List<Classification_Info>()) : new ReadOnlyCollection<Classification_Info>(classifications);
             }
         }
 
@@ -333,12 +285,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no identifiers, the Identifiers property creates a readonly collection to pass back out.</remarks>
         public int Identifiers_Count
         {
-            get
-            {
-                if (identifiers == null)
-                    return 0;
-                else
-                    return identifiers.Count;
+            get {
+                return identifiers == null ? 0 : identifiers.Count;
             }
         }
 
@@ -347,12 +295,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no identifiers, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Identifier_Info> Identifiers
         {
-            get
-            {
-                if (identifiers == null)
-                    return new ReadOnlyCollection<Identifier_Info>(new List<Identifier_Info>());
-                else
-                    return new ReadOnlyCollection<Identifier_Info>(identifiers);
+            get {
+                return identifiers == null ? new ReadOnlyCollection<Identifier_Info>(new List<Identifier_Info>()) : new ReadOnlyCollection<Identifier_Info>(identifiers);
             }
         }
 
@@ -361,12 +305,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no subject keywords, the Subjects property creates a readonly collection to pass back out.</remarks>
         public int Subjects_Count
         {
-            get
-            {
-                if (subjects == null)
-                    return 0;
-                else
-                    return subjects.Count;
+            get {
+                return subjects == null ? 0 : subjects.Count;
             }
         }
 
@@ -375,12 +315,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no subject keywords, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Subject_Info> Subjects
         {
-            get
-            {
-                if (subjects == null)
-                    return new ReadOnlyCollection<Subject_Info>(new List<Subject_Info>());
-                else
-                    return new ReadOnlyCollection<Subject_Info>(subjects);
+            get {
+                return subjects == null ? new ReadOnlyCollection<Subject_Info>(new List<Subject_Info>()) : new ReadOnlyCollection<Subject_Info>(subjects);
             }
         }
 
@@ -389,12 +325,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no notes, the Notes property creates a readonly collection to pass back out.</remarks>
         public int Notes_Count
         {
-            get
-            {
-                if (notes == null)
-                    return 0;
-                else
-                    return notes.Count;
+            get {
+                return notes == null ? 0 : notes.Count;
             }
         }
 
@@ -403,12 +335,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no notes, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Note_Info> Notes
         {
-            get
-            {
-                if (notes == null)
-                    return new ReadOnlyCollection<Note_Info>(new List<Note_Info>());
-                else
-                    return new ReadOnlyCollection<Note_Info>(notes);
+            get {
+                return notes == null ? new ReadOnlyCollection<Note_Info>(new List<Note_Info>()) : new ReadOnlyCollection<Note_Info>(notes);
             }
         }
 
@@ -417,12 +345,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no names, the Names property creates a readonly collection to pass back out.</remarks>
         public int Names_Count
         {
-            get
-            {
-                if (names == null)
-                    return 0;
-                else
-                    return names.Count;
+            get {
+                return names == null ? 0 : names.Count;
             }
         }
 
@@ -431,12 +355,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no names, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Name_Info> Names
         {
-            get
-            {
-                if (names == null)
-                    return new ReadOnlyCollection<Name_Info>(new List<Name_Info>());
-                else
-                    return new ReadOnlyCollection<Name_Info>(names);
+            get {
+                return names == null ? new ReadOnlyCollection<Name_Info>(new List<Name_Info>()) : new ReadOnlyCollection<Name_Info>(names);
             }
         }
 
@@ -445,12 +365,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no target audiences, the Target_Audiences property creates a readonly collection to pass back out.</remarks>
         public int Target_Audiences_Count
         {
-            get
-            {
-                if (targetAudiences == null)
-                    return 0;
-                else
-                    return targetAudiences.Count;
+            get {
+                return targetAudiences == null ? 0 : targetAudiences.Count;
             }
         }
 
@@ -459,12 +375,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no target audiences, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<TargetAudience_Info> Target_Audiences
         {
-            get
-            {
-                if (targetAudiences == null)
-                    return new ReadOnlyCollection<TargetAudience_Info>(new List<TargetAudience_Info>());
-                else
-                    return new ReadOnlyCollection<TargetAudience_Info>(targetAudiences);
+            get {
+                return targetAudiences == null ? new ReadOnlyCollection<TargetAudience_Info>(new List<TargetAudience_Info>()) : new ReadOnlyCollection<TargetAudience_Info>(targetAudiences);
             }
         }
 
@@ -472,12 +384,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// being present for this digital resource </summary>
         public bool hasLocationInformation
         {
-            get
-            {
-                if (locationInfo != null)
-                    return true;
-                else
-                    return false;
+            get {
+                return locationInfo != null;
             }
         }
 
@@ -485,113 +393,67 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// any URL information for the item or related EADs </summary>
         public Location_Info Location
         {
-            get
-            {
-                if (locationInfo == null)
-                    locationInfo = new Location_Info();
-
-                return locationInfo;
-            }
+            get { return locationInfo ?? (locationInfo = new Location_Info()); }
         }
 
         /// <summary> Flag indicates if there is the possibility of some donor information
         /// being present for this digital resource </summary>
         public bool hasDonor
         {
-            get
-            {
-                if (donor != null)
-                    return true;
-                else
-                    return false;
+            get {
+                return donor != null;
             }
         }
 
         /// <summary> Gets and sets the donor object for this material </summary>
         public Name_Info Donor
         {
-            get
-            {
-                if (donor == null)
-                    donor = new Name_Info();
-
-                return donor;
-            }
+            get { return donor ?? (donor = new Name_Info()); }
             set { donor = value; }
         }
 
         /// <summary> Flag indicates if there is the main entity information (main author, etc..) for this digital resource </summary>
         public bool hasMainEntityName
         {
-            get
-            {
-                if (main_entity_name != null)
-                    return main_entity_name.hasData;
-                else
-                    return false;
+            get {
+                return main_entity_name != null && main_entity_name.hasData;
             }
         }
 
         /// <summary> Gets and sets the main entity information (main author, etc..) for this digital resource </summary>
         public Name_Info Main_Entity_Name
         {
-            get
-            {
-                if (main_entity_name == null)
-                    main_entity_name = new Name_Info();
-
-                return main_entity_name;
-            }
+            get { return main_entity_name ?? (main_entity_name = new Name_Info()); }
             set { main_entity_name = value; }
         }
 
         /// <summary> Flag indicates if there is a series title associated with this digital resource </summary>
         public bool hasSeriesTitle
         {
-            get
-            {
-                if ((seriesTitle != null) && (seriesTitle.Title.Length > 0))
-                    return true;
-                else
-                    return false;
+            get {
+                return (seriesTitle != null) && (seriesTitle.Title.Length > 0);
             }
         }
 
         /// <summary> Gets or sets the series title associated with this digital resource </summary>
         public Title_Info SeriesTitle
         {
-            get
-            {
-                if (seriesTitle == null)
-                    seriesTitle = new Title_Info();
-
-                return seriesTitle;
-            }
+            get { return seriesTitle ?? (seriesTitle = new Title_Info()); }
             set { seriesTitle = value; }
         }
 
         /// <summary> Flag indicates if there is series part information for this resource  </summary>
         public bool hasSeriesPartInfo
         {
-            get
-            {
-                if ((seriesPartInfo != null) && (seriesPartInfo.hasData))
-                    return true;
-                else
-                    return false;
+            get {
+                return (seriesPartInfo != null) && (seriesPartInfo.hasData);
             }
         }
 
         /// <summary> Gets and sets the series part information for this resource </summary>
         public Part_Info Series_Part_Info
         {
-            get
-            {
-                if (seriesPartInfo == null)
-                    seriesPartInfo = new Part_Info();
-
-                return seriesPartInfo;
-            }
+            get { return seriesPartInfo ?? (seriesPartInfo = new Part_Info()); }
             set { seriesPartInfo = value; }
         }
 
@@ -665,7 +527,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 names = new List<Name_Info>();
 
             Name_Info newName = new Name_Info(Name, Text_Role);
-            newName.Add_Role(MARC_Role, "marcrelator", Name_Info_Role_Type_Enum.code);
+            newName.Add_Role(MARC_Role, "marcrelator", Name_Info_Role_Type_Enum.Code);
             names.Add(newName);
             return newName;
         }
@@ -1621,7 +1483,8 @@ namespace SobekCM.Resource_Object.Bib_Info
                     }
                 }
 
-                full_citation.Append(originalPhysicalDesc.Extent + " | ");
+                if (( originalPhysicalDesc != null ) && ( !String.IsNullOrEmpty(originalPhysicalDesc.Extent)))
+                    full_citation.Append(originalPhysicalDesc.Extent + " | ");
                 full_citation.Append(type.MODS_Type_String + " | ");
 
                 if (languages != null)
@@ -1683,7 +1546,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 {
                     foreach (Subject_Info thisSubject in subjects)
                     {
-                        full_citation.Append(thisSubject.ToString() + " | ");
+                        full_citation.Append(thisSubject + " | ");
                     }
                 }
 
@@ -1766,7 +1629,8 @@ namespace SobekCM.Resource_Object.Bib_Info
 
         /// <summary> Appends this bibliographic description information as MODS to the StringBuilder object </summary>
         /// <param name="Results">StringBuilder to add this XML to </param>
-        internal virtual void Add_MODS(TextWriter Results, VRACore_Info vraCoreInfo)
+        /// <param name="VRACoreInfo"> VRA core information to include here </param>
+        internal virtual void Add_MODS(TextWriter Results, VRACore_Info VRACoreInfo)
         {
             // Start the MODS section
             Results.Write("<mods:mods>\r\n");
@@ -1897,7 +1761,7 @@ namespace SobekCM.Resource_Object.Bib_Info
 
             if (!String.IsNullOrEmpty(tableOfContents))
             {
-                Results.Write("<mods:tableOfContents type=\"original catalog\">" + base.Convert_String_To_XML_Safe(tableOfContents) + "</mods:tableOfContents>\r\n");
+                Results.Write("<mods:tableOfContents type=\"original catalog\">" + Convert_String_To_XML_Safe(tableOfContents) + "</mods:tableOfContents>\r\n");
             }
 
             // Write the target audiences
@@ -1933,27 +1797,25 @@ namespace SobekCM.Resource_Object.Bib_Info
         }
 
         /// <summary> Helper method to create a simple MODS line </summary>
-        /// <param name="mets_tag">Tag for this XML value</param>
-        /// <param name="mets_value">Inner text for this XML value</param>
+        /// <param name="METSTag">Tag for this XML value</param>
+        /// <param name="METSValue">Inner text for this XML value</param>
         /// <returns>Built simple MODS string </returns>
-        protected string toMODS(string mets_tag, string mets_value)
+        protected string toMODS(string METSTag, string METSValue)
         {
-            if (!String.IsNullOrEmpty(mets_value))
+            if (!String.IsNullOrEmpty(METSValue))
             {
-                return "<" + mets_tag + ">" + mets_value + "</" + mets_tag + ">\r\n";
+                return "<" + METSTag + ">" + METSValue + "</" + METSTag + ">\r\n";
             }
-            else
-            {
-                return String.Empty;
-            }
+            
+            return String.Empty;
         }
 
-        private void write_all_names(TextWriter results)
+        private void write_all_names(TextWriter Results)
         {
             // Add the main entity first
             if ((main_entity_name != null) && ((main_entity_name.Full_Name.Length > 0) || (main_entity_name.Family_Name.Length > 0) || (main_entity_name.Given_Name.Length > 0)))
             {
-                main_entity_name.Add_MODS(true, results);
+                main_entity_name.Add_MODS(true, Results);
             }
 
             // Now, add all the other names
@@ -1961,7 +1823,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 foreach (Name_Info thisName in names)
                 {
-                    thisName.Add_MODS(false, results);
+                    thisName.Add_MODS(false, Results);
                 }
             }
 
@@ -1970,12 +1832,12 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 if (donor.Roles.Count == 0)
                 {
-                    if ((donor.Name_Type == Name_Info_Type_Enum.personal) || (donor.Name_Type == Name_Info_Type_Enum.UNKNOWN))
+                    if ((donor.Name_Type == Name_Info_Type_Enum.Personal) || (donor.Name_Type == Name_Info_Type_Enum.UNKNOWN))
                         donor.Add_Role("donor", String.Empty);
                     else
                         donor.Add_Role("endowment", String.Empty);
                 }
-                donor.Add_MODS(false, results);
+                donor.Add_MODS(false, Results);
             }
         }
 

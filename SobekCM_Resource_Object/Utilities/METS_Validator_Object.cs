@@ -12,7 +12,7 @@ namespace SobekCM.Resource_Object.Utilities
     /// <remarks> Written by Gus Clifton and Mark Sullivan ( 2005 ). </remarks>
     public class METS_Validator_Object
     {
-        private XmlSchemaSet cache;
+        private readonly XmlSchemaSet cache;
         private StringBuilder errors;
         private bool isValid = true;
 

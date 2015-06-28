@@ -10,6 +10,7 @@ using SobekCM.Resource_Object.Metadata_Modules;
 
 namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 {
+    /// <summary> Taxonomic hierarchy ( DarwinCore) METS subsection reader/writer </summary>
     public class DarwinCore_METS_dmdSec_ReaderWriter : XML_Writing_Base_Type, iPackage_dmdSec_ReaderWriter
     {
         #region iPackage_dmdSec_ReaderWriter Members
@@ -44,57 +45,57 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
             if (!String.IsNullOrEmpty(taxonInfo.Scientific_Name))
             {
-                Output_Stream.WriteLine("<dwc:scientificName>" + base.Convert_String_To_XML_Safe(taxonInfo.Scientific_Name) + "</dwc:scientificName>");
+                Output_Stream.WriteLine("<dwc:scientificName>" + Convert_String_To_XML_Safe(taxonInfo.Scientific_Name) + "</dwc:scientificName>");
             }
 
             if (!String.IsNullOrEmpty(taxonInfo.Higher_Classification))
             {
-                Output_Stream.WriteLine("<dwc:higherClassification>" + base.Convert_String_To_XML_Safe(taxonInfo.Higher_Classification) + "</dwc:higherClassification>");
+                Output_Stream.WriteLine("<dwc:higherClassification>" + Convert_String_To_XML_Safe(taxonInfo.Higher_Classification) + "</dwc:higherClassification>");
             }
 
             if (!String.IsNullOrEmpty(taxonInfo.Kingdom))
             {
-                Output_Stream.WriteLine("<dwc:kingdom>" + base.Convert_String_To_XML_Safe(taxonInfo.Kingdom) + "</dwc:kingdom>");
+                Output_Stream.WriteLine("<dwc:kingdom>" + Convert_String_To_XML_Safe(taxonInfo.Kingdom) + "</dwc:kingdom>");
             }
 
             if (!String.IsNullOrEmpty(taxonInfo.Phylum))
             {
-                Output_Stream.WriteLine("<dwc:phylum>" + base.Convert_String_To_XML_Safe(taxonInfo.Phylum) + "</dwc:phylum>");
+                Output_Stream.WriteLine("<dwc:phylum>" + Convert_String_To_XML_Safe(taxonInfo.Phylum) + "</dwc:phylum>");
             }
 
             if (!String.IsNullOrEmpty(taxonInfo.Class))
             {
-                Output_Stream.WriteLine("<dwc:class>" + base.Convert_String_To_XML_Safe(taxonInfo.Class) + "</dwc:class>");
+                Output_Stream.WriteLine("<dwc:class>" + Convert_String_To_XML_Safe(taxonInfo.Class) + "</dwc:class>");
             }
 
             if (!String.IsNullOrEmpty(taxonInfo.Order))
             {
-                Output_Stream.WriteLine("<dwc:order>" + base.Convert_String_To_XML_Safe(taxonInfo.Order) + "</dwc:order>");
+                Output_Stream.WriteLine("<dwc:order>" + Convert_String_To_XML_Safe(taxonInfo.Order) + "</dwc:order>");
             }
 
             if (!String.IsNullOrEmpty(taxonInfo.Family))
             {
-                Output_Stream.WriteLine("<dwc:family>" + base.Convert_String_To_XML_Safe(taxonInfo.Family) + "</dwc:family>");
+                Output_Stream.WriteLine("<dwc:family>" + Convert_String_To_XML_Safe(taxonInfo.Family) + "</dwc:family>");
             }
 
             if (!String.IsNullOrEmpty(taxonInfo.Genus))
             {
-                Output_Stream.WriteLine("<dwc:genus>" + base.Convert_String_To_XML_Safe(taxonInfo.Genus) + "</dwc:genus>");
+                Output_Stream.WriteLine("<dwc:genus>" + Convert_String_To_XML_Safe(taxonInfo.Genus) + "</dwc:genus>");
             }
 
             if (!String.IsNullOrEmpty(taxonInfo.Specific_Epithet))
             {
-                Output_Stream.WriteLine("<dwc:specificEpithet>" + base.Convert_String_To_XML_Safe(taxonInfo.Specific_Epithet) + "</dwc:specificEpithet>");
+                Output_Stream.WriteLine("<dwc:specificEpithet>" + Convert_String_To_XML_Safe(taxonInfo.Specific_Epithet) + "</dwc:specificEpithet>");
             }
 
             if (!String.IsNullOrEmpty(taxonInfo.Taxonomic_Rank))
             {
-                Output_Stream.WriteLine("<dwc:taxonRank>" + base.Convert_String_To_XML_Safe(taxonInfo.Taxonomic_Rank) + "</dwc:taxonRank>");
+                Output_Stream.WriteLine("<dwc:taxonRank>" + Convert_String_To_XML_Safe(taxonInfo.Taxonomic_Rank) + "</dwc:taxonRank>");
             }
 
             if (!String.IsNullOrEmpty(taxonInfo.Common_Name))
             {
-                Output_Stream.WriteLine("<dwc:vernacularName>" + base.Convert_String_To_XML_Safe(taxonInfo.Common_Name) + "</dwc:vernacularName>");
+                Output_Stream.WriteLine("<dwc:vernacularName>" + Convert_String_To_XML_Safe(taxonInfo.Common_Name) + "</dwc:vernacularName>");
             }
 
             Output_Stream.WriteLine("</dwr:SimpleDarwinRecord>");

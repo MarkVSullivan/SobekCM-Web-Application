@@ -14,7 +14,7 @@ namespace SobekCM.Resource_Object.Tracking
     [Serializable]
     public class Tracking_Info
     {
-        private List<Tracking_ArchiveMedia> archiveMedia;
+        private readonly List<Tracking_ArchiveMedia> archiveMedia;
         private Nullable<DateTime> digitalAcquisition;
         private short dispositionAdvice;
         private string dispositionAdviceNotes;
@@ -35,7 +35,7 @@ namespace SobekCM.Resource_Object.Tracking
         private string trackingBox;
 
         private string vid_source;
-        private List<Tracking_Progress> worklogWorkHistory;
+        private readonly List<Tracking_Progress> worklogWorkHistory;
 
         /// <summary> Constructor for a new instance of the Tracking_Info class </summary>
         public Tracking_Info()

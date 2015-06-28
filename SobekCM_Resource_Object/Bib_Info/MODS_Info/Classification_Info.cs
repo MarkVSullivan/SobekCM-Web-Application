@@ -62,34 +62,31 @@ namespace SobekCM.Resource_Object.Bib_Info
         #region IEquatable<Classification_Info> Members
 
         /// <summary> Compares this object with another similarly typed object </summary>
-        /// <param name="other">Similarly types object </param>
+        /// <param name="Other">Similarly types object </param>
         /// <returns>TRUE if the two objects are sufficiently similar</returns>
-        public bool Equals(Classification_Info other)
+        public bool Equals(Classification_Info Other)
         {
-            if (classification == other.Classification)
-                return true;
-            else
-                return false;
+            return String.Compare(classification, Other.Classification, StringComparison.Ordinal) == 0;
         }
 
         #endregion
 
         /// <summary> Writes this classification as MODS to a writer writing to a stream ( either a file or web response stream )</summary>
-        /// <param name="returnValue"> Writer to the MODS building stream </param>
-        internal void Add_MODS(TextWriter returnValue)
+        /// <param name="ReturnValue"> Writer to the MODS building stream </param>
+        internal void Add_MODS(TextWriter ReturnValue)
         {
             if (String.IsNullOrEmpty(classification))
                 return;
 
-            returnValue.Write("<mods:classification");
-            base.Add_ID(returnValue);
+            ReturnValue.Write("<mods:classification");
+            Add_ID(ReturnValue);
             if (!String.IsNullOrEmpty(authority))
-                returnValue.Write(" authority=\"" + authority + "\"");
+                ReturnValue.Write(" authority=\"" + authority + "\"");
             if (!String.IsNullOrEmpty(displayLabel))
-                returnValue.Write(" displayLabel=\"" + base.Convert_String_To_XML_Safe(displayLabel) + "\"");
+                ReturnValue.Write(" displayLabel=\"" + Convert_String_To_XML_Safe(displayLabel) + "\"");
             if (!String.IsNullOrEmpty(edition))
-                returnValue.Write(" edition=\"" + base.Convert_String_To_XML_Safe(edition) + "\"");
-            returnValue.Write(">" + base.Convert_String_To_XML_Safe(classification) + "</mods:classification>\r\n");
+                ReturnValue.Write(" edition=\"" + Convert_String_To_XML_Safe(edition) + "\"");
+            ReturnValue.Write(">" + Convert_String_To_XML_Safe(classification) + "</mods:classification>\r\n");
         }
 
         internal MARC_Field to_MARC_Tag()
@@ -97,9 +94,11 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (String.IsNullOrEmpty(classification))
                 return null;
 
-            MARC_Field returnValue = new MARC_Field();
-            returnValue.Indicators = "  ";
-            returnValue.Tag = 84;
+            MARC_Field returnValue = new MARC_Field
+            {
+                Indicators = "  ", 
+                Tag = 84
+            };
 
 
             string authority_builder = String.Empty;

@@ -31,7 +31,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     switch (thisTitle.Title_Type)
                     {
                         case Title_Type_Enum.UNSPECIFIED:
-                        case Title_Type_Enum.alternative:
+                        case Title_Type_Enum.Alternative:
                             string titleType = thisTitle.Display_Label;
                             if ((!String.IsNullOrWhiteSpace(titleType)) && ( String.Compare(titleType, "OTHER TITLE", StringComparison.InvariantCultureIgnoreCase ) != 0 ))
                                 New.Add_Description("Alternative Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim()).SubTerm = titleType;
@@ -39,15 +39,15 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                                 New.Add_Description("Alternative Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim());
                             break;
 
-                        case Title_Type_Enum.uniform:
+                        case Title_Type_Enum.Uniform:
                             New.Add_Description("Uniform Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim());
                             break;
 
-                        case Title_Type_Enum.translated:
+                        case Title_Type_Enum.Translated:
                             New.Add_Description("Translated Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim()).Language = thisTitle.Language;
                             break;
 
-                        case Title_Type_Enum.abbreviated:
+                        case Title_Type_Enum.Abbreviated:
                             New.Add_Description("Abbreviated Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim());
                             break;
                     }

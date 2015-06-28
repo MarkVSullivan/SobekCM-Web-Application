@@ -16,7 +16,7 @@ namespace SobekCM.Resource_Object.Divisions
     public class Division_Tree
     {
         /// <summary> Stores the root node for this tree </summary>
-        private List<abstract_TreeNode> rootNodes;
+        private readonly List<abstract_TreeNode> rootNodes;
 
         /// <summary> Constructor creates a new instance of the Division_Tree class </summary>
         public Division_Tree()
@@ -36,9 +36,9 @@ namespace SobekCM.Resource_Object.Divisions
         {
             get
             {
-                foreach (abstract_TreeNode TreeNode in rootNodes)
+                foreach (abstract_TreeNode treeNode in rootNodes)
                 {
-                    if (recursively_check_for_any_files(TreeNode))
+                    if (recursively_check_for_any_files(treeNode))
                         return true;
                 }
                 return false;
@@ -56,9 +56,9 @@ namespace SobekCM.Resource_Object.Divisions
             if (!Node.Page)
             {
                 Division_TreeNode divNode = (Division_TreeNode) Node;
-                foreach (abstract_TreeNode TreeNode in divNode.Nodes)
+                foreach (abstract_TreeNode treeNode in divNode.Nodes)
                 {
-                    if (recursively_check_for_any_files(TreeNode))
+                    if (recursively_check_for_any_files(treeNode))
                         return true;
                 }
             }
@@ -263,29 +263,29 @@ namespace SobekCM.Resource_Object.Divisions
             }
         }
 
-        private void preorder_build(List<abstract_TreeNode> collection, abstract_TreeNode thisNode, bool only_add_pages)
+        private void preorder_build(List<abstract_TreeNode> Collection, abstract_TreeNode ThisNode, bool OnlyAddPages)
         {
             // Since this is pre-order, first 'visit' this
-            if (!only_add_pages)
+            if (!OnlyAddPages)
             {
-                collection.Add(thisNode);
+                Collection.Add(ThisNode);
             }
             else
             {
                 // If we are just getting pages, only add if it is not already added
-                if ((thisNode.Page) && (!collection.Contains(thisNode)))
-                    collection.Add(thisNode);
+                if ((ThisNode.Page) && (!Collection.Contains(ThisNode)))
+                    Collection.Add(ThisNode);
             }
 
             // is this a division node? .. which can have children ..
-            if (!thisNode.Page)
+            if (!ThisNode.Page)
             {
-                Division_TreeNode thisDivNode = (Division_TreeNode) thisNode;
+                Division_TreeNode thisDivNode = (Division_TreeNode) ThisNode;
 
                 // Do the same for all the children
                 foreach (abstract_TreeNode childNode in thisDivNode.Nodes)
                 {
-                    preorder_build(collection, childNode, only_add_pages);
+                    preorder_build(Collection, childNode, OnlyAddPages);
                 }
             }
         }
@@ -307,31 +307,31 @@ namespace SobekCM.Resource_Object.Divisions
             }
         }
 
-        private void recursively_build_all_files_list(List<SobekCM_File_Info> returnValue, List<Page_TreeNode> handledPages, abstract_TreeNode thisNode)
+        private void recursively_build_all_files_list(List<SobekCM_File_Info> ReturnValue, List<Page_TreeNode> HandledPages, abstract_TreeNode ThisNode)
         {
             // Since this is pre-order, first 'visit' this
-            if (thisNode.Page)
+            if (ThisNode.Page)
             {
-                Page_TreeNode pageNode = (Page_TreeNode) thisNode;
-                if (!handledPages.Contains(pageNode))
+                Page_TreeNode pageNode = (Page_TreeNode) ThisNode;
+                if (!HandledPages.Contains(pageNode))
                 {
                     foreach (SobekCM_File_Info file in pageNode.Files)
                     {
-                        returnValue.Add(file);
+                        ReturnValue.Add(file);
                     }
-                    handledPages.Add(pageNode);
+                    HandledPages.Add(pageNode);
                 }
             }
 
             // is this a division node? .. which can have children ..
-            if (!thisNode.Page)
+            if (!ThisNode.Page)
             {
-                Division_TreeNode thisDivNode = (Division_TreeNode) thisNode;
+                Division_TreeNode thisDivNode = (Division_TreeNode) ThisNode;
 
                 // Do the same for all the children
                 foreach (abstract_TreeNode childNode in thisDivNode.Nodes)
                 {
-                    recursively_build_all_files_list(returnValue, handledPages, childNode);
+                    recursively_build_all_files_list(ReturnValue, HandledPages, childNode);
                 }
             }
         }

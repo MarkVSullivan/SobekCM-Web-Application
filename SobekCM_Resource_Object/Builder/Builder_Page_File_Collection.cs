@@ -21,18 +21,18 @@ namespace SobekCM.Resource_Object.Builder
         /// <summary> Address a single Page_File from this Collection, by the node id. </summary>
         /// <exception cref="Exception"> Throws a <see cref="Exception"/> if there is 
         /// an Page_File requested which does not exist. </exception>
-        internal Builder_Page_File this[int index]
+        internal Builder_Page_File this[int Index]
         {
             get
             {
                 // Check that this node exists exists
-                if ((index >= List.Count) || (index < 0))
-                    throw new Exception("Requested Page_File #" + index + " and this Page_File does not exist.");
+                if ((Index >= List.Count) || (Index < 0))
+                    throw new Exception("Requested Page_File #" + Index + " and this Page_File does not exist.");
 
                 // Return the requested MXF Page_File
-                return ((Builder_Page_File) (List[index]));
+                return ((Builder_Page_File) (List[Index]));
             }
-            set { List[index] = value; }
+            set { List[Index] = value; }
         }
 
         #region IEnumerable Members
@@ -43,92 +43,88 @@ namespace SobekCM.Resource_Object.Builder
         /// language runtime-compatible langueages. </remarks>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return (IEnumerator) new Builder_Page_File_Enumerator(this);
+            return new Builder_Page_File_Enumerator(this);
         }
 
         #endregion
 
         /// <summary> Add a new Page_File to this collection. </summary>
-        /// <param name="newPage_File"> <see cref="Builder_Page_File"/> object for this new Page_File </param>
-        internal void Add(Builder_Page_File newPage_File)
+        /// <param name="NewPageFile"> <see cref="Builder_Page_File"/> object for this new Page_File </param>
+        internal void Add(Builder_Page_File NewPageFile)
         {
             // Add this constructed Page_File to the collection
-            List.Add(newPage_File);
+            List.Add(NewPageFile);
         }
 
         /// <summary> Insert a new page into this collection, based on the file name </summary>
-        /// <param name="newPage_File"></param>
+        /// <param name="NewPageFile"></param>
         /// <returns></returns>
-        internal int Insert(Builder_Page_File newPage_File)
+        internal int Insert(Builder_Page_File NewPageFile)
         {
             if (List.Count == 0)
             {
-                return List.Add(newPage_File);
+                return List.Add(NewPageFile);
             }
 
-            if (newPage_File.CompareTo(this[0]) <= 0)
+            if (NewPageFile.CompareTo(this[0]) <= 0)
             {
-                List.Insert(0, newPage_File);
+                List.Insert(0, NewPageFile);
                 return 0;
             }
 
-            if (newPage_File.CompareTo(this[List.Count - 1]) >= 0)
+            if (NewPageFile.CompareTo(this[List.Count - 1]) >= 0)
             {
-                return List.Add(newPage_File);
+                return List.Add(NewPageFile);
             }
 
-            return Recursive_Sort_Insert(newPage_File, 0, List.Count - 1);
+            return Recursive_Sort_Insert(NewPageFile, 0, List.Count - 1);
         }
 
-        internal int Recursive_Sort_Insert(Builder_Page_File newPage_File, int start, int end)
+        internal int Recursive_Sort_Insert(Builder_Page_File NewPageFile, int Start, int End)
         {
-            int startIndex = start;
-            int endIndex = end;
+            int startIndex = Start;
+            int endIndex = End;
             int midIndex = (int) Math.Ceiling((double) (endIndex - startIndex)/2) + startIndex;
             if (endIndex - startIndex <= 1)
             {
-                if (newPage_File.CompareTo(this[startIndex]) <= 0)
+                if (NewPageFile.CompareTo(this[startIndex]) <= 0)
                 {
-                    List.Insert(startIndex, newPage_File);
+                    List.Insert(startIndex, NewPageFile);
                     return startIndex;
                 }
-                else
-                {
-                    List.Insert(endIndex, newPage_File);
-                    return endIndex;
-                }
+                
+                List.Insert(endIndex, NewPageFile);
+                return endIndex;
             }
+            
+            if (NewPageFile.CompareTo(this[midIndex]) < 0)
+                endIndex = midIndex;
             else
-            {
-                if (newPage_File.CompareTo(this[midIndex]) < 0)
-                    endIndex = midIndex;
-                else
-                    startIndex = midIndex;
+                startIndex = midIndex;
 
-                return Recursive_Sort_Insert(newPage_File, startIndex, endIndex);
-            }
+            return Recursive_Sort_Insert(NewPageFile, startIndex, endIndex);
         }
 
         /// <summary> Remove an existing Page_File under from this collection. </summary>
-        /// <param name="nodeid"> node id for this workflow </param>
+        /// <param name="Nodeid"> node id for this workflow </param>
         /// <exception cref="Exception"> Throws a <see cref="Exception"/> if there is no
         /// an Page_File which matches the Page_File requested to be removed. </exception>
-        internal void Remove(int nodeid)
+        internal void Remove(int Nodeid)
         {
             // Check that this BaseFileName exists
-            if (!Contains(nodeid))
-                throw new Exception("No Page_File '" + nodeid + "' exists for this division");
+            if (!Contains(Nodeid))
+                throw new Exception("No Page_File '" + Nodeid + "' exists for this division");
 
             // Remove this Page_File, since it existed
-            List.Remove(nodeid);
+            List.Remove(Nodeid);
         }
 
         /// <summary> Check to see if there is a Page_File in this collection already </summary>
-        /// <param name="nodeid"> node id for this workflow </param>
+        /// <param name="Nodeid"> node id for this workflow </param>
         /// <returns>TRUE if the provided work flow id is already part of this Page_File Collection </returns>
-        internal bool Contains(int nodeid)
+        internal bool Contains(int Nodeid)
         {
-            return List.Contains(nodeid);
+            return List.Contains(Nodeid);
         }
 
         /// <summary> Return an enumerator to step through this collection of tree nodes. </summary>
@@ -151,17 +147,17 @@ namespace SobekCM.Resource_Object.Builder
         public class Builder_Page_File_Enumerator : IEnumerator
         {
             /// <summary> Reference to the <see cref="Builder_Page_File_Collection"/> to iterate through. </summary>
-            private Builder_Page_File_Collection nodes;
+            private readonly Builder_Page_File_Collection nodes;
 
             /// <summary> Stores position for this enumerator </summary>
             private int position = -1;
 
             /// <summary> Constructore creates a new Page_File_Enumerator to iterate through
             /// the <see cref="Builder_Page_File_Collection"/>. </summary>
-            /// <param name="nodeCollection"> Collection of nodes </param>
-            internal Builder_Page_File_Enumerator(Builder_Page_File_Collection nodeCollection)
+            /// <param name="NodeCollection"> Collection of nodes </param>
+            internal Builder_Page_File_Enumerator(Builder_Page_File_Collection NodeCollection)
             {
-                nodes = nodeCollection;
+                nodes = NodeCollection;
             }
 
             /// <summary> Return the current <see cref="Builder_Page_File"/> from the <see cref="Builder_Page_File_Collection"/>. </summary>
@@ -183,10 +179,8 @@ namespace SobekCM.Resource_Object.Builder
                     position++;
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
+                
+                return false;
             }
 
             /// <summary> Reset to the position just before the first position.  

@@ -12,6 +12,7 @@ using SobekCM.Resource_Object.Divisions;
 
 namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 {
+    /// <summary> TEI metadata reader/writer </summary>
     public class TEI_File_ReaderWriter : XML_Writing_Base_Type, iMetadata_File_ReaderWriter
     {
         #region iMetadata_File_ReaderWriter Members
@@ -178,7 +179,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     role = thisName.Roles[0].Role;
                     foreach( Name_Info_Role thisRole in thisName.Roles )
                     {
-                        if ( thisRole.Role_Type == Name_Info_Role_Type_Enum.text )
+                        if ( thisRole.Role_Type == Name_Info_Role_Type_Enum.Text )
                         {
                             role = thisRole.Role;
                             break;
@@ -355,11 +356,11 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
         }
 
-        private void recursively_add_div_page_text( string source_directory, abstract_TreeNode thisNode, TextWriter Output_Stream, ref int page_count )
+        private void recursively_add_div_page_text( string SourceDirectory, abstract_TreeNode ThisNode, TextWriter Output_Stream, ref int PageCount )
         {
-            if (thisNode.Page)
+            if (ThisNode.Page)
             {
-                Page_TreeNode pageNode = (Page_TreeNode) thisNode;
+                Page_TreeNode pageNode = (Page_TreeNode) ThisNode;
 
                 if (pageNode.Files.Count > 0)
                 {
@@ -374,44 +375,44 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     }
                     
                     // Add the page break first
-                    Output_Stream.Write("<pb n=\"" + page_count + "\"");
+                    Output_Stream.Write("<pb n=\"" + PageCount + "\"");
                     if ( pageimage.Length > 0 )
                         Output_Stream.Write(" facs=\"" + Convert_String_To_XML_Safe(pageimage) + "\"");
                     Output_Stream.WriteLine(" />");
 
                     // Does the text file exist?
-                    string text_file = source_directory + "\\" + textfilename;
+                    string text_file = SourceDirectory + "\\" + textfilename;
                     try
                     {
-                        if (System.IO.File.Exists(text_file))
+                        if (File.Exists(text_file))
                         {
-                            Output_Stream.WriteLine(Convert_String_To_XML_Safe(System.IO.File.ReadAllText(text_file)));
+                            Output_Stream.WriteLine(Convert_String_To_XML_Safe(File.ReadAllText(text_file)));
                         }
                     }
                     catch { }
 
                 }
-                page_count++;
+                PageCount++;
             }
             else
             {
-                Division_TreeNode divNode = (Division_TreeNode) thisNode;
-                if (thisNode.Type != "main")
+                Division_TreeNode divNode = (Division_TreeNode) ThisNode;
+                if (ThisNode.Type != "main")
                 {
-                    Output_Stream.WriteLine("<div type=\"" + thisNode.Type + "\">");
-                    if ((thisNode.Label.Length > 0) && (thisNode.Label != thisNode.Type))
+                    Output_Stream.WriteLine("<div type=\"" + ThisNode.Type + "\">");
+                    if ((ThisNode.Label.Length > 0) && (ThisNode.Label != ThisNode.Type))
                     {
-                        Output_Stream.WriteLine("<head>" + Convert_String_To_XML_Safe(thisNode.Label) + "</head>");
+                        Output_Stream.WriteLine("<head>" + Convert_String_To_XML_Safe(ThisNode.Label) + "</head>");
                     }
                 }
 
                 // Now, step through child nodes
                 foreach (abstract_TreeNode childNode in divNode.Nodes)
                 {
-                    recursively_add_div_page_text(source_directory, childNode, Output_Stream, ref page_count);
+                    recursively_add_div_page_text(SourceDirectory, childNode, Output_Stream, ref PageCount);
                 }
 
-                if (thisNode.Type != "main")
+                if (ThisNode.Type != "main")
                 {
                     Output_Stream.WriteLine("</div>");
 

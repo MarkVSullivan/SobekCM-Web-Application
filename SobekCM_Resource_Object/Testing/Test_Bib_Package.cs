@@ -1,12 +1,12 @@
 ﻿#region Using directives
 
 using System;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Resource_Object.Metadata_Modules.LearningObjects;
-using SobekCM.Resource_Object.Behaviors;
 
 #endregion
 
@@ -67,7 +67,7 @@ namespace SobekCM.Resource_Object.Testing
             testPackage.Bib_Info.Location.EAD_URL = "http://digital.uflib.ufl.edu/";
             testPackage.Bib_Info.Location.EAD_Name = "Digital Library Center Finding Guide";
 
-            testPackage.Bib_Info.Main_Entity_Name.Name_Type = Name_Info_Type_Enum.personal;
+            testPackage.Bib_Info.Main_Entity_Name.Name_Type = Name_Info_Type_Enum.Personal;
             testPackage.Bib_Info.Main_Entity_Name.Full_Name = "Brown, B.F.";
             testPackage.Bib_Info.Main_Entity_Name.Terms_Of_Address = "Dr.";
             testPackage.Bib_Info.Main_Entity_Name.Display_Form = "B.F. Brown";
@@ -90,7 +90,7 @@ namespace SobekCM.Resource_Object.Testing
             taxonInfo.Common_Name = "Social Tuco-Tuco";
 
             Name_Info name1 = new Name_Info();
-            name1.Name_Type = Name_Info_Type_Enum.personal;
+            name1.Name_Type = Name_Info_Type_Enum.Personal;
             name1.Given_Name = "John Paul";
             name1.Terms_Of_Address = "Pope; II";
             name1.Dates = "1920-2002";
@@ -98,18 +98,18 @@ namespace SobekCM.Resource_Object.Testing
             testPackage.Bib_Info.Add_Named_Entity(name1);
 
             Name_Info name2 = new Name_Info();
-            name2.Name_Type = Name_Info_Type_Enum.conference;
+            name2.Name_Type = Name_Info_Type_Enum.Conference;
             name2.Full_Name = "Paris Peace Conference (1919-1920)";
             name2.Dates = "1919-1920";
             testPackage.Bib_Info.Add_Named_Entity(name2);
 
             Name_Info name3 = new Name_Info();
-            name3.Name_Type = Name_Info_Type_Enum.corporate;
+            name3.Name_Type = Name_Info_Type_Enum.Corporate;
             name3.Full_Name = "United States -- Court of Appeals (2nd Court)";
             testPackage.Bib_Info.Add_Named_Entity(name3);
 
             Name_Info name4 = new Name_Info();
-            name4.Name_Type = Name_Info_Type_Enum.personal;
+            name4.Name_Type = Name_Info_Type_Enum.Personal;
             name4.Full_Name = "Wilson, Mary";
             name4.Display_Form = "Mary 'Weels' Wilson";
             name4.Given_Name = "Mary";
@@ -121,7 +121,7 @@ namespace SobekCM.Resource_Object.Testing
             testPackage.Bib_Info.Add_Named_Entity(name4);
 
             Name_Info donor = new Name_Info();
-            donor.Name_Type = Name_Info_Type_Enum.personal;
+            donor.Name_Type = Name_Info_Type_Enum.Personal;
             donor.Full_Name = "Livingston, Arthur";
             donor.Description = "Gift in honor of Arthur Livingston";
             donor.Terms_Of_Address = "3rd";
@@ -132,7 +132,7 @@ namespace SobekCM.Resource_Object.Testing
             testPackage.Bib_Info.Main_Title.Title = "Man Who Would Be King";
             testPackage.Bib_Info.Main_Title.Subtitle = "The story of succession in England";
 
-            Title_Info title1 = new Title_Info("homme qui voulut être roi", Title_Type_Enum.translated);
+            Title_Info title1 = new Title_Info("homme qui voulut être roi", Title_Type_Enum.Translated);
             title1.NonSort = "L'";
             title1.Language = "fr";
             testPackage.Bib_Info.Add_Other_Title(title1);
@@ -141,7 +141,7 @@ namespace SobekCM.Resource_Object.Testing
             title2.Title = "Man Who Be King";
             title2.Display_Label = "also known as";
             title2.NonSort = "The";
-            title2.Title_Type = Title_Type_Enum.alternative;
+            title2.Title_Type = Title_Type_Enum.Alternative;
             testPackage.Bib_Info.Add_Other_Title(title2);
 
             Title_Info title3 = new Title_Info();
@@ -149,13 +149,13 @@ namespace SobekCM.Resource_Object.Testing
             title3.Authority = "naf";
             title3.Add_Part_Name("Second Portion");
             title3.Add_Part_Number("2nd");
-            title3.Title_Type = Title_Type_Enum.uniform;
+            title3.Title_Type = Title_Type_Enum.Uniform;
             title3.User_Submitted = true;
             testPackage.Bib_Info.Add_Other_Title(title3);
 
-            testPackage.Bib_Info.Add_Note("Funded by the NEH", Note_Type_Enum.funding);
+            testPackage.Bib_Info.Add_Note("Funded by the NEH", Note_Type_Enum.Funding);
             testPackage.Bib_Info.Add_Note("Based on a play which originally appeared in France as \"Un peu plus tard, un peu plus tôt\"").User_Submitted = true;
-            testPackage.Bib_Info.Add_Note("Anne Baxter (Louise), Maria Perschy (Angela), Gustavo Rojo (Bill), Reginald Gilliam (Mr. Johnson), [Catherine Elliot?] (Aunt Sallie), Ben Tatar (waiter)", Note_Type_Enum.performers, "Performed By");
+            testPackage.Bib_Info.Add_Note("Anne Baxter (Louise), Maria Perschy (Angela), Gustavo Rojo (Bill), Reginald Gilliam (Mr. Johnson), [Catherine Elliot?] (Aunt Sallie), Ben Tatar (waiter)", Note_Type_Enum.Performers, "Performed By");
 
             testPackage.Bib_Info.Origin_Info.Add_Place("New York", "nyu", "usa");
             testPackage.Bib_Info.Origin_Info.Date_Issued = "1992";
@@ -237,7 +237,7 @@ namespace SobekCM.Resource_Object.Testing
 
             // Add a title information subject
             Subject_Info_TitleInfo subjtitle1 = testPackage.Bib_Info.Add_Title_Subject();
-            subjtitle1.Title_Type = Title_Type_Enum.uniform;
+            subjtitle1.Title_Type = Title_Type_Enum.Uniform;
             subjtitle1.Authority = "naf";
             subjtitle1.Title = "Missale Carnotense";
 
@@ -301,9 +301,9 @@ namespace SobekCM.Resource_Object.Testing
             // Add a related item
             Related_Item_Info relatedItem1 = new Related_Item_Info();
             relatedItem1.SobekCM_ID = "UF00001234";
-            relatedItem1.Relationship = Related_Item_Type_Enum.preceding;
+            relatedItem1.Relationship = Related_Item_Type_Enum.Preceding;
             relatedItem1.Publisher = "Gainesville Sun Publishing House";
-            relatedItem1.Add_Note(new Note_Info("Digitized with funding from NEH", Note_Type_Enum.funding));
+            relatedItem1.Add_Note(new Note_Info("Digitized with funding from NEH", Note_Type_Enum.Funding));
             relatedItem1.Add_Note(new Note_Info("Gainesville Bee was the precursor to this item"));
             relatedItem1.Main_Title.NonSort = "The";
             relatedItem1.Main_Title.Title = "Gainesville Bee";
@@ -312,7 +312,7 @@ namespace SobekCM.Resource_Object.Testing
             Name_Info ri_name = new Name_Info();
             ri_name.Full_Name = "Hills, Bryan";
             ri_name.Terms_Of_Address = "Mr.";
-            ri_name.Name_Type = Name_Info_Type_Enum.personal;
+            ri_name.Name_Type = Name_Info_Type_Enum.Personal;
             ri_name.Add_Role("author");
             relatedItem1.Add_Name(ri_name);
             relatedItem1.URL = @"http://www.uflib.ufl.edu/ufdc/?b=UF00001234";
@@ -321,7 +321,7 @@ namespace SobekCM.Resource_Object.Testing
 
             // Add another related item
             Related_Item_Info relatedItem2 = new Related_Item_Info();
-            relatedItem2.Relationship = Related_Item_Type_Enum.succeeding;
+            relatedItem2.Relationship = Related_Item_Type_Enum.Succeeding;
             relatedItem2.SobekCM_ID = "UF00009999";
             relatedItem2.Main_Title.NonSort = "The";
             relatedItem2.Main_Title.Title = "Daily Sun";

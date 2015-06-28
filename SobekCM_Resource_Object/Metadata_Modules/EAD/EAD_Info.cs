@@ -11,9 +11,9 @@ namespace SobekCM.Resource_Object.Metadata_Modules.EAD
     [Serializable]
     public class EAD_Info : iMetadata_Module
     {
-        private Description_of_Subordinate_Components containerHierachy;
+        private readonly Description_of_Subordinate_Components containerHierachy;
         private string findingGuideDescription;
-        private List<EAD_TOC_Included_Section> toc_included_sections;
+        private readonly List<EAD_TOC_Included_Section> toc_included_sections;
 
         /// <summary> Constructor for a new instance of the EAD_Info class </summary>
         public EAD_Info()
@@ -47,9 +47,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.EAD
         {
             get
             {
-                if ((Container_Hierarchy.Containers.Count > 0) || (Full_Description.Length > 0))
-                    return true;
-                return false;
+                return (Container_Hierarchy.Containers.Count > 0) || (Full_Description.Length > 0);
             }
         }
 

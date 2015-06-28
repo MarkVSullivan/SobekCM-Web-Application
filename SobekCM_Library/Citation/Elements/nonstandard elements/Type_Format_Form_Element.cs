@@ -104,7 +104,7 @@ namespace SobekCM.Library.Citation.Elements
                     {
                         foreach (Note_Info thisNote in Bib.Bib_Info.Notes)
                         {
-                            if (thisNote.Note_Type == Note_Type_Enum.default_type)
+                            if (thisNote.Note_Type == Note_Type_Enum.DefaultType)
                             {
                                 instance_value = thisNote.Note;
                                 initial_value = false;
@@ -1365,7 +1365,7 @@ namespace SobekCM.Library.Citation.Elements
                     Note_Info deleteNote = null;
                     foreach (Note_Info thisNote in Bib.Bib_Info.Notes)
                     {
-                        if (thisNote.Note_Type == Note_Type_Enum.default_type)
+                        if (thisNote.Note_Type == Note_Type_Enum.DefaultType)
                         {
                             deleteNote = thisNote;
                         }
@@ -1395,7 +1395,7 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (type.Length > 0)
                 {
-                    Bib.Bib_Info.Add_Note(type, Note_Type_Enum.default_type);
+                    Bib.Bib_Info.Add_Note(type, Note_Type_Enum.DefaultType);
                 }
             }
             else

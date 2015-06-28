@@ -11,30 +11,29 @@ namespace SobekCM.Resource_Object.Builder
     /// <summary> Class is used to split a file name for sorting and ranging </summary>
     internal class Builder_SplitFileName
     {
-        private string[] nameParts;
-        private string origName;
+        private readonly string[] nameParts;
+        private readonly string origName;
 
         /// <summary> Constructor for a new instance of this class </summary>
-        /// <param name="fileName"> Original file name </param>
-        public Builder_SplitFileName(string fileName)
+        /// <param name="FileName"> Original file name </param>
+        public Builder_SplitFileName(string FileName)
         {
             // Save the filename
-            origName = fileName;
+            origName = FileName;
 
             // Create the collections for building the parts
             StringCollection parts = new StringCollection();
             StringBuilder partBuilder = new StringBuilder();
 
             // Check the first digit of the filename
-            bool lastDigit = Char.IsDigit(fileName[0]);
-            partBuilder.Append(fileName[0]);
-            bool thisDigit;
+            bool lastDigit = Char.IsDigit(FileName[0]);
+            partBuilder.Append(FileName[0]);
 
             // Step through the remaining characters
-            for (int i = 1; i < fileName.Length; i++)
+            for (int i = 1; i < FileName.Length; i++)
             {
                 // Underscore and dash always seperate parts
-                if ((fileName[i] == '_') || (fileName[i] == '-'))
+                if ((FileName[i] == '_') || (FileName[i] == '-'))
                 {
                     // Only add this part, if it has length already
                     if (partBuilder.Length > 0)
@@ -46,12 +45,12 @@ namespace SobekCM.Resource_Object.Builder
                 else
                 {
                     // Check the next character to see if it is a number or not
-                    thisDigit = Char.IsDigit(fileName[i]);
+                    bool thisDigit = Char.IsDigit(FileName[i]);
 
                     // If this is the same type as before, this continues the same part
                     if (thisDigit == lastDigit)
                     {
-                        partBuilder.Append(fileName[i]);
+                        partBuilder.Append(FileName[i]);
                     }
                     else
                     {
@@ -63,7 +62,7 @@ namespace SobekCM.Resource_Object.Builder
                         }
 
                         // Start the next part
-                        partBuilder.Append(fileName[i]);
+                        partBuilder.Append(FileName[i]);
                     }
 
                     // Save the digit flag

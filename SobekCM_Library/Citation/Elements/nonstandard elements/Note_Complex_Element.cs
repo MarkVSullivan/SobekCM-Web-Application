@@ -120,7 +120,7 @@ namespace SobekCM.Library.Citation.Elements
             int notes_count = 0;
             if (Bib.Bib_Info.Notes_Count > 0)
             {
-                notes_count += Bib.Bib_Info.Notes.Count(ThisNote => ((ThisNote.Note_Type != Note_Type_Enum.statement_of_responsibility) || (Include_Statement_Responsibility)) && (ThisNote.Note_Type != Note_Type_Enum.default_type));
+                notes_count += Bib.Bib_Info.Notes.Count(ThisNote => ((ThisNote.Note_Type != Note_Type_Enum.StatementOfResponsibility) || (Include_Statement_Responsibility)) && (ThisNote.Note_Type != Note_Type_Enum.DefaultType));
             }
 
             if (notes_count == 0)
@@ -169,8 +169,8 @@ namespace SobekCM.Library.Citation.Elements
                 int i = 1;
                 foreach (Note_Info thisNote in Bib.Bib_Info.Notes)
                 {
-                    if (((thisNote.Note_Type != Note_Type_Enum.statement_of_responsibility) || (Include_Statement_Responsibility)) &&
-                        ( thisNote.Note_Type != Note_Type_Enum.default_type ))
+                    if (((thisNote.Note_Type != Note_Type_Enum.StatementOfResponsibility) || (Include_Statement_Responsibility)) &&
+                        ( thisNote.Note_Type != Note_Type_Enum.DefaultType ))
                     {
                         string note_display_label = String.Empty;
                         string display_label_prompt = "Materials Selected";
@@ -188,31 +188,31 @@ namespace SobekCM.Library.Citation.Elements
                         else
                             Output.WriteLine("                  <option value=\"500\"></option>");
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.acquisition
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.Acquisition
                                              ? "                  <option value=\"541\" selected=\"selected\">Acquisition</option>"
                                              : "                  <option value=\"541\">Acquisition</option>");
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.additional_physical_form
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.AdditionalPhysicalForm
                                              ? "                  <option value=\"530\" selected=\"selected\">Additional Physical Form</option>"
                                              : "                  <option value=\"530\">Additional Physical Form</option>");
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.bibliography
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.Bibliography
                                              ? "                  <option value=\"504\" selected=\"selected\">Bibliography</option>"
                                              : "                  <option value=\"504\">Bibliography</option>");
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.biographical
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.Biographical
                                              ? "                  <option value=\"545\" selected=\"selected\">Biographical</option>"
                                              : "                  <option value=\"545\">Biographical</option>");
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.citation_reference
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.CitationReference
                                              ? "                  <option value=\"510\" selected=\"selected\">Citation/Reference</option>"
                                              : "                  <option value=\"510\">Citation/Reference</option>");
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.creation_credits
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.CreationCredits
                                              ? "                  <option value=\"508\" selected=\"selected\">Creation/Production Credits</option>"
                                              : "                  <option value=\"508\">Creation/Production Credits</option>");
 
-                        if (thisNote.Note_Type == Note_Type_Enum.dates_sequential_designation)
+                        if (thisNote.Note_Type == Note_Type_Enum.DatesSequentialDesignation)
                         {
                             Output.WriteLine("                  <option value=\"362\" selected=\"selected\">Dates/Sequential Designation</option>");
                             note_display_label = thisNote.Display_Label;
@@ -221,11 +221,11 @@ namespace SobekCM.Library.Citation.Elements
                         else
                             Output.WriteLine("                  <option value=\"362\">Dates/Sequential Designation</option>");
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.donation
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.Donation
                                              ? "                  <option value=\"donation\" selected=\"selected\">Donation</option>"
                                              : "                  <option value=\"donation\">Donation</option>");
 
-                        if (thisNote.Note_Type == Note_Type_Enum.exhibitions)
+                        if (thisNote.Note_Type == Note_Type_Enum.Exhibitions)
                         {
                             Output.WriteLine("                  <option value=\"585\" selected=\"selected\">Exhibitions</option>");
                             note_display_label = thisNote.Display_Label;
@@ -233,19 +233,19 @@ namespace SobekCM.Library.Citation.Elements
                         else
                             Output.WriteLine("                  <option value=\"585\">Exhibitions</option>");
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.funding
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.Funding
                                              ? "                  <option value=\"536\" selected=\"selected\">Funding</option>"
                                              : "                  <option value=\"536\">Funding</option>");
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.internal_comments
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.InternalComments
                                              ? "                  <option value=\"internal\" selected=\"selected\">Internal Comments</option>"
                                              : "                  <option value=\"internal\">Internal Comments</option>");
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.issuing_body
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.IssuingBody
                                              ? "                  <option value=\"550\" selected=\"selected\">Issuing Body</option>"
                                              : "                  <option value=\"550\">Issuing Body</option>");
 
-                        if (thisNote.Note_Type == Note_Type_Enum.language)
+                        if (thisNote.Note_Type == Note_Type_Enum.Language)
                         {
                             Output.WriteLine("                  <option value=\"546\" selected=\"selected\">Language</option>");
                             note_display_label = thisNote.Display_Label;
@@ -253,19 +253,19 @@ namespace SobekCM.Library.Citation.Elements
                         else
                             Output.WriteLine("                  <option value=\"546\">Language</option>");
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.numbering_peculiarities
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.NumberingPeculiarities
                                              ? "                  <option value=\"515\" selected=\"selected\">Numbering Peculiarities</option>"
                                              : "                  <option value=\"515\">Numbering Peculiarities</option>");
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.original_location
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.OriginalLocation
                                              ? "                  <option value=\"535\" selected=\"selected\">Original Location</option>"
                                              : "                  <option value=\"535\">Original Location</option>");
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.original_version
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.OriginalVersion
                                              ? "                  <option value=\"534\" selected=\"selected\">Original Version</option>"
                                              : "                  <option value=\"534\">Original Version</option>");
 
-                        if (thisNote.Note_Type == Note_Type_Enum.ownership)
+                        if (thisNote.Note_Type == Note_Type_Enum.Ownership)
                         {
                             Output.WriteLine("                  <option value=\"561\" selected=\"selected\">Ownership</option>");
                             note_display_label = thisNote.Display_Label;
@@ -273,7 +273,7 @@ namespace SobekCM.Library.Citation.Elements
                         else
                             Output.WriteLine("                  <option value=\"561\">Ownership</option>");
 
-                        if (thisNote.Note_Type == Note_Type_Enum.performers)
+                        if (thisNote.Note_Type == Note_Type_Enum.Performers)
                         {
                             Output.WriteLine("                  <option value=\"511\" selected=\"selected\">Performers</option>");
                             note_display_label = thisNote.Display_Label;
@@ -282,7 +282,7 @@ namespace SobekCM.Library.Citation.Elements
                         else
                             Output.WriteLine("                  <option value=\"511\">Performers</option>");
 
-                        if (thisNote.Note_Type == Note_Type_Enum.preferred_citation)
+                        if (thisNote.Note_Type == Note_Type_Enum.PreferredCitation)
                         {
                             Output.WriteLine("                  <option value=\"524\" selected=\"selected\">Preferred Citation</option>");
                             note_display_label = thisNote.Display_Label;
@@ -290,7 +290,7 @@ namespace SobekCM.Library.Citation.Elements
                         else
                             Output.WriteLine("                  <option value=\"524\">Preferred Citation</option>");
 
-                        if (thisNote.Note_Type == Note_Type_Enum.publications)
+                        if (thisNote.Note_Type == Note_Type_Enum.Publications)
                         {
                             Output.WriteLine("                  <option value=\"581\" selected=\"selected\">Publications</option>");
                             note_display_label = thisNote.Display_Label;
@@ -298,30 +298,30 @@ namespace SobekCM.Library.Citation.Elements
                         else
                             Output.WriteLine("                  <option value=\"581\">Publications</option>");
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.publication_status
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.PublicationStatus
                                              ? "                  <option value=\"pubstatus\" selected=\"selected\">Publication Status</option>"
                                              : "                  <option value=\"pubstatus\">Publication Status</option>");
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.restriction
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.Restriction
                                              ? "                  <option value=\"506\" selected=\"selected\">Restriction</option>"
                                              : "                  <option value=\"506\">Restriction</option>");
 
                         if (Include_Statement_Responsibility)
                         {
-                            Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.statement_of_responsibility
+                            Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.StatementOfResponsibility
                                                  ? "                  <option value=\"245\" selected=\"selected\">Statement of Responsibility</option>"
                                                  : "                  <option value=\"245\">Statement of Responsibility</option>");
                         }
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.system_details
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.SystemDetails
                                              ? "                  <option value=\"538\" selected=\"selected\">System Details</option>"
                                              : "                  <option value=\"538\">System Details</option>");
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.thesis
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.Thesis
                                              ? "                  <option value=\"502\" selected=\"selected\">Thesis</option>"
                                              : "                  <option value=\"502\">Thesis</option>");
 
-                        if (thisNote.Note_Type == Note_Type_Enum.date_venue)
+                        if (thisNote.Note_Type == Note_Type_Enum.DateVenue)
                         {
                             Output.WriteLine("                  <option value=\"518\" selected=\"selected\">Venue</option>");
                             note_display_label = thisNote.Display_Label;
@@ -329,7 +329,7 @@ namespace SobekCM.Library.Citation.Elements
                         else
                             Output.WriteLine("                  <option value=\"518\">Venue</option>");
 
-                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.version_identification
+                        Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.VersionIdentification
                                              ? "                  <option value=\"562\" selected=\"selected\">Version Identification</option>"
                                              : "                  <option value=\"562\">Version Identification</option>");
 
@@ -392,7 +392,7 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (Bib.Bib_Info.Notes_Count > 0)
                 {
-                    List<Note_Info> deletes = Bib.Bib_Info.Notes.Where(ThisNote => (ThisNote.Note_Type != Note_Type_Enum.statement_of_responsibility) && (ThisNote.Note_Type != Note_Type_Enum.default_type)).ToList();
+                    List<Note_Info> deletes = Bib.Bib_Info.Notes.Where(ThisNote => (ThisNote.Note_Type != Note_Type_Enum.StatementOfResponsibility) && (ThisNote.Note_Type != Note_Type_Enum.DefaultType)).ToList();
 
                     foreach (Note_Info thisNote in deletes)
                     {
@@ -422,111 +422,111 @@ namespace SobekCM.Library.Citation.Elements
                     switch (type)
                     {
                         case "541":
-                            type_enum = Note_Type_Enum.acquisition;
+                            type_enum = Note_Type_Enum.Acquisition;
                             break;
 
                         case "530":
-                            type_enum = Note_Type_Enum.additional_physical_form;
+                            type_enum = Note_Type_Enum.AdditionalPhysicalForm;
                             break;
 
                         case "504":
-                            type_enum = Note_Type_Enum.bibliography;
+                            type_enum = Note_Type_Enum.Bibliography;
                             break;
 
                         case "545":
-                            type_enum = Note_Type_Enum.biographical;
+                            type_enum = Note_Type_Enum.Biographical;
                             break;
 
                         case "510":
-                            type_enum = Note_Type_Enum.citation_reference;
+                            type_enum = Note_Type_Enum.CitationReference;
                             break;
 
                         case "508":
-                            type_enum = Note_Type_Enum.creation_credits;
+                            type_enum = Note_Type_Enum.CreationCredits;
                             break;
 
                         case "362":
-                            type_enum = Note_Type_Enum.dates_sequential_designation;
+                            type_enum = Note_Type_Enum.DatesSequentialDesignation;
                             break;
 
                         case "donation":
-                            type_enum = Note_Type_Enum.donation;
+                            type_enum = Note_Type_Enum.Donation;
                             break;
 
                         case "585":
-                            type_enum = Note_Type_Enum.exhibitions;
+                            type_enum = Note_Type_Enum.Exhibitions;
                             break;
 
                         case "536":
-                            type_enum = Note_Type_Enum.funding;
+                            type_enum = Note_Type_Enum.Funding;
                             break;
 
                         case "internal":
-                            type_enum = Note_Type_Enum.internal_comments;
+                            type_enum = Note_Type_Enum.InternalComments;
                             break;
 
                         case "550":
-                            type_enum = Note_Type_Enum.issuing_body;
+                            type_enum = Note_Type_Enum.IssuingBody;
                             break;
 
                         case "546":
-                            type_enum = Note_Type_Enum.language;
+                            type_enum = Note_Type_Enum.Language;
                             break;
 
                         case "515":
-                            type_enum = Note_Type_Enum.numbering_peculiarities;
+                            type_enum = Note_Type_Enum.NumberingPeculiarities;
                             break;
 
                         case "535":
-                            type_enum = Note_Type_Enum.original_location;
+                            type_enum = Note_Type_Enum.OriginalLocation;
                             break;
 
                         case "534":
-                            type_enum = Note_Type_Enum.original_version;
+                            type_enum = Note_Type_Enum.OriginalVersion;
                             break;
 
                         case "561":
-                            type_enum = Note_Type_Enum.ownership;
+                            type_enum = Note_Type_Enum.Ownership;
                             break;
 
                         case "511":
-                            type_enum = Note_Type_Enum.performers;
+                            type_enum = Note_Type_Enum.Performers;
                             break;
 
                         case "524":
-                            type_enum = Note_Type_Enum.preferred_citation;
+                            type_enum = Note_Type_Enum.PreferredCitation;
                             break;
 
                         case "581":
-                            type_enum = Note_Type_Enum.publications;
+                            type_enum = Note_Type_Enum.Publications;
                             break;
 
                         case "506":
-                            type_enum = Note_Type_Enum.restriction;
+                            type_enum = Note_Type_Enum.Restriction;
                             break;
 
                         case "245":
-                            type_enum = Note_Type_Enum.statement_of_responsibility;
+                            type_enum = Note_Type_Enum.StatementOfResponsibility;
                             break;
 
                         case "538":
-                            type_enum = Note_Type_Enum.system_details;
+                            type_enum = Note_Type_Enum.SystemDetails;
                             break;
 
                         case "502":
-                            type_enum = Note_Type_Enum.thesis;
+                            type_enum = Note_Type_Enum.Thesis;
                             break;
 
                         case "518":
-                            type_enum = Note_Type_Enum.date_venue;
+                            type_enum = Note_Type_Enum.DateVenue;
                             break;
 
                         case "562":
-                            type_enum = Note_Type_Enum.version_identification;
+                            type_enum = Note_Type_Enum.VersionIdentification;
                             break;
 
                         case "pubstatus":
-                            type_enum = Note_Type_Enum.publication_status;
+                            type_enum = Note_Type_Enum.PublicationStatus;
                             break;
                     }
 

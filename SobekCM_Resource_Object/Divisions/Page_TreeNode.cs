@@ -13,7 +13,7 @@ namespace SobekCM.Resource_Object.Divisions
     [Serializable]
     public class Page_TreeNode : abstract_TreeNode
     {
-        private List<SobekCM_File_Info> files;
+        private readonly List<SobekCM_File_Info> files;
 
         /// <summary> Constructor creates an empty instance of the Page_TreeNode class </summary>
         public Page_TreeNode() : base("Page", String.Empty)

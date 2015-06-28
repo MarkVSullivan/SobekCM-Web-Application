@@ -46,12 +46,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no catalog languages, the Catalog_Languages property creates a readonly collection to pass back out.</remarks>
         public int Catalog_Languages_Count
         {
-            get
-            {
-                if (catalog_languages == null)
-                    return 0;
-                else
-                    return catalog_languages.Count;
+            get {
+                return catalog_languages == null ? 0 : catalog_languages.Count;
             }
         }
 
@@ -60,12 +56,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no catalog languages, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Language_Info> Catalog_Languages
         {
-            get
-            {
-                if (catalog_languages == null)
-                    return new ReadOnlyCollection<Language_Info>(new List<Language_Info>());
-                else
-                    return new ReadOnlyCollection<Language_Info>(catalog_languages);
+            get {
+                return catalog_languages == null ? new ReadOnlyCollection<Language_Info>(new List<Language_Info>()) : new ReadOnlyCollection<Language_Info>(catalog_languages);
             }
         }
 
@@ -74,12 +66,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no MARC record content sources, the MARC_Record_Content_Sources property creates a readonly collection to pass back out.</remarks>
         public int MARC_Record_Content_Sources_Count
         {
-            get
-            {
-                if (marc_record_content_sources == null)
-                    return 0;
-                else
-                    return marc_record_content_sources.Count;
+            get {
+                return marc_record_content_sources == null ? 0 : marc_record_content_sources.Count;
             }
         }
 
@@ -88,25 +76,15 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no catalog sources, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> MARC_Record_Content_Sources
         {
-            get
-            {
-                if (marc_record_content_sources == null)
-                    return new ReadOnlyCollection<string>(new List<string>());
-                else
-                    return new ReadOnlyCollection<string>(marc_record_content_sources);
+            get {
+                return marc_record_content_sources == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(marc_record_content_sources);
             }
         }
 
         /// <summary> Main Record identifier ( which is generally the BibID + '_' + VID ) </summary>
         public Identifier_Info Main_Record_Identifier
         {
-            get
-            {
-                if (main_record_identifier == null)
-                    main_record_identifier = new Identifier_Info();
-
-                return main_record_identifier;
-            }
+            get { return main_record_identifier ?? (main_record_identifier = new Identifier_Info()); }
         }
 
         /// <summary> Source for this record  </summary>
@@ -185,42 +163,42 @@ namespace SobekCM.Resource_Object.Bib_Info
         }
 
         /// <summary> Add the MODS information for this record information to the stream writer </summary>
-        /// <param name="results"> Writer to the MODS building stream </param>
-        internal void Add_MODS(TextWriter results)
+        /// <param name="Results"> Writer to the MODS building stream </param>
+        internal void Add_MODS(TextWriter Results)
         {
-            results.WriteLine("<mods:recordInfo>");
+            Results.WriteLine("<mods:recordInfo>");
             if ((main_record_identifier != null) && (main_record_identifier.Identifier.Length > 0))
             {
                 if (main_record_identifier.Type.Length > 0)
                 {
-                    results.WriteLine("<mods:recordIdentifier source=\"" + main_record_identifier.Type + "\">" + main_record_identifier.Identifier + "</mods:recordIdentifier>");
+                    Results.WriteLine("<mods:recordIdentifier source=\"" + main_record_identifier.Type + "\">" + main_record_identifier.Identifier + "</mods:recordIdentifier>");
                 }
                 else
                 {
-                    results.WriteLine("<mods:recordIdentifier>" + main_record_identifier.Identifier + "</mods:recordIdentifier>");
+                    Results.WriteLine("<mods:recordIdentifier>" + main_record_identifier.Identifier + "</mods:recordIdentifier>");
                 }
             }
 
             if (!String.IsNullOrEmpty(marc_creation_date))
             {
-                results.WriteLine("<mods:recordCreationDate encoding=\"marc\">" + marc_creation_date + "</mods:recordCreationDate>");
+                Results.WriteLine("<mods:recordCreationDate encoding=\"marc\">" + marc_creation_date + "</mods:recordCreationDate>");
             }
 
             if (!String.IsNullOrEmpty(record_origin))
             {
-                results.WriteLine("<mods:recordOrigin>" + base.Convert_String_To_XML_Safe(record_origin) + "</mods:recordOrigin>");
+                Results.WriteLine("<mods:recordOrigin>" + Convert_String_To_XML_Safe(record_origin) + "</mods:recordOrigin>");
             }
 
             if (!String.IsNullOrEmpty(record_content_source))
             {
-                results.WriteLine("<mods:recordContentSource>" + base.Convert_String_To_XML_Safe(record_content_source) + "</mods:recordContentSource>");
+                Results.WriteLine("<mods:recordContentSource>" + Convert_String_To_XML_Safe(record_content_source) + "</mods:recordContentSource>");
             }
 
             if (marc_record_content_sources != null)
             {
                 foreach (string marcSource in marc_record_content_sources)
                 {
-                    results.WriteLine("<mods:recordContentSource authority=\"marcorg\">" + marcSource + "</mods:recordContentSource>");
+                    Results.WriteLine("<mods:recordContentSource authority=\"marcorg\">" + marcSource + "</mods:recordContentSource>");
                 }
             }
 
@@ -230,33 +208,33 @@ namespace SobekCM.Resource_Object.Bib_Info
                 {
                     if (thisLanguage.hasData)
                     {
-                        results.Write("<mods:languageOfCataloging");
-                        results.WriteLine(">");
+                        Results.Write("<mods:languageOfCataloging");
+                        Results.WriteLine(">");
                         if (thisLanguage.Language_Text.Length > 0)
                         {
-                            results.Write("<mods:languageTerm type=\"text\">" + base.Convert_String_To_XML_Safe(thisLanguage.Language_Text) + "</mods:languageTerm>\r\n");
+                            Results.Write("<mods:languageTerm type=\"text\">" + Convert_String_To_XML_Safe(thisLanguage.Language_Text) + "</mods:languageTerm>\r\n");
                         }
 
                         if (thisLanguage.Language_ISO_Code.Length > 0)
                         {
-                            results.Write("<mods:languageTerm type=\"code\" authority=\"iso639-2b\">" + base.Convert_String_To_XML_Safe(thisLanguage.Language_ISO_Code) + "</mods:languageTerm>\r\n");
+                            Results.Write("<mods:languageTerm type=\"code\" authority=\"iso639-2b\">" + Convert_String_To_XML_Safe(thisLanguage.Language_ISO_Code) + "</mods:languageTerm>\r\n");
                         }
 
                         if (thisLanguage.Language_RFC_Code.Length > 0)
                         {
-                            results.Write("<mods:languageTerm type=\"code\" authority=\"rfc3066\">" + base.Convert_String_To_XML_Safe(thisLanguage.Language_RFC_Code) + "</mods:languageTerm>\r\n");
+                            Results.Write("<mods:languageTerm type=\"code\" authority=\"rfc3066\">" + Convert_String_To_XML_Safe(thisLanguage.Language_RFC_Code) + "</mods:languageTerm>\r\n");
                         }
-                        results.WriteLine("</mods:languageOfCataloging>");
+                        Results.WriteLine("</mods:languageOfCataloging>");
                     }
                 }
             }
 
             if (!String.IsNullOrEmpty(descriptionStandard))
             {
-                results.WriteLine("<mods:descriptionStandard>" + base.Convert_String_To_XML_Safe(descriptionStandard) + "</mods:descriptionStandard>");
+                Results.WriteLine("<mods:descriptionStandard>" + Convert_String_To_XML_Safe(descriptionStandard) + "</mods:descriptionStandard>");
             }
 
-            results.WriteLine("</mods:recordInfo>");
+            Results.WriteLine("</mods:recordInfo>");
         }
     }
 }

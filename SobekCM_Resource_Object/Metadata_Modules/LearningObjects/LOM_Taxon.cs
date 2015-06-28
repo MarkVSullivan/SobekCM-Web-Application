@@ -1,8 +1,10 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
+
+#endregion
 
 namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
 {
@@ -10,7 +12,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
     [Serializable]
     public class LOM_Taxon
     {
-        private List<LOM_LanguageString> entries;
+        private readonly List<LOM_LanguageString> entries;
 
         /// <summary> Identifier of the taxon, such as a number or letter combination provided by the source of the taxonomy ( IEEE-LOM 9.2.2.1 ) </summary>
         public string ID { get; set;  }

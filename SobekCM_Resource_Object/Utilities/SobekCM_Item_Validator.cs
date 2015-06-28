@@ -3,8 +3,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text.RegularExpressions;
-using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Behaviors;
+using SobekCM.Resource_Object.Bib_Info;
 
 #endregion
 

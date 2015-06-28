@@ -82,14 +82,14 @@ namespace SobekCM.Resource_Object.Divisions
 
         /// <summary> Constructor for a new FileMD5 object which accepts the filename
         /// for the first file to be checked. </summary>
-        /// <param name="fileName"> Path and filename for the file to check </param>
-        public FileMD5(string fileName)
+        /// <param name="FileName"> Path and filename for the file to check </param>
+        public FileMD5(string FileName)
         {
             // Save the fileName parameter
-            this.fileName = fileName;
+            fileName = FileName;
 
             // Compute the checksum on the first file
-            computeChecksum();
+            ComputeChecksum();
         }
 
         /// <summary> Constructor for a new FileMD5 object. </summary>
@@ -125,7 +125,7 @@ namespace SobekCM.Resource_Object.Divisions
             {
                 // Save the new filename and compute the checksum
                 fileName = value;
-                computeChecksum();
+                ComputeChecksum();
             }
         }
 
@@ -135,7 +135,7 @@ namespace SobekCM.Resource_Object.Divisions
         public string Calculate_Checksum(string File)
         {
             fileName = File;
-            computeChecksum();
+            ComputeChecksum();
             return hashResult;
         }
 
@@ -145,7 +145,7 @@ namespace SobekCM.Resource_Object.Divisions
 
         /// <summary> Private helper method that computes the checksum for the 
         /// current file and set the private hashResult string to the checksum </summary>
-        private void computeChecksum()
+        private void ComputeChecksum()
         {
             // Perform this in a try/catch
             try
@@ -190,15 +190,15 @@ namespace SobekCM.Resource_Object.Divisions
         /// <returns> Hex character as a string </returns>
         private static string GetHex(double Dec)
         {
-            string Value = "";
+            string value = "";
             char c = 'a';
             if (Dec >= 10 && Dec <= 15)
             {
                 c += (char) (Dec - 10);
-                Value += c;
+                value += c;
             }
-            else Value = "" + Dec;
-            return Value;
+            else value = "" + Dec;
+            return value;
         }
     }
 }

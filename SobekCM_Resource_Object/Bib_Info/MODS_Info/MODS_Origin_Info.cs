@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 
 #endregion
 
@@ -115,9 +116,9 @@ namespace SobekCM.Resource_Object.Bib_Info
         private string edition;
         private List<Origin_Info_Frequency> frequencies;
         private List<Origin_Info_Issuance_Enum> issuances;
-        private string marc_dateIssued;
-        private string marc_dateIssued_end;
-        private string marc_dateIssued_start;
+        private string marcDateIssued;
+        private string marcDateIssuedEnd;
+        private string marcDateIssuedStart;
         private List<Origin_Info_Place> places;
         private List<string> publishers;
 
@@ -151,12 +152,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no frequencies, the Frequencies property creates a readonly collection to pass back out.</remarks>
         public int Frequencies_Count
         {
-            get
-            {
-                if (frequencies == null)
-                    return 0;
-                else
-                    return frequencies.Count;
+            get {
+                return frequencies == null ? 0 : frequencies.Count;
             }
         }
 
@@ -165,12 +162,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no frequencies, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Origin_Info_Frequency> Frequencies
         {
-            get
-            {
-                if (frequencies == null)
-                    return new ReadOnlyCollection<Origin_Info_Frequency>(new List<Origin_Info_Frequency>());
-                else
-                    return new ReadOnlyCollection<Origin_Info_Frequency>(frequencies);
+            get {
+                return frequencies == null ? new ReadOnlyCollection<Origin_Info_Frequency>(new List<Origin_Info_Frequency>()) : new ReadOnlyCollection<Origin_Info_Frequency>(frequencies);
             }
         }
 
@@ -179,12 +172,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no issuances, the Issuances property creates a readonly collection to pass back out.</remarks>
         public int Issuances_Count
         {
-            get
-            {
-                if (issuances == null)
-                    return 0;
-                else
-                    return issuances.Count;
+            get {
+                return issuances == null ? 0 : issuances.Count;
             }
         }
 
@@ -193,12 +182,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no issuances, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Origin_Info_Issuance_Enum> Issuances
         {
-            get
-            {
-                if (issuances == null)
-                    return new ReadOnlyCollection<Origin_Info_Issuance_Enum>(new List<Origin_Info_Issuance_Enum>());
-                else
-                    return new ReadOnlyCollection<Origin_Info_Issuance_Enum>(issuances);
+            get {
+                return issuances == null ? new ReadOnlyCollection<Origin_Info_Issuance_Enum>(new List<Origin_Info_Issuance_Enum>()) : new ReadOnlyCollection<Origin_Info_Issuance_Enum>(issuances);
             }
         }
 
@@ -207,12 +192,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no publication places, the Places property creates a readonly collection to pass back out.</remarks>
         public int Places_Count
         {
-            get
-            {
-                if (places == null)
-                    return 0;
-                else
-                    return places.Count;
+            get {
+                return places == null ? 0 : places.Count;
             }
         }
 
@@ -221,12 +202,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no publication places, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Origin_Info_Place> Places
         {
-            get
-            {
-                if (places == null)
-                    return new ReadOnlyCollection<Origin_Info_Place>(new List<Origin_Info_Place>());
-                else
-                    return new ReadOnlyCollection<Origin_Info_Place>(places);
+            get {
+                return places == null ? new ReadOnlyCollection<Origin_Info_Place>(new List<Origin_Info_Place>()) : new ReadOnlyCollection<Origin_Info_Place>(places);
             }
         }
 
@@ -261,15 +238,15 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Gets and sets the marc encoded date issued from the 260 |c </summary>
         public string MARC_DateIssued
         {
-            get { return marc_dateIssued ?? String.Empty; }
-            set { marc_dateIssued = value; }
+            get { return marcDateIssued ?? String.Empty; }
+            set { marcDateIssued = value; }
         }
 
         /// <summary> Gets and sets the marc encoded start of date issued </summary>
         public string MARC_DateIssued_Start
         {
-            get { return marc_dateIssued_start ?? String.Empty; }
-            set { marc_dateIssued_start = value; }
+            get { return marcDateIssuedStart ?? String.Empty; }
+            set { marcDateIssuedStart = value; }
         }
 
         /// <summary> Gets and sets the marc encoded end of date issued </summary>
@@ -277,10 +254,9 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             get
             {
-                return marc_dateIssued_end ?? String.Empty;
-                ;
+                return marcDateIssuedEnd ?? String.Empty;
             }
-            set { marc_dateIssued_end = value; }
+            set { marcDateIssuedEnd = value; }
         }
 
         /// <summary> Gets and sets date the item was reprinted or reissued</summary>
@@ -295,12 +271,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Gets the number of publishers associated with this origination information </summary>
         internal int Publishers_Count
         {
-            get
-            {
-                if (publishers == null)
-                    return 0;
-                else
-                    return publishers.Count;
+            get {
+                return publishers == null ? 0 : publishers.Count;
             }
         }
 
@@ -322,12 +294,8 @@ namespace SobekCM.Resource_Object.Bib_Info
                 // Step through all the publication places
                 if (places != null)
                 {
-                    foreach (Origin_Info_Place place in places)
-                    {
-                        if ((place.Place_ISO3166.Length > 0) || (place.Place_MarcCountry.Length > 0) || (place.Place_Text.Length > 0))
-                        {
-                            return true;
-                        }
+                    if (places.Any(Place => (Place.Place_ISO3166.Length > 0) || (Place.Place_MarcCountry.Length > 0) || (Place.Place_Text.Length > 0))) {
+                        return true;
                     }
                 }
 
@@ -340,15 +308,15 @@ namespace SobekCM.Resource_Object.Bib_Info
                     return true;
 
                 // Does the marc date exist?
-                if ((!String.IsNullOrEmpty(marc_dateIssued)) && (marc_dateIssued != "-1"))
+                if ((!String.IsNullOrEmpty(marcDateIssued)) && (marcDateIssued != "-1"))
                     return true;
 
                 // Does the marc date start exist?
-                if ((!String.IsNullOrEmpty(marc_dateIssued_start)) && (marc_dateIssued_start != "-1"))
+                if ((!String.IsNullOrEmpty(marcDateIssuedStart)) && (marcDateIssuedStart != "-1"))
                     return true;
 
                 // Does the marc end date exist?
-                if ((!String.IsNullOrEmpty(marc_dateIssued_end)) && (marc_dateIssued_end != "-1"))
+                if ((!String.IsNullOrEmpty(marcDateIssuedEnd)) && (marcDateIssuedEnd != "-1"))
                     return true;
 
                 // Is the copyright date exist?
@@ -420,29 +388,27 @@ namespace SobekCM.Resource_Object.Bib_Info
                 publishers = new List<string>();
 
 
-            foreach (string publisher in publishers)
-            {
-                if (Publisher_Name == publisher)
-                    return;
+            if (publishers.Any(Publisher => Publisher_Name == Publisher)) {
+                return;
             }
             publishers.Add(Publisher_Name);
         }
 
-        internal void Add_MODS(TextWriter results)
+        internal void Add_MODS(TextWriter Results)
         {
             // Return if there is no data
             if (!hasData)
                 return;
 
             // Start this
-            results.Write("<mods:originInfo>\r\n");
+            Results.Write("<mods:originInfo>\r\n");
 
             // Add all the publishers names
             if (publishers != null)
             {
                 foreach (string thisPublisher in publishers)
                 {
-                    results.Write("<mods:publisher>" + base.Convert_String_To_XML_Safe(thisPublisher) + "</mods:publisher>\r\n");
+                    Results.Write("<mods:publisher>" + Convert_String_To_XML_Safe(thisPublisher) + "</mods:publisher>\r\n");
                 }
             }
 
@@ -453,61 +419,61 @@ namespace SobekCM.Resource_Object.Bib_Info
                 {
                     if ((place.Place_ISO3166.Length > 0) || (place.Place_MarcCountry.Length > 0) || (place.Place_Text.Length > 0))
                     {
-                        results.Write("<mods:place>\r\n");
+                        Results.Write("<mods:place>\r\n");
                         if (place.Place_Text.Length > 0)
-                            results.Write("<mods:placeTerm type=\"text\">" + base.Convert_String_To_XML_Safe(place.Place_Text) + "</mods:placeTerm>\r\n");
+                            Results.Write("<mods:placeTerm type=\"text\">" + Convert_String_To_XML_Safe(place.Place_Text) + "</mods:placeTerm>\r\n");
                         if (place.Place_MarcCountry.Length > 0)
-                            results.Write("<mods:placeTerm type=\"code\" authority=\"marccountry\">" + place.Place_MarcCountry + "</mods:placeTerm>\r\n");
+                            Results.Write("<mods:placeTerm type=\"code\" authority=\"marccountry\">" + place.Place_MarcCountry + "</mods:placeTerm>\r\n");
                         if (place.Place_ISO3166.Length > 0)
-                            results.Write("<mods:placeTerm type=\"code\" authority=\"iso3166\">" + place.Place_ISO3166 + "</mods:placeTerm>\r\n");
-                        results.Write("</mods:place>\r\n");
+                            Results.Write("<mods:placeTerm type=\"code\" authority=\"iso3166\">" + place.Place_ISO3166 + "</mods:placeTerm>\r\n");
+                        Results.Write("</mods:place>\r\n");
                     }
                 }
             }
 
             // Is the date issued exist?
             if ((!String.IsNullOrEmpty(dateIssued)) && (dateIssued != "-1"))
-                results.Write("<mods:dateIssued>" + base.Convert_String_To_XML_Safe(dateIssued) + "</mods:dateIssued>\r\n");
+                Results.Write("<mods:dateIssued>" + Convert_String_To_XML_Safe(dateIssued) + "</mods:dateIssued>\r\n");
 
             // Does the marc date exist?
-            if (!String.IsNullOrEmpty(marc_dateIssued))
-                results.Write("<mods:dateIssued encoding=\"marc\">" + base.Convert_String_To_XML_Safe(marc_dateIssued) + "</mods:dateIssued>\r\n");
+            if (!String.IsNullOrEmpty(marcDateIssued))
+                Results.Write("<mods:dateIssued encoding=\"marc\">" + Convert_String_To_XML_Safe(marcDateIssued) + "</mods:dateIssued>\r\n");
 
             // Does the marc start date exist?
-            if (!String.IsNullOrEmpty(marc_dateIssued_start))
-                results.Write("<mods:dateIssued encoding=\"marc\" point=\"start\">" + marc_dateIssued_start + "</mods:dateIssued>\r\n");
+            if (!String.IsNullOrEmpty(marcDateIssuedStart))
+                Results.Write("<mods:dateIssued encoding=\"marc\" point=\"start\">" + marcDateIssuedStart + "</mods:dateIssued>\r\n");
 
             // Does the marc end date exist?
-            if (!String.IsNullOrEmpty(marc_dateIssued_end))
-                results.Write("<mods:dateIssued encoding=\"marc\" point=\"end\">" + marc_dateIssued_end + "</mods:dateIssued>\r\n");
+            if (!String.IsNullOrEmpty(marcDateIssuedEnd))
+                Results.Write("<mods:dateIssued encoding=\"marc\" point=\"end\">" + marcDateIssuedEnd + "</mods:dateIssued>\r\n");
 
             // Is the date created exist?
             if ((!String.IsNullOrEmpty(dateCreated)) && (dateCreated != "-1"))
-                results.Write("<mods:dateCreated>" + base.Convert_String_To_XML_Safe(dateCreated) + "</mods:dateCreated>\r\n");
+                Results.Write("<mods:dateCreated>" + Convert_String_To_XML_Safe(dateCreated) + "</mods:dateCreated>\r\n");
 
             // Is the copyright date exist?
             if ((!String.IsNullOrEmpty(dateCopyrighted)) && (dateCopyrighted != "-1"))
-                results.Write("<mods:copyrightDate>" + base.Convert_String_To_XML_Safe(dateCopyrighted) + "</mods:copyrightDate>\r\n");
+                Results.Write("<mods:copyrightDate>" + Convert_String_To_XML_Safe(dateCopyrighted) + "</mods:copyrightDate>\r\n");
 
             // Does the edition exist?
             if (!String.IsNullOrEmpty(edition))
-                results.Write("<mods:edition>" + base.Convert_String_To_XML_Safe(edition) + "</mods:edition>\r\n");
+                Results.Write("<mods:edition>" + Convert_String_To_XML_Safe(edition) + "</mods:edition>\r\n");
 
             // Does reprint or reissue date exist?
             if (!String.IsNullOrEmpty(dateReprinted))
-                results.Write("<mods:dateOther type=\"reprint\">" + base.Convert_String_To_XML_Safe(dateReprinted) + "</mods:dateOther>\r\n");
+                Results.Write("<mods:dateOther type=\"reprint\">" + Convert_String_To_XML_Safe(dateReprinted) + "</mods:dateOther>\r\n");
 
             // Add the frequency
             if (frequencies != null)
             {
                 foreach (Origin_Info_Frequency frequency in frequencies)
                 {
-                    results.Write("<mods:frequency");
+                    Results.Write("<mods:frequency");
                     if (frequency.Authority.Length > 0)
                     {
-                        results.Write(" authority=\"" + frequency.Authority + "\"");
+                        Results.Write(" authority=\"" + frequency.Authority + "\"");
                     }
-                    results.Write(">" + base.Convert_String_To_XML_Safe(frequency.Term) + "</mods:frequency>\r\n");
+                    Results.Write(">" + Convert_String_To_XML_Safe(frequency.Term) + "</mods:frequency>\r\n");
                 }
             }
 
@@ -518,40 +484,40 @@ namespace SobekCM.Resource_Object.Bib_Info
                 {
                     if (issuance != Origin_Info_Issuance_Enum.UNKNOWN)
                     {
-                        results.Write("<mods:issuance>");
+                        Results.Write("<mods:issuance>");
                         switch (issuance)
                         {
                             case Origin_Info_Issuance_Enum.Continuing:
-                                results.Write("continuing");
+                                Results.Write("continuing");
                                 break;
 
                             case Origin_Info_Issuance_Enum.Integrating_Resource:
-                                results.Write("integrating resource");
+                                Results.Write("integrating resource");
                                 break;
 
                             case Origin_Info_Issuance_Enum.Monographic:
-                                results.Write("monographic");
+                                Results.Write("monographic");
                                 break;
 
                             case Origin_Info_Issuance_Enum.Multipart_Monograph:
-                                results.Write("multipart monograph");
+                                Results.Write("multipart monograph");
                                 break;
 
                             case Origin_Info_Issuance_Enum.Serial:
-                                results.Write("serial");
+                                Results.Write("serial");
                                 break;
 
                             case Origin_Info_Issuance_Enum.Single_Unit:
-                                results.Write("single unit");
+                                Results.Write("single unit");
                                 break;
                         }
-                        results.Write("</mods:issuance>\r\n");
+                        Results.Write("</mods:issuance>\r\n");
                     }
                 }
             }
 
             // End this
-            results.Write("</mods:originInfo>\r\n");
+            Results.Write("</mods:originInfo>\r\n");
         }
 
         #endregion
@@ -563,9 +529,9 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (places != null) places.Clear();
 
             dateIssued = null;
-            marc_dateIssued = null;
-            marc_dateIssued_end = null;
-            marc_dateIssued_start = null;
+            marcDateIssued = null;
+            marcDateIssuedEnd = null;
+            marcDateIssuedStart = null;
             dateCopyrighted = null;
             dateReprinted = null;
             edition = null;
@@ -586,9 +552,9 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (frequencies != null) frequencies.Clear();
             if (issuances != null) issuances.Clear();
             dateIssued = null;
-            marc_dateIssued = null;
-            marc_dateIssued_end = null;
-            marc_dateIssued_start = null;
+            marcDateIssued = null;
+            marcDateIssuedEnd = null;
+            marcDateIssuedStart = null;
             dateCopyrighted = null;
             dateReprinted = null;
             edition = null;

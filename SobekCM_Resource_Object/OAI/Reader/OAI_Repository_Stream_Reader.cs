@@ -27,10 +27,10 @@ namespace SobekCM.Resource_Object.OAI.Reader
                 OAI_Repository_Records_List returnValue = new OAI_Repository_Records_List();
 
                 // Get the URL
-                string URL = OAI_URL + "?verb=ListRecords&resumptionToken=" + Resumption_Token;
+                string url = OAI_URL + "?verb=ListRecords&resumptionToken=" + Resumption_Token;
 
                 // prepare the web page we will be asking for
-                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(URL);
+                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
 
                 // execute the request
                 HttpWebResponse response = (HttpWebResponse) request.GetResponse();
@@ -63,12 +63,12 @@ namespace SobekCM.Resource_Object.OAI.Reader
                 OAI_Repository_Records_List returnValue = new OAI_Repository_Records_List();
 
                 // Get the URL
-                string URL = OAI_URL + "?verb=ListRecords&set=" + Set + "&metadataPrefix=" + MetadataPrefix;
+                string url = OAI_URL + "?verb=ListRecords&set=" + Set + "&metadataPrefix=" + MetadataPrefix;
                 if (Set.Length == 0)
-                    URL = OAI_URL + "?verb=ListRecords&metadataPrefix=" + MetadataPrefix;
+                    url = OAI_URL + "?verb=ListRecords&metadataPrefix=" + MetadataPrefix;
 
                 // prepare the web page we will be asking for
-                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(URL);
+                HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
 
                 // execute the request
                 HttpWebResponse response = (HttpWebResponse) request.GetResponse();
@@ -81,16 +81,16 @@ namespace SobekCM.Resource_Object.OAI.Reader
 
                 return returnValue;
             }
-            catch (Exception ee)
+            catch
             {
                 return null;
             }
         }
 
-        private static void read_list_of_records(Stream resStream, OAI_Repository_Records_List returnValue)
+        private static void read_list_of_records(Stream ResStream, OAI_Repository_Records_List ReturnValue)
         {
             // Try to read the XML
-            XmlTextReader r = new XmlTextReader(resStream);
+            XmlTextReader r = new XmlTextReader(ResStream);
 
             bool inRecord = false;
             OAI_Repository_DublinCore_Record thisRecord = new OAI_Repository_DublinCore_Record();
@@ -242,7 +242,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
                     else if ((r.NodeType == XmlNodeType.EndElement) && (r.Name == "record"))
                     {
                         inRecord = false;
-                        returnValue.Add_Record(thisRecord);
+                        ReturnValue.Add_Record(thisRecord);
                     }
                 }
                 else
@@ -258,7 +258,7 @@ namespace SobekCM.Resource_Object.OAI.Reader
                         r.Read();
                         if ((r.NodeType == XmlNodeType.Text) && (r.Value.Trim().Length > 0))
                         {
-                            returnValue.Resumption_Token = r.Value;
+                            ReturnValue.Resumption_Token = r.Value;
                         }
                         break;
                     }
@@ -266,6 +266,9 @@ namespace SobekCM.Resource_Object.OAI.Reader
             }
         }
 
+        /// <summary> Gets the basic OAI-PMH repository information about a repository, indicated by URL </summary>
+        /// <param name="OAI_URL"> URL for the OAI-PMH repository to query </param>
+        /// <returns> Information about the repository, from an Identify OAI-PMH request </returns>
         public static OAI_Repository_Information Identify(string OAI_URL)
         {
             // Create the return object 
@@ -281,6 +284,14 @@ namespace SobekCM.Resource_Object.OAI.Reader
 
                 // we will read data via the response stream
                 Stream resStream = response.GetResponseStream();
+
+                // Was it null?
+                if (resStream == null)
+                {
+                    returnValue.Is_Valid = false;
+                    return returnValue;
+                }
+
 
                 // Try to read the XML
                 XmlTextReader r = new XmlTextReader(resStream);
@@ -391,6 +402,9 @@ namespace SobekCM.Resource_Object.OAI.Reader
             return returnValue;
         }
 
+        /// <summary> Adds the list of all the sets to this OAI-PMH repository information object </summary>
+        /// <param name="Repository"> Repository information to add set information to </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
         public static bool List_Sets(OAI_Repository_Information Repository)
         {
             try
@@ -403,6 +417,10 @@ namespace SobekCM.Resource_Object.OAI.Reader
 
                 // we will read data via the response stream
                 Stream resStream = response.GetResponseStream();
+
+                // Was this null?
+                if (resStream == null)
+                    return false;
 
                 // Try to read the XML
                 XmlTextReader r = new XmlTextReader(resStream);
@@ -475,6 +493,9 @@ namespace SobekCM.Resource_Object.OAI.Reader
             return true;
         }
 
+        /// <summary> Add the list of possible metadata formats to the OAI-PMH repository information object </summary>
+        /// <param name="Repository"> Repository information to add metadata format information to </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
         public static bool List_Metadata_Formats(OAI_Repository_Information Repository)
         {
             try
@@ -487,6 +508,10 @@ namespace SobekCM.Resource_Object.OAI.Reader
 
                 // we will read data via the response stream
                 Stream resStream = response.GetResponseStream();
+
+                // Was this null?
+                if (resStream == null)
+                    return false;
 
                 // Try to read the XML
                 XmlTextReader r = new XmlTextReader(resStream);

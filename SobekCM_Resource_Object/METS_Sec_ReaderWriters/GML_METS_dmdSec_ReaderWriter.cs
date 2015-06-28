@@ -13,6 +13,7 @@ using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 
 namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 {
+    /// <summary> Geographic Markup Language (GML) reader that operates against a single METS section  </summary>
     public class GML_METS_dmdSec_ReaderWriter : XML_Writing_Base_Type, iPackage_dmdSec_ReaderWriter, iDivision_dmdSec_ReaderWriter
     {
         #region Properties and methods that implement iPackage_dmdSec_ReaderWriter

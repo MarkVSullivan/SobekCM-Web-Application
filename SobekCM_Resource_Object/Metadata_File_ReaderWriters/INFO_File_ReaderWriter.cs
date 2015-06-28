@@ -9,9 +9,7 @@ using System.IO;
 
 namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 {
-    /// <summary>
-    /// 
-    /// </summary>
+    /// <summary> INFO file reader/writer </summary>
     /// <remarks>INFO files were used in the DLC for a time to hold the structural information and file information</remarks>
     public class INFO_File_ReaderWriter : iMetadata_File_ReaderWriter
     {

@@ -13,22 +13,17 @@ namespace SobekCM.Resource_Object.Metadata_Modules
     public class DAITSS_Info : iMetadata_Module
     {
         private string account;
-        private bool archive;
         private string project;
         private string subaccount;
 
         /// <summary> Constructor for a new instance of the DAITSS_Info class </summary>
         public DAITSS_Info()
         {
-            archive = true;
+            toArchive = true;
         }
 
         /// <summary> Gets and sets the flag which indicates this material will be sent to DAITSS </summary>
-        public bool toArchive
-        {
-            get { return archive; }
-            set { archive = value; }
-        }
+        public bool toArchive { get; set; }
 
         /// <summary> Gets and sets the DAITSS account from the signed contract </summary>
         /// <value> This defaults to 'UF' if there is no value</value>
@@ -52,6 +47,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules
             set { project = value; }
         }
 
+        /// <summary> Gets the flag which indicates that there is data in this object that needs to be written to the METS file </summary>
         public bool hasData
         {
             get { return (( !String.IsNullOrEmpty(project)) && ( !String.IsNullOrEmpty(account))); }

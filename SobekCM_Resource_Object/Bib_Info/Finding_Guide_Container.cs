@@ -48,17 +48,17 @@ namespace SobekCM.Resource_Object.Bib_Info
         }
 
 
-        internal void toMETS(TextWriter writer, string sobekcm_namespace)
+        internal void ToMETS(TextWriter Writer, string SobekcmNamespace)
         {
             if (name.Length == 0)
                 return;
 
-            writer.Write("<" + sobekcm_namespace + ":Container");
+            Writer.Write("<" + SobekcmNamespace + ":Container");
             if (level > 0)
-                writer.Write(" level=\"" + level + "\"");
+                Writer.Write(" level=\"" + level + "\"");
             if (type.Length > 0)
-                writer.Write(" type=\"" + base.Convert_String_To_XML_Safe(type) + "\"");
-            writer.WriteLine(">" + base.Convert_String_To_XML_Safe(name) + "</" + sobekcm_namespace + ":Container>");
+                Writer.Write(" type=\"" + Convert_String_To_XML_Safe(type) + "\"");
+            Writer.WriteLine(">" + Convert_String_To_XML_Safe(name) + "</" + SobekcmNamespace + ":Container>");
         }
     }
 }

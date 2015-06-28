@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 
 #endregion
 
@@ -14,7 +13,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
     public class Coordinate_Line
     {
         private string label;
-        private List<Coordinate_Point> points;
+        private readonly List<Coordinate_Point> points;
         private string featureType;
 
 

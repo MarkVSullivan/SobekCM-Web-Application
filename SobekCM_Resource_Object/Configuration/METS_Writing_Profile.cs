@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
+
+#endregion
 
 namespace SobekCM.Resource_Object.Configuration
 {

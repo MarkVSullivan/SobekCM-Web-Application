@@ -109,11 +109,11 @@ namespace SobekCM.Resource_Object
                 results.Append("    <td>");
                 if ((thisTag.Tag == 8) || (thisTag.Tag == 7) || (thisTag.Tag == 6))
                 {
-                    results.Append(base.Convert_String_To_XML_Safe(thisTag.Control_Field_Value.Replace(" ", "^")));
+                    results.Append(Convert_String_To_XML_Safe(thisTag.Control_Field_Value.Replace(" ", "^")));
                 }
                 else
                 {
-                    results.Append(base.Convert_String_To_XML_Safe(thisTag.Control_Field_Value).Replace("|a", "<span style=\"color:blue;\">|a</span>").
+                    results.Append(Convert_String_To_XML_Safe(thisTag.Control_Field_Value).Replace("|a", "<span style=\"color:blue;\">|a</span>").
                                        Replace("|b", "<span style=\"color:blue;\">|b</span>").
                                        Replace("|c", "<span style=\"color:blue;\">|c</span>").
                                        Replace("|d", "<span style=\"color:blue;\">|d</span>").

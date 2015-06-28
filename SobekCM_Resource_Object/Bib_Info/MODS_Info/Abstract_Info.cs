@@ -68,14 +68,11 @@ namespace SobekCM.Resource_Object.Bib_Info
         #region IEquatable<Abstract_Info> Members
 
         /// <summary> Compares this object with another similarly typed object </summary>
-        /// <param name="other">Similarly types object </param>
+        /// <param name="Other">Similarly types object </param>
         /// <returns>TRUE if the two objects are sufficiently similar</returns>
-        public bool Equals(Abstract_Info other)
+        public bool Equals(Abstract_Info Other)
         {
-            if (Abstract_Text == other.Abstract_Text)
-                return true;
-            else
-                return false;
+            return String.Compare(Abstract_Text, Other.Abstract_Text, StringComparison.Ordinal) == 0;
         }
 
         #endregion
@@ -89,22 +86,22 @@ namespace SobekCM.Resource_Object.Bib_Info
 
             if (!String.IsNullOrEmpty(display_label))
             {
-                return "<b>" + display_label + "</b> " + base.Convert_String_To_XML_Safe(abstract_text);
+                return "<b>" + display_label + "</b> " + Convert_String_To_XML_Safe(abstract_text);
             }
-            else
-            {
-                return base.Convert_String_To_XML_Safe(abstract_text);
-            }
+            
+            return Convert_String_To_XML_Safe(abstract_text);
         }
 
         /// <summary> Writes this abstract as a MARC tag for aggregation into a MARC record </summary>
         /// <returns> Built MARC tag </returns>
         internal MARC_Field to_MARC_HTML()
         {
-            MARC_Field returnValue = new MARC_Field();
-            returnValue.Tag = 520;
-            returnValue.Indicators = "3 ";
-            returnValue.Control_Field_Value = "|a " + abstract_text.Replace("|", "&bar;");
+            MARC_Field returnValue = new MARC_Field
+            {
+                Tag = 520, 
+                Indicators = "3 ", 
+                Control_Field_Value = "|a " + abstract_text.Replace("|", "&bar;")
+            };
 
             if (type != null)
             {
@@ -132,21 +129,21 @@ namespace SobekCM.Resource_Object.Bib_Info
         }
 
         /// <summary> Writes this abstract as MODS to a writer writing to a stream ( either a file or web response stream )</summary>
-        /// <param name="returnValue"> Writer to the MODS building stream </param>
-        internal void Add_MODS(TextWriter returnValue)
+        /// <param name="ReturnValue"> Writer to the MODS building stream </param>
+        internal void Add_MODS(TextWriter ReturnValue)
         {
             if (abstract_text.Length == 0)
                 return;
 
-            returnValue.Write("<mods:abstract");
-            base.Add_ID(returnValue);
+            ReturnValue.Write("<mods:abstract");
+            Add_ID(ReturnValue);
             if (!String.IsNullOrEmpty(type))
-                returnValue.Write(" type=\"" + type + "\"");
+                ReturnValue.Write(" type=\"" + type + "\"");
             if (!String.IsNullOrEmpty(display_label))
-                returnValue.Write(" displayLabel=\"" + base.Convert_String_To_XML_Safe(display_label) + "\"");
+                ReturnValue.Write(" displayLabel=\"" + Convert_String_To_XML_Safe(display_label) + "\"");
             if (!String.IsNullOrEmpty(language))
-                returnValue.Write(" lang=\"" + language + "\"");
-            returnValue.Write(">" + base.Convert_String_To_XML_Safe(abstract_text) + "</mods:abstract>\r\n");
+                ReturnValue.Write(" lang=\"" + language + "\"");
+            ReturnValue.Write(">" + Convert_String_To_XML_Safe(abstract_text) + "</mods:abstract>\r\n");
         }
     }
 }

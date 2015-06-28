@@ -17,10 +17,10 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
     public class GeoSpatial_Information : iMetadata_Module
     {
         private string kml_reference;
-        private List<Coordinate_Line> lines;
+        private readonly List<Coordinate_Line> lines;
         private List<Coordinate_Point> points;
-        private List<Coordinate_Polygon> polygons;
-        private List<Coordinate_Circle> circles;
+        private readonly List<Coordinate_Polygon> polygons;
+        private readonly List<Coordinate_Circle> circles;
         private double sobekcm_main_spatial_distance;
         private string sobekcm_main_spatial_string;
 
@@ -73,16 +73,12 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
             foreach (Coordinate_Point thisPoint in Points)
             {
                 //create kml string (just a sample)
-                string Point_KML_String = "<Placemark><name>" + thisPoint.Label + "</name><point><coordinates>" + thisPoint.Latitude + "," + thisPoint.Longitude + "</coordinates></point></Placemark>";
+                string pointKMLString = "<Placemark><name>" + thisPoint.Label + "</name><point><coordinates>" + thisPoint.Latitude + "," + thisPoint.Longitude + "</coordinates></point></Placemark>";
 
-                Save_Item_Footprint(ItemID, thisPoint.Latitude, thisPoint.Longitude, -1.0, -1.0, -1.0, -1.0, Point_KML_String, DB_ConnectionString, out Error_Message);
+                Save_Item_Footprint(ItemID, thisPoint.Latitude, thisPoint.Longitude, -1.0, -1.0, -1.0, -1.0, pointKMLString, DB_ConnectionString, out Error_Message);
             }
 
             // Add each polygon (bounding box only)
-            double rect_latitude_a;
-            double rect_longitude_a;
-            double rect_latitude_b;
-            double rect_longitude_b;
             for (int rect_index = 0; rect_index < Polygon_Count; rect_index++)
             {
                 try
@@ -91,21 +87,19 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                     Coordinate_Polygon polygon = Get_Polygon(rect_index);
 
                     // Set initial values
-                    rect_latitude_a = -1.0;
-                    rect_longitude_a = -1.0;
-                    rect_latitude_b = -1.0;
-                    rect_longitude_b = -1.0;
+                    double rect_latitude_a = -1.0;
+                    double rect_longitude_a = -1.0;
+                    double rect_latitude_b = -1.0;
+                    double rect_longitude_b = -1.0;
 
                     // Step through each point
-                    double this_latitude;
-                    double this_longitude;
                     bool first_point = true;
                     foreach ( Coordinate_Point thisPoint in polygon.Edge_Points)
                     {
                         try
                         {
-                            this_latitude = thisPoint.Latitude;
-                            this_longitude = thisPoint.Longitude;
+                            double this_latitude = thisPoint.Latitude;
+                            double this_longitude = thisPoint.Longitude;
 
                             if (first_point)
                             {
@@ -161,12 +155,12 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         }
 
         /// <summary> Tries to convert a coordinate string into a floating point number </summary>
-        /// <param name="coordinate_string"> Cooordinate string to convert </param>
+        /// <param name="CoordinateString"> Cooordinate string to convert </param>
         /// <returns> Coordinate as a floating point (double) </returns>
-        public static double get_coordinate_float(string coordinate_string)
+        public static double get_coordinate_float(string CoordinateString)
         {
-            coordinate_string = coordinate_string.Replace("°", "");
-            return Convert.ToDouble(coordinate_string);
+            CoordinateString = CoordinateString.Replace("°", "");
+            return Convert.ToDouble(CoordinateString);
         }
 
         /// <summary> Saves ta single item footprint to the database by calling the appropriate stored procedure </summary>
@@ -177,6 +171,9 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         /// <param name="Rect_Longitude_A"> Longitude of the first point of a rectangular footprint </param>
         /// <param name="Rect_Latitude_B"> Latitude of the second point of a rectangular footprint </param>
         /// <param name="Rect_Longitude_B"> Longitude of the second point of a rectangular footprint </param>
+        /// <param name="Segment_KML"></param>
+        /// <param name="DB_ConnectionString"></param>
+        /// <param name="Error_Message"></param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         public static bool Save_Item_Footprint(int ItemID, double Point_Latitude, double Point_Longitude, double Rect_Latitude_A,
             double Rect_Longitude_A, double Rect_Latitude_B, double Rect_Longitude_B, string Segment_KML, string DB_ConnectionString, out string Error_Message )
@@ -197,9 +194,11 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
                 }
 
                 // Create the sql command / stored procedure
-                SqlCommand cmd = new SqlCommand("SobekCM_Save_Item_Footprint");
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Connection = sqlConnect;
+                SqlCommand cmd = new SqlCommand("SobekCM_Save_Item_Footprint")
+                {
+                    CommandType = CommandType.StoredProcedure, 
+                    Connection = sqlConnect
+                };
 
                 // Add the parameters
                 cmd.Parameters.AddWithValue("@itemid", ItemID);
@@ -283,15 +282,8 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         /// <value>TRUE if any data exists, otherwise FALSE </value>
         public bool hasData
         {
-            get
-            {
-                if (((points == null) || (points.Count == 0)) &&
-                    ((polygons == null) || (polygons.Count == 0)) &&
-                    ((lines == null) || (lines.Count == 0)) &&
-                    (String.IsNullOrEmpty(kml_reference)))
-                    return false;
-                else
-                    return true;
+            get {
+                return ((points != null) && (points.Count != 0)) || ((polygons != null) && (polygons.Count != 0)) || ((lines != null) && (lines.Count != 0)) || (!String.IsNullOrEmpty(kml_reference));
             }
         }
 
@@ -403,7 +395,6 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
 
             // Build the spatial_kml for this
             StringBuilder spatial_kml_builder = new StringBuilder(50);
-            string spatial_kml = String.Empty;
             try
             {
                 // Check for areas first
@@ -700,14 +691,11 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         }
 
         /// <summary> Pulls one coordinate line from the collection of lines associated with this digital resource </summary>
-        /// <param name="index"> Index of the line to retrieve </param>
+        /// <param name="Index"> Index of the line to retrieve </param>
         /// <returns> The indicated line or NULL </returns>
-        public Coordinate_Line Get_Line(int index)
+        public Coordinate_Line Get_Line(int Index)
         {
-            if (index < lines.Count)
-                return lines[index];
-            else
-                return null;
+            return Index < lines.Count ? lines[Index] : null;
         }
 
         /// <summary> Add a single, completely built line associated with this digital resource </summary>
@@ -719,6 +707,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
 
         /// <summary> Add a single, completely built line associated with this digital resource </summary>
         /// <param name="Line"> Coordinate line object associated with this digital resource </param>
+        /// <param name="FeatureType"> Feature type to add </param>
         public void Add_Line(Coordinate_Line Line, string FeatureType)
         {
             Line.FeatureType = FeatureType;
@@ -726,14 +715,11 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         }
 
         /// <summary> Pulls one coordinate polygon from the collection of polygons associated with this digital resource </summary>
-        /// <param name="index"> Index of the polygon to retrieve </param>
+        /// <param name="Index"> Index of the polygon to retrieve </param>
         /// <returns> The indicated polygon or NULL </returns>
-        public Coordinate_Polygon Get_Polygon(int index)
+        public Coordinate_Polygon Get_Polygon(int Index)
         {
-            if (index < polygons.Count)
-                return polygons[index];
-            else
-                return null;
+            return Index < polygons.Count ? polygons[Index] : null;
         }
 
         /// <summary> Add a single, completely built Cirlce associated with this digital resource </summary>
@@ -744,14 +730,11 @@ namespace SobekCM.Resource_Object.Metadata_Modules.GeoSpatial
         }
 
         /// <summary> Pulls one coordinate circle from the collection of circles associated with this digital resource </summary>
-        /// <param name="index"> Index of the circle to retrieve </param>
+        /// <param name="Index"> Index of the circle to retrieve </param>
         /// <returns> The indicated cirlce or NULL </returns>
-        public Coordinate_Circle Get_Circle(int index)
+        public Coordinate_Circle Get_Circle(int Index)
         {
-            if (index < circles.Count)
-                return circles[index];
-            else
-                return null;
+            return Index < circles.Count ? circles[Index] : null;
         }
 
         /// <summary> Add a single, completely built polygon associated with this digital resource </summary>

@@ -1,8 +1,10 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
+
+#endregion
 
 namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
 {
@@ -156,12 +158,12 @@ namespace SobekCM.Resource_Object.Metadata_Modules.LearningObjects
     public class LearningObjectMetadata : iMetadata_Module
     {
 
-        private List<LOM_VocabularyState> learningResourceTypes;
-        private List<LOM_System_Requirements> systemRequirements;
-        private List<IntendedEndUserRoleEnum> intendedEndUserRole;
-        private List<LOM_VocabularyState> context;
-        private List<LOM_LanguageString> typicalAgeRange;
-        private List<LOM_Classification> classifications;
+        private readonly List<LOM_VocabularyState> learningResourceTypes;
+        private readonly List<LOM_System_Requirements> systemRequirements;
+        private readonly List<IntendedEndUserRoleEnum> intendedEndUserRole;
+        private readonly List<LOM_VocabularyState> context;
+        private readonly List<LOM_LanguageString> typicalAgeRange;
+        private readonly List<LOM_Classification> classifications;
 
         /// <summary> The functional granularity of this learning object ( IEEE-LOM 1.8 ) </summary>
         public AggregationLevelEnum AggregationLevel { get; set; }

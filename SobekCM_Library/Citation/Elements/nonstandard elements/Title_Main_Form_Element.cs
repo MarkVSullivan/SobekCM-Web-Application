@@ -77,7 +77,7 @@ namespace SobekCM.Library.Citation.Elements
             {
                 foreach (Note_Info thisNote in Bib.Bib_Info.Notes)
                 {
-                    if (thisNote.Note_Type == Note_Type_Enum.statement_of_responsibility)
+                    if (thisNote.Note_Type == Note_Type_Enum.StatementOfResponsibility)
                     {
                         statement_responsibility = HttpUtility.HtmlEncode(thisNote.Note);
                         break;
@@ -215,7 +215,7 @@ namespace SobekCM.Library.Citation.Elements
             // Remove all statement of responsibilities
             if (Bib.Bib_Info.Notes_Count > 0)
             {
-                List<Note_Info> deletes = Bib.Bib_Info.Notes.Where(ThisNote => ThisNote.Note_Type == Note_Type_Enum.statement_of_responsibility).ToList();
+                List<Note_Info> deletes = Bib.Bib_Info.Notes.Where(ThisNote => ThisNote.Note_Type == Note_Type_Enum.StatementOfResponsibility).ToList();
                 foreach (Note_Info thisNote in deletes)
                 {
                     Bib.Bib_Info.Remove_Note(thisNote);
@@ -241,7 +241,7 @@ namespace SobekCM.Library.Citation.Elements
                     string statement = HttpContext.Current.Request.Form["formmaintitlestatement"].Trim();
                     if ( statement.Length > 0 )
                     {
-                        Bib.Bib_Info.Add_Note( statement, Note_Type_Enum.statement_of_responsibility );
+                        Bib.Bib_Info.Add_Note( statement, Note_Type_Enum.StatementOfResponsibility );
                     }
 
                     string partnum1 = HttpContext.Current.Request.Form["formmaintitlepartnum1"].Trim();

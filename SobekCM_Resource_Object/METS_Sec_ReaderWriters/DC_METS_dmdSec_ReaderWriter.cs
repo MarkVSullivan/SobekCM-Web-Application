@@ -188,7 +188,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             {
                 foreach (Note_Info thisNote in BibInfo.Notes)
                 {
-                    if (thisNote.Note_Type != Note_Type_Enum.source)
+                    if (thisNote.Note_Type != Note_Type_Enum.Source)
                         Output.WriteLine("<dc:description>" + Convert_String_To_XML_Safe_Static(thisNote.ToString().Replace("<b>", "(").Replace("</b>", ") ")) + "</dc:description>");
                 }
             }
@@ -322,7 +322,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             {
                 foreach (Note_Info thisNote in BibInfo.Notes)
                 {
-                    if (thisNote.Note_Type == Note_Type_Enum.source)
+                    if (thisNote.Note_Type == Note_Type_Enum.Source)
                         Output.WriteLine("<dc:source>" + Convert_String_To_XML_Safe_Static(thisNote.Note) + "</dc:source>");
                 }
             }
@@ -466,7 +466,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                BibInfo.Add_Note(R.Value, Note_Type_Enum.source);
+                                BibInfo.Add_Note(R.Value, Note_Type_Enum.Source);
                             }
                             break;
 
@@ -501,7 +501,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                                 }
                                 else
                                 {
-                                    BibInfo.Add_Other_Title(R.Value.Trim(), Title_Type_Enum.alternative);
+                                    BibInfo.Add_Other_Title(R.Value.Trim(), Title_Type_Enum.Alternative);
                                 }
                             }
                             break;
@@ -510,7 +510,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                BibInfo.Add_Other_Title(R.Value.Trim(), Title_Type_Enum.alternative);
+                                BibInfo.Add_Other_Title(R.Value.Trim(), Title_Type_Enum.Alternative);
                             }
                             break;
 
@@ -538,7 +538,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
                             R.Read();
                             if ((R.NodeType == XmlNodeType.Text) && (R.Value.Trim().Length > 0))
                             {
-                                BibInfo.Add_Note(R.Value.Trim(), Note_Type_Enum.ownership);
+                                BibInfo.Add_Note(R.Value.Trim(), Note_Type_Enum.Ownership);
                             }
                             break;
 

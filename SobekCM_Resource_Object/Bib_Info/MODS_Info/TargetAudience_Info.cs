@@ -69,28 +69,25 @@ namespace SobekCM.Resource_Object.Bib_Info
         #region IEquatable<TargetAudience_Info> Members
 
         /// <summary> Compares this object with another similarly typed object </summary>
-        /// <param name="other">Similarly types object </param>
+        /// <param name="Other">Similarly types object </param>
         /// <returns>TRUE if the two objects are sufficiently similar</returns>
-        public bool Equals(TargetAudience_Info other)
+        public bool Equals(TargetAudience_Info Other)
         {
-            if (Audience == other.Audience)
-                return true;
-            else
-                return false;
+            return String.Compare(Audience, Other.Audience, StringComparison.Ordinal) == 0;
         }
 
         #endregion
 
-        internal void Add_MODS(TextWriter results)
+        internal void Add_MODS(TextWriter Results)
         {
             if (String.IsNullOrEmpty(audience))
                 return;
 
-            results.Write("<mods:targetAudience");
-            base.Add_ID(results);
+            Results.Write("<mods:targetAudience");
+            Add_ID(Results);
             if (!String.IsNullOrEmpty(authority))
-                results.Write(" authority=\"" + authority + "\"");
-            results.Write(">" + base.Convert_String_To_XML_Safe(audience) + "</mods:targetAudience>\r\n");
+                Results.Write(" authority=\"" + authority + "\"");
+            Results.Write(">" + Convert_String_To_XML_Safe(audience) + "</mods:targetAudience>\r\n");
         }
     }
 }

@@ -10,9 +10,10 @@ using SobekCM.Resource_Object.Divisions;
 
 namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 {
+    /// <summary> SobekCM-specific file metadata reader that operates against a single METS section  </summary>
     public class SobekCM_FileInfo_METS_amdSec_ReaderWriter : iPackage_amdSec_ReaderWriter
     {
-        private string sobekcm_namespace;
+        private readonly string sobekcm_namespace;
 
         /// <summary> Constructor for a new instance of the SobekCM_FileInfo_METS_amdSec_ReaderWriter class </summary>
         /// <param name="SobekCM_Namespace">Namespace utilized for this material in the XML file being read</param>

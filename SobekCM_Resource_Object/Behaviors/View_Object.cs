@@ -84,15 +84,12 @@ namespace SobekCM.Resource_Object.Behaviors
         #region IEquatable<View_Object> Members
 
         /// <summary> Checks to see if this view is equal to another view </summary>
-        /// <param name="other"> Other view for comparison </param>
+        /// <param name="Other"> Other view for comparison </param>
         /// <returns> TRUE if they are equal, otherwise FALSE </returns>
         /// <remarks> Two views are considered equal if they have the view type </remarks>
-        public bool Equals(View_Object other)
+        public bool Equals(View_Object Other)
         {
-            if (other.View_Type == View_Type)
-                return true;
-            else
-                return false;
+            return Other.View_Type == View_Type;
         }
 
         #endregion
@@ -206,7 +203,9 @@ namespace SobekCM.Resource_Object.Behaviors
         }
 
         /// <summary> Returns the METS behavior associated with this viewer </summary>
-        internal void Add_METS(TextWriter behaviorSec, int view_count)
+        /// <param name="Results"> Results stream to write the METS-encoded serial information </param>
+        /// <param name="ViewCount"> Number of this view, as they are added </param>
+        internal void Add_METS(TextWriter Results, int ViewCount)
         {
             if ((View_Type == View_Enum.None) || (View_Type == View_Enum.GOOGLE_MAP) || (View_Type == View_Enum.CITATION) || (View_Type == View_Enum.TOC) || (View_Type == View_Enum.PDF) || (View_Type == View_Enum.FLASH) || (View_Type == View_Enum.YOUTUBE_VIDEO))
             {
@@ -214,13 +213,13 @@ namespace SobekCM.Resource_Object.Behaviors
             }
 
             // Start this behavior
-            if (view_count == 1)
+            if (ViewCount == 1)
             {
-                behaviorSec.Write("<METS:behavior GROUPID=\"VIEWS\" ID=\"VIEW1\" STRUCTID=\"STRUCT1\" LABEL=\"Default View\">\r\n");
+                Results.Write("<METS:behavior GROUPID=\"VIEWS\" ID=\"VIEW1\" STRUCTID=\"STRUCT1\" LABEL=\"Default View\">\r\n");
             }
             else
             {
-                behaviorSec.Write("<METS:behavior GROUPID=\"VIEWS\" ID=\"VIEW" + view_count.ToString() + "\" STRUCTID=\"STRUCT1\" LABEL=\"Alternate View\">\r\n");
+                Results.Write("<METS:behavior GROUPID=\"VIEWS\" ID=\"VIEW" + ViewCount.ToString() + "\" STRUCTID=\"STRUCT1\" LABEL=\"Alternate View\">\r\n");
             }
 
             // Get the label and title for this behavior mechanism
@@ -278,10 +277,10 @@ namespace SobekCM.Resource_Object.Behaviors
             }
 
             // Add the actual behavior mechanism
-            behaviorSec.Write("<METS:mechanism LABEL=\"" + temp_label + "\" LOCTYPE=\"OTHER\" OTHERLOCTYPE=\"SobekCM Procedure\" xlink:type=\"simple\" xlink:title=\"" + temp_title + "\" />\r\n");
+            Results.Write("<METS:mechanism LABEL=\"" + temp_label + "\" LOCTYPE=\"OTHER\" OTHERLOCTYPE=\"SobekCM Procedure\" xlink:type=\"simple\" xlink:title=\"" + temp_title + "\" />\r\n");
 
             // End this behavior
-            behaviorSec.Write("</METS:behavior>\r\n");
+            Results.Write("</METS:behavior>\r\n");
         }
     }
 }

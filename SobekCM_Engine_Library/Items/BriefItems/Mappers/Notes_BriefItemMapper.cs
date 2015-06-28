@@ -29,13 +29,13 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     if (thisNote.Note_Type != Note_Type_Enum.NONE)
                     {
                         // Statement of responsibilty will be printed at the very end
-                        if (thisNote.Note_Type == Note_Type_Enum.statement_of_responsibility)
+                        if (thisNote.Note_Type == Note_Type_Enum.StatementOfResponsibility)
                         {
                             statementOfResponsibility = thisNote;
                         }
                         else
                         {
-                            if (thisNote.Note_Type != Note_Type_Enum.internal_comments)
+                            if (thisNote.Note_Type != Note_Type_Enum.InternalComments)
                             {
                                 New.Add_Description("Note", thisNote.Note).SubTerm = thisNote.Note_Type_Display_String;
                             }

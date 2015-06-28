@@ -1209,17 +1209,17 @@ namespace SobekCM.Resource_Object
                     Package.Bib_Info.Add_Identifier(Data, "Accession Number");
                     break;
                 case Mapped_Fields.Alternate_Title:
-                    Package.Bib_Info.Add_Other_Title(Data, Title_Type_Enum.alternative);
+                    Package.Bib_Info.Add_Other_Title(Data, Title_Type_Enum.Alternative);
                     break;
                 case Mapped_Fields.Alternate_Title_Language:
-                    List<Title_Info> otherTitles = Package.Bib_Info.Other_Titles.Where(ThisTitle => ThisTitle.Title_Type == Title_Type_Enum.alternative).ToList();
+                    List<Title_Info> otherTitles = Package.Bib_Info.Other_Titles.Where(ThisTitle => ThisTitle.Title_Type == Title_Type_Enum.Alternative).ToList();
 		            if (otherTitles.Count > 0)
                     {
                         otherTitles[otherTitles.Count - 1].Language = Data;
                     }
                     break;
                 case Mapped_Fields.Attribution:
-                    Package.Bib_Info.Add_Note(Data, Note_Type_Enum.funding);
+                    Package.Bib_Info.Add_Note(Data, Note_Type_Enum.Funding);
                     break;
                 case Mapped_Fields.Aggregation_Code:
                     Package.Behaviors.Add_Aggregation(Data.ToUpper());
@@ -1494,7 +1494,7 @@ namespace SobekCM.Resource_Object
                         Package.Bib_Info.Original_Description.Extent = "Undetermined";
                     break;
                 case Mapped_Fields.Uniform_Title:
-                    Package.Bib_Info.Add_Other_Title(Data, Title_Type_Enum.uniform);
+                    Package.Bib_Info.Add_Other_Title(Data, Title_Type_Enum.Uniform);
                     Package.Behaviors.GroupTitle = Data;
                     break;
                 case Mapped_Fields.Title:

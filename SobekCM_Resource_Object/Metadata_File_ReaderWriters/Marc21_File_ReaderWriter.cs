@@ -8,6 +8,7 @@ using System.IO;
 
 namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 {
+    /// <summary> MARC21 metadata reader/writer </summary>
     public class Marc21_File_ReaderWriter : iMetadata_File_ReaderWriter
     {
         #region iMetadata_File_ReaderWriter Members

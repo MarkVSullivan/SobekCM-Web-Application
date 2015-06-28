@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
-using SobekCM.Resource_Object.OAI.Writer;
+﻿#region Using directives
 
+using System.Collections.Generic;
+
+#endregion
 
 namespace SobekCM.Resource_Object.OAI
 {

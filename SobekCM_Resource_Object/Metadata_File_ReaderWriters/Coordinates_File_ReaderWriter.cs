@@ -1,13 +1,17 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 
+#endregion
+
 namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 {
+    /// <summary> Reader reads the coordinate information from a file </summary>
     public class Coordinates_File_ReaderWriter : iMetadata_File_ReaderWriter
     {
         #region iMetadata_File_ReaderWriter Members
@@ -49,7 +53,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
         public bool Read_Metadata(string MetadataFilePathName, SobekCM_Item Return_Package, Dictionary<string, object> Options, out string Error_Message)
         {
             Stream reader = new FileStream(MetadataFilePathName, FileMode.Open, FileAccess.Read);
-            bool returnValue = Read_Metadata(reader, Return_Package, Options, out Error_Message);
+            Read_Metadata(reader, Return_Package, Options, out Error_Message);
             reader.Close();
 
             throw new NotImplementedException();
@@ -103,22 +107,20 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     return false;
                 }
             }
-            else
+            
+            try
             {
-                try
-                {
-                    StreamWriter results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
-                    bool returnValue = Write_Metadata(results, Item_To_Save, Options, out Error_Message);
-                    results.Flush();
-                    results.Close();
+                StreamWriter results = new StreamWriter(MetadataFilePathName, false, Encoding.UTF8);
+                bool returnValue = Write_Metadata(results, Item_To_Save, Options, out Error_Message);
+                results.Flush();
+                results.Close();
 
-                    return returnValue;
-                }
-                catch (Exception ee)
-                {
-                    Error_Message = "Error writing GML Coordinates metadata to file '" + MetadataFilePathName + ": " + ee.Message;
-                    return false;
-                }
+                return returnValue;
+            }
+            catch (Exception ee)
+            {
+                Error_Message = "Error writing GML Coordinates metadata to file '" + MetadataFilePathName + ": " + ee.Message;
+                return false;
             }
         }
 
@@ -130,7 +132,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
         /// <returns>TRUE if successful, otherwise FALSE </returns>
         /// <remarks>This writer accepts one option value.  'Coordinates_File_ReaderWriter:CSV_Style' is a boolean value which indicates
         /// if the Dublin Core metadata file should be written in CSV format.  (Default is FALSE).</remarks>
-        public bool Write_Metadata(System.IO.TextWriter Output_Stream, SobekCM_Item Item_To_Save, Dictionary<string, object> Options, out string Error_Message)
+        public bool Write_Metadata(TextWriter Output_Stream, SobekCM_Item Item_To_Save, Dictionary<string, object> Options, out string Error_Message)
         {
             // Set default error output message
             Error_Message = String.Empty;
@@ -151,10 +153,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             }
 
             // Call the appropriate writer
-            if (csv_style)
-                return Write_CSVFILE(Output_Stream, Item_To_Save, Options);
-            else
-                return Write_GMLFile(Output_Stream, Item_To_Save, Options);
+            return csv_style ? Write_CSVFILE(Output_Stream, Item_To_Save, Options) : Write_GMLFile(Output_Stream, Item_To_Save, Options);
         }
 
         #endregion
@@ -162,7 +161,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
         #region Method to write the coordinates as a CSV file 
 
         //new CSV Writer
-        private bool Write_CSVFILE(System.IO.TextWriter CSVOutput, SobekCM_Item METS_Item, Dictionary<string, object> Options)
+        private bool Write_CSVFILE(TextWriter CsvOutput, SobekCM_Item METS_Item, Dictionary<string, object> Options)
         {
             //2do confirm that this outputs a string of goodies ready to place in a CSV file
 
@@ -171,14 +170,12 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             if (geoInfo == null)
                 return true;
 
-            string GMLSchemaURL = "http://www.opengis.net/gml"; //create header  //2do: add custom schema
             string imageURL = "http://ufdc.ufl.edu/"; //create imageURL
             imageURL += METS_Item.BibID;
             imageURL += "/";
             imageURL += METS_Item.VID;
-            string featureCollectionURL = imageURL; //create collectionURL
 
-            CSVOutput.WriteLine("BIBID, VID, Title, Date, ImageURL, Latitude1, Longitude1, Latitude2, Longitude2, Latitude3, Longitude3, Latitude4, Longitude4"); //output csv header //2do, make definable?
+            CsvOutput.WriteLine("BIBID, VID, Title, Date, ImageURL, Latitude1, Longitude1, Latitude2, Longitude2, Latitude3, Longitude3, Latitude4, Longitude4"); //output csv header //2do, make definable?
 
             //for points
             foreach (Coordinate_Point thisPoint in geoInfo.Points)
@@ -186,9 +183,9 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 //iURL writer
                 string csvImageURL = imageURL;
 
-                CSVOutput.Write(METS_Item.BibID + ", " + METS_Item.VID + ", " + METS_Item.Bib_Title.Replace(",", " ") + ", " + METS_Item.Bib_Info.Origin_Info.Date_Issued + ", " + csvImageURL + ", ");
-                CSVOutput.Write(thisPoint.Latitude + ", " + thisPoint.Longitude + ", ");
-                CSVOutput.WriteLine(); //add line break
+                CsvOutput.Write(METS_Item.BibID + ", " + METS_Item.VID + ", " + METS_Item.Bib_Title.Replace(",", " ") + ", " + METS_Item.Bib_Info.Origin_Info.Date_Issued + ", " + csvImageURL + ", ");
+                CsvOutput.Write(thisPoint.Latitude + ", " + thisPoint.Longitude + ", ");
+                CsvOutput.WriteLine(); //add line break
             }
 
             //for lines
@@ -197,12 +194,12 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 //URL writer
                 string csvImageURL = imageURL;
 
-                CSVOutput.Write(METS_Item.BibID + ", " + METS_Item.VID + ", " + METS_Item.Bib_Title.Replace(",", " ") + ", " + METS_Item.Bib_Info.Origin_Info.Date_Issued + ", " + csvImageURL + ", ");
+                CsvOutput.Write(METS_Item.BibID + ", " + METS_Item.VID + ", " + METS_Item.Bib_Title.Replace(",", " ") + ", " + METS_Item.Bib_Info.Origin_Info.Date_Issued + ", " + csvImageURL + ", ");
                 foreach (Coordinate_Point thisPoint in thisLine.Points) //for each lat/long
                 {
-                    CSVOutput.Write(thisPoint.Latitude + ", " + thisPoint.Longitude + ", ");
+                    CsvOutput.Write(thisPoint.Latitude + ", " + thisPoint.Longitude + ", ");
                 }
-                CSVOutput.WriteLine(); //add line break
+                CsvOutput.WriteLine(); //add line break
             }
 
             //for polygons
@@ -216,12 +213,12 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     csvImageURL += thisPolygon.Page_Sequence;
                 }
 
-                CSVOutput.Write(METS_Item.BibID + ", " + METS_Item.VID + ", " + METS_Item.Bib_Title.Replace(",", " ") + ", " + METS_Item.Bib_Info.Origin_Info.Date_Issued + ", " + csvImageURL + ", ");
+                CsvOutput.Write(METS_Item.BibID + ", " + METS_Item.VID + ", " + METS_Item.Bib_Title.Replace(",", " ") + ", " + METS_Item.Bib_Info.Origin_Info.Date_Issued + ", " + csvImageURL + ", ");
                 foreach (Coordinate_Point thisPoint in thisPolygon.Edge_Points) //for each lat/long
                 {
-                    CSVOutput.Write(thisPoint.Latitude + ", " + thisPoint.Longitude + ", "); //csv
+                    CsvOutput.Write(thisPoint.Latitude + ", " + thisPoint.Longitude + ", "); //csv
                 }
-                CSVOutput.WriteLine(); //add line break
+                CsvOutput.WriteLine(); //add line break
             }
 
             return true;
@@ -232,7 +229,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
         #region Method to write the coordinates as GML 
 
         //new GML Writer
-        private bool Write_GMLFile(System.IO.TextWriter GMLOutput, SobekCM_Item METS_Item, Dictionary<string, object> Options)
+        private bool Write_GMLFile(TextWriter GmlOutput, SobekCM_Item METS_Item, Dictionary<string, object> Options)
         {
             //2do confirm that this outputs a string of goodies ready to place in a GML file
 
@@ -248,25 +245,25 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             imageURL += METS_Item.VID;
             string featureCollectionURL = imageURL; //create collectionURL
 
-            GMLOutput.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"); //write header
-            GMLOutput.WriteLine("<gml:FeatureCollection xmlns:gml=\"" + GMLSchemaURL + "\">");
-            GMLOutput.WriteLine("<sobekCM:Collection URI=\"" + featureCollectionURL + "\">"); //write collectionURL
+            GmlOutput.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"); //write header
+            GmlOutput.WriteLine("<gml:FeatureCollection xmlns:gml=\"" + GMLSchemaURL + "\">");
+            GmlOutput.WriteLine("<sobekCM:Collection URI=\"" + featureCollectionURL + "\">"); //write collectionURL
 
             //for points
             foreach (Coordinate_Point thisPoint in geoInfo.Points)
             {
                 string featureMemberURL = imageURL;
 
-                GMLOutput.WriteLine("<gml:featureMember>");
-                GMLOutput.WriteLine("<sobekCM:Item URL=\"" + featureMemberURL + "\">");
-                GMLOutput.WriteLine("<gml:Point>");
-                GMLOutput.Write("<gml:Coordinates>");
-                GMLOutput.Write(thisPoint.Latitude + "," + thisPoint.Longitude + " ");
-                GMLOutput.Write("</gml:Coordinates>");
-                GMLOutput.WriteLine(); //add line break
-                GMLOutput.WriteLine("</gml:Point>");
-                GMLOutput.WriteLine("</sobekCM:Item>");
-                GMLOutput.WriteLine("</gml:featureMember>");
+                GmlOutput.WriteLine("<gml:featureMember>");
+                GmlOutput.WriteLine("<sobekCM:Item URL=\"" + featureMemberURL + "\">");
+                GmlOutput.WriteLine("<gml:Point>");
+                GmlOutput.Write("<gml:Coordinates>");
+                GmlOutput.Write(thisPoint.Latitude + "," + thisPoint.Longitude + " ");
+                GmlOutput.Write("</gml:Coordinates>");
+                GmlOutput.WriteLine(); //add line break
+                GmlOutput.WriteLine("</gml:Point>");
+                GmlOutput.WriteLine("</sobekCM:Item>");
+                GmlOutput.WriteLine("</gml:featureMember>");
 
             }
 
@@ -275,21 +272,21 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             {
                 string featureMemberURL = imageURL;
 
-                GMLOutput.WriteLine("<gml:featureMember>");
-                GMLOutput.WriteLine("<sobekCM:Item URL=\"" + featureMemberURL + "\">");
-                GMLOutput.WriteLine("<gml:boundedBy>");
-                GMLOutput.WriteLine("<gml:Box>");
-                GMLOutput.Write("<gml:Coordinates>");
+                GmlOutput.WriteLine("<gml:featureMember>");
+                GmlOutput.WriteLine("<sobekCM:Item URL=\"" + featureMemberURL + "\">");
+                GmlOutput.WriteLine("<gml:boundedBy>");
+                GmlOutput.WriteLine("<gml:Box>");
+                GmlOutput.Write("<gml:Coordinates>");
                 foreach (Coordinate_Point thisPoint in thisLine.Points) //for each lat/long
                 {
-                    GMLOutput.Write(thisPoint.Latitude + "," + thisPoint.Longitude + " ");
+                    GmlOutput.Write(thisPoint.Latitude + "," + thisPoint.Longitude + " ");
                 }
-                GMLOutput.Write("</gml:Coordinates>");
-                GMLOutput.WriteLine(); //add line break
-                GMLOutput.WriteLine("</gml:Box>");
-                GMLOutput.WriteLine("</gml:boundedBy>");
-                GMLOutput.WriteLine("</sobekCM:Item>");
-                GMLOutput.WriteLine("</gml:featureMember>");
+                GmlOutput.Write("</gml:Coordinates>");
+                GmlOutput.WriteLine(); //add line break
+                GmlOutput.WriteLine("</gml:Box>");
+                GmlOutput.WriteLine("</gml:boundedBy>");
+                GmlOutput.WriteLine("</sobekCM:Item>");
+                GmlOutput.WriteLine("</gml:featureMember>");
             }
 
             //for polygons
@@ -299,31 +296,31 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 featureMemberURL += "/";
                 featureMemberURL += thisPolygon.Page_Sequence;
 
-                GMLOutput.WriteLine("<gml:featureMember>");
-                GMLOutput.WriteLine("<sobekCM:Item URL=\"" + featureMemberURL + "\">");
-                GMLOutput.WriteLine("<gml:Polygon>");
-                GMLOutput.WriteLine("<gml:exterior>");
-                GMLOutput.WriteLine("<gml:LinearRing>");
-                GMLOutput.Write("<gml:Coordinates>");
+                GmlOutput.WriteLine("<gml:featureMember>");
+                GmlOutput.WriteLine("<sobekCM:Item URL=\"" + featureMemberURL + "\">");
+                GmlOutput.WriteLine("<gml:Polygon>");
+                GmlOutput.WriteLine("<gml:exterior>");
+                GmlOutput.WriteLine("<gml:LinearRing>");
+                GmlOutput.Write("<gml:Coordinates>");
                 foreach (Coordinate_Point thisPoint in thisPolygon.Edge_Points) //for each lat/long
                 {
-                    GMLOutput.Write(thisPoint.Latitude + "," + thisPoint.Longitude + " "); //gml
+                    GmlOutput.Write(thisPoint.Latitude + "," + thisPoint.Longitude + " "); //gml
                 }
-                GMLOutput.Write("</gml:Coordinates>");
-                GMLOutput.WriteLine(); //gml, add line break
-                GMLOutput.WriteLine("</gml:LinearRing>");
-                GMLOutput.WriteLine("</gml:exterior>");
-                GMLOutput.WriteLine("</gml:Polygon>");
-                GMLOutput.WriteLine("<sobekCM:/Item>");
-                GMLOutput.WriteLine("</gml:featureMember>");
+                GmlOutput.Write("</gml:Coordinates>");
+                GmlOutput.WriteLine(); //gml, add line break
+                GmlOutput.WriteLine("</gml:LinearRing>");
+                GmlOutput.WriteLine("</gml:exterior>");
+                GmlOutput.WriteLine("</gml:Polygon>");
+                GmlOutput.WriteLine("<sobekCM:/Item>");
+                GmlOutput.WriteLine("</gml:featureMember>");
             }
 
 
             //send closing gml tags and close gml file
-            GMLOutput.WriteLine("</sobekCM:Collection>");
-            GMLOutput.WriteLine("</gml:FeatureCollection>");
-            GMLOutput.Flush();
-            GMLOutput.Close();
+            GmlOutput.WriteLine("</sobekCM:Collection>");
+            GmlOutput.WriteLine("</gml:FeatureCollection>");
+            GmlOutput.Flush();
+            GmlOutput.Close();
 
             return true;
         }

@@ -27,7 +27,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         protected List<string> topics;
 
         /// <summary> Constructor for a new instance of the standard subject base class </summary>
-        public Subject_Standard_Base()
+        protected Subject_Standard_Base()
         {
             // Do nothing
         }
@@ -37,13 +37,10 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             get
             {
-                if (((topics != null) && (topics.Count > 0)) ||
-                    ((geographics != null) && (geographics.Count > 0)) ||
-                    ((temporals != null) && (temporals.Count > 0)) ||
-                    ((genres != null) && (genres.Count > 0)))
-                    return true;
-
-                return false;
+                return ((topics != null) && (topics.Count > 0)) ||
+                       ((geographics != null) && (geographics.Count > 0)) ||
+                       ((temporals != null) && (temporals.Count > 0)) ||
+                       ((genres != null) && (genres.Count > 0));
             }
         }
 
@@ -52,12 +49,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no topical subjects, the Topics property creates a readonly collection to pass back out.</remarks>
         public int Topics_Count
         {
-            get
-            {
-                if (topics == null)
-                    return 0;
-                else
-                    return topics.Count;
+            get {
+                return topics == null ? 0 : topics.Count;
             }
         }
 
@@ -66,12 +59,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no topical subjects, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> Topics
         {
-            get
-            {
-                if (topics == null)
-                    return new ReadOnlyCollection<string>(new List<string>());
-                else
-                    return new ReadOnlyCollection<string>(topics);
+            get {
+                return topics == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(topics);
             }
         }
 
@@ -80,12 +69,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no geographic subjects, the Geographics property creates a readonly collection to pass back out.</remarks>
         public int Geographics_Count
         {
-            get
-            {
-                if (geographics == null)
-                    return 0;
-                else
-                    return geographics.Count;
+            get {
+                return geographics == null ? 0 : geographics.Count;
             }
         }
 
@@ -94,12 +79,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no geographic subjects, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> Geographics
         {
-            get
-            {
-                if (geographics == null)
-                    return new ReadOnlyCollection<string>(new List<string>());
-                else
-                    return new ReadOnlyCollection<string>(geographics);
+            get {
+                return geographics == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(geographics);
             }
         }
 
@@ -108,12 +89,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no temporal subjects, the Temporals property creates a readonly collection to pass back out.</remarks>
         public int Temporals_Count
         {
-            get
-            {
-                if (temporals == null)
-                    return 0;
-                else
-                    return temporals.Count;
+            get {
+                return temporals == null ? 0 : temporals.Count;
             }
         }
 
@@ -122,12 +99,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no temporal subjects, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> Temporals
         {
-            get
-            {
-                if (temporals == null)
-                    return new ReadOnlyCollection<string>(new List<string>());
-                else
-                    return new ReadOnlyCollection<string>(temporals);
+            get {
+                return temporals == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(temporals);
             }
         }
 
@@ -136,12 +109,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no genre subjects, the Genres property creates a readonly collection to pass back out.</remarks>
         public int Genres_Count
         {
-            get
-            {
-                if (genres == null)
-                    return 0;
-                else
-                    return genres.Count;
+            get {
+                return genres == null ? 0 : genres.Count;
             }
         }
 
@@ -150,12 +119,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no genre subjects, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> Genres
         {
-            get
-            {
-                if (genres == null)
-                    return new ReadOnlyCollection<string>(new List<string>());
-                else
-                    return new ReadOnlyCollection<string>(genres);
+            get {
+                return genres == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(genres);
             }
         }
 
@@ -303,14 +268,14 @@ namespace SobekCM.Resource_Object.Bib_Info
         }
 
         /// <summary> Add the base MODS section, which includes the topic, genre, geographic, and temporal key words </summary>
-        /// <param name="results"> Stream to write the resulting MODS-formatted XML to</param>
-        protected void Add_Base_MODS(TextWriter results)
+        /// <param name="Results"> Stream to write the resulting MODS-formatted XML to</param>
+        protected void Add_Base_MODS(TextWriter Results)
         {
             if (topics != null)
             {
                 foreach (string thisElement in topics)
                 {
-                    results.Write("<mods:topic>" + base.Convert_String_To_XML_Safe(thisElement) + "</mods:topic>\r\n");
+                    Results.Write("<mods:topic>" + Convert_String_To_XML_Safe(thisElement) + "</mods:topic>\r\n");
                 }
             }
 
@@ -318,7 +283,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 foreach (string thisElement in geographics)
                 {
-                    results.Write("<mods:geographic>" + base.Convert_String_To_XML_Safe(thisElement) + "</mods:geographic>\r\n");
+                    Results.Write("<mods:geographic>" + Convert_String_To_XML_Safe(thisElement) + "</mods:geographic>\r\n");
                 }
             }
 
@@ -326,7 +291,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 foreach (string thisElement in temporals)
                 {
-                    results.Write("<mods:temporal>" + base.Convert_String_To_XML_Safe(thisElement) + "</mods:temporal>\r\n");
+                    Results.Write("<mods:temporal>" + Convert_String_To_XML_Safe(thisElement) + "</mods:temporal>\r\n");
                 }
             }
 
@@ -334,7 +299,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 foreach (string thisElement in genres)
                 {
-                    results.Write("<mods:genre>" + base.Convert_String_To_XML_Safe(thisElement) + "</mods:genre>\r\n");
+                    Results.Write("<mods:genre>" + Convert_String_To_XML_Safe(thisElement) + "</mods:genre>\r\n");
                 }
             }
         }

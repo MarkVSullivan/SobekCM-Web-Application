@@ -113,7 +113,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             StringBuilder builder = new StringBuilder();
             builder.Append((titleInfo.NonSort + " " + titleInfo.Title + " " + titleInfo.Subtitle).Trim());
 
-            builder.Append(base.To_Base_String());
+            builder.Append(To_Base_String());
 
             if (Include_Scheme)
             {
@@ -124,24 +124,24 @@ namespace SobekCM.Resource_Object.Bib_Info
             return Convert_String_To_XML_Safe(builder.ToString());
         }
 
-        internal override void Add_MODS(TextWriter results)
+        internal override void Add_MODS(TextWriter Results)
         {
             if (titleInfo.Title.Length == 0)
                 return;
 
-            results.Write("<mods:subject");
-            base.Add_ID(results);
+            Results.Write("<mods:subject");
+            Add_ID(Results);
             if (!String.IsNullOrEmpty(language))
-                results.Write(" lang=\"" + language + "\"");
+                Results.Write(" lang=\"" + language + "\"");
             if (!String.IsNullOrEmpty(authority))
-                results.Write(" authority=\"" + authority + "\"");
-            results.Write(">\r\n");
+                Results.Write(" authority=\"" + authority + "\"");
+            Results.Write(">\r\n");
 
-            titleInfo.Add_MODS(results);
+            titleInfo.Add_MODS(Results);
 
-            base.Add_Base_MODS(results);
+            Add_Base_MODS(Results);
 
-            results.Write("</mods:subject>\r\n");
+            Results.Write("</mods:subject>\r\n");
         }
 
         internal override MARC_Field to_MARC_HTML()
@@ -183,7 +183,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 }
             }
 
-            base.Add_Source_Indicator(returnValue, fieldBuilder);
+            Add_Source_Indicator(returnValue, fieldBuilder);
 
             returnValue.Control_Field_Value = fieldBuilder.ToString().Trim();
 

@@ -10,6 +10,7 @@ using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 
 namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 {
+    /// <summary> OAI-PMH type metadata file reader/writer </summary>
     public class OAI_File_ReaderWriter : iMetadata_File_ReaderWriter
     {
         #region iMetadata_File_ReaderWriter Members

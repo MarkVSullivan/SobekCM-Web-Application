@@ -15,7 +15,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.EAD
     {
         #region Private variable definitions
 
-        private List<Container_Info> containers;
+        private readonly List<Container_Info> containers;
         private Descriptive_Identification did;
         private string head;
         private string type;

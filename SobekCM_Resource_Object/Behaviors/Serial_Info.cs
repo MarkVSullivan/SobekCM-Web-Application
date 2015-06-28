@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization;
 
 #endregion
 
@@ -25,27 +24,23 @@ namespace SobekCM.Resource_Object.Behaviors
         /// <summary> Gets the number of hierarchies in this serial hierarchy </summary>
         public int Count
         {
-            get
-            {
-                if (hierarchy == null)
-                    return 0;
-                else
-                    return hierarchy.Count;
+            get {
+                return hierarchy == null ? 0 : hierarchy.Count;
             }
         }
 
         /// <summary> Address a single hierarchy from this collection, by index </summary>
         /// <exception cref="Exception"> Throws a <see cref="Exception"/> if the hierarchy requested does not exist. </exception>
-        public Single_Serial_Hierarchy this[int index]
+        public Single_Serial_Hierarchy this[int Index]
         {
             get
             {
                 // Check that this node exists exists
-                if ((hierarchy == null) || (index >= hierarchy.Count) || (index < 0))
-                    throw new Exception("Requested serial hierarchy #" + index + " and this serial hierarchy does not exist.");
+                if ((hierarchy == null) || (Index >= hierarchy.Count) || (Index < 0))
+                    throw new Exception("Requested serial hierarchy #" + Index + " and this serial hierarchy does not exist.");
 
                 // Return the requested hierarchy file
-                return hierarchy.Values[index];
+                return hierarchy.Values[Index];
             }
         }
 
@@ -71,23 +66,22 @@ namespace SobekCM.Resource_Object.Behaviors
             }
         }
 
-        /// <summary> Returns the METS formatted XML string for the serial hierarchy information </summary>
-        /// <param name="sobekcm_namespace">METS extension schema namespace to use</param>
-        /// <param name="results">Results stream to write the METS-encoded serial information </param>
-        /// <returns>METS formatted XML string with the serial hierarchy information</returns>
-        internal void Add_METS(string sobekcm_namespace, TextWriter results)
+        /// <summary> Adds the METS formatted XML string for the serial hierarchy information </summary>
+        /// <param name="SobekcmNamespace">METS extension schema namespace to use</param>
+        /// <param name="Results">Results stream to write the METS-encoded serial information </param>
+        internal void Add_METS(string SobekcmNamespace, TextWriter Results)
         {
             if ((hierarchy == null) || (hierarchy.Count == 0))
             {
                 return;
             }
 
-            results.Write("<" + sobekcm_namespace + ":serial>\r\n");
+            Results.Write("<" + SobekcmNamespace + ":serial>\r\n");
             for (int i = 1; i <= Count; i++)
             {
-                results.Write(hierarchy.Values[i - 1].toMETS(i, sobekcm_namespace) + "\r\n");
+                Results.Write(hierarchy.Values[i - 1].toMETS(i, SobekcmNamespace) + "\r\n");
             }
-            results.Write("</" + sobekcm_namespace + ":serial>\r\n");
+            Results.Write("</" + SobekcmNamespace + ":serial>\r\n");
         }
 
         #region Nested type: Single_Serial_Hierarchy
@@ -125,7 +119,7 @@ namespace SobekCM.Resource_Object.Behaviors
 
             internal string Display_XML
             {
-                get { return base.Convert_String_To_XML_Safe(display); }
+                get { return Convert_String_To_XML_Safe(display); }
             }
 
             /// <summary> Returns this single serial hierarchy in METS formatted XML </summary>
@@ -134,7 +128,7 @@ namespace SobekCM.Resource_Object.Behaviors
             /// <returns>METS formatted XML for this single serial hierarchical data</returns>
             internal string toMETS(int level, string myNamespace)
             {
-                return "<" + myNamespace + ":SerialHierarchy level=\"" + level + "\" order=\"" + order + "\">" + base.Convert_String_To_XML_Safe(display) + "</" + myNamespace + ":SerialHierarchy>";
+                return "<" + myNamespace + ":SerialHierarchy level=\"" + level + "\" order=\"" + order + "\">" + Convert_String_To_XML_Safe(display) + "</" + myNamespace + ":SerialHierarchy>";
             }
         }
 

@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
-using SobekCM.Resource_Object.Behaviors;
 using SolrNet.Attributes;
 
 #endregion
@@ -17,21 +17,21 @@ namespace SobekCM.Resource_Object.Solr
     /// the full metadata and text available for Solr (or database) indexing </summary>
     public class SolrDocument
     {
-        private List<string> additional_text_files = new List<string>();
-        private List<string> allsubjects = new List<string>();
-        private List<string> city = new List<string>();
-        private List<string> country = new List<string>();
-        private List<string> county = new List<string>();
-        private SobekCM_Item digitalObject;
-        private string fileLocation;
-        private List<string> genre = new List<string>();
-        private List<string> namesubject = new List<string>();
-        private List<SolrPage> solrpages = new List<SolrPage>();
-        private List<string> spatialcoverage = new List<string>();
-        private List<string> state = new List<string>();
-        private List<string> subjectkeyword = new List<string>();
-        private List<string> temporalsubject = new List<string>();
-        private List<string> titlesubject = new List<string>();
+        private readonly List<string> additional_text_files = new List<string>();
+        private readonly List<string> allsubjects = new List<string>();
+        private readonly List<string> city = new List<string>();
+        private readonly List<string> country = new List<string>();
+        private readonly List<string> county = new List<string>();
+        private readonly SobekCM_Item digitalObject;
+        private readonly string fileLocation;
+        private readonly List<string> genre = new List<string>();
+        private readonly List<string> namesubject = new List<string>();
+        private readonly List<SolrPage> solrpages = new List<SolrPage>();
+        private readonly List<string> spatialcoverage = new List<string>();
+        private readonly List<string> state = new List<string>();
+        private readonly List<string> subjectkeyword = new List<string>();
+        private readonly List<string> temporalsubject = new List<string>();
+        private readonly List<string> titlesubject = new List<string>();
         private List<string> tocterms = new List<string>();
 
         /// <summary> Constructor for a new instance of the SolrDocument class </summary>
@@ -1222,9 +1222,9 @@ namespace SobekCM.Resource_Object.Solr
                         builder.Append(reader.ReadToEnd() + " ");
                         reader.Close();
                     }
-                    catch (Exception ee)
+                    catch 
                     {
-                        bool error = true;
+                        // do nothing
                     }
                 }
 

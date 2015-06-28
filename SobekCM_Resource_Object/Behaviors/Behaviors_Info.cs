@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 using SobekCM.Resource_Object.Bib_Info;
@@ -482,11 +481,12 @@ namespace SobekCM.Resource_Object.Behaviors
 			}
 		}
 
-		/// <summary> Adds an aggregation, if it doesn't exist </summary>
-		/// <param name="Code">Aggregation code to add</param>
-		/// <param name="Name">Aggregation name to add</param>
-		/// <remarks>This parses the aggregation string for spaces, commas, and semicolons.</remarks>
-		public void Add_Aggregation(string Code, string Name, string Type)
+	    /// <summary> Adds an aggregation, if it doesn't exist </summary>
+	    /// <param name="Code">Aggregation code to add</param>
+	    /// <param name="Name">Aggregation name to add</param>
+	    /// <param name="Type">Aggregation type</param>
+	    /// <remarks>This parses the aggregation string for spaces, commas, and semicolons.</remarks>
+	    public void Add_Aggregation(string Code, string Name, string Type)
 		{
 			if (Code.Length > 0)
 			{

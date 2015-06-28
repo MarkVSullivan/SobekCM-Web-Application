@@ -1112,8 +1112,8 @@ namespace SobekCM.Resource_Object.Bib_Info
 
 	    /// <summary> Appends this bibliographic description information as MODS to the StringBuilder object </summary>
 	    /// <param name="Results">StringBuilder to add this XML to </param>
-	    /// <param name="VraCoreInfo"> MODS can also contain the VRA core as an internal extension schema </param>
-	    internal override void Add_MODS(TextWriter Results, VRACore_Info VraCoreInfo)
+	    /// <param name="VRACoreInfo"> MODS can also contain the VRA core as an internal extension schema </param>
+	    internal override void Add_MODS(TextWriter Results, VRACore_Info VRACoreInfo)
         {
             // Set some values
             XML_Node_Base_Type.Reset_User_ID_Index();
@@ -1139,7 +1139,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     ModsOriginInfo.Add_Publisher(thisPublisher.Name);
                 }
             }
-            base.Add_MODS(Results, VraCoreInfo);
+            base.Add_MODS(Results, VRACoreInfo);
         }
 
         /// <summary> Adds the custom SobekCM bibliographic information in the SobekCM-custom schema XML format</summary>
@@ -1174,7 +1174,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 Results.WriteLine("<" + sobekcm_namespace + ":FindingGuidePosition>");
                 foreach (Finding_Guide_Container thisContainer in containers)
                 {
-                    thisContainer.toMETS(Results, sobekcm_namespace);
+                    thisContainer.ToMETS(Results, sobekcm_namespace);
                 }
                 Results.WriteLine("</" + sobekcm_namespace + ":FindingGuidePosition>");
             }
@@ -1254,7 +1254,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             TitleString = TitleString.Replace("\"", "").Replace(".", "").Replace("'", "").Replace(",", "");
 
             // Build the collection of  articles
-            string[] articles = new string[] {"EL", "LA", "LAS", "LE", "LES", "A", "THE", "UNAS", "UNOS"};
+            string[] articles = {"EL", "LA", "LAS", "LE", "LES", "A", "THE", "UNAS", "UNOS"};
 
             // Step through each article
             string capitalTitle = TitleString.ToUpper();
@@ -1298,64 +1298,60 @@ namespace SobekCM.Resource_Object.Bib_Info
 			    sortDate = (int) timeElapsed.TotalDays;
 			    return sortDate;
 		    }
-		    else
-		    {
-			    // Didn't work, so need to try and find a year at least
-			    DateString = DateString.Replace("[", "").Replace("]", "").Replace("(", "").Replace(")", "");
-			    DateString = DateString.ToUpper();
-			    DateString = DateString.Replace("circa", "").Replace("ca", "").Replace("c", "");
-			    DateString = DateString.Replace(".", "").Replace(",", "").Replace("-", "").Trim();
+	        
+            // Didn't work, so need to try and find a year at least
+	        DateString = DateString.Replace("[", "").Replace("]", "").Replace("(", "").Replace(")", "");
+	        DateString = DateString.ToUpper();
+	        DateString = DateString.Replace("circa", "").Replace("ca", "").Replace("c", "");
+	        DateString = DateString.Replace(".", "").Replace(",", "").Replace("-", "").Trim();
 
-			    // Step through looking for first four digits
-			    int start = -1;
-			    for (int i = 0; i < DateString.Length; i++)
-			    {
-				    if ((Char.IsNumber(DateString[i])) || (DateString[i] == '-') ||
-				        (DateString[i] == 'X') || (DateString[i] == '?') || (DateString[i] == 'U'))
-				    {
-					    if (start < 0)
-					    {
-						    start = i;
-					    }
-				    }
-				    else
-				    {
-					    // Did this include four digits?
-					    if ((start >= 0) && ((i - start) >= 4))
-					    {
-						    // You can stop
-						    break;
-					    }
-					    start = -1;
-				    }
-			    }
+	        // Step through looking for first four digits
+	        int start = -1;
+	        for (int i = 0; i < DateString.Length; i++)
+	        {
+	            if ((Char.IsNumber(DateString[i])) || (DateString[i] == '-') ||
+	                (DateString[i] == 'X') || (DateString[i] == '?') || (DateString[i] == 'U'))
+	            {
+	                if (start < 0)
+	                {
+	                    start = i;
+	                }
+	            }
+	            else
+	            {
+	                // Did this include four digits?
+	                if ((start >= 0) && ((i - start) >= 4))
+	                {
+	                    // You can stop
+	                    break;
+	                }
+	                start = -1;
+	            }
+	        }
 
-			    // If a start was found, use it
-			    if ((start >= 0) && ((DateString.Length - start) >= 4))
-			    {
-				    string year = DateString.Substring(start, 4).Replace("X", "0").Replace("?", "0").Replace("U", "0").Replace("-", "0");
-				    DateTime thisYear = new DateTime(Convert.ToInt16(year), 1, 1);
-				    TimeSpan timeElapsed = thisYear.Subtract(new DateTime(1, 1, 1));
-				    sortDate = (int) timeElapsed.TotalDays;
-				    return sortDate;
-			    }
-		    }
+	        // If a start was found, use it
+	        if ((start >= 0) && ((DateString.Length - start) >= 4))
+	        {
+	            string year = DateString.Substring(start, 4).Replace("X", "0").Replace("?", "0").Replace("U", "0").Replace("-", "0");
+	            DateTime thisYear = new DateTime(Convert.ToInt16(year), 1, 1);
+	            TimeSpan timeElapsed = thisYear.Subtract(new DateTime(1, 1, 1));
+	            sortDate = (int) timeElapsed.TotalDays;
+	            return sortDate;
+	    
+            }
 
-		    // Return this value, as empty
+	        // Return this value, as empty
 		    return -1;
 	    }
 
 	    #endregion
 
-        
+        /// <summary> Holding location code for this material  </summary>
         public string HoldingCode
         {
             get
             {
-                if (this.Location != null)
-                    return Location.Holding_Code;
-
-                return String.Empty;
+                return Location != null ? Location.Holding_Code : String.Empty;
             }
         }
 

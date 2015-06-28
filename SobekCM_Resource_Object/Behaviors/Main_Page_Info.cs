@@ -54,21 +54,17 @@ namespace SobekCM.Resource_Object.Behaviors
             set { next_page_exists = value; }
         }
 
-        internal void Add_METS(string sobekcm_namespace, TextWriter results)
+        /// <summary> Add the METS for this main page information to the METS page (under SobekCM namespace) </summary>
+        /// <param name="SobekcmNamespace">METS extension schema namespace to use</param>
+        /// <param name="Results">Results stream to write the METS-encoded serial information </param>
+        internal void Add_METS(string SobekcmNamespace, TextWriter Results)
         {
             if (String.IsNullOrEmpty(filename))
                 return;
 
-            results.Write("<" + sobekcm_namespace + ":MainPage previous=\"" + previous_page_exists.ToString().ToLower() + "\" pagename=\"");
-            if (!String.IsNullOrEmpty(pagename))
-            {
-                results.Write(base.Convert_String_To_XML_Safe(pagename));
-            }
-            else
-            {
-                results.Write(base.Convert_String_To_XML_Safe((new FileInfo(filename)).Name));
-            }
-            results.Write("\" next=\"" + next_page_exists.ToString().ToLower() + "\">" + base.Convert_String_To_XML_Safe(filename) + "</" + sobekcm_namespace + ":MainPage>\r\n");
+            Results.Write("<" + SobekcmNamespace + ":MainPage previous=\"" + previous_page_exists.ToString().ToLower() + "\" pagename=\"");
+            Results.Write(!String.IsNullOrEmpty(pagename) ? Convert_String_To_XML_Safe(pagename) : Convert_String_To_XML_Safe((new FileInfo(filename)).Name));
+            Results.Write("\" next=\"" + next_page_exists.ToString().ToLower() + "\">" + Convert_String_To_XML_Safe(filename) + "</" + SobekcmNamespace + ":MainPage>\r\n");
         }
     }
 }

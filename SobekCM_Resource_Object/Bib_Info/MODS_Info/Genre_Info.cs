@@ -57,14 +57,11 @@ namespace SobekCM.Resource_Object.Bib_Info
         #region IEquatable<Genre_Info> Members
 
         /// <summary> Compares this object with another similarly typed object </summary>
-        /// <param name="other">Similarly types object </param>
+        /// <param name="Other">Similarly types object </param>
         /// <returns>TRUE if the two objects are sufficiently similar</returns>
-        public bool Equals(Genre_Info other)
+        public bool Equals(Genre_Info Other)
         {
-            if (Genre_Term == other.Genre_Term)
-                return true;
-            else
-                return false;
+            return String.Compare(Genre_Term, Other.Genre_Term, StringComparison.Ordinal) == 0;
         }
 
         #endregion
@@ -80,27 +77,25 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 return genre_term + " ( <i>" + authority + "</i> )";
             }
-            else
-            {
-                return genre_term;
-            }
+            
+            return genre_term;
         }
 
 
         /// <summary> Writes this genre as MODS to a writer writing to a stream ( either a file or web response stream )</summary>
-        /// <param name="returnValue"> Writer to the MODS building stream </param>
-        internal void Add_MODS(TextWriter returnValue)
+        /// <param name="ReturnValue"> Writer to the MODS building stream </param>
+        internal void Add_MODS(TextWriter ReturnValue)
         {
             if (String.IsNullOrEmpty(genre_term))
                 return;
 
-            returnValue.Write("<mods:genre");
-            base.Add_ID(returnValue);
+            ReturnValue.Write("<mods:genre");
+            Add_ID(ReturnValue);
             if (!String.IsNullOrEmpty(authority))
-                returnValue.Write(" authority=\"" + authority + "\"");
+                ReturnValue.Write(" authority=\"" + authority + "\"");
             if (!String.IsNullOrEmpty(language))
-                returnValue.Write(" language=\"" + language + "\"");
-            returnValue.Write(">" + base.Convert_String_To_XML_Safe(genre_term) + "</mods:genre>\r\n");
+                ReturnValue.Write(" language=\"" + language + "\"");
+            ReturnValue.Write(">" + Convert_String_To_XML_Safe(genre_term) + "</mods:genre>\r\n");
         }
 
         internal MARC_Field to_MARC_HTML()
@@ -108,10 +103,9 @@ namespace SobekCM.Resource_Object.Bib_Info
             if ((authority == "marcgt") || (genre_term.Trim().Length == 0))
                 return null;
 
-            MARC_Field returnValue = new MARC_Field();
-            returnValue.Tag = 655;
+            MARC_Field returnValue = new MARC_Field {Tag = 655};
 
-            string second_indicator = " ";
+            string second_indicator;
             string authority_builder = String.Empty;
             if (!String.IsNullOrEmpty(authority))
             {

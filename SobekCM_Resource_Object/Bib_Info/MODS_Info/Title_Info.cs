@@ -18,17 +18,17 @@ namespace SobekCM.Resource_Object.Bib_Info
         UNSPECIFIED = -1,
 
         /// <summary> Abbreviated title is a shorter version of the main title </summary>
-        abbreviated = 1,
+        Abbreviated = 1,
 
         /// <summary> Translated title is the main title translated into a different language </summary>
-        translated,
+        Translated,
 
         /// <summary> Alternative title refers to any title which can alternatively describe 
         /// the item, and cannot be described with any of the other title types  </summary>
-        alternative,
+        Alternative,
 
         /// <summary> Uniform title is a title used to describe a set of different items in a uniform way </summary>
-        uniform
+        Uniform
     }
 
     /// <summary>A word, phrase, character, or group of characters, normally appearing in a resource, that names it or the work contained in it.</summary>
@@ -87,34 +87,27 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (!String.IsNullOrEmpty(nonSort))
             {
                 if (nonSort[nonSort.Length - 1] == ' ')
-                    return base.Convert_String_To_XML_Safe(nonSort + title);
-                else
+                    return Convert_String_To_XML_Safe(nonSort + title);
+                
+                if (nonSort[nonSort.Length - 1] == '\'')
                 {
-                    if (nonSort[nonSort.Length - 1] == '\'')
-                    {
-                        return base.Convert_String_To_XML_Safe(nonSort + title);
-                    }
-                    else
-                    {
-                        return base.Convert_String_To_XML_Safe(nonSort + " " + title);
-                    }
+                    return Convert_String_To_XML_Safe(nonSort + title);
                 }
+                
+                return Convert_String_To_XML_Safe(nonSort + " " + title);
             }
-            else
-            {
-                return base.Convert_String_To_XML_Safe(title);
-            }
+            return Convert_String_To_XML_Safe(title);
         }
 
-        internal MARC_Field to_MARC_HTML(int tag, int fill_indicator, string statement_of_responsibility, string h_field)
+        internal MARC_Field to_MARC_HTML(int Tag, int FillIndicator, string StatementOfResponsibility, string HField)
         {
             if (String.IsNullOrEmpty(title))
                 return null;
 
             MARC_Field returnValue = new MARC_Field();
             StringBuilder fieldBuilder = new StringBuilder();
-            returnValue.Tag = tag;
-            if (tag < 0)
+            returnValue.Tag = Tag;
+            if (Tag < 0)
                 returnValue.Tag = 0;
             returnValue.Indicators = "  ";
             string fill_indicator_value = "0";
@@ -150,9 +143,9 @@ namespace SobekCM.Resource_Object.Bib_Info
                 fieldBuilder.Append("|a " + title.Replace("|", "&bar;") + " ");
             }
 
-            if (h_field.Length > 0)
+            if (HField.Length > 0)
             {
-                fieldBuilder.Append("|h " + h_field + " ");
+                fieldBuilder.Append("|h " + HField + " ");
             }
 
             if (!String.IsNullOrEmpty(subtitle))
@@ -160,9 +153,9 @@ namespace SobekCM.Resource_Object.Bib_Info
                 fieldBuilder.Append("|b " + subtitle + " ");
             }
 
-            if (statement_of_responsibility.Length > 0)
+            if (StatementOfResponsibility.Length > 0)
             {
-                fieldBuilder.Append("/ |c " + statement_of_responsibility + " ");
+                fieldBuilder.Append("/ |c " + StatementOfResponsibility + " ");
             }
 
             if (partNumbers != null)
@@ -199,46 +192,46 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 switch (titleType)
                 {
-                    case Title_Type_Enum.uniform:
+                    case Title_Type_Enum.Uniform:
                         switch (displayLabel)
                         {
                             case "Main Entry":
                                 returnValue.Tag = 130;
-                                fill_indicator = 1;
+                                FillIndicator = 1;
                                 break;
 
                             case "Uncontrolled":
                                 returnValue.Tag = 730;
-                                fill_indicator = 1;
+                                FillIndicator = 1;
                                 break;
 
                             default:
                                 returnValue.Tag = 240;
-                                fill_indicator = 2;
+                                FillIndicator = 2;
                                 break;
                         }
                         break;
 
-                    case Title_Type_Enum.translated:
+                    case Title_Type_Enum.Translated:
                         returnValue.Tag = 242;
-                        fill_indicator = 2;
+                        FillIndicator = 2;
                         break;
 
-                    case Title_Type_Enum.abbreviated:
+                    case Title_Type_Enum.Abbreviated:
                         returnValue.Tag = 210;
-                        fill_indicator = -1;
+                        FillIndicator = -1;
                         break;
 
-                    case Title_Type_Enum.alternative:
+                    case Title_Type_Enum.Alternative:
                         if ((!String.IsNullOrEmpty(displayLabel) && (displayLabel == "Uncontrolled")))
                         {
                             returnValue.Tag = 740;
-                            fill_indicator = 1;
+                            FillIndicator = 1;
                         }
                         else
                         {
                             returnValue.Tag = 246;
-                            fill_indicator = -1;
+                            FillIndicator = -1;
                             returnValue.Indicators = "3 ";
                             if (!String.IsNullOrEmpty(displayLabel))
                             {
@@ -290,7 +283,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 }
             }
 
-            switch (fill_indicator)
+            switch (FillIndicator)
             {
                 case 1:
                     returnValue.Indicators = fill_indicator_value + " ";
@@ -304,53 +297,53 @@ namespace SobekCM.Resource_Object.Bib_Info
             return returnValue;
         }
 
-        internal void Add_MODS(TextWriter results)
+        internal void Add_MODS(TextWriter Results)
         {
             if (title.Length == 0)
                 return;
 
-            results.Write("<mods:titleInfo");
-            base.Add_ID(results);
+            Results.Write("<mods:titleInfo");
+            Add_ID(Results);
             switch (titleType)
             {
-                case Title_Type_Enum.abbreviated:
-                    results.Write(" type=\"abbreviated\"");
+                case Title_Type_Enum.Abbreviated:
+                    Results.Write(" type=\"abbreviated\"");
                     break;
-                case Title_Type_Enum.alternative:
-                    results.Write(" type=\"alternative\"");
+                case Title_Type_Enum.Alternative:
+                    Results.Write(" type=\"alternative\"");
                     break;
-                case Title_Type_Enum.translated:
-                    results.Write(" type=\"translated\"");
+                case Title_Type_Enum.Translated:
+                    Results.Write(" type=\"translated\"");
                     break;
-                case Title_Type_Enum.uniform:
-                    results.Write(" type=\"uniform\"");
+                case Title_Type_Enum.Uniform:
+                    Results.Write(" type=\"uniform\"");
                     break;
             }
 
             if (!String.IsNullOrEmpty(displayLabel))
-                results.Write(" displayLabel=\"" + base.Convert_String_To_XML_Safe(displayLabel) + "\"");
+                Results.Write(" displayLabel=\"" + Convert_String_To_XML_Safe(displayLabel) + "\"");
 
             if (!String.IsNullOrEmpty(authority))
-                results.Write(" authority=\"" + authority + "\"");
+                Results.Write(" authority=\"" + authority + "\"");
 
             if (!String.IsNullOrEmpty(language))
-                results.Write(" lang=\"" + language + "\"");
+                Results.Write(" lang=\"" + language + "\"");
 
-            results.Write(">\r\n");
+            Results.Write(">\r\n");
 
             if (!String.IsNullOrEmpty(nonSort))
-                results.Write("<mods:nonSort>" + base.Convert_String_To_XML_Safe(nonSort) + "</mods:nonSort>\r\n");
+                Results.Write("<mods:nonSort>" + Convert_String_To_XML_Safe(nonSort) + "</mods:nonSort>\r\n");
 
-            results.Write("<mods:title>" + base.Convert_String_To_XML_Safe(title) + "</mods:title>\r\n");
+            Results.Write("<mods:title>" + Convert_String_To_XML_Safe(title) + "</mods:title>\r\n");
 
             if (!String.IsNullOrEmpty(subtitle))
-                results.Write("<mods:subTitle>" + base.Convert_String_To_XML_Safe(subtitle) + "</mods:subTitle>\r\n");
+                Results.Write("<mods:subTitle>" + Convert_String_To_XML_Safe(subtitle) + "</mods:subTitle>\r\n");
 
             if (partNumbers != null)
             {
                 foreach (string thisNumber in partNumbers)
                 {
-                    results.Write("<mods:partNumber>" + base.Convert_String_To_XML_Safe(thisNumber) + "</mods:partNumber>\r\n");
+                    Results.Write("<mods:partNumber>" + Convert_String_To_XML_Safe(thisNumber) + "</mods:partNumber>\r\n");
                 }
             }
 
@@ -358,11 +351,11 @@ namespace SobekCM.Resource_Object.Bib_Info
             {
                 foreach (string thisName in partNames)
                 {
-                    results.Write("<mods:partName>" + base.Convert_String_To_XML_Safe(thisName) + "</mods:partName>\r\n");
+                    Results.Write("<mods:partName>" + Convert_String_To_XML_Safe(thisName) + "</mods:partName>\r\n");
                 }
             }
 
-            results.Write("</mods:titleInfo>\r\n");
+            Results.Write("</mods:titleInfo>\r\n");
         }
 
         #region Public properties
@@ -412,7 +405,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Gets the title as XML-safe string </summary>
         internal string Title_XML
         {
-            get { return base.Convert_String_To_XML_Safe(title); }
+            get { return Convert_String_To_XML_Safe(title); }
         }
 
         /// <summary> Gets or sets the subtitle portion </summary>
@@ -427,12 +420,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no part numbers, the Part_Numbers property creates a readonly collection to pass back out.</remarks>
         public int Part_Numbers_Count
         {
-            get
-            {
-                if (partNumbers == null)
-                    return 0;
-                else
-                    return partNumbers.Count;
+            get {
+                return partNumbers == null ? 0 : partNumbers.Count;
             }
         }
 
@@ -441,12 +430,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no part numbers, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> Part_Numbers
         {
-            get
-            {
-                if (partNumbers == null)
-                    return new ReadOnlyCollection<string>(new List<string>());
-                else
-                    return new ReadOnlyCollection<string>(partNumbers);
+            get {
+                return partNumbers == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(partNumbers);
             }
         }
 
@@ -455,12 +440,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no part names, the Part_Names property creates a readonly collection to pass back out.</remarks>
         public int Part_Names_Count
         {
-            get
-            {
-                if (partNames == null)
-                    return 0;
-                else
-                    return partNames.Count;
+            get {
+                return partNames == null ? 0 : partNames.Count;
             }
         }
 
@@ -469,12 +450,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no part names, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<string> Part_Names
         {
-            get
-            {
-                if (partNames == null)
-                    return new ReadOnlyCollection<string>(new List<string>());
-                else
-                    return new ReadOnlyCollection<string>(partNames);
+            get {
+                return partNames == null ? new ReadOnlyCollection<string>(new List<string>()) : new ReadOnlyCollection<string>(partNames);
             }
         }
 

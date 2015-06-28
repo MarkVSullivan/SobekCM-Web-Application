@@ -19,8 +19,8 @@ namespace SobekCM.Resource_Object.Divisions
     {
         private string source_directory;
         
-        private Division_Tree downloadDivisionTree;
-        private Division_Tree physicalDivisionTree;
+        private readonly Division_Tree downloadDivisionTree;
+        private readonly Division_Tree physicalDivisionTree;
 
         private List<Outer_Division_Info> outerDivisions;  
 
@@ -108,10 +108,7 @@ namespace SobekCM.Resource_Object.Divisions
             {
                 List<KeyValuePair<string, string>> metadataTerms = new List<KeyValuePair<string, string>>();
 
-
-
                 // Add any other division or page names 
-                List<string> tocterms = new List<string>();
                 foreach (abstract_TreeNode thisNode in downloadDivisionTree.Divisions_PreOrder)
                 {
                     if ((thisNode.Label.Length > 0) &&
@@ -122,7 +119,7 @@ namespace SobekCM.Resource_Object.Divisions
                         metadataTerms.Add(new KeyValuePair<string, string>("Other Citation", thisNode.Label));
                     }
                 }
-                foreach (abstract_TreeNode thisNode in this.physicalDivisionTree.Divisions_PreOrder)
+                foreach (abstract_TreeNode thisNode in physicalDivisionTree.Divisions_PreOrder)
                 {
                     if ((thisNode.Label.Length > 0) &&
                         (((thisNode.Label.IndexOf("Page ", StringComparison.InvariantCultureIgnoreCase) != 0) &&

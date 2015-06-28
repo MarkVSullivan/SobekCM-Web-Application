@@ -1,6 +1,10 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Reflection;
 using SobekCM.Resource_Object.Metadata_Modules;
+
+#endregion
 
 namespace SobekCM.Resource_Object.Configuration
 {

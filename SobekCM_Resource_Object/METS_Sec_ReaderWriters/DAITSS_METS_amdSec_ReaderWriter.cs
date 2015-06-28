@@ -10,6 +10,7 @@ using SobekCM.Resource_Object.Metadata_Modules;
 
 namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 {
+    /// <summary> DAITSS (Digital Archiving in the Sunshine State) archiving METS subsection reader/writer </summary>
     public class DAITSS_METS_amdSec_ReaderWriter : iPackage_amdSec_ReaderWriter
     {
         #region iPackage_amdSec_ReaderWriter Members

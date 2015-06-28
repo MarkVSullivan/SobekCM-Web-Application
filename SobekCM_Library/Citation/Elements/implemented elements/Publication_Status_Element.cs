@@ -69,7 +69,7 @@ namespace SobekCM.Library.Citation.Elements
             bool init_value = true;
             if (Bib.Bib_Info.Notes_Count > 0)
             {
-                foreach (Note_Info thisNote in Bib.Bib_Info.Notes.Where(thisNote => thisNote.Note_Type == Note_Type_Enum.publication_status))
+                foreach (Note_Info thisNote in Bib.Bib_Info.Notes.Where(thisNote => thisNote.Note_Type == Note_Type_Enum.PublicationStatus))
                 {
                     value = thisNote.Note;
                     init_value = false;
@@ -87,7 +87,7 @@ namespace SobekCM.Library.Citation.Elements
         {
             if (Bib.Bib_Info.Notes_Count > 0)
             {
-                List<Note_Info> deletes = Bib.Bib_Info.Notes.Where(thisNote => thisNote.Note_Type == Note_Type_Enum.publication_status).ToList();
+                List<Note_Info> deletes = Bib.Bib_Info.Notes.Where(thisNote => thisNote.Note_Type == Note_Type_Enum.PublicationStatus).ToList();
                 foreach (Note_Info thisNote in deletes)
                 {
                     Bib.Bib_Info.Remove_Note(thisNote);
@@ -107,7 +107,7 @@ namespace SobekCM.Library.Citation.Elements
                 string value = HttpContext.Current.Request.Form[thisKey];
                 if (value.ToUpper().IndexOf("SELECT") != 0)
                 {
-                    Bib.Bib_Info.Add_Note(HttpContext.Current.Request.Form[thisKey], Note_Type_Enum.publication_status);
+                    Bib.Bib_Info.Add_Note(HttpContext.Current.Request.Form[thisKey], Note_Type_Enum.PublicationStatus);
                 }
                 return;
             } 

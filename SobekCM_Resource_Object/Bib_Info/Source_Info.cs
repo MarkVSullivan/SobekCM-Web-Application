@@ -47,12 +47,12 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Gets the source statement as a XML-encoded string </summary>
         internal string XML_Safe_Statement
         {
-            get { return base.Convert_String_To_XML_Safe(statement); }
+            get { return Convert_String_To_XML_Safe(statement); }
         }
 
-        private void set_code(string newCode)
+        private void set_code(string NewCode)
         {
-            code = newCode;
+            code = NewCode;
             switch (code.ToUpper())
             {
                 case "AM":
@@ -131,23 +131,23 @@ namespace SobekCM.Resource_Object.Bib_Info
         }
 
         /// <summary> Writes this source information as SobekCM-formatted XML </summary>
-        /// <param name="sobekcm_namespace"> Namespace to use for the SobekCM custom schema ( usually 'sobekcm' )</param>
-        /// <param name="results"> Stream to write this source information as SobekCM-formatted XML</param>
-        internal void Add_SobekCM_Metadata(string sobekcm_namespace, TextWriter results)
+        /// <param name="SobekcmNamespace"> Namespace to use for the SobekCM custom schema ( usually 'sobekcm' )</param>
+        /// <param name="Results"> Stream to write this source information as SobekCM-formatted XML</param>
+        internal void Add_SobekCM_Metadata(string SobekcmNamespace, TextWriter Results)
         {
             if (!String.IsNullOrEmpty(statement))
             {
                 if (!String.IsNullOrEmpty(code))
                 {
-                    results.Write("<" + sobekcm_namespace + ":Source>\r\n");
-                    results.Write("<" + sobekcm_namespace + ":statement code=\"" + code + "\">" + base.Convert_String_To_XML_Safe(statement) + "</" + sobekcm_namespace + ":statement>\r\n");
-                    results.Write("</" + sobekcm_namespace + ":Source>\r\n");
+                    Results.Write("<" + SobekcmNamespace + ":Source>\r\n");
+                    Results.Write("<" + SobekcmNamespace + ":statement code=\"" + code + "\">" + Convert_String_To_XML_Safe(statement) + "</" + SobekcmNamespace + ":statement>\r\n");
+                    Results.Write("</" + SobekcmNamespace + ":Source>\r\n");
                 }
                 else
                 {
-                    results.Write("<" + sobekcm_namespace + ":Source>\r\n");
-                    results.Write("<" + sobekcm_namespace + ":statement>" + base.Convert_String_To_XML_Safe(statement) + "</" + sobekcm_namespace + ":statement>\r\n");
-                    results.Write("</" + sobekcm_namespace + ":Source>\r\n");
+                    Results.Write("<" + SobekcmNamespace + ":Source>\r\n");
+                    Results.Write("<" + SobekcmNamespace + ":statement>" + Convert_String_To_XML_Safe(statement) + "</" + SobekcmNamespace + ":statement>\r\n");
+                    Results.Write("</" + SobekcmNamespace + ":Source>\r\n");
                 }
             }
         }

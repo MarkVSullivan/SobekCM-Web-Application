@@ -198,7 +198,7 @@ namespace SobekCM.Library.Citation.Elements
             // Always have one empty other title
             if ((title_count == 1) && (Bib.Bib_Info.Other_Titles_Count == 0))
             {
-                Bib.Bib_Info.Add_Other_Title(String.Empty, Title_Type_Enum.alternative);
+                Bib.Bib_Info.Add_Other_Title(String.Empty, Title_Type_Enum.Alternative);
             }
 
             foreach (Title_Info thisTitle in Bib.Bib_Info.Other_Titles)
@@ -211,15 +211,15 @@ namespace SobekCM.Library.Citation.Elements
                         Output.Write(" : " + thisTitle.Subtitle);
                     switch (thisTitle.Title_Type)
                     {
-                        case Title_Type_Enum.abbreviated:
+                        case Title_Type_Enum.Abbreviated:
                             Output.Write(" ( <i>Abbreviated Title</i> )");
                             break;
 
-                        case Title_Type_Enum.translated:
+                        case Title_Type_Enum.Translated:
                             Output.Write(" ( <i>Translated Title</i> )");
                             break;
 
-                        case Title_Type_Enum.uniform:
+                        case Title_Type_Enum.Uniform:
                             Output.Write(" ( <i>Uniform Title</i> )");
                             break;
 
@@ -245,11 +245,11 @@ namespace SobekCM.Library.Citation.Elements
 
                 // Add the title type (and optionally display label)
                 PopupFormBuilder.Append("    <tr><td style=\"width:90px\">Title Type:</td><td colspan=\"2\"><select class=\"formtitle_type_select\" name=\"formothertitletype_" + title_count + "\" id=\"formothertitletype_" + title_count + "\" onchange=\"other_title_type_change(" + title_count + ")\" >");
-                PopupFormBuilder.Append(thisTitle.Title_Type == Title_Type_Enum.abbreviated
+                PopupFormBuilder.Append(thisTitle.Title_Type == Title_Type_Enum.Abbreviated
                                               ? "<option value=\"abbreviated\" selected=\"selected\" >Abbreviated Title</option>"
                                               : "<option value=\"abbreviated\">Abbreviated Title</option>");
 
-                if ((thisTitle.Title_Type == Title_Type_Enum.alternative) || ( thisTitle.Title_Type == Title_Type_Enum.UNSPECIFIED ))
+                if ((thisTitle.Title_Type == Title_Type_Enum.Alternative) || ( thisTitle.Title_Type == Title_Type_Enum.UNSPECIFIED ))
                 {
                     PopupFormBuilder.Append("<option value=\"alternate\" selected=\"selected\" >Alternative Title</option>");
                 }
@@ -259,25 +259,25 @@ namespace SobekCM.Library.Citation.Elements
                 }
                 PopupFormBuilder.Append("<option value=\"series\">Series Title</option>");
 
-                PopupFormBuilder.Append(thisTitle.Title_Type == Title_Type_Enum.translated
+                PopupFormBuilder.Append(thisTitle.Title_Type == Title_Type_Enum.Translated
                                               ? "<option value=\"translated\" selected=\"selected\" >Translated Title</option>"
                                               : "<option value=\"translated\">Translated Title</option>");
 
-                PopupFormBuilder.Append(thisTitle.Title_Type == Title_Type_Enum.uniform
+                PopupFormBuilder.Append(thisTitle.Title_Type == Title_Type_Enum.Uniform
                                               ? "<option value=\"uniform\" selected=\"selected\" >Uniform Title</option>"
                                               : "<option value=\"uniform\">Uniform Title</option>");
 
                 PopupFormBuilder.AppendLine("</select>");
 
                 // Should the SELECT options be pre-established?
-                if ((thisTitle.Title_Type == Title_Type_Enum.alternative) || (thisTitle.Title_Type == Title_Type_Enum.uniform))
+                if ((thisTitle.Title_Type == Title_Type_Enum.Alternative) || (thisTitle.Title_Type == Title_Type_Enum.Uniform))
                 {
  
                     PopupFormBuilder.AppendLine("        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;");
                     PopupFormBuilder.AppendLine("        <span id=\"formothertitlesubtype_" + title_count + "\">Display Label: ");
                     PopupFormBuilder.Append(" <select class=\"formtitle_display_select\" name=\"formothertitledisplay_" + title_count + "\" id=\"formothertitledisplay_" + title_count + "\" >");
 
-                    if (thisTitle.Title_Type == Title_Type_Enum.alternative)
+                    if (thisTitle.Title_Type == Title_Type_Enum.Alternative)
                     {
                         PopupFormBuilder.Append(thisTitle.Display_Label == "Added title page title"
                                                       ? "<option value=\"added\" selected=\"selected\" >Added title page title</option>"
@@ -513,23 +513,23 @@ namespace SobekCM.Library.Citation.Elements
                             switch (type)
                             {
                                 case "abbreviated":
-                                    thisTitle.Title_Type = Title_Type_Enum.abbreviated;
+                                    thisTitle.Title_Type = Title_Type_Enum.Abbreviated;
                                     break;
 
                                 case "translated":
-                                    thisTitle.Title_Type = Title_Type_Enum.translated;
+                                    thisTitle.Title_Type = Title_Type_Enum.Translated;
                                     break;
 
                                 case "uniform":
-                                    thisTitle.Title_Type = Title_Type_Enum.uniform;
+                                    thisTitle.Title_Type = Title_Type_Enum.Uniform;
                                     break;
 
                                 default:
-                                    thisTitle.Title_Type = Title_Type_Enum.alternative;
+                                    thisTitle.Title_Type = Title_Type_Enum.Alternative;
                                     break;
                             }
 
-                            if (thisTitle.Title_Type == Title_Type_Enum.alternative)
+                            if (thisTitle.Title_Type == Title_Type_Enum.Alternative)
                             {
                                 switch (display)
                                 {
@@ -575,7 +575,7 @@ namespace SobekCM.Library.Citation.Elements
                                 }
                             }
 
-                            if (thisTitle.Title_Type == Title_Type_Enum.uniform)
+                            if (thisTitle.Title_Type == Title_Type_Enum.Uniform)
                             {
                                 switch (display)
                                 {

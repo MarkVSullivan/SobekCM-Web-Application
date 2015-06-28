@@ -115,7 +115,7 @@ namespace SobekCM.Library.Citation.Elements
                     {
                         foreach (Name_Info thisName in Bib.Bib_Info.Names)
                         {
-                            if ((thisName.Name_Type == Name_Info_Type_Enum.conference) && (thisName.Full_Name.Length > 0))
+                            if ((thisName.Name_Type == Name_Info_Type_Enum.Conference) && (thisName.Full_Name.Length > 0))
                             {
                                 larger_value = thisName.ToString();
                                 break;
@@ -330,10 +330,10 @@ namespace SobekCM.Library.Citation.Elements
                                 {
                                     foreach (Name_Info thisName in Bib.Bib_Info.Names)
                                     {
-                                        if (thisName.Name_Type == Name_Info_Type_Enum.conference)
+                                        if (thisName.Name_Type == Name_Info_Type_Enum.Conference)
                                         {
                                             thisName.Clear();
-                                            thisName.Name_Type = Name_Info_Type_Enum.conference;
+                                            thisName.Name_Type = Name_Info_Type_Enum.Conference;
                                             thisName.Full_Name = largerbody;
                                             found_conference_name = true;
                                             break;
@@ -344,7 +344,7 @@ namespace SobekCM.Library.Citation.Elements
                                 {
                                     Name_Info conferenceName = new Name_Info
                                                                    {
-                                                                       Name_Type = Name_Info_Type_Enum.conference,
+                                                                       Name_Type = Name_Info_Type_Enum.Conference,
                                                                        Full_Name = largerbody
                                                                    };
                                     Bib.Bib_Info.Add_Named_Entity(conferenceName);

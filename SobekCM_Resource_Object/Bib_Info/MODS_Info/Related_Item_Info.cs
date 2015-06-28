@@ -18,19 +18,19 @@ namespace SobekCM.Resource_Object.Bib_Info
         UNKNOWN = -1,
 
         /// <summary> This related item preceeds the main described item </summary>
-        preceding = 1,
+        Preceding = 1,
 
         /// <summary> This related item succeeds the main described item </summary>
-        succeeding,
+        Succeeding,
 
         /// <summary> This related item is the host for the main described item </summary>
-        host,
+        Host,
 
         /// <summary> This related item is a different version of the main described item </summary>
-        otherVersion,
+        OtherVersion,
 
         /// <summary> This related item is a different format of the main described item </summary>
-        otherFormat
+        OtherFormat
     }
 
     /// <summary> Represents information about a related item </summary>
@@ -43,7 +43,6 @@ namespace SobekCM.Resource_Object.Bib_Info
         private List<Name_Info> names;
         private List<Note_Info> notes;
         private string publisher;
-        private Related_Item_Type_Enum relationship;
 
         private string start_date;
         private Title_Info title;
@@ -53,7 +52,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Constructor creates a new instance of the Related_Item_Info class  </summary>
         public Related_Item_Info()
         {
-            relationship = Related_Item_Type_Enum.UNKNOWN;
+            Relationship = Related_Item_Type_Enum.UNKNOWN;
         }
 
         /// <summary> Gets the number of identifiers associated with this related item  </summary>
@@ -61,12 +60,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no identifiers, the Identifiers property creates a readonly collection to pass back out.</remarks>
         public int Identifiers_Count
         {
-            get
-            {
-                if (identifiers == null)
-                    return 0;
-                else
-                    return identifiers.Count;
+            get {
+                return identifiers == null ? 0 : identifiers.Count;
             }
         }
 
@@ -75,12 +70,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no identifiers, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Identifier_Info> Identifiers
         {
-            get
-            {
-                if (identifiers == null)
-                    return new ReadOnlyCollection<Identifier_Info>(new List<Identifier_Info>());
-                else
-                    return new ReadOnlyCollection<Identifier_Info>(identifiers);
+            get {
+                return identifiers == null ? new ReadOnlyCollection<Identifier_Info>(new List<Identifier_Info>()) : new ReadOnlyCollection<Identifier_Info>(identifiers);
             }
         }
 
@@ -90,12 +81,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no notes, the Notes property creates a readonly collection to pass back out.</remarks>
         public int Notes_Count
         {
-            get
-            {
-                if (notes == null)
-                    return 0;
-                else
-                    return notes.Count;
+            get {
+                return notes == null ? 0 : notes.Count;
             }
         }
 
@@ -104,12 +91,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no notes, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Note_Info> Notes
         {
-            get
-            {
-                if (notes == null)
-                    return new ReadOnlyCollection<Note_Info>(new List<Note_Info>());
-                else
-                    return new ReadOnlyCollection<Note_Info>(notes);
+            get {
+                return notes == null ? new ReadOnlyCollection<Note_Info>(new List<Note_Info>()) : new ReadOnlyCollection<Note_Info>(notes);
             }
         }
 
@@ -118,12 +101,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// there are no names, the Names property creates a readonly collection to pass back out.</remarks>
         public int Names_Count
         {
-            get
-            {
-                if (names == null)
-                    return 0;
-                else
-                    return names.Count;
+            get {
+                return names == null ? 0 : names.Count;
             }
         }
 
@@ -132,45 +111,27 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// Even if there are no names, this property creates a readonly collection to pass back out.</remarks>
         public ReadOnlyCollection<Name_Info> Names
         {
-            get
-            {
-                if (names == null)
-                    return new ReadOnlyCollection<Name_Info>(new List<Name_Info>());
-                else
-                    return new ReadOnlyCollection<Name_Info>(names);
+            get {
+                return names == null ? new ReadOnlyCollection<Name_Info>(new List<Name_Info>()) : new ReadOnlyCollection<Name_Info>(names);
             }
         }
 
         /// <summary> Flag indicates if this related item has a main title included </summary>
         public bool hasMainTitle
         {
-            get
-            {
-                if ((title != null) && (title.Title.Length > 0))
-                    return true;
-                else
-                    return false;
+            get {
+                return (title != null) && (title.Title.Length > 0);
             }
         }
 
         /// <summary> Gets the main title for this related item </summary>
         public Title_Info Main_Title
         {
-            get
-            {
-                if (title == null)
-                    title = new Title_Info();
-
-                return title;
-            }
+            get { return title ?? (title = new Title_Info()); }
         }
 
         /// <summary> Gets or sets the type of relationship this item has to the described item  </summary>
-        public Related_Item_Type_Enum Relationship
-        {
-            get { return relationship; }
-            set { relationship = value; }
-        }
+        public Related_Item_Type_Enum Relationship { get; set; }
 
         /// <summary> Gets or sets the SobekCM ID for the related item if hosted in the same library </summary>
         public string SobekCM_ID
@@ -267,13 +228,13 @@ namespace SobekCM.Resource_Object.Bib_Info
         }
 
         /// <summary> Directly sets the main title object during construction of the related item </summary>
-        /// <param name="newTitle"> Main title for this related item </param>
-        internal void Set_Main_Title(Title_Info newTitle)
+        /// <param name="NewTitle"> Main title for this related item </param>
+        internal void Set_Main_Title(Title_Info NewTitle)
         {
-            title = newTitle;
+            title = NewTitle;
         }
 
-        internal void Add_MODS(TextWriter results)
+        internal void Add_MODS(TextWriter Results)
         {
             if (((title != null) && (title.Title.Length > 0)) || ((identifiers != null) && (identifiers.Count > 0)) ||
                 (!String.IsNullOrEmpty(sobekcm_id)) || (!String.IsNullOrEmpty(url)) ||
@@ -281,50 +242,50 @@ namespace SobekCM.Resource_Object.Bib_Info
                 ((names != null) && (names.Count > 0)))
             {
                 // Start this related item
-                results.Write("<mods:relatedItem");
-                base.Add_ID(results);
-                switch (relationship)
+                Results.Write("<mods:relatedItem");
+                Add_ID(Results);
+                switch (Relationship)
                 {
-                    case Related_Item_Type_Enum.host:
-                        results.Write(" type=\"host\"");
+                    case Related_Item_Type_Enum.Host:
+                        Results.Write(" type=\"host\"");
                         break;
 
-                    case Related_Item_Type_Enum.otherFormat:
-                        results.Write(" type=\"otherFormat\"");
+                    case Related_Item_Type_Enum.OtherFormat:
+                        Results.Write(" type=\"otherFormat\"");
                         break;
 
-                    case Related_Item_Type_Enum.otherVersion:
-                        results.Write(" type=\"otherVersion\"");
+                    case Related_Item_Type_Enum.OtherVersion:
+                        Results.Write(" type=\"otherVersion\"");
                         break;
 
-                    case Related_Item_Type_Enum.preceding:
-                        results.Write(" type=\"preceding\"");
+                    case Related_Item_Type_Enum.Preceding:
+                        Results.Write(" type=\"preceding\"");
                         break;
 
-                    case Related_Item_Type_Enum.succeeding:
-                        results.Write(" type=\"succeeding\"");
+                    case Related_Item_Type_Enum.Succeeding:
+                        Results.Write(" type=\"succeeding\"");
                         break;
                 }
-                results.WriteLine(">");
+                Results.WriteLine(">");
 
                 // Write all the identifiers
                 if (identifiers != null)
                 {
                     foreach (Identifier_Info thisIdentifier in identifiers)
                     {
-                        thisIdentifier.Add_MODS(results);
+                        thisIdentifier.Add_MODS(Results);
                     }
                 }
 
                 // Add the location information
                 if (!String.IsNullOrEmpty(url))
                 {
-                    results.Write("<mods:location>\r\n");
-                    results.Write("<mods:url");
+                    Results.Write("<mods:location>\r\n");
+                    Results.Write("<mods:url");
                     if (!String.IsNullOrEmpty(displayLabel))
-                        results.Write(" displayLabel=\"" + base.Convert_String_To_XML_Safe(displayLabel) + "\"");
-                    results.Write(">" + base.Convert_String_To_XML_Safe(url) + "</mods:url>\r\n");
-                    results.Write("</mods:location>\r\n");
+                        Results.Write(" displayLabel=\"" + Convert_String_To_XML_Safe(displayLabel) + "\"");
+                    Results.Write(">" + Convert_String_To_XML_Safe(url) + "</mods:url>\r\n");
+                    Results.Write("</mods:location>\r\n");
                 }
 
                 // Add the list of names
@@ -332,7 +293,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                 {
                     foreach (Name_Info thisName in names)
                     {
-                        thisName.Add_MODS(false, results);
+                        thisName.Add_MODS(false, Results);
                     }
                 }
 
@@ -341,76 +302,78 @@ namespace SobekCM.Resource_Object.Bib_Info
                 {
                     foreach (Note_Info thisNote in notes)
                     {
-                        thisNote.Add_MODS(results);
+                        thisNote.Add_MODS(Results);
                     }
                 }
 
                 // Add the publisher name, if that exists
                 if ((!String.IsNullOrEmpty(publisher)) || (!String.IsNullOrEmpty(start_date)) || (!String.IsNullOrEmpty(end_date)))
                 {
-                    results.Write("<mods:Origin_Info>\r\n");
+                    Results.Write("<mods:Origin_Info>\r\n");
                     if (!String.IsNullOrEmpty(publisher))
                     {
-                        results.Write("<mods:publisher>" + base.Convert_String_To_XML_Safe(publisher) + "</mods:publisher>\r\n");
+                        Results.Write("<mods:publisher>" + Convert_String_To_XML_Safe(publisher) + "</mods:publisher>\r\n");
                     }
                     if (!String.IsNullOrEmpty(start_date))
                     {
-                        results.Write("<mods:dateIssued point=\"start\">" + base.Convert_String_To_XML_Safe(start_date) + "</mods:dateIssued>\r\n");
+                        Results.Write("<mods:dateIssued point=\"start\">" + Convert_String_To_XML_Safe(start_date) + "</mods:dateIssued>\r\n");
                     }
                     if (!String.IsNullOrEmpty(end_date))
                     {
-                        results.Write("<mods:dateIssued point=\"end\">" + base.Convert_String_To_XML_Safe(end_date) + "</mods:dateIssued>\r\n");
+                        Results.Write("<mods:dateIssued point=\"end\">" + Convert_String_To_XML_Safe(end_date) + "</mods:dateIssued>\r\n");
                     }
-                    results.Write("</mods:Origin_Info>\r\n");
+                    Results.Write("</mods:Origin_Info>\r\n");
                 }
 
                 // Add the UFDC ID, if it exists
                 if (!String.IsNullOrEmpty(sobekcm_id))
                 {
-                    results.WriteLine("<mods:recordInfo>");
-                    results.WriteLine("<mods:recordIdentifier source=\"ufdc\">" + sobekcm_id + "</mods:recordIdentifier>");
-                    results.WriteLine("</mods:recordInfo>");
+                    Results.WriteLine("<mods:recordInfo>");
+                    Results.WriteLine("<mods:recordIdentifier source=\"ufdc\">" + sobekcm_id + "</mods:recordIdentifier>");
+                    Results.WriteLine("</mods:recordInfo>");
                 }
 
 
                 // Write the title
                 if ((title != null) && (title.Title.Length > 0))
                 {
-                    title.Add_MODS(results);
+                    title.Add_MODS(Results);
                 }
 
                 // End this related item
-                results.WriteLine("</mods:relatedItem>");
+                Results.WriteLine("</mods:relatedItem>");
             }
         }
 
         internal MARC_Field to_MARC_HTML()
         {
-            MARC_Field related_item_tag = new MARC_Field();
-            related_item_tag.Indicators = "00";
-            related_item_tag.Tag = 787;
+            MARC_Field related_item_tag = new MARC_Field
+            {
+                Indicators = "00", 
+                Tag = 787
+            };
             switch (Relationship)
             {
-                case Related_Item_Type_Enum.host:
+                case Related_Item_Type_Enum.Host:
                     related_item_tag.Tag = 773;
                     related_item_tag.Indicators = "0 ";
                     break;
 
-                case Related_Item_Type_Enum.otherFormat:
+                case Related_Item_Type_Enum.OtherFormat:
                     related_item_tag.Tag = 776;
                     related_item_tag.Indicators = "0 ";
                     break;
 
-                case Related_Item_Type_Enum.otherVersion:
+                case Related_Item_Type_Enum.OtherVersion:
                     related_item_tag.Tag = 775;
                     related_item_tag.Indicators = "0 ";
                     break;
 
-                case Related_Item_Type_Enum.preceding:
+                case Related_Item_Type_Enum.Preceding:
                     related_item_tag.Tag = 780;
                     break;
 
-                case Related_Item_Type_Enum.succeeding:
+                case Related_Item_Type_Enum.Succeeding:
                     related_item_tag.Tag = 785;
                     break;
             }

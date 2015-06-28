@@ -449,7 +449,7 @@ namespace SobekCM.Library.MySobekViewer
                         string acquisition_append = "Submitted by " + RequestSpecificValues.Current_User.Full_Name + ".";
                         if (item.Bib_Info.Notes_Count > 0)
                         {
-                            foreach (Note_Info thisNote in item.Bib_Info.Notes.Where(ThisNote => ThisNote.Note_Type == Note_Type_Enum.acquisition))
+                            foreach (Note_Info thisNote in item.Bib_Info.Notes.Where(ThisNote => ThisNote.Note_Type == Note_Type_Enum.Acquisition))
                             {
                                 if (thisNote.Note.IndexOf(acquisition_append) < 0)
                                     thisNote.Note = thisNote.Note.Trim() + "  " + acquisition_append;
@@ -1760,7 +1760,7 @@ namespace SobekCM.Library.MySobekViewer
                             Note_Info deleteNote = null;
                             foreach (Note_Info thisNote in item.Bib_Info.Notes)
                             {
-                                if (thisNote.Note_Type == Note_Type_Enum.default_type)
+                                if (thisNote.Note_Type == Note_Type_Enum.DefaultType)
                                 {
                                     deleteNote = thisNote;
                                     item.Bib_Info.SobekCM_Type_String = thisNote.Note;
