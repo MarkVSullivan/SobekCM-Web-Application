@@ -21,6 +21,9 @@ namespace SobekCM.Library.ItemViewer.Fragments
             get { return ItemViewer_Type_Enum.Fragment_SendForm; }
         }
 
+        /// <summary> Add the main HTML for the main viewer, which is the bulk of the send fragment </summary>
+        /// <param name="MainPlaceHolder">Main place holder ( "mainPlaceHolder" ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             if (CurrentUser != null)

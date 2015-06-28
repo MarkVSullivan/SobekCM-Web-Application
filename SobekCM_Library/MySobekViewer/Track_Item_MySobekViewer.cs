@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlTypes;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -12,7 +11,6 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
@@ -42,16 +40,13 @@ namespace SobekCM.Library.MySobekViewer
         private string start_Time;
         private string end_Time;
         private bool close_error = false;
-        private DateTime this_workflow_date;
 
-        private DataTable tracking_users;
-        private DataTable open_workflows_from_DB;
-        private DataTable previous_workflows_this_user;
+        private readonly DataTable open_workflows_from_DB;
 
         private Dictionary<string, Tracking_Workflow> current_workflows;
         private Dictionary<string, Tracking_Workflow> current_workflows_no_durations;
 
-        private User_Object current_selected_user;
+        private readonly User_Object current_selected_user;
         private Tracking_Workflow this_workflow = new Tracking_Workflow();
 
         private readonly int page;
@@ -71,14 +66,14 @@ namespace SobekCM.Library.MySobekViewer
 
 
             //Initialize variables
-            tracking_users = new DataTable();
+            DataTable trackingUsers = new DataTable();
             user_list = new Dictionary<string, User_Object>();
             scanners_list = new List<string>();
 
             //Determine the page
             page = 1;
 
-            if ((HttpContext.Current.Session["Selected_Tab"] != null) && !(String.IsNullOrEmpty(HttpContext.Current.Session["Selected_Tab"].ToString())) && HttpContext.Current.Session["Selected_Tab"] == "2")
+            if ((HttpContext.Current.Session["Selected_Tab"] != null) && !(String.IsNullOrEmpty(HttpContext.Current.Session["Selected_Tab"].ToString())) && HttpContext.Current.Session["Selected_Tab"].ToString() == "2")
                 page = 2;
 
             string sub_page = HttpContext.Current.Request.Form["tracking_new_page"] ?? "";
@@ -95,9 +90,9 @@ namespace SobekCM.Library.MySobekViewer
 
 
             //Get the list of users who are possible Scanning/Processing technicians from the DB
-            tracking_users = SobekCM_Database.Tracking_Get_Users_Scanning_Processing();
+            trackingUsers = SobekCM_Database.Tracking_Get_Users_Scanning_Processing();
 
-            foreach (DataRow row in tracking_users.Rows)
+            foreach (DataRow row in trackingUsers.Rows)
             {
                 User_Object temp_user = new User_Object();
                 temp_user.UserName = row["UserName"].ToString();
@@ -190,12 +185,6 @@ namespace SobekCM.Library.MySobekViewer
                     //Get the the form field values from the first tab
                     start_Time = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartTime"]).ToString("hh:mm tt");
                     end_Time = Convert.ToDateTime(HttpContext.Current.Request.Form["txtEndTime"]).ToString("hh:mm tt");
-                    this_workflow_date = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartDate"]);
-                }
-                else if (page == 2)
-                {
-                    //Get the form values from the second tab
-                    this_workflow_date = Convert.ToDateTime(HttpContext.Current.Request.Form["txtStartDate2"]);
                 }
             }
 
@@ -259,7 +248,7 @@ namespace SobekCM.Library.MySobekViewer
                             itemID = Resource_Object.Database.SobekCM_Database.Get_ItemID(BibID, VID);
                             Get_Bib_VID_from_ItemID(itemID);
                         }
-                        catch (Exception ee)
+                        catch
                         {
                             error_message = "Invalid BibID or VID!";
                         }
@@ -489,12 +478,11 @@ namespace SobekCM.Library.MySobekViewer
                     current_workflow_id = this_workflow.WorkflowID;
                     key = current_workflow_id.ToString();
 
-                    if (current_workflows_no_durations.ContainsKey("-1"))
+                    if (current_workflows_no_durations != null && current_workflows_no_durations.ContainsKey("-1"))
                         current_workflows_no_durations.Remove("-1");
 
                     //Add this to the dictionary
-                    current_workflows_no_durations.Add(key, this_workflow);
-
+                    if (current_workflows_no_durations != null) current_workflows_no_durations.Add(key, this_workflow);
                 }
 
 
@@ -516,7 +504,6 @@ namespace SobekCM.Library.MySobekViewer
                 {
                     if (this_event == 2 || this_event == 4)
                     {
-                        string opened_key_string = this_event == 2 ? "1" : "3";
                         //         string opened_key = page + thisItemID + this_workflow.Date + opened_key_string + current_selected_user.UserName;
                         string opened_key = key;
 
@@ -940,7 +927,6 @@ namespace SobekCM.Library.MySobekViewer
 
             const string DURATION = "Track with Duration";
             const string SINGLE_POINT = "Track without Duration";
-            const string EDIT_SCREEN = "Edit Previous Entries";
 
             //Draw all the page tabs for this form
 
@@ -1224,7 +1210,6 @@ namespace SobekCM.Library.MySobekViewer
                         builder.AppendLine("         </td>");
                         builder.AppendLine("         <td>Date:</td>");
 
-                        DateTime startDateToDisplay;
                         string startDateDisplayString = String.Empty;
                         //DateTime.TryParse(this_date_started, out startDateToDisplay);
                         if (!String.IsNullOrEmpty(row["DateStarted"].ToString()))

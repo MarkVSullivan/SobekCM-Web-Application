@@ -1,6 +1,10 @@
+#region Using directives
+
 using System;
 using System.IO;
 using System.Xml;
+
+#endregion
 
 namespace SobekCM.Library.Settings
 {

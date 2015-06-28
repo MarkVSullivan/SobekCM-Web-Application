@@ -1,6 +1,10 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Runtime.Serialization;
 using System.Text;
+
+#endregion
 
 namespace SobekCM.Core.Settings
 {

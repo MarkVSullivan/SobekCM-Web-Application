@@ -10,12 +10,10 @@ using System.Linq;
 using System.Web;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.Skins;
-using SobekCM.Engine_Library.Navigation;
+using SobekCM.Engine_Library.Skins;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Engine_Library.Skins;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -30,8 +28,8 @@ namespace SobekCM.Library.AdminViewer
     /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
     /// During a valid html request, the following steps occur:
     /// <ul>
-    /// <li>Application state is built/verified by the <see cref="Application_State.Application_State_Builder"/> </li>
-    /// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation_Object"/> </li>
+    /// <li>Application state is built/verified by the Application_State_Builder </li>
+    /// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/> </li>
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
     /// <li>The mySobek subwriter creates an instance of this viewer to manage the HTML skins in this digital library</li>
@@ -112,7 +110,6 @@ namespace SobekCM.Library.AdminViewer
                                     RequestSpecificValues.Current_Mode.Skin_In_URL = false;
                                     RequestSpecificValues.Current_Mode.Skin = null;
                                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
-                                    return;
                                 }
 
                             }
@@ -139,7 +136,6 @@ namespace SobekCM.Library.AdminViewer
 
                             bool override_banner = false;
                             bool override_header = false;
-                            bool build_on_launch = false;
                             bool suppress_top_nav = false;
                             bool copycurrent = false;
                             object temp_object;
@@ -157,8 +153,6 @@ namespace SobekCM.Library.AdminViewer
                                     override_banner = true;
                                 }
 
-                                override_header = true;
-
                                 temp_object = form["admin_interface_top_nav"];
                                 if (temp_object != null)
                                 {
@@ -173,25 +167,17 @@ namespace SobekCM.Library.AdminViewer
 
                                 // Only real validation needed is that this is a new wek skin name and is alphanumeric
                                 bool result = save_value.All(C => Char.IsLetterOrDigit(C) || C == '_');
-                                bool existing_already = UI_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes.Any(thisSkinCode => String.Equals(thisSkinCode, save_value, StringComparison.CurrentCultureIgnoreCase));
+                                bool existing_already = UI_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes.Any(ThisSkinCode => String.Equals(ThisSkinCode, save_value, StringComparison.CurrentCultureIgnoreCase));
 
                                 if ((!result) || (existing_already))
                                 {
-                                    if (!result)
-                                    {
-                                        actionMessage = "ERROR: New web skin code must be only letters and numbers";
-                                        save_value = save_value.Replace("\"", "");
-                                    }
-                                    else
-                                    {
-                                        actionMessage = "ERROR: New web skin code already exists!";
-                                    }
+                                    actionMessage = !result ? "ERROR: New web skin code must be only letters and numbers" : "ERROR: New web skin code already exists!";
                                 }
                                 else
                                 {
 
                                     // Save this new interface
-                                    if (SobekCM_Database.Save_Web_Skin(save_value, new_base_code, override_banner, override_header, new_banner_link, new_notes, suppress_top_nav, RequestSpecificValues.Tracer))
+                                    if (SobekCM_Database.Save_Web_Skin(save_value, new_base_code, override_banner, true, new_banner_link, new_notes, suppress_top_nav, RequestSpecificValues.Tracer))
                                     {
                                         // Ensure a folder exists for this, otherwise create one
                                         try
@@ -339,7 +325,7 @@ namespace SobekCM.Library.AdminViewer
 
                                             }
                                         }
-                                        catch (Exception ee)
+                                        catch 
                                         {
                                             actionMessage = "Error creating some of the files for the new web skin";
                                         }
@@ -388,7 +374,7 @@ namespace SobekCM.Library.AdminViewer
                                             }
                                         }
                                     }
-                                    catch (Exception ee)
+                                    catch 
                                     {
                                         actionMessage = "Error creating all the necessary folders";
                                     }

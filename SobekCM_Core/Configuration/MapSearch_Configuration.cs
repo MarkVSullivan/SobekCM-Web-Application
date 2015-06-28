@@ -8,19 +8,22 @@ using System.Xml;
 
 namespace SobekCM.Core.Configuration
 {
+    /// <summary> Instance-wide configuraiton information for the map search capabilities </summary>
     public static class MapSearch_Configuration
     {
         //assign config file
         private static string configFilePath = AppDomain.CurrentDomain.BaseDirectory + "/config/default/sobekcm_mapsearch.config";
 
-        //gets all settings from config file
+        /// <summary> Gets all settings from config file </summary>
+        /// <param name="IdsFromPage"> The ids from page.</param>
+        /// <returns></returns>
         public static List<string>[] getSettings(List<string> IdsFromPage)
         {
             //get defaults as base
             List<string>[] settings = getDefaultSettings();
 
             //determine if custom has settings
-            if (hasCustomSettings(IdsFromPage))
+            if (HasCustomSettings(IdsFromPage))
             {
                 List<string>[] newSettings = getCustomSettings(IdsFromPage);
                 foreach (string settingName in newSettings[0])
@@ -36,8 +39,10 @@ namespace SobekCM.Core.Configuration
             return settings;
         }
 
-        //determines if there are custom settings
-        private static bool hasCustomSettings(List<string> IdsFromPage)
+        /// <summary> Determines if there are custom settings </summary>
+        /// <param name="IdsFromPage">The ids from page.</param>
+        /// <returns></returns>
+        private static bool HasCustomSettings(List<string> IdsFromPage)
         {
             bool hasCustomSettings = false;
             foreach (string IdFromPage in IdsFromPage)

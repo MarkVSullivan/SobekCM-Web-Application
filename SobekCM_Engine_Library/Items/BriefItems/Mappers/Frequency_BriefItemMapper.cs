@@ -1,8 +1,12 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
+using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Core.BriefItem;
+
+#endregion
 
 namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 {

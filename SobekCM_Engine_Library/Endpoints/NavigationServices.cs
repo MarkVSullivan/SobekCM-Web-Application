@@ -1,4 +1,4 @@
-﻿#region Using references
+﻿#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -21,6 +21,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> Resolve the URL to a Navigation_Object </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         public void ResolveUrl(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
@@ -93,7 +94,13 @@ namespace SobekCM.Engine_Library.Endpoints
         }
 
 
-        public Navigation_Object get_navigation_object(NameValueCollection RequestQueryString, string BaseUrl, string[] RequestUserLanguages, Custom_Tracer tracer)
+        /// <summary> Resolve the requested URL (sepecified via the base url and the query string ) into a SobekCM navigation object </summary>
+        /// <param name="RequestQueryString"> Query string, from the request The request query string.</param>
+        /// <param name="BaseUrl"> Base URL of the original request </param>
+        /// <param name="RequestUserLanguages"> List of user languages requested (via browser settings) </param>
+        /// <param name="Tracer">The tracer.</param>
+        /// <returns> Fully built navigation controller object </returns>
+        public Navigation_Object get_navigation_object(NameValueCollection RequestQueryString, string BaseUrl, string[] RequestUserLanguages, Custom_Tracer Tracer)
         {
             NameValueCollection keys = RequestQueryString.Copy();
 
@@ -102,7 +109,7 @@ namespace SobekCM.Engine_Library.Endpoints
             keys["urlrelative"] = redirect_url;
 
             Navigation_Object currentMode = new Navigation_Object();
-            QueryString_Analyzer.Parse_Query(keys, currentMode, BaseUrl, RequestUserLanguages, Engine_ApplicationCache_Gateway.Codes, Engine_ApplicationCache_Gateway.Collection_Aliases, Engine_ApplicationCache_Gateway.Items, Engine_ApplicationCache_Gateway.URL_Portals, tracer);
+            QueryString_Analyzer.Parse_Query(keys, currentMode, BaseUrl, RequestUserLanguages, Engine_ApplicationCache_Gateway.Codes, Engine_ApplicationCache_Gateway.Collection_Aliases, Engine_ApplicationCache_Gateway.Items, Engine_ApplicationCache_Gateway.URL_Portals, Tracer);
 
             return currentMode;
         }

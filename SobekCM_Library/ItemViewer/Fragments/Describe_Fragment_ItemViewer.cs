@@ -21,6 +21,9 @@ namespace SobekCM.Library.ItemViewer.Fragments
             get { return ItemViewer_Type_Enum.Fragment_AddForm; }
         }
 
+        /// <summary> Adds the main view section to the page turner </summary>
+        /// <param name="MainPlaceHolder">Main place holder ( "mainPlaceHolder" ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             if ((CurrentItem.Behaviors.Can_Be_Described) && (CurrentUser != null))
@@ -49,7 +52,7 @@ namespace SobekCM.Library.ItemViewer.Fragments
                 responseBuilder.AppendLine("</div>");
                 responseBuilder.AppendLine();
 
-                MainPlaceHolder.Controls.Add(new Literal() { Text = responseBuilder.ToString() });
+                MainPlaceHolder.Controls.Add(new Literal { Text = responseBuilder.ToString() });
             }
         }
     }

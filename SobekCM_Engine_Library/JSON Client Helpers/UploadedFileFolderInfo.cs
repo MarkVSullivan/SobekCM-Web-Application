@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#region Using directives
+
+using System;
 using System.Runtime.Serialization;
+
+#endregion
 
 namespace SobekCM.Engine_Library.JSON_Client_Helpers
 {

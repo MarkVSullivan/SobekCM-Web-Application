@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region Using directives
+
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
+#endregion
+
 namespace SobekCM.Library.AggregationViewer.Viewers
 {
+    /// <summary> Aggregation viewer shows all the options that a logged in user has for managing the current
+    /// aggregation </summary>
     public class Manage_Menu_AggregationViewer : abstractAggregationViewer
     {
         /// <summary> Constructor for a new instance of the Manage_Menu_AggregationViewer class </summary>

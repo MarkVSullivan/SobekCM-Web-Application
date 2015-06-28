@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+
+#endregion
 
 namespace SobekCM.Core.Database
 {
@@ -429,7 +433,7 @@ namespace SobekCM.Core.Database
                 {
                     reader = sqlCommand.ExecuteReader();
                 }
-                catch (Exception ee)
+                catch 
                 {
                     sqlConnect.Close();
                     throw;

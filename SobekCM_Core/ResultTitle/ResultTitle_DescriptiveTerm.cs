@@ -1,9 +1,13 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.BriefItem;
+
+#endregion
 
 namespace SobekCM.Core.ResultTitle
 {

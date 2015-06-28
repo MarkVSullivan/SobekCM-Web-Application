@@ -1,8 +1,9 @@
-﻿#region Using references
+﻿#region Using directives
 
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Web;
+using System.Xml.Serialization;
 using Jil;
 using ProtoBuf;
 using SobekCM.Engine_Library.Microservices;
@@ -41,7 +42,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     break;
 
                 case Microservice_Endpoint_Protocol_Enum.XML:
-                    System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(ReturnValue.GetType());
+                    XmlSerializer x = new XmlSerializer(ReturnValue.GetType());
                     x.Serialize(Response.Output, ReturnValue);
                     break;
 

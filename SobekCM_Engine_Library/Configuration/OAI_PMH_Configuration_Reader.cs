@@ -1,8 +1,11 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.IO;
 using System.Xml;
 using SobekCM.Core.Configuration;
-using SobekCM.Engine_Library.ApplicationState;
+
+#endregion
 
 namespace SobekCM.Engine_Library.Configuration
 {

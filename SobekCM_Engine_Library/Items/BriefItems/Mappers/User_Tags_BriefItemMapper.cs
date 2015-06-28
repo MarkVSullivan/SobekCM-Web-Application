@@ -1,6 +1,10 @@
-﻿using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Behaviors;
+﻿#region Using directives
+
 using SobekCM.Core.BriefItem;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Behaviors;
+
+#endregion
 
 namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 {

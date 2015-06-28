@@ -119,7 +119,6 @@ namespace SobekCM.Library.Citation.Elements
             // Pull the standard values
             NameValueCollection form = HttpContext.Current.Request.Form;
 
-            int i = 1;
             foreach (string thisKey in form.AllKeys)
             {
                 if (thisKey.IndexOf("lomcontext_select") == 0)

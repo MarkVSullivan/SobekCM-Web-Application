@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -13,21 +15,24 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Engine_Library.Navigation;
+using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Library.UploadiFive;
 using SobekCM.Tools;
 
+#endregion
+
 namespace SobekCM.Library.AdminViewer
 {
+    /// <summary> Add a new collection wizard administrative viewer </summary>
     public class Add_Collection_AdminViewer : abstract_AdminViewer
     {
         private readonly int page;
         private string actionMessage;
-        private string userInProcessDirectory;
-        private string userInProcessUrl;
+        private readonly string userInProcessDirectory;
+        private readonly string userInProcessUrl;
 
         private readonly New_Aggregation_Arguments newAggr;
 
@@ -169,11 +174,6 @@ namespace SobekCM.Library.AdminViewer
                     // Pull the standard values
                     NameValueCollection form = HttpContext.Current.Request.Form;
 
-                    string save_value = form["admin_wizard_save"].ToUpper().Trim();
-                    string new_aggregation_code = String.Empty;
-                    if (form["admin_aggr_code"] != null)
-                        new_aggregation_code = form["admin_aggr_code"].ToUpper().Trim();
-
                     // Get the curret action
                     string action = form["admin_wizard_save"];
 
@@ -240,15 +240,15 @@ namespace SobekCM.Library.AdminViewer
                             break;
 
                         case 3:
-                            Save_Page_Banner_Postback(form);
+                            Save_Page_Banner_Postback();
                             break;
 
                         case 4:
-                            Save_Page_Buttons_Postback(form);
+                            Save_Page_Buttons_Postback();
                             break;
 
                         case 5:
-                            Save_Page_Success_Postback(form);
+                            Save_Page_Success_Postback();
                             break;
 
                         case 0:
@@ -335,7 +335,7 @@ namespace SobekCM.Library.AdminViewer
                         // Try to add this aggregation
                         ErrorRestMessage msg = SobekEngineClient.Aggregations.Add_New_Aggregation(newAggr);
 
-                        if (msg.ErrorType == ErrorRestType.Successful)
+                        if (msg.ErrorTypeEnum == ErrorRestTypeEnum.Successful)
                         {
                             // Clear all aggregation information (and thematic heading info) from the cache as well
                             CachedDataManager.Aggregations.Clear();
@@ -393,7 +393,6 @@ namespace SobekCM.Library.AdminViewer
                             HttpContext.Current.Session["Add_Coll_Wizard"] = null;
 
                             UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
-                            return;
                         }
                         else
                         {
@@ -408,13 +407,15 @@ namespace SobekCM.Library.AdminViewer
                         RequestSpecificValues.Current_Mode.Request_Completed = true;
                     }
                 }
-                catch ( Exception ee )
+                catch 
                 {
                     actionMessage = "General error while reading postback information";
                 }
             }
         }
 
+        /// <summary>  Gets the collection of special behaviors which this admin or mySobek viewer
+        /// requests from the main HTML subwriter </summary>
         public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
         {
             get { return new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Suppress_Banner, HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables}; }
@@ -551,9 +552,9 @@ namespace SobekCM.Library.AdminViewer
             }
         }
 
-        private char page_to_char(int page_as_int)
+        private char page_to_char(int PageAsInt)
         {
-            switch (page_as_int)
+            switch (PageAsInt)
             {
                 case 0:
                     return 'w';
@@ -611,7 +612,7 @@ namespace SobekCM.Library.AdminViewer
             if (do_not_show_flag)
             {
                 RequestSpecificValues.Current_User.Add_Setting("Add_Collection_AdminViewer:Skip Welcome", "true");
-                Library.Database.SobekCM_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Add_Collection_AdminViewer:Skip Welcome", "true");
+                SobekCM_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Add_Collection_AdminViewer:Skip Welcome", "true");
             }
         }
 
@@ -637,17 +638,17 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 1 - Basic Information
 
-        private void Save_Page_Basic_Postback(NameValueCollection form)
+        private void Save_Page_Basic_Postback(NameValueCollection Form)
         {
             // Pull the values from the submitted form
-            string new_aggregation_code = form["admin_aggr_code"];
-            string new_type = form["admin_aggr_type"];
+            string new_aggregation_code = Form["admin_aggr_code"];
+            string new_type = Form["admin_aggr_type"];
             string new_parent = String.Empty;
             bool parent_locked = true;
-            string new_name = form["admin_aggr_name"].Trim();
-            string new_shortname = form["admin_aggr_shortname"].Trim();
-            string new_description = form["admin_aggr_desc"].Trim();
-            string new_link = form["admin_aggr_link"].Trim();
+            string new_name = Form["admin_aggr_name"].Trim();
+            string new_shortname = Form["admin_aggr_shortname"].Trim();
+            string new_description = Form["admin_aggr_desc"].Trim();
+            string new_link = Form["admin_aggr_link"].Trim();
 
 
             // Convert to the integer id for the parent and begin to do checking
@@ -656,7 +657,7 @@ namespace SobekCM.Library.AdminViewer
 
             if ((!newAggr.ParentLocked.HasValue) || (!newAggr.ParentLocked.Value))
             {
-                new_parent = form["admin_aggr_parent"].Trim();
+                new_parent = Form["admin_aggr_parent"].Trim();
                 parent_locked = false;
                 if (String.IsNullOrEmpty(new_parent))
                 {
@@ -951,12 +952,12 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 2 - Visibility
 
-        private void Save_Page_Visibility_Postback(NameValueCollection form)
+        private void Save_Page_Visibility_Postback(NameValueCollection Form)
         {
-            string new_thematic_heading = form["admin_aggr_heading"].Trim();
+            string new_thematic_heading = Form["admin_aggr_heading"].Trim();
 
-            bool is_active = form["admin_aggr_isactive"] != null;
-            bool is_hidden = form["admin_aggr_ishidden"] == null;
+            bool is_active = Form["admin_aggr_isactive"] != null;
+            bool is_hidden = Form["admin_aggr_ishidden"] == null;
 
             // Get the thematic heading id (no checks here)
             string thematicHeading = null;
@@ -977,11 +978,11 @@ namespace SobekCM.Library.AdminViewer
                 }
                 else if (thematicHeadingId == -2)
                 {
-                    string newHeading = form["admin_aggr_newheading"];
+                    string newHeading = Form["admin_aggr_newheading"];
                     if (!String.IsNullOrEmpty(newHeading))
  {
                         newAggr.NewThematicHeading = true;
-                        thematicHeading = form["admin_aggr_newheading"];
+                        thematicHeading = Form["admin_aggr_newheading"];
                     }
                 }
             }
@@ -1076,7 +1077,7 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 3 - Banner
 
-        private void Save_Page_Banner_Postback(NameValueCollection Form)
+        private void Save_Page_Banner_Postback()
         {
             string banner_folder = userInProcessDirectory + "\\images\\banners";
             if (!Directory.Exists(banner_folder))
@@ -1174,7 +1175,7 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 4 - Button
 
-        private void Save_Page_Buttons_Postback(NameValueCollection Form)
+        private void Save_Page_Buttons_Postback()
         {
             string button_folder = userInProcessDirectory + "\\images\\buttons";
             if (!Directory.Exists(button_folder))
@@ -1287,7 +1288,7 @@ namespace SobekCM.Library.AdminViewer
 
         #region Methods to render (and parse) page 5 - Success
 
-        private void Save_Page_Success_Postback(NameValueCollection Form)
+        private void Save_Page_Success_Postback()
         {
             // Do nothing
         }
@@ -1352,14 +1353,16 @@ namespace SobekCM.Library.AdminViewer
             UploadFilesPlaceHolder.Controls.Add(filesLiteral2);
             filesBuilder.Remove(0, filesBuilder.Length);
 
-            UploadiFiveControl uploadControl = new UploadiFiveControl();
-            uploadControl.UploadPath = UploadDirectory;
-            uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
-            uploadControl.AllowedFileExtensions = FileExtensions;
-            uploadControl.SubmitWhenQueueCompletes = true;
-            uploadControl.RemoveCompleted = true;
-            uploadControl.Multi = UploadMultiple;
-            uploadControl.ServerSideFileName = ServerSideName;
+            UploadiFiveControl uploadControl = new UploadiFiveControl
+            {
+                UploadPath = UploadDirectory, 
+                UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx", 
+                AllowedFileExtensions = FileExtensions, 
+                SubmitWhenQueueCompletes = true, 
+                RemoveCompleted = true, 
+                Multi = UploadMultiple, 
+                ServerSideFileName = ServerSideName
+            };
             UploadFilesPlaceHolder.Controls.Add(uploadControl);
 
             LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());

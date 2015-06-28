@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Navigation;
+using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Settings;
@@ -24,8 +24,8 @@ namespace SobekCM.Library.AdminViewer
 	/// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
 	/// During a valid html request, the following steps occur:
 	/// <ul>
-	/// <li>Application state is built/verified by the <see cref="Application_State.Application_State_Builder"/> </li>
-	/// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation.SobekCM_Navigation_Object"/> </li>
+	/// <li>Application state is built/verified by the Application_State_Builder </li>
+	/// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/>  </li>
 	/// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
 	/// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
 	/// <li>The mySobek subwriter creates an instance of this viewer to display the system admin home page </li>
@@ -67,7 +67,9 @@ namespace SobekCM.Library.AdminViewer
 	            UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
 	        }
 
-	        menu_preference = RequestSpecificValues.Current_User.Get_Setting("Home_AdminViewer:View Preference", "brief");
+	        menu_preference = "brief";
+            if ( RequestSpecificValues.Current_User != null )
+                menu_preference = RequestSpecificValues.Current_User.Get_Setting("Home_AdminViewer:View Preference", "brief");
 
 	        // Was this a post-back, which would only be due to a preference change
 	        if (RequestSpecificValues.Current_Mode.isPostBack)
@@ -78,8 +80,11 @@ namespace SobekCM.Library.AdminViewer
 	            {
 	                // Save the new preference
 	                menu_preference = new_preference;
-	                RequestSpecificValues.Current_User.Add_Setting("Home_AdminViewer:View Preference", menu_preference);
-	                Library.Database.SobekCM_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Home_AdminViewer:View Preference", menu_preference);
+	                if (RequestSpecificValues.Current_User != null)
+	                {
+	                    RequestSpecificValues.Current_User.Add_Setting("Home_AdminViewer:View Preference", menu_preference);
+	                    SobekCM_Database.Set_User_Setting(RequestSpecificValues.Current_User.UserID, "Home_AdminViewer:View Preference", menu_preference);
+	                }
 	            }
 	        }
 
@@ -110,7 +115,7 @@ namespace SobekCM.Library.AdminViewer
 	        categories_dictionary["common"].Add(editCurrSkinIcon);
 
 	        string usersIcon = String.Empty;
-	        if (RequestSpecificValues.Current_User.Is_System_Admin)
+	        if (( RequestSpecificValues.Current_User != null ) && ( RequestSpecificValues.Current_User.Is_System_Admin))
 	        {
 	            // Edit users and groups
 	            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
@@ -213,7 +218,7 @@ namespace SobekCM.Library.AdminViewer
 	        categories_dictionary["permissions"].Add(permissionsIcon);
 
 	        // Edit users (REPEAT FROM COMMON TASKS CATEGORY)
-	        if (RequestSpecificValues.Current_User.Is_System_Admin)
+            if ((RequestSpecificValues.Current_User != null) && ( RequestSpecificValues.Current_User.Is_System_Admin))
 	        {
 	            // Edit users
 	            categories_dictionary["permissions"].Add(usersIcon);
@@ -565,15 +570,15 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  </div>");
 	    }
         
-	    private void display_single_category(TextWriter Output, string category, string Title)
+	    private void display_single_category(TextWriter Output, string Category, string Title)
 	    {
-	        if ((categories_dictionary.ContainsKey(category)) && ( categories_dictionary[category].Count > 0 ))
+	        if ((categories_dictionary.ContainsKey(Category)) && ( categories_dictionary[Category].Count > 0 ))
 	        {
 	            Output.WriteLine();
                 if ( Title.Length > 0 )
-    	            Output.WriteLine("  <h2 id=\"" + category + "\">" + Title + "</h2>");
+    	            Output.WriteLine("  <h2 id=\"" + Category + "\">" + Title + "</h2>");
 
-	            foreach (string icon in categories_dictionary[category])
+	            foreach (string icon in categories_dictionary[Category])
 	            {
 	                Output.WriteLine(icon);
 	            }

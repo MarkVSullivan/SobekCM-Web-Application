@@ -141,7 +141,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             {
                                 label = download.System_Name;
                             }
-                            if (label.IndexOf(download.File_Extension, System.StringComparison.OrdinalIgnoreCase) > 0)
+                            if (label.IndexOf(download.File_Extension, StringComparison.OrdinalIgnoreCase) > 0)
                             {
                                 Output.WriteLine("                  <a href=\"" + file_link + "\" target=\"_blank\">" + label + "</a><br /><br />");
                             }

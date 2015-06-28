@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Specialized;
 using System.Linq;
 using SobekCM.Core.Navigation;
+
+#endregion
 
 namespace SobekCM.Core.Results
 {

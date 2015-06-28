@@ -1,8 +1,12 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.BriefItem;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Resource_Object;
-using SobekCM.Core.BriefItem;
+
+#endregion
 
 namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 {

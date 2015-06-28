@@ -1,21 +1,28 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Web;
 using Jil;
 using ProtoBuf;
 
+#endregion
+
 namespace SobekCM.Core.MicroservicesClient
 {
+    /// <summary> Base class used for all microservice clients that includes helper methods </summary>
     public abstract class MicroservicesClientBase
     {
-
+        /// <summary> Configuration information for microservice client endpoints </summary>
         protected static MicroservicesClient_Configuration Config;
 
         /// <summary> Constructor for a new instance of the MicroservicesClientBase class </summary>
         /// <param name="ConfigFile"> Location for the configuration file to read </param>
+        /// <param name="SystemBaseUrl"> System base URL </param>
         protected MicroservicesClientBase(string ConfigFile, string SystemBaseUrl )
         {
             if ( Config == null )
@@ -156,10 +163,8 @@ namespace SobekCM.Core.MicroservicesClient
             {
                 throw new ApplicationException("Error deserializing the Protocol Buffer response from microservice URL ( '" + MicroserviceUri + "' ) into " + typeof(T) + ".  (" + ee.Message + ")", ee);
             }
-            catch (Exception ee)
-            {
-                throw;
-            }
+
+            // Other exceptions are thrown
         }
 
         /// <summary> Deserialize an object from a remote microservice URI (Generic method) </summary>
@@ -180,7 +185,7 @@ namespace SobekCM.Core.MicroservicesClient
                 request.ContentType = "application/x-www-form-urlencoded";
 
                 // Build and encode the post data
-                NameValueCollection outgoingQueryString = System.Web.HttpUtility.ParseQueryString(String.Empty);
+                NameValueCollection outgoingQueryString = HttpUtility.ParseQueryString(String.Empty);
                 foreach (KeyValuePair<string, string> thisFieldData in PostData)
                 {
                     outgoingQueryString.Add( thisFieldData.Key, thisFieldData.Value);
@@ -296,13 +301,13 @@ namespace SobekCM.Core.MicroservicesClient
             {
                 throw new ApplicationException("Error deserializing the Protocol Buffer response from microservice URL ( '" + MicroserviceUri + "' ) into " + typeof(T) + ".  (" + ee.Message + ")", ee);
             }
-            catch (Exception ee)
-            {
-                throw;
-            }
+            
+            // Other exceptions are thrown
         }
 
         #endregion
+
+        // ReSharper disable UnusedMember.Local
 
         private object ExampleGetMethod(int PrimaryKey)
         {
@@ -328,5 +333,7 @@ namespace SobekCM.Core.MicroservicesClient
             // Call out to the endpoint and return the deserialized object
             return Deserialize<string>(endpoint.URL, endpoint.Protocol, postData);
         }
+
+        // ReSharper restore UnusedMember.Local
     }
 }

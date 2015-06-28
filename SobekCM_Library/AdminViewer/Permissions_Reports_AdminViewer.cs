@@ -1,8 +1,11 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Web;
+using System.Web.Caching;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -10,12 +13,18 @@ using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
+#endregion
+
 namespace SobekCM.Library.AdminViewer
 {
+    /// <summary> Administrative viewer allows all the users with special permissions to be viewed,
+    /// allowing for top-level user management  </summary>
     public class Permissions_Reports_AdminViewer : abstract_AdminViewer
     {
         private string actionMessage;
 
+        /// <summary> Constructor for a new version of the <see cref="Permissions_Reports_AdminViewer"/> class. </summary>
+        /// <param name="RequestSpecificValues">All the necessary, non-global data specific to the current request</param>
         public Permissions_Reports_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             RequestSpecificValues.Tracer.Add_Trace("Permissions_Reports_AdminViewer.Constructor", String.Empty);
@@ -52,6 +61,8 @@ namespace SobekCM.Library.AdminViewer
             get { return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Banner, HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables }; }
         }
 
+        /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page,
+        ///  just below the banner </summary>
         public override string Web_Title
         {
             get { return "User Permissions Reports"; }
@@ -63,6 +74,10 @@ namespace SobekCM.Library.AdminViewer
             get { return Static_Resources.User_Permission_Img; }
         }
 
+        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of any form) </summary>
+        /// <param name="Output">Textwriter to write the HTML for this viewer</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <remarks> This does nothing </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             // Nothin yet
@@ -243,7 +258,7 @@ namespace SobekCM.Library.AdminViewer
                         }
                         else
                         {
-                            HttpContext.Current.Cache.Insert("GlobalPermissionsReport", globalPermissions, null, DateTime.Now.AddSeconds(60d), System.Web.Caching.Cache.NoSlidingExpiration);
+                            HttpContext.Current.Cache.Insert("GlobalPermissionsReport", globalPermissions, null, DateTime.Now.AddSeconds(60d), Cache.NoSlidingExpiration);
                         }
                     }
 
@@ -395,7 +410,7 @@ namespace SobekCM.Library.AdminViewer
                         }
                         else
                         {
-                            HttpContext.Current.Cache.Insert("GlobalPermissionsReport", globalPermissions2, null, DateTime.Now.AddSeconds(60d), System.Web.Caching.Cache.NoSlidingExpiration);
+                            HttpContext.Current.Cache.Insert("GlobalPermissionsReport", globalPermissions2, null, DateTime.Now.AddSeconds(60d), Cache.NoSlidingExpiration);
                         }
                     }
 
@@ -587,7 +602,7 @@ namespace SobekCM.Library.AdminViewer
                         }
                         else
                         {
-                            HttpContext.Current.Cache.Insert("GlobalPermissionsUsersLinked", usersLinked, null, DateTime.Now.AddSeconds(60d), System.Web.Caching.Cache.NoSlidingExpiration);
+                            HttpContext.Current.Cache.Insert("GlobalPermissionsUsersLinked", usersLinked, null, DateTime.Now.AddSeconds(60d), Cache.NoSlidingExpiration);
                         }
                     }
 
@@ -620,14 +635,12 @@ namespace SobekCM.Library.AdminViewer
 
 
                         Output.WriteLine("    <tbody>");
-                        string dateCreated;
-                        string lastActivity;
                         int userCount = 0;
                         foreach (DataRow thisRow in usersLinked.Rows)
                         {
                             // Initialize some values
-                            dateCreated = String.Empty;
-                            lastActivity = String.Empty;
+                            string dateCreated = String.Empty;
+                            string lastActivity = String.Empty;
 
                             // Get the UserID
                             int this_userid = Convert.ToInt32(thisRow["UserID"].ToString());
@@ -695,7 +708,7 @@ namespace SobekCM.Library.AdminViewer
                         }
                         else
                         {
-                            HttpContext.Current.Cache.Insert("GlobalPermissionsLinkedAggr", linkedAggrs, null, DateTime.Now.AddSeconds(60d), System.Web.Caching.Cache.NoSlidingExpiration);
+                            HttpContext.Current.Cache.Insert("GlobalPermissionsLinkedAggr", linkedAggrs, null, DateTime.Now.AddSeconds(60d), Cache.NoSlidingExpiration);
                         }
                     }
 
@@ -728,23 +741,26 @@ namespace SobekCM.Library.AdminViewer
                         Output.WriteLine("          <option value=\"\" selected=\"selected\"></option>");
                     string collection_name = String.Empty;
 
-                    foreach (DataRow thisRow in linkedAggrs.Rows)
+                    if (linkedAggrs != null)
                     {
-                        string display_code = thisRow["Code"].ToString().ToUpper();
-                        string thisType = thisRow["Type"].ToString();
-                        if ((display_code[0] == 'I') && (thisType.IndexOf("Institution", StringComparison.InvariantCultureIgnoreCase) >= 0))
+                        foreach (DataRow thisRow in linkedAggrs.Rows)
                         {
-                            display_code = "i" + display_code.Substring(1);
-                        }
+                            string display_code = thisRow["Code"].ToString().ToUpper();
+                            string thisType = thisRow["Type"].ToString();
+                            if ((display_code[0] == 'I') && (thisType.IndexOf("Institution", StringComparison.InvariantCultureIgnoreCase) >= 0))
+                            {
+                                display_code = "i" + display_code.Substring(1);
+                            }
 
-                        if (String.Compare(thisRow["Code"].ToString(), current_aggr_code, StringComparison.InvariantCultureIgnoreCase) == 0)
-                        {
-                            Output.WriteLine("          <option value=\"" + thisRow["Code"].ToString().ToLower() + "\" selected=\"selected\">" + display_code + " - " + thisRow["Name"] + "</option>");
-                            collection_name = thisRow["Name"].ToString();
-                        }
-                        else
-                            Output.WriteLine("          <option value=\"" + thisRow["Code"].ToString().ToLower() + "\">" + display_code + " - " + thisRow["Name"] + "</option>");
+                            if (String.Compare(thisRow["Code"].ToString(), current_aggr_code, StringComparison.InvariantCultureIgnoreCase) == 0)
+                            {
+                                Output.WriteLine("          <option value=\"" + thisRow["Code"].ToString().ToLower() + "\" selected=\"selected\">" + display_code + " - " + thisRow["Name"] + "</option>");
+                                collection_name = thisRow["Name"].ToString();
+                            }
+                            else
+                                Output.WriteLine("          <option value=\"" + thisRow["Code"].ToString().ToLower() + "\">" + display_code + " - " + thisRow["Name"] + "</option>");
 
+                        }
                     }
 
                     Output.WriteLine("        </select>");
@@ -796,11 +812,6 @@ namespace SobekCM.Library.AdminViewer
 
                             // Is this using detailed permissions?
                             bool detailedPermissions = UI_ApplicationCache_Gateway.Settings.Detailed_User_Aggregation_Permissions;
-
-                            // Dertermine the number of columns
-                            int columns = 5;
-                            if (detailedPermissions)
-                                columns = 10;
 
                             Output.WriteLine("  <table id=\"sbkPrav_DetailedUsers\">");
                             Output.WriteLine("  <thead>");
@@ -879,8 +890,6 @@ namespace SobekCM.Library.AdminViewer
                                     Output.WriteLine("    </tr>");
 
                                     // Prepare to collect the information about this user
-                                    last_userid = thisUserId;
-                                    username = thisUser["LastName"] + "," + thisUser["FirstName"];
                                     canSelect = false;
                                     canEditMetadata = false;
                                     canEditBehaviors = false;
@@ -1051,7 +1060,7 @@ namespace SobekCM.Library.AdminViewer
                         }
                         else
                         {
-                            HttpContext.Current.Cache.Insert("GlobalPermissionsReportSubmit", userSubmitPermit, null, DateTime.Now.AddSeconds(60d), System.Web.Caching.Cache.NoSlidingExpiration);
+                            HttpContext.Current.Cache.Insert("GlobalPermissionsReportSubmit", userSubmitPermit, null, DateTime.Now.AddSeconds(60d), Cache.NoSlidingExpiration);
                         }
                     }
 

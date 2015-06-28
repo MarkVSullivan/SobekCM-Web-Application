@@ -1,11 +1,16 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
 
+#endregion
 
 namespace SobekCM.Core.Aggregations
 {
+    /// <summary> Basic information about any child page to an item aggregation, regardless of whether this is a
+    /// static html page, or a browse pulled from the database  </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("childPage")]
     public class Item_Aggregation_Child_Page
@@ -26,7 +31,7 @@ namespace SobekCM.Core.Aggregations
             this.Source_Data_Type = Source_Data_Type;
             this.Label = Label;
             if ( !String.IsNullOrEmpty(Static_HTML_Source))
-    		    this.Source = Static_HTML_Source;
+    		    Source = Static_HTML_Source;
 
 		    //// If this is the special ALL or NEW, then the source will be a database table/set
 		    //if ((Code == "all") || (Code == "new"))

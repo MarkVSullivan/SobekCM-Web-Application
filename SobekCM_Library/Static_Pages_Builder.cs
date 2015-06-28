@@ -189,7 +189,7 @@ namespace SobekCM.Library
 	    /// <param name="InstanceName"> Name of this instance </param>
 	    /// <param name="PrimaryLogId"> Log ID in the case this is the builder and it has been pre-logged </param>
 	    /// <returns> The number of encountered errors </returns>
-	    public int Rebuild_All_Static_Pages(LogFileXHTML Logger, bool BuildAllCitationPages, string RssFeedLocation, string InstanceName, long PrimaryLogId )
+	    public int Rebuild_All_Static_Pages(LogFileXhtml Logger, bool BuildAllCitationPages, string RssFeedLocation, string InstanceName, long PrimaryLogId )
         {
 	        if (InstanceName.Length > 0)
 		        InstanceName = InstanceName + " - ";
@@ -234,7 +234,7 @@ namespace SobekCM.Library
 
 
 					// ********** TEMPORARY CLEAN UP ***********************//
-					/// TODO: REMOVE THIS!
+					// TODO: REMOVE THIS!
 					// *******************************************//
 					try
 					{

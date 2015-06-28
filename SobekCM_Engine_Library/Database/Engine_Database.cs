@@ -21,6 +21,7 @@ using SobekCM.Tools;
 
 namespace SobekCM.Engine_Library.Database
 {
+    /// <summary> Database gateway for the engine library, used for all database calls </summary>
 	public static class Engine_Database
 	{
 		private const int MAX_PAGE_LOOKAHEAD = 4;
@@ -46,23 +47,25 @@ namespace SobekCM.Engine_Library.Database
 			DatabaseType = EalDbTypeEnum.MSSQL;
 		}
 
+        ///// <summary> Tests this instance.
+        ///// </summary>
+        ///// <returns></returns>
+        //public static bool TEST()
+        //{
+        //    // Build the parameter list
+        //    List<EalDbParameter> parameters = new List<EalDbParameter>();
+        //    parameters.Add(new EalDbParameter("@inputValue", 1000));
 
-		public static bool TEST()
-		{
-			// Build the parameter list
-			List<EalDbParameter> parameters = new List<EalDbParameter>();
-			parameters.Add(new EalDbParameter("@inputValue", 1000));
+        //    // Add parameters for total items and total titles
+        //    EalDbParameter totalItemsParameter = new EalDbParameter("@returnValue", 0) {Direction = ParameterDirection.InputOutput};
+        //    parameters.Add(totalItemsParameter);
 
-			// Add parameters for total items and total titles
-			EalDbParameter totalItemsParameter = new EalDbParameter("@returnValue", 0) {Direction = ParameterDirection.InputOutput};
-			parameters.Add(totalItemsParameter);
+        //    // Do the non-query
+        //    EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "TEST_Return", parameters);
 
-			// Do the non-query
-			EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "TEST_Return", parameters);
-
-			// Check to see what value4s are
-		    return (Int32.Parse(totalItemsParameter.Value.ToString()) == 1000);
-		}
+        //    // Check to see what value4s are
+        //    return (Int32.Parse(totalItemsParameter.Value.ToString()) == 1000);
+        //}
 
 		/// <summary> Test connectivity to the database </summary>
 		/// <returns> TRUE if connection can be made, otherwise FALSE </returns>
@@ -1158,39 +1161,41 @@ namespace SobekCM.Engine_Library.Database
 			}
 
 			// Build the parameter list
-			List<EalDbParameter> parameters = new List<EalDbParameter>();
-			parameters.Add(new EalDbParameter("@link1", Link1));
-			parameters.Add(new EalDbParameter("@term1", Term1));
-			parameters.Add(new EalDbParameter("@field1", Field1));
-			parameters.Add(new EalDbParameter("@link2", Link2));
-			parameters.Add(new EalDbParameter("@term2", Term2));
-			parameters.Add(new EalDbParameter("@field2", Field2));
-			parameters.Add(new EalDbParameter("@link3", Link3));
-			parameters.Add(new EalDbParameter("@term3", Term3));
-			parameters.Add(new EalDbParameter("@field3", Field3));
-			parameters.Add(new EalDbParameter("@link4", Link4));
-			parameters.Add(new EalDbParameter("@term4", Term4));
-			parameters.Add(new EalDbParameter("@field4", Field4));
-			parameters.Add(new EalDbParameter("@link5", Link5));
-			parameters.Add(new EalDbParameter("@term5", Term5));
-			parameters.Add(new EalDbParameter("@field5", Field5));
-			parameters.Add(new EalDbParameter("@link6", Link6));
-			parameters.Add(new EalDbParameter("@term6", Term6));
-			parameters.Add(new EalDbParameter("@field6", Field6));
-			parameters.Add(new EalDbParameter("@link7", Link7));
-			parameters.Add(new EalDbParameter("@term7", Term7));
-			parameters.Add(new EalDbParameter("@field7", Field7));
-			parameters.Add(new EalDbParameter("@link8", Link8));
-			parameters.Add(new EalDbParameter("@term8", Term8));
-			parameters.Add(new EalDbParameter("@field8", Field8));
-			parameters.Add(new EalDbParameter("@link9", Link9));
-			parameters.Add(new EalDbParameter("@term9", Term9));
-			parameters.Add(new EalDbParameter("@field9", Field9));
-			parameters.Add(new EalDbParameter("@link10", Link10));
-			parameters.Add(new EalDbParameter("@term10", Term10));
-			parameters.Add(new EalDbParameter("@field10", Field10));
-			parameters.Add(new EalDbParameter("@include_private", IncludePrivateItems));
-			if (AggregationCode.ToUpper() == "ALL")
+			List<EalDbParameter> parameters = new List<EalDbParameter>
+			{
+			    new EalDbParameter("@link1", Link1), 
+                new EalDbParameter("@term1", Term1), 
+                new EalDbParameter("@field1", Field1), 
+                new EalDbParameter("@link2", Link2), 
+                new EalDbParameter("@term2", Term2), 
+                new EalDbParameter("@field2", Field2), 
+                new EalDbParameter("@link3", Link3), 
+                new EalDbParameter("@term3", Term3), 
+                new EalDbParameter("@field3", Field3), 
+                new EalDbParameter("@link4", Link4), 
+                new EalDbParameter("@term4", Term4), 
+                new EalDbParameter("@field4", Field4), 
+                new EalDbParameter("@link5", Link5), 
+                new EalDbParameter("@term5", Term5), 
+                new EalDbParameter("@field5", Field5), 
+                new EalDbParameter("@link6", Link6), 
+                new EalDbParameter("@term6", Term6), 
+                new EalDbParameter("@field6", Field6), 
+                new EalDbParameter("@link7", Link7), 
+                new EalDbParameter("@term7", Term7), 
+                new EalDbParameter("@field7", Field7), 
+                new EalDbParameter("@link8", Link8), 
+                new EalDbParameter("@term8", Term8), 
+                new EalDbParameter("@field8", Field8), 
+                new EalDbParameter("@link9", Link9), 
+                new EalDbParameter("@term9", Term9), 
+                new EalDbParameter("@field9", Field9), 
+                new EalDbParameter("@link10", Link10), 
+                new EalDbParameter("@term10", Term10), 
+                new EalDbParameter("@field10", Field10), 
+                new EalDbParameter("@include_private", IncludePrivateItems)
+			};
+		    if (AggregationCode.ToUpper() == "ALL")
 				AggregationCode = String.Empty;
 			parameters.Add(new EalDbParameter("@aggregationcode", AggregationCode));
 			parameters.Add(new EalDbParameter("@daterange_start", DateRangeStart));
@@ -1313,20 +1318,23 @@ namespace SobekCM.Engine_Library.Database
 				Tracer.Add_Trace("Engine_Database.Perform_Basic_Search_Paged", "Performing basic search in database");
 			}
 
-			// Build the list of parameters
-			List<EalDbParameter> parameters = new List<EalDbParameter>();
-			parameters.Add(new EalDbParameter("@searchcondition", SearchCondition.Replace("''", "'")));
-			parameters.Add(new EalDbParameter("@include_private", IncludePrivateItems));
-			if (AggregationCode.ToUpper() == "ALL")
-				AggregationCode = String.Empty;
-			parameters.Add(new EalDbParameter("@aggregationcode", AggregationCode));
-			parameters.Add(new EalDbParameter("@daterange_start", DateRangeStart));
-			parameters.Add(new EalDbParameter("@daterange_end", DateRangeEnd));
-			parameters.Add(new EalDbParameter("@pagesize", ResultsPerPage));
-			parameters.Add(new EalDbParameter("@pagenumber", ResultsPage));
-			parameters.Add(new EalDbParameter("@sort", Sort));
+            if (AggregationCode.ToUpper() == "ALL")
+                AggregationCode = String.Empty;
 
-			// If this is for more than 100 results, don't look ahead
+			// Build the list of parameters
+			List<EalDbParameter> parameters = new List<EalDbParameter>
+			{
+			    new EalDbParameter("@searchcondition", SearchCondition.Replace("''", "'")),
+			    new EalDbParameter("@include_private", IncludePrivateItems), 
+                new EalDbParameter("@aggregationcode", AggregationCode), 
+                new EalDbParameter("@daterange_start", DateRangeStart), 
+                new EalDbParameter("@daterange_end", DateRangeEnd), 
+                new EalDbParameter("@pagesize", ResultsPerPage), 
+                new EalDbParameter("@pagenumber", ResultsPage), 
+                new EalDbParameter("@sort", Sort)
+			};
+
+		    // If this is for more than 100 results, don't look ahead
 			if (ResultsPerPage > 100)
 			{
 				parameters.Add(new EalDbParameter("@minpagelookahead", 1));
@@ -1444,21 +1452,24 @@ namespace SobekCM.Engine_Library.Database
 				Tracer.Add_Trace("Engine_Database.Perform_Metadata_Exact_Search_Paged", "Performing exact search in database");
 			}
 
-			// Build the parameters
-			List<EalDbParameter> parameters = new List<EalDbParameter>();
-			parameters.Add(new EalDbParameter("@term1", SearchTerm));
-			parameters.Add(new EalDbParameter("@field1", FieldID));
-			parameters.Add(new EalDbParameter("@include_private", IncludePrivateItems));
-			if (AggregationCode.ToUpper() == "ALL")
-				AggregationCode = String.Empty;
-			parameters.Add(new EalDbParameter("@aggregationcode", AggregationCode));
-			parameters.Add(new EalDbParameter("@daterange_start", DateRangeStart));
-			parameters.Add(new EalDbParameter("@daterange_end", DateRangeEnd));
-			parameters.Add(new EalDbParameter("@pagesize", ResultsPerPage));
-			parameters.Add(new EalDbParameter("@pagenumber", ResultsPage));
-			parameters.Add(new EalDbParameter("@sort", Sort));
+            if (AggregationCode.ToUpper() == "ALL")
+                AggregationCode = String.Empty;
 
-			// If this is for more than 100 results, don't look ahead
+			// Build the parameters
+			List<EalDbParameter> parameters = new List<EalDbParameter>
+			{
+			    new EalDbParameter("@term1", SearchTerm), 
+                new EalDbParameter("@field1", FieldID), 
+                new EalDbParameter("@include_private", IncludePrivateItems), 
+                new EalDbParameter("@aggregationcode", AggregationCode), 
+                new EalDbParameter("@daterange_start", DateRangeStart), 
+                new EalDbParameter("@daterange_end", DateRangeEnd), 
+                new EalDbParameter("@pagesize", ResultsPerPage), 
+                new EalDbParameter("@pagenumber", ResultsPage), 
+                new EalDbParameter("@sort", Sort)
+			};
+
+		    // If this is for more than 100 results, don't look ahead
 			if (ResultsPerPage > 100)
 			{
 				parameters.Add(new EalDbParameter("@minpagelookahead", 1));
@@ -2229,13 +2240,15 @@ namespace SobekCM.Engine_Library.Database
 			}
 
 			// Build the parameters
-			List<EalDbParameter> parameters = new List<EalDbParameter>();
-			parameters.Add(new EalDbParameter("@userid", UserID));
-			parameters.Add(new EalDbParameter("@foldername", FolderName));
-			parameters.Add(new EalDbParameter("@pagesize", ResultsPerPage));
-			parameters.Add(new EalDbParameter("@pagenumber", ResultsPage));
-			parameters.Add(new EalDbParameter("@include_facets", IncludeFacets));
-			if ((IncludeFacets) && (FacetTypes != null))
+			List<EalDbParameter> parameters = new List<EalDbParameter>
+			{
+			    new EalDbParameter("@userid", UserID), 
+                new EalDbParameter("@foldername", FolderName), 
+                new EalDbParameter("@pagesize", ResultsPerPage), 
+                new EalDbParameter("@pagenumber", ResultsPage), 
+                new EalDbParameter("@include_facets", IncludeFacets)
+			};
+		    if ((IncludeFacets) && (FacetTypes != null))
 			{
 				parameters.Add(FacetTypes.Count > 0 ? new EalDbParameter("@facettype1", FacetTypes[0]) : new EalDbParameter("@facettype1", -1));
 				parameters.Add(FacetTypes.Count > 1 ? new EalDbParameter("@facettype2", FacetTypes[1]) : new EalDbParameter("@facettype2", -1));
@@ -2313,12 +2326,14 @@ namespace SobekCM.Engine_Library.Database
 			}
 
 			// Build the paremeters list
-			List<EalDbParameter> parameters = new List<EalDbParameter>();
-			parameters.Add(new EalDbParameter("@folderid", UserFolderID));
-			parameters.Add(new EalDbParameter("@pagesize", ResultsPerPage));
-			parameters.Add(new EalDbParameter("@pagenumber", ResultsPage));
-			parameters.Add(new EalDbParameter("@include_facets", IncludeFacets));
-			if ((IncludeFacets) && (FacetTypes != null))
+			List<EalDbParameter> parameters = new List<EalDbParameter>
+			{
+			    new EalDbParameter("@folderid", UserFolderID), 
+                new EalDbParameter("@pagesize", ResultsPerPage), 
+                new EalDbParameter("@pagenumber", ResultsPage), 
+                new EalDbParameter("@include_facets", IncludeFacets)
+			};
+		    if ((IncludeFacets) && (FacetTypes != null))
 			{
 				parameters.Add(FacetTypes.Count > 0 ? new EalDbParameter("@facettype1", FacetTypes[0]) : new EalDbParameter("@facettype1", -1));
 				parameters.Add(FacetTypes.Count > 1 ? new EalDbParameter("@facettype2", FacetTypes[1]) : new EalDbParameter("@facettype2", -1));
@@ -2427,17 +2442,19 @@ namespace SobekCM.Engine_Library.Database
 			}
 			
 			// Create the parameter list
-			List<EalDbParameter> parameters = new List<EalDbParameter>();
-			parameters.Add(SinceDate.Length > 0 ? new EalDbParameter("@date", SinceDate) : new EalDbParameter("@date", DBNull.Value));
-			parameters.Add(new EalDbParameter("@include_private", IncludePrivateItems));
-			parameters.Add(new EalDbParameter("@pagesize", ResultsPerPage));
-			parameters.Add(new EalDbParameter("@pagenumber", ResultsPage));
-			parameters.Add(new EalDbParameter("@sort", Sort));
-			parameters.Add(new EalDbParameter("@minpagelookahead", MIN_PAGE_LOOKAHEAD));
-			parameters.Add(new EalDbParameter("@maxpagelookahead", MAX_PAGE_LOOKAHEAD));
-			parameters.Add(new EalDbParameter("@lookahead_factor", LOOKAHEAD_FACTOR));
-			parameters.Add(new EalDbParameter("@include_facets", IncludeFacets));
-			if ((IncludeFacets) && (FacetTypes != null))
+			List<EalDbParameter> parameters = new List<EalDbParameter>
+			{
+			    SinceDate.Length > 0 ? new EalDbParameter("@date", SinceDate) : new EalDbParameter("@date", DBNull.Value), 
+                new EalDbParameter("@include_private", IncludePrivateItems), 
+                new EalDbParameter("@pagesize", ResultsPerPage), 
+                new EalDbParameter("@pagenumber", ResultsPage), 
+                new EalDbParameter("@sort", Sort), 
+                new EalDbParameter("@minpagelookahead", MIN_PAGE_LOOKAHEAD), 
+                new EalDbParameter("@maxpagelookahead", MAX_PAGE_LOOKAHEAD), 
+                new EalDbParameter("@lookahead_factor", LOOKAHEAD_FACTOR), 
+                new EalDbParameter("@include_facets", IncludeFacets)
+			};
+		    if ((IncludeFacets) && (FacetTypes != null))
 			{
 				parameters.Add(FacetTypes.Count > 0 ? new EalDbParameter("@facettype1", FacetTypes[0]) : new EalDbParameter("@facettype1", -1));
 				parameters.Add(FacetTypes.Count > 1 ? new EalDbParameter("@facettype2", FacetTypes[1]) : new EalDbParameter("@facettype2", -1));
@@ -2569,15 +2586,17 @@ namespace SobekCM.Engine_Library.Database
 			}
 
 			// Build the parameters list
-			List<EalDbParameter> parameters = new List<EalDbParameter>();
-			parameters.Add(new EalDbParameter("@code", AggregationCode));
-			parameters.Add(new EalDbParameter("@date", SinceDate));
-			parameters.Add(new EalDbParameter("@include_private", IncludePrivateItems));
-			parameters.Add(new EalDbParameter("@pagesize", ResultsPerPage));
-			parameters.Add(new EalDbParameter("@pagenumber", ResultsPage));
-			parameters.Add(new EalDbParameter("@sort", Sort));
+			List<EalDbParameter> parameters = new List<EalDbParameter>
+			{
+			    new EalDbParameter("@code", AggregationCode), 
+                new EalDbParameter("@date", SinceDate), 
+                new EalDbParameter("@include_private", IncludePrivateItems), 
+                new EalDbParameter("@pagesize", ResultsPerPage), 
+                new EalDbParameter("@pagenumber", ResultsPage), 
+                new EalDbParameter("@sort", Sort)
+			};
 
-			if (ResultsPerPage > 100)
+		    if (ResultsPerPage > 100)
 			{
 				parameters.Add(new EalDbParameter("@minpagelookahead", 1));
 				parameters.Add(new EalDbParameter("@maxpagelookahead", 1));
@@ -3901,10 +3920,9 @@ namespace SobekCM.Engine_Library.Database
 				parameters[8] = new EalDbParameter("@username", Username);
 				parameters[9] = new EalDbParameter("@title", Title);
 				parameters[10] = new EalDbParameter("@summary", Summary);
-				parameters[11] = new EalDbParameter("@WebContentID", -1);
-				parameters[11].Direction = ParameterDirection.InputOutput;
+				parameters[11] = new EalDbParameter("@WebContentID", -1) { Direction = ParameterDirection.InputOutput };
 
-				// Define a temporary dataset
+			    // Define a temporary dataset
 				EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_Add", parameters);
 
 				// Get the new primary key and return it

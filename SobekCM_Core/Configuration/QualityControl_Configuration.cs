@@ -86,120 +86,107 @@ namespace SobekCM.Core.Configuration
 
         #region Set default values (used if no config file is present)
 
-        // Set the default profile with the default values 
+        /// <summary> Set the default profile with the default values </summary>
         public static void Set_Default_Values()
         {
             // Clear everything, just in case
             Clear();
 
             // Create the default profile
-            QualityControl_Profile newProfile = new QualityControl_Profile();
-            newProfile.Default_Profile = true;
-            newProfile.Profile_Name = "System Default";
-            newProfile.Profile_Description = "Default profile used when no config file is present";
+            QualityControl_Profile newProfile = new QualityControl_Profile
+            {
+                Default_Profile = true, 
+                Profile_Name = "System Default", 
+                Profile_Description = "Default profile used when no config file is present"
+            };
             Add_Profile(newProfile);
 
             // Add back cover
-            QualityControl_Division_Config div1 = new QualityControl_Division_Config();
-            div1.ID = 1;
-            div1.TypeName = "Back Cover";
-            div1.isActive = true;
-            div1.isNameable = false;
-            div1.BaseTypeName = "Cover";
+            QualityControl_Division_Config div1 = new QualityControl_Division_Config
+            {
+                ID = 1, TypeName = "Back Cover", isActive = true, isNameable = false, BaseTypeName = "Cover"
+            };
             div1.Add_Translation(Web_Language_Enum.Spanish, "Portada Posterior");
             div1.Add_Translation(Web_Language_Enum.French, "Couverture Arrière");
             newProfile.Add_Division_Type(div1);
 
             // Add back matter
-            QualityControl_Division_Config div2 = new QualityControl_Division_Config();
-            div2.ID = 2;
-            div2.TypeName = "Back Matter";
-            div2.isActive = true;
-            div2.isNameable = false;
+            QualityControl_Division_Config div2 = new QualityControl_Division_Config
+            {
+                ID = 2, TypeName = "Back Matter", isActive = true, isNameable = false
+            };
             div2.Add_Translation(Web_Language_Enum.Spanish, "Materia Posterior");
             div2.Add_Translation(Web_Language_Enum.French, "Matière Arrière");
             newProfile.Add_Division_Type(div2);
 
             // Add chapter ( misorder of the object names here and below matters not)
-            QualityControl_Division_Config div4 = new QualityControl_Division_Config();
-            div4.ID = 3;
-            div4.TypeName = "Chapter";
-            div4.isActive = true;
-            div4.isNameable = true;
+            QualityControl_Division_Config div4 = new QualityControl_Division_Config
+            {
+                ID = 3, TypeName = "Chapter", isActive = true, isNameable = true
+            };
             div4.Add_Translation(Web_Language_Enum.Spanish, "Capítulo");
             div4.Add_Translation(Web_Language_Enum.French, "Chapitre");
             newProfile.Add_Division_Type(div4);
 
             // Add front cover
-            QualityControl_Division_Config div3 = new QualityControl_Division_Config();
-            div3.ID = 4;
-            div3.TypeName = "Front Cover";
-            div3.isActive = true;
-            div3.isNameable = false;
-            div3.BaseTypeName = "Cover";
+            QualityControl_Division_Config div3 = new QualityControl_Division_Config
+            {
+                ID = 4, TypeName = "Front Cover", isActive = true, isNameable = false, BaseTypeName = "Cover"
+            };
             div3.Add_Translation(Web_Language_Enum.Spanish, "Portada Delantera");
             div3.Add_Translation(Web_Language_Enum.French, "Couverture Frente");
             newProfile.Add_Division_Type(div3);
 
             // Add front matter
-            QualityControl_Division_Config div5 = new QualityControl_Division_Config();
-            div5.ID = 5;
-            div5.TypeName = "Front Matter";
-            div5.isActive = true;
-            div5.isNameable = false;
+            QualityControl_Division_Config div5 = new QualityControl_Division_Config
+            {
+                ID = 5, TypeName = "Front Matter", isActive = true, isNameable = false
+            };
             div5.Add_Translation(Web_Language_Enum.Spanish, "Materia Delantera");
             div5.Add_Translation(Web_Language_Enum.French, "Préliminaires");
             newProfile.Add_Division_Type(div5);
 
             // Add index
-            QualityControl_Division_Config div6 = new QualityControl_Division_Config();
-            div6.ID = 6;
-            div6.TypeName = "Index";
-            div6.isActive = true;
-            div6.isNameable = true;
+            QualityControl_Division_Config div6 = new QualityControl_Division_Config
+            {
+                ID = 6, TypeName = "Index", isActive = true, isNameable = true
+            };
             div6.Add_Translation(Web_Language_Enum.Spanish, "Indice");
             div6.Add_Translation(Web_Language_Enum.French, "Indice");
             newProfile.Add_Division_Type(div6);
 
             // Add introduction
-            QualityControl_Division_Config div7 = new QualityControl_Division_Config();
-            div7.ID = 7;
-            div7.TypeName = "Introduction";
-            div7.isActive = true;
-            div7.isNameable = false;
-            div7.BaseTypeName = "Chapter";
+            QualityControl_Division_Config div7 = new QualityControl_Division_Config
+            {
+                ID = 7, TypeName = "Introduction", isActive = true, isNameable = false, BaseTypeName = "Chapter"
+            };
             div7.Add_Translation(Web_Language_Enum.Spanish, "Introducción");
             div7.Add_Translation(Web_Language_Enum.French, "Introduction");
             newProfile.Add_Division_Type(div7);
 
             // Add spine
-            QualityControl_Division_Config div8 = new QualityControl_Division_Config();
-            div8.ID = 8;
-            div8.TypeName = "Spine";
-            div8.isActive = true;
-            div8.isNameable = false;
+            QualityControl_Division_Config div8 = new QualityControl_Division_Config
+            {
+                ID = 8, TypeName = "Spine", isActive = true, isNameable = false
+            };
             div8.Add_Translation(Web_Language_Enum.Spanish, "Canto");
             div8.Add_Translation(Web_Language_Enum.French, "Épine de livre");
             newProfile.Add_Division_Type(div8);
 
             // Add table of contents
-            QualityControl_Division_Config div9 = new QualityControl_Division_Config();
-            div9.ID = 9;
-            div9.TypeName = "Table of Contents";
-            div9.isActive = true;
-            div9.isNameable = false;
-            div9.BaseTypeName = "Contents";
+            QualityControl_Division_Config div9 = new QualityControl_Division_Config
+            {
+                ID = 9, TypeName = "Table of Contents", isActive = true, isNameable = false, BaseTypeName = "Contents"
+            };
             div9.Add_Translation(Web_Language_Enum.Spanish, "Contenidos");
             div9.Add_Translation(Web_Language_Enum.French, "Table des Matières");
             newProfile.Add_Division_Type(div9);
 
             // Add title page
-            QualityControl_Division_Config div10 = new QualityControl_Division_Config();
-            div10.ID = 10;
-            div10.TypeName = "Title Page";
-            div10.isActive = true;
-            div10.isNameable = false;
-            div10.BaseTypeName = "Title";
+            QualityControl_Division_Config div10 = new QualityControl_Division_Config
+            {
+                ID = 10, TypeName = "Title Page", isActive = true, isNameable = false, BaseTypeName = "Title"
+            };
             div10.Add_Translation(Web_Language_Enum.Spanish, "Titre");
             div10.Add_Translation(Web_Language_Enum.French, "Titulario");
             newProfile.Add_Division_Type(div10);
@@ -268,7 +255,7 @@ namespace SobekCM.Core.Configuration
                 writer.Flush();
                 writer.Close();
             }
-            catch ( Exception ee)
+            catch 
             {
                 returnValue = false;
             }
@@ -282,24 +269,24 @@ namespace SobekCM.Core.Configuration
         }
 
         /// <summary> Converts a basic string into an XML-safe string </summary>
-        /// <param name="element"> Element data to convert </param>
+        /// <param name="Element"> Element data to convert </param>
         /// <returns> Data converted into an XML-safe string</returns>
-        private static string Convert_String_To_XML_Safe(string element)
+        private static string Convert_String_To_XML_Safe(string Element)
         {
-            if (element == null)
+            if (Element == null)
                 return string.Empty;
 
-            string xml_safe = element;
+            string xml_safe = Element;
             int i = xml_safe.IndexOf("&");
             while (i >= 0)
             {
-                if ((i != xml_safe.IndexOf("&amp;", i)) && (i != xml_safe.IndexOf("&quot;", i)) &&
-                    (i != xml_safe.IndexOf("&gt;", i)) && (i != xml_safe.IndexOf("&lt;", i)))
+                if ((i != xml_safe.IndexOf("&amp;", i, StringComparison.Ordinal)) && (i != xml_safe.IndexOf("&quot;", i, StringComparison.Ordinal)) &&
+                    (i != xml_safe.IndexOf("&gt;", i, StringComparison.Ordinal)) && (i != xml_safe.IndexOf("&lt;", i, StringComparison.Ordinal)))
                 {
                     xml_safe = xml_safe.Substring(0, i + 1) + "amp;" + xml_safe.Substring(i + 1);
                 }
 
-                i = xml_safe.IndexOf("&", i + 1);
+                i = xml_safe.IndexOf("&", i + 1, StringComparison.Ordinal);
             }
             return xml_safe.Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;");
         }
@@ -344,7 +331,7 @@ namespace SobekCM.Core.Configuration
                     }
                 }
             }
-            catch (Exception ee)
+            catch
             {
                 returnValue = false;
             }
@@ -371,32 +358,27 @@ namespace SobekCM.Core.Configuration
         }
 
 
-        private static void read_qc_profiles(XmlReader readerXml)
+        private static void read_qc_profiles(XmlReader ReaderXml)
         {
-            bool inPackage = false;
-            bool inDivision = false;
-            bool inFile = false;
-            bool inDmdSec = true;
-            QualityControl_Profile profile = null;
             int unnamed_profile_counter = 1;
 
-            while (readerXml.Read())
+            while (ReaderXml.Read())
             {
-                if (readerXml.NodeType == XmlNodeType.Element)
+                if (ReaderXml.NodeType == XmlNodeType.Element)
                 {
-                    switch (readerXml.Name.ToLower())
+                    switch (ReaderXml.Name.ToLower())
                     {
                         case "profile":
-                            profile = new QualityControl_Profile();
-                            XmlReader child_readerXml = readerXml.ReadSubtree();
-                            if (readerXml.MoveToAttribute("name"))
-                                profile.Profile_Name = readerXml.Value.Trim();
-                            if (readerXml.MoveToAttribute("description"))
-                                profile.Profile_Description = readerXml.Value;
-                            if (readerXml.MoveToAttribute("isDefault"))
+                            QualityControl_Profile profile = new QualityControl_Profile();
+                            XmlReader child_readerXml = ReaderXml.ReadSubtree();
+                            if (ReaderXml.MoveToAttribute("name"))
+                                profile.Profile_Name = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("description"))
+                                profile.Profile_Description = ReaderXml.Value;
+                            if (ReaderXml.MoveToAttribute("isDefault"))
                             {
                                 bool tempValue;
-                                if (bool.TryParse(readerXml.Value, out tempValue))
+                                if (bool.TryParse(ReaderXml.Value, out tempValue))
                                 {
                                     profile.Default_Profile = tempValue;
                                 }
@@ -435,29 +417,18 @@ namespace SobekCM.Core.Configuration
                             break;
 
                         case "package_scope":
-                            inPackage = true;
-                            inDivision = false;
-                            inFile = false;
                             break;
 
                         case "division_scope":
-                            inPackage = false;
-                            inDivision = true;
-                            inFile = false;
                             break;
 
                         case "file_scope":
-                            inPackage = false;
-                            inDivision = false;
-                            inFile = true;
                             break;
 
                         case "dmdsec":
-                            inDmdSec = true;
                             break;
 
                         case "amdsec":
-                            inDmdSec = false;
                             break;
 
                         //case "readerwriterref":
@@ -514,9 +485,9 @@ namespace SobekCM.Core.Configuration
         /// <summary> Flag indicates if this is the default profile </summary>
         public bool Default_Profile { get; internal set; }
 
-        private List<QualityControl_Division_Config> divisionTypes;
+        private readonly List<QualityControl_Division_Config> divisionTypes;
 
-        private Dictionary<string, QualityControl_Division_Config> divisionTypeLookup;
+        private readonly Dictionary<string, QualityControl_Division_Config> divisionTypeLookup;
 
         /// <summary> Constructor for a new instance of the QualityControl_Profile class </summary>
         public QualityControl_Profile()
@@ -571,14 +542,8 @@ namespace SobekCM.Core.Configuration
         /// <returns>Either NULL or the matching division config</returns>
         public QualityControl_Division_Config  this[string TypeName]
         {
-            get
-            {
-                if ( divisionTypeLookup.ContainsKey(TypeName))
-                    return divisionTypeLookup[TypeName];
-                else
-                {
-                    return null;
-                }
+            get {
+                return divisionTypeLookup.ContainsKey(TypeName) ? divisionTypeLookup[TypeName] : null;
             }
         }
     }
@@ -703,13 +668,13 @@ namespace SobekCM.Core.Configuration
             int i = xml_safe.IndexOf("&");
             while (i >= 0)
             {
-                if ((i != xml_safe.IndexOf("&amp;", i)) && (i != xml_safe.IndexOf("&quot;", i)) &&
-                    (i != xml_safe.IndexOf("&gt;", i)) && (i != xml_safe.IndexOf("&lt;", i)))
+                if ((i != xml_safe.IndexOf("&amp;", i, StringComparison.Ordinal)) && (i != xml_safe.IndexOf("&quot;", i, StringComparison.Ordinal)) &&
+                    (i != xml_safe.IndexOf("&gt;", i, StringComparison.Ordinal)) && (i != xml_safe.IndexOf("&lt;", i, StringComparison.Ordinal)))
                 {
                     xml_safe = xml_safe.Substring(0, i + 1) + "amp;" + xml_safe.Substring(i + 1);
                 }
 
-                i = xml_safe.IndexOf("&", i + 1);
+                i = xml_safe.IndexOf("&", i + 1, StringComparison.Ordinal);
             }
             return xml_safe.Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;");
         }

@@ -660,7 +660,9 @@ namespace SobekCM.Library.ResultsViewer
             }
         }
 
-        //for some reason I cannot put this in the beta???
+        /// <summary> for some reason I cannot put this in the beta??? </summary>
+        /// <param name="sendData">The send data.</param>
+        /// <returns></returns>
         public static object Process_MapSearch_Callback(string sendData)
         {
             //blank tracer

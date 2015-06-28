@@ -31,8 +31,8 @@ namespace SobekCM.Library.AdminViewer
     /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
     /// During a valid html request, the following steps occur:
     /// <ul>
-    /// <li>Application state is built/verified by the <see cref="Application_State.Application_State_Builder"/> </li>
-    /// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation.SobekCM_Navigation_Object"/> </li>
+    /// <li>Application state is built/verified by the Application_State_Builder> </li>
+    /// <li>Request is analyzed by the <see cref="QueryString_Analyzer"/> and output as a <see cref="Navigation_Object"/> </li>
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
     /// <li>The mySobek subwriter creates an instance of this viewer to view all user groups in this digital library</li>
@@ -46,10 +46,7 @@ namespace SobekCM.Library.AdminViewer
         #region Constructor and code to handle any post backs
 
         /// <summary> Constructor for a new instance of the User_Group_AdminViewer class </summary>
-        /// <param name="User"> Authenticated user information </param>
-        /// <param name="RequestSpecificValues.Current_Mode"> Mode / navigation information for the current request</param>
-        /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <param name="RequestSpecificValues"> Mode / navigation information for the current request</param>
         /// <remarks> Postback from a user group edit is handled here in the constructor </remarks>
         public User_Group_AdminViewer(RequestCache RequestSpecificValues)  : base(RequestSpecificValues)
         {
@@ -86,9 +83,9 @@ namespace SobekCM.Library.AdminViewer
                         {
                             editGroup = SobekCM_Database.Get_User_Group(edit_usergroupid, RequestSpecificValues.Tracer);
                             editGroup.Should_Be_Able_To_Edit_All_Items = false;
-                            bool canEditAll = (editGroup.Editable_Regular_Expressions != null) && (editGroup.Editable_Regular_Expressions.Any(thisRegularExpression => thisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}"));
+                            bool canEditAll = (editGroup.Editable_Regular_Expressions != null) && (editGroup.Editable_Regular_Expressions.Any(ThisRegularExpression => ThisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}"));
                             if (editGroup.Editable_Regular_Expressions != null)
-                                canEditAll = editGroup.Editable_Regular_Expressions.Any(thisRegularExpression => thisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}");
+                                canEditAll = editGroup.Editable_Regular_Expressions.Any(ThisRegularExpression => ThisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}");
                             if (canEditAll)
                                 editGroup.Should_Be_Able_To_Edit_All_Items = true;
                         }
@@ -258,8 +255,10 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
-                                        thisAggrLink.CanEditMetadata = true;
+                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
+                                        {
+                                            CanEditMetadata = true
+                                        };
                                         aggregations.Add(edit_project, thisAggrLink);
                                     }
                                 }
@@ -272,8 +271,10 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
-                                        thisAggrLink.CanEditBehaviors = true;
+                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
+                                        {
+                                            CanEditBehaviors = true
+                                        };
                                         aggregations.Add(edit_project, thisAggrLink);
                                     }
                                 }
@@ -286,8 +287,10 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
-                                        thisAggrLink.CanPerformQc = true;
+                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
+                                        {
+                                            CanPerformQc = true
+                                        };
                                         aggregations.Add(edit_project, thisAggrLink);
                                     }
                                 }
@@ -300,8 +303,10 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
-                                        thisAggrLink.CanUploadFiles = true;
+                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
+                                        {
+                                            CanUploadFiles = true
+                                        };
                                         aggregations.Add(edit_project, thisAggrLink);
                                     }
                                 }
@@ -314,8 +319,10 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
-                                        thisAggrLink.CanChangeVisibility = true;
+                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
+                                        {
+                                            CanChangeVisibility = true
+                                        };
                                         aggregations.Add(edit_project, thisAggrLink);
                                     }
                                 }
@@ -328,8 +335,10 @@ namespace SobekCM.Library.AdminViewer
                                     }
                                     else
                                     {
-                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false);
-                                        thisAggrLink.CanDelete = true;
+                                        User_Permissioned_Aggregation thisAggrLink = new User_Permissioned_Aggregation(edit_project, String.Empty, false, false, false, false, false)
+                                        {
+                                            CanDelete = true
+                                        };
                                         aggregations.Add(edit_project, thisAggrLink);
                                     }
                                 }
@@ -559,7 +568,7 @@ namespace SobekCM.Library.AdminViewer
                 text_builder.Append("Can submit items<br />");
             if (editGroup.IsInternalUser)
                 text_builder.Append("Is internal user<br />");     
-            if (( editGroup.Editable_Regular_Expressions != null ) && ( editGroup.Editable_Regular_Expressions.Any(thisRegularExpression => thisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}")))
+            if (( editGroup.Editable_Regular_Expressions != null ) && ( editGroup.Editable_Regular_Expressions.Any(ThisRegularExpression => ThisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}")))
             {
                 text_builder.Append("Can edit all items<br />");
             }
@@ -654,7 +663,7 @@ namespace SobekCM.Library.AdminViewer
 
                 // Get the list of collections lists in the user object
                 List<User_Permissioned_Aggregation> aggregations_in_editable_user = editGroup.Aggregations;
-                Dictionary<string, User_Permissioned_Aggregation> lookup_aggs = aggregations_in_editable_user.ToDictionary(thisAggr => thisAggr.Code.ToLower());
+                Dictionary<string, User_Permissioned_Aggregation> lookup_aggs = aggregations_in_editable_user.ToDictionary(ThisAggr => ThisAggr.Code.ToLower());
 
                 // Step through each aggregation type
                 foreach (string aggregationType in UI_ApplicationCache_Gateway.Aggregations.All_Types)
@@ -795,7 +804,6 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs\">");
             Output.WriteLine("  <div class=\"tabs\">");
             Output.WriteLine("    <ul>");
-            string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Replace("b", "").Replace("c", "");
             if (page == 1)
             {
@@ -945,13 +953,7 @@ namespace SobekCM.Library.AdminViewer
 
                     // Get the list of collections lists in the user object
                     List<User_Permissioned_Aggregation> aggregations_in_editable_user = editGroup.Aggregations;
-                    Dictionary<string, User_Permissioned_Aggregation> lookup_aggs;
-                    if (aggregations_in_editable_user != null)
-                        lookup_aggs = aggregations_in_editable_user.ToDictionary(thisAggr => thisAggr.Code.ToLower());
-                    else
-                        lookup_aggs = new Dictionary<string, User_Permissioned_Aggregation>();
-
-
+                    Dictionary<string, User_Permissioned_Aggregation> lookup_aggs = aggregations_in_editable_user != null ? aggregations_in_editable_user.ToDictionary(ThisAggr => ThisAggr.Code.ToLower()) : new Dictionary<string, User_Permissioned_Aggregation>();
 
                     // Determine if this is a detailed view of rights
                     int columns = 7;

@@ -39,14 +39,14 @@ namespace SobekCM.Tools
 			return true;
 		}
 
-		private static void recurse_folders(string Folder, List<string> nodes)
+		private static void recurse_folders(string Folder, List<string> Nodes)
 		{
 			foreach (string subFolder in Directory.GetDirectories(Folder))
 			{
-				recurse_folders(subFolder, nodes);
+				recurse_folders(subFolder, Nodes);
 			}
 
-			nodes.Add(Folder);
+			Nodes.Add(Folder);
 		}
 
 		/// <summary> Returns file names from given top folder that comply to given filters </summary>

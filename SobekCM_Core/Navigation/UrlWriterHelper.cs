@@ -9,14 +9,17 @@ using SobekCM.Core.Configuration;
 
 namespace SobekCM.Core.Navigation
 {
+    /// <summary> Class is used to write the standard SobekCM URL from the navigation object  </summary>
     public static class UrlWriterHelper
     {
+        /// <summary> URL to send to if there is an unhandled error durig the URL construction </summary>
         public static string Unhandled_Error_URL { get; set;  }
 
         #region iSobekCM_Navigation_Object Members
 
         /// <summary> Returns the URL to redirect the user's browser, based on the current
         /// mode and specifics for this mode. </summary>
+        /// <param name="Current_Mode"> Current navigation object which inludes all the navigation necessary objects </param>
         /// <param name="Item_View_Code">Item view code to display</param>
         /// <param name="Include_URL_Opts"> Flag indicates whether to include URL opts or not </param>
         /// <returns> String to be attached to the end of the main application name to redirect
@@ -170,22 +173,13 @@ namespace SobekCM.Core.Navigation
                     switch (Current_Mode.WebContent_Type)
                     {
                         case WebContent_Type_Enum.Edit:
-                            if (simple_html_cms_url.IndexOf("?") > 0)
-                                return simple_html_cms_url + "&mode=edit";
-                            else
-                                return simple_html_cms_url + "?mode=edit";
+                            return (simple_html_cms_url.IndexOf("?") > 0) ? simple_html_cms_url + "&mode=edit" : simple_html_cms_url + "?mode=edit";
 
                         case WebContent_Type_Enum.Milestones:
-                            if (simple_html_cms_url.IndexOf("?") > 0)
-                                return simple_html_cms_url + "&mode=miletsones";
-                            else
-                                return simple_html_cms_url + "?mode=miletsones";
+                            return (simple_html_cms_url.IndexOf("?") > 0) ? simple_html_cms_url + "&mode=miletsones" : simple_html_cms_url + "?mode=miletsones";
 
                         case WebContent_Type_Enum.Permissions:
-                            if (simple_html_cms_url.IndexOf("?") > 0)
-                                return simple_html_cms_url + "&mode=permissions";
-                            else
-                                return simple_html_cms_url + "?mode=permissions";
+                            return (simple_html_cms_url.IndexOf("?") > 0) ? simple_html_cms_url + "&mode=permissions" : simple_html_cms_url + "?mode=permissions";
 
                         default:
                             return simple_html_cms_url;
@@ -196,7 +190,9 @@ namespace SobekCM.Core.Navigation
                     {
                         case My_Sobek_Type_Enum.Logon:
                             if (!String.IsNullOrEmpty(Current_Mode.Return_URL))
+                            {
                                 return this_base_url + "my/logon?return=" + HttpUtility.UrlEncode(Current_Mode.Return_URL).Replace("%2c", ",") + urlOptions2;
+                            }
                             return this_base_url + "my/logon" + urlOptions1;
 
                         case My_Sobek_Type_Enum.Home:
@@ -1234,6 +1230,7 @@ namespace SobekCM.Core.Navigation
 
         /// <summary> Returns the URL to redirect the user's browser, based on the current
         /// mode and specifics for this mode. </summary>
+        /// <param name="Current_Mode"> Current navigation object which contains the information </param>
         /// <param name="Include_URL_Opts"> Flag indicates whether to include URL opts or not </param>
         /// <returns> String to be attached to the end of the main application name to redirect
         /// the current user's browser.  </returns>
@@ -1244,6 +1241,7 @@ namespace SobekCM.Core.Navigation
 
         /// <summary> Returns the URL to redirect the user's browser, based on the current
         /// mode and specifics for this mode. </summary>
+        /// <param name="Current_Mode"> Current navigation object which contains the information </param>
         /// <param name="Item_View_Code">Item view code to display</param>
         /// <returns> String to be attached to the end of the main application name to redirect
         /// the current user's browser.  </returns>
@@ -1266,7 +1264,8 @@ namespace SobekCM.Core.Navigation
         }
 
         /// <summary> Redirect the user to the current mode's URL </summary>
-        /// <param name="Flush_Response">Flag indicates if the response should be flushed</param>
+        /// <param name="Current_Mode"> Current navigation object which contains the information  </param>
+        /// <param name="Flush_Response"> Flag indicates if the response should be flushed</param>
         /// <remarks> This does not stop execution immediately (which would raise a ThreadAbortedException
         /// and be costly in terms of performance) but it does set the 
         /// Request_Completed flag, which should be checked and will effectively stop any 

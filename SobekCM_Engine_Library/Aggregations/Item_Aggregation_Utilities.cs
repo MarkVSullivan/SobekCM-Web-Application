@@ -7,7 +7,6 @@ using System.IO;
 using System.Text;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
-using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.WebContent;
@@ -30,7 +29,7 @@ namespace SobekCM.Engine_Library.Aggregations
 	    /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
 	    /// <returns>Fully built item aggregation object for the particular aggregation code and language code</returns>
 	    /// <remarks>Item aggregation object is also placed in the cache.<br /><br />
-	    /// Building of an item aggregation always starts by pulling the item from the database ( either <see cref="Engine_Database.Get_Item_Aggregation"/> or <see cref="SobekCM_Database.Get_Main_Aggregation"/> ).<br /><br />
+	    /// Building of an item aggregation always starts by pulling the item from the database ( either <see cref="Engine_Database.Get_Item_Aggregation"/> or <see cref="Engine_Database.Get_Main_Aggregation"/> ).<br /><br />
 	    /// Then, either the Item Aggregation XML file is read (if present) or the entire folder hierarchy is analyzed to find the browses, infos, banners, etc..</remarks>
 	    public static Complete_Item_Aggregation Get_Complete_Item_Aggregation(string AggregationCode, Custom_Tracer Tracer)
 	    {
@@ -236,16 +235,17 @@ namespace SobekCM.Engine_Library.Aggregations
 		}
 
 
-        /// <summary> Method returns the table of results for the browse indicated </summary>
-        /// <param name = "ChildPageObject">Object with all the information about the browse</param>
-        /// <param name = "Page"> Page of results requested for the indicated browse </param>
-        /// <param name = "Sort"> Sort applied to the results before being returned </param>
-        /// <param name="Potentially_Include_Facets"> Flag indicates if facets could be included in this browse results </param>
-        /// <param name = "Need_Browse_Statistics"> Flag indicates if the browse statistics (facets and total counts) are required for this browse as well </param>
-        /// <param name = "Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <param name="Results_Per_Page"> Number of results to retrieve per page</param>
-        /// <returns> Resutls for the browse or info in table form </returns>
-        public static Multiple_Paged_Results_Args Get_Browse_Results(Item_Aggregation ItemAggr, Item_Aggregation_Child_Page ChildPageObject,
+	    /// <summary> Method returns the table of results for the browse indicated </summary>
+	    /// <param name="ItemAggr"> Item Aggregation from which to return the browse </param>
+	    /// <param name = "ChildPageObject">Object with all the information about the browse</param>
+	    /// <param name = "Page"> Page of results requested for the indicated browse </param>
+	    /// <param name = "Sort"> Sort applied to the results before being returned </param>
+	    /// <param name="Potentially_Include_Facets"> Flag indicates if facets could be included in this browse results </param>
+	    /// <param name = "Need_Browse_Statistics"> Flag indicates if the browse statistics (facets and total counts) are required for this browse as well </param>
+	    /// <param name = "Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+	    /// <param name="Results_Per_Page"> Number of results to retrieve per page</param>
+	    /// <returns> Resutls for the browse or info in table form </returns>
+	    public static Multiple_Paged_Results_Args Get_Browse_Results(Item_Aggregation ItemAggr, Item_Aggregation_Child_Page ChildPageObject,
                                                                       int Page, int Sort, int Results_Per_Page, bool Potentially_Include_Facets, bool Need_Browse_Statistics,
                                                                       Custom_Tracer Tracer)
         {
@@ -282,7 +282,7 @@ namespace SobekCM.Engine_Library.Aggregations
         }
 
 	    /// <summary> Method returns the table of results for the browse indicated </summary>
-	    /// <param name = "ChildPageObject">Object with all the information about the browse</param>
+	    /// <param name = "ItemAggr">Object with all the information about the browse</param>
 	    /// <param name = "Page"> Page of results requested for the indicated browse </param>
 	    /// <param name = "Sort"> Sort applied to the results before being returned </param>
 	    /// <param name="Potentially_Include_Facets"> Flag indicates if facets could be included in this browse results </param>
@@ -319,16 +319,19 @@ namespace SobekCM.Engine_Library.Aggregations
 
 	    #region Method to save the complete item aggregation to the database
 
-        /// <summary> Saves the information about this item aggregation to the database </summary>
-        /// <param name="Username"> Name of the user performing this save, for the item aggregation milestones</param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns>TRUE if successful, otherwise FALSE </returns>
-        public static bool Save_To_Database(Complete_Item_Aggregation ItemAggr, string Username, Custom_Tracer Tracer)
+	    /// <summary> Saves the information about this item aggregation to the database </summary>
+	    /// <param name="ItemAggr"> Item aggregation object with all the information to be saved </param>
+	    /// <param name="Username"> Name of the user performing this save, for the item aggregation milestones</param>
+	    /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+	    /// <returns>TRUE if successful, otherwise FALSE </returns>
+	    public static bool Save_To_Database(Complete_Item_Aggregation ItemAggr, string Username, Custom_Tracer Tracer)
         {
             // Build the list of language variants
-            List<string> languageVariants = new List<string>();
-            languageVariants.Add(Web_Language_Enum_Converter.Enum_To_Code(Engine_ApplicationCache_Gateway.Settings.Default_UI_Language));
-            if (ItemAggr.Home_Page_File_Dictionary != null)
+            List<string> languageVariants = new List<string>
+            {
+                Web_Language_Enum_Converter.Enum_To_Code(Engine_ApplicationCache_Gateway.Settings.Default_UI_Language)
+            };
+	        if (ItemAggr.Home_Page_File_Dictionary != null)
             {
                 foreach (Web_Language_Enum language in ItemAggr.Home_Page_File_Dictionary.Keys)
                 {
@@ -394,6 +397,11 @@ namespace SobekCM.Engine_Library.Aggregations
 
         #region Methods to get the language-specific item aggregation
 
+	    /// <summary> Get the language specific item aggregation, from the complete item aggregation object </summary>
+	    /// <param name="CompAggr"> Copmlete item aggregation object </param>
+	    /// <param name="RequestedLanguage"> Language version requested </param>
+	    /// <param name="Tracer"></param>
+	    /// <returns> The language-specific aggregation, built from the complete aggregation object, or NULL if an error occurred </returns>
 	    public static Item_Aggregation Get_Item_Aggregation(Complete_Item_Aggregation CompAggr, Web_Language_Enum RequestedLanguage, Custom_Tracer Tracer)
 	    {
             // If the complete aggregation was null, return null
@@ -541,11 +549,13 @@ namespace SobekCM.Engine_Library.Aggregations
                 returnValue.Child_Pages = new List<Item_Aggregation_Child_Page>();
                 foreach (Complete_Item_Aggregation_Child_Page fullPage in CompAggr.Child_Pages)
                 {
-                    Item_Aggregation_Child_Page newPage = new Item_Aggregation_Child_Page();
-                    newPage.Browse_Type = fullPage.Browse_Type;
-                    newPage.Code = fullPage.Code;
-                    newPage.Parent_Code = fullPage.Parent_Code;
-                    newPage.Source_Data_Type = fullPage.Source_Data_Type;
+                    Item_Aggregation_Child_Page newPage = new Item_Aggregation_Child_Page
+                    {
+                        Browse_Type = fullPage.Browse_Type, 
+                        Code = fullPage.Code, 
+                        Parent_Code = fullPage.Parent_Code, 
+                        Source_Data_Type = fullPage.Source_Data_Type
+                    };
 
                     string label = fullPage.Get_Label(RequestedLanguage);
                     if (!String.IsNullOrEmpty(label))
@@ -631,7 +641,7 @@ namespace SobekCM.Engine_Library.Aggregations
             returnValue.HomePageSource = String.Empty;
             HTML_Based_Content homeHtml = Get_Home_HTML(CompAggr, RequestedLanguage, null);
             returnValue.HomePageHtml = homeHtml;
-	        returnValue.Custom_Home_Page = (CompAggr.Home_Page_File(RequestedLanguage)==null) ? false : (CompAggr.Home_Page_File(RequestedLanguage).isCustomHome);
+	        returnValue.Custom_Home_Page = (CompAggr.Home_Page_File(RequestedLanguage) != null) && (CompAggr.Home_Page_File(RequestedLanguage).isCustomHome);
 
             if (Tracer != null)
             {
@@ -640,13 +650,12 @@ namespace SobekCM.Engine_Library.Aggregations
             return returnValue;
 	    }
 
-        /// <summary>
-        ///   Method gets the HOME PAGE html for the appropriate UI settings
-        /// </summary>
-        /// <param name = "Language"> Current language of the user interface </param>
-        /// <param name = "Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns>Home page HTML</returns>
-        private static HTML_Based_Content Get_Home_HTML(Complete_Item_Aggregation CompAggr, Web_Language_Enum Language, Custom_Tracer Tracer)
+	    /// <summary> Method gets the HOME PAGE html for the appropriate UI settings </summary>
+	    /// <param name="CompAggr"> Complete item aggregation object </param>
+	    /// <param name = "Language"> Current language of the user interface </param>
+	    /// <param name = "Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+	    /// <returns>Home page HTML</returns>
+	    private static HTML_Based_Content Get_Home_HTML(Complete_Item_Aggregation CompAggr, Web_Language_Enum Language, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -655,7 +664,7 @@ namespace SobekCM.Engine_Library.Aggregations
 
             string homeFileSource = "";
             // Get the home file source
-            if(!(CompAggr.Home_Page_File(Language)==null))
+            if(CompAggr.Home_Page_File(Language) != null)
                homeFileSource = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, CompAggr.ObjDirectory, CompAggr.Home_Page_File(Language).Source);
 
             // If no home file source even found, return a message to that affect

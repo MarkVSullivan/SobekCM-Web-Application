@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿#region Using directives
+
+using System;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 using System.Xml.Serialization;
-using Microsoft.SqlServer.Server;
 using ProtoBuf;
-using SobekCM.Core.Aggregations;
+
+#endregion
 
 namespace SobekCM.Core.Aggregations
 {
     
     /// <summary> Single image highlight from an aggregation, with the information for only a single language </summary>
-    /// <remarks> This is related to the <see cref="Item_Aggregation_Complete_Highlights" /> class, except this does not have dictionaries
+    /// <remarks> This is related to the <see cref="Complete_Item_Aggregation_Highlights" /> class, except this does not have dictionaries
     /// for some of the values, since it is for a single language </remarks>
     [Serializable, DataContract, ProtoContract]
     public class Item_Aggregation_Highlights

@@ -1,10 +1,13 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
+using System.Xml.Serialization;
 using Jil;
 using ProtoBuf;
 using SobekCM.Core.WebContent;
@@ -12,6 +15,8 @@ using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Microservices;
 using SobekCM.Tools;
+
+#endregion
 
 namespace SobekCM.Engine_Library.Endpoints
 {
@@ -142,7 +147,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         break;
 
                     case Microservice_Endpoint_Protocol_Enum.XML:
-                        System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(typeof(Web_Content_Basic_Info));
+                        XmlSerializer x = new XmlSerializer(typeof(Web_Content_Basic_Info));
                         using (TextReader reader = new StringReader(pageInfoString))
                         {
                             basicInfo = (Web_Content_Basic_Info) x.Deserialize(reader);
@@ -359,6 +364,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
         /// <summary> Helper method retrieves HTML web content </summary>
         /// <param name="UrlSegments"> URL segments </param>
+        /// <param name="Tracer"></param>
         /// <param name="ErrorType"> Any error enocuntered during the process </param>
         /// <returns> Built HTML content object, or NULL </returns>
         public static HTML_Based_Content get_html_content(List<string> UrlSegments, Custom_Tracer Tracer, out WebContentEndpointErrorEnum ErrorType)

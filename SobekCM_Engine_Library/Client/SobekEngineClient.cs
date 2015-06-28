@@ -1,5 +1,9 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using SobekCM.Core.MicroservicesClient;
+
+#endregion
 
 namespace SobekCM.Core.Client
 {

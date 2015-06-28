@@ -46,20 +46,20 @@ namespace SobekCM.Tools.FDA
         }
 
         /// <summary>Reads the FDA report and creates the associated data object </summary>
-        /// <param name="fileName">Name (including path) of the report to read</param>
+        /// <param name="FileName">Name (including path) of the report to read</param>
         /// <returns>All the important data from an ingest report</returns>
         /// <remarks>If an exception occurred during this process, the last exception is accessible in the <see cref="Last_Exception" /> property. </remarks>
-        public static FDA_Report_Data Read(string fileName)
+        public static FDA_Report_Data Read(string FileName)
         {
             // Clear the last error
             lastError = String.Empty;
 
             // Load the XML Document
             XmlDocument report_xml = new XmlDocument();
-            report_xml.Load(fileName);
+            report_xml.Load(FileName);
 
             // Create the data repository
-            FDA_Report_Data report_data = new FDA_Report_Data {FileName = fileName};
+            FDA_Report_Data report_data = new FDA_Report_Data {FileName = FileName};
 
             // Step through
             try
@@ -258,13 +258,13 @@ namespace SobekCM.Tools.FDA
         }
 
 
-        private static void read_file_info(XmlNode filesNode, FDA_Report_Data report_data)
+        private static void read_file_info(XmlNode FilesNode, FDA_Report_Data ReportData)
         {
             // Declare some variables for all the files
             ArrayList storage_nodes = new ArrayList();
 
             // Step through all the individual files
-            foreach (XmlNode fileNode in filesNode)
+            foreach (XmlNode fileNode in FilesNode)
             {
                 // Clear the values
                 string dfid = String.Empty;
@@ -315,7 +315,7 @@ namespace SobekCM.Tools.FDA
                     // This is a valid file to save
                     FDA_File file = new FDA_File
                                         {ID = dfid, Name = path, Preservation = preservation, XML_Node = fileNode};
-                    report_data.Files.Add(file);
+                    ReportData.Files.Add(file);
 
                     // Get the size
                     long size_numeric;
@@ -351,7 +351,7 @@ namespace SobekCM.Tools.FDA
                         if (subNode.Name == "WARNING")
                         {
                             // Increment the warning count
-                            report_data.Warnings++;
+                            ReportData.Warnings++;
 
                             // Get the information about this warning
                             if (( subNode.Attributes != null ) && (subNode.Attributes.Count > 0) && (subNode.Attributes[0].Name == "CODE"))

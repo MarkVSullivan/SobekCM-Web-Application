@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,12 +9,18 @@ using System.Web.Caching;
 using SobekCM.Core.Skins;
 using SobekCM.Tools;
 
+#endregion
+
 namespace SobekCM.Core.MemoryMgmt
 {
+    /// <summary> Web skin-related services for the Cached Data Manager, which allows skin
+    /// objects to be cached locally for reuse </summary>
     public class CachedDataManager_WebSkinServices
     {
         private readonly CachedDataManager_Settings settings;
 
+        /// <summary> Constructor for a new instance of the <see cref="CachedDataManager_WebSkinServices"/> class.  </summary>
+        /// <param name="Settings"> Cached data manager settings object </param>
         public CachedDataManager_WebSkinServices(CachedDataManager_Settings Settings)
         {
             settings = Settings;
@@ -34,10 +42,10 @@ namespace SobekCM.Core.MemoryMgmt
 
         #region Static methods relating to storing and retrieving HTML skin objects
 
-        /// <summary> Removes all matching html skin objects from the cache or caching server </summary>
+        /// <summary> Removes all matching html skin objects from the cache  </summary>
         /// <param name="Skin_Code"> Code identifying this skin </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> Number of instances of this skin removed from the cache or caching server </returns>
+        /// <returns> Number of instances of this skin removed from the cache  </returns>
         /// <remarks> This removes every instance of this skin, regardless of language </remarks>
         public int Remove_Skin(string Skin_Code, Custom_Tracer Tracer)
         {
@@ -63,7 +71,7 @@ namespace SobekCM.Core.MemoryMgmt
             return values_cleared;
         }
 
-        /// <summary> Retrieves the language-specific html skin object from the cache or caching server </summary>
+        /// <summary> Retrieves the language-specific html skin object from the cache  </summary>
         /// <param name="Skin_Code"> Code for this html display skin </param>
         /// <param name="Language_Code"> Current language code for the user interface ( skins are language-specific)</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -100,7 +108,7 @@ namespace SobekCM.Core.MemoryMgmt
             return null;
         }
 
-        /// <summary> Stores the language-specific html skin object to the cache or caching server </summary>
+        /// <summary> Stores the language-specific html skin object to the cache  </summary>
         /// <param name="Skin_Code"> Code for this html display skin </param>
         /// <param name="Language_Code"> Current language code for the user interface ( skins are language-specific)</param>
         /// <param name="StoreObject"> Language-specific HTML Skin object </param>
@@ -126,7 +134,7 @@ namespace SobekCM.Core.MemoryMgmt
             HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
         }
 
-        /// <summary> Retrieves the complete html skin object from the cache or caching server </summary>
+        /// <summary> Retrieves the complete html skin object from the cache  </summary>
         /// <param name="Skin_Code"> Code for this html display skin </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Either NULL or the complete html skin object </returns>
@@ -160,7 +168,7 @@ namespace SobekCM.Core.MemoryMgmt
             return null;
         }
 
-        /// <summary> Stores the complete html skin object to the cache or caching server </summary>
+        /// <summary> Stores the complete html skin object to the cache  </summary>
         /// <param name="Skin_Code"> Code for this html display skin </param>
         /// <param name="StoreObject"> Complete HTML Skin object </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>

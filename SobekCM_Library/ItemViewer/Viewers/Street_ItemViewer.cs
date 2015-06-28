@@ -4,8 +4,6 @@ using System.IO;
 using System.Text;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Items.Authority;
-using SobekCM.Engine_Library.Navigation;
-using SobekCM.Library.Database;
 using SobekCM.Tools;
 
 #endregion

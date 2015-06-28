@@ -8,7 +8,6 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
@@ -3062,7 +3061,6 @@ namespace SobekCM.Library.HTML
 			    Output.WriteLine();
 			    Output.WriteLine("</div>");
 
-			    const int RULE = 10;
 			    Output.WriteLine("</div>");
 
 
@@ -3270,6 +3268,8 @@ namespace SobekCM.Library.HTML
             }
         }
 
+        /// <summary> Gets the collection of special behaviors which this subwriter
+        /// requests from the main HTML writer. </summary>
         public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
         {
             get { return new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Suppress_Banner}; }

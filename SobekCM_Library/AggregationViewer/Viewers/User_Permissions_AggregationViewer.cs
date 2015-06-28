@@ -1,19 +1,22 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.Database;
+using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
+#endregion
+
 namespace SobekCM.Library.AggregationViewer.Viewers
 {
+    /// <summary> Aggregation viewer to dispay the list of users that have special permissions on a single aggregation </summary>
     public class User_Permissions_AggregationViewer : abstractAggregationViewer
     {
         /// <summary> Constructor for a new instance of the User_Permissions_AggregationViewer class </summary>
@@ -36,9 +39,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
         }
 
-        public override List<HTML.HtmlSubwriter_Behaviors_Enum> AggregationViewer_Behaviors
+        /// <summary> Gets the collection of special behaviors which this aggregation viewer
+        /// requests from the main HTML subwriter. </summary>
+        public override List<HtmlSubwriter_Behaviors_Enum> AggregationViewer_Behaviors
         {
-            get { return new List<HTML.HtmlSubwriter_Behaviors_Enum> {HTML.HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables}; }
+            get { return new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables}; }
         }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
@@ -143,11 +148,6 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Is this using detailed permissions?
             bool detailedPermissions = UI_ApplicationCache_Gateway.Settings.Detailed_User_Aggregation_Permissions;
 
-            // Dertermine the number of columns
-            int columns = 5;
-            if (detailedPermissions)
-                columns = 10;
-
             Output.WriteLine("  <table id=\"sbkPrav_DetailedUsers\">");
             Output.WriteLine("  <thead>");
             Output.WriteLine("    <tr>");
@@ -233,8 +233,6 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 
                     // Prepare to collect the information about this user
-                    last_userid = thisUserId;
-                    username = thisUser["LastName"] + "," + thisUser["FirstName"];
                     canSelect = false;
                     canEditMetadata = false;
                     canEditBehaviors = false;

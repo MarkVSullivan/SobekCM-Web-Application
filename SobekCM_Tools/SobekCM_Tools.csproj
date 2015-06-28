@@ -137,7 +137,7 @@
     <Compile Include="Logs\LogFileXHTML_Style.cs" />
     <Compile Include="Logs\LogFile_Exception.cs" />
     <Compile Include="SecurityInfo.cs" />
-    <Compile Include="Settings\IS_UserSettings.cs" />
+    <Compile Include="Settings\IsolatedStorage_Settings.cs" />
     <Compile Include="FDA\FDA_File.cs" />
     <Compile Include="FDA\FDA_File_Warning.cs" />
     <Compile Include="FDA\FDA_Report_Data.cs" />

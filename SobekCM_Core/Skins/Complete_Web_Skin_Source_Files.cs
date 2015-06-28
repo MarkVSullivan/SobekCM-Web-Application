@@ -1,6 +1,9 @@
-﻿using System;
+﻿#region Using directives
+
 using System.Runtime.Serialization;
 using ProtoBuf;
+
+#endregion
 
 namespace SobekCM.Core.Skins
 {

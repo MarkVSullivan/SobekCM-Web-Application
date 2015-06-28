@@ -12,9 +12,9 @@ namespace SobekCM.Tools.Logs
 	public class LogFile_Exception : ApplicationException
 	{
 		/// <summary> Constructor which creates a new LogFile_Exception </summary>
-		/// <param name="customMessage"> Custom message which explains the error which
+		/// <param name="CustomMessage"> Custom message which explains the error which
 		/// occurred to fire this exception. </param>
-		public LogFile_Exception( string customMessage ) : base ( "Error detected in a Log File class.\n\n" + customMessage )
+		public LogFile_Exception( string CustomMessage ) : base ( "Error detected in a Log File class.\n\n" + CustomMessage )
 		{
 			// Empty constructor
 		}

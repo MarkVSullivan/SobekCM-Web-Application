@@ -375,10 +375,9 @@ namespace SobekCM.Library.UploadiFive
 					Add_To_Stream(Output, Extra_Indent + "                       ", NoHtml5OrFlashMessage);
                     Output.WriteLine("} //end");
 				}
-				catch (Exception ee)
+				catch
 				{
 					// Just want to ensure the setting is returned
-                    bool error = true;
 				}
 				finally
 				{

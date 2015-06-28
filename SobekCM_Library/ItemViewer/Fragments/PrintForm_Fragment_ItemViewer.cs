@@ -19,6 +19,9 @@ namespace SobekCM.Library.ItemViewer.Fragments
         private Page_TreeNode currentPage;
         private abstractItemViewer pageViewer;
 
+        /// <summary> Constructor for a new instance of the <see cref="PrintForm_Fragment_ItemViewer"/> class </summary>
+        /// <param name="Current_Page"> Current page object </param>
+        /// <param name="PageViewer"> Current page/item viewer </param>
         public PrintForm_Fragment_ItemViewer( Page_TreeNode Current_Page, abstractItemViewer PageViewer )
         {
             currentPage = Current_Page;
@@ -33,6 +36,9 @@ namespace SobekCM.Library.ItemViewer.Fragments
             get { return ItemViewer_Type_Enum.Fragment_PrintForm; }
         }
 
+        /// <summary> Adds the main view section to the page turner </summary>
+        /// <param name="MainPlaceHolder">Main place holder ( "mainPlaceHolder" ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
 

@@ -7,7 +7,6 @@ using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
@@ -25,12 +24,13 @@ namespace SobekCM.Library.ResultsViewer
 
         /// <summary> Protected field contains the current user IP restriction mask, used to determine
         /// if this use has access to IP restricted items </summary>
-        protected int current_user_mask;
+        protected int CurrentUserMask;
 
         private string imageRedirectStem;
 
         private string textRedirectStem;
 
+        /// <summary> Values specific to the current HTML request </summary>
         protected RequestCache RequestSpecificValues;
 
         /// <summary> Constructor for a new instance of the abstract_ResultsViewer class  </summary>
@@ -39,23 +39,23 @@ namespace SobekCM.Library.ResultsViewer
             this.RequestSpecificValues = RequestSpecificValues;
 
             // Determine the current user mask
-            current_user_mask = 0;
+            CurrentUserMask = 0;
             if ((HttpContext.Current != null) && ( HttpContext.Current.Session["IP_Range_Membership"] != null ))
             {
-                current_user_mask = (int)HttpContext.Current.Session["IP_Range_Membership"];
+                CurrentUserMask = (int)HttpContext.Current.Session["IP_Range_Membership"];
             }
         }
 
         /// <summary> Calculates the index for the last row to be displayed on the current result page </summary>
         public int LastRow
         {
-            get	
-            {	
+            get
+            {
                 // Determine which rows to display
                 if (RequestSpecificValues.Current_Mode.Page.HasValue)
                     return (RequestSpecificValues.Current_Mode.Page.Value * Results_Per_Page);
-                else
-                    return Results_Per_Page;
+                
+                return Results_Per_Page;
             }
         }
 

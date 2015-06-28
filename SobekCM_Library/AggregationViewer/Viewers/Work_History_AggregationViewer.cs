@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region Using directives
+
+using System;
 using System.Data;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.AggregationViewer.Viewers;
@@ -12,8 +10,11 @@ using SobekCM.Library.Database;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
+#endregion
+
 namespace SobekCM.Library.AggregationViewer
 {
+    /// <summary> Aggregation viewer displays all the work history related to an item aggregation </summary>
     public class Work_History_AggregationViewer : abstractAggregationViewer
     {
         /// <summary> Constructor for a new instance of the Work_History_AggregationViewer class </summary>

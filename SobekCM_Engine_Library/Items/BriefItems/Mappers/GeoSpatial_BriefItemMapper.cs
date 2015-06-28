@@ -1,9 +1,13 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Text;
+using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
-using SobekCM.Core.BriefItem;
+
+#endregion
 
 namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 {

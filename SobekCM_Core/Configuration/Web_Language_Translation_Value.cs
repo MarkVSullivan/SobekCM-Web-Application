@@ -1,6 +1,10 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Runtime.Serialization;
 using ProtoBuf;
+
+#endregion
 
 namespace SobekCM.Core.Configuration
 {

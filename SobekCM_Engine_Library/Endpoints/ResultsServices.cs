@@ -1,13 +1,13 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.BriefItem;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
@@ -19,6 +19,8 @@ using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Microservices;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Tools;
+
+#endregion
 
 namespace SobekCM.Engine_Library.Endpoints
 {

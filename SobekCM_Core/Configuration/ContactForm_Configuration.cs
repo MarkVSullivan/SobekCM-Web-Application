@@ -1,11 +1,16 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml.Serialization;
 using ProtoBuf;
+using SobekCM.Core.Users;
+
+#endregion
 
 namespace SobekCM.Core.Configuration
 {
@@ -54,7 +59,7 @@ namespace SobekCM.Core.Configuration
         {
             this.Element_Type = Element_Type;
             Options = new List<string>();
-            UserAttribute = Users.User_Object_Attribute_Mapping_Enum.NONE;
+            UserAttribute = User_Object_Attribute_Mapping_Enum.NONE;
             AlwaysShow = false;
             Required = false;
             QueryText = new Web_Language_Translation_Lookup();
@@ -102,7 +107,7 @@ namespace SobekCM.Core.Configuration
         [DataMember(Name = "userAttribute", EmitDefaultValue = false)]
         [XmlAttribute("userAttribute")]
         [ProtoMember(6)]
-        public Users.User_Object_Attribute_Mapping_Enum UserAttribute { get; set; }
+        public User_Object_Attribute_Mapping_Enum UserAttribute { get; set; }
 
         /// <summary> If this is mapped from a user attribute, this flag indicates whether it should be shown, even 
         /// if the user is logged on </summary>
@@ -248,9 +253,9 @@ namespace SobekCM.Core.Configuration
                         }
                         if (!String.IsNullOrEmpty(thisElement.CssClass))
                             writer.Write(" CssClass=\"" + thisElement.CssClass + "\"");
-                        if (thisElement.UserAttribute != Users.User_Object_Attribute_Mapping_Enum.NONE)
+                        if (thisElement.UserAttribute != User_Object_Attribute_Mapping_Enum.NONE)
                         {
-                            writer.Write(" UserAttribute=\"" + Users.User_Object_Attribute_Mapping_Enum_Converter.ToString(thisElement.UserAttribute) + "\"");
+                            writer.Write(" UserAttribute=\"" + User_Object_Attribute_Mapping_Enum_Converter.ToString(thisElement.UserAttribute) + "\"");
                             if (( thisElement.Element_Type != ContactForm_Configuration_Element_Type_Enum.ExplanationText ) && ( thisElement.Element_Type != ContactForm_Configuration_Element_Type_Enum.HiddenValue ))
                                 writer.Write(" AlwaysShow=\"" + thisElement.AlwaysShow.ToString().ToLower() + "\"");
                         }
@@ -303,7 +308,7 @@ namespace SobekCM.Core.Configuration
                 writer.Flush();
                 writer.Close();
             }
-            catch (Exception ee)
+            catch 
             {
                 returnValue = false;
             }

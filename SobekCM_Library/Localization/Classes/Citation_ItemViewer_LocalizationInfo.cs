@@ -242,25 +242,25 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Missing Image' localization string </remarks>
         public string MissingImage { get; private set; }
 
-        /// <remarks> '"The data (or metadata) about this digital resource is available in a variety of metadata formats. For more information about these formats, see the <a href=""http://ufdc.ufl.edu/sobekcm/metadata"">Metadata Section</a> of the <a href=""http://ufdc.ufl.edu/sobekcm/"">Technical Aspects</a> information."' localization string </remarks>
+        /// <remarks> '"The data (or metadata) about this digital resource is available in a variety of metadata formats. For more information about these formats, see the a href=http://ufdc.ufl.edu/sobekcm/metadata"">Metadata Section(/a) of the (a href=""http://ufdc.ufl.edu/sobekcm/"")Technical Aspects(/a) information."' localization string </remarks>
         public string TheDataOrMetadataAboutThisDigitalResourceI { get; private set; }
 
         /// <remarks> 'View Complete METS/MODS' localization string </remarks>
         public string ViewCompleteMETSMODS { get; private set; }
 
-        /// <remarks> '"This metadata file is the source metadata file submitted along with all the digital resource files. This contains all of the citation and processing information used to build this resource. This file follows the established <a href=""http://www.loc.gov/standards/mets/"">Metadata Encoding and Transmission Standard</a> (METS) and <a href=""http://www.loc.gov/standards/mods/"">Metadata Object Description Schema</a> (MODS). This METS/MODS file was just read when this item was loaded into memory and used to display all the information in the standard view and marc view within the citation."' localization string </remarks>
+        /// <remarks> '"This metadata file is the source metadata file submitted along with all the digital resource files. This contains all of the citation and processing information used to build this resource. This file follows the established (a href=""http://www.loc.gov/standards/mets/"")Metadata Encoding and Transmission Standard(/a) (METS) and (a href=""http://www.loc.gov/standards/mods/"")Metadata Object Description Schema(/a) (MODS). This METS/MODS file was just read when this item was loaded into memory and used to display all the information in the standard view and marc view within the citation."' localization string </remarks>
         public string ThisMetadataFileIsTheSourceMetadataFileSub { get; private set; }
 
         /// <remarks> 'View MARC XML File' localization string </remarks>
         public string ViewMARCXMLFile { get; private set; }
 
-        /// <remarks> '"The entered metadata is also converted to MARC XML format, for interoperability with other library catalog systems.  This represents the same data available in the <a href=""%1"">MARC VIEW</a> except this is a static XML file.  This file follows the <a href=""http://www.loc.gov/standards/marcxml/"">MarcXML Schema</a>."' localization string </remarks>
+        /// <remarks> '"The entered metadata is also converted to MARC XML format, for interoperability with other library catalog systems.  This represents the same data available in the (a href=""%1"")MARC VIEW(/a) except this is a static XML file.  This file follows the (a href=""http://www.loc.gov/standards/marcxml/"")MarcXML Schema(/a)."' localization string </remarks>
         public string TheEnteredMetadataIsAlsoConvertedToMARCXML { get; private set; }
 
         /// <remarks> 'View TEI/Text File' localization string </remarks>
         public string ViewTeitextFile { get; private set; }
 
-        /// <remarks> '"The full-text of this item is also available in the established standard <a href=""http://www.tei-c.org/index.xml"">Text Encoding Initiative</a> (TEI) downloadable file."' localization string </remarks>
+        /// <remarks> '"The full-text of this item is also available in the established standard (a href=""http://www.tei-c.org/index.xml"")Text Encoding Initiative(/a) (TEI) downloadable file."' localization string </remarks>
         public string TheFulltextOfThisItemIsAlsoAvailableInThe { get; private set; }
 
         /// <remarks> 'The record above was auto-generated from the METS file.' localization string </remarks>

@@ -2,7 +2,6 @@
 
 using System;
 using System.Data;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using SobekCM.Core.Configuration;
@@ -16,25 +15,25 @@ using SobekCM.Tools;
 
 namespace SobekCM.Engine_Library.Skins
 {
-	/// <summary> Builder creates individiual <see cref="SobekCM_Skin_Object"/> objects when application first starts and 
+	/// <summary> Builder creates individiual <see cref="Web_Skin_Object"/> objects when application first starts and 
     /// when a new skin is needed for a user request </summary>
 	public class Web_Skin_Utilities
 	{
         /// <summary> Populates/builds the main default HTML skin during application startup </summary>
         /// <param name="SkinList"> List of skin to populate with the default, commonly used skin</param>
-        /// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering  </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering  </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> Most HTML skins are built as they are needed and then cached for a period of time.  The main default skins are
-        /// permanently stored in this global <see cref="SobekCM_Skin_Collection"/> object.</remarks>
-        public static bool Populate_Default_Skins(Web_Skin_Collection SkinList, Custom_Tracer tracer)
+        /// permanently stored in this global <see cref="Web_Skin_Collection"/> object.</remarks>
+        public static bool Populate_Default_Skins(Web_Skin_Collection SkinList, Custom_Tracer Tracer)
         {
-            if (tracer != null)
+            if (Tracer != null)
             {
-                tracer.Add_Trace("SobekCM_Skin_Collection_Builder.Populate_Default_Skins", "Build the standard interfaces");
+                Tracer.Add_Trace("SobekCM_Skin_Collection_Builder.Populate_Default_Skins", "Build the standard interfaces");
             }
 
             // Get the data from the database
-            DataTable skinData = Engine_Database.Get_All_Web_Skins(tracer);
+            DataTable skinData = Engine_Database.Get_All_Web_Skins(Tracer);
 
             // Just return if the data appears bad..
             if ((skinData == null) || (skinData.Rows.Count == 0))
@@ -46,9 +45,10 @@ namespace SobekCM.Engine_Library.Skins
             return true;
         }
 
-        /// <summary> Builds the complete web skin object </summary>
-        /// <param name="Skin_Row"> Row for this web skin, from the database query </param>
-        /// <returns> Complete web skin </returns>
+	    /// <summary> Builds the complete web skin object </summary>
+	    /// <param name="Skin_Row"> Row for this web skin, from the database query </param>
+	    /// <param name="Tracer"></param>
+	    /// <returns> Complete web skin </returns>
 	    public static Complete_Web_Skin_Object Build_Skin_Complete(DataRow Skin_Row, Custom_Tracer Tracer )
 	    {
             if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin_Complete", "Building the complete web skin from the row and design files");
@@ -99,6 +99,10 @@ namespace SobekCM.Engine_Library.Skins
                     {
                         // Get the filename
                         string fileName = Path.GetFileName(thisHeaderFile);
+
+                        // Should not ever really be null, but if so. just skip it
+                        if (String.IsNullOrEmpty(fileName))
+                            continue;
 
                         // Was this an item header file?
                         if (fileName.IndexOf("header_item", StringComparison.InvariantCultureIgnoreCase) == 0)
@@ -311,25 +315,26 @@ namespace SobekCM.Engine_Library.Skins
 	    }
 
 
-	    /// <summary> Builds a language-specific <see cref="SobekCM_Skin_Object"/> when needed by a user's request </summary>
+	    /// <summary> Builds a language-specific <see cref="Web_Skin_Object"/> when needed by a user's request </summary>
 	    /// <param name="Skin_Row"> Row from a database query with basic information about the interface to build ( codes, override flags, banner link )</param>
 	    /// <param name="Language_Code"> Code for the language, which determines which HTML to use </param>
 	    /// <returns> Completely built HTML interface object </returns>
-	    /// <remarks> The datarow for this method is retrieved from the database by calling the <see cref="Database.SobekCM_Database.Get_All_Web_Skins"/> method during 
-	    /// application startup and is then stored in the <see cref="SobekCM_Skin_Collection"/> class until needed. </remarks>
+	    /// <remarks> The datarow for this method is retrieved from the database by calling the <see cref="Database.Engine_Database.Get_All_Web_Skins"/> method during 
+	    /// application startup and is then stored in the <see cref="Web_Skin_Collection"/> class until needed. </remarks>
 	    public static Web_Skin_Object Build_Skin(DataRow Skin_Row, string Language_Code)
 	    {
 	        Complete_Web_Skin_Object completeSkinObject = Build_Skin_Complete(Skin_Row, null);
 	        return Build_Skin(completeSkinObject, Language_Code, null);
 	    }
 
-        /// <summary> Builds a language-specific <see cref="SobekCM_Skin_Object"/> when needed by a user's request </summary>
-        /// <param name="CompleteSkin"> Complete web skin object </param>
-        /// <param name="Language_Code"> Code for the language, which determines which HTML to use </param>
-        /// <returns> Completely built HTML interface object </returns>
-        /// <remarks> The datarow for this method is retrieved from the database by calling the <see cref="Database.SobekCM_Database.Get_All_Web_Skins"/> method during 
-        /// application startup and is then stored in the <see cref="SobekCM_Skin_Collection"/> class until needed. </remarks>
-        public static Web_Skin_Object Build_Skin(Complete_Web_Skin_Object CompleteSkin, string Language_Code, Custom_Tracer Tracer )
+	    /// <summary> Builds a language-specific <see cref="Web_Skin_Object"/> when needed by a user's request </summary>
+	    /// <param name="CompleteSkin"> Complete web skin object </param>
+	    /// <param name="Language_Code"> Code for the language, which determines which HTML to use </param>
+	    /// <param name="Tracer"></param>
+	    /// <returns> Completely built HTML interface object </returns>
+	    /// <remarks> The datarow for this method is retrieved from the database by calling the <see cref="Database.Engine_Database.Get_All_Web_Skins"/> method during 
+	    /// application startup and is then stored in the <see cref="Web_Skin_Collection"/> class until needed. </remarks>
+	    public static Web_Skin_Object Build_Skin(Complete_Web_Skin_Object CompleteSkin, string Language_Code, Custom_Tracer Tracer )
         {
             // Look for the language
             Web_Language_Enum language = Web_Language_Enum_Converter.Code_To_Enum(Language_Code);

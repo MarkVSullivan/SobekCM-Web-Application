@@ -1,12 +1,21 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using SobekCM.Core.Settings;
 
+#endregion
+
 namespace SobekCM.Engine_Library.Settings
 {
+    /// <summary> Creates the builder settings, which holds data that is used by the builder </summary>
     public class Builder_Settings_Builder
     {
+        /// <summary> Refreshes the specified builder settings object, from the information pulled from the database </summary>
+        /// <param name="SettingsObject"> Current builer settings object to refresh </param>
+        /// <param name="SobekCM_Settings"> Dataset of all the builder settings, from the instance database </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
         public static bool Refresh(Builder_Settings SettingsObject, DataSet SobekCM_Settings)
         {
             SettingsObject.Clear();
@@ -34,15 +43,15 @@ namespace SobekCM.Engine_Library.Settings
 
                 return true;
             }
-            catch (Exception ee)
+            catch
             {
                 return false;
             }
         }
 
-        private static void Set_NonScheduled_Modules(Builder_Settings SettingsObject, DataTable BuilderFoldersTable, Dictionary<int, List<Builder_Module_Setting>> setid_to_modules)
+        private static void Set_NonScheduled_Modules(Builder_Settings SettingsObject, DataTable BuilderFoldersTable, Dictionary<int, List<Builder_Module_Setting>> SetidToModules)
         {
-            DataColumn moduleIdColumn = BuilderFoldersTable.Columns["ModuleID"];
+            //DataColumn moduleIdColumn = BuilderFoldersTable.Columns["ModuleID"];
             DataColumn assemblyColumn = BuilderFoldersTable.Columns["Assembly"];
             DataColumn classColumn = BuilderFoldersTable.Columns["Class"];
            // DataColumn descColumn = BuilderFoldersTable.Columns["ModuleDesc"];
@@ -58,11 +67,10 @@ namespace SobekCM.Engine_Library.Settings
 
 
             int prevSetid = -1;
-            string type = String.Empty;
             List<Builder_Module_Setting> folderSettings = new List<Builder_Module_Setting>();
             foreach (DataRow thisRow in BuilderFoldersTable.Rows)
             {
-                type = thisRow[typeAbbrevColumn].ToString().ToUpper();
+                string type = thisRow[typeAbbrevColumn].ToString().ToUpper();
 
                 Builder_Module_Setting newSetting = new Builder_Module_Setting
                 {
@@ -101,7 +109,7 @@ namespace SobekCM.Engine_Library.Settings
                         {
                             if (folderSettings.Count > 0)
                             {
-                                setid_to_modules[prevSetid] = folderSettings;
+                                SetidToModules[prevSetid] = folderSettings;
                                 folderSettings = new List<Builder_Module_Setting>();
                             }
                             prevSetid = setId;
@@ -117,12 +125,12 @@ namespace SobekCM.Engine_Library.Settings
 
             if (folderSettings.Count > 0)
             {
-                setid_to_modules[prevSetid] = folderSettings;
+                SetidToModules[prevSetid] = folderSettings;
             }
         }
         
 
-        private static void Set_Builder_Folders(Builder_Settings SettingsObject, DataTable BuilderFoldersTable, Dictionary<int, List<Builder_Source_Folder>> folder_to_set_dictionary)
+        private static void Set_Builder_Folders(Builder_Settings SettingsObject, DataTable BuilderFoldersTable, Dictionary<int, List<Builder_Source_Folder>> FolderToSetDictionary)
         {
             SettingsObject.IncomingFolders.Clear();
             foreach (DataRow thisRow in BuilderFoldersTable.Rows)
@@ -150,11 +158,11 @@ namespace SobekCM.Engine_Library.Settings
                 if (( thisRow["ModuleSetID"] != null) && ( thisRow["ModuleSetID"].ToString().Length > 0 ))
                 {
                     int id = Int32.Parse(thisRow["ModuleSetID"].ToString());
-                    if (folder_to_set_dictionary.ContainsKey(id))
-                        folder_to_set_dictionary[id].Add(newFolder);
+                    if (FolderToSetDictionary.ContainsKey(id))
+                        FolderToSetDictionary[id].Add(newFolder);
                     else
                     {
-                        folder_to_set_dictionary[id] = new List<Builder_Source_Folder> {newFolder};
+                        FolderToSetDictionary[id] = new List<Builder_Source_Folder> {newFolder};
                     }
                 }
 

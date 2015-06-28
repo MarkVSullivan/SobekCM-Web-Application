@@ -75,15 +75,23 @@ namespace SobekCM.Core.Users
         [DataMember]
         public bool IsSpecialGroup { get; set;  }
 
+        /// <summary> Flag indicates if this user group should be assigned, by default, to new users
+        /// that register via Sobek authentication  </summary>
         [DataMember]
         public bool IsSobekDefault { get; set; }
 
+        /// <summary> Flag indicates if this user group should be assigned, by default, to new users
+        /// that register via Shibboleth authentication  </summary>
         [DataMember]
         public bool IsShibbolethDefault { get; set; }
 
+        /// <summary> Flag indicates if this user group should be assigned, by default, to new users
+        /// that register via LDAP authentication  </summary>
         [DataMember]
         public bool IsLdapDefault { get; set; }
 
+        /// <summary> Flag indicates if this is a portal administrator, with top-level permissions on this instance </summary>
+        /// <remarks> Portal administrators have less rights, in general, than system administrators </remarks>
         [DataMember]
         public bool IsPortalAdmin { get; set; }
 
@@ -144,13 +152,13 @@ namespace SobekCM.Core.Users
         /// <summary> Return the number of aggregations tied to this user group </summary>
         public int Aggregations_Count
         {
-            get { return aggregations == null ? 0 : aggregations.Aggregations.Count; ; }
+            get { return aggregations == null ? 0 : aggregations.Aggregations.Count; }
         }
 
         /// <summary> Return the number of users tied to this user group </summary>
         public int Users_Count
         {
-            get { return users == null ? 0 : users.Count; ; }
+            get { return users == null ? 0 : users.Count; }
         }
 
         #endregion
@@ -181,10 +189,16 @@ namespace SobekCM.Core.Users
         /// <summary> Add a new item aggregation to this user group's collection of item aggregationPermissions </summary>
         /// <param name="Code">Code for this user editable item aggregation</param>
         /// <param name="Aggregation_Name">Name for this user editable item aggregation </param>
-        /// <param name="CanSelect">Flag indicates if this user can add items to this item aggregation</param>
-        /// <param name="CanEditItems">Flag indicates if this user can edit any items in this item aggregation</param>
-        /// <param name="IsCurator"> Flag indicates if this user is listed as the curator or collection manager for this given digital aggregation </param>
-		public void Add_Aggregation(string Code, string Aggregation_Name, bool CanSelect, bool CanEditMetadata, bool CanEditBehaviors, bool CanPerformQc, bool CanUploadFiles, bool CanChangeVisibility, bool CanDelete, bool IsCurator, bool IsAdmin)
+        /// <param name="CanSelect">Flag indicates if this user group can add items to this item aggregation</param>
+        /// <param name="CanDelete"> Flag indicates if the user group can delete items in this aggregation </param>
+        /// <param name="IsCurator"> Flag indicates if this user group is listed as the curator or collection manager for this given digital aggregation </param>
+        /// <param name="CanEditMetadata"> Flag indicates if the user group can edit metadata for all items in this aggregation </param>
+        /// <param name="CanEditBehaviors"> Flag indicates if the user group can edit behaviors for all items in this aggregation  </param>
+        /// <param name="CanPerformQc"> Flag indicates if the user group can edit perform quality control for all items in this aggregation  </param>
+        /// <param name="CanUploadFiles"> Flag indicates if the user group can edit upload files for all items in this aggregation  </param>
+        /// <param name="CanChangeVisibility"> Flag indicates if the user group can change the visibility for all items in this aggregation  </param>
+        /// <param name="IsAdmin"> Flag indicates if membership in this group are administrators on the aggregation </param>
+        public void Add_Aggregation(string Code, string Aggregation_Name, bool CanSelect, bool CanEditMetadata, bool CanEditBehaviors, bool CanPerformQc, bool CanUploadFiles, bool CanChangeVisibility, bool CanDelete, bool IsCurator, bool IsAdmin)
         {
             if (aggregations == null) aggregations = new User_Aggregation_Permissions();
 

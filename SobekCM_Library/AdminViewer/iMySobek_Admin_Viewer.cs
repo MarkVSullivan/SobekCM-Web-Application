@@ -10,6 +10,7 @@ using SobekCM.Tools;
 
 namespace SobekCM.Library.AdminViewer
 {
+    /// <summary> Interface defines the required behavior for the mySobek and administrative viewers  </summary>
     public interface iMySobek_Admin_Viewer
     {
 

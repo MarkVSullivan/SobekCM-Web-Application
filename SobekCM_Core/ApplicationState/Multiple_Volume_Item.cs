@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using SobekCM.Core.Serialization;
 
 #endregion
 
@@ -86,6 +85,7 @@ namespace SobekCM.Core.ApplicationState
             return itemDictionary.ContainsKey(VID);
         }
 
+        /// <summary> Method is called by the serializer after this item is unserialized </summary>
 	    public void PostUnSerialization()
 	    {
 	        itemDictionary.Clear();

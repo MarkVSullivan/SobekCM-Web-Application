@@ -1,8 +1,11 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
+#endregion
 
 namespace SobekCM.Core.Configuration
 {
@@ -135,7 +138,7 @@ namespace SobekCM.Core.Configuration
                 writer.Flush();
                 writer.Close();
             }
-            catch (Exception ee)
+            catch
             {
                 returnValue = false;
             }

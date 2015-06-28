@@ -2,7 +2,7 @@
 {
     /// <summary> Class represents one possible metadata format that can be served
     /// via OAI-PMH, and indicates the class that should be used to create the metadata
-    /// for storing in the databaase  and subsequently serving via OAI-PMH <summary>
+    /// for storing in the databaase  and subsequently serving via OAI-PMH </summary>
     public class OAI_PMH_Metadata_Format
     {
         /// <summary> Constructor for a new instance of the OAI_PMH_Metadata_Format class </summary>

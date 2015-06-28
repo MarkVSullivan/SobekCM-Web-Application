@@ -59,9 +59,11 @@ namespace SobekCM.Core.ApplicationState
         [DataMember]
         public string Default_Web_Skin { get; set; }
 
+        /// <summary> Aggregations which can appear under this portal </summary>
         [DataMember(EmitDefaultValue = false)]
         public List<string> PossibleAggregations { get; set;  }
 
+        /// <summary> Web skins which can appear under this portal </summary>
         [DataMember(EmitDefaultValue = false)]
         public List<string> PossibleSkins { get; set;  }
 

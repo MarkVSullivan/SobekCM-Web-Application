@@ -18,6 +18,7 @@ using Zen.Barcode;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
+    /// <summary> Item viewer displays the tracking sheet for an individual item, including bar code </summary>
     public class TrackingSheet_ItemViewer : abstractItemViewer
     {
         private readonly SobekCM_Item track_item;
@@ -26,7 +27,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private readonly string aggregations;
         private readonly string oclc;
         private readonly string aleph;
-        private readonly string username;
         private readonly List<string> authors_list;
         private readonly string[] publishers_list;
 
@@ -379,23 +379,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
         /// <summary> Generates a barcode(with checksum) for a given string </summary>
-        /// <param name="InputString"> This is the itemID, in base 26 number system</param>
-		/// <param name="Action"> Indicates the Imaging action represented by this barcode</param>
+        /// <param name="ItemID"> ItemID for the material </param>
+        /// <param name="Action"> Indicates the Imaging action represented by this barcode</param>
         /// <param name="FilenameToSave"> Name of the output file to save </param>
         /// <returns>The url of the generated barcode GIF image</returns>
-        public string Get_BarcodeImageUrl_from_string(int itemID, string Action, string FilenameToSave)
+        public string Get_BarcodeImageUrl_from_string(int ItemID, string Action, string FilenameToSave)
         {
-            string convertedItemID = int_to_base26(itemID);
-            string InputString = (convertedItemID + Action).ToUpper();
-	        if (InputString == null) throw new ArgumentNullException("InputString");
+            string convertedItemID = int_to_base26(ItemID);
+            string inputString = (convertedItemID + Action).ToUpper();
+	        if (inputString == null) throw new ArgumentNullException("InputString");
 
             //Calculate the checksum
-            int actionNum = 0;
+            int actionNum;
             Int32.TryParse(Action, out actionNum);
-            int checksumInt = (itemID + actionNum)%26;
+            int checksumInt = (ItemID + actionNum) % 26;
             string checksum = int_to_base26(checksumInt).ToUpper();
 			
-            string barcodeString = InputString + checksum;
+            string barcodeString = inputString + checksum;
           
             string image_save_location = image_location + "\\" + FilenameToSave + ".gif";
 
@@ -405,8 +405,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             
             //Save the image
             barcode_image.Save(@image_save_location, ImageFormat.Gif);
-	       // string url = CurrentMode.Base_URL + "temp/" + CurrentUser.UserName.Replace(".", "").Replace("@", "") + "/tsBarcodes/" + itemID.ToString();
-            string url = CurrentMode.Base_URL + "temp/" + "tsBarcodes/" + itemID.ToString();
+
+            string url = CurrentMode.Base_URL + "temp/" + "tsBarcodes/" + ItemID;
 
 			return url + "/" + FilenameToSave + ".gif";
 

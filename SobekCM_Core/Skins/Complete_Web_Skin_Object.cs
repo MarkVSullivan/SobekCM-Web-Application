@@ -1,8 +1,12 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Configuration;
+
+#endregion
 
 namespace SobekCM.Core.Skins
 {
@@ -26,7 +30,6 @@ namespace SobekCM.Core.Skins
 
         /// <summary> Constructor for a new instance of the Complete_Web_Skin_Object class </summary>
         /// <param name="Skin_Code"> Code for this HTML skin</param>
-        /// <param name="Base_Skin_Code"> Code for the base HTML skin which this skin derives from</param>
         /// <param name="CSS_Style"> Additional CSS Stylesheet to be included for this HTML skin</param>
         public Complete_Web_Skin_Object(string Skin_Code, string CSS_Style)
         {

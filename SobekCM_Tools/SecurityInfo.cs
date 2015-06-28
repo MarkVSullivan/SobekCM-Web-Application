@@ -89,18 +89,18 @@ namespace SobekCM.Tools
 
 
 		/// <summary> Returns a string value from the registry under HKEY_LOCAL_MACHINE. </summary>
-		/// <param name="keyLocation"> Location of the key (i.e. "Control Panel\Desktop") </param>
-		/// <param name="valueName"> Name of the value to retrieve </param>
+		/// <param name="KeyLocation"> Location of the key (i.e. "Control Panel\Desktop") </param>
+		/// <param name="ValueName"> Name of the value to retrieve </param>
 		/// <returns> String value from the registry, or "-1" if an error occurs </returns>
-		public string LocalMachineKey( string keyLocation, string valueName )
+		public string LocalMachineKey( string KeyLocation, string ValueName )
 		{
 			try
 			{
 				RegistryKey fetcher = Registry.LocalMachine;
-				fetcher = fetcher.OpenSubKey( keyLocation );
+				fetcher = fetcher.OpenSubKey( KeyLocation );
 			    if (fetcher != null)
 			    {
-			        string fetchedValue = (string) fetcher.GetValue(valueName);
+			        string fetchedValue = (string) fetcher.GetValue(ValueName);
 			        fetcher.Close();
 			        return fetchedValue ?? "-1";
 			    }
@@ -113,19 +113,19 @@ namespace SobekCM.Tools
 		}
 
         /// <summary> Returns a string value from the registry under HKEY_CURRENT_USER. </summary>
-        /// <param name="keyLocation"> Location of the key (i.e. "Control Panel\Desktop") </param>
-        /// <param name="valueName"> Name of the value to retrieve </param>
+        /// <param name="KeyLocation"> Location of the key (i.e. "Control Panel\Desktop") </param>
+        /// <param name="ValueName"> Name of the value to retrieve </param>
         /// <returns> String value from the registry, or "-1" if an error occurs </returns>
-		public string CurrentUserKey( string keyLocation, string valueName )
+		public string CurrentUserKey( string KeyLocation, string ValueName )
 		{
 			try
 			{
 
 				RegistryKey fetcher = Registry.CurrentUser;
-				fetcher = fetcher.OpenSubKey( keyLocation );
+				fetcher = fetcher.OpenSubKey( KeyLocation );
 			    if (fetcher != null)
 			    {
-			        string fetchedValue = (string) fetcher.GetValue(valueName);
+			        string fetchedValue = (string) fetcher.GetValue(ValueName);
 			        fetcher.Close();
 			        return fetchedValue ?? "-1";
 			    }
@@ -138,28 +138,28 @@ namespace SobekCM.Tools
 		}
 
 		/// <summary> Reads text from a file encrypted in DES encryption. (128 bit symmetric encryption) </summary>
-		/// <param name="filename"> Path and name of file to be read from</param>
-		/// <param name="key"> 8 character (64bit) key for decryption</param>
-		/// <param name="IV"> 8 character (64bit) initialization vector for decryption</param>
-		/// <param name="position"> Character position to start reading from</param>
-		/// <param name="length"> Number of characters to read from the file</param>
+		/// <param name="Filename"> Path and name of file to be read from</param>
+		/// <param name="Key"> 8 character (64bit) key for decryption</param>
+		/// <param name="Iv"> 8 character (64bit) initialization vector for decryption</param>
+		/// <param name="Position"> Character position to start reading from</param>
+		/// <param name="Length"> Number of characters to read from the file</param>
 		/// <returns> Character array of data read and decrypted from file or a NULL if there was an error</returns>
-		public char[] ReadFromEncryptedFile ( string filename, string key, string IV, int position, int length )
+		public char[] ReadFromEncryptedFile ( string Filename, string Key, string Iv, int Position, int Length )
 		{
-			char[] temp = new char[length];
+			char[] temp = new char[Length];
 
 			try
 			{
 				// Open the necessary file streams
-				FileStream projectDataFile = new FileStream(filename, FileMode.Open, FileAccess.Read);
+				FileStream projectDataFile = new FileStream(Filename, FileMode.Open, FileAccess.Read);
 			    DESCryptoServiceProvider desProvider = new DESCryptoServiceProvider
-			                                               {Key = Encoding.ASCII.GetBytes(key), IV = Encoding.ASCII.GetBytes(IV)};
+			                                               {Key = Encoding.ASCII.GetBytes(Key), IV = Encoding.ASCII.GetBytes(Iv)};
 			    CryptoStream cryptoStreamDecrypt = new CryptoStream(projectDataFile, desProvider.CreateDecryptor(), CryptoStreamMode.Read );
 				StreamReader streamInput = new StreamReader(cryptoStreamDecrypt);
 
 				// Jump to position provided and read the data requested
-				projectDataFile.Position = position;
-				streamInput.Read(temp, 0, length );
+				projectDataFile.Position = Position;
+				streamInput.Read(temp, 0, Length );
 
 				// Close the file stream
 				projectDataFile.Close();
@@ -173,30 +173,30 @@ namespace SobekCM.Tools
 		}
 
 		/// <summary> Writes text to a file encrypted in DES encryption. (128 bit symmetric encryption) </summary>
-		/// <param name="textToWrite"> Text which will be written to the file</param>
-		/// <param name="filename"> Path and name of file to be written to</param>
-		/// <param name="key"> 8 character (64bit) key for encryption</param>
-		/// <param name="IV"> 8 character (64bit) initialization vector for encryption</param>
-		/// <param name="position"> Character position in file to write the text</param>
+		/// <param name="TextToWrite"> Text which will be written to the file</param>
+		/// <param name="Filename"> Path and name of file to be written to</param>
+		/// <param name="Key"> 8 character (64bit) key for encryption</param>
+		/// <param name="Iv"> 8 character (64bit) initialization vector for encryption</param>
+		/// <param name="Position"> Character position in file to write the text</param>
 		/// <returns> TRUE if written successfully, otherwise FALSE </returns>
-		public bool WriteToEncryptedFile ( string textToWrite, string filename, string key, string IV, int position )
+		public bool WriteToEncryptedFile ( string TextToWrite, string Filename, string Key, string Iv, int Position )
 		{
 			try
 			{
 				// Open file streams necessary
-				FileStream projectDataFile = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write);
+				FileStream projectDataFile = new FileStream(Filename, FileMode.OpenOrCreate, FileAccess.Write);
 			    DESCryptoServiceProvider desProvider = new DESCryptoServiceProvider
-			                                               {Key = Encoding.ASCII.GetBytes(key), IV = Encoding.ASCII.GetBytes(IV)};
+			                                               {Key = Encoding.ASCII.GetBytes(Key), IV = Encoding.ASCII.GetBytes(Iv)};
 			    CryptoStream cryptoStreamEncrypt = new CryptoStream(projectDataFile, desProvider.CreateEncryptor(), CryptoStreamMode.Write );
 
 				// Get to the correct position in the file to write
-				projectDataFile.Position = position;
+				projectDataFile.Position = Position;
 
 				// Break string into a byte array and write to file
-				byte[] temp = new byte[textToWrite.Length];
-				for ( int i = 0 ; i < textToWrite.Length ; ++i )
-					temp[i] = Convert.ToByte(Convert.ToChar(textToWrite.Substring(i, 1)));
-				cryptoStreamEncrypt.Write(temp, 0, textToWrite.Length);
+				byte[] temp = new byte[TextToWrite.Length];
+				for ( int i = 0 ; i < TextToWrite.Length ; ++i )
+					temp[i] = Convert.ToByte(Convert.ToChar(TextToWrite.Substring(i, 1)));
+				cryptoStreamEncrypt.Write(temp, 0, TextToWrite.Length);
 
 				// Close the file stream
 				cryptoStreamEncrypt.Close( );
@@ -229,9 +229,9 @@ namespace SobekCM.Tools
         /// <summary> Encrypt a string, given the string.  </summary>
         /// <param name="Source"> String to encrypt </param>
         /// <param name="Key"> Key for the encryption </param>
-        /// <param name="IV"> Initialization Vector for the encryption </param>
+        /// <param name="Iv"> Initialization Vector for the encryption </param>
         /// <returns> The encrypted string </returns>
-        public static string DES_EncryptString(string Source, string Key, string IV )
+        public static string DES_EncryptString(string Source, string Key, string Iv )
         {
             byte[] bytIn = Encoding.ASCII.GetBytes(Source);
             // create a MemoryStream so that the process can be done without I/O files
@@ -241,7 +241,7 @@ namespace SobekCM.Tools
             DESCryptoServiceProvider desProvider = new DESCryptoServiceProvider
                                                        {
                                                            Key = Encoding.ASCII.GetBytes(Key),
-                                                           IV = Encoding.ASCII.GetBytes(IV)
+                                                           IV = Encoding.ASCII.GetBytes(Iv)
                                                        };
 
             // create an Encryptor from the Provider Service instance
@@ -265,9 +265,9 @@ namespace SobekCM.Tools
 		/// <summary> Encrypt a string, given the string, the key, and the IV values.  </summary>
 		/// <param name="Source"> String to encrypt </param>
 		/// <param name="Key"> Key for the encryption </param>
-		/// <param name="IV"> Initialization Vector for the encryption </param>
+		/// <param name="Iv"> Initialization Vector for the encryption </param>
 		/// <returns> The encrypted string </returns>
-		public string EncryptString(string Source, string Key, string IV )
+		public string EncryptString(string Source, string Key, string Iv )
 		{
 			byte[] bytIn = Encoding.ASCII.GetBytes(Source);
 			// create a MemoryStream so that the process can be done without I/O files
@@ -275,7 +275,7 @@ namespace SobekCM.Tools
 
 			// set the private key
 		    DESCryptoServiceProvider desProvider = new DESCryptoServiceProvider
-		                                               {Key = Encoding.ASCII.GetBytes(Key), IV = Encoding.ASCII.GetBytes(IV)};
+		                                               {Key = Encoding.ASCII.GetBytes(Key), IV = Encoding.ASCII.GetBytes(Iv)};
 
 		    // create an Encryptor from the Provider Service instance
 			ICryptoTransform encrypto = desProvider.CreateEncryptor();
@@ -298,9 +298,9 @@ namespace SobekCM.Tools
 		/// <summary> Decrypt a string, given the string, the key, and the IV values.  </summary>
 		/// <param name="Source"> String to decrypt </param>
 		/// <param name="Key"> Key for the encryption </param>
-		/// <param name="IV"> Initialization Vector for the encryption </param>
+		/// <param name="Iv"> Initialization Vector for the encryption </param>
 		/// <returns> The decrypted string </returns>
-		public string DecryptString(string Source, string Key, string IV )
+		public string DecryptString(string Source, string Key, string Iv )
 		{
 			// convert from Base64 to binary
 			byte[] bytIn = Convert.FromBase64String(Source);
@@ -309,7 +309,7 @@ namespace SobekCM.Tools
 
 			// set the private key
 		    DESCryptoServiceProvider desProvider = new DESCryptoServiceProvider
-		                                               {Key = Encoding.ASCII.GetBytes(Key), IV = Encoding.ASCII.GetBytes(IV)};
+		                                               {Key = Encoding.ASCII.GetBytes(Key), IV = Encoding.ASCII.GetBytes(Iv)};
 
 		    // create a Decryptor from the Provider Service instance
 			ICryptoTransform encrypto = desProvider.CreateDecryptor();

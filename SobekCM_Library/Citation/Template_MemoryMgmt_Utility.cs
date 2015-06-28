@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#region Using directives
+
+using System;
 using System.Web;
 using System.Web.Caching;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Tools;
 
+#endregion
+
 namespace SobekCM.Library.Citation
 {
+    /// <summary> Memory management utility for storing and retrieving metadata templates </summary>
     public static class Template_MemoryMgmt_Utility
     {
-            #region Static methods relating to storing and retrieving templates (for online submission and editing)
+        #region Static methods relating to storing and retrieving templates (for online submission and editing)
 
         /// <summary> Retrieves the template ( for online submission and editing ) from the cache or caching server </summary>
         /// <param name="Template_Code"> Code which specifies the template to retrieve </param>

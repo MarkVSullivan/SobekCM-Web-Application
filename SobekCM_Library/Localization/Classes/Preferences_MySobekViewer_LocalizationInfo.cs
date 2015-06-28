@@ -280,7 +280,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> '"(These are the default rights you give for sharing, repurposing, or remixing your item to other users. You can set this with each new item you submit, but this will be the default that appears.)"' localization string </remarks>
         public string TheseAreTheDefaultRightsYouGiveForSharing { get; private set; }
 
-        /// <remarks> '"You may also select a <a title=""Explanation of different creative commons licenses."" href=""http://creativecommons.org/about/licenses/"">Creative Commons License</a> option below."' localization string </remarks>
+        /// <remarks> '"You may also select a a title Explanation of different creative commons licenses. href=http://creativecommons.org/about/licenses/  Creative Commons License  option below."' localization string </remarks>
         public string YouMayAlsoSelectAATitleExplanationOfDiffe { get; private set; }
 
         /// <remarks> 'Other Preferences' localization string </remarks>

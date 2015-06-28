@@ -14,6 +14,7 @@ using SobekCM.Tools;
 
 namespace SobekCM.Library.AggregationViewer.Viewers
 {
+    /// <summary> Beta version of map browse (from USACH project) </summary>
     public class Map_Browse_AggregationViewer_Beta : abstractAggregationViewer
     {
         /// <summary> Constructor for a new instance of the Metadata_Browse_AggregationViewer class </summary>

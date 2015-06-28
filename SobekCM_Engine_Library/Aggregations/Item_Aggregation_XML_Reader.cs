@@ -248,7 +248,7 @@ namespace SobekCM.Engine_Library.Aggregations
 						case "HI:CUSTOMHOME":
 							NodeReader.Read();
                             // No longer do anything with this tag
-							///HierarchyObject.Custom_Home_Page_Source_File = NodeReader.Value.Trim();
+							// HierarchyObject.Custom_Home_Page_Source_File = NodeReader.Value.Trim();
 							break;
 
                         case "HI:FACETS":
@@ -297,7 +297,8 @@ namespace SobekCM.Engine_Library.Aggregations
                             }
                             if ((NodeReader.HasAttributes) && (NodeReader.MoveToAttribute("isCustom")))
                             {
-                                if (NodeReader.GetAttribute("isCustom").ToLower() == "true")
+                                string attribute = NodeReader.GetAttribute("isCustom");
+                                if (attribute != null && attribute.ToLower() == "true")
                                     isCustom = true;
                             }
 

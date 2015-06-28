@@ -1,10 +1,15 @@
-using System;
+
+#region Using directives
+
 using System.IO;
 using SobekCM.Core.Configuration;
 using SobekCM.Library.Localization.Classes;
 
+#endregion
+
 namespace SobekCM.Library.Localization
 {
+    /// <summary> Main class to handle localization of strings into a requested user language </summary>
     public class SobekCM_LocalizationInfo
     {
 		/// <summary> Language of this localization information </summary>
@@ -2682,7 +2687,7 @@ namespace SobekCM.Library.Localization
 
 				return true;
 			}
-			catch (Exception ee)
+			catch 
 			{
 				return false;
 			}

@@ -8,21 +8,24 @@ using System.Xml;
 
 namespace SobekCM.Core.Configuration
 {
+    /// <summary> Instance-wide configuration information for the map editor </summary>
     public static class MapEditor_Configuration
     {
         //assign config file
         private static string configFilePath = AppDomain.CurrentDomain.BaseDirectory + "/config/default/sobekcm_mapeditor.config";
-        
-        //gets all settings from config file
-        public static List<string>[] getSettings(List<string> IdsFromPage)
+
+        /// <summary> Gets all settings from config file </summary>
+        /// <param name="IdsFromPage"> The IDs from the page </param>
+        /// <returns> List of settings to use for that ID(?) </returns>
+        public static List<string>[] GetSettings(List<string> IdsFromPage)
         {
             //get defaults as base
-            List<string>[] settings = getDefaultSettings();
+            List<string>[] settings = GetDefaultSettings();
 
             //determine if custom has settings
-            if (hasCustomSettings(IdsFromPage))
+            if (HasCustomSettings(IdsFromPage))
             {
-                List<string>[] newSettings =  getCustomSettings(IdsFromPage);
+                List<string>[] newSettings =  GetCustomSettings(IdsFromPage);
                 foreach (string settingName in newSettings[0])
                 {
                     settings[0].Add(settingName);
@@ -34,29 +37,32 @@ namespace SobekCM.Core.Configuration
             }
             
             return settings;
-        } 
+        }
 
-        //determines if there are custom settings
-        private static bool hasCustomSettings(List<string> IdsFromPage)
+        /// <summary> Determines if there are custom settings </summary>
+        /// <param name="IdsFromPage">The ids from page.</param>
+        /// <returns></returns>
+        private static bool HasCustomSettings(List<string> IdsFromPage)
         {
             bool hasCustomSettings = false;
-            foreach (string IdFromPage in IdsFromPage)
+            foreach (string idFromPage in IdsFromPage)
             {
-                foreach (string IdFromConfig in getIdsFromConfig())
+                foreach (string idFromConfig in GetIdsFromConfig())
                 {
-                    if (IdFromPage.Replace(" ", "") == IdFromConfig.Replace(" ", ""))
+                    if (idFromPage.Replace(" ", "") == idFromConfig.Replace(" ", ""))
                         hasCustomSettings = true;
                 }
             }
             
             return hasCustomSettings;
         }
-        
-        //get all the collection ids from the config file
-        private static List<string> getIdsFromConfig()
+
+        /// <summary> Get all the collection ids from the config file  </summary>
+        /// <returns> List of ids from the config file </returns>
+        private static List<string> GetIdsFromConfig()
         {
             //init IdsFromConfig
-            List<string> IdsFromConfig = new List<string>();
+            List<string> idsFromConfig = new List<string>();
 
             //read the Ids from config file
             using (XmlReader reader = XmlReader.Create(configFilePath))
@@ -68,20 +74,22 @@ namespace SobekCM.Core.Configuration
                         if (reader.Name == "collection")
                         {
                             //get all of the  ids
-                            string[] tempIds = reader.GetAttribute("id").Split(',');
-                            foreach (string tempId in tempIds)
+                            string attribute = reader.GetAttribute("id");
+                            if (attribute != null)
                             {
-                                IdsFromConfig.Add(tempId);
+                                string[] tempIds = attribute.Split(',');
+                                idsFromConfig.AddRange(tempIds);
                             }
                         }
                     }
                 }
             }
-            return IdsFromConfig;
-        } 
+            return idsFromConfig;
+        }
 
-        //gets the default settings
-        private static List<string>[] getDefaultSettings()
+        /// <summary> Gets the default settings </summary>
+        /// <returns></returns>
+        private static List<string>[] GetDefaultSettings()
         {
             //init LoadParams
             List<string>[] settings = new List<string>[2];
@@ -122,8 +130,10 @@ namespace SobekCM.Core.Configuration
             return settings;
         }
 
-        //gets all the custom settigns as defined from page itself
-        private static List<string>[] getCustomSettings(List<string> IdsFromPage)
+        /// <summary> Gets all the custom settigns as defined from page itself </summary>
+        /// <param name="IdsFromPage"> The ids from page.</param>
+        /// <returns></returns>
+        private static List<string>[] GetCustomSettings(List<string> IdsFromPage)
         {
             //init LoadParams
             List<string>[] settings = new List<string>[2];
@@ -142,9 +152,10 @@ namespace SobekCM.Core.Configuration
                         switch (reader.Name)
                         {
                             case "collection":
-                                foreach (string Id in IdsFromPage)
+                                foreach (string id in IdsFromPage) 
                                 {
-                                    if ((reader["id"].Contains(Id)))
+                                    string s = reader["id"];
+                                    if (s != null && (s.Contains(id)))
                                     {
                                         while (reader.Read())
                                         {

@@ -13,7 +13,7 @@ namespace SobekCM.Tools.Settings
 	/// store and retrive the settings for an application's user.
 	/// </summary>
 	/// <remarks> Object created by Mark V Sullivan (2004) for University of Florida's Digital Library Center. </remarks>
-	public abstract class IS_UserSettings
+	public abstract class IsolatedStorage_Settings
 	{
 	    /// <summary> DataRow which holds the specific values </summary>
 		private static DataRow userSettings;
@@ -22,7 +22,7 @@ namespace SobekCM.Tools.Settings
 		private static string fileName;
 
 		/// <summary> Static constructor for the IS_UserSettings base class </summary>
-		static IS_UserSettings()
+		static IsolatedStorage_Settings()
 		{
 			// Create a new, empty dataset
 			Create_DataSet();
@@ -98,13 +98,13 @@ namespace SobekCM.Tools.Settings
 		}
 
 		/// <summary> Reads the user settings from a XML file in Isolated Storage </summary>
-		/// <param name="IS_FileName"> Name of the file </param>
+        /// <param name="IsolatedStorage_FileName"> Name of the file </param>
 		/// <returns> TRUE if the XML file already existed, otherwise FALSE </returns>
 		/// <remarks> If the XML file does not exist, an empty DataSet is created </remarks>
-		protected static bool Read_XML_File( string IS_FileName )
+		protected static bool Read_XML_File( string IsolatedStorage_FileName )
 		{
 			// Save the file name
-			FileName = IS_FileName;
+            FileName = IsolatedStorage_FileName;
 
 			// Call the 'base' method
 			return Read_XML_File();
@@ -148,12 +148,12 @@ namespace SobekCM.Tools.Settings
 
 
 		/// <summary> Writes the user settings to a XML file in Isolated Storage </summary>
-        /// <param name="IS_FileName"> Name of the file </param>
+        /// <param name="IsolatedStorage_FileName"> Name of the file </param>
 		/// <returns> TRUE if the XML file is successfully written, otherwise FALSE </returns>
-		protected static bool Write_XML_File( string IS_FileName )
+        protected static bool Write_XML_File(string IsolatedStorage_FileName)
 		{
 			// Save the file name
-            FileName = IS_FileName;
+            FileName = IsolatedStorage_FileName;
 
 			// Call the 'base' method
 			return Write_XML_File();
@@ -161,10 +161,10 @@ namespace SobekCM.Tools.Settings
 
 	    /// <summary> Set a value in the current user setting. </summary>
 		/// <param name="SettingName"> Name of the setting </param>
-		/// <param name="newValue"> New value for the setting </param>
+		/// <param name="NewValue"> New value for the setting </param>
 		/// <remarks> If the setting name already exists, the value will be changed
 		/// to match the new value. </remarks>
-		protected static void Add_Setting( string SettingName, int newValue )
+		protected static void Add_Setting( string SettingName, int NewValue )
 		{
 			// Check to see if the setting already exists
 			if ( !Setting_DataSet.Tables[0].Columns.Contains( SettingName ) )
@@ -174,15 +174,15 @@ namespace SobekCM.Tools.Settings
 			}
 
 			// Add this value to the only row in the table
-			userSettings[ SettingName ] = newValue;
+			userSettings[ SettingName ] = NewValue;
 		}
 
 		/// <summary> Set a value in the current user setting. </summary>
 		/// <param name="SettingName"> Name of the setting </param>
-		/// <param name="newValue"> New value for the setting </param>
+		/// <param name="NewValue"> New value for the setting </param>
 		/// <remarks> If the setting name already exists, the value will be changed
 		/// to match the new value. </remarks>
-		protected static void Add_Setting( string SettingName, string newValue )
+		protected static void Add_Setting( string SettingName, string NewValue )
 		{
 			// Check to see if the setting already exists
 			if ( !Contains( SettingName ) )
@@ -192,7 +192,7 @@ namespace SobekCM.Tools.Settings
 			}
 
 			// Add this value to the only row in the table
-			userSettings[ SettingName ] = newValue;
+			userSettings[ SettingName ] = NewValue;
 		}
 
 		/// <summary> Gets a pre-existing integer setting for this user  </summary>

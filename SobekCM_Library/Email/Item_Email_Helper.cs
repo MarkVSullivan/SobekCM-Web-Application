@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Text;
 using SobekCM.Core;
 using SobekCM.Engine_Library.Email;
-using SobekCM.Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
@@ -19,26 +18,27 @@ namespace SobekCM.Library.Email
     {
         /// <summary> Creates and sends the email when a user 'shares' a single digital resource </summary>
         /// <param name="Recepient_List"> Recepient list for this email </param>
-        /// <param name="CC_List"> CC list for this email </param>
+        /// <param name="CcList"> CC list for this email </param>
         /// <param name="Comments"> Sender's comments to be included in the email </param>
         /// <param name="User_Name"> Name of the user that sent this email </param>
         /// <param name="SobekCM_Instance_Name"> Name of the current SobekCM instance (i.e., UDC, dLOC, etc..)</param>
         /// <param name="Item"> Digital resource to email </param>
         /// <param name="HTML_Format"> Tells if this should be sent as HMTL, otherwise it will be plain text </param>
         /// <param name="URL"> Direct URL for this item </param>
+        /// <param name="UserID"> Primary key for the user that is sendig the email </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool Send_Email( string Recepient_List, string CC_List, string Comments, string User_Name, string SobekCM_Instance_Name, SobekCM_Item Item, bool HTML_Format, string URL, int UserID )
+        public static bool Send_Email( string Recepient_List, string CcList, string Comments, string User_Name, string SobekCM_Instance_Name, SobekCM_Item Item, bool HTML_Format, string URL, int UserID )
         {
             if (HTML_Format)
             {
-                return HTML_Send_Email(Recepient_List, CC_List, Comments, User_Name, SobekCM_Instance_Name, Item, URL, UserID) || Text_Send_Email(Recepient_List, CC_List, Comments, User_Name, SobekCM_Instance_Name, Item, URL, UserID);
+                return HTML_Send_Email(Recepient_List, CcList, Comments, User_Name, SobekCM_Instance_Name, Item, URL, UserID) || Text_Send_Email(Recepient_List, CcList, Comments, User_Name, SobekCM_Instance_Name, Item, URL, UserID);
             }
             
-            return Text_Send_Email(Recepient_List, CC_List, Comments, User_Name, SobekCM_Instance_Name, Item, URL, UserID);
+            return Text_Send_Email(Recepient_List, CcList, Comments, User_Name, SobekCM_Instance_Name, Item, URL, UserID);
         }
 
 
-        private static bool HTML_Send_Email(string Recepient_List, string CC_List, string Comments, string User_Name, string SobekCM_Instance_Name, SobekCM_Item Item, string URL, int UserID )
+        private static bool HTML_Send_Email(string Recepient_List, string CcList, string Comments, string User_Name, string SobekCM_Instance_Name, SobekCM_Item Item, string URL, int UserID )
         {
             try
             {
@@ -320,8 +320,8 @@ namespace SobekCM.Library.Email
                     if (! String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay))
                         newEmail.FromAddress = UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay + " <" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">";
 
-                    if (CC_List.Length > 0)
-                        newEmail.RecipientsList = thisReceipient.Trim() + "," + CC_List;
+                    if (CcList.Length > 0)
+                        newEmail.RecipientsList = thisReceipient.Trim() + "," + CcList;
 
                     string error;
                     if (!Email_Helper.SendEmail(newEmail, out error))
@@ -335,7 +335,7 @@ namespace SobekCM.Library.Email
             }
         }
 
-        private static bool Text_Send_Email(string Recepient_List, string CC_List, string Comments, string User_Name, string SobekCM_Instance_Name, SobekCM_Item Item, string URL, int UserID )
+        private static bool Text_Send_Email(string Recepient_List, string CcList, string Comments, string User_Name, string SobekCM_Instance_Name, SobekCM_Item Item, string URL, int UserID )
         {
             try
             {
@@ -607,8 +607,8 @@ namespace SobekCM.Library.Email
                         newEmail.FromAddress = UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay + " <" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">";
 
 
-                    if (CC_List.Length > 0)
-                        newEmail.RecipientsList = thisReceipient.Trim() + "," + CC_List;
+                    if (CcList.Length > 0)
+                        newEmail.RecipientsList = thisReceipient.Trim() + "," + CcList;
 
                     string error;
                     if (!Email_Helper.SendEmail(newEmail, out error))

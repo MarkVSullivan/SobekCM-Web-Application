@@ -10,6 +10,7 @@ using SobekCM.Tools;
 
 namespace SobekCM.Library.AdminViewer
 {
+    /// <summary> Abstract base class extended by all admin viewer objects </summary>
     public abstract class abstract_AdminViewer : iMySobek_Admin_Viewer
     {
 

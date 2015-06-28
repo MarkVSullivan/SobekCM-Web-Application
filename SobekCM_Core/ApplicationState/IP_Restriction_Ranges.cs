@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
-using SobekCM.Core.Serialization;
 
 #endregion
 
@@ -35,12 +34,8 @@ namespace SobekCM.Core.ApplicationState
         /// <returns> Requested IP restriction range </returns>
         public IP_Restriction_Range this[int RangeID]
         {
-            get
-            {
-                if (rangeDictionary.ContainsKey(RangeID))
-                    return rangeDictionary[RangeID];
-                else
-                    return null;
+            get {
+                return rangeDictionary.ContainsKey(RangeID) ? rangeDictionary[RangeID] : null;
             }
         }
 
@@ -115,6 +110,7 @@ namespace SobekCM.Core.ApplicationState
             }
         }
 
+        /// <summary> Method is called by the serializer after this item is unserialized </summary>
         public void PostUnSerialization()
         {
             if (rangeDictionary == null)

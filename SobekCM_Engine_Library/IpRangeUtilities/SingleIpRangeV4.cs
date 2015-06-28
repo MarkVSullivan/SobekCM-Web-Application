@@ -1,4 +1,8 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
+
+#endregion
 
 namespace SobekCM.Engine_Library.IpRangeUtilities
 {

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,12 +11,18 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.WebContent;
 using SobekCM.Tools;
 
+#endregion
+
 namespace SobekCM.Core.MemoryMgmt
 {
+    /// <summary> Aggregation-related services for the Cached Data Manager, which allows aggregation
+    /// objects, and closely related objects, to be cached locally for reuse </summary>
     public class CachedDataManager_AggregationServices
     {
         private readonly CachedDataManager_Settings settings;
 
+        /// <summary> Constructor for a new instance of the <see cref="CachedDataManager_AggregationServices"/> class. </summary>
+        /// <param name="Settings"> Cached data manager settings object </param>
         public CachedDataManager_AggregationServices(CachedDataManager_Settings Settings)
         {
             settings = Settings;
@@ -22,12 +30,10 @@ namespace SobekCM.Core.MemoryMgmt
 
         #region Methods relating to storing and retrieving COMPLETE ITEM AGGREGATION objects
 
-        /// <summary> Retrieves the item aggregation obejct from the cache or caching server </summary>
+        /// <summary> Retrieves the complete item aggregation obejct from the cache  </summary>
         /// <param name="Aggregation_Code"> Code for the item aggregation to retrieve </param>
-        /// <param name="Language_Code"> Current language code (item aggregation instances are currently language-specific)</param>
-        /// <param name="Possibly_Cache_Locally"> Flag indicates whether to potentially copy to the local cache if it was present on the distant cache </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> Either NULL or the item aggregation object </returns>
+        /// <returns> Either NULL or the complete item aggregation object </returns>
         public Complete_Item_Aggregation Retrieve_Complete_Item_Aggregation(string Aggregation_Code, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
@@ -54,50 +60,17 @@ namespace SobekCM.Core.MemoryMgmt
                 return returnValue;
             }
 
-            // Try to get this from the caching server, if enabled
-            if ((settings.CachingServerEnabled) && (AppFabric_Manager.Contains(key)))
-            {
-                object from_app_fabric = AppFabric_Manager.Get(key, Tracer);
-                if (from_app_fabric != null)
-                {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Found item aggregation on caching server");
-                    }
-
-                    //// Check the number of item aggregationPermissions currently locally cached
-                    //if ((Possibly_Cache_Locally) && (settings.LOCALLY_CACHED_AGGREGATION_LIMIT > 0))
-                    //{
-                    //    int items_cached = HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => ThisItem.Key.ToString().IndexOf("AGGR_") == 0);
-
-                    //    // Locally cache if this doesn't exceed the limit
-                    //    if (items_cached < settings.LOCALLY_CACHED_AGGREGATION_LIMIT)
-                    //    {
-                    //        if (Tracer != null)
-                    //        {
-                    //            Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
-                    //        }
-
-                    //        HttpContext.Current.Cache.Insert(key, from_app_fabric, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
-                    //    }
-                    //}
-
-                    return (Complete_Item_Aggregation)from_app_fabric;
-                }
-            }
-
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Aggregation not found in either the local cache or caching server");
+                Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Aggregation not found in either the local cache ");
             }
 
             // Since everything failed, just return null
             return null;
         }
 
-        /// <summary> Stores the item aggregation object to the cache or caching server </summary>
+        /// <summary> Stores the copmlete item aggregation object to the cache </summary>
         /// <param name="Aggregation_Code"> Code for the item aggregation to store </param>
-        /// <param name="Language_Code"> Current language code (item aggregation instances are currently language-specific)</param>
         /// <param name="StoreObject"> Item aggregation object to store for later retrieval </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Store_Complete_Item_Aggregation(string Aggregation_Code, Complete_Item_Aggregation StoreObject, Custom_Tracer Tracer)
@@ -119,34 +92,15 @@ namespace SobekCM.Core.MemoryMgmt
 
             // Check the number of item aggregationPermissions currently locally cached
             //int items_cached = 0;
-            int local_expiration = 15;
-            //if (Aggregation_Code != "all")
-            //{
-            //    local_expiration = 1;
-            //    if ((LOCALLY_CACHED_AGGREGATION_LIMIT > 0) && ( caching_serving_enabled ))
-            //    {
-            //        items_cached += HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => ThisItem.Key.ToString().IndexOf("AGGR_") == 0);
-            //    }
-            //}
+            const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Adding object '" + key + "' to the local cache with expiration of " + local_expiration + " minute(s)");
+                Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Adding object '" + key + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(local_expiration));
-
-            // try to store in the caching server, if enabled
-            if ((settings.CachingServerEnabled) && (Aggregation_Code != "all"))
-            {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Adding object '" + key + "' to the caching server");
-                }
-
-                AppFabric_Manager.Add(key, StoreObject, Tracer);
-            }
+            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
         }
 
 
@@ -154,7 +108,7 @@ namespace SobekCM.Core.MemoryMgmt
 
         #region Methods relating to storing and retrieving LANGUAGE-SPECIFIC ITEM AGGREGATION objects
 
-        /// <summary> Retrieves the item aggregation obejct from the cache or caching server </summary>
+        /// <summary> Retrieves the item aggregation obejct from the cache  </summary>
         /// <param name="AggregationCode"> Code for the item aggregation to retrieve </param>
         /// <param name="Language"> Current language code (item aggregation instances are currently language-specific)</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -185,31 +139,16 @@ namespace SobekCM.Core.MemoryMgmt
                 return returnValue;
             }
 
-            // Try to get this from the caching server, if enabled
-            if ((settings.CachingServerEnabled) && (AppFabric_Manager.Contains(key)))
-            {
-                object from_app_fabric = AppFabric_Manager.Get(key, Tracer);
-                if (from_app_fabric != null)
-                {
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Found item aggregation on caching server");
-                    }
-
-                    return (Item_Aggregation)from_app_fabric;
-                }
-            }
-
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Aggregation not found in either the local cache or caching server");
+                Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Aggregation not found in either the local cache ");
             }
 
             // Since everything failed, just return null
             return null;
         }
 
-        /// <summary> Stores the item aggregation object to the cache or caching server </summary>
+        /// <summary> Stores the item aggregation object to the cache  </summary>
         /// <param name="AggregationCode"> Code for the item aggregation to store </param>
         /// <param name="Language"> Current language code (item aggregation instances are currently language-specific)</param>
         /// <param name="StoreObject"> Item aggregation object to store for later retrieval </param>
@@ -235,33 +174,22 @@ namespace SobekCM.Core.MemoryMgmt
             // Determine the key
             string key = "AGGR|" + AggregationCode.ToUpper() + "|" + Web_Language_Enum_Converter.Enum_To_Code(Language);
 
-            int local_expiration = 15;
+            const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Adding object '" + key + "' to the local cache with expiration of " + local_expiration + " minute(s)");
+                Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Adding object '" + key + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(local_expiration));
-
-            // try to store in the caching server, if enabled
-            if ((settings.CachingServerEnabled) && (AggregationCode != "all"))
-            {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("CachedDataManager.Store_Item_Aggregation", "Adding object '" + key + "' to the caching server");
-                }
-
-                AppFabric_Manager.Add(key, StoreObject, Tracer);
-            }
+            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
         }
 
         #endregion
 
         #region Method related to the entire collection hierarchy
 
-        /// <summary> Retrieves the item aggregation hierarchy from the cache or caching server </summary>
+        /// <summary> Retrieves the item aggregation hierarchy from the cache  </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> Either NULL or the item aggregation hierarchy </returns>
         public Aggregation_Hierarchy Retrieve_Aggregation_Hierarchy(Custom_Tracer Tracer)
@@ -276,10 +204,10 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            string key = "AGGR_HIERARCHY";
+            const string KEY = "AGGR_HIERARCHY";
 
             // See if this is in the local cache first
-            Aggregation_Hierarchy returnValue = HttpContext.Current.Cache.Get(key) as Aggregation_Hierarchy;
+            Aggregation_Hierarchy returnValue = HttpContext.Current.Cache.Get(KEY) as Aggregation_Hierarchy;
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -292,14 +220,14 @@ namespace SobekCM.Core.MemoryMgmt
 
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager.Retrieve_Aggregation_Hierarchy", "Aggregation hierarchy not found in either the local cache or caching server");
+                Tracer.Add_Trace("CachedDataManager.Retrieve_Aggregation_Hierarchy", "Aggregation hierarchy not found in either the local cache ");
             }
 
             // Since everything failed, just return null
             return null;
         }
 
-        /// <summary> Stores the item aggregation hierarchy to the cache or caching server </summary>
+        /// <summary> Stores the item aggregation hierarchy to the cache  </summary>
         /// <param name="StoreObject"> Item aggregation object to store for later retrieval </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Store_Aggregation_Hierarchy(Aggregation_Hierarchy StoreObject, Custom_Tracer Tracer)
@@ -317,29 +245,20 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            string key = "AGGR_HIERARCHY";
+            const string KEY = "AGGR_HIERARCHY";
 
-            // Check the number of item aggregationPermissions currently locally cached
-            //int items_cached = 0;
-            int local_expiration = 15;
-            //if (Aggregation_Code != "all")
-            //{
-            //    local_expiration = 1;
-            //    if ((LOCALLY_CACHED_AGGREGATION_LIMIT > 0) && ( caching_serving_enabled ))
-            //    {
-            //        items_cached += HttpContext.Current.Cache.Cast<DictionaryEntry>().Count(ThisItem => ThisItem.Key.ToString().IndexOf("AGGR_") == 0);
-            //    }
-            //}
+            const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager.Store_Aggregation_Hierarchy", "Adding object '" + key + "' to the local cache with expiration of " + local_expiration + " minute(s)");
+                Tracer.Add_Trace("CachedDataManager.Store_Aggregation_Hierarchy", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(local_expiration));
+            HttpContext.Current.Cache.Insert(KEY, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
         }
 
+        /// <summary> Clear the aggregation hierarchy object from the cache </summary>
         public void Clear_Aggregation_Hierarchy()
         {
             // If the cache is disabled, just return before even tracing
@@ -349,8 +268,8 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            string key = "AGGR_HIERARCHY";
-            HttpContext.Current.Cache.Remove(key);
+            const string KEY = "AGGR_HIERARCHY";
+            HttpContext.Current.Cache.Remove(KEY);
         }
 
         #endregion
@@ -372,7 +291,7 @@ namespace SobekCM.Core.MemoryMgmt
         }
 
 
-        /// <summary> Removes all references to a particular item aggregation from the cache or caching server </summary>
+        /// <summary> Removes all references to a particular item aggregation from the cache </summary>
         /// <param name="Aggregation_Code"> Code for the item aggregation to remove </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Remove_Item_Aggregation(string Aggregation_Code, Custom_Tracer Tracer)
@@ -398,20 +317,15 @@ namespace SobekCM.Core.MemoryMgmt
             {
                 HttpContext.Current.Cache.Remove(key);
             }
-
-            // Do the same thing for the remote cache
-            keys.Clear();
-            keys.AddRange(from cachedObject in AppFabric_Manager.Cached_Items where (cachedObject.Object_Key == key_nolanguage) || (cachedObject.Object_Key.IndexOf(key_start) == 0) select cachedObject.Object_Key);
-
-            // Delete all items from the Cache
-            foreach (string key in keys)
-            {
-                AppFabric_Manager.Expire_Item(key);
-            }
         }
 
 
-
+        /// <summary> Retrieve the aggregation-level static HTML browse object, including the text itself, from the cache </summary>
+        /// <param name="Aggregation_Code"> Aggregation code </param>
+        /// <param name="Language"> Requested language version </param>
+        /// <param name="ChildPageCode"> Code for the child page in question </param>
+        /// <param name="Tracer">The tracer.</param>
+        /// <returns> Fully built object with the information about the aggregation-level HTML browse object </returns>
         public HTML_Based_Content Retrieve_Aggregation_HTML_Based_Content(string Aggregation_Code, Web_Language_Enum Language, string ChildPageCode, Custom_Tracer Tracer)
         {
             // If the cache is disabled, just return before even tracing
@@ -447,7 +361,14 @@ namespace SobekCM.Core.MemoryMgmt
             return null;
         }
 
-
+        /// <summary>
+        /// Store_s the content of the aggregation_ HTM l_ based_.
+        /// </summary>
+        /// <param name="Aggregation_Code">The aggregation_ code.</param>
+        /// <param name="Language">The language.</param>
+        /// <param name="ChildPageCode">The child page code.</param>
+        /// <param name="StoreObject">The store object.</param>
+        /// <param name="Tracer">The tracer.</param>
         public void Store_Aggregation_HTML_Based_Content(string Aggregation_Code, Web_Language_Enum Language, string ChildPageCode, HTML_Based_Content StoreObject, Custom_Tracer Tracer)
         {
             if (Tracer != null)
@@ -466,15 +387,15 @@ namespace SobekCM.Core.MemoryMgmt
             string key = "AGGR|" + Aggregation_Code.ToUpper() + "|" + Web_Language_Enum_Converter.Enum_To_Code(Language) + "|" + ChildPageCode;
 
             // Check the number of item aggregationPermissions currently locally cached
-            int local_expiration = 15;
+            const int LOCAL_EXPIRATION = 15;
 
             // Locally cache if this doesn't exceed the limit
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager_AggregationServices.Store_Aggregation_HTML_Based_Content", "Adding object '" + key + "' to the local cache with expiration of " + local_expiration + " minute(s)");
+                Tracer.Add_Trace("CachedDataManager_AggregationServices.Store_Aggregation_HTML_Based_Content", "Adding object '" + key + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
-            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(local_expiration));
+            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
         }
 
     }

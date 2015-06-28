@@ -109,13 +109,11 @@
     <Compile Include="MemoryMgmt\AdoNetHelper\AdoNetFastSerializerSurrogate.cs" />
     <Compile Include="MemoryMgmt\AdoNetHelper\AdoNetHelper.cs" />
     <Compile Include="MemoryMgmt\AdoNetHelper\FastSerializer.cs" />
-    <Compile Include="MemoryMgmt\AppFabric_Manager.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_AggregationServices.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_Settings.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_WebSkinServices.cs" />
     <Compile Include="MemoryMgmt\Cached_Object_Info.cs" />
-    <Compile Include="MemoryMgmt\Expiring_Item_Typed_List.cs" />
     <Compile Include="Message\ErrorRestMessage.cs" />
     <Compile Include="MicroservicesClient\MicroservicesClient_Configuration.cs" />
     <Compile Include="MicroservicesClient\MicroservicesClient_Config_Reader.cs" />

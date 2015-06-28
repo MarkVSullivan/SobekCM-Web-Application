@@ -170,7 +170,7 @@ namespace SobekCM.Core.Configuration
                 writer.Flush();
                 writer.Close();
             }
-            catch (Exception ee)
+            catch 
             {
                 returnValue = false;
             }

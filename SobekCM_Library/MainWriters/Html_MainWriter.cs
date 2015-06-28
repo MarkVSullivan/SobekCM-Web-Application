@@ -7,19 +7,12 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.Users;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Email;
-using SobekCM.Engine_Library.Navigation;
-using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
-using SobekCM.Library.MySobekViewer;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
-using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Tools;
 
 #endregion
@@ -356,7 +349,7 @@ namespace SobekCM.Library.MainWriters
 		}
 
         /// <summary> Gets the enumeration of the type of main writer </summary>
-        /// <value> This property always returns the enumerational value <see cref="SobekCM.UI_Library.Navigation.Writer_Type_Enum.HTML"/>. </value>
+        /// <value> This property always returns the enumerational value <see cref="Writer_Type_Enum.HTML"/>. </value>
         public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.HTML; } }
 
         /// <summary> Perform all the work of adding to the response stream back to the web user </summary>

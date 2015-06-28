@@ -1,4 +1,4 @@
-﻿#region Using references
+﻿#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -26,6 +26,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> Gets the complete (language agnostic) web skin, by web skin code </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         public void GetCompleteWebSkin(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
@@ -86,13 +87,14 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> Gets the language-specific web skin, by web skin code and language code </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         public void GetWebSkin(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
             if (UrlSegments.Count > 1)
             {
                 Custom_Tracer tracer = new Custom_Tracer();
-                Web_Skin_Object returnValue = null;
+                Web_Skin_Object returnValue;
                 try
                 {
                     // Get the code and language from the URL
@@ -153,6 +155,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> Get the list of ordered web skin codes </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         public void GetOrderedCodes(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
@@ -170,6 +173,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> [PUBLIC] Get the list of uploaded images for a particular web skin </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <remarks> This REST API should be publicly available for users that are performing administrative work </remarks>
         public void GetWebSkinUploadedImages(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)

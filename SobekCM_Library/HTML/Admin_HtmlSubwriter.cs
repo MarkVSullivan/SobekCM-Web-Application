@@ -9,7 +9,6 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MySobekViewer;
@@ -27,8 +26,8 @@ namespace SobekCM.Library.HTML
 	/// <remarks> This class extends the <see cref="abstractHtmlSubwriter"/> abstract class. <br /><br />
 	/// During a valid html request, the following steps occur:
 	/// <ul>
-	/// <li>Application state is built/verified by the <see cref="Application_State.Application_State_Builder"/> </li>
-	/// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation.SobekCM_Navigation_Object"/> </li>
+	/// <li>Application state is built/verified by the Application_State_Builder </li>
+	/// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/>  </li>
 	/// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
 	/// <li>The HTML writer will create this necessary subwriter since this action requires administrative rights. </li>
 	/// <li>This class will create a admin subwriter (extending <see cref="AdminViewer.abstract_AdminViewer"/> ) for the specified task.The admin subwriter creates an instance of this viewer to view and edit existing item aggregationPermissions in this digital library</li>

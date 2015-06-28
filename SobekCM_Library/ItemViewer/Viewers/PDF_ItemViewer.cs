@@ -18,11 +18,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	/// <see cref="iItemViewer" /> interface. </remarks>
 	public class PDF_ItemViewer : abstractItemViewer
 	{
-	    private bool writeAsIframe;
+	    private readonly bool writeAsIframe;
 
-		/// <summary> Constructor for a new instance of the PDF_ItemViewer class </summary>
-		/// <param name="FileName"> Name of the PDF file to display </param>
-        public PDF_ItemViewer(string FileName, Navigation_Object Current_Mode)
+	    /// <summary> Constructor for a new instance of the PDF_ItemViewer class </summary>
+	    /// <param name="FileName"> Name of the PDF file to display </param>
+	    /// <param name="Current_Mode"> Current navigation information for this request </param>
+	    public PDF_ItemViewer(string FileName, Navigation_Object Current_Mode)
 		{
             // Determine if this should be written as an iFrame
 		    writeAsIframe = ((!String.IsNullOrEmpty(Current_Mode.Browser_Type)) && (Current_Mode.Browser_Type.IndexOf("CHROME") == 0));

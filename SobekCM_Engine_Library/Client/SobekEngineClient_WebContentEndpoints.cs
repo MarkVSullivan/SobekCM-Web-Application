@@ -1,12 +1,13 @@
-﻿using System;
+﻿#region Using directives
+
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Endpoints;
 using SobekCM.Tools;
+
+#endregion
 
 namespace SobekCM.Core.Client
 {
@@ -20,7 +21,10 @@ namespace SobekCM.Core.Client
             // All work done in the base constructor
         }
 
-
+        /// <summary> Get the information for a single top-level web content page </summary>
+        /// <param name="InfoBrowseMode"> Path for the requested web content page ( i.e., software/download/.. ) </param>
+        /// <param name="Tracer">The tracer.</param>
+        /// <returns> Object with all the information and source text for the top-level web content page </returns>
         public HTML_Based_Content Get_HTML_Based_Content( string InfoBrowseMode, Custom_Tracer Tracer )
         {
             // Get the array of portions of the URL to pass into the web content services helper method for now

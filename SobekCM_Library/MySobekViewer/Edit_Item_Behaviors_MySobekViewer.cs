@@ -6,7 +6,6 @@ using System.IO;
 using System.Web;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
@@ -26,8 +25,8 @@ namespace SobekCM.Library.MySobekViewer
     /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
     /// During a valid html request, the following steps occur:
     /// <ul>
-    /// <li>Application state is built/verified by the <see cref="Application_State.Application_State_Builder"/> </li>
-    /// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation_Object"/> </li>
+    /// <li>Application state is built/verified by the Application_State_Builder </li>
+    /// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/> </li>
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
     /// <li>The mySobek subwriter creates an instance of this viewer to display the RequestSpecificValues.Current_Item's behaviors for editing</li>

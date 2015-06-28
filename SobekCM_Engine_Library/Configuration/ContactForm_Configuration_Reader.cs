@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region Using directives
+
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Users;
+
+#endregion
 
 namespace SobekCM.Engine_Library.Configuration
 {
@@ -14,6 +14,9 @@ namespace SobekCM.Engine_Library.Configuration
     /// about the contact form from the aggregation file </summary>
     public static class ContactForm_Configuration_Reader
     {
+        /// <summary> Read the contact form system configuration file from within the config subfolder on the web app </summary>
+        /// <param name="ConfigFile"> Complete path and name of the configuration file to read </param>
+        /// <returns> Built configuration object for the contact form </returns>
         public static ContactForm_Configuration Read_Config(string ConfigFile)
         {
             ContactForm_Configuration returnValue = new ContactForm_Configuration();

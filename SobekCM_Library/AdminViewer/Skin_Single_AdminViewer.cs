@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -11,14 +13,16 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Skins;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Engine_Library.Skins;
 using SobekCM.Library.Database;
+using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Library.UploadiFive;
 using SobekCM.Tools;
+
+#endregion
 
 namespace SobekCM.Library.AdminViewer
 {
@@ -28,8 +32,8 @@ namespace SobekCM.Library.AdminViewer
     /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
     /// During a valid html request, the following steps occur:
     /// <ul>
-    /// <li>Application state is built/verified by the <see cref="Application_State.Application_State_Builder"/> </li>
-    /// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation.SobekCM_Navigation_Object"/> </li>
+    /// <li>Application state is built/verified by the Application_State_Builder </li>
+    /// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/>  </li>
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
     /// <li>The mySobek subwriter creates an instance of this viewer to view and edit information related to a single item aggregation</li>
@@ -483,7 +487,6 @@ namespace SobekCM.Library.AdminViewer
             const string GENERAL = "General";
             const string STYLESHEET = "CSS Stylesheet";
             const string HTML = "HTML (Headers/Footers)";
-            const string BANNERS = "Banners";
             const string UPLOADS = "Uploads";
 
             // Draw all the page tabs for this form

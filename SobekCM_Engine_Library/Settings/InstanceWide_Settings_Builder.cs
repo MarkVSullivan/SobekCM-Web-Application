@@ -15,13 +15,15 @@ using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items.BriefItems;
-using SobekCM.Engine_Library.Navigation;
+using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.OAI.Writer;
 
 #endregion
 
 namespace SobekCM.Engine_Library.Settings
 {
+    /// <summary> Build the instance wide settings, from configuration files and from data 
+    /// returned from the database </summary>
     public static  class InstanceWide_Settings_Builder
     {
         #region Constant values 
@@ -73,7 +75,7 @@ namespace SobekCM.Engine_Library.Settings
 
             // Set the connection string to the database
             Engine_Database.Connection_String = returnValue.Database_Connections[0].Connection_String;
-            Resource_Object.Database.SobekCM_Database.Connection_String = returnValue.Database_Connections[0].Connection_String;
+            SobekCM_Database.Connection_String = returnValue.Database_Connections[0].Connection_String;
 
             // Get the settings
             DataSet sobekCMSettings = Engine_Database.Get_Settings_Complete(null);
@@ -211,6 +213,10 @@ namespace SobekCM.Engine_Library.Settings
             return returnValue;
         }
 
+        /// <summary> Refreshes the specified instance-wide settings object from the data pulled from the database </summary>
+        /// <param name="SettingsObject"> Instance-wide settings object to refresh </param>
+        /// <param name="SobekCM_Settings"> Setting information, from the database, to read into the settings object </param>
+        /// <returns> TRUE if successful, FALSE otherwise </returns>
         public static bool Refresh( InstanceWide_Settings SettingsObject, DataSet SobekCM_Settings )
         {
 
@@ -365,9 +371,8 @@ namespace SobekCM.Engine_Library.Settings
 
                 return true;
             }
-            catch ( Exception ee )
+            catch
             {
-                return (ee.Message.Length > 0);
                 return false;
             }
         }

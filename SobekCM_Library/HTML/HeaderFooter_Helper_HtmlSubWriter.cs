@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -7,20 +9,21 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object.Behaviors;
+
+#endregion
 
 namespace SobekCM.Library.HTML
 {
     /// <summary> Class is a helper class used for writing the header and footers for HTML responses </summary>
     public static class HeaderFooter_Helper_HtmlSubWriter
     {
-
         /// <summary> Add the header to the output </summary>
         /// <param name="Output"> Stream to which to write the HTML for this header </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="Container_CssClass"> Class name for the container around the page </param>
+        /// <param name="Web_Page_Title"> Title for this web page, to include behind the banner possibly </param>
         /// <param name="Behaviors"> List of behaviors from the html subwriters </param>
         public static void Add_Header(TextWriter Output, RequestCache RequestSpecificValues, string Container_CssClass, string Web_Page_Title, List<HtmlSubwriter_Behaviors_Enum> Behaviors)
         {
@@ -379,29 +382,29 @@ namespace SobekCM.Library.HTML
 
             bool end_div = !((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Simple_HTML_CMS) && (RequestSpecificValues.Site_Map != null));
 
-            string VERSION = UI_ApplicationCache_Gateway.Settings.Current_Web_Version;
-            if (VERSION.IndexOf(" ") > 0)
-                VERSION = VERSION.Split(" ".ToCharArray())[0];
+            string version = UI_ApplicationCache_Gateway.Settings.Current_Web_Version;
+            if (version.IndexOf(" ") > 0)
+                version = version.Split(" ".ToCharArray())[0];
 
             if (useItemFooter)
             {
-                Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Trim());
+                Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Trim());
             }
             else
             {
                 if (( RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.Value))
                 {
                     if (!end_div)
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Trim());
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Trim());
                     else
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "</div>").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Trim());
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "</div>").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Trim());
                 }
                 else
                 {
                     if (!end_div)
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Trim());
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Trim());
                     else
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", VERSION).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Trim() + Environment.NewLine + "</div>");
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Trim() + Environment.NewLine + "</div>");
                 }
             }
         }

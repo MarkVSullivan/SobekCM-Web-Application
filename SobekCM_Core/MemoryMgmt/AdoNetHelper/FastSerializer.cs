@@ -3,6 +3,12 @@
 #define THROW_IF_NOT_OPTIMIZABLE
 #endif
 
+// THIS IS EXTERNAL CREATED AND MANAGED CODE.. suppress any documentation warnings here
+
+#region Using directives
+
+#pragma warning disable 1591
+
 #region Using directives
 
 using System;
@@ -14,6 +20,8 @@ using System.IO;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+
+#endregion
 
 #endregion
 
@@ -2591,6 +2599,7 @@ namespace SobekCM.Core.MemoryMgmt
 
 		#region Type Usage (Debug mode only)
 #if DEBUG
+
 		public int[] typeUsage = new int[256];
 #endif
         /// <summary> Dump the type usage information while debugging </summary>
@@ -4490,11 +4499,11 @@ namespace SobekCM.Core.MemoryMgmt
 		#region Debug
 
         /// <summary> Dump string table during debugging </summary>
-        /// <param name="list"></param>
+        /// <param name="List"></param>
 		[Conditional("DEBUG")]
-		public void DumpStringTables(ArrayList list)
+		public void DumpStringTables(ArrayList List)
 		{
-			list.AddRange(stringTokenList);
+			List.AddRange(stringTokenList);
 		}
 		#endregion Debug
 	}
@@ -4698,3 +4707,5 @@ namespace SobekCM.Core.MemoryMgmt
 		Reserved1
 	}
 }
+
+#pragma warning restore 1591

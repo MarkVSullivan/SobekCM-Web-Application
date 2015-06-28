@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Runtime.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Configuration;
+
+#endregion
 
 namespace SobekCM.Core.Aggregations
 {

@@ -159,7 +159,7 @@ namespace SobekCM.Library.ResultsViewer
                 bool restricted_by_ip = false;
                 if ((titleResult.Item_Count == 1) && (firstItemResult.IP_Restriction_Mask > 0))
                 {
-                    int comparison = firstItemResult.IP_Restriction_Mask & current_user_mask;
+                    int comparison = firstItemResult.IP_Restriction_Mask & CurrentUserMask;
                     if (comparison == 0)
                     {
                         restricted_by_ip = true;

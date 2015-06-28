@@ -2,11 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -23,7 +19,6 @@ using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -43,8 +38,8 @@ namespace SobekCM.Library.AdminViewer
 	/// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
 	/// During a valid html request, the following steps occur:
 	/// <ul>
-	/// <li>Application state is built/verified by the <see cref="Application_State.Application_State_Builder"/> </li>
-	/// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation.SobekCM_Navigation_Object"/> </li>
+	/// <li>Application state is built/verified by the Application_State_Builder </li>
+	/// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/>  </li>
 	/// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
 	/// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
 	/// <li>The mySobek subwriter creates an instance of this viewer to view and edit information related to a single item aggregation</li>
@@ -56,14 +51,6 @@ namespace SobekCM.Library.AdminViewer
         private readonly Complete_Item_Aggregation itemAggregation;
 
 		private readonly int page;
-
-		private string enteredCode;
-		private string enteredDescription;
-		private bool enteredIsActive;
-		private bool enteredIsHidden;
-		private string enteredName;
-		private string enteredShortname;
-		private string enteredType;
 
 		private string childPageCode;
 		private string childPageLabel;
@@ -81,10 +68,6 @@ namespace SobekCM.Library.AdminViewer
 			// Set some defaults
 			actionMessage = String.Empty;
 		    string code = RequestSpecificValues.Hierarchy_Object.Code;
-
-            // Some defaults
-            enteredIsActive = true;
-            enteredIsHidden = false;
 
 			// If the RequestSpecificValues.Current_User cannot edit this, go back
             if (!RequestSpecificValues.Current_User.Is_Aggregation_Curator(code))
@@ -206,7 +189,7 @@ namespace SobekCM.Library.AdminViewer
 							break;
 
 						case 6:
-							Save_Page_6_Postback(form);
+							Save_Page_6_Postback();
 							break;
 
 						case 7:
@@ -1013,14 +996,7 @@ namespace SobekCM.Library.AdminViewer
                             Web_Language_Enum asEnum = Web_Language_Enum_Converter.Code_To_Enum(code);
                             if (itemAggregation.Home_Page_File_Dictionary.ContainsKey(asEnum))
                             {
-                                if (action.IndexOf("uncustomize_") == 0)
-                                {
-                                    itemAggregation.Home_Page_File_Dictionary[asEnum].isCustomHome = false;
-                                }
-                                else
-                                {
-                                    itemAggregation.Home_Page_File_Dictionary[asEnum].isCustomHome = true;
-                                }
+                                itemAggregation.Home_Page_File_Dictionary[asEnum].isCustomHome = (action.IndexOf("uncustomize_") != 0);
                             }
                         }
 
@@ -1072,10 +1048,7 @@ namespace SobekCM.Library.AdminViewer
             if ((itemAggregation.Web_Skins != null) && (itemAggregation.Web_Skins.Count > 4))
                 skin_inputs = itemAggregation.Web_Skins.Count + 1;
 
-	        if (skin_inputs > 5)
-	            Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
-            else
-    	        Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\" >");
+	        Output.WriteLine(skin_inputs > 5 ? "  <tr class=\"sbkSaav_TallRow\">" : "  <tr class=\"sbkSaav_SingleRow\" >");
 	        Output.WriteLine("    <td style=\"width:50px;\">&nbsp;</td>");
 	        Output.WriteLine("    <td class=\"sbkSaav_TableLabel\" style=\"width:140px\">Web Skin(s):</label></td>");
 	        Output.WriteLine("    <td>");
@@ -1303,10 +1276,7 @@ namespace SobekCM.Library.AdminViewer
 	        List<string> unused_banners = new List<string>();
 	        if (banner_files != null)
 	        {
-	            foreach (string thisBanner in banner_files)
-	            {
-	                unused_banners.Add(Path.GetFileName(thisBanner));
-	            }
+	            unused_banners.AddRange(banner_files.Select(Path.GetFileName));
 	        }
 
 
@@ -2351,7 +2321,7 @@ namespace SobekCM.Library.AdminViewer
 
 		#region Methods to render (and parse) page 6 - Highlights
 
-		private void Save_Page_6_Postback(NameValueCollection Form)
+		private void Save_Page_6_Postback()
 		{
             // This does not currently save
 		}
@@ -2578,12 +2548,14 @@ namespace SobekCM.Library.AdminViewer
 						string html_source_file = html_source_dir + "\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.Default_UI_Language) + ".html";
 						if (!File.Exists(html_source_file))
 						{
-							HTML_Based_Content htmlContent = new HTML_Based_Content();
-							htmlContent.Content = "<br /><br />This is a new browse page.<br /><br />" + childPageLabel + "<br /><br />The code for this browse is: " + childPageCode;
-							htmlContent.Author = RequestSpecificValues.Current_User.Full_Name;
-							htmlContent.Date = DateTime.Now.ToLongDateString();
-							htmlContent.Title = childPageLabel;
-							htmlContent.Save_To_File(html_source_file);
+							HTML_Based_Content htmlContent = new HTML_Based_Content
+							{
+							    Content = "<br /><br />This is a new browse page.<br /><br />" + childPageLabel + "<br /><br />The code for this browse is: " + childPageCode, 
+                                Author = RequestSpecificValues.Current_User.Full_Name, 
+                                Date = DateTime.Now.ToLongDateString(), 
+                                Title = childPageLabel
+							};
+						    htmlContent.Save_To_File(html_source_file);
 						}
 						newPage.Add_Static_HTML_Source("html\\browse\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.Default_UI_Language) + ".html", UI_ApplicationCache_Gateway.Settings.Default_UI_Language);
 
@@ -2827,11 +2799,7 @@ namespace SobekCM.Library.AdminViewer
 				return;
 			}
 
-			string new_aggregation_code = String.Empty;
-			if (Form["admin_aggr_code"] != null)
-				new_aggregation_code = Form["admin_aggr_code"].ToUpper().Trim();
-
-			
+		
 			// Was this to delete the aggregation?
 			if ((action.IndexOf("delete_") == 0) && ( action.Length > 7))
 			{
@@ -2862,8 +2830,6 @@ namespace SobekCM.Library.AdminViewer
 				{
                     Engine_Database.Populate_Code_Manager(UI_ApplicationCache_Gateway.Aggregations, null);
 				}
-
-				return;
 			}
 		}
 
@@ -3083,7 +3049,7 @@ namespace SobekCM.Library.AdminViewer
                         Output.Write("<img class=\"sbkSaav_UploadThumbnail\" src=\"" + thisImageFile_URL + "\" alt=\"Missing Thumbnail\" title=\"" + thisImageFile + "\" /></a>");
 
                         
-                        if (display_name.Length > 25)
+                        if (( !String.IsNullOrEmpty(display_name)) && (display_name.Length > 25))
                         {
                             Output.Write("<br /><span class=\"sbkSaav_UploadTitle\"><abbr title=\"" + display_name + "\">" + thisImageFile.Substring(0, 20) + "..." + Path.GetExtension(thisImage) + "</abbr></span>");
                         }
@@ -3147,6 +3113,9 @@ namespace SobekCM.Library.AdminViewer
 
                         // Determine which image to use for this document
                         string extension = Path.GetExtension(thisDocument);
+                        if (String.IsNullOrEmpty(extension))
+                            continue;
+
                         string thisDocFileImage = Static_Resources.File_TXT_Img;
                         switch (extension.ToUpper().Replace(".", ""))
                         {
@@ -3208,7 +3177,7 @@ namespace SobekCM.Library.AdminViewer
 
                         string display_name = thisDocFile;
                         
-                        if (display_name.Length > 25)
+                        if (( !String.IsNullOrEmpty(display_name)) && ( display_name.Length > 25))
                         {
                             Output.Write("<br /><span class=\"sbkSaav_UploadTitle\"><abbr title=\"" + display_name + "\">" + thisDocFile.Substring(0, 20) + "..." + extension + "</abbr></span>");
                         }
@@ -3365,12 +3334,14 @@ namespace SobekCM.Library.AdminViewer
 					}
 					else if ( !File.Exists(fileDir))
 					{
-						HTML_Based_Content htmlContent = new HTML_Based_Content();
-						htmlContent.Content = "<br /><br />This is a new " + Web_Language_Enum_Converter.Enum_To_Name(languageEnum) + " browse page.<br /><br />" + title + "<br /><br />The code for this browse is: " + childPage.Code;
-						htmlContent.Author = RequestSpecificValues.Current_User.Full_Name;
-						htmlContent.Date = DateTime.Now.ToLongDateString();
-						htmlContent.Title = title;
-						htmlContent.Save_To_File(fileDir);
+						HTML_Based_Content htmlContent = new HTML_Based_Content
+						{
+						    Content = "<br /><br />This is a new " + Web_Language_Enum_Converter.Enum_To_Name(languageEnum) + " browse page.<br /><br />" + title + "<br /><br />The code for this browse is: " + childPage.Code, 
+                            Author = RequestSpecificValues.Current_User.Full_Name, 
+                            Date = DateTime.Now.ToLongDateString(), 
+                            Title = title
+						};
+					    htmlContent.Save_To_File(fileDir);
 					}
 
 					// Add to this child page
@@ -3735,16 +3706,18 @@ namespace SobekCM.Library.AdminViewer
 			UploadFilesPlaceHolder.Controls.Add(filesLiteral2);
 			filesBuilder.Remove(0, filesBuilder.Length);
 
-			UploadiFiveControl uploadControl = new UploadiFiveControl();
-			uploadControl.UploadPath = UploadDirectory;
-			uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
-			uploadControl.AllowedFileExtensions = FileExtensions;
-			uploadControl.SubmitWhenQueueCompletes = true;
-			uploadControl.RemoveCompleted = true;
-            uploadControl.Multi = UploadMultiple;
-            uploadControl.ServerSideFileName = ServerSideName;
-            uploadControl.ReturnToken = ReturnToken;
-			UploadFilesPlaceHolder.Controls.Add(uploadControl);
+			UploadiFiveControl uploadControl = new UploadiFiveControl
+			{
+			    UploadPath = UploadDirectory, 
+                UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx", 
+                AllowedFileExtensions = FileExtensions, 
+                SubmitWhenQueueCompletes = true, 
+                RemoveCompleted = true, 
+                Multi = UploadMultiple, 
+                ServerSideFileName = ServerSideName, 
+                ReturnToken = ReturnToken
+			};
+		    UploadFilesPlaceHolder.Controls.Add(uploadControl);
 
 			LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
 			UploadFilesPlaceHolder.Controls.Add(literal1);

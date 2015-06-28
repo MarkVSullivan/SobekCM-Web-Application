@@ -92,13 +92,13 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> '"In addition, the following actions are available:"' localization string </remarks>
         public string InAdditionTheFollowingActionsAreAvailable { get; private set; }
 
-        /// <remarks> 'SAVE & EDIT ITEM' localization string </remarks>
+        /// <remarks> 'SAVE &amp; EDIT ITEM' localization string </remarks>
         public string SAVEEDITITEM { get; private set; }
 
-        /// <remarks> 'SAVE & ADD FILES' localization string </remarks>
+        /// <remarks> 'SAVE &amp; ADD FILES' localization string </remarks>
         public string SAVEADDFILES { get; private set; }
 
-        /// <remarks> 'SAVE & ADD ANOTHER' localization string </remarks>
+        /// <remarks> 'SAVE &amp; ADD ANOTHER' localization string </remarks>
         public string SAVEADDANOTHER { get; private set; }
 
     }

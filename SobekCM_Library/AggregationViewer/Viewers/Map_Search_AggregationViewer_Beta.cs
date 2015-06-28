@@ -12,6 +12,7 @@ using SobekCM.Tools;
 
 namespace SobekCM.Library.AggregationViewer.Viewers
 {
+    /// <summary> Beta version of map search (from USACH project)   </summary>
     public class Map_Search_AggregationViewer_Beta : abstractAggregationViewer
     {
         /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>

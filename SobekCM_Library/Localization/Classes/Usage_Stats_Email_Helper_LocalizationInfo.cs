@@ -44,6 +44,7 @@ namespace SobekCM.Library.Localization.Classes
 
             }
         }
+
         /// <remarks> 'Usage statistics for your materials ( %1 )' localization string </remarks>
         public string UsageStatisticsForYourMaterialsXXX { get; private set; }
 
@@ -56,7 +57,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Total to date ( since %1 )' localization string </remarks>
         public string TotalToDateSinceXXX { get; private set; }
 
-        /// <remarks> '"You are receiving this message because you are a contributor to a digital library or a collection supported by the UF Libraries, including the Institutional Repository (IR@UF), the UF Digital Collections (UFDC), the Digital Library of the Caribbean (dLOC), and many others. If you do not wish to receive future messages, please <a href=\""http://ufdc.ufl.edu/my/preferences\"">edit your account preferences</a> online or send an email to <a href=\""mailto:ufdc@uflib.ufl.edu\"">ufdc@uflib.ufl.edu</a>. </p>"" + ""<p><strong>Usage statistics for your materials ( <%DATE%> )</strong></p>"" + ""<p><%NAME%>,</p>"" + ""<p>Thank you for sharing materials that will be accessible online and for supporting worldwide open access to scholarly, creative, and other works.  This is a usage report for the shared materials.</p>"" + ""<p>Your items have been viewed <%TOTAL%> times since they were added and were viewed <%MONTHLY%> times this month</p>"" + ""<%ITEMS%>"" + ""<p><em><a href=\""http://ufdc.ufl.edu/my/stats/<%YEAR%><%MONTH%>d\"">Click here to see the usage statistics for all of your items. &gt;&gt;</a></em></p>"" + ""<p>Thank you for sharing these materials.  Please contact us with any questions ( <a href=\""mailto:ufdc@uflib.ufl.edu\"">ufdc@uflib.ufl.edu</a> or 352-273-2900)."' localization string </remarks>
+        /// <remarks> '"You are receiving this message because you are a contributor to a digital library or a collection supported by the UF Libraries, including the Institutional Repository (IR@UF), the UF Digital Collections (UFDC), the Digital Library of the Caribbean (dLOC), and many others. If you do not wish to receive future messages, please ... localization string </remarks>
         public string YouAreReceivingThisMessageBecauseYouAreAC { get; private set; }
 
     }

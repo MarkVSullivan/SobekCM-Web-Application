@@ -23,7 +23,7 @@ namespace SobekCM.Library.MainWriters
         }
 
         /// <summary> Gets the enumeration of the type of main writer </summary>
-        /// <value> This property always returns the enumerational value <see cref="SobekCM.UI_Library.Navigation.Writer_Type_Enum.DataSet"/>. </value>
+        /// <value> This property always returns the enumerational value <see cref="Writer_Type_Enum.DataSet"/>. </value>
         public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.DataSet; } }
 
         /// <summary> Perform all the work of adding text directly to the response stream back to the web user </summary>
@@ -36,7 +36,7 @@ namespace SobekCM.Library.MainWriters
                 case Display_Mode_Enum.Results:
                 case Display_Mode_Enum.Aggregation:
                     if (RequestSpecificValues.Paged_Results != null)
-                        display_search_results(Output);
+                        display_search_results();
                      break;
 
                 default:
@@ -45,7 +45,7 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
-        private void display_search_results(TextWriter Output)
+        private void display_search_results()
         {
             // Write this information
             //search_results.WriteXml(Output, XmlWriteMode.WriteSchema);

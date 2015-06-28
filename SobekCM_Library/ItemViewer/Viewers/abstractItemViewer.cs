@@ -8,7 +8,6 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
@@ -311,6 +310,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             get { return emptybehaviors; }
 	    }
 
+        /// <summary> Convert a string to XML format, by switching in the special XML codes for illegal characters  </summary>
+        /// <param name="element"> String to convert </param>
+        /// <returns> XML safe convert </returns>
         protected static string Convert_String_To_XML_Safe(string element)
         {
            // System.Xml.Linq .Xml.Linq .Linq.XElement  newElement = new XmlElement()

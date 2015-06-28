@@ -4,7 +4,6 @@ using System.IO;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
@@ -76,16 +75,13 @@ namespace SobekCM.Library.HTML
             Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
             const string publicFolderText = "PUBLIC BOOKSHELF";
-            string homeText = "HOME";
 
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
             {
-                homeText = "PAGE D'ACCUEIL";
             }
 
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
             {
-                homeText = "INICIO";
             }
 
 			// Add the item views

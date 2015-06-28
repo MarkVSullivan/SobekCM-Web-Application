@@ -122,7 +122,7 @@ namespace SobekCM.Engine_Library.Solr
 
 				return true;
 			}
-			catch ( Exception ee )
+			catch 
 			{
 				return false;
 			}

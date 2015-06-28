@@ -31,21 +31,21 @@ namespace SobekCM.Tools.FDA
         }
 
         /// <summary> Constructor creates a new instance of the FDA_File class </summary>
-        /// <param name="id">ID for this file in the FDA</param>
-        /// <param name="name">Name (or path) of the file</param>
-        /// <param name="size">Size of the file</param>
-        /// <param name="md5_checksum">MD5 checksum for the file</param>
-        /// <param name="sha1_checksum">SHA-1 checksum for the file</param>
-        /// <param name="preservation">Preservation level applied to this file</param>
-        public FDA_File(string id, string name, long size, string md5_checksum, string sha1_checksum, string preservation)
+        /// <param name="ID">ID for this file in the FDA</param>
+        /// <param name="Name">Name (or path) of the file</param>
+        /// <param name="Size">Size of the file</param>
+        /// <param name="MD5_Checksum">MD5 checksum for the file</param>
+        /// <param name="SHA1_Checksum">SHA-1 checksum for the file</param>
+        /// <param name="Preservation">Preservation level applied to this file</param>
+        public FDA_File(string ID, string Name, long Size, string MD5_Checksum, string SHA1_Checksum, string Preservation)
         {
             // Set all values
-            Name = name;
-            MD5_Checksum = md5_checksum;
-            SHA1_Checksum = sha1_checksum;
-            Preservation = preservation;
-            ID = id;
-            Size = size;
+            this.Name = Name;
+            this.MD5_Checksum = MD5_Checksum;
+            this.SHA1_Checksum = SHA1_Checksum;
+            this.Preservation = Preservation;
+            this.ID = ID;
+            this.Size = Size;
             Event = String.Empty;
             warnings = new List<FDA_File_Warning>();
         }

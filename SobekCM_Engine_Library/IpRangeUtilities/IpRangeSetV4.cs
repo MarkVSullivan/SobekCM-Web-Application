@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿#region Using directives
+
+using System.Collections.Generic;
 using System.Linq;
+
+#endregion
 
 namespace SobekCM.Engine_Library.IpRangeUtilities
 {

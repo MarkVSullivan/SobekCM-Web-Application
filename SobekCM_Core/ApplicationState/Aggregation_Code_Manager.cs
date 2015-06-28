@@ -5,7 +5,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Serialization;
 
 #endregion
 
@@ -120,6 +119,8 @@ namespace SobekCM.Core.ApplicationState
             All_Aggregations.Clear();
         }
 
+        /// <summary> Add the basic information about an aggregation to this aggreation manager </summary>
+        /// <param name="New_Aggregation"> New aggregation to add information about </param>
         public void Add_Collection(Item_Aggregation_Related_Aggregations New_Aggregation)
         {
 			// Insert this into the proper spot in the item aggregation list
@@ -200,9 +201,7 @@ namespace SobekCM.Core.ApplicationState
             return Aggregation_Code;
         }
 
-        /// <summary>
-        ///   Checks to see if an aggregation code exists
-        /// </summary>
+        /// <summary> Checks to see if an aggregation code exists </summary>
         /// <param name = "Aggregation_Code"> Code for the aggregation of interest </param>
         /// <returns> TRUE if the aggregation exists, otherwise FALSE </returns>
         public bool isValidCode(string Aggregation_Code)
@@ -271,6 +270,7 @@ namespace SobekCM.Core.ApplicationState
 			}
 	    }
 
+        /// <summary> Method is called by the serializer after this item is unserialized </summary>
         public void PostUnSerialization()
         {
             Aggregations_By_Thematic_Heading.Clear();

@@ -13,7 +13,7 @@ namespace SobekCM.Tools.Logs
     /// This class establishes a rich XHTML log file.  Then, lines can be added in three
     /// flavors ( error, nonerror, and complete). <br /> <br /> </summary>
     /// <remarks> There are two modes that can be used for this log file.  You can 
-    /// specify <see cref="LogFileXHTML.Open"/> and <see cref="LogFileXHTML.Close"/>, which will leave the file stream (and associated 
+    /// specify <see cref="LogFileXhtml.Open"/> and <see cref="LogFileXhtml.Close"/>, which will leave the file stream (and associated 
     /// resources) open during the period between the two calls. Alternatively, 
     /// you can just call the Write routines directly.  It will open the stream
     /// before the write and close right after writing and modifying the header information. <br /> <br />
@@ -137,7 +137,7 @@ namespace SobekCM.Tools.Logs
     ///
     ///	&lt;/html&gt;
     /// </code></example>
-    public class LogFileXHTML
+    public class LogFileXhtml
     {
         #region Private Fields
 
@@ -195,147 +195,147 @@ namespace SobekCM.Tools.Logs
 
         /// <summary> Constant position values used to place, or fetch, data into the 
         /// XHTML header of the log file. </summary>
-        private const int titlePosition = 358, positionPosition = 466, createDatePosition = 516, rowHeaderPosition = 575,
-                          dateStampPosition = 635, errorPosition = 678, applicationPosition = 720;
+        private const int TITLE_POSITION = 358, POSITION_POSITION = 466, CREATE_DATE_POSITION = 516, ROW_HEADER_POSITION = 575,
+                          DATE_STAMP_POSITION = 635, ERROR_POSITION = 678, APPLICATION_POSITION = 720;
 
         #endregion
 
         #region Constructors
 
         /// <summary> Constructor which builds a new LogFileXHTML object </summary>
-        /// <param name="newFileName"> File Name and Path for this LogFileXHTML object </param>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// <param name="NewFileName"> File Name and Path for this LogFileXHTML object </param>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         /// <remarks> This uses the following default values: <ul>
         /// <li type="circle" /> Title - this is set to no title by default
         /// <li type="circle" /> Application Name - this is left blank by default
-        /// <li type="circle" /> Row Header - Disabled ( can be enabled by calling the <see cref="LogFileXHTML.enableRowHeaders"/> method )
-        /// <li type="circle" /> Date Stamping - Enabled ( can be changed by calling the <see cref="LogFileXHTML.DateStampingEnabled"/> property )
-        /// <li type="circle" /> Exceptions - Enabled ( can be changed by calling the <see cref="LogFileXHTML.SuppressExceptions"/> property )
+        /// <li type="circle" /> Row Header - Disabled ( can be enabled by calling the <see cref="EnableRowHeaders"/> method )
+        /// <li type="circle" /> Date Stamping - Enabled ( can be changed by calling the <see cref="LogFileXhtml.DateStampingEnabled"/> property )
+        /// <li type="circle" /> Exceptions - Enabled ( can be changed by calling the <see cref="LogFileXhtml.SuppressExceptions"/> property )
         /// </ul></remarks>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown here if the directory for
         /// the log file does not exist, and can not be created. </exception>
-        public LogFileXHTML(string newFileName)
+        public LogFileXhtml(string NewFileName)
         {
-            setupLogFile(newFileName, newFileName, "", "", false);
+            SetupLogFile(NewFileName, NewFileName, "", "", false);
         }
 
         /// <summary> Constructor which builds a new LogFileXHTML object </summary>
-        /// <param name="newFileName"> File Name and Path for this LogFileXHTML object </param>
-        /// <param name="title"> Title for this log </param>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// <param name="NewFileName"> File Name and Path for this LogFileXHTML object </param>
+        /// <param name="Title"> Title for this log </param>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         /// <remarks> This uses the following default values: <ul>
         /// <li type="circle" /> Application Name - this is left blank by default
-        /// <li type="circle" /> Row Header - Disabled ( can be enabled by calling the <see cref="LogFileXHTML.enableRowHeaders"/> method )
-        /// <li type="circle" /> Date Stamping - Enabled ( can be changed by calling the <see cref="LogFileXHTML.DateStampingEnabled"/> property )
-        /// <li type="circle" /> Exceptions - Enabled ( can be changed by calling the <see cref="LogFileXHTML.SuppressExceptions"/> property )
+        /// <li type="circle" /> Row Header - Disabled ( can be enabled by calling the <see cref="EnableRowHeaders"/> method )
+        /// <li type="circle" /> Date Stamping - Enabled ( can be changed by calling the <see cref="LogFileXhtml.DateStampingEnabled"/> property )
+        /// <li type="circle" /> Exceptions - Enabled ( can be changed by calling the <see cref="LogFileXhtml.SuppressExceptions"/> property )
         /// </ul></remarks>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown here if the directory for
         /// the log file does not exist, and can not be created. </exception>
-        public LogFileXHTML(string newFileName, string title)
+        public LogFileXhtml(string NewFileName, string Title)
         {
-            setupLogFile(newFileName, title, "", "", false);
+            SetupLogFile(NewFileName, Title, "", "", false);
         }
 
         /// <summary> Constructor which builds a new LogFileXHTML object </summary>
-        /// <param name="newFileName"> File Name and Path for this LogFileXHTML object </param>
-        /// <param name="title"> Title for this log </param>
-        /// <param name="appName"> Name of the application </param>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// <param name="NewFileName"> File Name and Path for this LogFileXHTML object </param>
+        /// <param name="Title"> Title for this log </param>
+        /// <param name="AppName"> Name of the application </param>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         /// <remarks> This uses the following default values: <ul>
-        /// <li type="circle" /> Row Header - Disabled ( can be enabled by calling the <see cref="LogFileXHTML.enableRowHeaders"/> method )
-        /// <li type="circle" /> Date Stamping - Enabled ( can be changed by calling the <see cref="LogFileXHTML.DateStampingEnabled"/> property )
-        /// <li type="circle" /> Exceptions - Enabled ( can be changed by calling the <see cref="LogFileXHTML.SuppressExceptions"/> property )
+        /// <li type="circle" /> Row Header - Disabled ( can be enabled by calling the <see cref="EnableRowHeaders"/> method )
+        /// <li type="circle" /> Date Stamping - Enabled ( can be changed by calling the <see cref="LogFileXhtml.DateStampingEnabled"/> property )
+        /// <li type="circle" /> Exceptions - Enabled ( can be changed by calling the <see cref="LogFileXhtml.SuppressExceptions"/> property )
         /// </ul></remarks>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown here if the directory for
         /// the log file does not exist, and can not be created. </exception>
-        public LogFileXHTML(string newFileName, string title, string appName )
+        public LogFileXhtml(string NewFileName, string Title, string AppName )
         {
-            setupLogFile(newFileName, title, appName, "", false);
+            SetupLogFile(NewFileName, Title, AppName, "", false);
         }
 
         /// <summary> Constructor which builds a new LogFileXHTML object </summary>
-        /// <param name="newFileName"> File Name and Path for this LogFileXHTML object </param>
-        /// <param name="title"> Title for this log </param>
-        /// <param name="appName"> Name of the application </param>
-        /// <param name="rowHeader"> Header for each row </param>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// <param name="NewFileName"> File Name and Path for this LogFileXHTML object </param>
+        /// <param name="Title"> Title for this log </param>
+        /// <param name="AppName"> Name of the application </param>
+        /// <param name="RowHeader"> Header for each row </param>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         /// <remarks> This uses the following default values: <ul>
-        /// <li type="circle" /> Date Stamping - Enabled ( can be changed by calling the <see cref="LogFileXHTML.DateStampingEnabled"/> property )
-        /// <li type="circle" /> Exceptions - Enabled ( can be changed by calling the <see cref="LogFileXHTML.SuppressExceptions"/> property )
+        /// <li type="circle" /> Date Stamping - Enabled ( can be changed by calling the <see cref="LogFileXhtml.DateStampingEnabled"/> property )
+        /// <li type="circle" /> Exceptions - Enabled ( can be changed by calling the <see cref="LogFileXhtml.SuppressExceptions"/> property )
         /// </ul></remarks>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown here if the directory for
         /// the log file does not exist, and can not be created. </exception>
-        public LogFileXHTML(string newFileName, string title, string appName, string rowHeader )
+        public LogFileXhtml(string NewFileName, string Title, string AppName, string RowHeader )
         {
-            setupLogFile(newFileName, title, appName, rowHeader, false);
+            SetupLogFile(NewFileName, Title, AppName, RowHeader, false);
         }
 
         /// <summary> Constructor which builds a new LogFileXHTML object </summary>
-        /// <param name="newFileName"> File Name and Path for this LogFileXHTML object </param>
-        /// <param name="suppressExceptions"> Flag indicates whether to suppress exceptions </param>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// <param name="NewFileName"> File Name and Path for this LogFileXHTML object </param>
+        /// <param name="SuppressExceptions"> Flag indicates whether to suppress exceptions </param>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         /// <remarks> This uses the following default values: <ul>
         /// <li type="circle" /> Title - this is set to no title by default
         /// <li type="circle" /> Application Name - this is left blank by default
-        /// <li type="circle" /> Row Header - Disabled ( can be enabled by calling the <see cref="LogFileXHTML.enableRowHeaders"/> method )
-        /// <li type="circle" /> Date Stamping - Enabled ( can be changed by calling the <see cref="LogFileXHTML.DateStampingEnabled"/> property )
+        /// <li type="circle" /> Row Header - Disabled ( can be enabled by calling the <see cref="EnableRowHeaders"/> method )
+        /// <li type="circle" /> Date Stamping - Enabled ( can be changed by calling the <see cref="LogFileXhtml.DateStampingEnabled"/> property )
         /// </ul></remarks>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown here if the directory for
-        /// the log file does not exist, and can not be created, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
-        public LogFileXHTML(string newFileName, bool suppressExceptions )
+        /// the log file does not exist, and can not be created, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
+        public LogFileXhtml(string NewFileName, bool SuppressExceptions )
         {
-            setupLogFile(newFileName, newFileName, "", "", suppressExceptions);
+            SetupLogFile(NewFileName, NewFileName, "", "", SuppressExceptions);
         }
 
         /// <summary> Constructor which builds a new LogFileXHTML object </summary>
-        /// <param name="newFileName"> File Name and Path for this LogFileXHTML object </param>
-        /// <param name="title"> Title for this log </param>
-        /// <param name="suppressExceptions"> Flag indicates whether to suppress exceptions </param>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// <param name="NewFileName"> File Name and Path for this LogFileXHTML object </param>
+        /// <param name="Title"> Title for this log </param>
+        /// <param name="SuppressExceptions"> Flag indicates whether to suppress exceptions </param>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         /// <remarks> This uses the following default values: <ul>
         /// <li type="circle" /> Application Name - this is left blank by default
-        /// <li type="circle" /> Row Header - Disabled ( can be enabled by calling the <see cref="LogFileXHTML.enableRowHeaders"/> method )
-        /// <li type="circle" /> Date Stamping - Enabled ( can be changed by calling the <see cref="LogFileXHTML.DateStampingEnabled"/> property )
+        /// <li type="circle" /> Row Header - Disabled ( can be enabled by calling the <see cref="EnableRowHeaders"/> method )
+        /// <li type="circle" /> Date Stamping - Enabled ( can be changed by calling the <see cref="LogFileXhtml.DateStampingEnabled"/> property )
         /// </ul></remarks>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown here if the directory for
-        /// the log file does not exist, and can not be created, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
-        public LogFileXHTML(string newFileName, string title, bool suppressExceptions )
+        /// the log file does not exist, and can not be created, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
+        public LogFileXhtml(string NewFileName, string Title, bool SuppressExceptions)
         {
-            setupLogFile(newFileName, title, "", "", suppressExceptions);
+            SetupLogFile(NewFileName, Title, "", "", SuppressExceptions);
         }
 
         /// <summary> Constructor which builds a new LogFileXHTML object </summary>
-        /// <param name="newFileName"> File Name and Path for this LogFileXHTML object </param>
-        /// <param name="title"> Title for this log </param>
-        /// <param name="appName"> Name of the application </param>
-        /// <param name="suppressExceptions"> Flag indicates whether to suppress exceptions </param>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// <param name="NewFileName"> File Name and Path for this LogFileXHTML object </param>
+        /// <param name="Title"> Title for this log </param>
+        /// <param name="AppName"> Name of the application </param>
+        /// <param name="SuppressExceptions"> Flag indicates whether to suppress exceptions </param>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         /// <remarks> This uses the following default values: <ul>
-        /// <li type="circle" /> Row Header - Disabled ( can be enabled by calling the <see cref="LogFileXHTML.enableRowHeaders"/> method )
-        /// <li type="circle" /> Date Stamping - Enabled ( can be changed by calling the <see cref="LogFileXHTML.DateStampingEnabled"/> property )
+        /// <li type="circle" /> Row Header - Disabled ( can be enabled by calling the <see cref="EnableRowHeaders"/> method )
+        /// <li type="circle" /> Date Stamping - Enabled ( can be changed by calling the <see cref="LogFileXhtml.DateStampingEnabled"/> property )
         /// </ul></remarks>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown here if the directory for
-        /// the log file does not exist, and can not be created, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
-        public LogFileXHTML(string newFileName, string title, string appName, bool suppressExceptions )
+        /// the log file does not exist, and can not be created, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
+        public LogFileXhtml(string NewFileName, string Title, string AppName, bool SuppressExceptions)
         {
-            setupLogFile(newFileName, title, appName, "", suppressExceptions);
+            SetupLogFile(NewFileName, Title, AppName, "", SuppressExceptions);
         }
 
         /// <summary> Constructor which builds a new LogFileXHTML object </summary>
-        /// <param name="newFileName"> File Name and Path for this LogFileXHTML object </param>
-        /// <param name="title"> Title for this log </param>
-        /// <param name="appName"> Name of the application </param>
-        /// <param name="rowHeader"> Header for each row </param>
-        /// <param name="suppressExceptions"> Flag indicates whether to suppress exceptions </param>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// <param name="NewFileName"> File Name and Path for this LogFileXHTML object </param>
+        /// <param name="Title"> Title for this log </param>
+        /// <param name="AppName"> Name of the application </param>
+        /// <param name="RowHeader"> Header for each row </param>
+        /// <param name="SuppressExceptions"> Flag indicates whether to suppress exceptions </param>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         /// <remarks> This uses the following default values: <ul>
-        /// <li type="circle" /> Date Stamping - Enabled ( can be changed by calling the <see cref="LogFileXHTML.DateStampingEnabled"/> property )
+        /// <li type="circle" /> Date Stamping - Enabled ( can be changed by calling the <see cref="LogFileXhtml.DateStampingEnabled"/> property )
         /// </ul></remarks>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown here if the directory for
-        /// the log file does not exist, and can not be created, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
-        public LogFileXHTML(string newFileName, string title, string appName, string rowHeader, bool suppressExceptions )
+        /// the log file does not exist, and can not be created, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
+        public LogFileXhtml(string NewFileName, string Title, string AppName, string RowHeader, bool SuppressExceptions)
         {
-            setupLogFile(newFileName, title, appName, rowHeader, suppressExceptions);
+            SetupLogFile(NewFileName, Title, AppName, RowHeader, SuppressExceptions);
         }
 
 
@@ -346,8 +346,8 @@ namespace SobekCM.Tools.Logs
         /// <param name="RowHeader"> Header for each row </param>
         /// <param name="SuppressExceptionsFlag"> Flag indicates whether to suppress exceptions </param>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown here if the directory for
-        /// the log file does not exist, and can not be created, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
-        private void setupLogFile(string Log_FileName, string Title, string AppName, string RowHeader, bool SuppressExceptionsFlag)
+        /// the log file does not exist, and can not be created, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
+        private void SetupLogFile(string Log_FileName, string Title, string AppName, string RowHeader, bool SuppressExceptionsFlag)
         {
             // Save the parameters
             SuppressExceptions = SuppressExceptionsFlag;
@@ -396,23 +396,23 @@ namespace SobekCM.Tools.Logs
 
         /// <summary> Gets and Sets the flag which indicates if all <see cref="LogFile_Exception"/>s should be
         /// suppressed or not.  </summary>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         public bool SuppressExceptions { get; set; }
 
         /// <summary> Returns true if the log file is currently open. </summary>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         public bool isOpen { get; private set; }
 
         /// <summary> Gets and sets the flag which indicates if each line receives a date stamp. </summary>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         public bool DateStampingEnabled { get; set; }
 
         /// <summary> Gets the date and time the current log file was created. </summary>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         public DateTime DateCreated { get; private set; }
 
-        /// <summary> Gets the number of explicit calls to <see cref="LogFileXHTML.AddError"/> method were made. </summary>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// <summary> Gets the number of explicit calls to <see cref="LogFileXhtml.AddError"/> method were made. </summary>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         public int ErrorCount { get; private set; }
 
         /// <summary> Returns the filename for this log file </summary>
@@ -424,15 +424,15 @@ namespace SobekCM.Tools.Logs
 
         /// <summary>  Deletes the current log file, closing first if necessary. </summary>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
-        /// during processing, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
+        /// during processing, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
         public bool New()
         {
             currentPosition = 0;
 
             if (isOpen)
-                closeConnection();
+                CloseConnection();
 
             if ( File.Exists(FileName) )
                 File.Delete(FileName);
@@ -440,12 +440,12 @@ namespace SobekCM.Tools.Logs
             DateCreated = DateTime.Now;
             ErrorCount = 0;
 
-            return !isOpen || (openConnection());
+            return !isOpen || (OpenConnection());
         }
 
         /// <summary> Returns true if the log file currently exists. </summary>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         public bool Exists()
         {
             return File.Exists(FileName);
@@ -454,53 +454,53 @@ namespace SobekCM.Tools.Logs
         /// <summary> Opens or creates a log file. </summary>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks>  This also specifies that the connection to the file will 
-        /// remain open until <see cref="LogFileXHTML.Close"/> is called. </remarks>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// remain open until <see cref="LogFileXhtml.Close"/> is called. </remarks>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
-        /// opening the connection, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
+        /// opening the connection, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
         public bool Open()
         {
             // Set leave open and try to open the connection
             isOpen = true;
-            return openConnection();
+            return OpenConnection();
         }
 
         /// <summary> Saves and closes the log file. </summary>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
-        /// closing the connection, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
+        /// closing the connection, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
         public bool Close()
         {
             if ( isOpen )
             {
                 isOpen = false;
-                return closeConnection();
+                return CloseConnection();
             }
 
             return false;
         }
 
         /// <summary> Disable the additional information between the time/date and the log entry. </summary>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
-        public void disableRowHeaders()
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
+        public void DisableRowHeaders()
         {
             eachRowHeader = "";
         }
 
         /// <summary> Enables the additional information between the time/date and
         /// the log entry and sets this information to the string which is passed in. </summary>
-        /// <param name="textForEachLine"> Text to be used as the Row Headers on each row </param>
+        /// <param name="TextForEachLine"> Text to be used as the Row Headers on each row </param>
         /// <returns> TRUE if the requested row header is accepted, otherwise FALSE </returns>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
-        public bool enableRowHeaders(string textForEachLine)
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
+        public bool EnableRowHeaders(string TextForEachLine)
         {
-            eachRowHeader = textForEachLine;
+            eachRowHeader = TextForEachLine;
             return true;
         }
 
         /// <summary> Adds a non-error line to the current log file. </summary>
-        /// <param name="msg"> Message to add </param>
+        /// <param name="Msg"> Message to add </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This uses the default style defined as 'logEntry' with the following attributes: <ul>
         /// <li type="circle" /> Color:		Black
@@ -508,14 +508,14 @@ namespace SobekCM.Tools.Logs
         /// <li type="circle" /> Bold:		false
         /// <li type="circle" /> Italics:	false
         /// </ul></remarks>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
-        public bool AddNonError(string msg)
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
+        public bool AddNonError(string Msg)
         {
-            return Write(msg, "logEntry", false);
+            return Write(Msg, "logEntry", false);
         }
 
         /// <summary> Adds an error line to the current log file.  </summary>
-        /// <param name="msg"> Message to add </param>
+        /// <param name="Msg"> Message to add </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This uses the default style defined as 'errorLogEntry' with the following attributes: <ul>
         /// <li type="circle" /> Color:		Red
@@ -523,24 +523,24 @@ namespace SobekCM.Tools.Logs
         /// <li type="circle" /> Bold:		true
         /// <li type="circle" /> Italics:	false
         /// </ul></remarks>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
-        public bool AddError(string msg)
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
+        public bool AddError(string Msg)
         {
-            Write(msg, "errorLogEntry", true);
+            Write(Msg, "errorLogEntry", true);
 
             if (!isOpen)
-                openConnection();
+                OpenConnection();
 
             ErrorCount++;
             
             if (!isOpen)
-                closeConnection();
+                CloseConnection();
 
             return true;
         }
 
         /// <summary> Adds a line indicating completeness to the log file. </summary>
-        /// <param name="msg"> Msg to add indicating completeness </param>
+        /// <param name="Msg"> Msg to add indicating completeness </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This uses the default style defined as 'completedLogEntry' with the following attributes: <ul>
         /// <li type="circle" /> Color:		Blue
@@ -548,17 +548,17 @@ namespace SobekCM.Tools.Logs
         /// <li type="circle" /> Bold:		true
         /// <li type="circle" /> Italics:	false
         /// </ul></remarks>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
-        public bool AddComplete(string msg)
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
+        public bool AddComplete(string Msg)
         {
-            return Write(msg, "completedLogEntry", true);
+            return Write(Msg, "completedLogEntry", true);
         }
 
         /// <summary> Displays the XHTML log file in Internet Explorer. </summary>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
-        /// while trying to display the log, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
+        /// while trying to display the log, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
         public bool Display()
         {
             // Now, display the local log file copy with IEXPLORE.exe
@@ -594,7 +594,7 @@ namespace SobekCM.Tools.Logs
         /// <remarks> This style will be used in the Style Definition
         /// section and will be used in the body of the text below.  Any custom styles will
         /// need to be specified when the line is added to the log file.  When a style is added to the XHTML Log file,
-        /// a new <see cref="LogFileXHTML_Style"/> object is created and added to a collection of style objects. <br /> <br />
+        /// a new <see cref="LogFileXhtmlStyle"/> object is created and added to a collection of style objects. <br /> <br />
         /// The following colors are accepted: <ul>
         /// <li type="circle" /> Aqua
         /// <li type="circle" /> Lime
@@ -612,22 +612,22 @@ namespace SobekCM.Tools.Logs
         /// <li type="circle" /> Teal
         /// <li type="circle" /> Yellow
         /// </ul>  </remarks>
-        /// <param name="style_name"> Name for this style </param>
-        /// <param name="font_color"> Color for text of this style </param>
-        /// <param name="bold"> Flag tells whether text of this style should be emboldened </param>
+        /// <param name="StyleName"> Name for this style </param>
+        /// <param name="FontColor"> Color for text of this style </param>
+        /// <param name="Bold"> Flag tells whether text of this style should be emboldened </param>
         /// <returns> TRUE if this style was successfully added, otherwise FALSE </returns>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
-        public bool AddNewStyle( string style_name, string font_color, bool bold )
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
+        public bool AddNewStyle( string StyleName, string FontColor, bool Bold )
         {
             // Call the complete method, passing in these values and the defaults
-            return AddNewStyle(style_name, font_color, "medium", bold, false );
+            return AddNewStyle(StyleName, FontColor, "medium", Bold, false );
         }
 
         /// <summary> [NOT YET FULLY IMPLEMENTED] <br /> <br /> Create a new style for this log file. </summary>
         /// <remarks> This style will be used in the Style Definition
         /// section and will be used in the body of the text below.  Any custom styles will
         /// need to be specified when the line is added to the log file.  When a style is added to the XHTML Log file,
-        /// a new <see cref="LogFileXHTML_Style"/> object is created and added to a collection of style objects.  <br /> <br />
+        /// a new <see cref="LogFileXhtmlStyle"/> object is created and added to a collection of style objects.  <br /> <br />
         /// The following colors are accepted: <ul>
         /// <li type="circle" /> Aqua
         /// <li type="circle" /> Lime
@@ -645,61 +645,21 @@ namespace SobekCM.Tools.Logs
         /// <li type="circle" /> Teal
         /// <li type="circle" /> Yellow
         /// </ul> </remarks>
-        /// <param name="style_name"> Name for this style </param>
-        /// <param name="font_color"> Color for text of this style </param>
+        /// <param name="StyleName"> Name for this style </param>
+        /// <param name="FontColor"> Color for text of this style </param>
         /// <returns> TRUE if this style was successfully added, otherwise FALSE </returns>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
-        public bool AddNewStyle( string style_name, string font_color )
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
+        public bool AddNewStyle( string StyleName, string FontColor )
         {
             // Call the complete method, passing in these values and the defaults
-            return AddNewStyle(style_name, font_color, "medium", false, false );
+            return AddNewStyle(StyleName, FontColor, "medium", false, false );
         }
 
         /// <summary> [NOT YET FULLY IMPLEMENTED] <br /> <br /> Create a new style for this log file. </summary>
         /// <remarks> This style will be used in the Style Definition
         /// section and will be used in the body of the text below.  Any custom styles will
         /// need to be specified when the line is added to the log file.  When a style is added to the XHTML Log file,
-        /// a new <see cref="LogFileXHTML_Style"/> object is created and added to a collection of style objects. <br /> <br />
-        /// The following colors are accepted: <ul>
-        /// <li type="circle" /> Aqua
-        /// <li type="circle" /> Lime
-        /// <li type="circle" /> Black
-        /// <li type="circle" /> Blue
-        /// <li type="circle" /> Fuchsia
-        /// <li type="circle" /> Green
-        /// <li type="circle" /> Gray
-        /// <li type="circle" /> Maroon
-        /// <li type="circle" /> Navy
-        /// <li type="circle" /> Olive
-        /// <li type="circle" /> Purple
-        /// <li type="circle" /> Red
-        /// <li type="circle" /> Silver
-        /// <li type="circle" /> Teal
-        /// <li type="circle" /> Yellow
-        /// </ul> <br /> <br />
-        /// The following sizes are accepted: <ul>
-        /// <li type="circle" /> x-small
-        /// <li type="circle" /> small
-        /// <li type="circle" /> medium
-        /// <li type="circle" /> large
-        /// <li type="circle" /> x-large
-        /// </ul> </remarks>
-        /// <param name="style_name"> Name for this style </param>
-        /// <param name="font_color"> Color for text of this style </param>
-        /// <param name="font_size"> Size for the text of this style </param>
-        /// <returns> TRUE if this style was successfully added, otherwise FALSE </returns>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
-        public bool AddNewStyle( string style_name, string font_color, string font_size )
-        {
-            // Call the complete method, passing in these values and the defaults
-            return AddNewStyle(style_name, font_color, font_size, false, false );
-        }
-
-        /// <summary> [NOT YET FULLY IMPLEMENTED] <br /> <br /> Create a new style for this log file. </summary>
-        /// <remarks> This style will be used in the Style Definition
-        /// section and will be used in the body of the text below.  Any custom styles will
-        /// need to be specified when the line is added to the log file.  When a style is added to the XHTML Log file,
-        /// a new <see cref="LogFileXHTML_Style"/> object is created and added to a collection of style objects. <br /> <br />
+        /// a new <see cref="LogFileXhtmlStyle"/> object is created and added to a collection of style objects. <br /> <br />
         /// The following colors are accepted: <ul>
         /// <li type="circle" /> Aqua
         /// <li type="circle" /> Lime
@@ -724,23 +684,22 @@ namespace SobekCM.Tools.Logs
         /// <li type="circle" /> large
         /// <li type="circle" /> x-large
         /// </ul> </remarks>
-        /// <param name="style_name"> Name for this style </param>
-        /// <param name="font_color"> Color for text of this style </param>
-        /// <param name="font_size"> Size for the text of this style </param>
-        /// <param name="bold"> Flag tells whether text of this style should be emboldened </param>
+        /// <param name="StyleName"> Name for this style </param>
+        /// <param name="FontColor"> Color for text of this style </param>
+        /// <param name="FontSize"> Size for the text of this style </param>
         /// <returns> TRUE if this style was successfully added, otherwise FALSE </returns>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
-        public bool AddNewStyle( string style_name, string font_color, string font_size, bool bold )
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
+        public bool AddNewStyle( string StyleName, string FontColor, string FontSize )
         {
             // Call the complete method, passing in these values and the defaults
-            return AddNewStyle(style_name, font_color, font_size, bold, false );
+            return AddNewStyle(StyleName, FontColor, FontSize, false, false );
         }
 
         /// <summary> [NOT YET FULLY IMPLEMENTED] <br /> <br /> Create a new style for this log file. </summary>
         /// <remarks> This style will be used in the Style Definition
         /// section and will be used in the body of the text below.  Any custom styles will
         /// need to be specified when the line is added to the log file.  When a style is added to the XHTML Log file,
-        /// a new <see cref="LogFileXHTML_Style"/> object is created and added to a collection of style objects.  <br /> <br />
+        /// a new <see cref="LogFileXhtmlStyle"/> object is created and added to a collection of style objects. <br /> <br />
         /// The following colors are accepted: <ul>
         /// <li type="circle" /> Aqua
         /// <li type="circle" /> Lime
@@ -765,14 +724,55 @@ namespace SobekCM.Tools.Logs
         /// <li type="circle" /> large
         /// <li type="circle" /> x-large
         /// </ul> </remarks>
-        /// <param name="style_name"> Name for this style </param>
-        /// <param name="font_color"> Color for text of this style </param>
-        /// <param name="font_size"> Size for the text of this style </param>
-        /// <param name="bold"> Flag tells whether text of this style should be emboldened </param>
-        /// <param name="italics"> Flag tells whether text of this style should be italicized </param>
+        /// <param name="StyleName"> Name for this style </param>
+        /// <param name="FontColor"> Color for text of this style </param>
+        /// <param name="FontSize"> Size for the text of this style </param>
+        /// <param name="Bold"> Flag tells whether text of this style should be emboldened </param>
         /// <returns> TRUE if this style was successfully added, otherwise FALSE </returns>
-        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXHTML"/> class. </example>
-        public bool AddNewStyle( string style_name, string font_color, string font_size, bool bold, bool italics )
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
+        public bool AddNewStyle( string StyleName, string FontColor, string FontSize, bool Bold )
+        {
+            // Call the complete method, passing in these values and the defaults
+            return AddNewStyle(StyleName, FontColor, FontSize, Bold, false );
+        }
+
+        /// <summary> [NOT YET FULLY IMPLEMENTED] <br /> <br /> Create a new style for this log file. </summary>
+        /// <remarks> This style will be used in the Style Definition
+        /// section and will be used in the body of the text below.  Any custom styles will
+        /// need to be specified when the line is added to the log file.  When a style is added to the XHTML Log file,
+        /// a new <see cref="LogFileXhtmlStyle"/> object is created and added to a collection of style objects.  <br /> <br />
+        /// The following colors are accepted: <ul>
+        /// <li type="circle" /> Aqua
+        /// <li type="circle" /> Lime
+        /// <li type="circle" /> Black
+        /// <li type="circle" /> Blue
+        /// <li type="circle" /> Fuchsia
+        /// <li type="circle" /> Green
+        /// <li type="circle" /> Gray
+        /// <li type="circle" /> Maroon
+        /// <li type="circle" /> Navy
+        /// <li type="circle" /> Olive
+        /// <li type="circle" /> Purple
+        /// <li type="circle" /> Red
+        /// <li type="circle" /> Silver
+        /// <li type="circle" /> Teal
+        /// <li type="circle" /> Yellow
+        /// </ul> <br /> <br />
+        /// The following sizes are accepted: <ul>
+        /// <li type="circle" /> x-small
+        /// <li type="circle" /> small
+        /// <li type="circle" /> medium
+        /// <li type="circle" /> large
+        /// <li type="circle" /> x-large
+        /// </ul> </remarks>
+        /// <param name="StyleName"> Name for this style </param>
+        /// <param name="FontColor"> Color for text of this style </param>
+        /// <param name="FontSize"> Size for the text of this style </param>
+        /// <param name="Bold"> Flag tells whether text of this style should be emboldened </param>
+        /// <param name="Italics"> Flag tells whether text of this style should be italicized </param>
+        /// <returns> TRUE if this style was successfully added, otherwise FALSE </returns>
+        /// <example> To see examples, look at the examples listed under the main <see cref="LogFileXhtml"/> class. </example>
+        public bool AddNewStyle( string StyleName, string FontColor, string FontSize, bool Bold, bool Italics )
         {
             // Create a new log file XHTML Style object
            // LogFileXHTML_Style newStyle = new LogFileXHTML_Style( bold, font_color, font_size, italics, style_name );
@@ -811,21 +811,21 @@ namespace SobekCM.Tools.Logs
         /// <summary> Writes a string to the log file. </summary>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
-        /// while processing, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
-        private bool Write(string msg, string styleType, bool strong )
+        /// while processing, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
+        private bool Write(string Msg, string StyleType, bool Strong )
         {
             bool noError = true;
 
             if (!isOpen)
-                noError = openConnection();
+                noError = OpenConnection();
 
             try
             {
                 if (noError)
                 {
-                    string configuredMsg = configureText(msg, styleType, strong);
-                    writeToLog(configuredMsg);
-                    writeClosingTags();
+                    string configuredMsg = ConfigureText(Msg, StyleType, Strong);
+                    WriteToLog(configuredMsg);
+                    WriteClosingTags();
                 }
             }
             catch
@@ -836,15 +836,15 @@ namespace SobekCM.Tools.Logs
             }
 
             if (!isOpen && noError)
-                noError = closeConnection();
+                noError = CloseConnection();
 
             return noError;
         }
 
         /// <summary> Private method writes closing tags to the file. </summary>
-        private void writeClosingTags()
+        private void WriteClosingTags()
         {
-            writeAtPos(currentPosition, NEW_END_TAGS);
+            WriteAtPos(currentPosition, NEW_END_TAGS);
         }
 
         /// <summary> Opens the connection and returns true
@@ -853,13 +853,13 @@ namespace SobekCM.Tools.Logs
         /// </summary>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
-        /// while processing, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
-        private bool openConnection()
+        /// while processing, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
+        private bool OpenConnection()
         {
             try
             {	// try to open an existing file
                 logFileStream = new FileStream(FileName, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
-                return readHeader();
+                return ReadHeader();
             }
             catch
             {
@@ -867,8 +867,8 @@ namespace SobekCM.Tools.Logs
                 {	// try to create a new file since it was unable to open the existing
                     logFileStream = new FileStream(FileName, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
                     DateCreated = DateTime.Now;
-                    createHeader();
-                    writeClosingTags();
+                    CreateHeader();
+                    WriteClosingTags();
                     return true;
                 }
                 catch
@@ -883,29 +883,29 @@ namespace SobekCM.Tools.Logs
         /// <summary>  Creates the header for a new log file  </summary>
         /// <returns> TRUE if sucessful, otherwise FALSE </returns>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
-        /// while processing, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
-        private bool createHeader()
+        /// while processing, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
+        private bool CreateHeader()
         {	
             try
             {
                 // Create the header with references, style sheet, etc...
                 // Also, create the beginning of the body with the title to display
-                writeToLog(COMPLETE_NEW_HEADER + NEW_START_BODY1 + title +  NEW_START_BODY2 );
+                WriteToLog(COMPLETE_NEW_HEADER + NEW_START_BODY1 + title +  NEW_START_BODY2 );
 
                 // Insert the title into the header
                 if ( title.Length > 25 )
-                    writeAtPos( titlePosition, title.Substring(0,25) + " </title>");			
+                    WriteAtPos( TITLE_POSITION, title.Substring(0,25) + " </title>");			
                 else
-                    writeAtPos( titlePosition, title + " </title>");
+                    WriteAtPos( TITLE_POSITION, title + " </title>");
 
                 // Insert the other META data into the header
-                writeAtPos( createDatePosition, DateCreated.ToString() );
-                writeAtPos( rowHeaderPosition, eachRowHeader + "\">" );
-                writeAtPos( dateStampPosition, DateStampingEnabled.ToString() + "\">" );
-                writeAtPos( applicationPosition, appName + "\">" );
+                WriteAtPos( CREATE_DATE_POSITION, DateCreated.ToString() );
+                WriteAtPos( ROW_HEADER_POSITION, eachRowHeader + "\">" );
+                WriteAtPos( DATE_STAMP_POSITION, DateStampingEnabled.ToString() + "\">" );
+                WriteAtPos( APPLICATION_POSITION, appName + "\">" );
 
                 // Write the current position into the header
-                saveCurrentPosition( );
+                SaveCurrentPosition( );
 
                 return true;
             }
@@ -919,38 +919,38 @@ namespace SobekCM.Tools.Logs
 
         /// <summary> Saves the current position into the XHTML header </summary>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
-        /// while processing, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
-        private void saveCurrentPosition( )
+        /// while processing, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
+        private void SaveCurrentPosition( )
         {
-            writeAtPos( positionPosition, currentPosition + "\">" );
+            WriteAtPos( POSITION_POSITION, currentPosition + "\">" );
         }
 
         /// <summary> Saves the number of current errors into the XHTML header </summary>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
-        /// while processing, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
-        private void saveErrorCount( )
+        /// while processing, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
+        private void SaveErrorCount( )
         {
-            writeAtPos( errorPosition, ErrorCount + "\">" );
+            WriteAtPos( ERROR_POSITION, ErrorCount + "\">" );
         }
 
         /// <summary>  Writes at a certain position in the log File </summary>
-        /// <param name="newPosition"> Position to write at </param>
-        /// <param name="msg"> Message to write </param>
+        /// <param name="NewPosition"> Position to write at </param>
+        /// <param name="Msg"> Message to write </param>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
-        /// while processing, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
-        private void writeAtPos( int newPosition, string msg )
+        /// while processing, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
+        private void WriteAtPos( int NewPosition, string Msg )
         {
             int nextPosition = currentPosition;
-            currentPosition = newPosition;
-            writeToLog(msg);
+            currentPosition = NewPosition;
+            WriteToLog(Msg);
             currentPosition = nextPosition;
         }
     
         /// <summary> Reads the header information </summary>
         /// <returns> FALSE if it was corrupted </returns>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
-        /// while processing, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
-        private bool readHeader()
+        /// while processing, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
+        private bool ReadHeader()
         {
             try
             {
@@ -965,13 +965,13 @@ namespace SobekCM.Tools.Logs
 
                 // Populate the variables with the provided information
                 string tempReadString = tempRead.ToString();
-                currentPosition = Convert.ToInt32(tempReadString.Substring(positionPosition, 11).Split('\"')[0]);
-                string dateString = tempReadString.Substring(createDatePosition, 23);
+                currentPosition = Convert.ToInt32(tempReadString.Substring(POSITION_POSITION, 11).Split('\"')[0]);
+                string dateString = tempReadString.Substring(CREATE_DATE_POSITION, 23);
                 dateString = dateString.Split('\"')[0].Replace("-","").Trim();
                 DateCreated = Convert.ToDateTime(dateString);
-                eachRowHeader = tempReadString.Substring(rowHeaderPosition, 23).Split('\"')[0];
-                DateStampingEnabled = Convert.ToBoolean(tempReadString.Substring(dateStampPosition, 6).Split('\"')[0]);
-                ErrorCount = Convert.ToInt32(tempReadString.Substring(errorPosition, 8).Split('\"')[0]);
+                eachRowHeader = tempReadString.Substring(ROW_HEADER_POSITION, 23).Split('\"')[0];
+                DateStampingEnabled = Convert.ToBoolean(tempReadString.Substring(DATE_STAMP_POSITION, 6).Split('\"')[0]);
+                ErrorCount = Convert.ToInt32(tempReadString.Substring(ERROR_POSITION, 8).Split('\"')[0]);
                 return true;
             }
             catch
@@ -985,19 +985,19 @@ namespace SobekCM.Tools.Logs
         /// <summary>  Take a basic line to go into the log and append the date or rowHeader
         /// as necessary.  Also, breaks up the message if it exceeds the line length
         /// for the log file. </summary>
-        /// <param name="origMsg"> Original message </param>
-        /// <param name="styleType"> StyleType name to use </param>
-        /// <param name="strong"> Tells whether this is strong or not </param>
+        /// <param name="OrigMsg"> Original message </param>
+        /// <param name="StyleType"> StyleType name to use </param>
+        /// <param name="Strong"> Tells whether this is strong or not </param>
         /// <returns> The configured line </returns>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
-        /// while processing, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
-        private string configureText(string origMsg, string styleType, bool strong )
+        /// while processing, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
+        private string ConfigureText(string OrigMsg, string StyleType, bool Strong )
         {
             // Declare the new stringBuilder and set to the original message
-            StringBuilder lineBuilder = new StringBuilder(origMsg);
+            StringBuilder lineBuilder = new StringBuilder(OrigMsg);
 
             // If this text should be strong add the strong tags
-            if ( strong )
+            if ( Strong )
             {
                 lineBuilder.Insert(0, "<strong>");
                 lineBuilder.Append("</strong>");
@@ -1009,7 +1009,7 @@ namespace SobekCM.Tools.Logs
                 lineBuilder.Insert(0, DateTime.Now.ToString() + " - ");
 
             // Finally, insert the <div> tags
-            lineBuilder.Insert(0,"<div class=\"" + styleType + "\"> ");
+            lineBuilder.Insert(0,"<div class=\"" + StyleType + "\"> ");
             lineBuilder.Append("</div>\r\n");
 
             return lineBuilder.ToString();
@@ -1020,8 +1020,8 @@ namespace SobekCM.Tools.Logs
         /// <param name="msg"> Message to write </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
-        /// while processing, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
-        private bool writeToLog(string msg)
+        /// while processing, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
+        private bool WriteToLog(string msg)
         {
             try
             {
@@ -1043,13 +1043,13 @@ namespace SobekCM.Tools.Logs
         /// <summary>  Saves and closes the log file </summary>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         /// <exception cref="LogFile_Exception"> A <see cref="LogFile_Exception"/> will be thrown if there is an error
-        /// while processing, unless the <see cref="LogFileXHTML.SuppressExceptions"/> flag is set to true. </exception>
-        private bool closeConnection()
+        /// while processing, unless the <see cref="LogFileXhtml.SuppressExceptions"/> flag is set to true. </exception>
+        private bool CloseConnection()
         {
             try
             {
-                saveCurrentPosition();
-                saveErrorCount();
+                SaveCurrentPosition();
+                SaveErrorCount();
                 logFileStream.Close();
                 return true;
             }

@@ -14,6 +14,7 @@ using SobekCM.Resource_Object;
 
 namespace SobekCM.Library.Citation.Elements
 {
+    /// <summary> Element to allow users to enter a URL for an embedded video to display within a digital resource </summary>
     public class EmbeddedVideo_Element: textArea_Element
     {
         /// <summary> Constructor for a new instance of the Note_Element class </summary>
@@ -40,23 +41,23 @@ namespace SobekCM.Library.Citation.Elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Enter the complete HTML to embed an external video in this digital resource.";
+                const string DEFAULT_ACRONYM = "Enter the complete HTML to embed an external video in this digital resource.";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.Spanish:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.French:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     default:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
                 }
             }
@@ -84,7 +85,7 @@ namespace SobekCM.Library.Citation.Elements
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
             string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
-            foreach (string thisKey in getKeys.Where(thisKey => thisKey.IndexOf(html_element_name) == 0))
+            foreach (string thisKey in getKeys.Where(ThisKey => ThisKey.IndexOf(html_element_name) == 0))
             {
                 string video_embedding_html = HttpContext.Current.Request.Form[thisKey];
 

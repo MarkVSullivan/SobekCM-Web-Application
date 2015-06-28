@@ -7,7 +7,6 @@ using System.Text;
 using SobekCM.Core;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Email;
-using SobekCM.Library.Database;
 
 #endregion
 
@@ -23,7 +22,7 @@ namespace SobekCM.Library.Email
 
         private const string TOO_MANY_ITEMS_MESSAGE = "<p>Below are the details for your top 10 items.  See the link below to view usage statistics for all <%COUNT%> of your items.</p>";
 
-        private static string EmailBody;
+        private static string emailBody;
 
         /// <summary> Sets the email body, from a source file </summary>
         /// <param name="SourceFile"> File to read the source from </param>
@@ -34,7 +33,7 @@ namespace SobekCM.Library.Email
             {
                 if (File.Exists(SourceFile))
                 {
-                    EmailBody = File.ReadAllText(SourceFile);
+                    emailBody = File.ReadAllText(SourceFile);
                 }
             }
             catch { }
@@ -49,12 +48,14 @@ namespace SobekCM.Library.Email
         /// <param name="Month"> Month of statistics to highlight in the email </param>
         /// <param name="Number_Of_Items_To_Include"> Number of items to include in this email, in case the user has many, many items linked </param>
         /// <param name="System_URL"> Base URL to use for links to these items </param>
+        /// <param name="System_Name"> Name of the SobekCM instance </param>
+        /// <param name="FromAddress"> Address from which the email should be sent </param>
         /// <returns> TRUE if succesful, otherwise FALSE </returns>
         public static bool Send_Individual_Usage_Email(int UserID, string User_Name, string User_Email, int Year, int Month, int Number_Of_Items_To_Include, string System_URL, string System_Name,  string FromAddress )
         {
             // If no email body was loaded, use the default
-            if (String.IsNullOrEmpty(EmailBody))
-                EmailBody = DEFAULT_EMAIL_BODY;
+            if (String.IsNullOrEmpty(emailBody))
+                emailBody = DEFAULT_EMAIL_BODY;
 
             try
             {
@@ -105,7 +106,7 @@ namespace SobekCM.Library.Email
                     if (item_count > Number_Of_Items_To_Include)
                         itemStatsBuilder.Insert(0, TOO_MANY_ITEMS_MESSAGE.Replace("<%COUNT%>", item_count.ToString()));
 
-                    string email_body_user = EmailBody.Replace("<%TOTAL%>", Number_To_String(total_total_hits)).Replace("<%MONTHLY%>", Number_To_String(total_month_hits)).Replace("<%ITEMS%>", itemStatsBuilder.ToString()).Replace("<%DATE%>", Month_From_Int(Month) + " " + Year).Replace("<%NAME%>", User_Name).Replace("<%SYSURL%>", System_URL).Replace("<%SYSNAME%>", System_Name).Replace("<%YEAR%>", Year.ToString()).Replace("<%MONTH%>", Month.ToString().PadLeft(2, '0')) + "<br /><br /><p>( " + Month_From_Int(Month) + " " + Year + " )</p>";
+                    string email_body_user = emailBody.Replace("<%TOTAL%>", Number_To_String(total_total_hits)).Replace("<%MONTHLY%>", Number_To_String(total_month_hits)).Replace("<%ITEMS%>", itemStatsBuilder.ToString()).Replace("<%DATE%>", Month_From_Int(Month) + " " + Year).Replace("<%NAME%>", User_Name).Replace("<%SYSURL%>", System_URL).Replace("<%SYSNAME%>", System_Name).Replace("<%YEAR%>", Year.ToString()).Replace("<%MONTH%>", Month.ToString().PadLeft(2, '0')) + "<br /><br /><p>( " + Month_From_Int(Month) + " " + Year + " )</p>";
 
                     // Only send the email if there was actually usage this month though
                     if (total_month_hits > 0)

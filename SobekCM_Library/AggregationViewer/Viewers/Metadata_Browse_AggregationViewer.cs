@@ -26,7 +26,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     /// Collection viewers are used when displaying collection home pages, searches, browses, and information pages.<br /><br />
     /// During a valid html request to display a static browse or info page, the following steps occur:
     /// <ul>
-    /// <li>Application state is built/verified by the <see cref="Application_State_Builder"/> </li>
+    /// <li>Application state is built/verified by the Application_State_Builder </li>
     /// <li>Request is analyzed by the <see cref="QueryString_Analyzer"/> and output as a <see cref="Navigation_Object"/> </li>
     /// <li>Main writer is created for rendering the output, in this case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  For a collection-level request, an instance of the  <see cref="Aggregation_HtmlSubwriter"/> class is created. </li>

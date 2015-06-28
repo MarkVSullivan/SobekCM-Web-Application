@@ -7,7 +7,6 @@ using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
@@ -31,15 +30,16 @@ namespace SobekCM.Library.HTML
 	        this.RequestSpecificValues = RequestSpecificValues;
 	    }
 
-		/// <summary> Adds the banner to the response stream from either the html web skin
-		/// or from the current item aggreagtion object, depending on flags in the web skin object </summary>
-		/// <param name="Output"> Stream to which to write the HTML for the banner </param>
-		/// <param name="Banner_Division_Name"> Name for the wrapper division around the banner </param>
-		/// <param name="Hierarchy_Object"> Current item aggregation object to display </param>
-		/// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
-		/// <param name="CurrentMode"> Mode / navigation information for the current request</param>
-		/// <remarks> This is called by several html subwriters that otherwise tell this class to suppress writing the banner </remarks>
-		public static void Add_Banner(TextWriter Output, string Banner_Division_Name, string Web_Page_Title, Navigation_Object CurrentMode, Web_Skin_Object HTML_Skin, Item_Aggregation Hierarchy_Object)
+	    /// <summary> Adds the banner to the response stream from either the html web skin
+	    /// or from the current item aggreagtion object, depending on flags in the web skin object </summary>
+	    /// <param name="Output"> Stream to which to write the HTML for the banner </param>
+	    /// <param name="Banner_Division_Name"> Name for the wrapper division around the banner </param>
+	    /// <param name="Hierarchy_Object"> Current item aggregation object to display </param>
+	    /// <param name="HTML_Skin"> HTML Web skin which controls the overall appearance of this digital library </param>
+	    /// <param name="Web_Page_Title"> Web page title to add behind the banner image </param>
+	    /// <param name="CurrentMode"> Mode / navigation information for the current request</param>
+	    /// <remarks> This is called by several html subwriters that otherwise tell this class to suppress writing the banner </remarks>
+	    public static void Add_Banner(TextWriter Output, string Banner_Division_Name, string Web_Page_Title, Navigation_Object CurrentMode, Web_Skin_Object HTML_Skin, Item_Aggregation Hierarchy_Object)
 		{
 			Output.WriteLine("<!-- Write the main collection, interface, or institution banner -->");
             if ((HTML_Skin != null) && (HTML_Skin.Override_Banner.HasValue) && (HTML_Skin.Override_Banner.Value))

@@ -39,6 +39,7 @@ namespace SobekCM.Core.Settings
 
         private string inProcessLocationOverride;
 
+        /// <summary> Gets the URL for the SobekCM engine for this instance </summary>
         public string Engine_URL { get { return System_Base_URL + "engine/";  } }
 
         /// <summary> constructor sets all the values to default empty strings </summary>
@@ -741,6 +742,7 @@ namespace SobekCM.Core.Settings
             return userInProcessDirectory;
         }
 
+        /// <summary> Method is called by the serializer after this item is unserialized </summary>
         public void PostUnSerialization()
         {
             // Populate the dictionaries for looking up metadata search fields by code, id, name, etc..

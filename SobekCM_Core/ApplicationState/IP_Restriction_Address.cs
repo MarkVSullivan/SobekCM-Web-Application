@@ -12,7 +12,7 @@ namespace SobekCM.Core.ApplicationState
         private readonly uint endIPAsInt;
         private readonly uint startIpAsInt;
 
-        private static readonly char[] dotArray = new[] { '.' };
+        private static readonly char[] dotArray = { '.' };
 
         /// <summary> Constructor for a new instance of the IP_Restriction_Address class </summary>
         /// <param name="Start_IP"> Beginning of the IP , or the complete IP address </param>

@@ -1,14 +1,16 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 using ProtoBuf;
 
+#endregion
+
 namespace SobekCM.Core.ResultTitle
 {
+    /// <summary> Wrapper object contains all the information about a single page of results </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("resultTitle")]
     public class ResultSetPage
@@ -19,6 +21,7 @@ namespace SobekCM.Core.ResultTitle
         [ProtoMember(1)]
         public int Page { get; set; }
 
+        /// <summary> Collection of results for this page of results within the larger set </summary>
         [DataMember(EmitDefaultValue = false, Name = "results")]
         [XmlArray("results")]
         [XmlArrayItem("title", typeof(ResultTitleInfo))]

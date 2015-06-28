@@ -22,8 +22,8 @@ namespace SobekCM.Library.MySobekViewer
     /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
     /// During a valid html request, the following steps occur:
     /// <ul>
-    /// <li>Application state is built/verified by the <see cref="Application_State.Application_State_Builder"/> </li>
-    /// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation_Object"/> </li>
+    /// <li>Application state is built/verified by the Application_State_Builder </li>
+    /// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/> </li>
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
     /// <li>The mySobek subwriter creates an instance of this viewer to display the item for editing</li>
@@ -64,6 +64,9 @@ namespace SobekCM.Library.MySobekViewer
             get { return "My Saved Searches"; }
         }
 
+        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of any form) </summary>
+        /// <param name="Output">Textwriter to write the HTML for this viewer</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
             // Do nothing

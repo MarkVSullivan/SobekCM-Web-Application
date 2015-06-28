@@ -1521,6 +1521,9 @@ namespace SobekCM.Library.HTML
 
         #endregion
 
+        /// <summary> Write the treeview to the specified output </summary>
+        /// <param name="Output"> Stream to the HTML response output </param>
+        /// <param name="Tracer">The tracer.</param>
         protected internal void write_treeview(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jstree_Js + "\"></script>");

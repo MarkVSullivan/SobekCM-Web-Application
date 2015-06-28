@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Web;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -26,8 +26,8 @@ namespace SobekCM.Library.AdminViewer
     /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
     /// During a valid html request, the following steps occur:
     /// <ul>
-    /// <li>Application state is built/verified by the <see cref="Application_State.Application_State_Builder"/> </li>
-    /// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation_Object"/> </li>
+    /// <li>Application state is built/verified by the Application_State_Builder </li>
+    /// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/> </li>
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
     /// <li>The mySobek subwriter creates an instance of this viewer to manage the item aggregation aliases in this digital library</li>
@@ -214,8 +214,8 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("      <td><label for=\"form_forwarding_code\">Item Aggregation:</label></td>");
             Output.WriteLine("      <td colspan=\"2\">");
             Output.WriteLine("        <select class=\"sbkAav_input sbkAdmin_Focusable\" name=\"form_forwarding_code\" id=\"form_forwarding_code\">");
-            List<Core.Aggregations.Item_Aggregation_Related_Aggregations> aggrCodes = UI_ApplicationCache_Gateway.Aggregations.All_Aggregations;
-            foreach (Core.Aggregations.Item_Aggregation_Related_Aggregations thisAggr in aggrCodes)
+            List<Item_Aggregation_Related_Aggregations> aggrCodes = UI_ApplicationCache_Gateway.Aggregations.All_Aggregations;
+            foreach (Item_Aggregation_Related_Aggregations thisAggr in aggrCodes)
             {
                 if ( thisAggr.ShortName.Length > 65 )
                     Output.WriteLine("          <option value=\"" + thisAggr.Code.ToUpper() + "\">" + thisAggr.Code + " - " + thisAggr.ShortName.Substring(0,65) + "...</option>");
@@ -266,7 +266,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("          <td colspan=\"2\">");
             Output.WriteLine("            <select class=\"sbkAav_input sbkAdmin_Focusable\" name=\"admin_forwarding_code\" id=\"admin_forwarding_code\">");
             Output.WriteLine("              <option value=\"\"></option>");
-            foreach (Core.Aggregations.Item_Aggregation_Related_Aggregations thisAggr in aggrCodes)
+            foreach (Item_Aggregation_Related_Aggregations thisAggr in aggrCodes)
             {
                 Output.WriteLine("              <option value=\"" + thisAggr.Code + "\">" + thisAggr.Code + " - " + HttpUtility.HtmlEncode(thisAggr.ShortName) + "</option>");
 

@@ -13,8 +13,6 @@ using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Database;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
@@ -45,45 +43,24 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Internal_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
-            string title = RequestSpecificValues.Current_Mode.Instance_Abbreviation.ToUpper() + " HOME";
-            string collection_details = "COLLECTION HIERARCHY";
             string collection_details_title = "Active and Inactive Collections";
-            string new_items = "NEW ITEMS";
             string new_items_title = "Newly Added or Modified Items";
-            string memory_mgmt = "MEMORY MANAGEMENT";
             string memory_mgmt_title = "Current Memory Profile";
-            string wordmarks = "WORDMARKS";
-            string wordmarks_title = "Wordmarks";
-            const string buildFailures = "BUILD FAILURES";
-            const string buildFailuresTitle = "Build Failure Log";
-            const string unauthorizedTitle = "Internal Users Only";
-            string my_sobek_home = "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation.ToUpper() + " HOME";
-            const string myLibrary = "MY LIBRARY";
-            const string myPreferences = "MY ACCOUNT";
-            const string internalTab = "INTERNAL";
-            string sobek_admin = "SYSTEM ADMIN";
-            if ((RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_System_Admin))
-                sobek_admin = "PORTAL ADMIN";
+            const string WORDMARKS_TITLE = "Wordmarks";
+            const string BUILD_FAILURES_TITLE = "Build Failure Log";
+            const string UNAUTHORIZED_TITLE = "Internal Users Only";
 
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
             {
-                title = "INICIO";
-                collection_details = "DETALLES DE LA COLECCIÓN";
                 collection_details_title = "Activos e inactivos colecciones";
-                new_items = "NUEVOS ARTÍCULOS";
                 new_items_title = "Objetos recien Agregados o Modificados";
-                memory_mgmt = "MEMORIA";
                 memory_mgmt_title = "Actual del uso de la memoria";
             }
 
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.French)
             {
-                title = "PAGE D'ACCUEIL";
-                collection_details = "DETAILS DE LA COLLECTION";
                 collection_details_title = "Actifs et inactifs collections";
-                new_items = "LES NOUVEAUX DOCUMENTS";
                 new_items_title = "Documents récents ou venant d'être modifié";
-                memory_mgmt = "MÉMOIRE";
                 memory_mgmt_title = "L'utilisation de la mémoire en cours";
             }
 
@@ -99,7 +76,7 @@ namespace SobekCM.Library.HTML
             if (!isAuthorized)
             {
                 Output.WriteLine("<div class=\"SobekSearchPanel\">");
-                Output.WriteLine("  <h1>" + unauthorizedTitle + "</h1>");
+                Output.WriteLine("  <h1>" + UNAUTHORIZED_TITLE + "</h1>");
                 Output.WriteLine("</div>");
 
                 Output.WriteLine("<div class=\"SobekText\">");
@@ -136,7 +113,7 @@ namespace SobekCM.Library.HTML
                         break;
 
                     case Internal_Type_Enum.Build_Failures:
-                        stat_title = buildFailuresTitle;
+                        stat_title = BUILD_FAILURES_TITLE;
                         break;
 
                     case Internal_Type_Enum.Cache:
@@ -144,7 +121,7 @@ namespace SobekCM.Library.HTML
                         break;
 
                     case Internal_Type_Enum.Wordmarks:
-                        stat_title = wordmarks_title;
+                        stat_title = WORDMARKS_TITLE;
                         break;
                 }
 
@@ -488,7 +465,6 @@ namespace SobekCM.Library.HTML
             string global_values = "GLOBAL VALUES";
             string application_state = "APPLICATION STATE VALUES";
             string local_cache_state = "LOCALLY CACHED OBJECTS";
-            string remote_cache_state = "REMOTELY CACHED OBJECTS";
             string session_state = "SESSION STATE VALUES";
             string variable_name = "INSTANCE NAME";
             string key = "KEY";
@@ -499,7 +475,6 @@ namespace SobekCM.Library.HTML
                     global_values = "VALEURS MONIDAL";
                     application_state = "APPLICATAION LES VALEURS DE L'ÉTAT";
                     local_cache_state = "MIS EN CACHE LOCALEMENT DES VALEURS";
-                    remote_cache_state = "A DISTANCE EN CACHE DES VALEURS";
                     session_state = "SESSION LES VALEURS DE L'ÉTAT";
                     variable_name = "Nom Instance";
                     key = "Clef";
@@ -511,7 +486,6 @@ namespace SobekCM.Library.HTML
                     global_values = "GLOBAL VALORES";
                     application_state = "APLICACIÓN ESTADO VALORES";
                     local_cache_state = "LOCALMENTE EN CACHE LOS VALORES";
-                    remote_cache_state = "DE FORMA REMOTA LOS VALORES ALMACENADOS EN CACHE";
                     session_state = "SESIÓN ESTADO VALORES";
                     variable_name = "Instancia Nombre";
                     key = "Clave";
@@ -680,59 +654,6 @@ namespace SobekCM.Library.HTML
                 // Close out this table
                 Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
                 Output.WriteLine("</table>");
-
-                // Start the remotely cached data
-                Output.WriteLine("<br /><br />");
-
-                // Add the header information
-                Output.WriteLine("<table width=\"720px\" cellspacing=\"0px\">");
-                Output.WriteLine("  <tr align=\"center\" bgcolor=\"#0022a7\"><td colspan=\"2\"><span style=\"color: White\"><b>" + remote_cache_state + "</b></span></td></tr>");
-                Output.WriteLine("  <tr align=\"left\" bgcolor=\"#7d90d5\">");
-                Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + key + "</span></th>");
-                Output.WriteLine("    <th align=\"left\"><span style=\"color: White\">" + objectTitle + "</span></th>");
-                Output.WriteLine("  </tr>");
-
-                try
-                {
-                    // Now, get the information from the cache
-                    ReadOnlyCollection<Cached_Object_Info> network_cached_objects = CachedDataManager.Remotely_Cached_Objects;
-                    if (network_cached_objects.Count == 0)
-                    {
-                        Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                        Output.WriteLine("  <tr align=\"left\">");
-                        Output.WriteLine("    <td><i>( none )</i></td>");
-                        Output.WriteLine("    <td><i>( none )</td>");
-                        Output.WriteLine("  </tr>");
-                    }
-                    else
-                    {
-                        foreach (Cached_Object_Info thisItem in network_cached_objects)
-                        {
-                            // Add this row
-                            Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                            Output.WriteLine("  <tr align=\"left\">");
-                            Output.WriteLine("    <td>" + thisItem.Object_Key + "</td>");
-                            string typeString = "<i>UNKNOWN</i>";
-                            if ( thisItem.Object_Key != null )
-                                typeString = thisItem.Object_Type.FullName;
-                            if (typeString == "System.Collections.Generic.List`1[[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]")
-                                typeString = "generic List&lt;System.String&gt;";
-                            if (typeString != null && typeString.Length == 0)
-                                typeString = "<i>UNKNOWN</i>";
-                            Output.WriteLine("    <td>" + typeString + "</td>");
-                            Output.WriteLine("  </tr>");
-                        }
-                    }
-                }
-                catch (Exception)
-                {
-                    Output.WriteLine("<strong>Error caught while pulling remotely cached memory management information</strong>");
-                }
-
-                // Close out this table
-                Output.WriteLine("  <tr><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
-                Output.WriteLine("</table>");
-
 
                 // Start the session data
                 Output.WriteLine("<br /><br />");
@@ -987,23 +908,9 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("        <td>" + thisAggr.Type + "</td>");
                     Output.WriteLine("        <td>" + thisAggr.Name + "</td>");
 
-                    if (thisAggr.Active)
-                    {
-                        Output.WriteLine("        <td>Y</td>");
-                    }
-                    else
-                    {
-                        Output.WriteLine("        <td>N</td>");
-                    }
+                    Output.WriteLine(thisAggr.Active ? "        <td>Y</td>" : "        <td>N</td>");
 
-                    if (thisAggr.Thematic_Heading != null)
-                    {
-                        Output.WriteLine("        <td>Y</td>");
-                    }
-                    else
-                    {
-                        Output.WriteLine("        <td>N</td>");
-                    }
+                    Output.WriteLine(thisAggr.Thematic_Heading != null ? "        <td>Y</td>" : "        <td>N</td>");
                     if (thisAggr.Parent_Count > 0)
                     {
                         Output.WriteLine("        <td>" + thisAggr.Parents[0].Code + "</td>");
@@ -1090,7 +997,7 @@ namespace SobekCM.Library.HTML
             const string BIBID = "BIBID : VID";
             string last_event = "DATE";
             string mets_type = "METS TYPE";
-            const string allTypes = "ALL";
+            const string ALL_TYPES = "ALL";
 
             string online_edits = "ONLINE EDITS";
             string online_submits = "ONLINE SUBMITS";
@@ -1145,12 +1052,12 @@ namespace SobekCM.Library.HTML
 
             if (type == "all")
             {
-                Output.WriteLine("    <li class=\"current\">" + allTypes + "</li>");
+                Output.WriteLine("    <li class=\"current\">" + ALL_TYPES + "</li>");
             }
             else
             {
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
-                Output.WriteLine("    <li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + allTypes + "</a></li>");
+                Output.WriteLine("    <li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + ALL_TYPES + "</a></li>");
             }
 
             if (type == "edit")
@@ -1460,6 +1367,8 @@ namespace SobekCM.Library.HTML
 
         }
 
+        /// <summary>  Gets the collection of special behaviors which this subwriter
+        /// requests from the main HTML writer.  </summary>
         public override List<HtmlSubwriter_Behaviors_Enum> Subwriter_Behaviors
         {
             get { return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Banner }; }

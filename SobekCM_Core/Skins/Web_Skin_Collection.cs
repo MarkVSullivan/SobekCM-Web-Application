@@ -2,12 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Data;
 using System.Linq;
 using System.Runtime.Serialization;
 using ProtoBuf;
-using SobekCM.Resource_Object.Database;
 
 #endregion
 
@@ -18,9 +16,13 @@ namespace SobekCM.Core.Skins
     [Serializable, DataContract, ProtoContract]
 	public class Web_Skin_Collection
 	{
+        /// <summary> Gets the ordered list of web skin codes </summary>
+        /// <value>
+        /// The ordered_ skin_ codes.
+        /// </value>
         [DataMember(Name = "orderedCodes")]
         [ProtoMember(1)]
-        public List<string> Ordered_Skin_Codes { get; set; }
+        public List<string> Ordered_Skin_Codes { get; private set; }
 
 	    /// <summary> Constructor for a new instance of the Web_Skin_Collection class  </summary>
 		public Web_Skin_Collection()
@@ -31,7 +33,7 @@ namespace SobekCM.Core.Skins
         /// <summary> Constructor for a new instance of the Web_Skin_Collection class  </summary>
         /// <param name="Interface_Table"> Datatable with the interface details for all valid HTML skins from the database </param>
         /// <remarks> This datatable is retrieved from the database by calling 
-        /// the <see cref="Engine_Database.Get_All_Web_Skins"/> method</remarks>
+        /// the Get_All_Web_Skins method</remarks>
         public Web_Skin_Collection(DataTable Interface_Table)
         {
             Ordered_Skin_Codes = new List<string>();
@@ -52,8 +54,8 @@ namespace SobekCM.Core.Skins
 
 	    /// <summary> Datatable which has the information about every valid HTML skin from the database </summary>
 	    /// <remarks> This is passed in during construction of this object.  This datatable was retrieved by calling 
-	    /// the <see cref="SobekCM_Database.Get_All_Web_Skins"/> method during 
-	    /// application startup when the <see cref="SobekCM_Skin_Collection_Builder.Populate_Default_Skins"/> method is called. </remarks>
+	    /// the Get_All_Web_Skins method during 
+	    /// application startup when the Web_Skin_Collection_Builder.Populate_Default_Skins method is called. </remarks>
 	    [DataMember]
 	    public DataTable Skin_Table { get; set; }
 
@@ -67,8 +69,8 @@ namespace SobekCM.Core.Skins
 	    /// <param name="Skin_Code"> Code for the HTML skin information to retrieve </param>
 	    /// <returns> Row from a database query with basic information about the skin to build ( codes, override flags, banner link ), or NULL </returns>
 	    /// <remarks> The datarow for this method is from the datatable passed in during construction of this object.  This datatable was retrieved by calling 
-	    /// the <see cref="Database.SobekCM_Database.Get_All_Web_Skins"/> method during 
-	    /// application startup when the <see cref="SobekCM_Skin_Collection_Builder.Populate_Default_Skins"/> method is called. </remarks>
+	    /// the Get_All_Web_Skins method during 
+	    /// application startup when the Web_Skin_Collection_Builder.Populate_Default_Skins method is called. </remarks>
 	    public DataRow Skin_Row(string Skin_Code )
 	    {
 	        DataRow[] selectedRows = Skin_Table.Select("WebSkinCode = '" + Skin_Code + "'");

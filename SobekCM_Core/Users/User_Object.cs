@@ -195,7 +195,7 @@ namespace SobekCM.Core.Users
         private readonly Dictionary<string, object> userSettings;
 
 		private readonly List<string> templates_from_groups;
-	    private readonly List<string> defaultMetadataSets_from_groups;
+	    private readonly List<string> defaultMetadataSetsFromGroups;
 
         #endregion
 
@@ -243,7 +243,7 @@ namespace SobekCM.Core.Users
 			userSettings = new Dictionary<string, object>();
 	        Can_Delete_All = false;
             Authentication_Type = User_Authentication_Type_Enum.NONE;
-			defaultMetadataSets_from_groups = new List<string>();
+			defaultMetadataSetsFromGroups = new List<string>();
 			templates_from_groups = new List<string>();
             LoggedOn = false;
 
@@ -603,7 +603,7 @@ namespace SobekCM.Core.Users
         public void Set_Aggregation_Home_Page_Flag(string Code, string Name, bool Flag)
         {
             string aggrCodeUpper = Code.ToUpper();
-            if ((aggregationPermissions != null) && (aggregationPermissions.Aggregations != null))
+            if (aggregationPermissions.Aggregations != null)
             {
                 foreach (User_Permissioned_Aggregation thisAggregation in aggregationPermissions.Aggregations.Where(ThisAggregation => ThisAggregation.Code == aggrCodeUpper))
                 {
@@ -740,20 +740,27 @@ namespace SobekCM.Core.Users
                 bookshelfObjectIds.Add(objid);
         }
 
+        /// <summary> Clear the list of aggregation permissions associated with this user </summary>
         public void Clear_Aggregations()
         {
             aggregationPermissions.Clear();
         }
 
-        /// <summary> Add a new item aggregation to this user's collection of item aggregationPermissions </summary>
-        /// <param name="Code">Code for this user editable item aggregation</param>
-        /// <param name="Name">Name for this user editable item aggregation </param>
-        /// <param name="CanSelect">Flag indicates if this user can add items to this item aggregation</param>
-        /// <param name="CanEditItems">Flag indicates if this user can edit any items in this item aggregation</param>
-        /// <param name="IsCurator"> Flag indicates if this user is listed as the curator or collection manager for this given digital aggregation </param>
-        /// <param name="OnHomePage"> Flag indicates if this user has asked to have this aggregation appear on their personalized home page</param>
-        /// <param name="IsAdmin"> Flag indicates if this user is listed athe admin for this aggregation </param>
-		public void Add_Aggregation(string Code, string Name, bool CanSelect, bool CanEditMetadata, bool CanEditBehaviors, bool CanPerformQc, bool CanUploadFiles, bool CanChangeVisibility, bool CanDelete, bool IsCurator, bool OnHomePage, bool IsAdmin, bool GroupDefined )
+	    /// <summary> Add a new item aggregation to this user's collection of item aggregationPermissions </summary>
+	    /// <param name="Code">Code for this user editable item aggregation</param>
+	    /// <param name="Name">Name for this user editable item aggregation </param>
+	    /// <param name="CanSelect">Flag indicates if this user can add items to this item aggregation</param>
+        /// <param name="CanDelete"> Flag indicates if the user can delete items in this aggregation  </param>
+	    /// <param name="IsCurator"> Flag indicates if this user is listed as the curator or collection manager for this given digital aggregation </param>
+	    /// <param name="OnHomePage"> Flag indicates if this user has asked to have this aggregation appear on their personalized home page</param>
+	    /// <param name="IsAdmin"> Flag indicates if this user is listed athe admin for this aggregation </param>
+	    /// <param name="CanEditMetadata"> Flag indicates if the user can edit metadata for all items in this aggregation </param>
+        /// <param name="CanEditBehaviors"> Flag indicates if the user can edit behaviors for all items in this aggregation  </param>
+        /// <param name="CanPerformQc"> Flag indicates if the user can edit perform quality control for all items in this aggregation  </param>
+        /// <param name="CanUploadFiles"> Flag indicates if the user can edit upload files for all items in this aggregation  </param>
+        /// <param name="CanChangeVisibility"> Flag indicates if the user can change the visibility for all items in this aggregation  </param>
+	    /// <param name="GroupDefined"> Flag indicates if these permissions are derived from the group </param>
+	    public void Add_Aggregation(string Code, string Name, bool CanSelect, bool CanEditMetadata, bool CanEditBehaviors, bool CanPerformQc, bool CanUploadFiles, bool CanChangeVisibility, bool CanDelete, bool IsCurator, bool OnHomePage, bool IsAdmin, bool GroupDefined )
         {
             aggregationPermissions.Add(Code, Name, CanSelect, CanEditMetadata, CanEditBehaviors, CanPerformQc, CanUploadFiles, CanChangeVisibility, CanDelete, IsCurator, OnHomePage, IsAdmin, GroupDefined );
         }
@@ -771,10 +778,11 @@ namespace SobekCM.Core.Users
             templates.Clear();
         }
 
-        /// <summary> Adds a template to the list of templates this user can select </summary>
-        /// <param name="Template">Code for this template</param>
-        /// <remarks>This must match the name of one of the template XML files in the mySobek\templates folder</remarks>
-        public void Add_Template(string Template, bool Group_Defined)
+	    /// <summary> Adds a template to the list of templates this user can select </summary>
+	    /// <param name="Template">Code for this template</param>
+	    /// <param name="Group_Defined"> Indicates if this user has permissions to use this tempate through group membership </param>
+	    /// <remarks>This must match the name of one of the template XML files in the mySobek\templates folder</remarks>
+	    public void Add_Template(string Template, bool Group_Defined)
         {
             templates.Add(Template);
 			if ( Group_Defined )
@@ -806,7 +814,7 @@ namespace SobekCM.Core.Users
         {
             defaultMetadataSets.Add(MetadataSet);
 			if ( Group_Defined )
-				defaultMetadataSets_from_groups.Add(MetadataSet);
+				defaultMetadataSetsFromGroups.Add(MetadataSet);
         }
 
         /// <summary> Sets the current default metadata set for this user </summary>
@@ -968,7 +976,7 @@ namespace SobekCM.Core.Users
             //if (!InstanceWide_Settings_Singleton.Settings.Online_Edit_Submit_Enabled)
             //    return false;
 
-            if ( String.Compare(ItemType, "PROJECT", true ) == 0 )
+            if ( String.Compare(ItemType, "PROJECT", StringComparison.OrdinalIgnoreCase ) == 0 )
 				return Is_Portal_Admin;
 
 	        if ((Is_Portal_Admin) || (Is_System_Admin))
@@ -1037,9 +1045,9 @@ namespace SobekCM.Core.Users
         /// <summary> Encrypt a string, given the string.  </summary>
         /// <param name="Source"> String to encrypt </param>
         /// <param name="Key"> Key for the encryption </param>
-        /// <param name="IV"> Initialization Vector for the encryption </param>
+        /// <param name="Iv"> Initialization Vector for the encryption </param>
         /// <returns> The encrypted string </returns>
-        public static string DES_EncryptString(string Source, string Key, string IV)
+        public static string DES_EncryptString(string Source, string Key, string Iv)
         {
             byte[] bytIn = Encoding.ASCII.GetBytes(Source);
             // create a MemoryStream so that the process can be done without I/O files
@@ -1049,7 +1057,7 @@ namespace SobekCM.Core.Users
             DESCryptoServiceProvider desProvider = new DESCryptoServiceProvider
             {
                 Key = Encoding.ASCII.GetBytes(Key),
-                IV = Encoding.ASCII.GetBytes(IV)
+                IV = Encoding.ASCII.GetBytes(Iv)
             };
 
             // create an Encryptor from the Provider Service instance

@@ -7,12 +7,12 @@ using System.Text;
 namespace SobekCM.Tools.Logs
 {
 	/// <summary> [ NOT YET FULLY IMPLEMENTED ] <br /> <br />
-	/// LogFileXHTML_Style is a class used to hold information about a specific style used in the <see cref="LogFileXHTML"/> class. 
+	/// LogFileXHTML_Style is a class used to hold information about a specific style used in the <see cref="LogFileXhtml"/> class. 
 	/// <br /> <br /> </summary>
-	/// <remarks> This class is created by calls to the <see cref="LogFileXHTML.AddNewStyle(string, string, bool)"/> method in the <see cref="LogFileXHTML"/> class. 
+	/// <remarks> This class is created by calls to the <see cref="LogFileXhtml.AddNewStyle(string, string, bool)"/> method in the <see cref="LogFileXhtml"/> class. 
 	/// <br /> <br />
 	/// Object created by Mark V Sullivan (2003) for University of Florida's Digital Library Center.  </remarks> 
-	public class LogFileXHTML_Style
+	public class LogFileXhtmlStyle
 	{
 
 /*=========================================================================
@@ -42,19 +42,19 @@ namespace SobekCM.Tools.Logs
  *=========================================================================*/
 
 		/// <summary> Constructor for the LogFileXHTML_Style class. </summary>
-		/// <param name="bold"> Flag which indicates if this style should have the actual log portion of the line emboldened. </param>
-		/// <param name="font_Color"> The information for the color of the font used for this style. </param>
-		/// <param name="font_Size"> The information for the size of the font to use for this style. </param>
-		/// <param name="italics"> Flag which indicates if the actual log information for these style should be italicized. </param>
-		/// <param name="name"> The name of this style to be referenced in the body of the XHTML document. </param>
-		public LogFileXHTML_Style( bool bold, string font_Color, string font_Size, bool italics, string name )
+        /// <param name="Bold"> Flag which indicates if this style should have the actual log portion of the line emboldened. </param>
+        /// <param name="FontColor"> The information for the color of the font used for this style. </param>
+        /// <param name="FontSize"> The information for the size of the font to use for this style. </param>
+        /// <param name="Italics"> Flag which indicates if the actual log information for these style should be italicized. </param>
+        /// <param name="Name"> The name of this style to be referenced in the body of the XHTML document. </param>
+        public LogFileXhtmlStyle(bool Bold, string FontColor, string FontSize, bool Italics, string Name)
 		{
 			// Save all the properties to the private variables
-			this.bold = bold;
-			fontColor = font_Color;
-			fontSize = font_Size;
-			this.italics = italics;
-			this.name = name;
+			bold = Bold;
+			fontColor = FontColor;
+			fontSize = FontSize;
+			italics = Italics;
+			name = Name;
 
 			// Set the font family to the default of Aerial
 			fontFamily = "Aerial";
@@ -63,8 +63,8 @@ namespace SobekCM.Tools.Logs
 		/// <summary> Constructor for the LogFileXHTML_Style class which takes the style definition from
 		/// HTML and parses each element for this object. </summary>
 		/// <remarks> The input string must be of the exact form which the ToString() method creates. </remarks>
-		/// <param name="style_definition"> Style sheet in HTML format, as output by ToString() </param>
-		public LogFileXHTML_Style( string style_definition )
+		/// <param name="StyleDefinition"> Style sheet in HTML format, as output by ToString() </param>
+		public LogFileXhtmlStyle( string StyleDefinition )
 		{
 			
 

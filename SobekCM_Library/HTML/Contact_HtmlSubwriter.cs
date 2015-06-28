@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Net.Mail;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -13,8 +12,6 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Email;
-using SobekCM.Engine_Library.Navigation;
-using SobekCM.Library.Database;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -211,7 +208,7 @@ namespace SobekCM.Library.HTML
             // Use IdnMapping class to convert Unicode domain names. 
             try
             {
-                strIn = Regex.Replace(strIn, @"(@)(.+)$", this.DomainMapper, RegexOptions.None, TimeSpan.FromMilliseconds(200));
+                strIn = Regex.Replace(strIn, @"(@)(.+)$", DomainMapper, RegexOptions.None, TimeSpan.FromMilliseconds(200));
             }
             catch (RegexMatchTimeoutException)
             {

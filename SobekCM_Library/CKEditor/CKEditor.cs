@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region Using directives
+
+using System;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using SobekCM.Core.Configuration;
-using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 
+#endregion
 
 namespace SobekCM.Library.CKEditor
 {
+    /// <summary> Class is used to write the HTML to allow users to edit web (HTML) content using
+    /// the CKEditor jquery library </summary>
     public class CKEditor
     {
         /// <summary> Constructor for a new instance of the CKEditor class </summary>
@@ -31,6 +32,8 @@ namespace SobekCM.Library.CKEditor
         /// <summary> Add the file input and the necessary script section, with
         /// all the options specfiedi here, directly to the streamwriter </summary>
         /// <param name="Output"> Writer to write to the stream </param>
+        /// <param name="Include_Script_Reference"> Flag indicates if the CKEditor script reference should be
+        /// added to the output stream here </param>
         public void Add_To_Stream(TextWriter Output, bool Include_Script_Reference )
         {
             if (HttpContext.Current == null)

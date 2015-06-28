@@ -1,20 +1,31 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
 
+#endregion
+
 namespace SobekCM.Core.Aggregations
 {
-    /// TODO: Facet comparison below needs to look up the name of the facet, 
-    /// TODO: rather than just showing the primary key to the facet
-
-
+    /// <summary> Class is used to compare two aggregation objects and is generally used to determine
+    /// has been updated within an item aggreation during administrative work </summary>
     public class Complete_Item_Aggregation_Comparer
     {
+        /// <summary> Compares the two aggregation objects and returns a list of differences for saving as milestones
+        /// during aggregation curatorial or administrative work </summary>
+        /// <param name="Base"> Base item aggregation </param>
+        /// <param name="Compared"> New item aggregation object to compare to the base </param>
+        /// <returns> List of changes between the two aggregation objects </returns>
         public static List<string> Compare(Complete_Item_Aggregation Base, Complete_Item_Aggregation Compared )
         {
+
+            // TODO: Facet comparison below needs to look up the name of the facet,
+            // TODO: rather than just showing the primary key to the facet
+
             List<string> changes = new List<string>();
 
             // code
@@ -31,7 +42,7 @@ namespace SobekCM.Core.Aggregations
                 foreach (Item_Aggregation_Related_Aggregations parentAggr in Base.Parents)
                 {
                     // Look in compared for a match
-                    if ((Compared.Parents == null) || (Compared.Parents.All(compareAggr => String.Compare(parentAggr.Code, compareAggr.Code, StringComparison.InvariantCultureIgnoreCase) != 0)))
+                    if ((Compared.Parents == null) || (Compared.Parents.All(CompareAggr => String.Compare(parentAggr.Code, CompareAggr.Code, StringComparison.InvariantCultureIgnoreCase) != 0)))
                     {
                         base_parents.Add(parentAggr.Code);
                     }
@@ -43,7 +54,7 @@ namespace SobekCM.Core.Aggregations
                 foreach (Item_Aggregation_Related_Aggregations parentAggr in Compared.Parents)
                 {
                     // Look in base for a match
-                    if ((Base.Parents == null) || (Base.Parents.All(compareAggr => String.Compare(parentAggr.Code, compareAggr.Code, StringComparison.InvariantCultureIgnoreCase) != 0)))
+                    if ((Base.Parents == null) || (Base.Parents.All(CompareAggr => String.Compare(parentAggr.Code, CompareAggr.Code, StringComparison.InvariantCultureIgnoreCase) != 0)))
                     {
                         compared_parents.Add(parentAggr.Code);
                     }
@@ -157,8 +168,7 @@ namespace SobekCM.Core.Aggregations
                 foreach( string thisSkin in Base.Web_Skins)
                 {
                     // Look in compared for a match
-                    bool match = false;
-                    if ((Compared.Web_Skins == null) || (Compared.Web_Skins.All(compareSkin => String.Compare(thisSkin, compareSkin, StringComparison.InvariantCultureIgnoreCase) != 0)))
+                    if ((Compared.Web_Skins == null) || (Compared.Web_Skins.All(CompareSkin => String.Compare(thisSkin, CompareSkin, StringComparison.InvariantCultureIgnoreCase) != 0)))
                     {
                         base_skins.Add(thisSkin);
                     }                       
@@ -169,7 +179,7 @@ namespace SobekCM.Core.Aggregations
                 foreach ( string thisSkin in Compared.Web_Skins)
                 {
                     // Look in base for a match
-                    if ((Base.Web_Skins == null) || (Base.Web_Skins.All(compareSkin => String.Compare(thisSkin, compareSkin, StringComparison.InvariantCultureIgnoreCase) != 0)))
+                    if ((Base.Web_Skins == null) || (Base.Web_Skins.All(CompareSkin => String.Compare(thisSkin, CompareSkin, StringComparison.InvariantCultureIgnoreCase) != 0)))
                     {
                         compared_skins.Add(thisSkin); 
                     }
@@ -231,8 +241,7 @@ namespace SobekCM.Core.Aggregations
                 foreach ( KeyValuePair<Web_Language_Enum, Complete_Item_Aggregation_Home_Page> thisHomePage in Base.Home_Page_File_Dictionary)
                 {
                     // Look in compared for a match
-                    bool match = false;
-                    if ((Compared.Home_Page_File_Dictionary == null) || (Compared.Home_Page_File_Dictionary.All(compareHomePage => thisHomePage.Key != compareHomePage.Key)))
+                    if ((Compared.Home_Page_File_Dictionary == null) || (Compared.Home_Page_File_Dictionary.All(CompareHomePage => thisHomePage.Key != CompareHomePage.Key)))
                     {
                         removedLanguages.Add(thisHomePage.Key);
                     }                       
@@ -243,8 +252,7 @@ namespace SobekCM.Core.Aggregations
                 foreach (KeyValuePair<Web_Language_Enum, Complete_Item_Aggregation_Home_Page> thisHomePage in Compared.Home_Page_File_Dictionary)
                 {
                     // Look in base for a match
-                    bool match = false;
-                    if ((Base.Home_Page_File_Dictionary == null) || (Base.Home_Page_File_Dictionary.All(compareHomePage => thisHomePage.Key != compareHomePage.Key)))
+                    if ((Base.Home_Page_File_Dictionary == null) || (Base.Home_Page_File_Dictionary.All(CompareHomePage => thisHomePage.Key != CompareHomePage.Key)))
                     {
                         addedLanguages.Add(thisHomePage.Key);
                     }                       
@@ -316,7 +324,7 @@ namespace SobekCM.Core.Aggregations
                 foreach (KeyValuePair<Web_Language_Enum, string> thisBanner in Compared.Banner_Dictionary)
                 {
                     // Look in base for a match
-                    if ((Base.Banner_Dictionary == null) || (Base.Banner_Dictionary.All(compareBanner => thisBanner.Key != compareBanner.Key)))
+                    if ((Base.Banner_Dictionary == null) || (Base.Banner_Dictionary.All(CompareBanner => thisBanner.Key != CompareBanner.Key)))
                     {
                         addedLanguages.Add(thisBanner.Key);
                     }
@@ -359,7 +367,7 @@ namespace SobekCM.Core.Aggregations
                 foreach (Search_Type_Enum thisSearch in Base.Search_Types)
                 {
                     // Look in compared for a match
-                    if ((Compared.Search_Types == null) || (Compared.Search_Types.All(compareSearch => thisSearch != compareSearch)))
+                    if ((Compared.Search_Types == null) || (Compared.Search_Types.All(CompareSearch => thisSearch != CompareSearch)))
                     {
                         removedSearches.Add(thisSearch);
                     }
@@ -370,8 +378,7 @@ namespace SobekCM.Core.Aggregations
                 foreach (Search_Type_Enum thisSearch in Compared.Search_Types)
                 {
                     // Look in base for a match
-                    bool match = false;
-                    if ((Base.Search_Types == null) || (Base.Search_Types.All(compareSearch => thisSearch != compareSearch)))
+                    if ((Base.Search_Types == null) || (Base.Search_Types.All(CompareSearch => thisSearch != CompareSearch)))
                     {
                         addedSearches.Add(thisSearch);
                     }
@@ -422,7 +429,7 @@ namespace SobekCM.Core.Aggregations
                 foreach (short thisFacet in Base.Facets)
                 {
                     // Look in compared for a match
-                    if ((Compared.Facets == null) || (Compared.Facets.All(compareFacet => thisFacet != compareFacet)))
+                    if ((Compared.Facets == null) || (Compared.Facets.All(CompareFacet => thisFacet != CompareFacet)))
                     {
                         removedFacets.Add(thisFacet);
                     }
@@ -433,7 +440,7 @@ namespace SobekCM.Core.Aggregations
                 foreach (short thisFacet in Compared.Facets)
                 {
                     // Look in base for a match
-                    if ((Base.Facets == null) || (Base.Facets.All(compareFacet => thisFacet != compareFacet)))
+                    if ((Base.Facets == null) || (Base.Facets.All(CompareFacet => thisFacet != CompareFacet)))
                     {
                         addedFacets.Add(thisFacet);
                     }
@@ -476,7 +483,7 @@ namespace SobekCM.Core.Aggregations
                 foreach (Result_Display_Type_Enum thisSearch in Base.Result_Views)
                 {
                     // Look in compared for a match
-                    if ((Compared.Result_Views == null) || (Compared.Result_Views.All(compareSearch => thisSearch != compareSearch)))
+                    if ((Compared.Result_Views == null) || (Compared.Result_Views.All(CompareSearch => thisSearch != CompareSearch)))
                     {
                         removedResultsDisplay.Add(thisSearch);
                     }
@@ -487,8 +494,7 @@ namespace SobekCM.Core.Aggregations
                 foreach (Result_Display_Type_Enum thisSearch in Compared.Result_Views)
                 {
                     // Look in base for a match
-                    bool match = false;
-                    if ((Base.Result_Views == null) || (Base.Result_Views.All(compareSearch => thisSearch != compareSearch)))
+                    if ((Base.Result_Views == null) || (Base.Result_Views.All(CompareSearch => thisSearch != CompareSearch)))
                     {
                         addedResultsDisplays.Add(thisSearch);
                     }
@@ -547,26 +553,26 @@ namespace SobekCM.Core.Aggregations
             return changes;
         }
 
-        private static void compare_nullable_strings(string A, string B, string type, List<string> logger)
+        private static void compare_nullable_strings(string A, string B, string Type, List<string> Logger)
         {
             if (String.IsNullOrEmpty(A))
             {
                 if (!String.IsNullOrEmpty(B))
                 {
-                    logger.Add("Added " + type + " ( '" + B + "' )");
+                    Logger.Add("Added " + Type + " ( '" + B + "' )");
                 }
             }
             else
             {
                 if (String.IsNullOrEmpty(B))
                 {
-                    logger.Add("Removed " + type + " ( '" + A + "' )");
+                    Logger.Add("Removed " + Type + " ( '" + A + "' )");
                 }
                 else
                 {
                     if (A != B)
                     {
-                        logger.Add("Changed " + type + " ( '" + A + "' --> '" + B + "' )");
+                        Logger.Add("Changed " + Type + " ( '" + A + "' --> '" + B + "' )");
                     }
                 }
             }

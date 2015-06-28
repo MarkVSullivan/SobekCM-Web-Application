@@ -1,10 +1,14 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Skins;
 using SobekCM.Engine_Library.Endpoints;
 using SobekCM.Tools;
+
+#endregion
 
 namespace SobekCM.Core.Client
 {
@@ -66,7 +70,7 @@ namespace SobekCM.Core.Client
             return new_skin;
         }
 
-
+        /// <summary> Returns the URL to be used by the HTML editing library for retrieving the list of uploads for a web skin </summary>
         public string WebSkin_Uploaded_Files_URL
         {
             get

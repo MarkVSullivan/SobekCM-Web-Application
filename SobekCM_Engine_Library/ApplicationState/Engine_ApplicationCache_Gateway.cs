@@ -17,6 +17,8 @@ using SobekCM.Engine_Library.Skins;
 
 namespace SobekCM.Engine_Library.ApplicationState
 {
+    /// <summary> Class stores all the application-wide setting information as well as basic values
+    /// for most of the main object types used by the system </summary>
     public static class Engine_ApplicationCache_Gateway
     {
         /// <summary> Constructor for this gateway class, which sets the last refresh time </summary>
@@ -25,13 +27,14 @@ namespace SobekCM.Engine_Library.ApplicationState
             Last_Refresh = DateTime.Now;
         }
 
-        public static DateTime? Last_Refresh;
+        /// <summary> Last time the date time value was refreshed </summary>
+        public static DateTime? Last_Refresh { get; private set; }
 
-        public static void ClearAll()
-        {
-            Last_Refresh = DateTime.Now;
-        }
 
+
+        /// <summary> Refress all of the settings within this gateway </summary>
+        /// <param name="DbInstance"> Database instance to use when pulling the new data  </param>
+        /// <returns> TRUE if successful, FALSE if any errors occurred </returns>
         public static bool RefreshAll( Database_Instance_Configuration DbInstance )
         {
             bool error = !RefreshSettings(DbInstance);
@@ -51,9 +54,13 @@ namespace SobekCM.Engine_Library.ApplicationState
             error = error | !RefreshDefaultMetadataTemplates();
             error = error | !RefreshUrlPortals();
 
+            Last_Refresh = DateTime.Now;
+
             return !error;
         }
         
+        /// <summary> Refress all of the settings within this gateway </summary>
+        /// <returns> TRUE if successful, FALSE if any errors occurred </returns>
         public static bool RefreshAll()
         {
             bool error = !RefreshSettings();
@@ -72,6 +79,8 @@ namespace SobekCM.Engine_Library.ApplicationState
             error = error | !RefreshIcons();
             error = error | !RefreshDefaultMetadataTemplates();
             error = error | !RefreshUrlPortals();
+
+            Last_Refresh = DateTime.Now;
 
             return !error;
         }
@@ -920,6 +929,7 @@ namespace SobekCM.Engine_Library.ApplicationState
             }  
         }
 
+        /// <summary> List of all the globally defined default metadata sets for this instance </summary>
         public static List<Default_Metadata> Global_Default_Metadata
         {
             get
@@ -936,6 +946,7 @@ namespace SobekCM.Engine_Library.ApplicationState
             }
         }
 
+        /// <summary> List of all the globally defined metadata templates within this instance </summary>
         public static List<Template> Templates
         {
             get
@@ -952,6 +963,9 @@ namespace SobekCM.Engine_Library.ApplicationState
             }
         }
 
+        /// <summary> Clears the lists of globally defined default metadata sets and metadata input templates, so they 
+        /// will be refreshed next time they are requested </summary>
+        /// <returns> TRUE </returns>
         public static bool RefreshDefaultMetadataTemplates()
         {
             defaultMetadataList = null;

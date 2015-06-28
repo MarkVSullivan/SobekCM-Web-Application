@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using System.Web.Caching;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Client;
@@ -21,15 +20,13 @@ using SobekCM.Core.SiteMap;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
-using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Aggregations;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Engine_Library.Endpoints;
 using SobekCM.Engine_Library.Items;
 using SobekCM.Engine_Library.SiteMap;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.Database;
-using SobekCM.Engine_Library.Skins;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
@@ -532,6 +529,7 @@ namespace SobekCM.Library
         /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
         /// <param name="Base_URL"> Base URL for all the digital resource files for items to display </param>
         /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
+        /// <param name="Item_Viewer_Priority"> List of the globally defined item viewer priorities  </param>
         /// <param name="Current_User"> Currently logged on user information (used when editing an item)</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Current_Item"> [OUT] Built single digital resource ready for displaying or editing </param>
@@ -562,6 +560,7 @@ namespace SobekCM.Library
         /// <param name="Base_URL"> Base URL for all the digital resource files for items to display </param>
         /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
         /// <param name="Current_User"> Currently logged on user information (used when editing an item)</param>
+        /// <param name="Item_Viewer_Priority"> List of the globally defined item viewer priorities </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Current_Item"> [OUT] Built single digital resource ready for displaying or editing </param>
         /// <param name="Current_Page"> [OUT] Build current page for display </param>
@@ -772,12 +771,14 @@ namespace SobekCM.Library
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
         /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
         /// <param name="Aggregation_Object"> Object for the current aggregation object, against which this search is performed </param>
+        /// <param name="Search_Stop_Words"> List of search stop workds </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         public void Get_Search_Results(Navigation_Object Current_Mode,
                                        Item_Lookup_Object All_Items_Lookup,
-                                       Item_Aggregation Aggregation_Object, List<string> Search_Stop_Words,
+                                       Item_Aggregation Aggregation_Object, 
+            List<string> Search_Stop_Words,
                                        Custom_Tracer Tracer,
                                        out Search_Results_Statistics Complete_Result_Set_Info,
                                        out List<iSearch_Title_Result> Paged_Results )

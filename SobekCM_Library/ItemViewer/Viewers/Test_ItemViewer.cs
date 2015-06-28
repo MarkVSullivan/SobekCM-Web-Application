@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using SobekCM.Library.HTML;
 using SobekCM.Tools;
 
@@ -11,8 +10,10 @@ using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
+    /// <summary> Very simple test item viewer, to use as a sample for customizations </summary>
     public class Test_ItemViewer : abstractItemViewer
     {
+        /// <summary> Type of item viewer </summary>
         public override ItemViewer_Type_Enum ItemViewer_Type
         {
             get { return ItemViewer_Type_Enum.Test; }
@@ -24,9 +25,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            // Start to build the response
-            StringBuilder mapperBuilder = new StringBuilder();
-
             //page content
             Output.WriteLine("<td>");
 
@@ -34,8 +32,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //end of custom content
             Output.WriteLine("</td>");
-
-
         }
 
         /// <summary> Gets the collection of body attributes to be included 
@@ -73,6 +69,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
+        /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
         public override ItemViewer_PageSelector_Type_Enum Page_Selector
         {
             get

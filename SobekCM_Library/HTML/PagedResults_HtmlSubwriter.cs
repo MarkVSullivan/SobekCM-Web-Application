@@ -510,9 +510,6 @@ namespace SobekCM.Library.HTML
                 int startRow = lastRow - 19;
 
                 // Start the form for this, unless we are already in an appropriate form
-                string form_name = Outer_Form_Name;
-                if (form_name.Length == 0)
-                    form_name = "sort_form";
                 if (Outer_Form_Name.Length == 0)
                 {
                     string post_url = HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"].ToString());
@@ -987,8 +984,7 @@ namespace SobekCM.Library.HTML
 
                 // Get the value for the <%DESCRIPTION%> directive (to explain current display)
                 string DESCRIPTION = String.Empty;
-                string summation;
-                if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Public_Folder) || ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management))) // browse info only for aggregation
+		        if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Public_Folder) || ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Folder_Management))) // browse info only for aggregation
                 {
                     if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Public_Folder)
                     {
@@ -1261,8 +1257,7 @@ namespace SobekCM.Library.HTML
 			// Split the parts
 			if ((RequestSpecificValues.Current_Mode.Search_Type != Search_Type_Enum.Map)||(RequestSpecificValues.Current_Mode.Search_Type != Search_Type_Enum.Map_Beta))
 			{
-				int length_of_explanation = 0;
-				List<string> terms = new List<string>();
+			    List<string> terms = new List<string>();
 				List<string> fields = new List<string>();
 
 				// Split the terms correctly
@@ -1302,13 +1297,11 @@ namespace SobekCM.Library.HTML
 									if (fields[i][0] == '=')
 									{
 										Output.Write(or_language);
-										length_of_explanation += or_language.Length;
-										fields[i] = fields[i].Substring(1);
+									    fields[i] = fields[i].Substring(1);
 									}
 									else
 									{
 										Output.Write(and_language);
-										length_of_explanation += and_language.Length;
 									}
 								}
 
@@ -1325,7 +1318,7 @@ namespace SobekCM.Library.HTML
 
                                 // Special code for MIMETYPE of NOT NONE
 							    string write_value;
-							    if ((String.Compare(terms[i], "NONE", true) == 0) && (String.Compare(fields[i], "-MI", true) == 0))
+                                if ((String.Compare(terms[i], "NONE", StringComparison.OrdinalIgnoreCase) == 0) && (String.Compare(fields[i], "-MI", StringComparison.OrdinalIgnoreCase) == 0))
 							    {
 							        write_value = "items with files ";
 							        Output.Write("items with files ");
@@ -1336,19 +1329,16 @@ namespace SobekCM.Library.HTML
 							        if (terms[i].Contains(" "))
 							        {
 							            Output.Write("\"" + terms[i].Replace("''''", "'").Replace("''", "'") + "\" ");
-							            length_of_explanation += terms[i].Length + 1;
 							        }
 							        else
 							        {
 							            Output.Write("'" + terms[i].Replace("''''", "'").Replace("''", "'") + "' ");
-							            length_of_explanation += terms[i].Length + 3;
 							        }
 
 							        // Does the field start with a negative?
 							        if (fields[i][0] == '-')
 							        {
 							            Output.Write(and_not_language);
-							            length_of_explanation += and_not_language.Length;
 							            fields[i] = fields[i].Substring(1);
 							        }
 
@@ -1399,7 +1389,6 @@ namespace SobekCM.Library.HTML
 
 
 								Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Click to remove this search term\"><img src=\"" + Static_Resources.Removeicon_Gif + "\" id=\"removesearchterm" + term_counter + "\" class=\"sbkPrsw_RemoveSearchTerm\" /></a></div>");
-								length_of_explanation += write_value.Length;
 							}
 						}
 
@@ -1428,13 +1417,11 @@ namespace SobekCM.Library.HTML
 									if (fields[i][0] == '=')
 									{
 										Output.Write(or_language);
-										length_of_explanation += or_language.Length;
-										fields[i] = fields[i].Substring(1);
+									    fields[i] = fields[i].Substring(1);
 									}
 									else
 									{
 										Output.Write(and_language);
-										length_of_explanation += and_language.Length;
 									}
 								}
 
@@ -1449,28 +1436,21 @@ namespace SobekCM.Library.HTML
 								if (terms[i].Contains(" "))
 								{
 									Output.Write("\"" + terms[i].Replace("''''", "'").Replace("''", "'") + "\" ");
-									length_of_explanation += terms[i].Length + 1;
 								}
 								else
 								{
 									Output.Write("'" + terms[i].Replace("''''", "'").Replace("''", "'") + "' ");
-									length_of_explanation += terms[i].Length + 3;
 								}
 
 								// Does the field start with a negative?
 								if (fields[i][0] == '-')
 								{
 									Output.Write(and_not_language);
-									length_of_explanation += and_not_language.Length;
-									fields[i] = fields[i].Substring(1);
+								    fields[i] = fields[i].Substring(1);
 								}
 
 								string write_value = Search_Label_from_Sobek_Code(fields[i]).ToLower() + " ";
 								Output.Write(write_value);
-
-
-
-								length_of_explanation += write_value.Length;
 							}
 						}
 
@@ -2015,18 +1995,18 @@ namespace SobekCM.Library.HTML
                 #region FIDKey Support
 
                 //create fid key hash and id and session state
-                int FIDKeyHashSpecial = 0;
-                foreach (string FID in fids)
+                int fidKeyHashSpecial = 0;
+                foreach (string fid in fids)
                 {
-                    byte[] tempFIDChars = Encoding.ASCII.GetBytes(FID);
+                    byte[] tempFIDChars = Encoding.ASCII.GetBytes(fid);
                     foreach (byte tempFIDChar in tempFIDChars)
                     {
-                        FIDKeyHashSpecial += Convert.ToInt32(tempFIDChar);
+                        fidKeyHashSpecial += Convert.ToInt32(tempFIDChar);
                     }
                 }
                 //finish processing FIDkeyhash and store
-                FIDKeyHashSpecial = Convert.ToInt32(FIDKeyHashSpecial * fids.Count);
-                HttpContext.Current.Session["FIDKey"] = "FIDKey_" + FIDKeyHashSpecial.ToString();
+                fidKeyHashSpecial = Convert.ToInt32(fidKeyHashSpecial * fids.Count);
+                HttpContext.Current.Session["FIDKey"] = "FIDKey_" + fidKeyHashSpecial.ToString();
 
                 HttpContext.Current.Cache[HttpContext.Current.Session["FIDKey"].ToString()] = fids;
 

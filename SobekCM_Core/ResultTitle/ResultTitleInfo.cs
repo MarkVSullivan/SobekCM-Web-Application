@@ -1,8 +1,12 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
+
+#endregion
 
 namespace SobekCM.Core.ResultTitle
 {
@@ -43,6 +47,7 @@ namespace SobekCM.Core.ResultTitle
         [ProtoMember(4)]
         public List<ResultItemInfo> Items { get; set; }
 
+        /// <summary> Constructor for a new instance of the <see cref="ResultTitleInfo"/> class.  </summary>
         public ResultTitleInfo()
         {
             Items = new List<ResultItemInfo>();

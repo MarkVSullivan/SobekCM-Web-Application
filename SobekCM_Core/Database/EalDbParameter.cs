@@ -1,6 +1,10 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Data;
 using System.Data.Common;
+
+#endregion
 
 namespace SobekCM.Core.Database
 {

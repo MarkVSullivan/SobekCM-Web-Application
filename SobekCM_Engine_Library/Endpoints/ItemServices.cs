@@ -1,4 +1,4 @@
-﻿#region Using references
+﻿#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -8,13 +8,14 @@ using System.Linq;
 using System.Web;
 using Jil;
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.BriefItem;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items;
+using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Engine_Library.Microservices;
 using SobekCM.Resource_Object;
-using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Tools;
 
@@ -490,12 +491,12 @@ namespace SobekCM.Engine_Library.Endpoints
             if (String.IsNullOrEmpty(MappingSet))
             {
                 Tracer.Add_Trace("ItemServices.getBriefItem", "Map to the brief item, using the default mapping set");
-                BriefItemInfo item = Items.BriefItems.BriefItem_Factory.Create(currentItem, Tracer);
+                BriefItemInfo item = BriefItem_Factory.Create(currentItem, Tracer);
                 return item;
             }
 
             Tracer.Add_Trace("ItemServices.getBriefItem", "Map to the brief item, using mapping set '" + MappingSet + "'");
-            BriefItemInfo item2 = Items.BriefItems.BriefItem_Factory.Create(currentItem, MappingSet, Tracer);
+            BriefItemInfo item2 = BriefItem_Factory.Create(currentItem, MappingSet, Tracer);
             return item2;
         }
 

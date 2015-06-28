@@ -1,9 +1,8 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.ApplicationState;
@@ -12,10 +11,19 @@ using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 
+#endregion
+
 namespace SobekCM.Engine_Library.Items
 {
+    /// <summary> Code to update an existing digital resource, from a newly updated SobekCM_Item object </summary>
+    /// <remarks> This is used by the Edit_Item_Metadata_MySobekViewer, and will be exposed via a REST API </remarks>
     public static class SobekCM_Item_Updater
     {
+        /// <summary> Update the exsting digital resource, by saving the changes to the database and rewriting metadata files </summary>
+        /// <param name="Item"> Digital resource object with all the updated metadata </param>
+        /// <param name="User"> User who performed the update, for the item milestones </param>
+        /// <param name="Error_Message"> [OUT] Return an error message if an exception is encountered </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
         public static bool Update_Item(SobekCM_Item Item, User_Object User, out string Error_Message )
         {
             Error_Message = String.Empty;

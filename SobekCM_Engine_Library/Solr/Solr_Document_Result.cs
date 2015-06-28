@@ -11,7 +11,7 @@ namespace SobekCM.Engine_Library.Solr
     /// <summary> Stores the information relating to a single result from ansearch within a Solr index  </summary>
     /// <remarks> This is populated by the Solr query through SolrNet, using the SolrNet property attributes as guides.  The highlighted snippet
     /// containing the search term(s) for this page is also loaded into this object<br /><br />
-    /// This class implements both the <see cref="Results.iSearch_Title_Result" /> and <see cref="Results.iSearch_Item_Result" /> interfaces because
+    /// This class implements both the <see cref="iSearch_Title_Result" /> and <see cref="iSearch_Item_Result" /> interfaces because
     /// Solr/Lucene search results are a flattened, non-hierarchical structure.  Each result contains all the title and item information within
     /// a single result object.</remarks>
     [Serializable]
@@ -191,7 +191,7 @@ namespace SobekCM.Engine_Library.Solr
         /// <summary> Gets the item indicated by the provided index </summary>
         /// <param name="Index"> Index of the item requested </param>
         /// <returns> Item result requested, or NULL </returns>
-        /// <remarks> Since this class implements the <see cref="Results.iSearch_Item_Result" /> interface this
+        /// <remarks> Since this class implements the <see cref="iSearch_Item_Result" /> interface this
         /// method actually returns this object because each Solr/Lucene result contains the flattened
         /// title and item information and is not displayed hierarchically </remarks>
         public iSearch_Item_Result Get_Item(int Index)
@@ -370,21 +370,21 @@ namespace SobekCM.Engine_Library.Solr
 		#region Unimplemented portions of the iSearch_Title_Result interface
 
 		/// <summary> Group title for this title result </summary>
-        /// <remarks> This is required by the <see cref="Results.iSearch_Title_Result" /> interface, but is not really implement in this instance.  The empty string is always returned. </remarks>
+        /// <remarks> This is required by the <see cref="iSearch_Title_Result" /> interface, but is not really implement in this instance.  The empty string is always returned. </remarks>
         public string GroupTitle
         {
             get { return String.Empty; }
         }
 
         /// <summary> Group-wide thumbnail for this title result </summary>
-        /// <remarks> This is required by the <see cref="Results.iSearch_Title_Result" /> interface, but is not really implement in this instance.  The empty string is always returned. </remarks>
+        /// <remarks> This is required by the <see cref="iSearch_Title_Result" /> interface, but is not really implement in this instance.  The empty string is always returned. </remarks>
         public string GroupThumbnail
         {
             get { return String.Empty; }
         }
 
         /// <summary> User notes for this title result, if it is in a bookshelf </summary>
-        /// <remarks> This is required by the <see cref="Results.iSearch_Title_Result" /> interface, but is not really implement in this instance.  The empty string is always returned. </remarks>
+        /// <remarks> This is required by the <see cref="iSearch_Title_Result" /> interface, but is not really implement in this instance.  The empty string is always returned. </remarks>
         public string UserNotes
         {
             get { return String.Empty; }
@@ -396,28 +396,28 @@ namespace SobekCM.Engine_Library.Solr
         #region Unimplemented portions of the iSearch_Item_Result interface
 
         /// <summary> IP restriction mask for this item within a title within a collection of results </summary>
-        /// <remarks> This is required by the <see cref="Results.iSearch_Item_Result" /> interface, but is not really implement in this instance.  Zero (public) is always returned. </remarks>
+        /// <remarks> This is required by the <see cref="iSearch_Item_Result" /> interface, but is not really implement in this instance.  Zero (public) is always returned. </remarks>
         public short IP_Restriction_Mask
         {
             get { return 0; }
         }
 
         /// <summary> Number of pages within this item within a title within a collection of results </summary>
-        /// <remarks> This is required by the <see cref="Results.iSearch_Item_Result" /> interface, but is not really implement in this instance.  -1 is always returned. </remarks>
+        /// <remarks> This is required by the <see cref="iSearch_Item_Result" /> interface, but is not really implement in this instance.  -1 is always returned. </remarks>
         public int PageCount
         {
             get { return -1; }
         }
 
         /// <summary> External URL for this item within a title within a collection of results </summary>
-        /// <remarks> This is required by the <see cref="Results.iSearch_Item_Result" /> interface, but is not really implement in this instance.  The empty string is always returned. </remarks>
+        /// <remarks> This is required by the <see cref="iSearch_Item_Result" /> interface, but is not really implement in this instance.  The empty string is always returned. </remarks>
         public string Link
         {
             get { return String.Empty; }
         }
 
         /// <summary> Index of the first serial hierarchy level for this item within a title within a collection of results </summary>
-        /// <remarks> This is required by the <see cref="Results.iSearch_Item_Result" /> interface, but is not really implement in this 
+        /// <remarks> This is required by the <see cref="iSearch_Item_Result" /> interface, but is not really implement in this 
         /// instance since Solr/Lucene results are always a single item/title, rather than a collection 
         /// of items within a title which would require serial hierarchy.  -1 is always returned. </remarks>
         public short Level1_Index
@@ -426,7 +426,7 @@ namespace SobekCM.Engine_Library.Solr
         }
 
         /// <summary> Text of the first serial hierarchy level for this item within a title within a collection of results </summary>
-        /// <remarks> This is required by the <see cref="Results.iSearch_Item_Result" /> interface, but is not really implement in this 
+        /// <remarks> This is required by the <see cref="iSearch_Item_Result" /> interface, but is not really implement in this 
         /// instance since Solr/Lucene results are always a single item/title, rather than a collection 
         /// of items within a title which would require serial hierarchy.  The empty string is always returned. </remarks>
         public string Level1_Text
@@ -435,7 +435,7 @@ namespace SobekCM.Engine_Library.Solr
         }
 
         /// <summary> Index of the second serial hierarchy level for this item within a title within a collection of results </summary>
-        /// <remarks> This is required by the <see cref="Results.iSearch_Item_Result" /> interface, but is not really implement in this 
+        /// <remarks> This is required by the <see cref="iSearch_Item_Result" /> interface, but is not really implement in this 
         /// instance since Solr/Lucene results are always a single item/title, rather than a collection 
         /// of items within a title which would require serial hierarchy.  -1 is always returned. </remarks>
         public short Level2_Index
@@ -444,7 +444,7 @@ namespace SobekCM.Engine_Library.Solr
         }
 
         /// <summary> Text of the second serial hierarchy level for this item within a title within a collection of results </summary>
-        /// <remarks> This is required by the <see cref="Results.iSearch_Item_Result" /> interface, but is not really implement in this 
+        /// <remarks> This is required by the <see cref="iSearch_Item_Result" /> interface, but is not really implement in this 
         /// instance since Solr/Lucene results are always a single item/title, rather than a collection 
         /// of items within a title which would require serial hierarchy.  The empty string is always returned. </remarks>
         public string Level2_Text
@@ -453,7 +453,7 @@ namespace SobekCM.Engine_Library.Solr
         }
 
         /// <summary> Index of the third serial hierarchy level for this item within a title within a collection of results </summary>
-        /// <remarks> This is required by the <see cref="Results.iSearch_Item_Result" /> interface, but is not really implement in this 
+        /// <remarks> This is required by the <see cref="iSearch_Item_Result" /> interface, but is not really implement in this 
         /// instance since Solr/Lucene results are always a single item/title, rather than a collection 
         /// of items within a title which would require serial hierarchy.  -1 is always returned. </remarks>
         public short Level3_Index
@@ -462,7 +462,7 @@ namespace SobekCM.Engine_Library.Solr
         }
 
         /// <summary> Text of the third serial hierarchy level for this item within a title within a collection of results </summary>
-        /// <remarks> This is required by the <see cref="Results.iSearch_Item_Result" /> interface, but is not really implement in this 
+        /// <remarks> This is required by the <see cref="iSearch_Item_Result" /> interface, but is not really implement in this 
         /// instance since Solr/Lucene results are always a single item/title, rather than a collection 
         /// of items within a title which would require serial hierarchy.  The empty string is always returned. </remarks>
         public string Level3_Text
@@ -471,14 +471,14 @@ namespace SobekCM.Engine_Library.Solr
         }
 
 		/// <summary> Spatial coverage as KML for this item within a title result for map display </summary>
-		/// <remarks> This is required by the <see cref="Results.iSearch_Item_Result" /> interface, but is not really implement in this instance.  The empty string is always returned. </remarks>
+		/// <remarks> This is required by the <see cref="iSearch_Item_Result" /> interface, but is not really implement in this instance.  The empty string is always returned. </remarks>
 		public string Spatial_KML
 		{
 			get { return String.Empty; }
 		}
 
 		/// <summary> COinS OpenURL format of citation for citation sharing </summary>
-		/// <remarks> This is required by the <see cref="Results.iSearch_Item_Result" /> interface, but is not really implement in this instance.  The empty string is always returned. </remarks>
+		/// <remarks> This is required by the <see cref="iSearch_Item_Result" /> interface, but is not really implement in this instance.  The empty string is always returned. </remarks>
 		public string COinS_OpenURL
 		{
 			get { return String.Empty; }

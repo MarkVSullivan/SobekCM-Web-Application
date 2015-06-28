@@ -1,10 +1,15 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
 
+#endregion
+
 namespace SobekCM.Core.Aggregations
 {
+    /// <summary> Basic statistical information for an item aggregation, including basic counts of items, titles, pages, etc..  </summary>
     [Serializable, DataContract, ProtoContract]
     public class Item_Aggregation_Statistics
     {

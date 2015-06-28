@@ -1,8 +1,6 @@
 ﻿#region Using directives
 
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Web;
 using System.Xml;
@@ -10,7 +8,6 @@ using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Metadata_Modules;
 
 #endregion

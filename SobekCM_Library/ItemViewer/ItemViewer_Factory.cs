@@ -18,15 +18,16 @@ namespace SobekCM.Library.ItemViewer
         /// <summary> Accepts a simple <see cref="View_Object"/> from the digital resource object and returns
         /// the appropriate item viewer object which extends the <see cref="SobekCM.Library.ItemViewer.Viewers.abstractItemViewer"/>
         /// class for rendering the item to the web via HTML.</summary>
-        /// <param name="viewObject"> View object from the digital resource object </param>
+        /// <param name="ViewObject"> View object from the digital resource object </param>
         /// <param name="Resource_Type">Resource type often impacts how an item viewer renders</param>
         /// <param name="Current_Object">Current resource object </param>
         /// <param name="Current_User">Currently session's user </param>
+        /// <param name="Current_Mode"> Navigation object with all the information about the current request </param>
         /// <returns> Genereated item viewer class for rendering the particular view of a digital resource
         /// via HTML. </returns>
-        public static abstractItemViewer Get_Viewer(View_Object viewObject, string Resource_Type, SobekCM_Item Current_Object, User_Object Current_User, Navigation_Object Current_Mode )
+        public static abstractItemViewer Get_Viewer(View_Object ViewObject, string Resource_Type, SobekCM_Item Current_Object, User_Object Current_User, Navigation_Object Current_Mode )
         {
-            switch (viewObject.View_Type)
+            switch (ViewObject.View_Type)
             {
                 case View_Enum.ALL_VOLUMES:
                     return new MultiVolumes_ItemViewer();
@@ -59,7 +60,7 @@ namespace SobekCM.Library.ItemViewer
                     return new Feature_ItemViewer();
 
                 case View_Enum.FLASH:
-                    return new Flash_ItemViewer(viewObject.Label, 0);
+                    return new Flash_ItemViewer(ViewObject.Label, 0);
 
                 case View_Enum.GOOGLE_COORDINATE_ENTRY:
                     return new Google_Coordinate_Entry_ItemViewer(Current_User, Current_Object, Current_Mode);
@@ -71,33 +72,32 @@ namespace SobekCM.Library.ItemViewer
                     return new Google_Map_ItemViewer_Beta();
 
                 case View_Enum.HTML:
-                    return new HTML_ItemViewer(viewObject.Attributes, viewObject.Label);
+                    return new HTML_ItemViewer(ViewObject.Attributes, ViewObject.Label);
 
                 case View_Enum.JPEG:
-                    abstractItemViewer jpegViewer = new JPEG_ItemViewer( viewObject.Attributes );
-                    jpegViewer.FileName = viewObject.FileName;
+                    abstractItemViewer jpegViewer = new JPEG_ItemViewer( ViewObject.Attributes );
+                    jpegViewer.FileName = ViewObject.FileName;
                     return jpegViewer;
 
 				case View_Enum.JPEG_TEXT_TWO_UP:
-		            abstractItemViewer jpegTextViewer = new JPEG_Text_Two_Up_ItemViewer(viewObject.Attributes);
-					jpegTextViewer.FileName = viewObject.FileName;
+		            abstractItemViewer jpegTextViewer = new JPEG_Text_Two_Up_ItemViewer(ViewObject.Attributes);
+					jpegTextViewer.FileName = ViewObject.FileName;
 					return jpegTextViewer;
 
                 case View_Enum.JPEG2000:
 					if ( UI_ApplicationCache_Gateway.Settings.JP2ServerType == "Built-In IIPImage")
 					{
 						abstractItemViewer newJp2Viewer = new JPEG2000_ItemViewer();
-						newJp2Viewer.FileName = viewObject.FileName;
+						newJp2Viewer.FileName = ViewObject.FileName;
 						return newJp2Viewer;
 					}
-					else if ( UI_ApplicationCache_Gateway.Settings.JP2ServerType == "Aware")
-					{
-                        abstractItemViewer jpeg2000Viewer = new Aware_JP2_ItemViewer(Resource_Type, viewObject.Attributes, Current_Mode);
-                        jpeg2000Viewer.FileName = viewObject.FileName;
+                    if ( UI_ApplicationCache_Gateway.Settings.JP2ServerType == "Aware")
+                    {
+                        abstractItemViewer jpeg2000Viewer = new Aware_JP2_ItemViewer(Resource_Type, ViewObject.Attributes, Current_Mode);
+                        jpeg2000Viewer.FileName = ViewObject.FileName;
                         return jpeg2000Viewer;
                     }
-		            return null;
-		            break;
+                    return null;
 
 				case View_Enum.MANAGE:
 					return new ManageMenu_ItemViewer(Current_Object, Current_User, Current_Mode);
@@ -106,7 +106,7 @@ namespace SobekCM.Library.ItemViewer
 						return new GnuBooks_PageTurner_ItemViewer();
 
 				case View_Enum.PDF:
-                        return new PDF_ItemViewer(viewObject.FileName, Current_Mode);
+                        return new PDF_ItemViewer(ViewObject.FileName, Current_Mode);
 
 				case View_Enum.QUALITY_CONTROL:
 						return new QC_ItemViewer(Current_Object, Current_User, Current_Mode);
@@ -125,7 +125,7 @@ namespace SobekCM.Library.ItemViewer
 
                 case View_Enum.TEXT:
                     abstractItemViewer textViewer = new Text_ItemViewer();
-                    textViewer.FileName = viewObject.FileName;
+                    textViewer.FileName = ViewObject.FileName;
                     return textViewer;
 
                 case View_Enum.TOC:

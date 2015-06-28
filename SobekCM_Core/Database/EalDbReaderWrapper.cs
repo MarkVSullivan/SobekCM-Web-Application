@@ -1,6 +1,10 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
+
+#endregion
 
 namespace SobekCM.Core.Database
 {
@@ -44,6 +48,11 @@ namespace SobekCM.Core.Database
             connection.Close();
         }
 
+        /// <summary> Store the relationship between the EAL ( Engine Agnostic Level ) parameter and the database parameter. </summary>
+        /// <param name="EalParam"></param>
+        /// <param name="DbParam"></param>
+        /// <remarks> This is only used for parameters that include an output direction, so the returned parameter value
+        /// can be copied bac from the database parameter to the EAL parameter. </remarks>
         public void Add_Parameter_Copy_Pair(EalDbParameter EalParam, DbParameter DbParam)
         {
             if (parameterCopy == null)

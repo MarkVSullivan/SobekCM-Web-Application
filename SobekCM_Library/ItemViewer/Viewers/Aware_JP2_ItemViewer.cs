@@ -54,10 +54,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             handle_postback();
 		}
 
-		/// <summary> Constructor for a new instance of the Aware_JP2_ItemViewer class </summary>
-		/// <param name="Attributes"> Attributes for the JPEG2000 file to display, including width and height</param>
-		/// <param name="Resource_Type"> Resource type for the item being displayed; this affects the overall rendering style </param>
-		public Aware_JP2_ItemViewer( string Resource_Type, string Attributes, Navigation_Object Current_Mode )
+	    /// <summary> Constructor for a new instance of the Aware_JP2_ItemViewer class </summary>
+	    /// <param name="Attributes"> Attributes for the JPEG2000 file to display, including width and height</param>
+	    /// <param name="Resource_Type"> Resource type for the item being displayed; this affects the overall rendering style </param>
+	    /// <param name="Current_Mode"> Navigation object holds all the information about the current request </param>
+	    public Aware_JP2_ItemViewer( string Resource_Type, string Attributes, Navigation_Object Current_Mode )
 		{
 			resourceType = Resource_Type;
 			width = 0;
@@ -544,6 +545,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 		}
 
+        /// <summary>  This provides an opportunity for the viewer to perform any pre-display work
+        /// which is necessary before entering any of the rendering portions  </summary>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
 	    public override void Perform_PreDisplay_Work(Custom_Tracer Tracer)
 	    {
 	        Tracer.Add_Trace("Aware_JP2_ItemViewer.Perform_PreDisplay_Work", "Check for all the image specification data from the JPEG2000 file");
@@ -636,6 +640,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        featureHeight = FeatureHeight;
 	    }
 
+        /// <summary> Adds any viewer_specific information to the left Navigation Bar Menu Section </summary>
+        /// <param name="Output">Response stream for the item viewer to write directly to</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
 	    public override void Write_Left_Nav_Menu_Section(TextWriter Output, Custom_Tracer Tracer)
         {
 	        if (Tracer != null)
@@ -752,57 +759,57 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	        //}
 	    }
 
-	    private int get_jp2_viewport_size( int size_scale,  int zoom_scale )
+	    private int get_jp2_viewport_size( int SizeScale,  int ZoomScale )
 	    {
-	        int viewport_size_pixels = 512 + ( size_scale * 256 );
-	        if ( size_scale == 3 )
+	        int viewport_size_pixels = 512 + ( SizeScale * 256 );
+	        if ( SizeScale == 3 )
 	            viewport_size_pixels = 1536;
-	        return viewport_size_pixels * (int)Math.Pow(2, (zoomlevels - zoom_scale));
+	        return viewport_size_pixels * (int)Math.Pow(2, (zoomlevels - ZoomScale));
 	    }
 
-	    private int adjust_x( int current_x, int current_y, int current_jp2_viewport_size, int new_jp2_viewport_size )
+	    private int adjust_x( int CurrentX, int CurrentY, int CurrentJP2ViewportSize, int NewJP2ViewportSize )
 	    {
 	        // If this is currently 0 (and y is zero) return 0
-	        if (( current_x == 0 ) && ( current_y == 0 ))
+	        if (( CurrentX == 0 ) && ( CurrentY == 0 ))
 	            return 0;
 
 	        // Determine the center x value
-	        int new_x = current_x + (int) ( 0.5F * current_jp2_viewport_size );
-	        new_x = new_x - (int) ( 0.5F * new_jp2_viewport_size );
+	        int new_x = CurrentX + (int) ( 0.5F * CurrentJP2ViewportSize );
+	        new_x = new_x - (int) ( 0.5F * NewJP2ViewportSize );
 	        if (( CurrentMode.Viewport_Rotation % 2 ) == 0 )
 	        {
-	            if ( new_x +  new_jp2_viewport_size > width )
-	                new_x = width - new_jp2_viewport_size;
+	            if ( new_x +  NewJP2ViewportSize > width )
+	                new_x = width - NewJP2ViewportSize;
 	        }
 	        else
 	        {
-	            if ( new_x +  new_jp2_viewport_size > height )
-	                new_x = height - new_jp2_viewport_size;
+	            if ( new_x +  NewJP2ViewportSize > height )
+	                new_x = height - NewJP2ViewportSize;
 	        }
 	        if ( new_x < 0 )
 	            new_x = 0;
 	        return new_x;
 	    }
 
-	    private int adjust_y( int current_x, int current_y, int current_jp2_viewport_size, int new_jp2_viewport_size )
+	    private int adjust_y( int CurrentX, int CurrentY, int CurrentJP2ViewportSize, int NewJP2ViewportSize )
 	    {
 	        // If this is currently 0 (and x is zero) return 0
-	        if (( current_x == 0 ) && ( current_y == 0 ))
+	        if (( CurrentX == 0 ) && ( CurrentY == 0 ))
 	            return 0;
 
 	        // Determine the center x value
-	        int new_y = current_y + (int) ( 0.5F * current_jp2_viewport_size );
-	        new_y = new_y - (int) ( 0.5F * new_jp2_viewport_size );
+	        int new_y = CurrentY + (int) ( 0.5F * CurrentJP2ViewportSize );
+	        new_y = new_y - (int) ( 0.5F * NewJP2ViewportSize );
 
 	        if (( CurrentMode.Viewport_Rotation % 2 ) == 0 )
 	        {
-	            if ( new_y +  new_jp2_viewport_size > height )
-	                new_y = height - new_jp2_viewport_size;
+	            if ( new_y +  NewJP2ViewportSize > height )
+	                new_y = height - NewJP2ViewportSize;
 	        }
 	        else
 	        {
-	            if ( new_y +  new_jp2_viewport_size > width )
-	                new_y = width - new_jp2_viewport_size;
+	            if ( new_y +  NewJP2ViewportSize > width )
+	                new_y = width - NewJP2ViewportSize;
 	        }
 
 	        if ( new_y < 0 )
@@ -878,9 +885,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	            if ( CurrentMode.Viewport_Zoom != 1 )
 	            {
 	                // Create the image object
-                    ImageButton mainImage = new ImageButton { CssClass = "sbkAj2_Image", ImageUrl = url_builder.ToString() };
-	                mainImage.Height = size_pixels;
-	                mainImage.BackColor = Color.White;
+                    ImageButton mainImage = new ImageButton
+                    {
+                        CssClass = "sbkAj2_Image", 
+                        ImageUrl = url_builder.ToString(), 
+                        Height = size_pixels, 
+                        BackColor = Color.White
+                    };
 	                mainImage.Click +=mainImage_Click;
 	                mainImage.AlternateText = "Main Image";
 	                switch( CurrentMode.Language )
@@ -941,7 +952,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			return 1;
 		}
 
-		private void mainImage_Click(object sender, ImageClickEventArgs e)
+		private void mainImage_Click(object Sender, ImageClickEventArgs E)
 		{
 			// Determine the size of the current portal
             int currViewportSize = CurrentMode.Viewport_Size.HasValue ? CurrentMode.Viewport_Size.Value : 1;
@@ -954,8 +965,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				image_size = 1536;
 
 			// Get the click values
-			int x = (int) (((float) e.X / image_size ) * size_pixels);
-			int y = (int) (((float) e.Y / image_size ) * size_pixels);
+			int x = (int) (((float) E.X / image_size ) * size_pixels);
+			int y = (int) (((float) E.Y / image_size ) * size_pixels);
 
 			// Re-center
             int x_current = CurrentMode.Viewport_Point_X.HasValue ? CurrentMode.Viewport_Point_X.Value : 0;
@@ -983,13 +994,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 	    #region Method to actually compute the JPEG2000 attributes by reading the file 
 
-	    private void get_attributes_from_jpeg2000(string file)
+	    private void get_attributes_from_jpeg2000(string File)
 	    {
 	        try
 	        {
 	            // Get the height and width of this JPEG file
-	            FileStream reader = new FileStream(file, FileMode.Open, FileAccess.Read);
-	            int[] previousValues = new[] { 0, 0, 0, 0 };
+	            FileStream reader = new FileStream(File, FileMode.Open, FileAccess.Read);
+	            int[] previousValues = { 0, 0, 0, 0 };
 	            int bytevalue = reader.ReadByte();
 	            int count = 1;
 	            while (bytevalue != -1)
@@ -1026,22 +1037,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	            height = (ushort)((((((reader.ReadByte() * 256) + reader.ReadByte()) * 256) + reader.ReadByte()) * 256) + reader.ReadByte());
 	            width = (ushort)((((((reader.ReadByte() * 256) + reader.ReadByte()) * 256) + reader.ReadByte()) * 256) + reader.ReadByte());
 	            reader.Close();
-
-	            return;
 	        }
 	        catch
 	        {
-	            return;
+                // Do nothing. but catch the error
 	        }
 	    }
 
 	    #endregion
 
+        /// <summary> Gets the collection of special behaviors which this item viewer
+        /// requests from the main HTML subwriter. </summary>
         public override List<HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors
         {
             get
             {
-                return new List<HtmlSubwriter_Behaviors_Enum>() { HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Requires_Left_Navigation_Bar };
+                return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Requires_Left_Navigation_Bar };
             }
         }
 	}

@@ -18,14 +18,15 @@ namespace SobekCM.Engine_Library.Items
     public class SobekCM_Item_Factory
 	{
 	    /// <summary> Builds a digital resource object for the given BibID and VID </summary>
-        /// <param name="BibID"> Bibliographic identifier for the digital resource to build </param>
-        /// <param name="VID"> Volume identifier for the digital resource to builder </param>
-        /// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the HTML for the icons linked to this digital resource</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> Fully built digital resource object for a single volume </returns>
-        /// <remarks> This method relies heavily upon the <see cref="SobekCM_METS_Based_ItemBuilder"/> class to actually
-        /// read the METS files and build the items. </remarks>
-        public static SobekCM_Item Get_Item(string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, List<string> Item_Viewer_Priority, Custom_Tracer Tracer)
+	    /// <param name="BibID"> Bibliographic identifier for the digital resource to build </param>
+	    /// <param name="VID"> Volume identifier for the digital resource to builder </param>
+	    /// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the HTML for the icons linked to this digital resource</param>
+	    /// <param name="Item_Viewer_Priority"> List of the globally defined item viewer priorities </param>
+	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+	    /// <returns> Fully built digital resource object for a single volume </returns>
+	    /// <remarks> This method relies heavily upon the <see cref="SobekCM_METS_Based_ItemBuilder"/> class to actually
+	    /// read the METS files and build the items. </remarks>
+	    public static SobekCM_Item Get_Item(string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, List<string> Item_Viewer_Priority, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -39,16 +40,17 @@ namespace SobekCM.Engine_Library.Items
             return builder.Build_Item( BibID, VID, Icon_Dictionary, Item_Viewer_Priority, Tracer);
         }
 
-        /// <summary> Builds a digital resource object for the given BibID and VID </summary>
-        /// <param name="BibID"> Bibliographic identifier for the title </param>
-        /// <param name="VID"> Volume identifier for the title </param>
-        /// <param name="METS_Location"> Location and name of the METS file to read </param>
-        /// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the HTML for the icons linked to this digital resource</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> Fully built digital resource object for a single volume </returns>
-        /// <remarks> This method relies heavily upon the <see cref="SobekCM_METS_Based_ItemBuilder"/> class to actually
-        /// read the METS files and build the items. </remarks>
-        public static SobekCM_Item Get_Item(string METS_Location, string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, List<string> Item_Viewer_Priority, Custom_Tracer Tracer)
+	    /// <summary> Builds a digital resource object for the given BibID and VID </summary>
+	    /// <param name="BibID"> Bibliographic identifier for the title </param>
+	    /// <param name="VID"> Volume identifier for the title </param>
+	    /// <param name="METS_Location"> Location and name of the METS file to read </param>
+	    /// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the HTML for the icons linked to this digital resource</param>
+        /// <param name="Item_Viewer_Priority"> List of the globally defined item viewer priorities  </param>
+	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+	    /// <returns> Fully built digital resource object for a single volume </returns>
+	    /// <remarks> This method relies heavily upon the <see cref="SobekCM_METS_Based_ItemBuilder"/> class to actually
+	    /// read the METS files and build the items. </remarks>
+	    public static SobekCM_Item Get_Item(string METS_Location, string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, List<string> Item_Viewer_Priority, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {

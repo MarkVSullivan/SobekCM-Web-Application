@@ -7,7 +7,6 @@ using System.Web;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
@@ -19,12 +18,13 @@ using SobekCM.Tools;
 
 namespace SobekCM.Library.MySobekViewer
 {
+    /// <summary> Viewer allows permissions on an item to be modified by logged on administrative users  </summary>
     public class Edit_Item_Permissions_MySobekViewer : abstract_MySobekViewer
     {
-        private short ipRestrictionMask;
-        private bool isDark;
+        private readonly short ipRestrictionMask;
+        private readonly bool isDark;
         private DateTime? embargoDate;
-        private bool restrictedSelected;
+        private readonly bool restrictedSelected;
 
         /// <summary> Constructor for a new instance of the Edit_Item_Permissions_MySobekViewer class  </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -36,6 +36,7 @@ namespace SobekCM.Library.MySobekViewer
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
             }
 
             bool userCanEditItem = RequestSpecificValues.Current_User.Can_Edit_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List);
@@ -67,14 +68,14 @@ namespace SobekCM.Library.MySobekViewer
                 // Get the restriction mask and isDark flag
                 if (HttpContext.Current.Request.Form["restrictionMask"] != null)
                 {
-                    ipRestrictionMask = short.Parse(HttpContext.Current.Request.Form["restrictionMask"].ToString());
-                    isDark = bool.Parse(HttpContext.Current.Request.Form["isDark"].ToString());
+                    ipRestrictionMask = short.Parse(HttpContext.Current.Request.Form["restrictionMask"]);
+                    isDark = bool.Parse(HttpContext.Current.Request.Form["isDark"]);
                 }
 
                 // Look for embargo date
                 if (HttpContext.Current.Request.Form["embargoDateBox"] != null)
                 {
-                    string embargoText = HttpContext.Current.Request.Form["embargoDateBox"].ToString();
+                    string embargoText = HttpContext.Current.Request.Form["embargoDateBox"];
                     DateTime embargoDateNew;
                     if (DateTime.TryParse(embargoText, out embargoDateNew))
                     {
@@ -105,7 +106,6 @@ namespace SobekCM.Library.MySobekViewer
                     // Is this to change accessibility?
                     if ((action == "public") || (action == "private") || (action == "restricted") || ( action == "dark" ))
                     {
-                        int current_mask = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership;
                         switch (action)
                         {
                             case "public":
@@ -139,7 +139,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Was the SAVE button pushed?
                 if (HttpContext.Current.Request.Form["behaviors_request"] != null)
                 {
-                    string behaviorRequest = HttpContext.Current.Request.Form["behaviors_request"].ToString();
+                    string behaviorRequest = HttpContext.Current.Request.Form["behaviors_request"];
                     if (behaviorRequest == "save")
                     {
                         RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership = ipRestrictionMask;
@@ -152,7 +152,7 @@ namespace SobekCM.Library.MySobekViewer
                         if (SobekCM_Database.Set_Item_Visibility(RequestSpecificValues.Current_Item.Web.ItemID, ipRestrictionMask, isDark, embargoDate, RequestSpecificValues.Current_User.UserName))
                         {
                             // Update the web.config
-                            Resource_Web_Config_Writer.Update_Web_Config(RequestSpecificValues.Current_Item.Source_Directory, RequestSpecificValues.Current_Item.Behaviors.Dark_Flag, (short)ipRestrictionMask, RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail);
+                            Resource_Web_Config_Writer.Update_Web_Config(RequestSpecificValues.Current_Item.Source_Directory, RequestSpecificValues.Current_Item.Behaviors.Dark_Flag, ipRestrictionMask, RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail);
 
                             // Remove the cached item
                             CachedDataManager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Tracer);
@@ -181,6 +181,8 @@ namespace SobekCM.Library.MySobekViewer
             }
         }
 
+        /// <summary>  Title for the page that displays this viewer, this is shown in the search box at 
+        /// the top of the page, just below the banner </summary>
         public override string Web_Title
         {
             get { return "Edit Item Permissions"; }

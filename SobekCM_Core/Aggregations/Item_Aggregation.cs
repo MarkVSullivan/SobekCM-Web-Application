@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -10,7 +12,8 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Skins;
 using SobekCM.Core.WebContent;
-using SobekCM.Tools;
+
+#endregion
 
 namespace SobekCM.Core.Aggregations
 {
@@ -19,6 +22,9 @@ namespace SobekCM.Core.Aggregations
     [XmlRoot("aggregation")]
     public class Item_Aggregation
     {
+        /// <summary> List of custom directives used within this aggregation to replicate a large chunk of HTML on 
+        /// multiple static browse pages </summary>
+        /// <remarks> This property is not serialized </remarks>
         [XmlIgnore]
         [IgnoreDataMember]
         [NonSerialized]
@@ -177,12 +183,8 @@ namespace SobekCM.Core.Aggregations
         [XmlElement("rotatingHighlights")]
         public string Rotating_Highlights_AsString
         {
-            get
-            {
-                if (Rotating_Highlights.HasValue)
-                    return Rotating_Highlights.ToString();
-                else
-                    return null;
+            get {
+                return Rotating_Highlights.HasValue ? Rotating_Highlights.ToString() : null;
             }
             set
             {
@@ -334,22 +336,26 @@ namespace SobekCM.Core.Aggregations
         [ProtoMember(32)]
         public ContactForm_Configuration ContactForm { get; set; }
 
+        /// <summary> Front banner information, used for the banner on the main home page of this aggregation </summary>
         [DataMember(EmitDefaultValue = false, Name = "frontBanner")]
         [XmlElement("frontBanner")]
         [ProtoMember(34)]
         public Item_Aggregation_Front_Banner FrontBannerObj { get; set; }
-        
 
+        /// <summary> Filename for the banner used on most of the aggregation pages, and perhaps the front page as well </summary>
         [DataMember(EmitDefaultValue = false, Name = "bannerImg")]
         [XmlElement("bannerImg")]
         [ProtoMember(35)]
         public string BannerImage { get; set; }
 
+        /// <summary> Information pulled from the home page source file, including the full home page text </summary>
         [DataMember(EmitDefaultValue = false, Name = "homeText")]
         [XmlElement("homeText")]
         [ProtoMember(36)]
         public HTML_Based_Content HomePageHtml { get; set; }
 
+        /// <summary> Source file for the home page text </summary>
+        /// <remarks> This property is not serialized </remarks>
         [IgnoreDataMember]
         [XmlIgnore]
         public string HomePageSource { get; set; }
@@ -527,7 +533,7 @@ namespace SobekCM.Core.Aggregations
             if (Child_Pages == null)
                 return null;
 
-            return Child_Pages.FirstOrDefault(childPage => String.Compare(ChildCode, childPage.Code, StringComparison.InvariantCultureIgnoreCase) == 0);
+            return Child_Pages.FirstOrDefault(ChildPage => String.Compare(ChildCode, ChildPage.Code, StringComparison.InvariantCultureIgnoreCase) == 0);
 		}
 
 	    /// <summary> Add a child page to this item aggregatiion </summary>
@@ -644,6 +650,10 @@ namespace SobekCM.Core.Aggregations
             }
         }
 
+        /// <summary> Get the banner image for this aggregation, possibly returning the web skin banner if it overrides
+        /// the aggregation banner  </summary>
+        /// <param name="ThisWebSkin"> Web skin object, which may override the banner from this aggregation </param>
+        /// <returns> String for the banner to use for this aggregation </returns>
         public string Get_Banner_Image(Web_Skin_Object ThisWebSkin)
         {
             // Does the web skin exist and override the banner?  For non-institutional agggregations

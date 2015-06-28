@@ -1,14 +1,26 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Net.Mail;
 using SobekCM.Core;
+using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
+
+#endregion
 
 namespace SobekCM.Engine_Library.Email
 {
     /// <summary> Class is used to send emails according to this instance of SobekCM's settings </summary>
     public static class Email_Helper
     {
+        /// <summary> Sends an email using the currently selected email method ( i.e., direct SMTP or database mail ) </summary>
+        /// <param name="ToAddress"> To address for the email to send </param>
+        /// <param name="Subject"> Subject line for the email to send </param>
+        /// <param name="Body"> Body of the email to send  </param>
+        /// <param name="isHtml"> If set to <c>true</c>, send the email as HTML format (vs. text format) </param>
+        /// <param name="InstanceName"> Name of the current SobekCM instance </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
         public static bool SendEmail(string ToAddress, string Subject, string Body, bool isHtml, string InstanceName)
         {
             EmailInfo newEmail = new EmailInfo {RecipientsList = ToAddress, Subject = Subject, Body = Body, isHTML = isHtml};
@@ -42,7 +54,7 @@ namespace SobekCM.Engine_Library.Email
             if (Email.UserID.HasValue)
                 userId = Email.UserID.Value;
 
-            if (Engine_ApplicationCache_Gateway.Settings.EmailMethod == Core.Settings.Email_Method_Enum.MsSqlDatabaseMail)
+            if (Engine_ApplicationCache_Gateway.Settings.EmailMethod == Email_Method_Enum.MsSqlDatabaseMail)
             {
                 try
                 {

@@ -13,7 +13,6 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Email;
-using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -31,8 +30,8 @@ namespace SobekCM.Library.MySobekViewer
     /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
     /// During a valid html request, the following steps occur:
     /// <ul>
-    /// <li>Application state is built/verified by the <see cref="Application_State.Application_State_Builder"/> </li>
-    /// <li>Request is analyzed by the <see cref="Navigation.SobekCM_QueryString_Analyzer"/> and output as a <see cref="Navigation.SobekCM_Navigation_Object"/> </li>
+    /// <li>Application state is built/verified by the Application_State_Builder </li>
+    /// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/>  </li>
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
     /// <li>The mySobek subwriter creates an instance of this viewer for either registering or changing their preferences </li>
@@ -40,7 +39,7 @@ namespace SobekCM.Library.MySobekViewer
     public class Preferences_MySobekViewer : abstract_MySobekViewer
     {
         private readonly List<string> validationErrors;
-        private User_Object user;
+        private readonly User_Object user;
 
 		private readonly bool registration;
 		private readonly bool desire_to_upload;
@@ -54,12 +53,8 @@ namespace SobekCM.Library.MySobekViewer
 		private readonly string college;
 		private readonly string department;
 		private readonly string unit;
-		private readonly string template;
-		private readonly string project;
-		private readonly string username;
-		private readonly string password;
-		private readonly string password2;
-		private string ufid;
+        private readonly string username;
+        private string ufid;
 	    private readonly string language;
 		private readonly string default_rights;
 
@@ -96,7 +91,7 @@ namespace SobekCM.Library.MySobekViewer
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Preferences_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            RequestSpecificValues.Tracer.Add_Trace("Preferences_MySobekViewer.Constructor", String.Empty);
+	        RequestSpecificValues.Tracer.Add_Trace("Preferences_MySobekViewer.Constructor", String.Empty);
 
             validationErrors = new List<string>();
 
@@ -211,11 +206,11 @@ namespace SobekCM.Library.MySobekViewer
 			college = String.Empty;
 			department = String.Empty;
 			unit = String.Empty;
-			template = String.Empty;
-			project = String.Empty;
+			string template = String.Empty;
+			string project = String.Empty;
 			username = String.Empty;
-			password = String.Empty;
-			password2 = String.Empty;
+			string password = String.Empty;
+			string password2 = String.Empty;
 			ufid = String.Empty;
 			language = String.Empty;
 			default_rights = String.Empty;
@@ -554,6 +549,10 @@ namespace SobekCM.Library.MySobekViewer
             }
         }
 
+        /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of any form) </summary>
+        /// <param name="Output">Textwriter to write the HTML for this viewer</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <remarks> This does nothing </remarks>
 	    public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
 	    {
 		    // Do nothing

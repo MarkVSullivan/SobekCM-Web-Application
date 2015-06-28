@@ -1,5 +1,9 @@
-﻿using SobekCM.Resource_Object;
+﻿#region Using directives
+
 using SobekCM.Core.BriefItem;
+using SobekCM.Resource_Object;
+
+#endregion
 
 namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 {

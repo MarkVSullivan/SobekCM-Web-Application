@@ -41,6 +41,16 @@ namespace SobekCM.Library.Citation.Elements
 			// do nothing
 		}
 
+		/// <summary> Render the HTML for the template </summary>
+		/// <param name="Output"> Output stream to write the template to </param>
+		/// <param name="Bib"> Digital resource to show in the template </param>
+		/// <param name="Skin_Code"> Skin code to use </param>
+		/// <param name="IsMozilla"> Flag indicates if this is being displayed in Mozilla </param>
+		/// <param name="PopupFormBuilder"> Builder collects any pop-up form HTML </param>
+		/// <param name="Current_User"> Currenlty logged on user </param>
+		/// <param name="CurrentLanguage"> Currently requested language for the template </param>
+		/// <param name="Translator"> Translator object </param>
+		/// <param name="Base_URL"> Base URL for the instance of SobekCM </param>
 		public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
 		{
 			Output.WriteLine("  <!-- Literal Element -->");
@@ -50,6 +60,8 @@ namespace SobekCM.Library.Citation.Elements
 			Output.WriteLine("  </tr>");
 		}
 
+		/// <summary> Read inner data for this XML  </summary>
+		/// <param name="XMLReader"> Current reader for the template configuration XML file </param>
 		protected override void Inner_Read_Data(XmlTextReader XMLReader)
 		{
 			while (XMLReader.Read())

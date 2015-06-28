@@ -1,7 +1,11 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+
+#endregion
 
 namespace SobekCM.Engine_Library.Microservices
 {
@@ -167,7 +171,7 @@ namespace SobekCM.Engine_Library.Microservices
                 writer.Flush();
                 writer.Close();
             }
-            catch (Exception ee)
+            catch 
             {
                 returnValue = false;
             }

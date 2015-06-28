@@ -188,7 +188,7 @@ namespace SobekCM
 
                 defaultSkin = currentMode.Skin;
 			}
-			catch ( Exception ee )
+			catch 
 			{
 				HttpContext.Current.Response.Status = "301 Moved Permanently";
 				HttpContext.Current.Response.AddHeader("Location", base_url);

@@ -314,23 +314,23 @@ namespace SobekCM.Library.Database
 			// Will create new online web interfac and then decide
 			return true;
 
-			try
-			{
-				// build the parameter list
-				EalDbParameter[] paramList = new EalDbParameter[3];
-				paramList[0] = new EalDbParameter("@BibID", BibID);
-				paramList[1] = new EalDbParameter("@VID", Vid);
-				paramList[2] = new EalDbParameter("@ClearedBy", ClearedBy);
+            //try
+            //{
+            //    // build the parameter list
+            //    EalDbParameter[] paramList = new EalDbParameter[3];
+            //    paramList[0] = new EalDbParameter("@BibID", BibID);
+            //    paramList[1] = new EalDbParameter("@VID", Vid);
+            //    paramList[2] = new EalDbParameter("@ClearedBy", ClearedBy);
 
-				//Execute this non-query stored procedure
-				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Clear_Item_Error_Log", paramList);
-				return true;
-			}
-			catch (Exception ee)
-			{
-				lastException = ee;
-				return false;
-			}
+            //    //Execute this non-query stored procedure
+            //    EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Clear_Item_Error_Log", paramList);
+            //    return true;
+            //}
+            //catch (Exception ee)
+            //{
+            //    lastException = ee;
+            //    return false;
+            //}
 		}
 
 		/// <summary> Expire older builder logs which can be removed from the system </summary>
@@ -693,13 +693,14 @@ namespace SobekCM.Library.Database
 
         #region Method to return DATATABLE of all items from an aggregation
 
-		/// <summary> Gets the list of unique coordinate points and associated bibid and group title for a single 
-		/// item aggregation </summary>
-		/// <param name="AggregationCode"> Code for the item aggregation </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> DataTable with all the coordinate values </returns>
-		/// <remarks> This calls the 'SobekCM_Coordinate_Points_By_Aggregation' stored procedure </remarks>
-		public static DataTable Get_All_Items_By_AggregationID(string AggregationCode, List<string> FIDs, Custom_Tracer Tracer)
+	    /// <summary> Gets the list of unique coordinate points and associated bibid and group title for a single 
+	    /// item aggregation </summary>
+	    /// <param name="AggregationCode"> Code for the item aggregation </param>
+	    /// <param name="FIDs"> FileIDs </param>
+	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+	    /// <returns> DataTable with all the coordinate values </returns>
+	    /// <remarks> This calls the 'SobekCM_Coordinate_Points_By_Aggregation' stored procedure </remarks>
+	    public static DataTable Get_All_Items_By_AggregationID(string AggregationCode, List<string> FIDs, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -721,12 +722,12 @@ namespace SobekCM.Library.Database
             //paramList[7] = new EalDbParameter("@FID7_PassIn", FIDs[6]);
             //paramList[8] = new EalDbParameter("@FID8_PassIn", FIDs[7]);
             int paramListIndex = 0; //set where we are at
-            int FIDIndex = 0; //where do the fids start (zero)
+            int fidIndex = 0; //where do the fids start (zero)
             foreach (string fiD in FIDs)
             {
                 paramListIndex++;
-                FIDIndex++;
-                paramList[paramListIndex] = new EalDbParameter("@FID" + FIDIndex.ToString(), fiD);
+                fidIndex++;
+                paramList[paramListIndex] = new EalDbParameter("@FID" + fidIndex.ToString(), fiD);
             }
             paramList[(paramListIndex + 1)] = new EalDbParameter("FIDDBCallPrefix", HOOK_FIDDBCallPrefix);
 
@@ -740,11 +741,11 @@ namespace SobekCM.Library.Database
         #region Method to return STIRNG of the human readable metadata code
 
         /// <summary> Gets the human readable name of a metadate id</summary>
-        /// <param name="metadataTypeId"> Code for the metadata</param>
+        /// <param name="MetadataTypeId"> Code for the metadata</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <returns> String with the name of the metadata </returns>
         /// <remarks> This calls the 'SobekCM_Get_Metadata_Name_From_MetadataTypeID' stored procedure </remarks>
-        public static string Get_Metadata_Name_From_MetadataTypeID(short metadataTypeId, Custom_Tracer Tracer)
+        public static string Get_Metadata_Name_From_MetadataTypeID(short MetadataTypeId, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -753,7 +754,7 @@ namespace SobekCM.Library.Database
 
             // Build the parameter list
             EalDbParameter[] paramList = new EalDbParameter[1];
-            paramList[0] = new EalDbParameter("@metadataTypeID", metadataTypeId);
+            paramList[0] = new EalDbParameter("@metadataTypeID", MetadataTypeId);
 
             // Define a temporary dataset
             DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Metadata_Name_From_MetadataTypeID", paramList);
@@ -6035,14 +6036,14 @@ namespace SobekCM.Library.Database
 
 
 		/// <summary>Gets all tracking workflow entries created by a single user </summary>
-		/// <param name="username">User Name</param>
+		/// <param name="Username">User Name</param>
 		/// <returns>DataTable of all previous entries for this user</returns>
-		public static DataTable Tracking_Get_All_Entries_By_User(string username)
+		public static DataTable Tracking_Get_All_Entries_By_User(string Username)
 		{
 			try
 			{
                 EalDbParameter[] parameters = new EalDbParameter[1];
-                parameters[0] = new EalDbParameter("@username", username);
+                parameters[0] = new EalDbParameter("@username", Username);
 
                 // Define a temporary dataset
                 DataSet returnSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Get_All_Entries_By_User", parameters);
@@ -6053,35 +6054,35 @@ namespace SobekCM.Library.Database
 			}
 			catch (Exception ee)
 			{
-				throw new ApplicationException("Error retrieving previous tracking entries for user "+username+" from the DB. " + ee.Message);
+				throw new ApplicationException("Error retrieving previous tracking entries for user "+Username+" from the DB. " + ee.Message);
 			}
 
 		}
 
 
 		/// <summary> Save a new workflow entry during tracking</summary>
-		/// <param name="itemID"></param>
-		/// <param name="workPerformedBy"></param>
-		/// <param name="relatedEquipment"></param>
-		/// <param name="dateStarted"></param>
-		/// <param name="dateCompleted"></param>
+		/// <param name="ItemID"></param>
+		/// <param name="WorkPerformedBy"></param>
+		/// <param name="RelatedEquipment"></param>
+		/// <param name="DateStarted"></param>
+		/// <param name="DateCompleted"></param>
 		/// <param name="EventNum"></param>
 		/// <param name="StartEvent"></param>
 		/// <param name="EndEvent"></param>
 		/// <param name="StartEndEvent"></param>
 		/// <returns></returns>
-		public static int Tracking_Save_New_Workflow(int itemID, string workPerformedBy, string relatedEquipment, DateTime? dateStarted, DateTime? dateCompleted, int EventNum, int StartEvent, int EndEvent, int StartEndEvent)
+		public static int Tracking_Save_New_Workflow(int ItemID, string WorkPerformedBy, string RelatedEquipment, DateTime? DateStarted, DateTime? DateCompleted, int EventNum, int StartEvent, int EndEvent, int StartEndEvent)
 		{
 			int this_workflow_id;  
 
             // Build the parameters
 		    List<EalDbParameter> parameters = new List<EalDbParameter>
 		    {
-		        new EalDbParameter("@itemid", itemID), 
-                new EalDbParameter("@user", workPerformedBy), 
-                dateStarted.HasValue ? new EalDbParameter("@dateStarted", dateStarted.Value) : new EalDbParameter("@dateStarted", DBNull.Value), 
-                dateCompleted.HasValue ? new EalDbParameter("@dateCompleted", dateCompleted.Value) : new EalDbParameter("@dateCompleted", DBNull.Value), 
-                new EalDbParameter("@relatedEquipment", relatedEquipment), 
+		        new EalDbParameter("@itemid", ItemID), 
+                new EalDbParameter("@user", WorkPerformedBy), 
+                DateStarted.HasValue ? new EalDbParameter("@dateStarted", DateStarted.Value) : new EalDbParameter("@dateStarted", DBNull.Value), 
+                DateCompleted.HasValue ? new EalDbParameter("@dateCompleted", DateCompleted.Value) : new EalDbParameter("@dateCompleted", DBNull.Value), 
+                new EalDbParameter("@relatedEquipment", RelatedEquipment), 
                 new EalDbParameter("@EventNumber", EventNum), 
                 new EalDbParameter("@StartEventNumber", StartEvent),
                 new EalDbParameter("@EndEventNumber", EndEvent), 
@@ -6108,31 +6109,31 @@ namespace SobekCM.Library.Database
 
 
         /// <summary> Update an already saved tracking workflow entry </summary>
-        /// <param name="workflowID"></param>
-        /// <param name="itemID"></param>
-        /// <param name="workPerformedBy"></param>
-        /// <param name="dateStarted"></param>
-        /// <param name="dateCompleted"></param>
-        /// <param name="relatedEquipment"></param>
-        /// <param name="eventNumber"></param>
-        /// <param name="startEventNumber"></param>
-        /// <param name="endEventNum"></param>
-		public static void Tracking_Update_Workflow(int workflowID, int itemID, string workPerformedBy, DateTime? dateStarted, DateTime? dateCompleted, string relatedEquipment, int eventNumber, int startEventNumber, int endEventNum)
+        /// <param name="WorkflowID"></param>
+        /// <param name="ItemID"></param>
+        /// <param name="WorkPerformedBy"></param>
+        /// <param name="DateStarted"></param>
+        /// <param name="DateCompleted"></param>
+        /// <param name="RelatedEquipment"></param>
+        /// <param name="EventNumber"></param>
+        /// <param name="StartEventNumber"></param>
+        /// <param name="EndEventNum"></param>
+		public static void Tracking_Update_Workflow(int WorkflowID, int ItemID, string WorkPerformedBy, DateTime? DateStarted, DateTime? DateCompleted, string RelatedEquipment, int EventNumber, int StartEventNumber, int EndEventNum)
 		{
 			try
 			{
                 // Build the parameters list
 			    List<EalDbParameter> parameters = new List<EalDbParameter>
 			    {
-			        new EalDbParameter("@workflow_entry_id", workflowID), 
-                    new EalDbParameter("@itemid", itemID), 
-                    new EalDbParameter("@user", workPerformedBy), 
-                    dateStarted.HasValue ? new EalDbParameter("@dateStarted", dateStarted.Value) : new EalDbParameter("@dateStarted", DBNull.Value), 
-                    dateCompleted.HasValue ? new EalDbParameter("@dateCompleted", dateCompleted.Value) : new EalDbParameter("@dateCompleted", DBNull.Value), 
-                    new EalDbParameter("@relatedEquipment", relatedEquipment), 
-                    new EalDbParameter("@EventNumber", eventNumber), 
-                    new EalDbParameter("@StartEventNumber", startEventNumber), 
-                    new EalDbParameter("@EndEventNumber", endEventNum)
+			        new EalDbParameter("@workflow_entry_id", WorkflowID), 
+                    new EalDbParameter("@itemid", ItemID), 
+                    new EalDbParameter("@user", WorkPerformedBy), 
+                    DateStarted.HasValue ? new EalDbParameter("@dateStarted", DateStarted.Value) : new EalDbParameter("@dateStarted", DBNull.Value), 
+                    DateCompleted.HasValue ? new EalDbParameter("@dateCompleted", DateCompleted.Value) : new EalDbParameter("@dateCompleted", DBNull.Value), 
+                    new EalDbParameter("@relatedEquipment", RelatedEquipment), 
+                    new EalDbParameter("@EventNumber", EventNumber), 
+                    new EalDbParameter("@StartEventNumber", StartEventNumber), 
+                    new EalDbParameter("@EndEventNumber", EndEventNum)
 			    };
 
 			    // Run the SQL 
@@ -6171,14 +6172,14 @@ namespace SobekCM.Library.Database
 		#region Methods supporting USFLDC_Redirection_Service method in SobekCM_URL_Rewriter
 
 		/// <summary> Gets aggregation code from CID in aggregation description</summary>
-		/// <param name="cid"> CID for the digital collection </param>
+		/// <param name="Cid"> CID for the digital collection </param>
 		/// <returns> Aggregation Code </returns>
-		public static String Get_AggregationCode_From_CID(String cid)
+		public static String Get_AggregationCode_From_CID(String Cid)
 		{
 			try
 			{
 				EalDbParameter[] parameters = new EalDbParameter[1];
-				parameters[0] = new EalDbParameter("@cid", cid);
+				parameters[0] = new EalDbParameter("@cid", Cid);
 
 				// Define a temporary dataset
 				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "USF_Get_AggregationCode_From_CID", parameters);
@@ -6200,14 +6201,14 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Pulls the BibID, VID via the Identifier </summary>
-		/// <param name="identifier"> Identifier (PURL Handle) for the digital resource object </param>
+		/// <param name="Identifier"> Identifier (PURL Handle) for the digital resource object </param>
 		/// <returns> BibID_VID </returns>
-		public static String Get_BibID_VID_From_Identifier(string identifier)
+		public static String Get_BibID_VID_From_Identifier(string Identifier)
 		{
 			try
 			{
 				EalDbParameter[] parameters = new EalDbParameter[1];
-				parameters[0] = new EalDbParameter("@identifier", identifier);
+				parameters[0] = new EalDbParameter("@identifier", Identifier);
 		   
 				// Define a temporary dataset
 				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_BibID_VID_From_Identifier", parameters);

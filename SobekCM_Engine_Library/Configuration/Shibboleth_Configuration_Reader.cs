@@ -1,14 +1,21 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.IO;
 using System.Xml;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Users;
+
+#endregion
 
 namespace SobekCM.Engine_Library.Configuration
 {
     /// <summary> Class is used to read the shibboleth configuration file </summary>
     public static class Shibboleth_Configuration_Reader
     {
+        /// <summary> Read the Shibboleth system configuration file from within the config subfolder on the web app </summary>
+        /// <param name="ConfigFile"> Complete path and name of the configuration file to read </param>
+        /// <returns> Built configuration object for Shibboleth authentication </returns>
         public static Shibboleth_Configuration Read_Config(string ConfigFile)
         {
             Shibboleth_Configuration returnValue = new Shibboleth_Configuration();
@@ -57,34 +64,34 @@ namespace SobekCM.Engine_Library.Configuration
             return returnValue;
         }
 
-        private static void read_shibb_details(XmlReader readerXml, Shibboleth_Configuration config)
+        private static void read_shibb_details(XmlReader ReaderXml, Shibboleth_Configuration Config)
         {
             // Read the attributes
-            if (readerXml.MoveToAttribute("UserIdentityAttribute"))
-                config.UserIdentityAttribute = readerXml.Value.Trim();
+            if (ReaderXml.MoveToAttribute("UserIdentityAttribute"))
+                Config.UserIdentityAttribute = ReaderXml.Value.Trim();
 
-            if (readerXml.MoveToAttribute("URL"))
-                config.ShibbolethURL = readerXml.Value.Trim();
+            if (ReaderXml.MoveToAttribute("URL"))
+                Config.ShibbolethURL = ReaderXml.Value.Trim();
 
-            if (readerXml.MoveToAttribute("Label"))
-                config.Label = readerXml.Value.Trim();
+            if (ReaderXml.MoveToAttribute("Label"))
+                Config.Label = ReaderXml.Value.Trim();
 
-            if (readerXml.MoveToAttribute("Debug"))
+            if (ReaderXml.MoveToAttribute("Debug"))
             {
-                if (String.Compare(readerXml.Value.Trim(), "true", true) == 0)
-                    config.Debug = true;
+                if (String.Compare(ReaderXml.Value.Trim(), "true", StringComparison.OrdinalIgnoreCase) == 0)
+                    Config.Debug = true;
             }
 
-            if (readerXml.MoveToAttribute("Enabled"))
+            if (ReaderXml.MoveToAttribute("Enabled"))
             {
-                if (String.Compare(readerXml.Value.Trim(), "false", true) == 0)
-                    config.Enabled = false;
+                if (String.Compare(ReaderXml.Value.Trim(), "false", StringComparison.OrdinalIgnoreCase) == 0)
+                    Config.Enabled = false;
             }
 
 
             // Just step through the subtree of this
-            readerXml.MoveToElement();
-            XmlReader subTreeReader = readerXml.ReadSubtree();
+            ReaderXml.MoveToElement();
+            XmlReader subTreeReader = ReaderXml.ReadSubtree();
             while (subTreeReader.Read())
             {
                 if (subTreeReader.NodeType == XmlNodeType.Element)
@@ -103,7 +110,7 @@ namespace SobekCM.Engine_Library.Configuration
                                 User_Object_Attribute_Mapping_Enum userAttrEnum = User_Object_Attribute_Mapping_Enum_Converter.ToEnum(userAttribute.ToUpper());
                                 if (userAttrEnum != User_Object_Attribute_Mapping_Enum.NONE)
                                 {
-                                    config.Add_Attribute_Mapping(serverVariable, userAttrEnum);
+                                    Config.Add_Attribute_Mapping(serverVariable, userAttrEnum);
                                 }
                             }
                             break;
@@ -123,7 +130,7 @@ namespace SobekCM.Engine_Library.Configuration
                                 User_Object_Attribute_Mapping_Enum userAttrEnum = User_Object_Attribute_Mapping_Enum_Converter.ToEnum(userAttribute2.ToUpper());
                                 if (userAttrEnum != User_Object_Attribute_Mapping_Enum.NONE)
                                 {
-                                    config.Add_Constant(userAttrEnum, constantValue);
+                                    Config.Add_Constant(userAttrEnum, constantValue);
                                 }
                             }
                             break;
@@ -137,7 +144,7 @@ namespace SobekCM.Engine_Library.Configuration
                                 requiredValue = subTreeReader.Value.Trim();
                             if ((!String.IsNullOrEmpty(serverVariable2)) && (!String.IsNullOrEmpty(requiredValue)))
                             {
-                                config.Add_CanSubmit_Indicator(serverVariable2, requiredValue);
+                                Config.Add_CanSubmit_Indicator(serverVariable2, requiredValue);
                             }
                             break;
                     }

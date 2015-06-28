@@ -213,13 +213,13 @@ namespace SobekCM.Core.Aggregations
 
 
         /// <summary> Method adds a minimally reported aggregation as a parent of this </summary>
-        /// <param name="Code"> Aggregation code for this minimally reported aggregation </param>
-        /// <param name="Name"> Full name for this minimally reported aggregation </param>
-        /// <param name="ShortName"> Shortened name for this minimally reported aggregation </param>
-        public void Add_Parent_Aggregation(string Code, string Name, string ShortName)
+        /// <param name="ParentCode"> Aggregation code for this minimally reported aggregation </param>
+        /// <param name="ParentName"> Full name for this minimally reported aggregation </param>
+        /// <param name="ParentShortName"> Shortened name for this minimally reported aggregation </param>
+        public void Add_Parent_Aggregation(string ParentCode, string ParentName, string ParentShortName)
         {
             // Create the object
-            Item_Aggregation_Minimal parentAggregation = new Item_Aggregation_Minimal(Code, Name, ShortName);
+            Item_Aggregation_Minimal parentAggregation = new Item_Aggregation_Minimal(ParentCode, ParentName, ParentShortName);
 
             // If the list is currently null, create it
             if (Parents == null)
@@ -275,11 +275,16 @@ namespace SobekCM.Core.Aggregations
             this.ShortName = ShortName;
         }
 
-        public bool Equals(Item_Aggregation_Minimal other)
+        /// <summary> Indicates whether the current object is equal to another object of the same type </summary>
+        /// <param name="Other"> An object to compare with this object.</param>
+        /// <returns> TRUE if the current object is equal to the <paramref name="Other" /> parameter; otherwise, FALSE </returns>
+        public bool Equals(Item_Aggregation_Minimal Other)
         {
-            return (String.Compare(other.Code, Code, StringComparison.InvariantCultureIgnoreCase) == 0);
+            return (String.Compare(Other.Code, Code, StringComparison.InvariantCultureIgnoreCase) == 0);
         }
 
+        /// <summary> [Overrides] Returns a hash code for this instance. </summary>
+        /// <returns> A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. </returns>
         public override int GetHashCode()
         {
             return ("ItemAggregationMinimal|" + Code ).GetHashCode();

@@ -1,4 +1,4 @@
-﻿#region Using references
+﻿#region Using directives
 
 using System;
 using System.Collections.Generic;
@@ -21,6 +21,7 @@ using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Email;
 using SobekCM.Engine_Library.JSON_Client_Helpers;
 using SobekCM.Engine_Library.Microservices;
 using SobekCM.Tools;
@@ -35,6 +36,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> Gets the complete (language agnostic) item aggregation, by aggregation code </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         public void GetCompleteAggregationByCode(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
@@ -97,6 +99,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> Gets the language-specific item aggregation, by aggregation code and language code </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         public void GetAggregationByCode(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
@@ -166,6 +169,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> Gets the list of all aggregations - including inactive and hidden </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         public void GetAllAggregations(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
@@ -228,6 +232,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> [PUBLIC] Get the list of uploaded images for a particular aggregation </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <remarks> This REST API should be publicly available for users that are performing administrative work </remarks>
         public void GetAggregationUploadedImages(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
@@ -272,6 +277,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> Gets the entire collection hierarchy (used for hierarchical tree displays) </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         public void GetCollectionHierarchy(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
@@ -328,6 +334,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> Gets the all information, including the HTML, for an item aggregation child page </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         public void GetCollectionStaticPage(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
         {
@@ -547,6 +554,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
         /// <summary> [HELPER] Gets the complete (language agnostic) item aggregation, by aggregation code </summary>
         /// <param name="AggregationCode"> Code the requested aggregation </param>
+        /// <param name="UseCache"> Flag indicates if the cache should be checed and used to store the final product </param>
         /// <param name="Tracer"></param>
         /// <returns> Fully built language-agnostic aggregation, with all related configurations </returns>
         /// <remarks> This may be public now, but this will be converted into a private helped class with 
@@ -574,7 +582,6 @@ namespace SobekCM.Engine_Library.Endpoints
                     foreach (Thematic_Heading thisTheme in Engine_ApplicationCache_Gateway.Thematic_Headings)
                     {
                         // Build the list of html to display
-                        SortedList<string, string> html_list = new SortedList<string, string>();
                         ReadOnlyCollection<Item_Aggregation_Related_Aggregations> thisThemesAggrs = Engine_ApplicationCache_Gateway.Codes.Aggregations_By_ThemeID(thisTheme.ID);
                         foreach (Item_Aggregation_Related_Aggregations thisAggr in thisThemesAggrs)
                         {
@@ -600,12 +607,11 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 return itemAggr;
             }
-            else
-            {
-                Tracer.Add_Trace("AggregationServices.get_complete_aggregation", "UseCache parameter is FALSE, will not use the cache for this request");
+            
+            // else..
+            Tracer.Add_Trace("AggregationServices.get_complete_aggregation", "UseCache parameter is FALSE, will not use the cache for this request");
 
-                return Item_Aggregation_Utilities.Get_Complete_Item_Aggregation(AggregationCode, Tracer);
-            }
+            return Item_Aggregation_Utilities.Get_Complete_Item_Aggregation(AggregationCode, Tracer);
         }
 
         #endregion
@@ -720,7 +726,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 foreach (string error in errors)
                     actionMessage.Append("<br />" + error);
 
-                return new ErrorRestMessage(ErrorRestType.InputError, actionMessage.ToString());
+                return new ErrorRestMessage(ErrorRestTypeEnum.InputError, actionMessage.ToString());
             }
 
 
@@ -730,7 +736,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Try to save the new item aggregation
             if (!Engine_Database.Save_Item_Aggregation(NewAggregation.Code, NewAggregation.Name, NewAggregation.ShortName, NewAggregation.Description, thematicHeadingId, NewAggregation.Type, NewAggregation.Active, NewAggregation.Hidden, NewAggregation.External_Link, parentid, NewAggregation.User, language, null))
             {
-                return new ErrorRestMessage(ErrorRestType.Exception, "ERROR saving the new item aggregation to the database");
+                return new ErrorRestMessage(ErrorRestTypeEnum.Exception, "ERROR saving the new item aggregation to the database");
             }
             // Ensure a folder exists for this, otherwise create one
             try
@@ -850,18 +856,18 @@ namespace SobekCM.Engine_Library.Endpoints
                     itemAggregation.Write_Configuration_File(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + itemAggregation.ObjDirectory);
 
                     // If an email shoudl be sent, do that now
-                    if (String.Compare(Engine_ApplicationCache_Gateway.Settings.Send_Email_On_Added_Aggregation, "always", true) == 0)
+                    if (String.Compare(Engine_ApplicationCache_Gateway.Settings.Send_Email_On_Added_Aggregation, "always", StringComparison.OrdinalIgnoreCase) == 0)
                     {
                         string user = String.Empty;
                         if (!String.IsNullOrEmpty(NewAggregation.User))
                             user = NewAggregation.User;
 
                         string body = "New aggregation added to this system:\n\n\tCode:\t" + itemAggregation.Code + "\n\tType:\t" + itemAggregation.Type + "\n\tName:\t" + itemAggregation.Name + "\n\tShort:\t" + itemAggregation.ShortName + "\n\tUser:\t" + user + "\n\n" + Engine_ApplicationCache_Gateway.Settings.Application_Server_URL + "/" + itemAggregation.Code;
-                        Email.Email_Helper.SendEmail(Engine_ApplicationCache_Gateway.Settings.System_Email, "New " + itemAggregation.Type + " - " + itemAggregation.ShortName, body, false, Engine_ApplicationCache_Gateway.Settings.System_Name);
+                        Email_Helper.SendEmail(Engine_ApplicationCache_Gateway.Settings.System_Email, "New " + itemAggregation.Type + " - " + itemAggregation.ShortName, body, false, Engine_ApplicationCache_Gateway.Settings.System_Name);
                     }
                 }
             }
-            catch ( Exception ee )
+            catch 
             {
                 // Reload the list of all codes, to include this new one and the new hierarchy
                 lock (Engine_ApplicationCache_Gateway.Codes)
@@ -869,7 +875,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     Engine_Database.Populate_Code_Manager(Engine_ApplicationCache_Gateway.Codes, null);
                 }
 
-                return new ErrorRestMessage(ErrorRestType.Exception, "ERROR completing the new aggregation add");
+                return new ErrorRestMessage(ErrorRestTypeEnum.Exception, "ERROR completing the new aggregation add");
             }
 
             // Reload the list of all codes, to include this new one and the new hierarchy
@@ -881,7 +887,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Clear all aggregation information (and thematic heading info) from the cache as well
             CachedDataManager.Aggregations.Clear();
 
-            return new ErrorRestMessage(ErrorRestType.Successful, null);
+            return new ErrorRestMessage(ErrorRestTypeEnum.Successful, null);
 
         }
 

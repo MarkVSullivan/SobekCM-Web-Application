@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#region Using directives
+
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Navigation;
+
+#endregion
 
 namespace SobekCM.Core.Client
 {

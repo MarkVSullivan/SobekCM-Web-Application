@@ -1,9 +1,13 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Reflection;
 using System.Web;
 using SobekCM.Engine_Library.IpRangeUtilities;
+
+#endregion
 
 namespace SobekCM.Engine_Library.Microservices
 {
@@ -50,6 +54,11 @@ namespace SobekCM.Engine_Library.Microservices
         private object restApiObject;
         private IpRangeSetV4 rangeTester;
 
+        /// <summary> Invoke the method in the class specified for this endpoint, from the configuration XML file </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="RequestForm"></param>
         public void Invoke(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, NameValueCollection RequestForm )
         {
             if ((methodInfo == null) || (restApiObject == null))

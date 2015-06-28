@@ -17,6 +17,7 @@
 
         /// <summary> Constructor for a new instance of the Default_Metadata class </summary>
         /// <param name="Code"> Code for this default metadata set </param>
+        /// <param name="Name"> Name of this default metadata set </param>
         /// <param name="Description"> Description of this default metadata set </param>
         public Default_Metadata(string Code, string Name, string Description)
         {
@@ -27,6 +28,7 @@
 
         /// <summary> Constructor for a new instance of the Default_Metadata class </summary>
         /// <param name="Code"> Code for this default metadata set </param>
+        /// <param name="Name"> Name of this default metadata set </param>
         /// <param name="Description"> Description of this default metadata set </param>
         /// <param name="User"> User for this default metadata set, if this is a personal default metadata set, and not a global set </param>
         public Default_Metadata(string Code, string Name, string Description, string User)

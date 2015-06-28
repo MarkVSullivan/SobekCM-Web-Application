@@ -57,6 +57,7 @@ namespace SobekCM.Core.WebContent
         /// <summary> Constructor for a new instance of the base_HTML_Content_Object class  </summary>
         /// <param name="Text"> Static text to use for this item </param>
         /// <param name="Title"> Title to display with this item </param>
+        /// <param name="Source"> Source file for this static web-based content object </param>
         /// <remarks> This constructor is mostly used with passing back errors to be displayed. </remarks>
         public HTML_Based_Content(string Text, string Title, string Source )
         {
@@ -163,12 +164,8 @@ namespace SobekCM.Core.WebContent
         [XmlAttribute("includeMenu")]
         public string IncludeMenu_AsString
         {
-            get
-            {
-                if (IncludeMenu.HasValue)
-                    return IncludeMenu.ToString();
-                else
-                    return null;
+            get {
+                return IncludeMenu.HasValue ? IncludeMenu.ToString() : null;
             }
             set
             {
@@ -294,7 +291,7 @@ namespace SobekCM.Core.WebContent
 
 				return true;
 			}
-			catch (Exception ee)
+			catch 
 			{
 				return false;
 			}

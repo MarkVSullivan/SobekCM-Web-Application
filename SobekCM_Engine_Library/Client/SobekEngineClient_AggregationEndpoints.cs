@@ -1,10 +1,14 @@
-﻿using SobekCM.Core.Aggregations;
+﻿#region Using directives
+
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Message;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Endpoints;
 using SobekCM.Tools;
+
+#endregion
 
 namespace SobekCM.Core.Client
 {
@@ -20,6 +24,7 @@ namespace SobekCM.Core.Client
 
         /// <summary> Gets the complete (language agnostic) item aggregation, by aggregation code </summary>
         /// <param name="AggregationCode"> Code for the requested aggregation </param>
+        /// <param name="UseCache"> Flag indicates if the cache should be used to check for a built copy or store the final product </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Fully built language-agnostic aggregation, with all related configurations </returns>
         public Complete_Item_Aggregation Get_Complete_Aggregation(string AggregationCode, bool UseCache, Custom_Tracer Tracer)

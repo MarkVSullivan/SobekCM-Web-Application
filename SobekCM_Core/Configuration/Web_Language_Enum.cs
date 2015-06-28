@@ -16,6 +16,7 @@ namespace SobekCM.Core.Configuration
         /// <summary> Special value is used when the default language should be used </summary>
         DEFAULT,
 
+        /// <summary> Special value used as a place holder for template languages </summary>
         TEMPLATE,
 
         /// <summary> Afrikaans web language ( af )</summary>
@@ -211,7 +212,7 @@ namespace SobekCM.Core.Configuration
         Luxembourgish,
 
         /// <summary> FYRO Macedonian web language ( mk )</summary>
-        FYRO_Macedonian,
+        FyroMacedonian,
 
         /// <summary> Malay web language ( ms )</summary>
         Malay,
@@ -611,7 +612,7 @@ namespace SobekCM.Core.Configuration
 	                return Web_Language_Enum.Luxembourgish;
 
                 case "mk":
-	                return Web_Language_Enum.FYRO_Macedonian;
+	                return Web_Language_Enum.FyroMacedonian;
 
                 case "ms":
 	                return Web_Language_Enum.Malay;
@@ -1391,7 +1392,7 @@ namespace SobekCM.Core.Configuration
                 case Web_Language_Enum.Luxembourgish:
                     return "Luxembourgish";
 
-                case Web_Language_Enum.FYRO_Macedonian:
+                case Web_Language_Enum.FyroMacedonian:
                     return "FYRO Macedonian";
 
                 case Web_Language_Enum.Malay:
@@ -1583,6 +1584,9 @@ namespace SobekCM.Core.Configuration
             }
         }
 
+        /// <summary> Convert enumeration to two digit ISO language code </summary>
+        /// <param name="Enum"> Enumeration value to convert to the ISO code </param>
+        /// <returns> Two digit ISO code </returns>
         public static string Enum_To_Code(Web_Language_Enum Enum )
         {
             switch(Enum)
@@ -1779,7 +1783,7 @@ namespace SobekCM.Core.Configuration
                 case Web_Language_Enum.Luxembourgish:
                     return "lb";
 
-                case Web_Language_Enum.FYRO_Macedonian:
+                case Web_Language_Enum.FyroMacedonian:
                     return "mk";
 
                 case Web_Language_Enum.Malay:

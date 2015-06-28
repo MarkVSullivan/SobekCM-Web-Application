@@ -398,7 +398,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Clear Pagination' localization string </remarks>
         public string ClearPagination { get; private set; }
 
-        /// <remarks> 'Clear All & Reorder Pages' localization string </remarks>
+        /// <remarks> 'Clear All &amp; Reorder Pages' localization string </remarks>
         public string ClearAllReorderPages { get; private set; }
 
         /// <remarks> 'Settings' localization string </remarks>
@@ -416,7 +416,7 @@ namespace SobekCM.Library.Localization.Classes
         /// <remarks> 'Entire document' localization string </remarks>
         public string EntireDocument { get; private set; }
 
-        /// <remarks> 'Drag & drop pages' localization string </remarks>
+        /// <remarks> 'Drag &amp; drop pages' localization string </remarks>
         public string DragDropPages { get; private set; }
 
         /// <remarks> 'Enabled' localization string </remarks>

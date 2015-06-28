@@ -3,8 +3,6 @@
 using System.IO;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Items.Authority;
-using SobekCM.Engine_Library.Navigation;
-using SobekCM.Library.Database;
 using SobekCM.Tools;
 
 #endregion
@@ -85,12 +83,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			CurrentMode.ViewerCode = current_view_code;
 		}
 
-		/// <summary> Build the HTML for the feature index for this item </summary>
-        /// <param name="html"> Stringbuilder to feed the HTML into </param>
-        /// <param name="features"> Dataset containig all of the features linked to this item </param>
-        protected internal void Create_Feature_Index( TextWriter Output, Map_Features_DataSet features)
+        /// <summary> Build the HTML for the feature index for this item </summary>
+        /// <param name="Output"> HTML output stream </param>
+        /// <param name="Features"> Dataset containig all of the features linked to this item </param>
+        protected internal void Create_Feature_Index( TextWriter Output, Map_Features_DataSet Features)
 		{
-            if (features == null)
+            if (Features == null)
             {
                 Output.WriteLine("<br />");
                 Output.WriteLine("<center><b>UNABLE TO LOAD FEATURES FROM DATABASE</b></center>");
@@ -109,8 +107,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 				// Determine (roughly) how many rows for each side
 				// of the column
-				int rows_per_column = features.Features.Count / 2;
-				if (( features.Features.Count % 2 ) > 0 )
+				int rows_per_column = Features.Features.Count / 2;
+				if (( Features.Features.Count % 2 ) > 0 )
 					rows_per_column++;
 
 				// Start the large table for each section
@@ -118,7 +116,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t<td width=\"46%\" valign=\"top\">");
 
 				// Create the first column of feature information
-				Insert_One_Feature_Column( Output, features, 0, rows_per_column );			
+				Insert_One_Feature_Column( Output, Features, 0, rows_per_column );			
 
 				// Move to second column of large table, after making a small margin column
                 Output.WriteLine("\t\t</td>");
@@ -126,7 +124,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t<td width=\"46%\" valign=\"top\">");
 
 				// Create the second column of feature information
-                Insert_One_Feature_Column(Output, features, rows_per_column, features.Features.Count);			
+                Insert_One_Feature_Column(Output, Features, rows_per_column, Features.Features.Count);			
 
 				// Finish off the large table
                 Output.WriteLine("\t\t</td>\n\t</tr>\n</table>");
@@ -135,12 +133,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				CurrentMode.ViewerCode = currentView;
 		}
 
-		/// <summary> Insert the HTML for a single feature column into the Stringbuilder </summary>
-		/// <param name="html"> Stringbuilder to feed the HTML into </param>
-        /// <param name="features"> Dataset containig all of the features linked to this item </param>
-		/// <param name="startRow"> Row of the set of features to begin on </param>
-		/// <param name="endRow"> Last row in the set of features </param>
-		protected internal void Insert_One_Feature_Column( TextWriter Output, Map_Features_DataSet features, int startRow, int endRow )
+        /// <summary> Insert the HTML for a single feature column into the Stringbuilder </summary>
+        /// <param name="Output"> Output stream to write the HTML to </param>
+        /// <param name="Features"> Dataset containig all of the features linked to this item </param>
+        /// <param name="StartRow"> Row of the set of features to begin on </param>
+        /// <param name="EndRow"> Last row in the set of features </param>
+        protected internal void Insert_One_Feature_Column( TextWriter Output, Map_Features_DataSet Features, int StartRow, int EndRow )
 		{
 			// Declare some variables for looping
 			string lastFeatureName = "%";
@@ -149,11 +147,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("\t\t\t<table width=\"100%\"> <!-- Table to display a single column of feature information -->");
 
 			// Now, loop through all the results
-		    int i = startRow;
-			while ( i < endRow )
+		    int i = StartRow;
+			while ( i < EndRow )
 			{
 			    // Get this feature
-			    Map_Features_DataSet.FeaturesRow thisFeature = features.Features[ i++ ];
+			    Map_Features_DataSet.FeaturesRow thisFeature = Features.Features[ i++ ];
 
 			    // Only display this if it is not null
 			    if ((thisFeature.IssorterNull()) || (thisFeature.sorter.Trim().Length <= 0)) continue;

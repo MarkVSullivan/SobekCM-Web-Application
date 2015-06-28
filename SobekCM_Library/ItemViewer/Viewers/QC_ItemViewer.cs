@@ -14,12 +14,11 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items;
-using SobekCM.Engine_Library.Navigation;
+using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
 
@@ -27,10 +26,11 @@ using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
+    /// <summary> Item viewer allows user to perform online quality control to review the images and 
+    /// create the structural metadata online   </summary>
 	public class QC_ItemViewer : abstractItemViewer
 	{
-		private readonly string title;
-		private int thumbnailsPerPage;
+        private int thumbnailsPerPage;
 		private int thumbnailSize;
 		private int autonumber_mode_from_form; //Mode 0: autonumber all pages of current div; Mode 1: all pages of document
 		private int autonumber_mode;
@@ -178,8 +178,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Get the default QC profile
 			qc_profile = QualityControl_Configuration.Default_Profile;
 
-			title = "Quality Control";
-
             // If this was a post-back keep the required height and width for the qc area
             allThumbnailsOuterDiv1Width = -1;
 		    allThumbnailsOuterDiv1Height = -1;
@@ -225,7 +223,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		        if (makeSortable.ToString() != Current_User.Get_Setting("QC_ItemViewer:SortableMode", "NULL"))
 		        {
 		            CurrentUser.Add_Setting("QC_ItemViewer:SortableMode", makeSortable);
-                    Library.Database.SobekCM_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:SortableMode", makeSortable.ToString());
+                    SobekCM_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:SortableMode", makeSortable.ToString());
 		        }
 		    }
 
@@ -236,7 +234,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (autonumber_mode.ToString() != Current_User.Get_Setting("QC_ItemViewer:AutonumberingMode", "NULL"))
                 {
                     CurrentUser.Add_Setting("QC_ItemViewer:AutonumberingMode", autonumber_mode);
-                    Library.Database.SobekCM_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:AutonumberingMode", autonumber_mode.ToString());
+                    SobekCM_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:AutonumberingMode", autonumber_mode.ToString());
                 }
             }
 
@@ -246,7 +244,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (CurrentMode.Size_Of_Thumbnails.ToString() != Current_User.Get_Setting("QC_ItemViewer:ThumbnailSize", "NULL"))
                 {
                     CurrentUser.Add_Setting("QC_ItemViewer:ThumbnailSize", CurrentMode.Size_Of_Thumbnails);
-                    Library.Database.SobekCM_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:ThumbnailSize", CurrentMode.Size_Of_Thumbnails.ToString());
+                    SobekCM_Database.Set_User_Setting(CurrentUser.UserID, "QC_ItemViewer:ThumbnailSize", CurrentMode.Size_Of_Thumbnails.ToString());
                 }
             }
 
@@ -305,7 +303,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             //Get the list of associated errors for this item from the database
-		    int itemID = SobekCM_Database.Get_ItemID(Current_Object.BibID, Current_Object.VID);
+		    int itemID = Resource_Object.Database.SobekCM_Database.Get_ItemID(Current_Object.BibID, Current_Object.VID);
             Get_QC_Errors(itemID);
 
 
@@ -421,26 +419,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 		}
 
-        /// <summary> Sets the QC Error for a page </summary>
-        /// <param name="error_code"></param>
-        /// <param name="affected_page_filename"></param>
-        public void SaveQcError(int itemID,string error_code, string affected_page_filename)
+	    /// <summary> Sets the QC Error for a page </summary>
+	    /// <param name="ItemID"></param>
+	    /// <param name="ErrorCode"></param>
+        /// <param name="AffectedPageFilename"></param>
+        public void SaveQcError(int ItemID, string ErrorCode, string AffectedPageFilename)
         {
             QC_Error thisError = new QC_Error();
             thisError.Description = String.Empty;
-            thisError.ErrorCode = error_code;
-            thisError.FileName = affected_page_filename;
-            switch (error_code)
+            thisError.ErrorCode = ErrorCode;
+            thisError.FileName = AffectedPageFilename;
+            switch (ErrorCode)
             {
                   //0 indicates no error, so delete if present from the database and dictionary
                  case "0":
-                    if (qc_errors_dictionary.ContainsKey(itemID+affected_page_filename))
+                    if (qc_errors_dictionary.ContainsKey(ItemID + AffectedPageFilename))
                     {
                         //Delete the previous error for this file from the database
-                        SobekCM_Database.Delete_QC_Error(itemID, affected_page_filename);
+                        Resource_Object.Database.SobekCM_Database.Delete_QC_Error(ItemID, AffectedPageFilename);
 
                         //Also remove any previous entry from the session dictionary
-                        qc_errors_dictionary.Remove(itemID+affected_page_filename);
+                        qc_errors_dictionary.Remove(ItemID + AffectedPageFilename);
                         
                     }
                     break;
@@ -513,23 +512,23 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     break;
 
             }
-            if (qc_errors_dictionary.ContainsKey(itemID + affected_page_filename))
+            if (qc_errors_dictionary.ContainsKey(ItemID + AffectedPageFilename))
             {
                 //Delete the previous error for this file from the database
-                SobekCM_Database.Delete_QC_Error(itemID, affected_page_filename);
+                Resource_Object.Database.SobekCM_Database.Delete_QC_Error(ItemID, AffectedPageFilename);
 
                 //Also remove any previous entry from the session dictionary
-                qc_errors_dictionary.Remove(itemID+affected_page_filename);
+                qc_errors_dictionary.Remove(ItemID + AffectedPageFilename);
 
             }
             //Now save this error to the DB, and update the dictionary
-            if (error_code != "11" && error_code!="0")
+            if (ErrorCode != "11" && ErrorCode!="0")
             {
-                thisError.Error_ID = SobekCM_Database.Save_QC_Error(itemID, affected_page_filename, thisError.ErrorCode, thisError.Description, thisError.isVolumeError);
+                thisError.Error_ID = Resource_Object.Database.SobekCM_Database.Save_QC_Error(ItemID, AffectedPageFilename, thisError.ErrorCode, thisError.Description, thisError.isVolumeError);
                 if (qc_errors_dictionary == null)
                     qc_errors_dictionary = new Dictionary<string, QC_Error>();
 
-                qc_errors_dictionary.Add(itemID+affected_page_filename, thisError);
+                qc_errors_dictionary.Add(ItemID + AffectedPageFilename, thisError);
             }
 
             //Update the session dictionary with the updated one
@@ -538,11 +537,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Gets all the page errors set by the user  </summary>
-        /// <param name="thisItemID"></param>
-        public void Get_QC_Errors(int thisItemID)
+        /// <param name="ThisItemID"></param>
+        public void Get_QC_Errors(int ThisItemID)
         {
             //Get the DataTable of all page errors for this item from the database
-            qc_errors_table = SobekCM_Database.Get_QC_Errors_For_Item(thisItemID);
+            qc_errors_table = Resource_Object.Database.SobekCM_Database.Get_QC_Errors_For_Item(ThisItemID);
             QC_Error thisError = new QC_Error();
 
             if (HttpContext.Current.Session["QC_Errors"] == null)
@@ -557,7 +556,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             foreach (DataRow thisRow in qc_errors_table.Rows)
                 {
                     thisError.FileName = thisRow["FileName"].ToString();
-                    int temp_error_id=-1;
+                    int temp_error_id;
                     Int32.TryParse(thisRow["ErrorID"].ToString(),out (temp_error_id));
                     thisError.Error_ID = temp_error_id;
                     thisError.isVolumeError = Convert.ToBoolean(thisRow["isVolumeError"]);
@@ -719,10 +718,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (!rootNode.Page)
                 {
                     recurse_through_and_find_child_parent_relationship((Division_TreeNode) rootNode);
-                }
-                else
-                {
-                    
                 }
             }
 
@@ -1404,7 +1399,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
             //Save changes to the DB
-            SobekCM_Database.QC_Update_Item_Info(qc_item.BibID, qc_item.VID, CurrentUser.UserName, hidden_main_thumbnail + "thm.jpg", hidden_main_thumbnail + ".jpg", pages_count, files_count, size, notes);
+            Resource_Object.Database.SobekCM_Database.QC_Update_Item_Info(qc_item.BibID, qc_item.VID, CurrentUser.UserName, hidden_main_thumbnail + "thm.jpg", hidden_main_thumbnail + ".jpg", pages_count, files_count, size, notes);
 
 	        // Clear the updated item from the session
 	        HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = null;
@@ -1588,7 +1583,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				List<string> goToUrls = new List<string>();
 				for (int i = 1; i <= PageCount; i++)
 				{
-				    int numThumbnailstemp = CurrentMode.Thumbnails_Per_Page.HasValue ? CurrentMode.Thumbnails_Per_Page.Value : -100;
 				    CurrentMode.Thumbnails_Per_Page =  (short)thumbnailsPerPage;
 				    CurrentMode.Size_Of_Thumbnails = (short)thumbnailSize;
                     goToUrls.Add(UrlWriterHelper.Redirect_URL(CurrentMode, i + "qc"));
@@ -1646,27 +1640,26 @@ namespace SobekCM.Library.ItemViewer.Viewers
         //	private void add_main_menu(StringBuilder builder)
         private void add_main_menu(TextWriter Output)
         {
-            string Num_Of_Thumbnails = "Thumbnails per page";
-            string Size_Of_Thumbnail = "Thumbnail size";
+            //string Num_Of_Thumbnails = "Thumbnails per page";
+            //string Size_Of_Thumbnail = "Thumbnail size";
             string Go_To_Thumbnail = "Go to thumbnail";
 
             if (CurrentMode.Language == Web_Language_Enum.French)
             {
-                Num_Of_Thumbnails = "Vignettes par page";
-                Size_Of_Thumbnail = "la taille des vignettes";
+                //Num_Of_Thumbnails = "Vignettes par page";
+                //Size_Of_Thumbnail = "la taille des vignettes";
                 Go_To_Thumbnail = "Aller à l'Vignette";
             }
 
             if (CurrentMode.Language == Web_Language_Enum.Spanish)
             {
-                Num_Of_Thumbnails = "Miniaturas por página";
-                Size_Of_Thumbnail = "Miniatura de tamaño";
+                //Num_Of_Thumbnails = "Miniaturas por página";
+                //Size_Of_Thumbnail = "Miniatura de tamaño";
                 Go_To_Thumbnail = "Ir a la miniatura";
             }
 
             //Set the number of thumbnails to show per page
             int thumbnails_per_page;
-            int size_of_thumbnails;
 
             if (qc_item.Web.Static_PageCount > 100)
                 thumbnails_per_page = 50;
@@ -1679,7 +1672,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             if (uri.Query.IndexOf("ts") > 0)
             {
-                size_of_thumbnails = Convert.ToInt32(HttpUtility.ParseQueryString(uri.Query).Get("ts"));
+                int size_of_thumbnails = Convert.ToInt32(HttpUtility.ParseQueryString(uri.Query).Get("ts"));
                 CurrentMode.Size_Of_Thumbnails = (short)size_of_thumbnails;
             }
             else
@@ -1967,7 +1960,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             filenamesFromMets = new List<string>();
 
 			//Get the current QC page number
-			int current_qc_viewer_page_num = 1;
+			int current_qc_viewer_page_num;
 			if (( !String.IsNullOrEmpty(CurrentMode.ViewerCode)) && ( CurrentMode.ViewerCode.Replace("qc", "").Length > 0))
 				Int32.TryParse(CurrentMode.ViewerCode.Replace("qc", ""), out current_qc_viewer_page_num);
 
@@ -2018,7 +2011,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Determine the main thumbnail
-            int main_thumbnail_index = -1;
+            int main_thumbnail_index;
             if (!String.IsNullOrEmpty(hidden_main_thumbnail))
                 Int32.TryParse(hidden_main_thumbnail, out main_thumbnail_index);
 
@@ -2036,7 +2029,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 string label = node.Value.Label;
                 if (!qcDivisionList.ContainsKey(type))
                 {
-                    bool isNameable = (String.IsNullOrEmpty(label)) ? false : true;
+                    bool isNameable = (!String.IsNullOrEmpty(label));
                     qcDivisionList.Add(type, isNameable);
                 }
             }
@@ -2045,17 +2038,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			List<abstract_TreeNode> static_pages = qc_item.Divisions.Physical_Tree.Pages_PreOrder;
 
             // Determine some values including some icon sizes, based on current thumbnail size
-            int error_icon_height = 20;
+            int error_icon_height;
             int error_icon_width = 20;
-            int pick_main_thumbnail_height = 20;
-            int pick_main_thumbnail_width = 20;
-            int arrow_height = 12;
-            int arrow_width = 15;
+            int pick_main_thumbnail_height;
+            int pick_main_thumbnail_width;
+            int arrow_height;
+            int arrow_width;
             string division_text = "Division:";
             string pagination_text = "Pagination:";
-            string division_name_text = "Name:";
-            string division_tooltip_text = "Division";
-            string division_checkbox_tooltip = "Check for the beginning of a new division type";
+            const string division_name_text = "Name:";
+            const string division_tooltip_text = "Division";
+            const string division_checkbox_tooltip = "Check for the beginning of a new division type";
             string division_box;
             string pagination_box;
             string icon_class;
@@ -2099,7 +2092,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 default:
                     error_icon_height = 20;
-					error_icon_height = 20;
 					pick_main_thumbnail_height = 20;
 					pick_main_thumbnail_width = 20;
 					arrow_height = 12;
@@ -2143,7 +2135,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 string filename_sansextension = String.Empty;
                 
                 // Look for a thumbnail in the actual METS
-                foreach (SobekCM_File_Info thisFile in thisPage.Files.Where((thisFile => thisFile.System_Name.IndexOf("thm.jpg") > 0)))
+                foreach (SobekCM_File_Info thisFile in thisPage.Files.Where((ThisFile => ThisFile.System_Name.IndexOf("thm.jpg") > 0)))
                 {
                     //set the image url to fetch the small thumbnail .thm image
                     thumbnail_filename = thisFile.System_Name;
@@ -2153,7 +2145,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
                 // Try to construct a thumbnail from the JPEG image then
-                foreach (SobekCM_File_Info thisFile in thisPage.Files.Where((thisFile => (thisFile.System_Name.IndexOf(".jpg") > 0) &&(thisFile.System_Name.IndexOf("thm.jpg") < 0))))
+                foreach (SobekCM_File_Info thisFile in thisPage.Files.Where((ThisFile => (ThisFile.System_Name.IndexOf(".jpg") > 0) &&(ThisFile.System_Name.IndexOf("thm.jpg") < 0))))
                 {
                     //set the image url to fetch the small thumbnail .thm image
                     filename = thisFile.System_Name;
@@ -2199,7 +2191,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     if (filename.Length == 0 )
                     {
                         image_url = Static_Resources.Missingimage_Jpg;
-                        bool b = true;
                     }
                    
                 }
@@ -2236,7 +2227,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			        string image_url = image_by_pageindex[page_index];
                     string filename_sans_extension = file_sans_by_pageindex[page_index];
                     string filenameToDisplay = filename_sans_extension;
-                    int itemID = SobekCM_Database.Get_ItemID(CurrentItem.BibID, CurrentItem.VID);
+                    int itemID = Resource_Object.Database.SobekCM_Database.Get_ItemID(CurrentItem.BibID, CurrentItem.VID);
 					string url = UrlWriterHelper.Redirect_URL(CurrentMode).Replace("&", "&amp;").Replace("\"", "&quot;");
 
                     QC_Error thisError = new QC_Error();
@@ -2666,17 +2657,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("</tr><tr><td colspan=\"100%\">");
 			//Output.WriteLine("<span id=\"displayTimeSaved\" class=\"displayTimeSaved\" style=\"float:left\">" + displayTimeText + "</span>");
 			//Start inner table
-            const string criticalVolumeText = "Critical Volume Error: ";
+            const string CRITICAL_VOLUME_TEXT = "Critical Volume Error: ";
             Output.WriteLine("<div id=\"sbkQc_BottomRow\">");
             if(volumeErrorPresent)
-                Output.WriteLine("<span class=\"sbkQc_CriticalVolumeErrorRed\">" + criticalVolumeText + "<select id=\"sbk_ddlCriticalVolumeError\" class=\"sbkQc_ddlCriticalVolumeError\" onchange=\"ddlCriticalVolumeError_change(this.value);\">");
+                Output.WriteLine("<span class=\"sbkQc_CriticalVolumeErrorRed\">" + CRITICAL_VOLUME_TEXT + "<select id=\"sbk_ddlCriticalVolumeError\" class=\"sbkQc_ddlCriticalVolumeError\" onchange=\"ddlCriticalVolumeError_change(this.value);\">");
             else
-                Output.WriteLine("<span class=\"sbkQc_CriticalVolumeError\">" + criticalVolumeText + "<select id=\"sbk_ddlCriticalVolumeError\" class=\"sbkQc_ddlCriticalVolumeError\" onchange=\"ddlCriticalVolumeError_change(this.value);\">");
-           if(!volumeErrorPresent)
-            Output.WriteLine("<option value=\"11\" selected>No Volume Error</option>");
-           else
-               Output.WriteLine("<option value=\"11\">No Volume Error</option>");
-           
+                Output.WriteLine("<span class=\"sbkQc_CriticalVolumeError\">" + CRITICAL_VOLUME_TEXT + "<select id=\"sbk_ddlCriticalVolumeError\" class=\"sbkQc_ddlCriticalVolumeError\" onchange=\"ddlCriticalVolumeError_change(this.value);\">");
+            Output.WriteLine(!volumeErrorPresent ? "<option value=\"11\" selected>No Volume Error</option>" : "<option value=\"11\">No Volume Error</option>");
+
             if(volumeErrorPresent && volumeErrorCode=="12")
                 Output.WriteLine("<option value=\"12\" selected>Invalid Images</option>");
             else
@@ -2732,10 +2720,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		/// <returns>Roman numeral after conversion</returns>
 		public string NumberToRoman(int Number)
 		{
-			string resultWithCase;
-			//Set up the key-values
-			int[] values=new int[]{1000,900,500,400,100,90,50,40,10,9,5,4,1};
-			string[] numerals = new string[]{"M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"};
+		    //Set up the key-values
+			int[] values= {1000,900,500,400,100,90,50,40,10,9,5,4,1};
+			string[] numerals = {"M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"};
 			
 
 			//Initialize the string builder
@@ -2750,9 +2737,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					result.Append(numerals[i]);
 				}
 			}
-			if (isLower == false)
-				resultWithCase = result.ToString().ToUpper();
-			else resultWithCase = result.ToString().ToLower();
+			string resultWithCase = isLower == false ? result.ToString().ToUpper() : result.ToString().ToLower();
 
 			return resultWithCase;
 		}
@@ -2843,14 +2828,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						throw new ArgumentException("Not a valid roman number: Rule 5 violated");
 				}
 				//Rule 2
-				int total = 0;
-
-				foreach (int digit in values)
-				{
-					total += digit;
-				}
-
-				return total;
+			    return values.Cast<int>().Sum();
 
 			}
 			catch
@@ -2879,48 +2857,61 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		};
 
 		#endregion
-        
+
+        /// <summary> Stores page division information of a digital resource durig the quality control process </summary>
 		protected class QC_Viewer_Page_Division_Info
 		{
+            /// <summary> Label for this page </summary>
 			public string Page_Label { get; set; }
 
+            /// <summary> Filename for this page </summary>
 			public string Filename { get; set; }
 
+            /// <summary> Flag indicates if a new division begins on this page </summary>
 			public bool New_Division { get; set; }
 
+            /// <summary> Division type </summary>
 			public string Division_Type { get; set;  }
-	
+
+            /// <summary> Label for the division </summary>
 			public string Division_Label { get; set; }
 
+            /// <summary> Object links back to the METS object for this page </summary>
 			public Page_TreeNode METS_StructMap_Page_Node { get; set; }
 
+            /// <summary> Flag indicates if the new division checkbox was selected </summary>
 			public bool Checkbox_Selected { get; set;  }
 
+            /// <summary> Constructor for a new instance of the <see cref="QC_Viewer_Page_Division_Info"/> class </summary>
 			public QC_Viewer_Page_Division_Info()
 			{
 				Checkbox_Selected = false;
 			}
 		}
 
-        public enum QC_Error_Code_to_Name
-        {
-            
-        }
-
+        /// <summary> Information for a single error in the imagery discovered during structural metadata creation
+        /// in the quality control tool </summary>
         protected class QC_Error
         {
+            /// <summary> ID for this error </summary>
             public int Error_ID { get; set; }
 
+            /// <summary> Name of this error </summary>
             public string ErrorName { get; set; }
 
+            /// <summary> Name of the file to which this error is associated </summary>
             public string FileName { get; set; }
 
+            /// <summary> Code related to this error </summary>
             public string ErrorCode { get; set; }
 
+            /// <summary> Flag indicates whether this is a volume-level error (vs. a file-level error ) </summary>
             public bool isVolumeError { get; set; }
 
+            /// <summary> Description of this error </summary>
             public string Description { get; set; }
 
+            /// <summary> Constructor for a new instance of the <see cref="QC_Error"/> class.  </summary>
             public QC_Error()
             {
                 isVolumeError = false;
