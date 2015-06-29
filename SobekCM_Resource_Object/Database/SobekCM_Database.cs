@@ -10,7 +10,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.ApplicationBlocks.Data;
+using EngineAgnosticLayerDbAccess;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Database.DataSets;
@@ -34,10 +34,13 @@ namespace SobekCM.Resource_Object.Database
         /// to get to the SobekCM Database on the SQL server. </summary>
         private static string connectionString = "data source=lib-ufdc-cache\\UFDCPROD;initial catalog=UFDC_prod;integrated security=SSPI;persist security info=False;workstation id=WSID3246;packet size=4096";
 
+        /// <summary> Gets the type of database ( i.e. MSSQL v. PostgreSQL ) </summary>
+        public static EalDbTypeEnum DatabaseType { get; set; }
+
         /// <summary> Static constructor for the SobekCM_Database class </summary>
         static SobekCM_Database()
         {
-            // Do nothing
+            DatabaseType = EalDbTypeEnum.MSSQL;
         }
 
         /// <summary> Pulls the item id, main thumbnail, and aggregation codes and adds them to the resource object </summary>
@@ -48,12 +51,12 @@ namespace SobekCM.Resource_Object.Database
         {
             try
             {
-                SqlParameter[] parameters = new SqlParameter[2];
-                parameters[0] = new SqlParameter("@bibid", Resource.BibID);
-                parameters[1] = new SqlParameter("@vid", Resource.VID);
+                EalDbParameter[] parameters = new EalDbParameter[2];
+                parameters[0] = new EalDbParameter("@bibid", Resource.BibID);
+                parameters[1] = new EalDbParameter("@vid", Resource.VID);
 
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Get_Minimum_Item_Information", parameters);
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Get_Minimum_Item_Information", parameters);
 
                 // If there was no data for this collection and entry point, return null (an ERROR occurred)
                 if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -555,161 +558,160 @@ namespace SobekCM.Resource_Object.Database
             {
                 int i = 0;
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[89];
-                param_list[i++] = new SqlParameter("@GroupID", ThisPackage.Web.GroupID);
-                param_list[i++] = new SqlParameter("@VID", ThisPackage.VID);
-                param_list[i++] = new SqlParameter("@PageCount", ThisPackage.Divisions.Page_Count);
-                param_list[i++] = new SqlParameter("@FileCount", ThisPackage.Divisions.Files.Count);
-                param_list[i++] = new SqlParameter("@Title", ThisPackage.Bib_Info.Main_Title.NonSort + ThisPackage.Bib_Info.Main_Title.Title);
-                param_list[i++] = new SqlParameter("@SortTitle", ThisPackage.Bib_Info.SortSafeTitle(ThisPackage.Bib_Info.Main_Title.Title, false));
-                param_list[i++] = new SqlParameter("@AccessMethod", 1);
-                param_list[i++] = new SqlParameter("@Link", link);
-                param_list[i++] = new SqlParameter("@CreateDate", DateTime.Now);
-                param_list[i++] = new SqlParameter("@PubDate", pubdate);
-                param_list[i++] = new SqlParameter("@SortDate", ThisPackage.Bib_Info.SortSafeDate(pubdate));
-                param_list[i++] = new SqlParameter("@Author", author_builder.ToString());
-                param_list[i++] = new SqlParameter("@Spatial_KML", spatial_kml);
-                param_list[i++] = new SqlParameter("@Spatial_KML_Distance", SPATIAL_DISTANCE);
-                param_list[i++] = new SqlParameter("@DiskSize_KB", ThisPackage.DiskSize_KB);
-                param_list[i++] = new SqlParameter("@Spatial_Display", spatialDisplayBuilder.ToString());
-                param_list[i++] = new SqlParameter("@Institution_Display", institutionDisplayBuilder.ToString());
-                param_list[i++] = new SqlParameter("@Edition_Display", ThisPackage.Bib_Info.Origin_Info.Edition);
-                param_list[i++] = new SqlParameter("@Material_Display", materialDisplayBuilder.ToString());
-                param_list[i++] = new SqlParameter("@Measurement_Display", measurements);
-                param_list[i++] = new SqlParameter("@StylePeriod_Display", stylePeriodDisplayBuilder.ToString());
-                param_list[i++] = new SqlParameter("@Technique_Display", techniqueDisplayBuilder.ToString());
-                param_list[i++] = new SqlParameter("@Subjects_Display", subjectsDisplayBuilder.ToString());
-                param_list[i++] = new SqlParameter("@Donor", donor);
-                param_list[i++] = new SqlParameter("@Publisher", publisher_builder.ToString());
-                param_list[i++] = new SqlParameter("@TextSearchable", TextFlag);
-                param_list[i++] = new SqlParameter("@MainThumbnail", ThisPackage.Behaviors.Main_Thumbnail);
-                param_list[i++] = new SqlParameter("@MainJPEG", ThisPackage.Behaviors.Main_Thumbnail.Replace("thm", ""));
-                param_list[i++] = new SqlParameter("@IP_Restriction_Mask", ThisPackage.Behaviors.IP_Restriction_Membership);
-                param_list[i++] = new SqlParameter("@CheckoutRequired", ThisPackage.Behaviors.CheckOut_Required);
-                param_list[i++] = new SqlParameter("@AggregationCode1", aggregationCodes[0]);
-                param_list[i++] = new SqlParameter("@AggregationCode2", aggregationCodes[1]);
-                param_list[i++] = new SqlParameter("@AggregationCode3", aggregationCodes[2]);
-                param_list[i++] = new SqlParameter("@AggregationCode4", aggregationCodes[3]);
-                param_list[i++] = new SqlParameter("@AggregationCode5", aggregationCodes[4]);
-                param_list[i++] = new SqlParameter("@AggregationCode6", aggregationCodes[5]);
-                param_list[i++] = new SqlParameter("@AggregationCode7", aggregationCodes[6]);
-                param_list[i++] = new SqlParameter("@AggregationCode8", aggregationCodes[7]);
-                param_list[i++] = new SqlParameter("@HoldingCode", holding_code);
-                param_list[i++] = new SqlParameter("@SourceCode", source_code);
-                param_list[i++] = new SqlParameter("@Icon1_Name", icon1_name);
-                param_list[i++] = new SqlParameter("@Icon2_Name", icon2_name);
-                param_list[i++] = new SqlParameter("@Icon3_Name", icon3_name);
-                param_list[i++] = new SqlParameter("@Icon4_Name", icon4_name);
-                param_list[i++] = new SqlParameter("@Icon5_Name", icon5_name);
-                param_list[i++] = new SqlParameter("@Viewer1_TypeID", view_type_ids[0]);
-                param_list[i++] = new SqlParameter("@Viewer1_Label", view_labels[0]);
-                param_list[i++] = new SqlParameter("@Viewer1_Attribute", view_attributes[0]);
-                param_list[i++] = new SqlParameter("@Viewer2_TypeID", view_type_ids[1]);
-                param_list[i++] = new SqlParameter("@Viewer2_Label", view_labels[1]);
-                param_list[i++] = new SqlParameter("@Viewer2_Attribute", view_attributes[1]);
-                param_list[i++] = new SqlParameter("@Viewer3_TypeID", view_type_ids[2]);
-                param_list[i++] = new SqlParameter("@Viewer3_Label", view_labels[2]);
-                param_list[i++] = new SqlParameter("@Viewer3_Attribute", view_attributes[2]);
-                param_list[i++] = new SqlParameter("@Viewer4_TypeID", view_type_ids[3]);
-                param_list[i++] = new SqlParameter("@Viewer4_Label", view_labels[3]);
-                param_list[i++] = new SqlParameter("@Viewer4_Attribute", view_attributes[3]);
-                param_list[i++] = new SqlParameter("@Viewer5_TypeID", view_type_ids[4]);
-                param_list[i++] = new SqlParameter("@Viewer5_Label", view_labels[4]);
-                param_list[i++] = new SqlParameter("@Viewer5_Attribute", view_attributes[4]);
-                param_list[i++] = new SqlParameter("@Viewer6_TypeID", view_type_ids[5]);
-                param_list[i++] = new SqlParameter("@Viewer6_Label", view_labels[5]);
-                param_list[i++] = new SqlParameter("@Viewer6_Attribute", view_attributes[5]);
+                EalDbParameter[] param_list = new EalDbParameter[89];
+                param_list[i++] = new EalDbParameter("@GroupID", ThisPackage.Web.GroupID);
+                param_list[i++] = new EalDbParameter("@VID", ThisPackage.VID);
+                param_list[i++] = new EalDbParameter("@PageCount", ThisPackage.Divisions.Page_Count);
+                param_list[i++] = new EalDbParameter("@FileCount", ThisPackage.Divisions.Files.Count);
+                param_list[i++] = new EalDbParameter("@Title", ThisPackage.Bib_Info.Main_Title.NonSort + ThisPackage.Bib_Info.Main_Title.Title);
+                param_list[i++] = new EalDbParameter("@SortTitle", ThisPackage.Bib_Info.SortSafeTitle(ThisPackage.Bib_Info.Main_Title.Title, false));
+                param_list[i++] = new EalDbParameter("@AccessMethod", 1);
+                param_list[i++] = new EalDbParameter("@Link", link);
+                param_list[i++] = new EalDbParameter("@CreateDate", DateTime.Now);
+                param_list[i++] = new EalDbParameter("@PubDate", pubdate);
+                param_list[i++] = new EalDbParameter("@SortDate", ThisPackage.Bib_Info.SortSafeDate(pubdate));
+                param_list[i++] = new EalDbParameter("@Author", author_builder.ToString());
+                param_list[i++] = new EalDbParameter("@Spatial_KML", spatial_kml);
+                param_list[i++] = new EalDbParameter("@Spatial_KML_Distance", SPATIAL_DISTANCE);
+                param_list[i++] = new EalDbParameter("@DiskSize_KB", ThisPackage.DiskSize_KB);
+                param_list[i++] = new EalDbParameter("@Spatial_Display", spatialDisplayBuilder.ToString());
+                param_list[i++] = new EalDbParameter("@Institution_Display", institutionDisplayBuilder.ToString());
+                param_list[i++] = new EalDbParameter("@Edition_Display", ThisPackage.Bib_Info.Origin_Info.Edition);
+                param_list[i++] = new EalDbParameter("@Material_Display", materialDisplayBuilder.ToString());
+                param_list[i++] = new EalDbParameter("@Measurement_Display", measurements);
+                param_list[i++] = new EalDbParameter("@StylePeriod_Display", stylePeriodDisplayBuilder.ToString());
+                param_list[i++] = new EalDbParameter("@Technique_Display", techniqueDisplayBuilder.ToString());
+                param_list[i++] = new EalDbParameter("@Subjects_Display", subjectsDisplayBuilder.ToString());
+                param_list[i++] = new EalDbParameter("@Donor", donor);
+                param_list[i++] = new EalDbParameter("@Publisher", publisher_builder.ToString());
+                param_list[i++] = new EalDbParameter("@TextSearchable", TextFlag);
+                param_list[i++] = new EalDbParameter("@MainThumbnail", ThisPackage.Behaviors.Main_Thumbnail);
+                param_list[i++] = new EalDbParameter("@MainJPEG", ThisPackage.Behaviors.Main_Thumbnail.Replace("thm", ""));
+                param_list[i++] = new EalDbParameter("@IP_Restriction_Mask", ThisPackage.Behaviors.IP_Restriction_Membership);
+                param_list[i++] = new EalDbParameter("@CheckoutRequired", ThisPackage.Behaviors.CheckOut_Required);
+                param_list[i++] = new EalDbParameter("@AggregationCode1", aggregationCodes[0]);
+                param_list[i++] = new EalDbParameter("@AggregationCode2", aggregationCodes[1]);
+                param_list[i++] = new EalDbParameter("@AggregationCode3", aggregationCodes[2]);
+                param_list[i++] = new EalDbParameter("@AggregationCode4", aggregationCodes[3]);
+                param_list[i++] = new EalDbParameter("@AggregationCode5", aggregationCodes[4]);
+                param_list[i++] = new EalDbParameter("@AggregationCode6", aggregationCodes[5]);
+                param_list[i++] = new EalDbParameter("@AggregationCode7", aggregationCodes[6]);
+                param_list[i++] = new EalDbParameter("@AggregationCode8", aggregationCodes[7]);
+                param_list[i++] = new EalDbParameter("@HoldingCode", holding_code);
+                param_list[i++] = new EalDbParameter("@SourceCode", source_code);
+                param_list[i++] = new EalDbParameter("@Icon1_Name", icon1_name);
+                param_list[i++] = new EalDbParameter("@Icon2_Name", icon2_name);
+                param_list[i++] = new EalDbParameter("@Icon3_Name", icon3_name);
+                param_list[i++] = new EalDbParameter("@Icon4_Name", icon4_name);
+                param_list[i++] = new EalDbParameter("@Icon5_Name", icon5_name);
+                param_list[i++] = new EalDbParameter("@Viewer1_TypeID", view_type_ids[0]);
+                param_list[i++] = new EalDbParameter("@Viewer1_Label", view_labels[0]);
+                param_list[i++] = new EalDbParameter("@Viewer1_Attribute", view_attributes[0]);
+                param_list[i++] = new EalDbParameter("@Viewer2_TypeID", view_type_ids[1]);
+                param_list[i++] = new EalDbParameter("@Viewer2_Label", view_labels[1]);
+                param_list[i++] = new EalDbParameter("@Viewer2_Attribute", view_attributes[1]);
+                param_list[i++] = new EalDbParameter("@Viewer3_TypeID", view_type_ids[2]);
+                param_list[i++] = new EalDbParameter("@Viewer3_Label", view_labels[2]);
+                param_list[i++] = new EalDbParameter("@Viewer3_Attribute", view_attributes[2]);
+                param_list[i++] = new EalDbParameter("@Viewer4_TypeID", view_type_ids[3]);
+                param_list[i++] = new EalDbParameter("@Viewer4_Label", view_labels[3]);
+                param_list[i++] = new EalDbParameter("@Viewer4_Attribute", view_attributes[3]);
+                param_list[i++] = new EalDbParameter("@Viewer5_TypeID", view_type_ids[4]);
+                param_list[i++] = new EalDbParameter("@Viewer5_Label", view_labels[4]);
+                param_list[i++] = new EalDbParameter("@Viewer5_Attribute", view_attributes[4]);
+                param_list[i++] = new EalDbParameter("@Viewer6_TypeID", view_type_ids[5]);
+                param_list[i++] = new EalDbParameter("@Viewer6_Label", view_labels[5]);
+                param_list[i++] = new EalDbParameter("@Viewer6_Attribute", view_attributes[5]);
 
                 if (level1_index >= 0)
                 {
-                    param_list[i++] = new SqlParameter("@Level1_Text", level1_text);
-                    param_list[i++] = new SqlParameter("@Level1_Index", level1_index);
+                    param_list[i++] = new EalDbParameter("@Level1_Text", level1_text);
+                    param_list[i++] = new EalDbParameter("@Level1_Index", level1_index);
                 }
                 else
                 {
-                    param_list[i++] = new SqlParameter("@Level1_Text", DBNull.Value);
-                    param_list[i++] = new SqlParameter("@Level1_Index", DBNull.Value);
+                    param_list[i++] = new EalDbParameter("@Level1_Text", DBNull.Value);
+                    param_list[i++] = new EalDbParameter("@Level1_Index", DBNull.Value);
                 }
 
                 if (level2_index >= 0)
                 {
-                    param_list[i++] = new SqlParameter("@Level2_Text", level2_text);
-                    param_list[i++] = new SqlParameter("@Level2_Index", level2_index);
+                    param_list[i++] = new EalDbParameter("@Level2_Text", level2_text);
+                    param_list[i++] = new EalDbParameter("@Level2_Index", level2_index);
                 }
                 else
                 {
-                    param_list[i++] = new SqlParameter("@Level2_Text", DBNull.Value);
-                    param_list[i++] = new SqlParameter("@Level2_Index", DBNull.Value);
+                    param_list[i++] = new EalDbParameter("@Level2_Text", DBNull.Value);
+                    param_list[i++] = new EalDbParameter("@Level2_Index", DBNull.Value);
                 }
 
                 if (level3_index >= 0)
                 {
-                    param_list[i++] = new SqlParameter("@Level3_Text", level3_text);
-                    param_list[i++] = new SqlParameter("@Level3_Index", level3_index);
+                    param_list[i++] = new EalDbParameter("@Level3_Text", level3_text);
+                    param_list[i++] = new EalDbParameter("@Level3_Index", level3_index);
                 }
                 else
                 {
-                    param_list[i++] = new SqlParameter("@Level3_Text", DBNull.Value);
-                    param_list[i++] = new SqlParameter("@Level3_Index", DBNull.Value);
+                    param_list[i++] = new EalDbParameter("@Level3_Text", DBNull.Value);
+                    param_list[i++] = new EalDbParameter("@Level3_Index", DBNull.Value);
                 }
 
                 if (level4_index >= 0)
                 {
-                    param_list[i++] = new SqlParameter("@Level4_Text", level4_text);
-                    param_list[i++] = new SqlParameter("@Level4_Index", level4_index);
+                    param_list[i++] = new EalDbParameter("@Level4_Text", level4_text);
+                    param_list[i++] = new EalDbParameter("@Level4_Index", level4_index);
                 }
                 else
                 {
-                    param_list[i++] = new SqlParameter("@Level4_Text", DBNull.Value);
-                    param_list[i++] = new SqlParameter("@Level4_Index", DBNull.Value);
+                    param_list[i++] = new EalDbParameter("@Level4_Text", DBNull.Value);
+                    param_list[i++] = new EalDbParameter("@Level4_Index", DBNull.Value);
                 }
 
                 if (level5_index >= 0)
                 {
-                    param_list[i++] = new SqlParameter("@Level5_Text", level5_text);
-                    param_list[i++] = new SqlParameter("@Level5_Index", level5_index);
+                    param_list[i++] = new EalDbParameter("@Level5_Text", level5_text);
+                    param_list[i++] = new EalDbParameter("@Level5_Index", level5_index);
                 }
                 else
                 {
-                    param_list[i++] = new SqlParameter("@Level5_Text", DBNull.Value);
-                    param_list[i++] = new SqlParameter("@Level5_Index", DBNull.Value);
+                    param_list[i++] = new EalDbParameter("@Level5_Text", DBNull.Value);
+                    param_list[i++] = new EalDbParameter("@Level5_Index", DBNull.Value);
                 }
 
-                param_list[i++] = new SqlParameter("@VIDSource", ThisPackage.Tracking.VID_Source);
-                param_list[i++] = new SqlParameter("@CopyrightIndicator", 0);
-                param_list[i++] = new SqlParameter("@Born_Digital", ThisPackage.Tracking.Born_Digital);
-                param_list[i++] = new SqlParameter("@Dark", ThisPackage.Behaviors.Dark_Flag);
+                param_list[i++] = new EalDbParameter("@VIDSource", ThisPackage.Tracking.VID_Source);
+                param_list[i++] = new EalDbParameter("@CopyrightIndicator", 0);
+                param_list[i++] = new EalDbParameter("@Born_Digital", ThisPackage.Tracking.Born_Digital);
+                param_list[i++] = new EalDbParameter("@Dark", ThisPackage.Behaviors.Dark_Flag);
                 if (ThisPackage.Tracking.Material_Received_Date.HasValue)
                 {
-                    param_list[i++] = new SqlParameter("@Material_Received_Date", ThisPackage.Tracking.Material_Received_Date.Value);
-                    param_list[i++] = new SqlParameter("@Material_Recd_Date_Estimated", ThisPackage.Tracking.Material_Rec_Date_Estimated);
+                    param_list[i++] = new EalDbParameter("@Material_Received_Date", ThisPackage.Tracking.Material_Received_Date.Value);
+                    param_list[i++] = new EalDbParameter("@Material_Recd_Date_Estimated", ThisPackage.Tracking.Material_Rec_Date_Estimated);
                 }
                 else
                 {
-                    param_list[i++] = new SqlParameter("@Material_Received_Date", DBNull.Value);
-                    param_list[i++] = new SqlParameter("@Material_Recd_Date_Estimated", false);
+                    param_list[i++] = new EalDbParameter("@Material_Received_Date", DBNull.Value);
+                    param_list[i++] = new EalDbParameter("@Material_Recd_Date_Estimated", false);
                 }
 
                 if (ThisPackage.Tracking.Disposition_Advice <= 0)
-                    param_list[i++] = new SqlParameter("@Disposition_Advice", DBNull.Value);
+                    param_list[i++] = new EalDbParameter("@Disposition_Advice", DBNull.Value);
                 else
-                    param_list[i++] = new SqlParameter("@Disposition_Advice", ThisPackage.Tracking.Disposition_Advice);
+                    param_list[i++] = new EalDbParameter("@Disposition_Advice", ThisPackage.Tracking.Disposition_Advice);
 
-                param_list[i++] = new SqlParameter("@Disposition_Advice_Notes", ThisPackage.Tracking.Disposition_Advice_Notes);
-                param_list[i++] = new SqlParameter("@Internal_Comments", ThisPackage.Tracking.Internal_Comments);
-                param_list[i++] = new SqlParameter("@Tracking_Box", ThisPackage.Tracking.Tracking_Box);
-                param_list[i++] = new SqlParameter("@Online_Submit", OnlineSubmit);
-                param_list[i++] = new SqlParameter("@User", Username);
-                param_list[i++] = new SqlParameter("@UserNotes", Usernotes);
-                param_list[i++] = new SqlParameter("@UserID_To_Link", Userid);
+                param_list[i++] = new EalDbParameter("@Disposition_Advice_Notes", ThisPackage.Tracking.Disposition_Advice_Notes);
+                param_list[i++] = new EalDbParameter("@Internal_Comments", ThisPackage.Tracking.Internal_Comments);
+                param_list[i++] = new EalDbParameter("@Tracking_Box", ThisPackage.Tracking.Tracking_Box);
+                param_list[i++] = new EalDbParameter("@Online_Submit", OnlineSubmit);
+                param_list[i++] = new EalDbParameter("@User", Username);
+                param_list[i++] = new EalDbParameter("@UserNotes", Usernotes);
+                param_list[i++] = new EalDbParameter("@UserID_To_Link", Userid);
 
-                param_list[i] = new SqlParameter("@ItemID", -1);
+                param_list[i] = new EalDbParameter("@ItemID", -1);
                 param_list[i++].Direction = ParameterDirection.InputOutput;
-                param_list[i] = new SqlParameter("@New_VID", "00000") { Direction = ParameterDirection.InputOutput };
+                param_list[i] = new EalDbParameter("@New_VID", "00000") { Direction = ParameterDirection.InputOutput };
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_New_Item", param_list);
-
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_New_Item", param_list);
 
                 // Save the item id and VID into the package
                 ThisPackage.Web.ItemID = (int)param_list[87].Value;
@@ -1119,7 +1121,7 @@ namespace SobekCM.Resource_Object.Database
         {
             try
             {
-                DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_All_Corporations");
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_All_Corporations");
                 return tempSet.Tables[0];
             }
             catch (Exception ee)
@@ -1135,7 +1137,7 @@ namespace SobekCM.Resource_Object.Database
         {
             try
             {
-                DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_All_Regions");
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_All_Regions");
                 return tempSet.Tables[0];
             }
             catch (Exception ee)
@@ -1150,12 +1152,12 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[2];
-                param_list[0] = new SqlParameter("@CorpAuthCode", CorpAuthCode);
-                param_list[1] = new SqlParameter("@CorporateName", CorporateName);
+                EalDbParameter[] param_list = new EalDbParameter[2];
+                param_list[0] = new EalDbParameter("@CorpAuthCode", CorpAuthCode);
+                param_list[1] = new EalDbParameter("@CorporateName", CorporateName);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Corporation", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Corporation", param_list);
 
                 // Return the value
                 return true;
@@ -1173,11 +1175,11 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[1];
-                param_list[0] = new SqlParameter("@ItemID", ItemID);
+                EalDbParameter[] param_list = new EalDbParameter[1];
+                param_list[0] = new EalDbParameter("@ItemID", ItemID);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Clear_Features_Streets_By_Item", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Clear_Features_Streets_By_Item", param_list);
 
                 // Return the value
                 return true;
@@ -1195,11 +1197,11 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[1];
-                param_list[0] = new SqlParameter("@ItemID", ItemID);
+                EalDbParameter[] param_list = new EalDbParameter[1];
+                param_list[0] = new EalDbParameter("@ItemID", ItemID);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Clear_Region_Link_By_Item", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Clear_Region_Link_By_Item", param_list);
 
                 // Return the value
                 return true;
@@ -1218,11 +1220,11 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[1];
-                param_list[0] = new SqlParameter("@ItemID", ItemID);
+                EalDbParameter[] param_list = new EalDbParameter[1];
+                param_list[0] = new EalDbParameter("@ItemID", ItemID);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Lock_Item", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Lock_Item", param_list);
 
                 // Return the value
                 return true;
@@ -1240,29 +1242,29 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[19];
-                param_list[0] = new SqlParameter("@GeoAuthCode", GeoAuthCode);
-                param_list[1] = new SqlParameter("@ItemID", ItemID);
-                param_list[2] = new SqlParameter("@RegionName", Name);
-                param_list[3] = new SqlParameter("@RegionType", Type);
-                param_list[4] = new SqlParameter("@P_RegionAuthCode", P_Code);
-                param_list[5] = new SqlParameter("@P_RegionName", P_Name);
-                param_list[6] = new SqlParameter("@P_RegionType", P_Type);
-                param_list[7] = new SqlParameter("@P2_RegionAuthCode", P2_Code);
-                param_list[8] = new SqlParameter("@P2_RegionName", P2_Name);
-                param_list[9] = new SqlParameter("@P2_RegionType", P2_Type);
-                param_list[10] = new SqlParameter("@P3_RegionAuthCode", P3_Code);
-                param_list[11] = new SqlParameter("@P3_RegionName", P3_Name);
-                param_list[12] = new SqlParameter("@P3_RegionType", P3_Type);
-                param_list[13] = new SqlParameter("@P4_RegionAuthCode", P4_Code);
-                param_list[14] = new SqlParameter("@P4_RegionName", P4_Name);
-                param_list[15] = new SqlParameter("@P4_RegionType", P4_Type);
-                param_list[16] = new SqlParameter("@P5_RegionAuthCode", P5_Code);
-                param_list[17] = new SqlParameter("@P5_RegionName", P5_Name);
-                param_list[18] = new SqlParameter("@P5_RegionType", P5_Type);
+                EalDbParameter[] param_list = new EalDbParameter[19];
+                param_list[0] = new EalDbParameter("@GeoAuthCode", GeoAuthCode);
+                param_list[1] = new EalDbParameter("@ItemID", ItemID);
+                param_list[2] = new EalDbParameter("@RegionName", Name);
+                param_list[3] = new EalDbParameter("@RegionType", Type);
+                param_list[4] = new EalDbParameter("@P_RegionAuthCode", P_Code);
+                param_list[5] = new EalDbParameter("@P_RegionName", P_Name);
+                param_list[6] = new EalDbParameter("@P_RegionType", P_Type);
+                param_list[7] = new EalDbParameter("@P2_RegionAuthCode", P2_Code);
+                param_list[8] = new EalDbParameter("@P2_RegionName", P2_Name);
+                param_list[9] = new EalDbParameter("@P2_RegionType", P2_Type);
+                param_list[10] = new EalDbParameter("@P3_RegionAuthCode", P3_Code);
+                param_list[11] = new EalDbParameter("@P3_RegionName", P3_Name);
+                param_list[12] = new EalDbParameter("@P3_RegionType", P3_Type);
+                param_list[13] = new EalDbParameter("@P4_RegionAuthCode", P4_Code);
+                param_list[14] = new EalDbParameter("@P4_RegionName", P4_Name);
+                param_list[15] = new EalDbParameter("@P4_RegionType", P4_Type);
+                param_list[16] = new EalDbParameter("@P5_RegionAuthCode", P5_Code);
+                param_list[17] = new EalDbParameter("@P5_RegionName", P5_Name);
+                param_list[18] = new EalDbParameter("@P5_RegionType", P5_Type);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Region_Item_Link", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Region_Item_Link", param_list);
 
                 // Return the value
                 return true;
@@ -1282,26 +1284,26 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[16];
-                param_list[0] = new SqlParameter("@FeatAuthCode", FeatAuthCode);
-                param_list[1] = new SqlParameter("@FeatureName", FeatureName);
-                param_list[2] = new SqlParameter("@LocationDesc", LocationDesc);
-                param_list[3] = new SqlParameter("@CorpAuthCode", CorpAuthCode);
-                param_list[4] = new SqlParameter("@AA_Indicated", AA_Indicated);
-                param_list[5] = new SqlParameter("@Albers_X", Albers_X);
-                param_list[6] = new SqlParameter("@Albers_Y", Albers_Y);
-                param_list[7] = new SqlParameter("@Latitude", Latitude);
-                param_list[8] = new SqlParameter("@Longitude", Longitude);
-                param_list[9] = new SqlParameter("@FeatureType", FeatureType);
-                param_list[10] = new SqlParameter("@FeatureTypeYear", FeatureTypeYear);
-                param_list[11] = new SqlParameter("@PageID1", PageID1);
-                param_list[12] = new SqlParameter("@PageID2", PageID2);
-                param_list[13] = new SqlParameter("@PageID3", PageID3);
-                param_list[14] = new SqlParameter("@PageID4", PageID4);
-                param_list[15] = new SqlParameter("@PageID5", PageID5);
+                EalDbParameter[] param_list = new EalDbParameter[16];
+                param_list[0] = new EalDbParameter("@FeatAuthCode", FeatAuthCode);
+                param_list[1] = new EalDbParameter("@FeatureName", FeatureName);
+                param_list[2] = new EalDbParameter("@LocationDesc", LocationDesc);
+                param_list[3] = new EalDbParameter("@CorpAuthCode", CorpAuthCode);
+                param_list[4] = new EalDbParameter("@AA_Indicated", AA_Indicated);
+                param_list[5] = new EalDbParameter("@Albers_X", Albers_X);
+                param_list[6] = new EalDbParameter("@Albers_Y", Albers_Y);
+                param_list[7] = new EalDbParameter("@Latitude", Latitude);
+                param_list[8] = new EalDbParameter("@Longitude", Longitude);
+                param_list[9] = new EalDbParameter("@FeatureType", FeatureType);
+                param_list[10] = new EalDbParameter("@FeatureTypeYear", FeatureTypeYear);
+                param_list[11] = new EalDbParameter("@PageID1", PageID1);
+                param_list[12] = new EalDbParameter("@PageID2", PageID2);
+                param_list[13] = new EalDbParameter("@PageID3", PageID3);
+                param_list[14] = new EalDbParameter("@PageID4", PageID4);
+                param_list[15] = new EalDbParameter("@PageID5", PageID5);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Feature", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Feature", param_list);
 
                 // Return the value
                 return true;
@@ -1320,18 +1322,18 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[8];
-                param_list[0] = new SqlParameter("@StreetAuthCode", StreetAuthCode);
-                param_list[1] = new SqlParameter("@StreetName", StreetName);
-                param_list[2] = new SqlParameter("@StartAddress", StartAddress);
-                param_list[3] = new SqlParameter("@EndAddress", EndAddress);
-                param_list[4] = new SqlParameter("@StreetDirection", StreetDirection);
-                param_list[5] = new SqlParameter("@StreetSide", StreetSide);
-                param_list[6] = new SqlParameter("@SegmentDesc", SegmentDesc);
-                param_list[7] = new SqlParameter("@PageID", PageID);
+                EalDbParameter[] param_list = new EalDbParameter[8];
+                param_list[0] = new EalDbParameter("@StreetAuthCode", StreetAuthCode);
+                param_list[1] = new EalDbParameter("@StreetName", StreetName);
+                param_list[2] = new EalDbParameter("@StartAddress", StartAddress);
+                param_list[3] = new EalDbParameter("@EndAddress", EndAddress);
+                param_list[4] = new EalDbParameter("@StreetDirection", StreetDirection);
+                param_list[5] = new EalDbParameter("@StreetSide", StreetSide);
+                param_list[6] = new EalDbParameter("@SegmentDesc", SegmentDesc);
+                param_list[7] = new EalDbParameter("@PageID", PageID);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Street_Page_Link", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Street_Page_Link", param_list);
 
                 // Return the value
                 return true;
@@ -1493,13 +1495,13 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[3];
-                param_list[0] = new SqlParameter("@groupID", GroupID);
-                param_list[1] = new SqlParameter("@extRecordValue", Identifier);
-                param_list[2] = new SqlParameter("@extRecordType", Type);
+                EalDbParameter[] param_list = new EalDbParameter[3];
+                param_list[0] = new EalDbParameter("@groupID", GroupID);
+                param_list[1] = new EalDbParameter("@extRecordValue", Identifier);
+                param_list[2] = new EalDbParameter("@extRecordType", Type);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Add_External_Record_Number", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Add_External_Record_Number", param_list);
             }
             catch (Exception ee)
             {
@@ -1558,11 +1560,11 @@ namespace SobekCM.Resource_Object.Database
             {
                 if (publisher_builder.Length > 0)
                 {
-                    publisher_builder.Append("|" + thisPublisher.ToString());
+                    publisher_builder.Append("|" + thisPublisher);
                 }
                 else
                 {
-                    publisher_builder.Append(thisPublisher.ToString());
+                    publisher_builder.Append(thisPublisher);
                 }
             }
 
@@ -1958,22 +1960,18 @@ namespace SobekCM.Resource_Object.Database
 
                     return;
                 }
-                else
-                {
-
-
-                    Save_Item_Behaviors(ThisPackage.Web.ItemID, TextFlag, ThisPackage.Behaviors.Main_Thumbnail,
-                        ThisPackage.Behaviors.Main_Thumbnail.Replace("thm", ""), ip_restrict,
-                        ThisPackage.Behaviors.CheckOut_Required, darkFlag, ThisPackage.Tracking.Born_Digital, ThisPackage.Tracking.Disposition_Advice, ThisPackage.Tracking.Disposition_Advice_Notes,
-                        ThisPackage.Tracking.Material_Received_Date, ThisPackage.Tracking.Material_Rec_Date_Estimated, ThisPackage.Tracking.Tracking_Box, aggregationCodes[0], aggregationCodes[1], aggregationCodes[2], aggregationCodes[3], aggregationCodes[4], aggregationCodes[5], aggregationCodes[6],
-                        aggregationCodes[7], holding_code, source_code, icon1_name, icon2_name, icon3_name, icon4_name, icon5_name,
-                        view_type_ids[0], view_labels[0], view_attributes[0],
-                        view_type_ids[1], view_labels[1], view_attributes[1],
-                        view_type_ids[2], view_labels[2], view_attributes[2],
-                        view_type_ids[3], view_labels[3], view_attributes[3],
-                        view_type_ids[4], view_labels[4], view_attributes[4],
-                        view_type_ids[5], view_labels[5], view_attributes[5], ThisPackage.Behaviors.Left_To_Right);
-                }
+                
+                Save_Item_Behaviors(ThisPackage.Web.ItemID, TextFlag, ThisPackage.Behaviors.Main_Thumbnail,
+                    ThisPackage.Behaviors.Main_Thumbnail.Replace("thm", ""), ip_restrict,
+                    ThisPackage.Behaviors.CheckOut_Required, darkFlag, ThisPackage.Tracking.Born_Digital, ThisPackage.Tracking.Disposition_Advice, ThisPackage.Tracking.Disposition_Advice_Notes,
+                    ThisPackage.Tracking.Material_Received_Date, ThisPackage.Tracking.Material_Rec_Date_Estimated, ThisPackage.Tracking.Tracking_Box, aggregationCodes[0], aggregationCodes[1], aggregationCodes[2], aggregationCodes[3], aggregationCodes[4], aggregationCodes[5], aggregationCodes[6],
+                    aggregationCodes[7], holding_code, source_code, icon1_name, icon2_name, icon3_name, icon4_name, icon5_name,
+                    view_type_ids[0], view_labels[0], view_attributes[0],
+                    view_type_ids[1], view_labels[1], view_attributes[1],
+                    view_type_ids[2], view_labels[2], view_attributes[2],
+                    view_type_ids[3], view_labels[3], view_attributes[3],
+                    view_type_ids[4], view_labels[4], view_attributes[4],
+                    view_type_ids[5], view_labels[5], view_attributes[5], ThisPackage.Behaviors.Left_To_Right);
             }
 
             // Also, save the ticlers
@@ -2236,33 +2234,33 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[17];
-                param_list[0] = new SqlParameter("@BibID", BibID);
-                param_list[1] = new SqlParameter("@GroupTitle", GroupTitle);
-                param_list[2] = new SqlParameter("@SortTitle", SortTitle);
-                param_list[3] = new SqlParameter("@Type", Type);
-                param_list[4] = new SqlParameter("@File_Location", File_Root);
+                EalDbParameter[] param_list = new EalDbParameter[17];
+                param_list[0] = new EalDbParameter("@BibID", BibID);
+                param_list[1] = new EalDbParameter("@GroupTitle", GroupTitle);
+                param_list[2] = new EalDbParameter("@SortTitle", SortTitle);
+                param_list[3] = new EalDbParameter("@Type", Type);
+                param_list[4] = new EalDbParameter("@File_Location", File_Root);
                 if (OCLC_Number < 0)
-                    param_list[5] = new SqlParameter("@OCLC_Number", 1);
+                    param_list[5] = new EalDbParameter("@OCLC_Number", 1);
                 else
-                    param_list[5] = new SqlParameter("@OCLC_Number", OCLC_Number);
+                    param_list[5] = new EalDbParameter("@OCLC_Number", OCLC_Number);
                 if (ALEPH_Number < 0)
-                    param_list[6] = new SqlParameter("@ALEPH_Number", 1);
+                    param_list[6] = new EalDbParameter("@ALEPH_Number", 1);
                 else
-                    param_list[6] = new SqlParameter("@ALEPH_Number", ALEPH_Number);
-                param_list[7] = new SqlParameter("@Group_Thumbnail", Group_Thumbnail);
-                param_list[8] = new SqlParameter("@Large_Format", Large_Format);
-                param_list[9] = new SqlParameter("@Track_By_Month", Track_By_Month);
-                param_list[10] = new SqlParameter("@Never_Overlay_Record", Never_Overlay_Record);
-                param_list[11] = new SqlParameter("@Update_Existing", Update_Existing);
-                param_list[12] = new SqlParameter("@PrimaryIdentifierType", Primary_Identifier_Type);
-                param_list[13] = new SqlParameter("@PrimaryIdentifier", Primary_Identifier);
-                param_list[14] = new SqlParameter("@GroupID", -1) { Direction = ParameterDirection.InputOutput };
-                param_list[15] = new SqlParameter("@New_BibID", "0000000000") { Direction = ParameterDirection.InputOutput };
-                param_list[16] = new SqlParameter("@New_Group", false) { Direction = ParameterDirection.InputOutput };
+                    param_list[6] = new EalDbParameter("@ALEPH_Number", ALEPH_Number);
+                param_list[7] = new EalDbParameter("@Group_Thumbnail", Group_Thumbnail);
+                param_list[8] = new EalDbParameter("@Large_Format", Large_Format);
+                param_list[9] = new EalDbParameter("@Track_By_Month", Track_By_Month);
+                param_list[10] = new EalDbParameter("@Never_Overlay_Record", Never_Overlay_Record);
+                param_list[11] = new EalDbParameter("@Update_Existing", Update_Existing);
+                param_list[12] = new EalDbParameter("@PrimaryIdentifierType", Primary_Identifier_Type);
+                param_list[13] = new EalDbParameter("@PrimaryIdentifier", Primary_Identifier);
+                param_list[14] = new EalDbParameter("@GroupID", -1) { Direction = ParameterDirection.InputOutput };
+                param_list[15] = new EalDbParameter("@New_BibID", "0000000000") { Direction = ParameterDirection.InputOutput };
+                param_list[16] = new EalDbParameter("@New_Group", false) { Direction = ParameterDirection.InputOutput };
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Group", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Group", param_list);
 
                 // Get the values to return
                 int groupid = (int)param_list[14].Value;
@@ -2292,13 +2290,13 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[4];
-                param_list[0] = new SqlParameter("@itemid", ItemID);
-                param_list[1] = new SqlParameter("@data_code", Data_Code);
-                param_list[2] = new SqlParameter("@oai_data", OAI_Data);
+                EalDbParameter[] param_list = new EalDbParameter[4];
+                param_list[0] = new EalDbParameter("@itemid", ItemID);
+                param_list[1] = new EalDbParameter("@data_code", Data_Code);
+                param_list[2] = new EalDbParameter("@oai_data", OAI_Data);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Add_OAI_PMH_Data", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Add_OAI_PMH_Data", param_list);
 
                 return true;
             }
@@ -2357,21 +2355,21 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[11];
-                param_list[0] = new SqlParameter("@GroupID", GroupID);
-                param_list[1] = new SqlParameter("@Primary_WebSkin", primaryInterface);
-                param_list[2] = new SqlParameter("@Alt_WebSkin1", altInterface1);
-                param_list[3] = new SqlParameter("@Alt_WebSkin2", altInterface2);
-                param_list[4] = new SqlParameter("@Alt_WebSkin3", altInterface3);
-                param_list[5] = new SqlParameter("@Alt_WebSkin4", altInterface4);
-                param_list[6] = new SqlParameter("@Alt_WebSkin5", altInterface5);
-                param_list[7] = new SqlParameter("@Alt_WebSkin6", altInterface6);
-                param_list[8] = new SqlParameter("@Alt_WebSkin7", altInterface7);
-                param_list[9] = new SqlParameter("@Alt_WebSkin8", altInterface8);
-                param_list[10] = new SqlParameter("@Alt_WebSkin9", altInterface9);
+                EalDbParameter[] param_list = new EalDbParameter[11];
+                param_list[0] = new EalDbParameter("@GroupID", GroupID);
+                param_list[1] = new EalDbParameter("@Primary_WebSkin", primaryInterface);
+                param_list[2] = new EalDbParameter("@Alt_WebSkin1", altInterface1);
+                param_list[3] = new EalDbParameter("@Alt_WebSkin2", altInterface2);
+                param_list[4] = new EalDbParameter("@Alt_WebSkin3", altInterface3);
+                param_list[5] = new EalDbParameter("@Alt_WebSkin4", altInterface4);
+                param_list[6] = new EalDbParameter("@Alt_WebSkin5", altInterface5);
+                param_list[7] = new EalDbParameter("@Alt_WebSkin6", altInterface6);
+                param_list[8] = new EalDbParameter("@Alt_WebSkin7", altInterface7);
+                param_list[9] = new EalDbParameter("@Alt_WebSkin8", altInterface8);
+                param_list[10] = new EalDbParameter("@Alt_WebSkin9", altInterface9);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Group_Web_Skins", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Group_Web_Skins", param_list);
 
                 // Return the value
                 return true;
@@ -2447,46 +2445,46 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[30];
-                param_list[0] = new SqlParameter("@GroupID", GroupID);
-                param_list[1] = new SqlParameter("@VID", VID);
-                param_list[2] = new SqlParameter("@PageCount", PageCount);
-                param_list[3] = new SqlParameter("@FileCount", FileCount);
-                param_list[4] = new SqlParameter("@Title", Title);
-                param_list[5] = new SqlParameter("@SortTitle", SortTitle);
-                param_list[6] = new SqlParameter("@AccessMethod", 1);
-                param_list[7] = new SqlParameter("@Link", Link);
-                param_list[8] = new SqlParameter("@CreateDate", CreateDate);
-                param_list[9] = new SqlParameter("@PubDate", PubDate);
-                param_list[10] = new SqlParameter("@SortDate", SortDate);
-                param_list[11] = new SqlParameter("@HoldingCode", Holding_Code);
-                param_list[12] = new SqlParameter("@SourceCode", Source_Code);
-                param_list[13] = new SqlParameter("@Author", Author);
-                param_list[14] = new SqlParameter("@Spatial_KML", Spatial_KML);
-                param_list[15] = new SqlParameter("@Spatial_KML_Distance", Spatial_KML_Distance);
-                param_list[16] = new SqlParameter("@DiskSize_KB", DiskSizeMb);
-                param_list[17] = new SqlParameter("@Spatial_Display", Spatial_Display);
-                param_list[18] = new SqlParameter("@Institution_Display", Institution_Display);
-                param_list[19] = new SqlParameter("@Edition_Display", Edition);
-                param_list[20] = new SqlParameter("@Material_Display", Material_Display);
-                param_list[21] = new SqlParameter("@Measurement_Display", Measurement_Display);
-                param_list[22] = new SqlParameter("@StylePeriod_Display", StylePeriod_Display);
-                param_list[23] = new SqlParameter("@Technique_Display", Technique_Display);
-                param_list[24] = new SqlParameter("@Subjects_Display", Subjects_Display);
-                param_list[25] = new SqlParameter("@Donor", Donor);
-                param_list[26] = new SqlParameter("@Publisher", Publisher);
-                param_list[27] = new SqlParameter("@ItemID", -1) { Direction = ParameterDirection.InputOutput };
-                param_list[28] = new SqlParameter("@Existing", false) { Direction = ParameterDirection.InputOutput };
-                param_list[29] = new SqlParameter("@New_VID", "00000") { Direction = ParameterDirection.InputOutput };
+                EalDbParameter[] param_list = new EalDbParameter[30];
+                param_list[0] = new EalDbParameter("@GroupID", GroupID);
+                param_list[1] = new EalDbParameter("@VID", VID);
+                param_list[2] = new EalDbParameter("@PageCount", PageCount);
+                param_list[3] = new EalDbParameter("@FileCount", FileCount);
+                param_list[4] = new EalDbParameter("@Title", Title);
+                param_list[5] = new EalDbParameter("@SortTitle", SortTitle);
+                param_list[6] = new EalDbParameter("@AccessMethod", 1);
+                param_list[7] = new EalDbParameter("@Link", Link);
+                param_list[8] = new EalDbParameter("@CreateDate", CreateDate);
+                param_list[9] = new EalDbParameter("@PubDate", PubDate);
+                param_list[10] = new EalDbParameter("@SortDate", SortDate);
+                param_list[11] = new EalDbParameter("@HoldingCode", Holding_Code);
+                param_list[12] = new EalDbParameter("@SourceCode", Source_Code);
+                param_list[13] = new EalDbParameter("@Author", Author);
+                param_list[14] = new EalDbParameter("@Spatial_KML", Spatial_KML);
+                param_list[15] = new EalDbParameter("@Spatial_KML_Distance", Spatial_KML_Distance);
+                param_list[16] = new EalDbParameter("@DiskSize_KB", DiskSizeMb);
+                param_list[17] = new EalDbParameter("@Spatial_Display", Spatial_Display);
+                param_list[18] = new EalDbParameter("@Institution_Display", Institution_Display);
+                param_list[19] = new EalDbParameter("@Edition_Display", Edition);
+                param_list[20] = new EalDbParameter("@Material_Display", Material_Display);
+                param_list[21] = new EalDbParameter("@Measurement_Display", Measurement_Display);
+                param_list[22] = new EalDbParameter("@StylePeriod_Display", StylePeriod_Display);
+                param_list[23] = new EalDbParameter("@Technique_Display", Technique_Display);
+                param_list[24] = new EalDbParameter("@Subjects_Display", Subjects_Display);
+                param_list[25] = new EalDbParameter("@Donor", Donor);
+                param_list[26] = new EalDbParameter("@Publisher", Publisher);
+                param_list[27] = new EalDbParameter("@ItemID", -1) { Direction = ParameterDirection.InputOutput };
+                param_list[28] = new EalDbParameter("@Existing", false) { Direction = ParameterDirection.InputOutput };
+                param_list[29] = new EalDbParameter("@New_VID", "00000") { Direction = ParameterDirection.InputOutput };
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item", param_list);
 
                 // Return the value
-                int ItemID = (int)param_list[27].Value;
+                int itemID = (int)param_list[27].Value;
                 bool existing = (bool)param_list[28].Value;
                 string new_vid = param_list[29].Value.ToString();
-                return new Save_Item_Args(ItemID, existing, new_vid);
+                return new Save_Item_Args(itemID, existing, new_vid);
             }
             catch (Exception ee)
             {
@@ -2506,12 +2504,12 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[2];
-                param_list[0] = new SqlParameter("@itemid", ItemID);
-                param_list[1] = new SqlParameter("@clear_non_mets_values", Clear_Non_Metadata_Values);
+                EalDbParameter[] param_list = new EalDbParameter[2];
+                param_list[0] = new EalDbParameter("@itemid", ItemID);
+                param_list[1] = new EalDbParameter("@clear_non_mets_values", Clear_Non_Metadata_Values);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Metadata_Clear2", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Metadata_Clear2", param_list);
                 return true;
             }
             catch (Exception ee)
@@ -2556,31 +2554,31 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[21];
-                param_list[0] = new SqlParameter("@itemid", ItemID);
-                param_list[1] = new SqlParameter("@metadata_type1", Metadata_Type1);
-                param_list[2] = new SqlParameter("@metadata_value1", Metadata_Value1.Trim());
-                param_list[3] = new SqlParameter("@metadata_type2", Metadata_Type2);
-                param_list[4] = new SqlParameter("@metadata_value2", Metadata_Value2.Trim());
-                param_list[5] = new SqlParameter("@metadata_type3", Metadata_Type3);
-                param_list[6] = new SqlParameter("@metadata_value3", Metadata_Value3.Trim());
-                param_list[7] = new SqlParameter("@metadata_type4", Metadata_Type4);
-                param_list[8] = new SqlParameter("@metadata_value4", Metadata_Value4.Trim());
-                param_list[9] = new SqlParameter("@metadata_type5", Metadata_Type5);
-                param_list[10] = new SqlParameter("@metadata_value5", Metadata_Value5.Trim());
-                param_list[11] = new SqlParameter("@metadata_type6", Metadata_Type6);
-                param_list[12] = new SqlParameter("@metadata_value6", Metadata_Value6.Trim());
-                param_list[13] = new SqlParameter("@metadata_type7", Metadata_Type7);
-                param_list[14] = new SqlParameter("@metadata_value7", Metadata_Value7.Trim());
-                param_list[15] = new SqlParameter("@metadata_type8", Metadata_Type8);
-                param_list[16] = new SqlParameter("@metadata_value8", Metadata_Value8.Trim());
-                param_list[17] = new SqlParameter("@metadata_type9", Metadata_Type9);
-                param_list[18] = new SqlParameter("@metadata_value9", Metadata_Value9.Trim());
-                param_list[19] = new SqlParameter("@metadata_type10", Metadata_Type10);
-                param_list[20] = new SqlParameter("@metadata_value10", Metadata_Value10.Trim());
+                EalDbParameter[] param_list = new EalDbParameter[21];
+                param_list[0] = new EalDbParameter("@itemid", ItemID);
+                param_list[1] = new EalDbParameter("@metadata_type1", Metadata_Type1);
+                param_list[2] = new EalDbParameter("@metadata_value1", Metadata_Value1.Trim());
+                param_list[3] = new EalDbParameter("@metadata_type2", Metadata_Type2);
+                param_list[4] = new EalDbParameter("@metadata_value2", Metadata_Value2.Trim());
+                param_list[5] = new EalDbParameter("@metadata_type3", Metadata_Type3);
+                param_list[6] = new EalDbParameter("@metadata_value3", Metadata_Value3.Trim());
+                param_list[7] = new EalDbParameter("@metadata_type4", Metadata_Type4);
+                param_list[8] = new EalDbParameter("@metadata_value4", Metadata_Value4.Trim());
+                param_list[9] = new EalDbParameter("@metadata_type5", Metadata_Type5);
+                param_list[10] = new EalDbParameter("@metadata_value5", Metadata_Value5.Trim());
+                param_list[11] = new EalDbParameter("@metadata_type6", Metadata_Type6);
+                param_list[12] = new EalDbParameter("@metadata_value6", Metadata_Value6.Trim());
+                param_list[13] = new EalDbParameter("@metadata_type7", Metadata_Type7);
+                param_list[14] = new EalDbParameter("@metadata_value7", Metadata_Value7.Trim());
+                param_list[15] = new EalDbParameter("@metadata_type8", Metadata_Type8);
+                param_list[16] = new EalDbParameter("@metadata_value8", Metadata_Value8.Trim());
+                param_list[17] = new EalDbParameter("@metadata_type9", Metadata_Type9);
+                param_list[18] = new EalDbParameter("@metadata_value9", Metadata_Value9.Trim());
+                param_list[19] = new EalDbParameter("@metadata_type10", Metadata_Type10);
+                param_list[20] = new EalDbParameter("@metadata_value10", Metadata_Value10.Trim());
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Metadata_Save", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Metadata_Save", param_list);
                 return true;
             }
             catch (Exception ee)
@@ -2602,11 +2600,11 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[1];
-                param_list[0] = new SqlParameter("@ItemID", ItemID);
+                EalDbParameter[] param_list = new EalDbParameter[1];
+                param_list[0] = new EalDbParameter("@ItemID", ItemID);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Create_Full_Citation_Value", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Create_Full_Citation_Value", param_list);
 
                 return true;
             }
@@ -2628,11 +2626,11 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[1];
-                param_list[0] = new SqlParameter("@ItemID", ItemID);
+                EalDbParameter[] param_list = new EalDbParameter[1];
+                param_list[0] = new EalDbParameter("@ItemID", ItemID);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Clear_Old_Item_Info", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Clear_Old_Item_Info", param_list);
 
                 return true;
             }
@@ -2709,64 +2707,64 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[47];
-                param_list[0] = new SqlParameter("@ItemID", ItemID);
-                param_list[1] = new SqlParameter("@TextSearchable", TextSearchable);
-                param_list[2] = new SqlParameter("@MainThumbnail", MainThumbnail);
-                param_list[3] = new SqlParameter("@MainJPEG", MainJPEG);
-                param_list[4] = new SqlParameter("@IP_Restriction_Mask", IP_Restriction_Mask);
-                param_list[5] = new SqlParameter("@CheckoutRequired", CheckoutRequired);
-                param_list[6] = new SqlParameter("@Dark_Flag", Dark_Flag);
-                param_list[7] = new SqlParameter("@Born_Digital", Born_Digital);
+                EalDbParameter[] param_list = new EalDbParameter[47];
+                param_list[0] = new EalDbParameter("@ItemID", ItemID);
+                param_list[1] = new EalDbParameter("@TextSearchable", TextSearchable);
+                param_list[2] = new EalDbParameter("@MainThumbnail", MainThumbnail);
+                param_list[3] = new EalDbParameter("@MainJPEG", MainJPEG);
+                param_list[4] = new EalDbParameter("@IP_Restriction_Mask", IP_Restriction_Mask);
+                param_list[5] = new EalDbParameter("@CheckoutRequired", CheckoutRequired);
+                param_list[6] = new EalDbParameter("@Dark_Flag", Dark_Flag);
+                param_list[7] = new EalDbParameter("@Born_Digital", Born_Digital);
                 if (DispositionAdvice <= 0)
-                    param_list[8] = new SqlParameter("@Disposition_Advice", DBNull.Value);
+                    param_list[8] = new EalDbParameter("@Disposition_Advice", DBNull.Value);
                 else
-                    param_list[8] = new SqlParameter("@Disposition_Advice", DispositionAdvice);
-                param_list[9] = new SqlParameter("@Disposition_Advice_Notes", DispositionAdviceNotes);
+                    param_list[8] = new EalDbParameter("@Disposition_Advice", DispositionAdvice);
+                param_list[9] = new EalDbParameter("@Disposition_Advice_Notes", DispositionAdviceNotes);
 
                 if (Material_Received_Date.HasValue)
-                    param_list[10] = new SqlParameter("@Material_Received_Date", Material_Received_Date.Value);
+                    param_list[10] = new EalDbParameter("@Material_Received_Date", Material_Received_Date.Value);
                 else
-                    param_list[10] = new SqlParameter("@Material_Received_Date", DBNull.Value);
-                param_list[11] = new SqlParameter("@Material_Recd_Date_Estimated", Material_Recd_Date_Estimated);
-                param_list[12] = new SqlParameter("@Tracking_Box", Tracking_Box);
-                param_list[13] = new SqlParameter("@AggregationCode1", AggregationCode1);
-                param_list[14] = new SqlParameter("@AggregationCode2", AggregationCode2);
-                param_list[15] = new SqlParameter("@AggregationCode3", AggregationCode3);
-                param_list[16] = new SqlParameter("@AggregationCode4", AggregationCode4);
-                param_list[17] = new SqlParameter("@AggregationCode5", AggregationCode5);
-                param_list[18] = new SqlParameter("@AggregationCode6", AggregationCode6);
-                param_list[19] = new SqlParameter("@AggregationCode7", AggregationCode7);
-                param_list[20] = new SqlParameter("@AggregationCode8", AggregationCode8);
-                param_list[21] = new SqlParameter("@HoldingCode", HoldingCode);
-                param_list[22] = new SqlParameter("@SourceCode", SourceCode);
-                param_list[23] = new SqlParameter("@Icon1_Name", Icon1_Name);
-                param_list[24] = new SqlParameter("@Icon2_Name", Icon2_Name);
-                param_list[25] = new SqlParameter("@Icon3_Name", Icon3_Name);
-                param_list[26] = new SqlParameter("@Icon4_Name", Icon4_Name);
-                param_list[27] = new SqlParameter("@Icon5_Name", Icon5_Name);
-                param_list[28] = new SqlParameter("@Viewer1_TypeID", Viewer1_Type);
-                param_list[29] = new SqlParameter("@Viewer1_Label", Viewer1_Label);
-                param_list[30] = new SqlParameter("@Viewer1_Attribute", Viewer1_Attributes);
-                param_list[31] = new SqlParameter("@Viewer2_TypeID", Viewer2_Type);
-                param_list[32] = new SqlParameter("@Viewer2_Label", Viewer2_Label);
-                param_list[33] = new SqlParameter("@Viewer2_Attribute", Viewer2_Attributes);
-                param_list[34] = new SqlParameter("@Viewer3_TypeID", Viewer3_Type);
-                param_list[35] = new SqlParameter("@Viewer3_Label", Viewer3_Label);
-                param_list[36] = new SqlParameter("@Viewer3_Attribute", Viewer3_Attributes);
-                param_list[37] = new SqlParameter("@Viewer4_TypeID", Viewer4_Type);
-                param_list[38] = new SqlParameter("@Viewer4_Label", Viewer4_Label);
-                param_list[39] = new SqlParameter("@Viewer4_Attribute", Viewer4_Attributes);
-                param_list[40] = new SqlParameter("@Viewer5_TypeID", Viewer5_Type);
-                param_list[41] = new SqlParameter("@Viewer5_Label", Viewer5_Label);
-                param_list[42] = new SqlParameter("@Viewer5_Attribute", Viewer5_Attributes);
-                param_list[43] = new SqlParameter("@Viewer6_TypeID", Viewer6_Type);
-                param_list[44] = new SqlParameter("@Viewer6_Label", Viewer6_Label);
-                param_list[45] = new SqlParameter("@Viewer6_Attribute", Viewer6_Attributes);
-                param_list[46] = new SqlParameter("@Left_To_Right", Left_To_Right);
+                    param_list[10] = new EalDbParameter("@Material_Received_Date", DBNull.Value);
+                param_list[11] = new EalDbParameter("@Material_Recd_Date_Estimated", Material_Recd_Date_Estimated);
+                param_list[12] = new EalDbParameter("@Tracking_Box", Tracking_Box);
+                param_list[13] = new EalDbParameter("@AggregationCode1", AggregationCode1);
+                param_list[14] = new EalDbParameter("@AggregationCode2", AggregationCode2);
+                param_list[15] = new EalDbParameter("@AggregationCode3", AggregationCode3);
+                param_list[16] = new EalDbParameter("@AggregationCode4", AggregationCode4);
+                param_list[17] = new EalDbParameter("@AggregationCode5", AggregationCode5);
+                param_list[18] = new EalDbParameter("@AggregationCode6", AggregationCode6);
+                param_list[19] = new EalDbParameter("@AggregationCode7", AggregationCode7);
+                param_list[20] = new EalDbParameter("@AggregationCode8", AggregationCode8);
+                param_list[21] = new EalDbParameter("@HoldingCode", HoldingCode);
+                param_list[22] = new EalDbParameter("@SourceCode", SourceCode);
+                param_list[23] = new EalDbParameter("@Icon1_Name", Icon1_Name);
+                param_list[24] = new EalDbParameter("@Icon2_Name", Icon2_Name);
+                param_list[25] = new EalDbParameter("@Icon3_Name", Icon3_Name);
+                param_list[26] = new EalDbParameter("@Icon4_Name", Icon4_Name);
+                param_list[27] = new EalDbParameter("@Icon5_Name", Icon5_Name);
+                param_list[28] = new EalDbParameter("@Viewer1_TypeID", Viewer1_Type);
+                param_list[29] = new EalDbParameter("@Viewer1_Label", Viewer1_Label);
+                param_list[30] = new EalDbParameter("@Viewer1_Attribute", Viewer1_Attributes);
+                param_list[31] = new EalDbParameter("@Viewer2_TypeID", Viewer2_Type);
+                param_list[32] = new EalDbParameter("@Viewer2_Label", Viewer2_Label);
+                param_list[33] = new EalDbParameter("@Viewer2_Attribute", Viewer2_Attributes);
+                param_list[34] = new EalDbParameter("@Viewer3_TypeID", Viewer3_Type);
+                param_list[35] = new EalDbParameter("@Viewer3_Label", Viewer3_Label);
+                param_list[36] = new EalDbParameter("@Viewer3_Attribute", Viewer3_Attributes);
+                param_list[37] = new EalDbParameter("@Viewer4_TypeID", Viewer4_Type);
+                param_list[38] = new EalDbParameter("@Viewer4_Label", Viewer4_Label);
+                param_list[39] = new EalDbParameter("@Viewer4_Attribute", Viewer4_Attributes);
+                param_list[40] = new EalDbParameter("@Viewer5_TypeID", Viewer5_Type);
+                param_list[41] = new EalDbParameter("@Viewer5_Label", Viewer5_Label);
+                param_list[42] = new EalDbParameter("@Viewer5_Attribute", Viewer5_Attributes);
+                param_list[43] = new EalDbParameter("@Viewer6_TypeID", Viewer6_Type);
+                param_list[44] = new EalDbParameter("@Viewer6_Label", Viewer6_Label);
+                param_list[45] = new EalDbParameter("@Viewer6_Attribute", Viewer6_Attributes);
+                param_list[46] = new EalDbParameter("@Left_To_Right", Left_To_Right);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Behaviors", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Behaviors", param_list);
 
                 return true;
             }
@@ -2810,30 +2808,30 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[20];
-                param_list[0] = new SqlParameter("@ItemID", ItemID);
-                param_list[1] = new SqlParameter("@TextSearchable", TextSearchable);
-                param_list[2] = new SqlParameter("@Viewer1_TypeID", Viewer1_Type);
-                param_list[3] = new SqlParameter("@Viewer1_Label", Viewer1_Label);
-                param_list[4] = new SqlParameter("@Viewer1_Attribute", Viewer1_Attributes);
-                param_list[5] = new SqlParameter("@Viewer2_TypeID", Viewer2_Type);
-                param_list[6] = new SqlParameter("@Viewer2_Label", Viewer2_Label);
-                param_list[7] = new SqlParameter("@Viewer2_Attribute", Viewer2_Attributes);
-                param_list[8] = new SqlParameter("@Viewer3_TypeID", Viewer3_Type);
-                param_list[9] = new SqlParameter("@Viewer3_Label", Viewer3_Label);
-                param_list[10] = new SqlParameter("@Viewer3_Attribute", Viewer3_Attributes);
-                param_list[11] = new SqlParameter("@Viewer4_TypeID", Viewer4_Type);
-                param_list[12] = new SqlParameter("@Viewer4_Label", Viewer4_Label);
-                param_list[13] = new SqlParameter("@Viewer4_Attribute", Viewer4_Attributes);
-                param_list[14] = new SqlParameter("@Viewer5_TypeID", Viewer5_Type);
-                param_list[15] = new SqlParameter("@Viewer5_Label", Viewer5_Label);
-                param_list[16] = new SqlParameter("@Viewer5_Attribute", Viewer5_Attributes);
-                param_list[17] = new SqlParameter("@Viewer6_TypeID", Viewer6_Type);
-                param_list[18] = new SqlParameter("@Viewer6_Label", Viewer6_Label);
-                param_list[19] = new SqlParameter("@Viewer6_Attribute", Viewer6_Attributes);
+                EalDbParameter[] param_list = new EalDbParameter[20];
+                param_list[0] = new EalDbParameter("@ItemID", ItemID);
+                param_list[1] = new EalDbParameter("@TextSearchable", TextSearchable);
+                param_list[2] = new EalDbParameter("@Viewer1_TypeID", Viewer1_Type);
+                param_list[3] = new EalDbParameter("@Viewer1_Label", Viewer1_Label);
+                param_list[4] = new EalDbParameter("@Viewer1_Attribute", Viewer1_Attributes);
+                param_list[5] = new EalDbParameter("@Viewer2_TypeID", Viewer2_Type);
+                param_list[6] = new EalDbParameter("@Viewer2_Label", Viewer2_Label);
+                param_list[7] = new EalDbParameter("@Viewer2_Attribute", Viewer2_Attributes);
+                param_list[8] = new EalDbParameter("@Viewer3_TypeID", Viewer3_Type);
+                param_list[9] = new EalDbParameter("@Viewer3_Label", Viewer3_Label);
+                param_list[10] = new EalDbParameter("@Viewer3_Attribute", Viewer3_Attributes);
+                param_list[11] = new EalDbParameter("@Viewer4_TypeID", Viewer4_Type);
+                param_list[12] = new EalDbParameter("@Viewer4_Label", Viewer4_Label);
+                param_list[13] = new EalDbParameter("@Viewer4_Attribute", Viewer4_Attributes);
+                param_list[14] = new EalDbParameter("@Viewer5_TypeID", Viewer5_Type);
+                param_list[15] = new EalDbParameter("@Viewer5_Label", Viewer5_Label);
+                param_list[16] = new EalDbParameter("@Viewer5_Attribute", Viewer5_Attributes);
+                param_list[17] = new EalDbParameter("@Viewer6_TypeID", Viewer6_Type);
+                param_list[18] = new EalDbParameter("@Viewer6_Label", Viewer6_Label);
+                param_list[19] = new EalDbParameter("@Viewer6_Attribute", Viewer6_Attributes);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Behaviors_Minimal", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Behaviors_Minimal", param_list);
 
                 return true;
             }
@@ -2860,16 +2858,16 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[6];
-                param_list[0] = new SqlParameter("@ItemID", ItemID);
-                param_list[1] = new SqlParameter("@Tickler1", Tickler1);
-                param_list[2] = new SqlParameter("@Tickler2", Tickler2);
-                param_list[3] = new SqlParameter("@Tickler3", Tickler3);
-                param_list[4] = new SqlParameter("@Tickler4", Tickler4);
-                param_list[5] = new SqlParameter("@Tickler5", Tickler5);
+                EalDbParameter[] param_list = new EalDbParameter[6];
+                param_list[0] = new EalDbParameter("@ItemID", ItemID);
+                param_list[1] = new EalDbParameter("@Tickler1", Tickler1);
+                param_list[2] = new EalDbParameter("@Tickler2", Tickler2);
+                param_list[3] = new EalDbParameter("@Tickler3", Tickler3);
+                param_list[4] = new EalDbParameter("@Tickler4", Tickler4);
+                param_list[5] = new EalDbParameter("@Tickler5", Tickler5);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Ticklers", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Ticklers", param_list);
 
                 return true;
             }
@@ -2904,21 +2902,21 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[11];
-                param_list[0] = new SqlParameter("@BibID", BibID);
-                param_list[1] = new SqlParameter("@VID", VID);
-                param_list[2] = new SqlParameter("@Viewer1_TypeID", Viewer1_Type);
-                param_list[3] = new SqlParameter("@Viewer1_Label", Viewer1_Label);
-                param_list[4] = new SqlParameter("@Viewer1_Attribute", Viewer1_Attributes);
-                param_list[5] = new SqlParameter("@Viewer2_TypeID", Viewer2_Type);
-                param_list[6] = new SqlParameter("@Viewer2_Label", Viewer2_Label);
-                param_list[7] = new SqlParameter("@Viewer2_Attribute", Viewer2_Attributes);
-                param_list[8] = new SqlParameter("@Viewer3_TypeID", Viewer3_Type);
-                param_list[9] = new SqlParameter("@Viewer3_Label", Viewer3_Label);
-                param_list[10] = new SqlParameter("@Viewer3_Attribute", Viewer3_Attributes);
+                EalDbParameter[] param_list = new EalDbParameter[11];
+                param_list[0] = new EalDbParameter("@BibID", BibID);
+                param_list[1] = new EalDbParameter("@VID", VID);
+                param_list[2] = new EalDbParameter("@Viewer1_TypeID", Viewer1_Type);
+                param_list[3] = new EalDbParameter("@Viewer1_Label", Viewer1_Label);
+                param_list[4] = new EalDbParameter("@Viewer1_Attribute", Viewer1_Attributes);
+                param_list[5] = new EalDbParameter("@Viewer2_TypeID", Viewer2_Type);
+                param_list[6] = new EalDbParameter("@Viewer2_Label", Viewer2_Label);
+                param_list[7] = new EalDbParameter("@Viewer2_Attribute", Viewer2_Attributes);
+                param_list[8] = new EalDbParameter("@Viewer3_TypeID", Viewer3_Type);
+                param_list[9] = new EalDbParameter("@Viewer3_Label", Viewer3_Label);
+                param_list[10] = new EalDbParameter("@Viewer3_Attribute", Viewer3_Attributes);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Views", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Views", param_list);
 
                 return true;
             }
@@ -2989,65 +2987,65 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[38];
-                param_list[0] = new SqlParameter("@GroupID", GroupID);
+                EalDbParameter[] param_list = new EalDbParameter[38];
+                param_list[0] = new EalDbParameter("@GroupID", GroupID);
 
                 if (Set_IP_Restriction_Mask)
-                    param_list[1] = new SqlParameter("@IP_Restriction_Mask", IP_Restriction_Mask);
+                    param_list[1] = new EalDbParameter("@IP_Restriction_Mask", IP_Restriction_Mask);
                 else
-                    param_list[1] = new SqlParameter("@IP_Restriction_Mask", DBNull.Value);
+                    param_list[1] = new EalDbParameter("@IP_Restriction_Mask", DBNull.Value);
 
                 if (Set_CheckoutRequired)
-                    param_list[2] = new SqlParameter("@CheckoutRequired", CheckoutRequired);
+                    param_list[2] = new EalDbParameter("@CheckoutRequired", CheckoutRequired);
                 else
-                    param_list[2] = new SqlParameter("@CheckoutRequired", DBNull.Value);
+                    param_list[2] = new EalDbParameter("@CheckoutRequired", DBNull.Value);
 
                 if (Set_Dark_Flag)
-                    param_list[3] = new SqlParameter("@Dark_Flag", Dark_Flag);
+                    param_list[3] = new EalDbParameter("@Dark_Flag", Dark_Flag);
                 else
-                    param_list[3] = new SqlParameter("@Dark_Flag", DBNull.Value);
+                    param_list[3] = new EalDbParameter("@Dark_Flag", DBNull.Value);
 
                 if (Set_Born_Digital)
-                    param_list[4] = new SqlParameter("@Born_Digital", Born_Digital);
+                    param_list[4] = new EalDbParameter("@Born_Digital", Born_Digital);
                 else
-                    param_list[4] = new SqlParameter("@Born_Digital", DBNull.Value);
+                    param_list[4] = new EalDbParameter("@Born_Digital", DBNull.Value);
 
-                param_list[5] = new SqlParameter("@AggregationCode1", AggregationCode1);
-                param_list[6] = new SqlParameter("@AggregationCode2", AggregationCode2);
-                param_list[7] = new SqlParameter("@AggregationCode3", AggregationCode3);
-                param_list[8] = new SqlParameter("@AggregationCode4", AggregationCode4);
-                param_list[9] = new SqlParameter("@AggregationCode5", AggregationCode5);
-                param_list[10] = new SqlParameter("@AggregationCode6", AggregationCode6);
-                param_list[11] = new SqlParameter("@AggregationCode7", AggregationCode7);
-                param_list[12] = new SqlParameter("@AggregationCode8", AggregationCode8);
-                param_list[13] = new SqlParameter("@HoldingCode", HoldingCode);
-                param_list[14] = new SqlParameter("@SourceCode", SourceCode);
-                param_list[15] = new SqlParameter("@Icon1_Name", Icon1_Name);
-                param_list[16] = new SqlParameter("@Icon2_Name", Icon2_Name);
-                param_list[17] = new SqlParameter("@Icon3_Name", Icon3_Name);
-                param_list[18] = new SqlParameter("@Icon4_Name", Icon4_Name);
-                param_list[19] = new SqlParameter("@Icon5_Name", Icon5_Name);
-                param_list[20] = new SqlParameter("@Viewer1_TypeID", Viewer1_Type);
-                param_list[21] = new SqlParameter("@Viewer1_Label", Viewer1_Label);
-                param_list[22] = new SqlParameter("@Viewer1_Attribute", Viewer1_Attributes);
-                param_list[23] = new SqlParameter("@Viewer2_TypeID", Viewer2_Type);
-                param_list[24] = new SqlParameter("@Viewer2_Label", Viewer2_Label);
-                param_list[25] = new SqlParameter("@Viewer2_Attribute", Viewer2_Attributes);
-                param_list[26] = new SqlParameter("@Viewer3_TypeID", Viewer3_Type);
-                param_list[27] = new SqlParameter("@Viewer3_Label", Viewer3_Label);
-                param_list[28] = new SqlParameter("@Viewer3_Attribute", Viewer3_Attributes);
-                param_list[29] = new SqlParameter("@Viewer4_TypeID", Viewer4_Type);
-                param_list[30] = new SqlParameter("@Viewer4_Label", Viewer4_Label);
-                param_list[31] = new SqlParameter("@Viewer4_Attribute", Viewer4_Attributes);
-                param_list[32] = new SqlParameter("@Viewer5_TypeID", Viewer5_Type);
-                param_list[33] = new SqlParameter("@Viewer5_Label", Viewer5_Label);
-                param_list[34] = new SqlParameter("@Viewer5_Attribute", Viewer5_Attributes);
-                param_list[35] = new SqlParameter("@Viewer6_TypeID", Viewer6_Type);
-                param_list[36] = new SqlParameter("@Viewer6_Label", Viewer6_Label);
-                param_list[37] = new SqlParameter("@Viewer6_Attribute", Viewer6_Attributes);
+                param_list[5] = new EalDbParameter("@AggregationCode1", AggregationCode1);
+                param_list[6] = new EalDbParameter("@AggregationCode2", AggregationCode2);
+                param_list[7] = new EalDbParameter("@AggregationCode3", AggregationCode3);
+                param_list[8] = new EalDbParameter("@AggregationCode4", AggregationCode4);
+                param_list[9] = new EalDbParameter("@AggregationCode5", AggregationCode5);
+                param_list[10] = new EalDbParameter("@AggregationCode6", AggregationCode6);
+                param_list[11] = new EalDbParameter("@AggregationCode7", AggregationCode7);
+                param_list[12] = new EalDbParameter("@AggregationCode8", AggregationCode8);
+                param_list[13] = new EalDbParameter("@HoldingCode", HoldingCode);
+                param_list[14] = new EalDbParameter("@SourceCode", SourceCode);
+                param_list[15] = new EalDbParameter("@Icon1_Name", Icon1_Name);
+                param_list[16] = new EalDbParameter("@Icon2_Name", Icon2_Name);
+                param_list[17] = new EalDbParameter("@Icon3_Name", Icon3_Name);
+                param_list[18] = new EalDbParameter("@Icon4_Name", Icon4_Name);
+                param_list[19] = new EalDbParameter("@Icon5_Name", Icon5_Name);
+                param_list[20] = new EalDbParameter("@Viewer1_TypeID", Viewer1_Type);
+                param_list[21] = new EalDbParameter("@Viewer1_Label", Viewer1_Label);
+                param_list[22] = new EalDbParameter("@Viewer1_Attribute", Viewer1_Attributes);
+                param_list[23] = new EalDbParameter("@Viewer2_TypeID", Viewer2_Type);
+                param_list[24] = new EalDbParameter("@Viewer2_Label", Viewer2_Label);
+                param_list[25] = new EalDbParameter("@Viewer2_Attribute", Viewer2_Attributes);
+                param_list[26] = new EalDbParameter("@Viewer3_TypeID", Viewer3_Type);
+                param_list[27] = new EalDbParameter("@Viewer3_Label", Viewer3_Label);
+                param_list[28] = new EalDbParameter("@Viewer3_Attribute", Viewer3_Attributes);
+                param_list[29] = new EalDbParameter("@Viewer4_TypeID", Viewer4_Type);
+                param_list[30] = new EalDbParameter("@Viewer4_Label", Viewer4_Label);
+                param_list[31] = new EalDbParameter("@Viewer4_Attribute", Viewer4_Attributes);
+                param_list[32] = new EalDbParameter("@Viewer5_TypeID", Viewer5_Type);
+                param_list[33] = new EalDbParameter("@Viewer5_Label", Viewer5_Label);
+                param_list[34] = new EalDbParameter("@Viewer5_Attribute", Viewer5_Attributes);
+                param_list[35] = new EalDbParameter("@Viewer6_TypeID", Viewer6_Type);
+                param_list[36] = new EalDbParameter("@Viewer6_Label", Viewer6_Label);
+                param_list[37] = new EalDbParameter("@Viewer6_Attribute", Viewer6_Attributes);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Mass_Update_Item_Behaviors", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Mass_Update_Item_Behaviors", param_list);
 
                 return true;
             }
@@ -3081,69 +3079,69 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[13];
-                param_list[0] = new SqlParameter("@GroupID", GroupID);
-                param_list[1] = new SqlParameter("@ItemID", ItemID);
+                EalDbParameter[] param_list = new EalDbParameter[13];
+                param_list[0] = new EalDbParameter("@GroupID", GroupID);
+                param_list[1] = new EalDbParameter("@ItemID", ItemID);
                 if (Level1_Index >= 0)
                 {
-                    param_list[2] = new SqlParameter("@Level1_Text", Level1_Text);
-                    param_list[3] = new SqlParameter("@Level1_Index", Level1_Index);
+                    param_list[2] = new EalDbParameter("@Level1_Text", Level1_Text);
+                    param_list[3] = new EalDbParameter("@Level1_Index", Level1_Index);
                 }
                 else
                 {
-                    param_list[2] = new SqlParameter("@Level1_Text", DBNull.Value);
-                    param_list[3] = new SqlParameter("@Level1_Index", DBNull.Value);
+                    param_list[2] = new EalDbParameter("@Level1_Text", DBNull.Value);
+                    param_list[3] = new EalDbParameter("@Level1_Index", DBNull.Value);
                 }
 
                 if (Level2_Index >= 0)
                 {
-                    param_list[4] = new SqlParameter("@Level2_Text", Level2_Text);
-                    param_list[5] = new SqlParameter("@Level2_Index", Level2_Index);
+                    param_list[4] = new EalDbParameter("@Level2_Text", Level2_Text);
+                    param_list[5] = new EalDbParameter("@Level2_Index", Level2_Index);
                 }
                 else
                 {
-                    param_list[4] = new SqlParameter("@Level2_Text", DBNull.Value);
-                    param_list[5] = new SqlParameter("@Level2_Index", DBNull.Value);
+                    param_list[4] = new EalDbParameter("@Level2_Text", DBNull.Value);
+                    param_list[5] = new EalDbParameter("@Level2_Index", DBNull.Value);
                 }
 
                 if (Level3_Index >= 0)
                 {
-                    param_list[6] = new SqlParameter("@Level3_Text", Level3_Text);
-                    param_list[7] = new SqlParameter("@Level3_Index", Level3_Index);
+                    param_list[6] = new EalDbParameter("@Level3_Text", Level3_Text);
+                    param_list[7] = new EalDbParameter("@Level3_Index", Level3_Index);
                 }
                 else
                 {
-                    param_list[6] = new SqlParameter("@Level3_Text", DBNull.Value);
-                    param_list[7] = new SqlParameter("@Level3_Index", DBNull.Value);
+                    param_list[6] = new EalDbParameter("@Level3_Text", DBNull.Value);
+                    param_list[7] = new EalDbParameter("@Level3_Index", DBNull.Value);
                 }
 
                 if (Level4_Index >= 0)
                 {
-                    param_list[8] = new SqlParameter("@Level4_Text", Level4_Text);
-                    param_list[9] = new SqlParameter("@Level4_Index", Level4_Index);
+                    param_list[8] = new EalDbParameter("@Level4_Text", Level4_Text);
+                    param_list[9] = new EalDbParameter("@Level4_Index", Level4_Index);
                 }
                 else
                 {
-                    param_list[8] = new SqlParameter("@Level4_Text", DBNull.Value);
-                    param_list[9] = new SqlParameter("@Level4_Index", DBNull.Value);
+                    param_list[8] = new EalDbParameter("@Level4_Text", DBNull.Value);
+                    param_list[9] = new EalDbParameter("@Level4_Index", DBNull.Value);
                 }
 
                 if (Level5_Index >= 0)
                 {
-                    param_list[10] = new SqlParameter("@Level5_Text", Level5_Text);
-                    param_list[11] = new SqlParameter("@Level5_Index", Level5_Index);
+                    param_list[10] = new EalDbParameter("@Level5_Text", Level5_Text);
+                    param_list[11] = new EalDbParameter("@Level5_Index", Level5_Index);
                 }
                 else
                 {
-                    param_list[10] = new SqlParameter("@Level5_Text", DBNull.Value);
-                    param_list[11] = new SqlParameter("@Level5_Index", DBNull.Value);
+                    param_list[10] = new EalDbParameter("@Level5_Text", DBNull.Value);
+                    param_list[11] = new EalDbParameter("@Level5_Index", DBNull.Value);
                 }
 
-                param_list[12] = new SqlParameter("@SerialHierarchy", SerialHierarchy);
+                param_list[12] = new EalDbParameter("@SerialHierarchy", SerialHierarchy);
 
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Save_Serial_Hierarchy", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Serial_Hierarchy", param_list);
             }
             catch (Exception ee)
             {
@@ -3178,19 +3176,19 @@ namespace SobekCM.Resource_Object.Database
             {
                 int itemID = Get_ItemID(BibID, VID);
                 //Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[8];
-                param_list[0] = new SqlParameter("@itemid", itemID);
-                param_list[1] = new SqlParameter("@notes", Notes);
-                param_list[2] = new SqlParameter("@onlineuser", User);
-                param_list[3] = new SqlParameter("@mainthumbnail", MainThumbnailFileName);
-                param_list[4] = new SqlParameter("@mainjpeg", MainJpgFileName);
-                param_list[5] = new SqlParameter("@pagecount", PageCount);
-                param_list[6] = new SqlParameter("@filecount", FileCount);
-                param_list[7] = new SqlParameter("@disksize_kb", DisksizeMb);
+                EalDbParameter[] param_list = new EalDbParameter[8];
+                param_list[0] = new EalDbParameter("@itemid", itemID);
+                param_list[1] = new EalDbParameter("@notes", Notes);
+                param_list[2] = new EalDbParameter("@onlineuser", User);
+                param_list[3] = new EalDbParameter("@mainthumbnail", MainThumbnailFileName);
+                param_list[4] = new EalDbParameter("@mainjpeg", MainJpgFileName);
+                param_list[5] = new EalDbParameter("@pagecount", PageCount);
+                param_list[6] = new EalDbParameter("@filecount", FileCount);
+                param_list[7] = new EalDbParameter("@disksize_kb", DisksizeMb);
 
 
                 //Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Submit_Online_Page_Division", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Submit_Online_Page_Division", param_list);
 
                 return true;
 
@@ -3217,21 +3215,21 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[5];
-                param_list[0] = new SqlParameter("@ItemID", ItemID);
-                param_list[1] = new SqlParameter("@IpRestrictionMask", NewRestrictionMask);
-                param_list[2] = new SqlParameter("@DarkFlag", DarkFlag);
+                EalDbParameter[] param_list = new EalDbParameter[5];
+                param_list[0] = new EalDbParameter("@ItemID", ItemID);
+                param_list[1] = new EalDbParameter("@IpRestrictionMask", NewRestrictionMask);
+                param_list[2] = new EalDbParameter("@DarkFlag", DarkFlag);
 
                 if (EmbargoDate.HasValue)
-                    param_list[3] = new SqlParameter("@EmbargoDate", EmbargoDate.Value);
+                    param_list[3] = new EalDbParameter("@EmbargoDate", EmbargoDate.Value);
                 else
-                    param_list[3] = new SqlParameter("@EmbargoDate", DBNull.Value);
+                    param_list[3] = new EalDbParameter("@EmbargoDate", DBNull.Value);
 
-                param_list[4] = new SqlParameter("@User", UserName);
+                param_list[4] = new EalDbParameter("@User", UserName);
 
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Set_Item_Visibility", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Set_Item_Visibility", param_list);
 
                 return true;
             }
@@ -3255,14 +3253,14 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[4];
-                param_list[0] = new SqlParameter("@itemid", ItemID);
-                param_list[1] = new SqlParameter("@newipmask", New_Restriction_Mask);
-                param_list[2] = new SqlParameter("@user", UserName);
-                param_list[3] = new SqlParameter("@progressnote", ProgressNote);
+                EalDbParameter[] param_list = new EalDbParameter[4];
+                param_list[0] = new EalDbParameter("@itemid", ItemID);
+                param_list[1] = new EalDbParameter("@newipmask", New_Restriction_Mask);
+                param_list[2] = new EalDbParameter("@user", UserName);
+                param_list[3] = new EalDbParameter("@progressnote", ProgressNote);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Set_IP_Restriction_Mask", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Set_IP_Restriction_Mask", param_list);
 
                 return true;
             }
@@ -3285,12 +3283,12 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[2];
-                param_list[0] = new SqlParameter("@itemid", ItemID);
-                param_list[1] = new SqlParameter("@newcomments", Internal_Comments);
+                EalDbParameter[] param_list = new EalDbParameter[2];
+                param_list[0] = new EalDbParameter("@itemid", ItemID);
+                param_list[1] = new EalDbParameter("@newcomments", Internal_Comments);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Set_Item_Comments", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Set_Item_Comments", param_list);
 
                 return true;
             }
@@ -3316,17 +3314,17 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[6];
-                param_list[0] = new SqlParameter("@bibid", BibID);
-                param_list[1] = new SqlParameter("@grouptitle", GroupTitle);
-                param_list[2] = new SqlParameter("@sorttitle", SortTitle);
-                param_list[3] = new SqlParameter("@groupthumbnail", Group_Thumbnail);
-                param_list[4] = new SqlParameter("@PrimaryIdentifierType", Primary_Identifier_Type);
-                param_list[5] = new SqlParameter("@PrimaryIdentifier", Primary_Identifier);
+                EalDbParameter[] param_list = new EalDbParameter[6];
+                param_list[0] = new EalDbParameter("@bibid", BibID);
+                param_list[1] = new EalDbParameter("@grouptitle", GroupTitle);
+                param_list[2] = new EalDbParameter("@sorttitle", SortTitle);
+                param_list[3] = new EalDbParameter("@groupthumbnail", Group_Thumbnail);
+                param_list[4] = new EalDbParameter("@PrimaryIdentifierType", Primary_Identifier_Type);
+                param_list[5] = new EalDbParameter("@PrimaryIdentifier", Primary_Identifier);
 
 
                 // Execute this query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Update_Item_Group", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Update_Item_Group", param_list);
 
                 return true;
             }
@@ -3350,12 +3348,12 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[2];
-                param_list[0] = new SqlParameter("@Tracking_Box", Tracking_Box);
-                param_list[1] = new SqlParameter("@ItemID", ItemID);
+                EalDbParameter[] param_list = new EalDbParameter[2];
+                param_list[0] = new EalDbParameter("@Tracking_Box", Tracking_Box);
+                param_list[1] = new EalDbParameter("@ItemID", ItemID);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Update_Tracking_Box", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Update_Tracking_Box", param_list);
 
                 return true;
             }
@@ -3380,13 +3378,13 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[3];
-                param_list[0] = new SqlParameter("@Disposition_Advice", DispositionTypeID);
-                param_list[1] = new SqlParameter("@Disposition_Advice_Notes", Notes);
-                param_list[2] = new SqlParameter("@ItemID", ItemID);
+                EalDbParameter[] param_list = new EalDbParameter[3];
+                param_list[0] = new EalDbParameter("@Disposition_Advice", DispositionTypeID);
+                param_list[1] = new EalDbParameter("@Disposition_Advice_Notes", Notes);
+                param_list[2] = new EalDbParameter("@ItemID", ItemID);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Update_Disposition_Advice", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Update_Disposition_Advice", param_list);
 
                 return true;
             }
@@ -3413,15 +3411,15 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[5];
-                param_list[0] = new SqlParameter("@Disposition_Date", DispositionDate);
-                param_list[1] = new SqlParameter("@Disposition_Type", DispositionTypeID);
-                param_list[2] = new SqlParameter("@Disposition_Notes", Notes);
-                param_list[3] = new SqlParameter("@ItemID", ItemID);
-                param_list[4] = new SqlParameter("@UserName", UserName);
+                EalDbParameter[] param_list = new EalDbParameter[5];
+                param_list[0] = new EalDbParameter("@Disposition_Date", DispositionDate);
+                param_list[1] = new EalDbParameter("@Disposition_Type", DispositionTypeID);
+                param_list[2] = new EalDbParameter("@Disposition_Notes", Notes);
+                param_list[3] = new EalDbParameter("@ItemID", ItemID);
+                param_list[4] = new EalDbParameter("@UserName", UserName);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Update_Disposition", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Update_Disposition", param_list);
 
                 return true;
             }
@@ -3449,16 +3447,16 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[6];
-                param_list[0] = new SqlParameter("@itemid", ItemID);
-                param_list[1] = new SqlParameter("@user", UserName);
-                param_list[2] = new SqlParameter("@progressnote", Notes);
-                param_list[3] = new SqlParameter("@workflow", Workflow_Type);
-                param_list[4] = new SqlParameter("@storagelocation", StorageLocation);
-                param_list[5] = new SqlParameter("@date", Date);
+                EalDbParameter[] param_list = new EalDbParameter[6];
+                param_list[0] = new EalDbParameter("@itemid", ItemID);
+                param_list[1] = new EalDbParameter("@user", UserName);
+                param_list[2] = new EalDbParameter("@progressnote", Notes);
+                param_list[3] = new EalDbParameter("@workflow", Workflow_Type);
+                param_list[4] = new EalDbParameter("@storagelocation", StorageLocation);
+                param_list[5] = new EalDbParameter("@date", Date);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Add_Past_Workflow_By_ItemID", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Add_Past_Workflow_By_ItemID", param_list);
 
                 return true;
             }
@@ -3486,15 +3484,15 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[5];
-                param_list[0] = new SqlParameter("@itemid", ItemID);
-                param_list[1] = new SqlParameter("@user", UserName);
-                param_list[2] = new SqlParameter("@progressnote", Notes);
-                param_list[3] = new SqlParameter("@workflow", Workflow_Type);
-                param_list[4] = new SqlParameter("@storagelocation", StorageLocation);
+                EalDbParameter[] param_list = new EalDbParameter[5];
+                param_list[0] = new EalDbParameter("@itemid", ItemID);
+                param_list[1] = new EalDbParameter("@user", UserName);
+                param_list[2] = new EalDbParameter("@progressnote", Notes);
+                param_list[3] = new EalDbParameter("@workflow", Workflow_Type);
+                param_list[4] = new EalDbParameter("@storagelocation", StorageLocation);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Add_Workflow_By_ItemID", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Add_Workflow_By_ItemID", param_list);
 
                 return true;
             }
@@ -3517,13 +3515,13 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[5];
-                param_list[0] = new SqlParameter("@ItemID", ItemID);
-                param_list[1] = new SqlParameter("@Last_Milestone", Last_Milestone);
-                param_list[2] = new SqlParameter("@Milestone_Date", Milestone_Date);
+                EalDbParameter[] param_list = new EalDbParameter[5];
+                param_list[0] = new EalDbParameter("@ItemID", ItemID);
+                param_list[1] = new EalDbParameter("@Last_Milestone", Last_Milestone);
+                param_list[2] = new EalDbParameter("@Milestone_Date", Milestone_Date);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Update_Digitization_Milestones", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Update_Digitization_Milestones", param_list);
 
                 return true;
             }
@@ -3550,15 +3548,15 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[5];
-                param_list[0] = new SqlParameter("@Material_Received_Date", Date);
-                param_list[1] = new SqlParameter("@Material_Recd_Date_Estimated", Estimated);
-                param_list[2] = new SqlParameter("@ItemID", ItemID);
-                param_list[3] = new SqlParameter("@User", UserName);
-                param_list[4] = new SqlParameter("@ProgressNote", Notes);
+                EalDbParameter[] param_list = new EalDbParameter[5];
+                param_list[0] = new EalDbParameter("@Material_Received_Date", Date);
+                param_list[1] = new EalDbParameter("@Material_Recd_Date_Estimated", Estimated);
+                param_list[2] = new EalDbParameter("@ItemID", ItemID);
+                param_list[3] = new EalDbParameter("@User", UserName);
+                param_list[4] = new EalDbParameter("@ProgressNote", Notes);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Update_Material_Received", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Update_Material_Received", param_list);
 
                 return true;
             }
@@ -3582,12 +3580,12 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[2];
-                param_list[0] = new SqlParameter("@Born_Digital", Born_Digital_Flag);
-                param_list[1] = new SqlParameter("@ItemID", ItemID);
+                EalDbParameter[] param_list = new EalDbParameter[2];
+                param_list[0] = new EalDbParameter("@Born_Digital", Born_Digital_Flag);
+                param_list[1] = new EalDbParameter("@ItemID", ItemID);
 
                 // Execute this non-query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "Tracking_Update_Born_Digital", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "Tracking_Update_Born_Digital", param_list);
 
                 return true;
             }
@@ -3617,15 +3615,15 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[5];
-                param_list[0] = new SqlParameter("@bibid", BibID);
-                param_list[1] = new SqlParameter("@vid", VID);
-                param_list[2] = new SqlParameter("@pagecount", PageCount);
-                param_list[3] = new SqlParameter("@filecount", FileCount);
-                param_list[4] = new SqlParameter("@disksize_kb", DiskSizeMb);
+                EalDbParameter[] param_list = new EalDbParameter[5];
+                param_list[0] = new EalDbParameter("@bibid", BibID);
+                param_list[1] = new EalDbParameter("@vid", VID);
+                param_list[2] = new EalDbParameter("@pagecount", PageCount);
+                param_list[3] = new EalDbParameter("@filecount", FileCount);
+                param_list[4] = new EalDbParameter("@disksize_kb", DiskSizeMb);
 
                 // Execute this query stored procedure
-                SqlHelper.ExecuteNonQuery(connectionString, CommandType.StoredProcedure, "SobekCM_Update_Item_Online_Statistics", param_list);
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Update_Item_Online_Statistics", param_list);
 
                 return true;
             }
@@ -3651,12 +3649,12 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[2];
-                param_list[0] = new SqlParameter("@bibid", BibID);
-                param_list[1] = new SqlParameter("@vid", VID);
+                EalDbParameter[] param_list = new EalDbParameter[2];
+                param_list[0] = new EalDbParameter("@bibid", BibID);
+                param_list[1] = new EalDbParameter("@vid", VID);
 
                 // Execute this query stored procedure
-                DataSet resultSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Get_ItemID", param_list);
+                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_ItemID", param_list);
 
                 if ((resultSet != null) && (resultSet.Tables[0].Rows.Count > 0))
                     return Convert.ToInt32(resultSet.Tables[0].Rows[0][0]);
@@ -3699,14 +3697,14 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[4];
-                param_list[0] = new SqlParameter("@bibid", BibID);
-                param_list[1] = new SqlParameter("@vid", VID);
-                param_list[2] = new SqlParameter("@OCLC_Number", oclc);
-                param_list[3] = new SqlParameter("@Local_Cat_Number", aleph);
+                EalDbParameter[] param_list = new EalDbParameter[4];
+                param_list[0] = new EalDbParameter("@bibid", BibID);
+                param_list[1] = new EalDbParameter("@vid", VID);
+                param_list[2] = new EalDbParameter("@OCLC_Number", oclc);
+                param_list[3] = new EalDbParameter("@Local_Cat_Number", aleph);
 
                 // Execute this query stored procedure
-                DataSet resultSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "SobekCM_Check_For_Record_Existence", param_list);
+                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Check_For_Record_Existence", param_list);
 
                 if (resultSet != null)
                     return resultSet.Tables[0];
@@ -3905,18 +3903,18 @@ namespace SobekCM.Resource_Object.Database
         }
 
         /// <summary> Retrive html as a string from a web page </summary>
-        /// <param name="strURL"> URL to use to retrieve the source </param>
-        /// <param name="Seconds_to_TimeOut"> Seconds before the HTML request times out </param>
+        /// <param name="StrURL"> URL to use to retrieve the source </param>
+        /// <param name="SecondsToTimeOut"> Seconds before the HTML request times out </param>
         /// <returns> Web page as string </returns>
-        public static String GetHtmlPage(string strURL, int Seconds_to_TimeOut)
+        public static String GetHtmlPage(string StrURL, int SecondsToTimeOut)
         {
             try
             {
                 // the html retrieved from the page
                 String strResult;
                 WebResponse objResponse;
-                WebRequest objRequest = HttpWebRequest.Create(strURL);
-                objRequest.Timeout = Seconds_to_TimeOut * 1000;
+                WebRequest objRequest = HttpWebRequest.Create(StrURL);
+                objRequest.Timeout = SecondsToTimeOut * 1000;
                 objResponse = objRequest.GetResponse();
                 // the using keyword will automatically dispose the object 
                 // once complete
@@ -3983,12 +3981,12 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                SqlParameter[] param_list = new SqlParameter[2];
-                param_list[0] = new SqlParameter("@BibID", BibID);
-                param_list[1] = new SqlParameter("@VID", VID);
+                EalDbParameter[] param_list = new EalDbParameter[2];
+                param_list[0] = new EalDbParameter("@BibID", BibID);
+                param_list[1] = new EalDbParameter("@VID", VID);
 
                 // Define a temporary dataset
-                DataSet tempSet = SqlHelper.ExecuteDataset(connectionString, CommandType.StoredProcedure, "Tivoli_Get_File_By_Bib_VID", param_list);
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "Tivoli_Get_File_By_Bib_VID", param_list);
                 if ((tempSet == null) || (tempSet.Tables.Count == 0) || (tempSet.Tables[0].Rows.Count == 0))
                     return null;
                 return tempSet.Tables[0];
@@ -4009,26 +4007,13 @@ namespace SobekCM.Resource_Object.Database
         {
             try
             {
-                SqlConnection connection = new SqlConnection(connectionString);
+                DataSet returnSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_QC_Get_Errors");
+                if ((returnSet != null) && (returnSet.Tables.Count > 0))
+                {
+                    return returnSet.Tables[0];
+                }
 
-                //Create the command
-                SqlCommand command = new SqlCommand("SobekCM_QC_Get_Errors", connection) { CommandType = CommandType.StoredProcedure };
-                command.Parameters.AddWithValue("@itemID", ItemID);
-
-                //Open the connection
-                connection.Open();
-
-                // Create the adapter
-                SqlDataAdapter adapter = new SqlDataAdapter(command);
-
-                DataTable returnTable = new DataTable();
-
-                adapter.Fill(returnTable);
-
-                //Close the connection
-                connection.Close();
-
-                return returnTable;
+                return null;
             }
             catch (Exception ee)
             {
@@ -4048,32 +4033,19 @@ namespace SobekCM.Resource_Object.Database
         {
             try
             {
-                //Create the connection
-                SqlConnection connect = new SqlConnection(connectionString);
-
-                //Create the command
-                SqlCommand command = new SqlCommand("SobekCM_QC_Save_Error", connect) { CommandType = CommandType.StoredProcedure };
-
-                //Open the connection
-                connect.Open();
-
                 //Add the parameters to this command
-                command.Parameters.AddWithValue("@itemID", ItemID);
-                command.Parameters.AddWithValue("@filename", Filename);
-                command.Parameters.AddWithValue("@errorCode", ErrorCode);
-                command.Parameters.AddWithValue("@description", Description);
-                command.Parameters.AddWithValue("@isVolumeError", isVolumeError);
+                EalDbParameter[] parameters = new EalDbParameter[6];
+                parameters[0] = new EalDbParameter("@itemID", ItemID);
+                parameters[1] = new EalDbParameter("@filename", Filename);
+                parameters[2] = new EalDbParameter("@errorCode", ErrorCode);
+                parameters[3] = new EalDbParameter("@description", Description);
+                parameters[4] = new EalDbParameter("@isVolumeError", isVolumeError);
+                parameters[5] = new EalDbParameter("@errorID", DbType.Int64) { Direction = ParameterDirection.Output };
 
-                //Add the output parameter
-                SqlParameter output_errorID = command.Parameters.AddWithValue("@errorID", SqlDbType.BigInt);
-                output_errorID.Direction = ParameterDirection.Output;
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_QC_Save_Error", parameters);
 
-                command.ExecuteNonQuery();
                 int errorID;
-                Int32.TryParse(output_errorID.Value.ToString(), out errorID);
-
-                connect.Close();
-
+                Int32.TryParse(parameters[5].Value.ToString(), out errorID);
                 return errorID;
 
             }
@@ -4090,22 +4062,12 @@ namespace SobekCM.Resource_Object.Database
         {
             try
             {
-                //Create the connection
-                SqlConnection connect = new SqlConnection(connectionString);
-
-                //Create the command
-                SqlCommand command = new SqlCommand("SobekCM_QC_Delete_Error", connect) { CommandType = CommandType.StoredProcedure };
-
-                //Open the connection
-                connect.Open();
-
                 //Add the parameters to this command
-                command.Parameters.AddWithValue("@itemID", itemID);
-                command.Parameters.AddWithValue("@filename", filename);
+                EalDbParameter[] parameters = new EalDbParameter[2];
+                parameters[0] = new EalDbParameter("@itemID", itemID);
+                parameters[1] = new EalDbParameter("@filename", filename);
 
-                command.ExecuteNonQuery();
-
-                connect.Close();
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_QC_Delete_Error", parameters);
             }
 
             catch (Exception ee)

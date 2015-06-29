@@ -99,10 +99,6 @@
     <Compile Include="Configuration\Web_Language_Enum.cs" />
     <Compile Include="Configuration\Web_Language_Translation_Lookup.cs" />
     <Compile Include="Configuration\Web_Language_Translation_Value.cs" />
-    <Compile Include="Database\EalDbAccess.cs" />
-    <Compile Include="Database\EalDbParameter.cs" />
-    <Compile Include="Database\EalDbReaderWrapper.cs" />
-    <Compile Include="Database\EalDbTypeEnum.cs" />
     <Compile Include="EmailInfo.cs" />
     <Compile Include="iPostSerialization.cs" />
     <Compile Include="Items\SobekCM_Items_In_Title.cs" />
@@ -173,6 +169,10 @@
     <Compile Include="WebContent\Web_Content_Basic_Info.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj">
+      <Project>{b481ce6e-05fd-4336-9524-64d057aab107}</Project>
+      <Name>EngineAgnosticLayerDbAccess</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj">
       <Project>{395c2621-ce19-41e0-aa1a-abdb37f6e815}</Project>
       <Name>SobekCM_Resource_Object</Name>

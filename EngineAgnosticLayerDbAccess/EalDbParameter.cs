@@ -6,7 +6,7 @@ using System.Data.Common;
 
 #endregion
 
-namespace SobekCM.Core.Database
+namespace EngineAgnosticLayerDbAccess
 {
     /// <summary> Database parameter for the Engine Agnostic Layer database access </summary>
     public sealed class EalDbParameter : DbParameter

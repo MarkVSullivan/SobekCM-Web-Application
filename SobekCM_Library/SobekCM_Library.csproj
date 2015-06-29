@@ -592,6 +592,10 @@
     <Compile Include="Email\Usage_Stats_Email_Helper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj">
+      <Project>{b481ce6e-05fd-4336-9524-64d057aab107}</Project>
+      <Name>EngineAgnosticLayerDbAccess</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SobekCM_Core\SobekCM_Core.csproj">
       <Project>{849c78a5-c60b-4faf-9efb-943753f64e56}</Project>
       <Name>SobekCM_Core</Name>

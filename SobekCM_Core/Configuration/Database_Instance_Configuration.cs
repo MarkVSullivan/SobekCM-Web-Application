@@ -2,7 +2,7 @@
 
 using System;
 using System.Runtime.Serialization;
-using SobekCM.Core.Database;
+using EngineAgnosticLayerDbAccess;
 
 #endregion
 

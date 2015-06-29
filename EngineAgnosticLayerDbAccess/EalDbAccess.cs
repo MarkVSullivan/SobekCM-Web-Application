@@ -7,7 +7,7 @@ using System.Data.SqlClient;
 
 #endregion
 
-namespace SobekCM.Core.Database
+namespace EngineAgnosticLayerDbAccess
 {
     /// <summary> Static library used for synchronous reads from a database, agnostic of the type of 
     /// database engine ( i.e., MS SQL, PostgreSQL, etc.. ) </summary>

@@ -1,4 +1,4 @@
-﻿namespace SobekCM.Core.Database
+﻿namespace EngineAgnosticLayerDbAccess
 {
     /// <summary> Enumeration tells the type of underlying database connection to create </summary>
     public enum EalDbTypeEnum : byte

@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 using System.Data;
 using System.Data.Common;
 using System.Linq;
-using SobekCM.Core.Database;
+using EngineAgnosticLayerDbAccess;
 using SobekCM.Core.Items;
 using SobekCM.Core.OAI;
 using SobekCM.Core.Results;

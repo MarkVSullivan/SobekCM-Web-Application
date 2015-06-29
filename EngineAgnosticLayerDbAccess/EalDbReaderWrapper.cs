@@ -6,7 +6,7 @@ using System.Data.Common;
 
 #endregion
 
-namespace SobekCM.Core.Database
+namespace EngineAgnosticLayerDbAccess
 {
     /// <summary> Wrapper for a database data reader and the database connection, to simplify the process
     /// of closing the reader and connection simultaneously </summary>
