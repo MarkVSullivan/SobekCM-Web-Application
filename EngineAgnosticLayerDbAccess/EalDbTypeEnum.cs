@@ -7,6 +7,9 @@
         MSSQL = 1,
 
         /// <summary> PostgreSQL Server </summary>
-        PostgreSQL
+        PostgreSQL,
+
+        /// <summary> MySQL Server </summary>
+        MySQL
     }
 }
