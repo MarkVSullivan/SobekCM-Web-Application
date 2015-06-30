@@ -34,7 +34,7 @@ namespace SobekCM.Builder_Library
         public Builder_Modules BuilderSettings;
         private DataTable itemTable;
 
-        private readonly LogFileXHTML logger;
+        private readonly LogFileXhtml logger;
         private readonly string logFileDirectory;
         
 	    private readonly bool canAbort;
@@ -59,7 +59,7 @@ namespace SobekCM.Builder_Library
         /// <param name="Verbose"> Flag indicates if the builder is in verbose mode, where it should log alot more information </param>
         /// <param name="DbInstance"> This database instance </param>
         /// <param name="MultiInstanceBuilder"></param>
-        public Worker_BulkLoader(LogFileXHTML Logger, bool Verbose, Database_Instance_Configuration DbInstance, bool MultiInstanceBuilder, string LogFileDirectory )
+        public Worker_BulkLoader(LogFileXhtml Logger, bool Verbose, Database_Instance_Configuration DbInstance, bool MultiInstanceBuilder, string LogFileDirectory )
         {
             // Save the log file and verbose flag
             logger = Logger;

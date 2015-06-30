@@ -381,7 +381,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 // If there is a coordinate search here
                 if (( allPolygons.Count > 1) &&
-                    ((CurrentMode.Coordinates.Length > 0) && (matchingTilesList != null) || (googleItemSearch)))
+                    (( !String.IsNullOrEmpty(CurrentMode.Coordinates)) && (matchingTilesList != null) || (googleItemSearch)))
                 {
                     if (googleItemSearch)
                     {

@@ -127,7 +127,7 @@ namespace SobekCM.Builder_Library
             }
 
             // Create the new log file
-            LogFileXHTML preloader_logger = new LogFileXHTML(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
+            LogFileXhtml preloader_logger = new LogFileXhtml(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
 
             // start with warnings on imagemagick and ghostscript not being installed
             if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.ImageMagick_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.ImageMagick_Executable)))
@@ -511,7 +511,7 @@ namespace SobekCM.Builder_Library
             string local_log_name = Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + "\\" + log_name;
 
             // Create the new log file
-            LogFileXHTML preloader_logger = new LogFileXHTML(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
+            LogFileXhtml preloader_logger = new LogFileXhtml(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
 
 			// Step through each database instance
 	        foreach (Database_Instance_Configuration dbConfig in Engine_ApplicationCache_Gateway.Settings.Database_Connections)
@@ -568,7 +568,7 @@ namespace SobekCM.Builder_Library
             if (CompleteStaticRebuild)
             {
 				Console.WriteLine("Beginning static rebuild");
-                LogFileXHTML staticRebuildLog = new LogFileXHTML( logFileDirectory  + "\\static_rebuild.html");
+                LogFileXhtml staticRebuildLog = new LogFileXhtml( logFileDirectory  + "\\static_rebuild.html");
 				Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Application_Server_Network);
                 builder.Rebuild_All_Static_Pages(staticRebuildLog, true, Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory, String.Empty, -1);
             }

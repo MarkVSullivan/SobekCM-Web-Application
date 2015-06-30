@@ -411,7 +411,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
 
             try
             {
-                LogFileXHTML errorLog = new LogFileXHTML(Resource_Folder + "\\" + Folder_Name + ".log.html", "Package Processing Log", "SobekCM Builder Errors");
+                LogFileXhtml errorLog = new LogFileXhtml(Resource_Folder + "\\" + Folder_Name + ".log.html", "Package Processing Log", "SobekCM Builder Errors");
                 errorLog.New();
                 errorLog.AddComplete("Error Log for " + Folder_Name + " processed at: " + DateTime.Now.ToString());
                 errorLog.AddComplete("");

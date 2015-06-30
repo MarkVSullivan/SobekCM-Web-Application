@@ -2290,7 +2290,7 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[4];
+                EalDbParameter[] param_list = new EalDbParameter[3];
                 param_list[0] = new EalDbParameter("@itemid", ItemID);
                 param_list[1] = new EalDbParameter("@data_code", Data_Code);
                 param_list[2] = new EalDbParameter("@oai_data", OAI_Data);

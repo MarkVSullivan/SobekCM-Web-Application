@@ -2034,13 +2034,13 @@ namespace SobekCM.Engine_Library.Database
 		    }
 
 			parameters.Add(new EalDbParameter("@include_private", IncludePrivateItems));
+            parameters.Add(new EalDbParameter("@aggregationcode", AggregationCode));
 			parameters.Add(new EalDbParameter("@pagesize", ResultsPerPage));
 			parameters.Add(new EalDbParameter("@pagenumber", ResultsPage));
 			parameters.Add(new EalDbParameter("@sort", Sort));
 			parameters.Add(new EalDbParameter("@minpagelookahead", MIN_PAGE_LOOKAHEAD));
 			parameters.Add(new EalDbParameter("@maxpagelookahead", MAX_PAGE_LOOKAHEAD));
 			parameters.Add(new EalDbParameter("@lookahead_factor", LOOKAHEAD_FACTOR));
-			parameters.Add(new EalDbParameter("@aggregationcode", AggregationCode));
 			parameters.Add(new EalDbParameter("@include_facets", IncludeFacets));
 
 			if ((IncludeFacets) && (FacetTypes != null) && (ReturnSearchStatistics))
