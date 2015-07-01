@@ -351,6 +351,19 @@ namespace SobekCM.Core.Navigation
         [ProtoMember(32)]
         public bool Logon_Required { get; set; }
 
+        /// <summary> Flag indicates if the requested web content page (or item) is not present (possibly a bad URL) </summary>
+        [DataMember(EmitDefaultValue = false, Name = "missing")]
+        [XmlElement("missing")]
+        [ProtoMember(75)]
+        public bool? Missing { get; set; }
+
+        /// <summary> Method suppresses XML Serialization of the Missing flag property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeMissing()
+        {
+            return  Missing.HasValue;
+        }
+
         /// <summary> Mode determined by parsing the query string </summary>
         [DataMember(EmitDefaultValue = false, Name = "mode")]
         [XmlAttribute("mode")]

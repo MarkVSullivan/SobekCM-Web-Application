@@ -26,11 +26,24 @@ namespace SobekCM.Library.HTML
         private string breadcrumbs;
         private bool canEdit;
         private bool excludeSiteMap;
+        private bool adminMissingScreen;
 
         /// <summary> Constructor for a new instance of the Web_Content_HtmlSubwriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Web_Content_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
+        public Web_Content_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
+            
+
+            // If this was missing and the user is an admin, show a special message
+            if ((RequestSpecificValues.Current_Mode.Missing.HasValue) && (RequestSpecificValues.Current_Mode.Missing.Value))
+            {
+                adminMissingScreen = false;
+                if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn) && ((RequestSpecificValues.Current_User.Is_Portal_Admin) || (RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Host_Admin)))
+                {
+                    adminMissingScreen = true;
+                }
+            }
+
             // If there is a sitemap, check if this is a robot request and then if the URL
             // for the sitemap pages is URL restricted
             if ((RequestSpecificValues.Site_Map != null) && (RequestSpecificValues.Site_Map.Is_URL_Restricted_For_Robots) && (RequestSpecificValues.Current_Mode.Is_Robot))
@@ -285,6 +298,72 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Web_Content_HtmlSubwriter.Write_HTML", "Rendering HTML");
 
+            if (adminMissingScreen)
+            {
+
+                // Constants for the brief explanations
+                const string ADD_COLLECTION_WIZARD_BRIEF = "Add a new collection (or any other type of aggregation) using the wizard.  This will guide you the process of adding a new collection and uploading the banner and button.";
+                const string ALIASES_BRIEF = "Manage the various aggregation aliases which allow different URLs to point to the same aggregation.";
+
+
+                Output.WriteLine("<div id=\"sbkWchs_Panel\">");
+
+
+                Add_Banner(Output, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Hierarchy_Object);
+
+                Output.WriteLine("<div id=\"sbkWchs_InnerPanel\">");
+
+
+                // Start the page container
+                Output.WriteLine("<div id=\"pagecontainer\">");
+                Output.WriteLine("<br />");
+
+                // Add the title
+                Output.WriteLine("<div class=\"sbkAdm_TitleDiv sbkAdm_TitleDivBorder\"><h1>Missing Page</h1></div>");
+
+                Output.WriteLine("The page you requested does not exist.  Would you like to add it today?");
+
+
+                Output.WriteLine("  <table id=\"sbkHav_OptionsTable3\">");
+                Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"appearance\">Select Option</h2></td></tr>");
+
+
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
+                string add_collection_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + add_collection_url + "\"><img src=\"" + Static_Resources.Wizard_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + add_collection_url + "\">Add Collection Wizard</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + ADD_COLLECTION_WIZARD_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+
+
+                // Edit aggregation aliases
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
+                string alias_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + alias_url + "\"><img src=\"" + Static_Resources.Aliases_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + alias_url + "\">Aggregation Aliases</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + ALIASES_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+
+                Output.WriteLine("  </table>");
+
+
+                Output.WriteLine("</div>");
+                Output.WriteLine("MISSING");
+
+                Output.WriteLine("</div>");
+                Output.WriteLine("</div>");
+                return true;
+            }
+
             // The header is already drawn, so just start the main table here
             if ((RequestSpecificValues.Site_Map != null) && ( !excludeSiteMap ))
             {
@@ -348,6 +427,9 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Web_Content_HtmlSubwriter.Write_Final_HTML", "Rendering HTML");
 
+            if (adminMissingScreen)
+                return;
+
             // If there is a sitemap, move to the second part of the table
             if ((RequestSpecificValues.Site_Map != null) && (!excludeSiteMap))
             {
@@ -369,7 +451,7 @@ namespace SobekCM.Library.HTML
             }
 
         }
-
+                    
         private void write_banner_and_menu(TextWriter Output, Custom_Tracer Tracer)
         {
             // Save the current mode and browse
@@ -654,8 +736,16 @@ namespace SobekCM.Library.HTML
                 }
             }
 
-			// Write the style sheet to use 
-            Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Metadata_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            // If this is an admin and the page was not present, give some options
+            if (adminMissingScreen)
+            {
+                Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Admin_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            }
+            else
+            {
+                // Write the style sheet to use 
+                Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Metadata_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            }
 
             // If this is the static html web content view, add any special text which came from the original
             // static html file which was already read, which can include style sheets, etc..

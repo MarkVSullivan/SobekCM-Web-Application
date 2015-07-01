@@ -1154,7 +1154,8 @@ namespace SobekCM.Engine_Library.Navigation
 								        }
 
                                         if ((String.IsNullOrEmpty(Navigator.Page_By_FileName)) && ((String.IsNullOrEmpty(Navigator.Default_Aggregation)) || (Navigator.Default_Aggregation == "all")))
-								        {
+                                        {
+                                            Navigator.Missing = true;
 								            Navigator.Info_Browse_Mode = "default";
 								            Navigator.Page_By_FileName = base_source + "\\default.html";
 								        }
