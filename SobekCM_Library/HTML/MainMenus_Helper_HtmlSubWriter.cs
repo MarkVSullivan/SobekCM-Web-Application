@@ -1143,7 +1143,7 @@ namespace SobekCM.Library.HTML
                 {
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
-                    Output.WriteLine("      <li id=\"sbkUsm_MyStartNew\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.New_Item_Img + "\" /> <div class=\"sbkUsm_TextWithImage\">Start a new item</div></a></li>");
+                    Output.WriteLine("      <li id=\"sbkUsm_MyStartNew\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.New_Item_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Start a new item</div></a></li>");
                 }
 
                 // If the user has already submitted stuff, add a link to all submitted items

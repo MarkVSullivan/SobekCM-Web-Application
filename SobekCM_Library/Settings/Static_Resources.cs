@@ -234,7 +234,9 @@ namespace SobekCM.Library.Settings
             New_Element_Jpg = "http://cdn.sobekrepository.org/images/misc/new_element.jpg";
             New_Element_Demo_Jpg = "http://cdn.sobekrepository.org/images/misc/new_element_demo.jpg";
             New_Folder_Jpg = "http://cdn.sobekrepository.org/images/misc/new_folder.jpg";
-            New_Item_Img = "http://cdn.sobekrepository.org/images/misc/new_item.gif";
+            New_Item_Img = "http://cdn.sobekrepository.org/images/misc/new_item_medium.png";
+            New_Item_Img_Large = "http://cdn.sobekrepository.org/images/misc/new_item_large.png";
+            New_Item_Img_Small = "http://cdn.sobekrepository.org/images/misc/new_item_small.png";
             Next_Png = "http://cdn.sobekrepository.org/images/bookturner/next.png";
             Next2_Png = "http://cdn.sobekrepository.org/images/bookturner/next2.png";
             No_Pages_Jpg = "http://cdn.sobekrepository.org/images/qc/no_pages.jpg";
@@ -363,6 +365,10 @@ namespace SobekCM.Library.Settings
             View_Ico = "http://cdn.sobekrepository.org/images/qc/View.ico";
             View_Work_Log_Img = "http://cdn.sobekrepository.org/images/misc/view_work_log.png";
             View_Work_Log_Img_Large = "http://cdn.sobekrepository.org/images/misc/view_work_log_icon.png";
+            Warning_Img = "http://cdn.sobekrepository.org/images/misc/warning.png";
+            WebContent_Img = "http://cdn.sobekrepository.org/images/misc/web_content_medium.png";
+            WebContent_Img_Small = "http://cdn.sobekrepository.org/images/misc/web_content_small.png";
+            WebContent_Img_Large = "http://cdn.sobekrepository.org/images/misc/web_content_large.png";
             Wizard_Img = "http://cdn.sobekrepository.org/images/misc/wizard.png";
             Wizard_Img_Large = "http://cdn.sobekrepository.org/images/misc/wizard_lg.png";
             Wordmarks_Img = "http://cdn.sobekrepository.org/images/misc/wordmarks.png";
@@ -1028,8 +1034,14 @@ namespace SobekCM.Library.Settings
         /// <summary> URL for the default resource 'new_folder.jpg' file ( http://cdn.sobekrepository.org/images/misc/new_folder.jpg by default)</summary>
         public static string New_Folder_Jpg { get; private set; }
 
-        /// <summary> URL for the default resource 'new_item.gif' file ( http://cdn.sobekrepository.org/images/misc/new_item.gif by default)</summary>
+        /// <summary> URL for the default resource 'new_item_medium.png' file ( http://cdn.sobekrepository.org/images/misc/new_item_medium.png by default)</summary>
         public static string New_Item_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'new_item_large.png' file ( http://cdn.sobekrepository.org/images/misc/new_item_large.png by default)</summary>
+        public static string New_Item_Img_Large { get; private set; }
+
+        /// <summary> URL for the default resource 'new_item_small.png' file ( http://cdn.sobekrepository.org/images/misc/new_item_small.png by default)</summary>
+        public static string New_Item_Img_Small { get; private set; }
 
         /// <summary> URL for the default resource 'next.png' file ( http://cdn.sobekrepository.org/images/bookturner/next.png by default)</summary>
         public static string Next_Png { get; private set; }
@@ -1414,6 +1426,18 @@ namespace SobekCM.Library.Settings
 
         /// <summary> URL for the default resource 'view_work_log_icon.png' file ( http://cdn.sobekrepository.org/images/misc/view_work_log_icon.png by default)</summary>
         public static string View_Work_Log_Img_Large { get; private set; }
+
+        /// <summary> URL for the default resource 'warning.png' file ( http://cdn.sobekrepository.org/images/misc/warnging.png by default)</summary>
+        public static string Warning_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'web_content_medium.png' file ( http://cdn.sobekrepository.org/images/misc/web_content_medium.png by default)</summary>
+        public static string WebContent_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'web_content_small.png' file ( http://cdn.sobekrepository.org/images/misc/web_content_small.png by default)</summary>
+        public static string WebContent_Img_Small { get; private set; }
+
+        /// <summary> URL for the default resource 'web_content_large.png' file ( http://cdn.sobekrepository.org/images/misc/web_content_large.png by default)</summary>
+        public static string WebContent_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'wizard.png' file ( http://cdn.sobekrepository.org/images/misc/wizard.png by default)</summary>
         public static string Wizard_Img { get; private set; }
@@ -2327,6 +2351,14 @@ namespace SobekCM.Library.Settings
                     New_Item_Img = Source;
                     break;
 
+                case "new_item_img_large":
+                    New_Item_Img_Large = Source;
+                    break;
+
+                case "new_item_img_small":
+                    New_Item_Img_Small = Source;
+                    break;
+
                 case "next_img":
                     Next_Png = Source;
                     break;
@@ -2843,6 +2875,22 @@ namespace SobekCM.Library.Settings
                     View_Work_Log_Img_Large = Source;
                     break;
 
+                case "warning_img":
+                    Warning_Img = Source;
+                    break;
+
+                case "webcontent_img":
+                    WebContent_Img = Source;
+                    break;
+
+                case "webcontent_img_small":
+                    WebContent_Img_Small = Source;
+                    break;
+
+                case "webcontent_img_large":
+                    WebContent_Img_Large = Source;
+                    break;
+
                 case "wizard_img":
                     Wizard_Img = Source;
                     break;
@@ -2937,7 +2985,6 @@ namespace SobekCM.Library.Settings
                 if (readerXml != null) readerXml.Close();
                 if (readerStream != null) readerStream.Close();
             }
-
 
             return returnValue;
         }

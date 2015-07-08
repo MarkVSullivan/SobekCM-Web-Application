@@ -98,6 +98,7 @@
     <Compile Include="AdminViewer\iMySobek_Admin_Viewer.cs" />
     <Compile Include="AdminViewer\Permissions_Reports_AdminViewer.cs" />
     <Compile Include="AdminViewer\Skin_Single_AdminViewer.cs" />
+    <Compile Include="AdminViewer\WebContent_Mgmt_AdminViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Manage_Menu_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Advanced_Search_MimeType_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Basic_Search_MimeType_AggregationViewer.cs" />

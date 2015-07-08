@@ -433,6 +433,9 @@
         /// <summary> Provides top-level reports regarding permissions granted to users </summary>
         User_Permissions_Reports,
 
+        /// <summary> Manage the list of all top-level static HTML web content pages in this instance </summary>
+        WebContent_Mgmt,
+
         /// <summary> Provides list of all existing wordmarks/icons and allows admin to enter a new wordmark or edit an existing wordmark </summary>
         Wordmarks
     };

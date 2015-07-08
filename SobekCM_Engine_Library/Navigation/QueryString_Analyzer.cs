@@ -699,6 +699,10 @@ namespace SobekCM.Engine_Library.Navigation
                                                 Navigator.My_Sobek_SubMode = url_relative_list[2];
                                             break;
 
+                                        case "webcontent":
+                                            Navigator.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
+                                            break;
+
                                         case "wordmarks":
                                             Navigator.Admin_Type = Admin_Type_Enum.Wordmarks;
                                             break;
@@ -1156,8 +1160,8 @@ namespace SobekCM.Engine_Library.Navigation
                                         if ((String.IsNullOrEmpty(Navigator.Page_By_FileName)) && ((String.IsNullOrEmpty(Navigator.Default_Aggregation)) || (Navigator.Default_Aggregation == "all")))
                                         {
                                             Navigator.Missing = true;
-								            Navigator.Info_Browse_Mode = "default";
-								            Navigator.Page_By_FileName = base_source + "\\default.html";
+                                            Navigator.Info_Browse_Mode = possibleInfoModeBuilder.ToString();
+								            Navigator.Page_By_FileName = base_source + "\\missing.html";
 								        }
 								    }
 

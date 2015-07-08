@@ -101,6 +101,10 @@ namespace SobekCM.Library.HTML
                     adminViewer = new Aliases_AdminViewer(RequestSpecificValues);
                     break;
 
+                case Admin_Type_Enum.WebContent_Mgmt:
+                    adminViewer = new WebContent_Mgmt_AdminViewer(RequestSpecificValues);
+                    break;
+
                 case Admin_Type_Enum.Wordmarks:
                     adminViewer = new Wordmarks_AdminViewer(RequestSpecificValues);
                     break;

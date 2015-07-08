@@ -225,6 +225,7 @@ namespace SobekCM.Core.WebContent
 
             // Replace the standard directives next
             Display_Text = Display_Text.Replace("<%URLOPTS%>", URL_Options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%INTERFACE%>", Web_Skin_Code).Replace("<%WEBSKIN%>", Web_Skin_Code).Replace("<%BASEURL%>", Base_URL);
+            Display_Text = Display_Text.Replace("[%URLOPTS%]", URL_Options).Replace("[%?URLOPTS%]", urlOptions1).Replace("[%&URLOPTS%]", urlOptions2).Replace("[%INTERFACE%]", Web_Skin_Code).Replace("[%WEBSKIN%]", Web_Skin_Code).Replace("[%BASEURL%]", Base_URL);
 
             // Replace some additional (more complex) values
             string tabstart = "<img src=\"" + Base_URL + "design/skins/" + Base_Skin_Code + "/tabs/cLD.gif\" border=\"0\" class=\"tab_image\" /><span class=\"tab\">";
