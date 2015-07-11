@@ -9,8 +9,16 @@ using System.Linq;
 
 namespace SobekCM.Builder_Library.Modules.Folders
 {
+    /// <summary> Folder-level builder module checks if a folder has a BibID restriction ( i.e., incoming items must start with 'XYZ..' ) and 
+    /// then checks each package found in that folder has a valid BibID, or moves it to the failures folder </summary>
+    /// <remarks> This class implements the <see cref="abstractFolderModule" /> abstract class and implements the <see cref="iFolderModule" /> interface. </remarks>
     public class ApplyBibIdRestrictionModule : abstractFolderModule
     {
+        /// <summary> Check if a folder has a BibID restriction ( i.e., incoming items must start with 'XYZ..' ) and then checks each package
+        /// found in that folder has a valid BibID, or moves it to the failures folder </summary>
+        /// <param name="BuilderFolder"> Builder folder upon which to perform all work </param>
+        /// <param name="IncomingPackages"> List of valid incoming packages, which may be modified by this process </param>
+        /// <param name="Deletes"> List of valid deletes, which may be modifyed by this process </param>
         public override void DoWork(Actionable_Builder_Source_Folder BuilderFolder, List<Incoming_Digital_Resource> IncomingPackages, List<Incoming_Digital_Resource> Deletes)
         {
             // If this folder is limited on what BibID roots it accepts, check that now

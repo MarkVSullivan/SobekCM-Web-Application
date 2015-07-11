@@ -12,6 +12,8 @@ using SobekCM.Resource_Object.Metadata_Modules.VRACore;
 
 namespace SobekCM.Builder_Library.Modules.Folders
 {
+    /// <summary> TEST Folder-level builder module for custom Wolfsonian processing </summary>
+    /// <remarks> This class implements the <see cref="abstractFolderModule" /> abstract class and implements the <see cref="iFolderModule" /> interface. </remarks>
     public class WolfsonianProcessorModule : abstractFolderModule
     {
         private string source_folder, destination_folder, archived_files_link;
@@ -717,6 +719,10 @@ namespace SobekCM.Builder_Library.Modules.Folders
                 Process_Complete(Aborted, packages_processed_count, "WOLF" + bibid.ToString().PadLeft(6, '0'));
         }
 
+        /// <summary>  </summary>
+        /// <param name="BuilderFolder"> Builder folder upon which to perform all work </param>
+        /// <param name="IncomingPackages"> List of valid incoming packages, which may be modified by this process </param>
+        /// <param name="Deletes"> List of valid deletes, which may be modifyed by this process </param>
         public override void DoWork(Actionable_Builder_Source_Folder BuilderFolder, List<Incoming_Digital_Resource> IncomingPackages, List<Incoming_Digital_Resource> Deletes)
         {
             

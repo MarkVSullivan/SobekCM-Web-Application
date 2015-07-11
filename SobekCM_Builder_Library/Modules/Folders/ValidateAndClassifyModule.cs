@@ -14,12 +14,20 @@ using SobekCM.Tools.Logs;
 
 namespace SobekCM.Builder_Library.Modules.Folders
 {
+    /// <summary> Folder-level builder module validates the metadata for each folder and classified as package either adding 
+    /// a new item or updating an existing item versus a package requesting a delete </summary>
+    /// <remarks> This class implements the <see cref="abstractFolderModule" /> abstract class and implements the <see cref="iFolderModule" /> interface. </remarks>
     public class ValidateAndClassifyModule : abstractFolderModule
     {
         private SobekCM_METS_Validator thisMetsValidator;
         private METS_Validator_Object metsSchemeValidator;
         private DataTable itemTable;
 
+        /// <summary> Validates the metadata for each folder and classified as package either adding 
+        /// a new item or updating an existing item versus a package requesting a delete </summary>
+        /// <param name="BuilderFolder"> Builder folder upon which to perform all work </param>
+        /// <param name="IncomingPackages"> List of valid incoming packages, which may be modified by this process </param>
+        /// <param name="Deletes"> List of valid deletes, which may be modifyed by this process </param>
         public override void DoWork(Actionable_Builder_Source_Folder BuilderFolder, List<Incoming_Digital_Resource> IncomingPackages, List<Incoming_Digital_Resource> Deletes)
         {
             if (Settings.Builder_Verbose_Flag)

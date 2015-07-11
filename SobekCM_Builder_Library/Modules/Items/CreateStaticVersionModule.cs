@@ -7,15 +7,23 @@ using SobekCM.Library;
 
 namespace SobekCM.Builder_Library.Modules.Items
 {
+    /// <summary> Item-level submission package module checks ... </summary>
+    /// <remarks> This class implements the <see cref="abstractSubmissionPackageModule" /> abstract class and implements the <see cref="iSubmissionPackageModule" /> interface. </remarks>
     public class CreateStaticVersionModule : abstractSubmissionPackageModule
     {
         private Static_Pages_Builder staticBuilder;
 
+        /// <summary> Method releases all resources </summary>
+        /// <remarks> This overrides the base implemenation of this method to also clear the static pages builder </remarks>
         public override void ReleaseResources()
         {
             staticBuilder = null;
+            Settings = null;
         }
 
+        /// <summary>  </summary>
+        /// <param name="Resource"> Incoming digital resource object </param>
+        /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
         public override bool DoWork(Incoming_Digital_Resource Resource)
         {
             return true;
