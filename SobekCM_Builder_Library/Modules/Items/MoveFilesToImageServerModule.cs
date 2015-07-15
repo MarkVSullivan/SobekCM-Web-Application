@@ -8,7 +8,8 @@ using System.IO;
 
 namespace SobekCM.Builder_Library.Modules.Items
 {
-    /// <summary> Item-level submission package module checks ... </summary>
+    /// <summary> Item-level submission package module moves all the incoming files and images to the image server,
+    /// while keeping track of which images were newly added </summary>
     /// <remarks> This class implements the <see cref="abstractSubmissionPackageModule" /> abstract class and implements the <see cref="iSubmissionPackageModule" /> interface. </remarks>
     public class MoveFilesToImageServerModule : abstractSubmissionPackageModule
     {
@@ -76,10 +77,13 @@ namespace SobekCM.Builder_Library.Modules.Items
             }
         }
 
-        public static string NormalizePath(string path)
+        /// <summary> Normalized this path </summary>
+        /// <param name="Path"></param>
+        /// <returns></returns>
+        private static string NormalizePath(string Path)
         {
-            return Path.GetFullPath(new Uri(path).LocalPath)
-                       .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+            return System.IO.Path.GetFullPath(new Uri(Path).LocalPath)
+                       .TrimEnd(System.IO.Path.DirectorySeparatorChar, System.IO.Path.AltDirectorySeparatorChar)
                        .ToUpperInvariant();
         }
 

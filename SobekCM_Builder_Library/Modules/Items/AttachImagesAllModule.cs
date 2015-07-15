@@ -1,16 +1,22 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Divisions;
+using SobekCM.Tools;
+
+#endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
 {
-    /// <summary> Item-level submission package module checks ... </summary>
+    /// <summary> Item-level submission package module adds ALL the image files to the digital resource,
+    /// regardless if they were just uploaded or not </summary>
     /// <remarks> This class implements the <see cref="abstractSubmissionPackageModule" /> abstract class and implements the <see cref="iSubmissionPackageModule" /> interface. </remarks>
     public class AttachImagesAllModule : abstractSubmissionPackageModule
     {
-        /// <summary>  </summary>
+        /// <summary> Adds ALL the image files to the digital resource, regardless if they were just uploaded or not </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
         public override bool DoWork(Incoming_Digital_Resource Resource)
@@ -20,12 +26,16 @@ namespace SobekCM.Builder_Library.Modules.Items
             int jpeg_files = 0;
 
             // Ensure all non-image files are linked to the METS file
-            string[] all_files = SobekCM.Tools.SobekCM_File_Utilities.GetFiles(Resource.Resource_Folder, "*.jp2|*.jpg");
+            string[] all_files = SobekCM_File_Utilities.GetFiles(Resource.Resource_Folder, "*.jp2|*.jpg");
             foreach (string thisFile in all_files)
             {
                 string filename = Path.GetFileName(thisFile);
-                string filename_sans_extension = Path.GetFileNameWithoutExtension(thisFile);
-                string extension = Path.GetExtension(thisFile).ToLower().Replace(".", "");
+                string extension = Path.GetExtension(thisFile);
+
+                if ((filename == null) || (extension == null))
+                    continue;
+
+                extension = extension.ToLower().Replace(".", "");
 
                 // Also, check to see if this is a jpeg or jpeg2000
                 if (extension == "jp2")
@@ -79,7 +89,6 @@ namespace SobekCM.Builder_Library.Modules.Items
 
             // THIS IS A TEMPORARY FIX FOR THUMBNAILS ACCIDENTALLY ADDED
             List<abstract_TreeNode> allPages = Resource.Metadata.Divisions.Physical_Tree.Pages_PreOrder;
-            List<Page_TreeNode> deletePages = new List<Page_TreeNode>();
             foreach (Page_TreeNode thisPage in allPages)
             {
                 // If there is only one file attached, look for the thumbnails

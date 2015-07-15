@@ -4,23 +4,22 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using SobekCM.Builder_Library.Modules;
+using SobekCM.Builder_Library.Modules.Folders;
+using SobekCM.Builder_Library.Modules.Items;
+using SobekCM.Builder_Library.Modules.PostProcess;
+using SobekCM.Builder_Library.Modules.PreProcess;
 using SobekCM.Builder_Library.Modules.Schedulable;
 using SobekCM.Builder_Library.Settings;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Settings;
-using SobekCM.Builder_Library.Modules;
-using SobekCM.Builder_Library.Modules.Folders;
-using SobekCM.Builder_Library.Modules.Items;
-using SobekCM.Builder_Library.Modules.PostProcess;
-using SobekCM.Builder_Library.Modules.PreProcess;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Settings;
-using SobekCM.Library.Database;
+using SobekCM.Resource_Object.Database;
 using SobekCM.Tools.Logs;
-using SobekCM.Builder_Library;
 
 #endregion
 
@@ -29,9 +28,12 @@ namespace SobekCM.Builder_Library
     /// <summary> Class is the worker thread for the main bulk loader processor </summary>
     public class Worker_BulkLoader
     {
+        // NOTE: This was PUBLIC.. not sure why.  Made PRIVATE on 7/15/2015 (MARK)
+        private Builder_Modules BuilderSettings;
+
+
         private readonly Database_Instance_Configuration dbInstance;
         private InstanceWide_Settings settings;
-        public Builder_Modules BuilderSettings;
         private DataTable itemTable;
 
         private readonly LogFileXhtml logger;
@@ -46,19 +48,20 @@ namespace SobekCM.Builder_Library
 	    private readonly string instanceName;
 	    private string finalmessage;
         
-        private readonly List<string> aggregations_to_refresh;
-        private readonly List<BibVidStruct> processed_items;
-        private readonly List<BibVidStruct> deleted_items;
+        private readonly List<string> aggregationsToRefresh;
+        private readonly List<BibVidStruct> processedItems;
+        private readonly List<BibVidStruct> deletedItems;
 
-        private readonly int new_item_limit;
-        private bool still_pending_items;
+        private readonly int newItemLimit;
+        private bool stillPendingItems;
 
 
         /// <summary> Constructor for a new instance of the Worker_BulkLoader class </summary>
         /// <param name="Logger"> Log file object for logging progress </param>
         /// <param name="Verbose"> Flag indicates if the builder is in verbose mode, where it should log alot more information </param>
         /// <param name="DbInstance"> This database instance </param>
-        /// <param name="MultiInstanceBuilder"></param>
+        /// <param name="MultiInstanceBuilder"> Flag indicates if this is set to be a multi-instance builder configuration </param>
+        /// <param name="LogFileDirectory"> Directory where any log files would be written </param>
         public Worker_BulkLoader(LogFileXhtml Logger, bool Verbose, Database_Instance_Configuration DbInstance, bool MultiInstanceBuilder, string LogFileDirectory )
         {
             // Save the log file and verbose flag
@@ -71,17 +74,17 @@ namespace SobekCM.Builder_Library
             logFileDirectory = LogFileDirectory;
 
 	        if (multiInstanceBuilder)
-	            new_item_limit = 100;
+	            newItemLimit = 100;
 	        else
-	            new_item_limit = -1;
+	            newItemLimit = -1;
  
             Add_NonError_To_Log("Worker_BulkLoader.Constructor: Start", verbose, String.Empty, String.Empty, -1);
 
 
             // Create new list of collections to build
-            aggregations_to_refresh = new List<string>();
-	        processed_items = new List<BibVidStruct>();
-	        deleted_items = new List<BibVidStruct>();
+            aggregationsToRefresh = new List<string>();
+	        processedItems = new List<BibVidStruct>();
+	        deletedItems = new List<BibVidStruct>();
 
 			// get all the info
 	        settings = InstanceWide_Settings_Builder.Build_Settings(dbInstance);
@@ -115,7 +118,7 @@ namespace SobekCM.Builder_Library
 
             verbose = Verbose;
             finalmessage = String.Empty;
-            still_pending_items = false;
+            stillPendingItems = false;
 
             Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Start", verbose, String.Empty, String.Empty, -1);
 
@@ -286,7 +289,7 @@ namespace SobekCM.Builder_Library
                         break;
                     }
 
-                    thisModule.DoWork(aggregations_to_refresh, processed_items, deleted_items, settings);
+                    thisModule.DoWork(aggregationsToRefresh, processedItems, deletedItems, settings);
                 }
             }
 
@@ -309,17 +312,18 @@ namespace SobekCM.Builder_Library
 
             Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Done", verbose, String.Empty, String.Empty, -1);
 
-            return still_pending_items;
+            return stillPendingItems;
 
         }
 
+        /// <summary> Release all the resources held in this class and all the related builder modules </summary>
         public void ReleaseResources()
         {
             // Set some things to NULL
             itemTable = null;
-            aggregations_to_refresh.Clear();
-            processed_items.Clear();
-            deleted_items.Clear();
+            aggregationsToRefresh.Clear();
+            processedItems.Clear();
+            deletedItems.Clear();
 
             // release all modules
             foreach (iFolderModule thisModule in BuilderSettings.AllFolderModules)
@@ -348,7 +352,7 @@ namespace SobekCM.Builder_Library
             CachedDataManager.Settings.Disabled = true;
 
             Engine_Database.Connection_String = dbInstance.Connection_String;
-            Resource_Object.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
+            SobekCM_Database.Connection_String = dbInstance.Connection_String;
             Library.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
 
             // Reload all the other data
@@ -372,7 +376,7 @@ namespace SobekCM.Builder_Library
 		    }
 
             // Save the item table
-		    itemTable = SobekCM_Database.Get_Item_List(true, null).Tables[0];
+		    itemTable = Library.Database.SobekCM_Database.Get_Item_List(true, null).Tables[0];
 
             // get all the info
             settings = InstanceWide_Settings_Builder.Build_Settings(dbInstance);
@@ -437,7 +441,7 @@ namespace SobekCM.Builder_Library
         private void Complete_Any_Recent_Loads_Requiring_Additional_Work()
         {
             // Get the list of recent loads requiring additional work
-            DataTable additionalWorkRequired = SobekCM_Database.Items_Needing_Aditional_Work;
+            DataTable additionalWorkRequired = Library.Database.SobekCM_Database.Items_Needing_Aditional_Work;
             if ((additionalWorkRequired != null) && (additionalWorkRequired.Rows.Count > 0))
             {
 	            Add_NonError_To_Log("Processing recently loaded items needing additional work", "Standard", String.Empty, String.Empty, -1);
@@ -474,9 +478,9 @@ namespace SobekCM.Builder_Library
                     {
 	                    Add_Error_To_Log("Unable to find valid resource files for reprocessing " + bibID + ":" + vid, bibID + ":" + vid, "Reprocess", -1);
 
-	                    int itemID = SobekCM_Database.Get_ItemID_From_Bib_VID(bibID, vid);
+	                    int itemID = Library.Database.SobekCM_Database.Get_ItemID_From_Bib_VID(bibID, vid);
 
-						SobekCM_Database.Update_Additional_Work_Needed_Flag(itemID, false, null);
+						Library.Database.SobekCM_Database.Update_Additional_Work_Needed_Flag(itemID, false, null);
                     }
                 }
             }
@@ -499,7 +503,7 @@ namespace SobekCM.Builder_Library
                 AdditionalWorkResource.METS_Type_String = "Reprocess";
 
                 // Add thumbnail and aggregation informaiton from the database 
-                SobekCM_Database.Add_Minimum_Builder_Information(AdditionalWorkResource.Metadata);
+                Library.Database.SobekCM_Database.Add_Minimum_Builder_Information(AdditionalWorkResource.Metadata);
 
                 // Do all the item processing per instance config
                 foreach (iSubmissionPackageModule thisModule in BuilderSettings.ItemProcessModules)
@@ -555,12 +559,12 @@ namespace SobekCM.Builder_Library
 
                     Process_Single_Incoming_Package(resourcePackage);
 
-                    if (new_item_limit > 0)
+                    if (newItemLimit > 0)
                     {
                         number_packages_processed++;
                         if (number_packages_processed >= MultiInstance_Builder_Settings.Instance_Package_Limit)
                         {
-                            still_pending_items = true;
+                            stillPendingItems = true;
                             Add_NonError_To_Log("....Still pending packages, but moving to next instances and will return for these", "Standard", String.Empty, String.Empty, -1);
                             return;
                         }
@@ -585,7 +589,7 @@ namespace SobekCM.Builder_Library
             ResourcePackage.BuilderLogId = Add_NonError_To_Log("........Processing '" + ResourcePackage.Folder_Name + "'", "Standard", ResourcePackage.BibID + ":" + ResourcePackage.VID, ResourcePackage.METS_Type_String, -1);
 
             // Clear any existing error linked to this item
-			SobekCM_Database.Builder_Clear_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, "SobekCM Builder");
+			Library.Database.SobekCM_Database.Builder_Clear_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, "SobekCM Builder");
 
             // Before we save this or anything, let's see if this is truly a new resource
             ResourcePackage.NewPackage = !(itemTable.Select("BibID='" + ResourcePackage.BibID + "' and VID='" + ResourcePackage.VID + "'").Length > 0);
@@ -697,7 +701,7 @@ namespace SobekCM.Builder_Library
                             }
                             catch
                             {
-
+                                // Do nothing if not able to move?
                             }
                             return;
                         }
@@ -732,7 +736,7 @@ namespace SobekCM.Builder_Library
 				Console.WriteLine( LogStatement);
 				logger.AddNonError( LogStatement.Replace("\t", "....."));
 			}
-			return SobekCM_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, DbLogType, LogStatement.Replace("\t", ""), MetsType);
+			return Library.Database.SobekCM_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, DbLogType, LogStatement.Replace("\t", ""), MetsType);
         }
 
 		private long Add_NonError_To_Log(string LogStatement, bool IsVerbose, string BibID_VID, string MetsType, long RelatedLogID)
@@ -749,7 +753,7 @@ namespace SobekCM.Builder_Library
 					Console.WriteLine( LogStatement);
 					logger.AddNonError( LogStatement.Replace("\t", "....."));
 				}
-	            return SobekCM_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, "Verbose", LogStatement.Replace("\t", ""), MetsType);
+	            return Library.Database.SobekCM_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, "Verbose", LogStatement.Replace("\t", ""), MetsType);
             }
 			return -1;
         }
@@ -766,7 +770,7 @@ namespace SobekCM.Builder_Library
 				Console.WriteLine( LogStatement);
 				logger.AddError( LogStatement.Replace("\t", "....."));
 			}
-			return SobekCM_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, "Error", LogStatement.Replace("\t", ""), MetsType);
+			return Library.Database.SobekCM_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, "Error", LogStatement.Replace("\t", ""), MetsType);
         }
 
         private void Add_Error_To_Log(string LogStatement, string BibID_VID, string MetsType, long RelatedLogID, Exception Ee)
@@ -781,13 +785,13 @@ namespace SobekCM.Builder_Library
                 Console.WriteLine(LogStatement);
                 logger.AddError(LogStatement.Replace("\t", "....."));
             }
-            long mainErrorId = SobekCM_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, "Error", LogStatement.Replace("\t", ""), MetsType);
+            long mainErrorId = Library.Database.SobekCM_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, "Error", LogStatement.Replace("\t", ""), MetsType);
 
 
             string[] split = Ee.ToString().Split("\n".ToCharArray());
             foreach (string thisSplit in split)
             {
-                SobekCM_Database.Builder_Add_Log_Entry(mainErrorId, BibID_VID, "Error", thisSplit, MetsType);
+                Library.Database.SobekCM_Database.Builder_Add_Log_Entry(mainErrorId, BibID_VID, "Error", thisSplit, MetsType);
             }
 
 
@@ -815,7 +819,7 @@ namespace SobekCM.Builder_Library
 				Console.WriteLine( LogStatement);
 				logger.AddComplete( LogStatement.Replace("\t", "....."));
 			}
-	        SobekCM_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, DbLogType, LogStatement.Replace("\t", ""), MetsType);
+	        Library.Database.SobekCM_Database.Builder_Add_Log_Entry(RelatedLogID, BibID_VID, DbLogType, LogStatement.Replace("\t", ""), MetsType);
         }
 
         #endregion
@@ -828,8 +832,8 @@ namespace SobekCM.Builder_Library
             if (Code.Length > 1)
             {
                 // This aggregation should be refreshed
-                if (!aggregations_to_refresh.Contains(Code.ToUpper()))
-                    aggregations_to_refresh.Add(Code.ToUpper());
+                if (!aggregationsToRefresh.Contains(Code.ToUpper()))
+                    aggregationsToRefresh.Add(Code.ToUpper());
             }
         }
 
@@ -839,7 +843,7 @@ namespace SobekCM.Builder_Library
             {
                 Add_Aggregation_To_Refresh_List(collectionCode);
             }
-            processed_items.Add(new BibVidStruct(BibID, VID));
+            processedItems.Add(new BibVidStruct(BibID, VID));
         }
 
         private void Add_Delete_Info_To_PostProcess_Lists(string BibID, string VID, IEnumerable<string> Codes)
@@ -848,7 +852,7 @@ namespace SobekCM.Builder_Library
             {
                 Add_Aggregation_To_Refresh_List(collectionCode);
             }
-            deleted_items.Add(new BibVidStruct(BibID, VID));
+            deletedItems.Add(new BibVidStruct(BibID, VID));
         }
 
         #endregion

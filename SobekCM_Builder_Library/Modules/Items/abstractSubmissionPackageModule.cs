@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿#region Using directives
+
+using System.Collections.Generic;
 using SobekCM.Core.Settings;
+
+#endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
 {

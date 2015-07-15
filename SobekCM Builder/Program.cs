@@ -39,7 +39,6 @@ namespace SobekCM.Builder
             bool build_production_marcxml_feed = false;
             bool build_test_marcxml_feed = false;
             string invalid_arg = String.Empty;
-            bool refresh_oai = false;
             bool verbose = false;
 
 	        // Get values from the arguments
@@ -83,7 +82,6 @@ namespace SobekCM.Builder
                 // Check for no loader flag
                 if (thisArgs == "--refresh_oai")
                 {
-                    refresh_oai = true;
                     arg_handled = true;
                 }
 

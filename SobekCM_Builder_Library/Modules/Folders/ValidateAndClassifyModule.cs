@@ -215,6 +215,8 @@ namespace SobekCM.Builder_Library.Modules.Folders
             }
         }
 
+        /// <summary> Method releases all resources </summary>
+        /// <remarks> Method is overridden to release XML/METS validator objects </remarks>
         public override void ReleaseResources()
         {
             thisMetsValidator = null;

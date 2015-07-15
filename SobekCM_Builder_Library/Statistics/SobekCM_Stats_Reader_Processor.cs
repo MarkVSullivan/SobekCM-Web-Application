@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Library.Database;
 
 #endregion
 
@@ -42,6 +41,7 @@ namespace SobekCM.Builder_Library.Statistics
             year_months = Year_Months;
         }
 
+        /// <summary> Event is fired when the statistics reader has progress to report during the overall process </summary>
         public event SobekCM_Stats_Reader_Processor_New_Status_Delegate New_Status;
 
         private void On_New_Status(string New_Message)

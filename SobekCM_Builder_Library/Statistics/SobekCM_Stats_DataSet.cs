@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Engine_Library.Navigation;
 
 #endregion
 
@@ -223,6 +222,7 @@ namespace SobekCM.Builder_Library.Statistics
             get { return webcontent_stats; }
         }
 
+        /// <summary> Date related to this dataset </summary>
         public DateTime Date
         {
             get { return date; }

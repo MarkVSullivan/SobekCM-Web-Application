@@ -1,15 +1,16 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using SobekCM.Builder_Library.Modules.Folders;
 using SobekCM.Builder_Library.Modules.Items;
 using SobekCM.Builder_Library.Modules.PostProcess;
 using SobekCM.Builder_Library.Modules.PreProcess;
 using SobekCM.Core.Settings;
+
+#endregion
 
 namespace SobekCM.Builder_Library.Settings
 {
@@ -26,7 +27,7 @@ namespace SobekCM.Builder_Library.Settings
 
 
         /// <summary> Constructor for a new instance of the Builder_Modules class </summary>
-        public Builder_Modules() : base()
+        public Builder_Modules() 
         {
             preProcessModules = new List<iPreProcessModule>();
             processItemModules = new List<iSubmissionPackageModule>();
@@ -49,7 +50,6 @@ namespace SobekCM.Builder_Library.Settings
         }
 
         /// <summary> Build the modules for the non-folder specific builder modules </summary>
-        /// <param name="Settings"> Settings indicate which modules to build </param>
         /// <returns> Either null, or a list of errors encountered </returns>
         public List<string> Builder_Modules_From_Settings( )
         {
@@ -424,28 +424,25 @@ namespace SobekCM.Builder_Library.Settings
             {
                 return null;
             }
-            else
+            
+            iSubmissionPackageModule itemAsItem = itemAsObj as iSubmissionPackageModule;
+            if (itemAsItem == null)
             {
-                iSubmissionPackageModule itemAsItem = itemAsObj as iSubmissionPackageModule;
-                if (itemAsItem == null)
-                {
-                    ErrorMessage = itemSetting.Class + " loaded from assembly but does not implement the ISubmissionPackageModules interface!";
-                    return null;
-                }
-                else
-                {
-                    if ((!String.IsNullOrEmpty(itemSetting.Argument1)) || (!String.IsNullOrEmpty(itemSetting.Argument2)) || (!String.IsNullOrEmpty(itemSetting.Argument3)))
-                    {
-                        if (itemAsItem.Arguments == null)
-                            itemAsItem.Arguments = new List<string>();
-                        itemAsItem.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument1) ? String.Empty : itemSetting.Argument1);
-                        itemAsItem.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument2) ? String.Empty : itemSetting.Argument2);
-                        itemAsItem.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument3) ? String.Empty : itemSetting.Argument3);
-                    }
-
-                    return itemAsItem;
-                }
+                ErrorMessage = itemSetting.Class + " loaded from assembly but does not implement the ISubmissionPackageModules interface!";
+                return null;
             }
+                
+            if ((!String.IsNullOrEmpty(itemSetting.Argument1)) || (!String.IsNullOrEmpty(itemSetting.Argument2)) || (!String.IsNullOrEmpty(itemSetting.Argument3)))
+            {
+                if (itemAsItem.Arguments == null)
+                    itemAsItem.Arguments = new List<string>();
+                itemAsItem.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument1) ? String.Empty : itemSetting.Argument1);
+                itemAsItem.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument2) ? String.Empty : itemSetting.Argument2);
+                itemAsItem.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument3) ? String.Empty : itemSetting.Argument3);
+            }
+
+            return itemAsItem;
+
         }
 
         private object Get_Module(Builder_Module_Setting Settings, out string ErrorMessage )
@@ -483,9 +480,12 @@ namespace SobekCM.Builder_Library.Settings
         /// <summary> Get the list of post-process module objects to use for post-processing during a SobekCM builder execution </summary>
         public ReadOnlyCollection<iPostProcessModule> PostProcessModules { get { return new ReadOnlyCollection<iPostProcessModule>(postProcessModules); }}
 
-
+        /// <summary> Get the list of incoming folder module objects to when checking incoming folders for new packages to process </summary>
         public ReadOnlyCollection<iFolderModule> AllFolderModules { get { return new ReadOnlyCollection<iFolderModule>(allFolderModules); }}
 
+        /// <summary> Get a folder module by key, avoiding multiple instances of folder modules from being created </summary>
+        /// <param name="Key"> Key for this folder module, usually the namespace and class name </param>
+        /// <returns> Folder module, or NULL if not found </returns>
         public iFolderModule Get_Folder_Module_By_Key(string Key)
         {
             return assemblyClassToModule[Key];

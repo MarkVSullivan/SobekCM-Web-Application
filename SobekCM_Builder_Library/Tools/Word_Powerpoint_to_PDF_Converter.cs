@@ -1,4 +1,10 @@
-﻿namespace SobekCM.Builder_Library.Tools
+﻿#region Using directives
+
+using SautinSoft;
+
+#endregion
+
+namespace SobekCM.Builder_Library.Tools
 {
     /// <summary> Class is used to convert Word and Powerpoint files to PDF </summary>
     public static class Word_Powerpoint_to_PDF_Converter
@@ -9,7 +15,7 @@
         /// <returns>An error value</returns>
         public static int Word_To_PDF( string Word_In_File, string PDF_Out_File )
         {
-            SautinSoft.UseOffice u = new SautinSoft.UseOffice();
+            UseOffice u = new UseOffice();
 
             //Prepare UseOffice .Net, loads MS Word in memory
             int ret = u.InitWord();
@@ -25,12 +31,12 @@
             if (Word_In_File.ToUpper().IndexOf(".DOCX") > 0)
             {
                 //Converting
-                ret = u.ConvertFile(Word_In_File, PDF_Out_File, SautinSoft.UseOffice.eDirection.DOCX_to_PDF);
+                ret = u.ConvertFile(Word_In_File, PDF_Out_File, UseOffice.eDirection.DOCX_to_PDF);
             }
             else
             {
                 //Converting
-                ret = u.ConvertFile(Word_In_File, PDF_Out_File, SautinSoft.UseOffice.eDirection.DOC_to_PDF);
+                ret = u.ConvertFile(Word_In_File, PDF_Out_File, UseOffice.eDirection.DOC_to_PDF);
             }
 
             //Release MS Word from memory
@@ -50,7 +56,7 @@
         /// <returns>An error value</returns>
         public static int Powerpoint_To_PDF(string Powerpoint_In_File, string PDF_Out_File)
         {
-            SautinSoft.UseOffice u = new SautinSoft.UseOffice();
+            UseOffice u = new UseOffice();
 
             //Prepare UseOffice .Net, loads MS Powerpoint in memory
             int ret = u.InitPowerPoint();
@@ -66,12 +72,12 @@
             if (Powerpoint_In_File.ToUpper().IndexOf(".PPTX") > 0)
             {
                 //Converting
-                ret = u.ConvertFile(Powerpoint_In_File, PDF_Out_File, SautinSoft.UseOffice.eDirection.PPTX_to_PDF);
+                ret = u.ConvertFile(Powerpoint_In_File, PDF_Out_File, UseOffice.eDirection.PPTX_to_PDF);
             }
             else
             {
                 //Converting
-                ret = u.ConvertFile(Powerpoint_In_File, PDF_Out_File, SautinSoft.UseOffice.eDirection.PPT_to_PDF);
+                ret = u.ConvertFile(Powerpoint_In_File, PDF_Out_File, UseOffice.eDirection.PPT_to_PDF);
             }
 
             //Release MS Powerpoint from memory

@@ -1,9 +1,17 @@
-﻿using SobekCM.Core.Settings;
+﻿#region Using directives
+
+using SobekCM.Core.Settings;
+
+#endregion
 
 namespace SobekCM.Builder_Library.Modules.Schedulable
 {
+    /// <summary> Schedulable builder module optimizes the solr/lucene indexes for this instance </summary>
+    /// <remarks> This class implements the <see cref="abstractSchedulableModule" /> abstract class and implements the <see cref="iSchedulableModule" /> interface. </remarks>
     public class SolrLuceneIndexOptimizationModule : abstractSchedulableModule
     {
+        /// <summary> Optimizes the solr/lucene indexes for this instance </summary>
+        /// <param name="Settings"> Instance-wide settings which may be required for this process </param>
         public override void DoWork(InstanceWide_Settings Settings)
         {
             //// Initiate a solr/lucene index optimization since we are done loading for a while

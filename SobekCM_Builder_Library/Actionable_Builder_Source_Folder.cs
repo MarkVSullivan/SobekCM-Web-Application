@@ -13,6 +13,8 @@ using SobekCM.Engine_Library.ApplicationState;
 
 namespace SobekCM.Builder_Library
 {
+    /// <summary> Builder source folder that adds the ability to perform some basic processing to the
+    /// base <see cref="Builder_Source_Folder" /> class </summary>
     public class Actionable_Builder_Source_Folder : Builder_Source_Folder
     {
         /// <summary> Constructor for a new instance of the Actionable_Builder_Source_Folder class </summary>
@@ -24,7 +26,7 @@ namespace SobekCM.Builder_Library
 
         /// <summary> Constructor for a new instance of the Actionable_Builder_Source_Folder class </summary>
         /// <param name="ExistingBaseInstance"> An existing base instance used to populate this class with data </param>
-        /// <param name="BuilderModules"> Builder modules object to retrieve the built module objects </param>
+        /// <param name="BuilderModulesConfig"> Builder module configuration to use to process this incoming folder structure </param>
         /// <remarks> This extends the core class <see cref="Builder_Source_Folder"/> and adds some methods to perform work </remarks>
         public Actionable_Builder_Source_Folder(Builder_Source_Folder ExistingBaseInstance, Builder_Modules BuilderModulesConfig )
         {
@@ -123,7 +125,7 @@ namespace SobekCM.Builder_Library
                     }
                     catch
                     {
-
+                        // Do not throw this error.. not necessary
                     }
                 }
             }

@@ -1,9 +1,17 @@
-﻿using SobekCM.Core.Settings;
+﻿#region Using directives
+
+using SobekCM.Core.Settings;
+
+#endregion
 
 namespace SobekCM.Builder_Library.Modules.Schedulable
 {
+    /// <summary> Schedulable builder module sends aggregated emails on all newly submitted items since the last email </summary>
+    /// <remarks> This class implements the <see cref="abstractSchedulableModule" /> abstract class and implements the <see cref="iSchedulableModule" /> interface. </remarks>
     public class SendNewItemEmailsModule : abstractSchedulableModule
     {
+        /// <summary> Sends aggregated emails on all newly submitted items since the last email </summary>
+        /// <param name="Settings"> Instance-wide settings which may be required for this process </param>
         public override void DoWork(InstanceWide_Settings Settings)
         {
             // NOTE: This was all brought over from the BulkLoader this way, it had been commented out ther as well.

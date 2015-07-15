@@ -1,6 +1,5 @@
 ﻿#region Using directives
 
-using System;
 using System.IO;
 using SobekCM.Builder_Library.Tools;
 
@@ -8,11 +7,13 @@ using SobekCM.Builder_Library.Tools;
 
 namespace SobekCM.Builder_Library.Modules.Items
 {
-    /// <summary> Item-level submission package module checks ... </summary>
+    /// <summary> Item-level submission package module attempts to clean dirty OCR files that may somehow
+    /// contain unprintable characters and other flaws </summary>
     /// <remarks> This class implements the <see cref="abstractSubmissionPackageModule" /> abstract class and implements the <see cref="iSubmissionPackageModule" /> interface. </remarks>
     public class CleanDirtyOcrModule : abstractSubmissionPackageModule
     {
-        /// <summary>  </summary>
+        /// <summary> Attempts to clean dirty OCR files that may somehow
+        /// contain unprintable characters and other flaws </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
         public override bool DoWork(Incoming_Digital_Resource Resource)

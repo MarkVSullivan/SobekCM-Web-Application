@@ -1,14 +1,14 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.VRACore;
+
+#endregion
 
 namespace SobekCM.Builder_Library.Modules.Folders
 {
@@ -42,10 +42,18 @@ namespace SobekCM.Builder_Library.Modules.Folders
         /// <summary> Custom event is fired when all processing is complete </summary>
         public event MFP_Process_Complete_Delegate Process_Complete;
 
+        /// <summary> Constructor for a new instance of the WolfsonianProcessorModule class </summary>
         public WolfsonianProcessorModule()
         {
+            // Do nothing
         }
 
+        /// <summary> Constructor for a new instance of the WolfsonianProcessorModule class </summary>
+        /// <param name="bibid"></param>
+        /// <param name="source_folder"></param>
+        /// <param name="destination_folder"></param>
+        /// <param name="isLibrary"></param>
+        /// <param name="archived_files_link"></param>
         public WolfsonianProcessorModule(int bibid, string source_folder, string destination_folder, bool isLibrary, string archived_files_link)
         {
             this.bibid = bibid;
@@ -693,7 +701,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
 
         private void OnNewProgress(int Value, int Max)
         {
-            if (this.New_Progress != null)
+            if (New_Progress != null)
             {
                 if (Value > Max)
                 {
@@ -708,14 +716,14 @@ namespace SobekCM.Builder_Library.Modules.Folders
 
         private void OnNewVolume(string newMessage)
         {
-            if (this.New_Volume_String != null)
+            if (New_Volume_String != null)
                 New_Volume_String(newMessage);
             // myLog.AddComplete(newMessage);
         }
 
         private void OnProcessComplete( bool Aborted, int packages_processed_count )
         {
-            if (this.Process_Complete != null)
+            if (Process_Complete != null)
                 Process_Complete(Aborted, packages_processed_count, "WOLF" + bibid.ToString().PadLeft(6, '0'));
         }
 

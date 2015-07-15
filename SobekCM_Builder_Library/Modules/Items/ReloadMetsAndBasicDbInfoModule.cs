@@ -8,11 +8,13 @@ using SobekCM.Resource_Object.Metadata_Modules;
 
 namespace SobekCM.Builder_Library.Modules.Items
 {
-    /// <summary> Item-level submission package module checks ... </summary>
+    /// <summary> Item-level submission package module reloads the basic behavior information from the database into the
+    /// digital resource, such as collections and thumbnails </summary>
     /// <remarks> This class implements the <see cref="abstractSubmissionPackageModule" /> abstract class and implements the <see cref="iSubmissionPackageModule" /> interface. </remarks>
     public class ReloadMetsAndBasicDbInfoModule : abstractSubmissionPackageModule
     {
-        /// <summary>  </summary>
+        /// <summary> Reloads the basic behavior information from the database into the
+        /// digital resource, such as collections and thumbnails  </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
         public override bool DoWork(Incoming_Digital_Resource Resource)

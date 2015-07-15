@@ -1,7 +1,10 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Threading;
 using SobekCM.Builder_Library.Statistics;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Settings;
@@ -9,12 +12,17 @@ using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Email;
 
+#endregion
+
 namespace SobekCM.Builder_Library.Modules.Schedulable
 {
-    /// <summary> Module reads the IIS usage logs and loads statistics from the previous month
+    /// <summary> Schedulable builder module reads the IIS usage logs and loads statistics from the previous month
     /// into the SobekCM database for display </summary>
+    /// <remarks> This class implements the <see cref="abstractSchedulableModule" /> abstract class and implements the <see cref="iSchedulableModule" /> interface. </remarks>
     public class CalculateUsageStatisticsModule : abstractSchedulableModule
     {
+        /// <summary> Checks to see if there are web logs that need to be processed to the usage statistics </summary>
+        /// <param name="Settings"> Instance-wide settings which may be required for this process </param>
         public override void DoWork(InstanceWide_Settings Settings)
         {
             // If there is no IIS web log set, then do nothing.  Don't even need a log here.
@@ -120,10 +128,10 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
             }
 
             // Parse them to determine the earliest and latest year/months
-            int earliest_year = -1;
-            int earliest_month = -1;
-            int latest_year = -1;
-            int latest_month = -1;
+            int earliest_year;
+            int earliest_month;
+            int latest_year;
+            int latest_month;
             try
             {
                 earliest_year = 2000 + Int32.Parse(earliest.Substring(4, 2));
@@ -131,7 +139,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
                 latest_year = 2000 + Int32.Parse(latest.Substring(4, 2));
                 latest_month = Int32.Parse(latest.Substring(6, 2));
             }
-            catch (Exception ee)
+            catch (Exception )
             {
                 OnError("CalculateUsageStatisticsModule : Error parsing the earliest or latest log for year/month (" + earliest + " or " + latest + " )", null, null, -1);
                 return;
@@ -192,7 +200,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
 
             // Create the processor
             SobekCM_Stats_Reader_Processor processor = new SobekCM_Stats_Reader_Processor(log_directory, temporary_workspace, sobekcm_directory, year_month);
-            processor.New_Status += new SobekCM_Stats_Reader_Processor_New_Status_Delegate(processor_New_Status);
+            processor.New_Status += processor_New_Status;
 
             // Create the thread
             processor.Process_IIS_Logs();
@@ -230,7 +238,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
 
         }
 
-        public static int Send_Usage_Emails(int year, int month, string SystemUrl, string SystemName, string FromAddress, string FromName )
+        private static int Send_Usage_Emails(int year, int month, string SystemUrl, string SystemName, string FromAddress, string FromName )
         {
             // Get the list of all users linked to items
             DataTable usersLinkedToItems = Engine_Database.Get_Users_Linked_To_Items(null);
@@ -250,13 +258,12 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
             int emails_sent = 0;
             foreach (DataRow thisRow in usersLinkedToItems.Rows)
             {
-                System.Threading.Thread.Sleep(1000);
+                Thread.Sleep(1000);
 
                 // Pull out the user information from this row
                 string firstName = thisRow[0].ToString();
                 string lastName = thisRow[1].ToString();
                 string nickName = thisRow[2].ToString();
-                string userName = thisRow[3].ToString();
                 int userid = Convert.ToInt32(thisRow[4]);
                 string email = thisRow[5].ToString();
 

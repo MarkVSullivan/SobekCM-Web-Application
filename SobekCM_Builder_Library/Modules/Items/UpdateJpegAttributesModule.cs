@@ -8,11 +8,13 @@ using SobekCM.Resource_Object.Divisions;
 
 namespace SobekCM.Builder_Library.Modules.Items
 {
-    /// <summary> Item-level submission package module checks ... </summary>
+    /// <summary> Item-level submission package module updates the basic dimensional information stored for all of the JPEG files 
+    /// within the service METS file </summary>
     /// <remarks> This class implements the <see cref="abstractSubmissionPackageModule" /> abstract class and implements the <see cref="iSubmissionPackageModule" /> interface. </remarks>
     public class UpdateJpegAttributesModule : abstractSubmissionPackageModule
     {
-        /// <summary>  </summary>
+        /// <summary> Updates the basic dimensional information stored for all of the JPEG files 
+        /// within the service METS file </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
         public override bool DoWork(Incoming_Digital_Resource Resource)
@@ -103,7 +105,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             {
                 // Get the height and width of this JPEG file
                 FileStream reader = new FileStream(File, FileMode.Open, FileAccess.Read);
-                int[] previousValues = new[] { 0, 0, 0, 0 };
+                int[] previousValues = { 0, 0, 0, 0 };
                 int bytevalue = reader.ReadByte();
                 int count = 1;
                 while (bytevalue != -1)

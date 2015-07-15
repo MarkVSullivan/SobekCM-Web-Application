@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.IO;
 using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Library.Database;
 using SobekCM.Tools.FDA;
 
 #endregion
@@ -100,7 +101,7 @@ namespace SobekCM.Builder_Library.Tools
                                     if (save_to_db)
                                     {
                                         // Save to the database
-                                        if (!Library.Database.SobekCM_Database.FDA_Report_Save( data ))
+                                        if (!SobekCM_Database.FDA_Report_Save( data ))
                                         {
                                             // If unsuccessful, set unsuccessful flag
                                             database_successful = false;

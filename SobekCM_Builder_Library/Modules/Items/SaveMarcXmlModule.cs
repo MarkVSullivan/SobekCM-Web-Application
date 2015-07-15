@@ -5,16 +5,15 @@ using System.Collections.Generic;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 
-
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
 {
-    /// <summary> Item-level submission package module checks ... </summary>
+    /// <summary> Item-level submission package module saves a MarcXML file within the digital resource folder </summary>
     /// <remarks> This class implements the <see cref="abstractSubmissionPackageModule" /> abstract class and implements the <see cref="iSubmissionPackageModule" /> interface. </remarks>
     public class SaveMarcXmlModule : abstractSubmissionPackageModule
     {
-        /// <summary>  </summary>
+        /// <summary> Saves a MarcXML file within the digital resource folder </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
         public override bool DoWork(Incoming_Digital_Resource Resource)
@@ -24,9 +23,6 @@ namespace SobekCM.Builder_Library.Modules.Items
                 // Set the image location
                 Resource.Metadata.Web.Image_Root = Settings.Image_URL + Resource.Metadata.Web.File_Root.Replace("\\", "/");
                 Resource.Metadata.Web.Set_BibID_VID(Resource.Metadata.BibID, Resource.Metadata.VID);
-
-
-                List<string> collectionnames = new List<string>();
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
                 Dictionary<string, object> options = new Dictionary<string, object>();

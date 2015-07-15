@@ -5,22 +5,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.IO;
-
-using SobekCM.Core.Aggregations;
-using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Settings;
-using SobekCM.Core.Skins;
-using SobekCM.Engine_Library.ApplicationState;
-using SobekCM.Engine_Library.ApplicationState;
-using SobekCM.Library;
-using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
-
-using SobekCM.Engine_Library.Skins;
-using SobekCM.Core.Users;
-using SobekCM.Library.UI;
-using SobekCM.Tools;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Navigation;
+using SobekCM.Library.UI;
 
 #endregion
 
@@ -30,29 +18,8 @@ namespace SobekCM.Builder_Library.Statistics
     /// <remarks> This class is used by the SobekCM Stats Reader app </remarks>
     public class SobekCM_Log_Reader
     {
-
-        private static Aggregation_Code_Manager Codes;
-        private static Dictionary<string, string> Collection_Aliases;
-        private static Dictionary<string, Wordmark_Icon> Icon_List;
-        private static IP_Restriction_Ranges IP_Restrictions;
-        private static Item_Lookup_Object Item_Lookup_Object;
-        private static DateTime Last_Refresh;
-        private static Recent_Searches Search_History;
-        private static List<string> Search_Stop_Words;
-        private static Web_Skin_Collection Skins;
-        private static Statistics_Dates Stats_Date_Range;
-        private static List<Thematic_Heading> Thematic_Headings;
-        private static Language_Support_Info Translation;
-        private static Portal_List URL_Portals;
-        private static string Version;
-        private static Dictionary<string, Mime_Type_Info> Mime_Types;
-	    private static List<string> Item_Viewer_Priority;
-        private static List<User_Group> User_Groups;
-
-
-        private List<string> dloc_ips;
         private SortedList<SobekCM_Hit, SobekCM_Hit> hits;
-        private DataTable itemList;
+        private readonly DataTable itemList;
         private Dictionary<string, SobekCM_Session> sessions;
 
         /// <summary> Constructor for a new instance of the SobekCM_Log_Reader class </summary>
@@ -61,9 +28,6 @@ namespace SobekCM.Builder_Library.Statistics
         public SobekCM_Log_Reader(DataTable Item_List, string SobekCM_Web_App_Directory )
         {
             itemList = Item_List;
-
-            // Build the application state
-            Custom_Tracer tracer = new Custom_Tracer();
 
             // Set the constant settings base directory value to the production location
             UI_ApplicationCache_Gateway.Settings.Base_Directory = SobekCM_Web_App_Directory;
@@ -74,9 +38,6 @@ namespace SobekCM.Builder_Library.Statistics
         /// <returns> Object with all the analyzed hits and sessions from the web log </returns>
         public SobekCM_Stats_DataSet Read_Log(string Log_File)
         {
-            // Get list of ips which include dloc.com
-            dloc_ips = new List<string>();
-
             // Create the list of hits
             hits = new SortedList<SobekCM_Hit, SobekCM_Hit>();
 
@@ -285,9 +246,9 @@ namespace SobekCM.Builder_Library.Statistics
                                 returnValue.Add_Robot_Hit();
                         }
                     }
-                    catch (Exception ee)
+                    catch (Exception)
                     {
-                        bool error = true;
+                        // Do nothing.. not important?
                     }
                 }
             }
@@ -295,14 +256,14 @@ namespace SobekCM.Builder_Library.Statistics
             return returnValue;
         }
 
-        private void parse_line(string stats_line)
+        private void parse_line(string StatsLine)
         {
             // If this was empty or a remark, also skip it
-            if ((stats_line.Length == 0) || (stats_line[0] == '#'))
+            if ((StatsLine.Length == 0) || (StatsLine[0] == '#'))
                 return;
 
             // Uppercase this line for further analysis
-            string stats_line_upper = stats_line.ToUpper();
+            string stats_line_upper = StatsLine.ToUpper();
 
             // Leave out any UNKNOWN UNKNOWN
             if (stats_line_upper.IndexOf("UNKNOWN UNKNOWN") > 0)
@@ -318,46 +279,44 @@ namespace SobekCM.Builder_Library.Statistics
             try
             {
                 // Find the first two spaces.. and then the date
-                int space_location = stats_line.IndexOf(" ");
-                space_location = stats_line.IndexOf(" ", space_location + 1);
-                string date_time = stats_line.Substring(0, space_location).Trim();
+                int space_location = StatsLine.IndexOf(" ");
+                space_location = StatsLine.IndexOf(" ", space_location + 1, StringComparison.Ordinal);
+                string date_time = StatsLine.Substring(0, space_location).Trim();
                 DateTime date = Convert.ToDateTime(date_time);
 
                 if (stats_line_upper.IndexOf(" W3SVC3 SL2K3WEB1 ") > 0)
                 {
-                    space_location = stats_line.IndexOf(" ", space_location + 1);
-                    space_location = stats_line.IndexOf(" ", space_location + 1);
+                    space_location = StatsLine.IndexOf(" ", space_location + 1, StringComparison.Ordinal);
                 }
 
                 // Find the next space and the server IP address
-                int ip_space_location = stats_line.IndexOf(" ", space_location + 1);
-                string server_ip = stats_line.Substring(space_location, ip_space_location - space_location).Trim();
+                int ip_space_location = StatsLine.IndexOf(" ", space_location + 1, StringComparison.Ordinal);
 
                 // Check this is a GET, and not a POST, which does not count
-                space_location = stats_line.IndexOf(" ", ip_space_location + 1);
-                string action = stats_line.Substring(ip_space_location, space_location - ip_space_location);
+                space_location = StatsLine.IndexOf(" ", ip_space_location + 1, StringComparison.Ordinal);
+                string action = StatsLine.Substring(ip_space_location, space_location - ip_space_location);
                 if (action.Trim() != "GET")
                     return;
 
                 // Find the url
-                int url_space_location = stats_line.IndexOf(" ", space_location + 1);
-                string url_result = stats_line.Substring(space_location, url_space_location - space_location).Trim();
+                int url_space_location = StatsLine.IndexOf(" ", space_location + 1, StringComparison.Ordinal);
+                string url_result = StatsLine.Substring(space_location, url_space_location - space_location).Trim();
 
                 // Find the query string
-                int query_string_space_location = stats_line.IndexOf(" ", url_space_location + 1);
+                int query_string_space_location = StatsLine.IndexOf(" ", url_space_location + 1, StringComparison.Ordinal);
                 string query_string =
-                    stats_line.Substring(url_space_location, query_string_space_location - url_space_location).Trim();
+                    StatsLine.Substring(url_space_location, query_string_space_location - url_space_location).Trim();
                 if (query_string == "-")
                     query_string = String.Empty;
 
                 // Now, find the origination IP address
-                space_location = stats_line.IndexOf(" ", query_string_space_location + 1);
-                space_location = stats_line.IndexOf(" ", space_location + 1);
-                int source_ip_location = stats_line.IndexOf(" ", space_location + 1);
-                string ip = stats_line.Substring(space_location, source_ip_location - space_location).Trim();
+                space_location = StatsLine.IndexOf(" ", query_string_space_location + 1, StringComparison.Ordinal);
+                space_location = StatsLine.IndexOf(" ", space_location + 1, StringComparison.Ordinal);
+                int source_ip_location = StatsLine.IndexOf(" ", space_location + 1, StringComparison.Ordinal);
+                string ip = StatsLine.Substring(space_location, source_ip_location - space_location).Trim();
 
-                int end_agent_location = stats_line.IndexOf(" ", source_ip_location + 1);
-                string useragent = stats_line.Substring(source_ip_location + 1, end_agent_location - source_ip_location);
+                int end_agent_location = StatsLine.IndexOf(" ", source_ip_location + 1, StringComparison.Ordinal);
+                string useragent = StatsLine.Substring(source_ip_location + 1, end_agent_location - source_ip_location);
 
                 // Create the hit object
                 SobekCM_Hit thisHit = new SobekCM_Hit(date, ip, query_string.ToUpper(), url_result, useragent);
@@ -365,9 +324,9 @@ namespace SobekCM.Builder_Library.Statistics
                 // Add this URL to the list
                 hits.Add(thisHit, thisHit);
             }
-            catch (Exception ee)
+            catch (Exception)
             {
-                string errorMessage = "ERROR IN parse_line( " + stats_line + " )\n\n" + ee.ToString();
+                // A single missed hit is not a big deal
             }
         }
     }

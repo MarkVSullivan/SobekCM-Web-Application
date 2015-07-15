@@ -63,13 +63,13 @@ namespace SobekCM.Builder_Library
 	    private string metsTypeOverride;
  
         /// <summary> Constructor for a new instance of the Incoming_Digital_Resource class </summary>
-        /// <param name="Resource_Folder"> Folder for this incoming digital resource </param>
-        /// <param name="Source_Folder"> Parent source folder </param>
-        public Incoming_Digital_Resource(string Resource_Folder, Actionable_Builder_Source_Folder Source_Folder )
+        /// <param name="ResourceFolder"> Folder for this incoming digital resource </param>
+        /// <param name="SourceFolder"> Parent source folder </param>
+        public Incoming_Digital_Resource(string ResourceFolder, Actionable_Builder_Source_Folder SourceFolder )
         {
             type = Incoming_Digital_Resource_Type.UNKNOWN;
-            resourceFolder = Resource_Folder;
-            this.Source_Folder = Source_Folder;
+            resourceFolder = ResourceFolder;
+            Source_Folder = SourceFolder;
 
             // Set some defaults
             bibid = String.Empty;
@@ -167,14 +167,14 @@ namespace SobekCM.Builder_Library
         }
 
         /// <summary> Read the METS file and load the data into this object </summary>
-        /// <param name="Source_File"> METS source file to read </param>
+        /// <param name="SourceFile"> METS source file to read </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public bool Load_METS(string Source_File)
+        public bool Load_METS(string SourceFile)
         {
             try
             {
                 // Load the METS file
-                Metadata = SobekCM_Item.Read_METS(Source_File);
+                Metadata = SobekCM_Item.Read_METS(SourceFile);
 
                 // If null was returned, this failed
                 if (Metadata == null)
@@ -273,9 +273,9 @@ namespace SobekCM.Builder_Library
         }
 
         /// <summary> Saves the MarcXML file, used for creating MARC feeds, for this incoming digital resource </summary>
-        /// <param name="Collection_Codes"> Collection codes to include in the resultant MarcXML file </param>
+        /// <param name="CollectionCodes"> Collection codes to include in the resultant MarcXML file </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public bool Save_MARC_XML( DataTable Collection_Codes )
+        public bool Save_MARC_XML( DataTable CollectionCodes )
         {
             try
             {
@@ -286,9 +286,9 @@ namespace SobekCM.Builder_Library
 
                 List<string> collectionnames = new List<string>();
                 // Get the collection names
-                if ((Metadata.Behaviors.Aggregation_Count > 0) && ( Collection_Codes != null ))
+                if ((Metadata.Behaviors.Aggregation_Count > 0) && ( CollectionCodes != null ))
                 {
-                    collectionnames.AddRange(from aggregation in Metadata.Behaviors.Aggregations select aggregation.Code into altCollection select Collection_Codes.Select("collectioncode = '" + altCollection + "'") into altCode where altCode.Length > 0 select altCode[0]["ShortName"].ToString());
+                    collectionnames.AddRange(from aggregation in Metadata.Behaviors.Aggregations select aggregation.Code into altCollection select CollectionCodes.Select("collectioncode = '" + altCollection + "'") into altCode where altCode.Length > 0 select altCode[0]["ShortName"].ToString());
                 }
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
@@ -317,9 +317,9 @@ namespace SobekCM.Builder_Library
         }
 
         /// <summary> Saves this item to the SobekCM database </summary>
-         /// <param name="New_Item"> Flag indicates this is an entirely new item </param>
+         /// <param name="NewItem"> Flag indicates this is an entirely new item </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public bool Save_to_Database(bool New_Item)
+        public bool Save_to_Database(bool NewItem)
         {
             if (Metadata == null)
                 return false;
@@ -328,7 +328,7 @@ namespace SobekCM.Builder_Library
             {
 
                 // save the bib package to the SobekCM database
-                bool existed = !New_Item;
+                bool existed = !NewItem;
                 DateTime createTime = packageTime;
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
@@ -373,7 +373,7 @@ namespace SobekCM.Builder_Library
                 //}
                 return true;
             }
-            catch (Exception ee)
+            catch (Exception )
             {
                 return false;
             }

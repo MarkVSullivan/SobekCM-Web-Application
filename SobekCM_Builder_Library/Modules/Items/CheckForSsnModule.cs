@@ -4,17 +4,18 @@ using System;
 using System.IO;
 using SobekCM.Builder_Library.Tools;
 using SobekCM.Engine_Library.Email;
-using SobekCM.Library.Database;
 
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
 {
-    /// <summary> Item-level submission package module checks ... </summary>
+    /// <summary> Item-level submission package module checks the text files for a match that appears
+    /// to be a social security number and emails a warning to the privacy email address on a possible match </summary>
     /// <remarks> This class implements the <see cref="abstractSubmissionPackageModule" /> abstract class and implements the <see cref="iSubmissionPackageModule" /> interface. </remarks>
     public class CheckForSsnModule : abstractSubmissionPackageModule
     {
-        /// <summary>  </summary>
+        /// <summary> Checks the text files for a match that appears to be a social security number and 
+        /// emails a warning to the privacy email address on a possible match </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
         public override bool DoWork(Incoming_Digital_Resource Resource)

@@ -3,9 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
+using SobekCM.Library.Database;
 
 #endregion
 
@@ -35,18 +37,18 @@ namespace SobekCM.Builder_Library.Tools
         /// <remarks> This first creates the MarcXML file, and then validates it against the schema </remarks>
         public bool Create_MarcXML_Data_File(bool Test_Feed_Flag, string XML_File)
         {
-            DataTable endecaItemList = Test_Feed_Flag ? Library.Database.SobekCM_Database.MarcXML_Test_Feed_Records : Library.Database.SobekCM_Database.MarcXML_Production_Feed_Records;
+            DataTable endecaItemList = Test_Feed_Flag ? SobekCM_Database.MarcXML_Test_Feed_Records : SobekCM_Database.MarcXML_Production_Feed_Records;
 
             if (endecaItemList == null)
             {
-                if (Library.Database.SobekCM_Database.Last_Exception != null)
-                    Errors = "Error pulling list for the feed: " + Library.Database.SobekCM_Database.Last_Exception.Message;
+                if (SobekCM_Database.Last_Exception != null)
+                    Errors = "Error pulling list for the feed: " + SobekCM_Database.Last_Exception.Message;
                 else
                     Errors = "Error pulling list for the feed, NULL was returned";
                 return false;
             }
 
-            if (!System.IO.Directory.Exists(server_root1))
+            if (!Directory.Exists(server_root1))
             {
                 Errors = "Server root ( " + server_root1 + " ) does not exist!  Configuration incorrect.";
                 return false;
@@ -54,7 +56,7 @@ namespace SobekCM.Builder_Library.Tools
 
             string last_bibid = String.Empty;
 
-            System.IO.StreamWriter writer = new System.IO.StreamWriter(XML_File, false);
+            StreamWriter writer = new StreamWriter(XML_File, false);
 
             writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
             writer.WriteLine("<collection xmlns=\"http://www.loc.gov/MARC21/slim\">");
@@ -72,9 +74,9 @@ namespace SobekCM.Builder_Library.Tools
                         last_bibid = this_bibid;
 
                         string marc_xml = server_root1 + thisRow["File_Location"].ToString().Replace("/", "\\") + "\\" + this_vid + "\\marc.xml";
-                        if (System.IO.File.Exists(marc_xml))
+                        if (File.Exists(marc_xml))
                         {
-                            System.IO.StreamReader reader = new System.IO.StreamReader(marc_xml);
+                            StreamReader reader = new StreamReader(marc_xml);
                             reader.ReadLine();
                             reader.ReadLine();
 
@@ -151,7 +153,7 @@ namespace SobekCM.Builder_Library.Tools
                 string record_number = String.Empty;
                 int line_number = 1;
                 int next_error_number = 0;
-                System.IO.StreamReader rereader = new System.IO.StreamReader(XML_File);
+                StreamReader rereader = new StreamReader(XML_File);
                 string line = rereader.ReadLine();
                 while ((line != null) && (error_lines.Count > next_error_number))
                 {

@@ -2,17 +2,19 @@
 
 using System;
 using System.IO;
+using System.Reflection;
 using SobekCM.Builder_Library.Tools;
 
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.Items
 {
-    /// <summary> Item-level submission package module checks ... </summary>
+    /// <summary> Item-level submission package module converts office files ( powerpoints and Word files )
+    /// into a PDF, while still retaining the original file </summary>
     /// <remarks> This class implements the <see cref="abstractSubmissionPackageModule" /> abstract class and implements the <see cref="iSubmissionPackageModule" /> interface. </remarks>
     public class ConvertOfficeFilesToPdfModule : abstractSubmissionPackageModule
     {
-        /// <summary>  </summary>
+        /// <summary> Converts office files ( powerpoints and Word files ) into a PDF, while still retaining the original file  </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
         public override bool DoWork(Incoming_Digital_Resource Resource)
@@ -94,7 +96,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 }
                 catch (Exception ee)
                 {
-                    string startupPath = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
+                    string startupPath = Assembly.GetExecutingAssembly().CodeBase;
 
                     StreamWriter errorWriter = new StreamWriter( Path.Combine(startupPath, "Logs\\error.log"), true);
                     errorWriter.WriteLine("Message: " + ee.Message);

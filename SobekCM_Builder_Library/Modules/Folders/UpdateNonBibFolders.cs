@@ -1,8 +1,14 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Database;
 
+#endregion
 
 namespace SobekCM.Builder_Library.Modules.Folders
 {
@@ -59,8 +65,8 @@ namespace SobekCM.Builder_Library.Modules.Folders
                     }
 
                     // Create the new object
-                    Resource_Object.SobekCM_Item newItem = new Resource_Object.SobekCM_Item();
-                    newItem.Bib_Info.SobekCM_Type = Resource_Object.Bib_Info.TypeOfResource_SobekCM_Enum.Archival;
+                    SobekCM_Item newItem = new SobekCM_Item();
+                    newItem.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Archival;
                     newItem.Bib_Info.Main_Title.Title = thisSubDirName;
                     newItem.Bib_Info.Add_Identifier(thisSubDirName);
                     newItem.Bib_Info.Source.Code = Arguments[1];
@@ -69,7 +75,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
                     newItem.VID = "00001";
 
                     // Save this item, for the necessary bibid
-                    Resource_Object.Database.SobekCM_Database.Save_New_Digital_Resource(newItem, false, false, "Builder", "Created BibID folder from '" + thisSubDirName + "'", -1);
+                    SobekCM_Database.Save_New_Digital_Resource(newItem, false, false, "Builder", "Created BibID folder from '" + thisSubDirName + "'", -1);
 
                     string newFolderName = newItem.BibID + "_" + newItem.VID;
                     string newFolder = Path.Combine(BuilderFolder.Inbound_Folder, newFolderName);

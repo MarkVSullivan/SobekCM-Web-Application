@@ -1,9 +1,17 @@
-﻿using SobekCM.Core.Settings;
+﻿#region Using directives
+
+using SobekCM.Core.Settings;
+
+#endregion
 
 namespace SobekCM.Builder_Library.Modules.Schedulable
 {
-    public class RebuildAllAggregationBrowsesModule : abstractSchedulableModule
+    /// <summary> Schedulable builder module rebuilds the static browse pages for the instance and aggregations  </summary>
+    /// <remarks> This class implements the <see cref="abstractSchedulableModule" /> abstract class and implements the <see cref="iSchedulableModule" /> interface. </remarks>
+ public class RebuildAllAggregationBrowsesModule : abstractSchedulableModule
     {
+        /// <summary> Rebuilds the static browse pages for the instance and aggregations </summary>
+        /// <param name="Settings"> Instance-wide settings which may be required for this process </param>
         public override void DoWork(InstanceWide_Settings Settings)
         {
             //// Rebuild all the static pages

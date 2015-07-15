@@ -8,9 +8,10 @@ using System.Text;
 
 namespace SobekCM.Builder_Library.Tools
 {
+    /// <summary> Helper class extracts the full text from a HTML or XML file by removing all the tags 
+    /// and stores the resulting text (for indexing) into an output file </summary>
     public static class HTML_XML_Text_Extractor
     {
-
         /// <summary> Extracts the full text from a HTML file and writes to a file </summary>
         /// <param name="HTML_In_Name">Full path to the HTML file</param>
         /// <param name="Text_Out_Name">Output file name for the extracted text </param>

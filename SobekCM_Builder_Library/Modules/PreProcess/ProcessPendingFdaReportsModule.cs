@@ -10,9 +10,12 @@ using SobekCM.Library.Database;
 
 namespace SobekCM.Builder_Library.Modules.PreProcess
 {
+    /// <summary> Pre-process module processes any incoming FDA (Florida Dark Archive) reports, saves the data to the database, and archives the report in the resource folder </summary>
+    /// <remarks> This class implements the <see cref="abstractPreProcessModule" /> abstract class and implements the <see cref="iPreProcessModule" /> interface. </remarks>
     public class ProcessPendingFdaReportsModule : abstractPreProcessModule
     {
-        /// <summary> Check for any FDA/DAITSS reports which were dropped into a FDA/DAITSS report drop box </summary>
+        /// <summary> Processes any incoming FDA (Florida Dark Archive) reports, saves the data to the database, and archives the report in the resource folder </summary>
+        /// <param name="Settings"> Instance-wide settings which may be required for this process </param>
         public override void DoWork(InstanceWide_Settings Settings)
         {
             // Step through each incoming folder and look for FDA reports

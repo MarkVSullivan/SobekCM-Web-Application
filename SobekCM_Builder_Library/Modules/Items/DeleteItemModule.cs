@@ -1,15 +1,21 @@
-﻿using System;
+﻿#region Using directives
+
+using System;
 using System.IO;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.Database;
 
+#endregion
+
 namespace SobekCM.Builder_Library.Modules.Items
 {
-    /// <summary> Item-level submission package module checks ... </summary>
+    /// <summary> Item-level submission package module performs a delete from the database and moves all digital resource
+    /// files into the recycle bin </summary>
     /// <remarks> This class implements the <see cref="abstractSubmissionPackageModule" /> abstract class and implements the <see cref="iSubmissionPackageModule" /> interface. </remarks>
     public class DeleteItemModule : abstractSubmissionPackageModule
     {
-        /// <summary>  </summary>
+        /// <summary> Performs a delete from the database and moves all digital resource
+        /// files into the recycle bin </summary>
         /// <param name="Resource"> Incoming digital resource object </param>
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
         public override bool DoWork(Incoming_Digital_Resource Resource)

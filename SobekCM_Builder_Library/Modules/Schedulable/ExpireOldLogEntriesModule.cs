@@ -1,9 +1,17 @@
-﻿using SobekCM.Core.Settings;
+﻿#region Using directives
+
+using SobekCM.Core.Settings;
+
+#endregion
 
 namespace SobekCM.Builder_Library.Modules.Schedulable
 {
+    /// <summary> Schedulable builder module expires (and deletes) expired log files, per instance-wide settings </summary>
+    /// <remarks> This class implements the <see cref="abstractSchedulableModule" /> abstract class and implements the <see cref="iSchedulableModule" /> interface. </remarks>
     public class ExpireOldLogEntriesModule : abstractSchedulableModule
     {
+        /// <summary> Clears the old logs that are ready to be expired, per instance-wide settings </summary>
+        /// <param name="Settings"> Instance-wide settings which may be required for this process </param>
         public override void DoWork(InstanceWide_Settings Settings)
         {
             // CLear the old logs

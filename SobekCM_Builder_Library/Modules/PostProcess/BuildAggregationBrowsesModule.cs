@@ -11,15 +11,19 @@ using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library;
 
-using SobekCM.Library.Database;
-
-
 #endregion
 
 namespace SobekCM.Builder_Library.Modules.PostProcess
 {
+    /// <summary> Post-process module builds the static aggregation-level (and instance-level) browse and RSS feed files </summary>
+    /// <remarks> This class implements the <see cref="abstractPostProcessModule" /> abstract class and implements the <see cref="iPostProcessModule" /> interface. </remarks>
     public class BuildAggregationBrowsesModule : abstractPostProcessModule
     {
+        /// <summary> Builds the static aggregation-level (and instance-level) browse and RSS feed files </summary>
+        /// <param name="AggregationsAffected"> List of aggregations affected during the last process of incoming digital resources </param>
+        /// <param name="ProcessedItems"> List of all items just processed (or reprocessed) </param>
+        /// <param name="DeletedItems"> List of all delete requests just processed </param>
+        /// <param name="Settings"> Instance-wide settings which may be required for this process </param>
         public override void DoWork(List<string> AggregationsAffected, List<BibVidStruct> ProcessedItems, List<BibVidStruct> DeletedItems, InstanceWide_Settings Settings)
         {
             if (AggregationsAffected.Count == 0)
@@ -29,7 +33,6 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
 
             // Create the new statics page builder
             // IN THIS CASE, WE DO NEED TO SET THE SINGLETON, SINCE THIS CALLS THE LIBRARIES
-            /// TODO: Start to pull this page directly from the web server, not builder here
             Engine_ApplicationCache_Gateway.Settings = Settings;
             Static_Pages_Builder staticBuilder = new Static_Pages_Builder(Settings.Application_Server_URL, Settings.Static_Pages_Location, Settings.Application_Server_Network);
 
@@ -108,10 +111,10 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
             }
 
             // Build the full instance-wide XML and RSS here as well
-            Recreate_Library_XML_and_RSS(updatedId, staticBuilder);
+            Recreate_Library_XML_and_RSS(updatedId, staticBuilder, Settings);
         }
 
-        private void Recreate_Library_XML_and_RSS(long Builderid, Static_Pages_Builder StaticBuilder )
+        private void Recreate_Library_XML_and_RSS(long Builderid, Static_Pages_Builder StaticBuilder, InstanceWide_Settings Settings )
         {
             // Update the RSS Feeds and Item Lists for ALL 
             // Build the simple XML result for this build
