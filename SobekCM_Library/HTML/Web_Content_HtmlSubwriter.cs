@@ -335,7 +335,7 @@ namespace SobekCM.Library.HTML
 
                 Output.WriteLine("<div class=\"sbkHav_MainText\" >");
 
-                Output.WriteLine("  <h1>The page you requested does not exist.  Would you like to add it today?</h1>");
+                Output.WriteLine("  <h1>The page you requested does not exist.  Would you like to add it?</h1>");
 
                 Output.WriteLine("  <table id=\"sbkHav_OptionsTable3\" style=\"padding-top:10px;\">");
 

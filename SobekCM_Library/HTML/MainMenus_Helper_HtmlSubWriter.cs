@@ -1367,6 +1367,11 @@ namespace SobekCM.Library.HTML
 
                     Output.WriteLine("      </ul></li>");
 
+                    // Web content pages
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
+                    Output.WriteLine("      <li id=\"sbkUsm_WebContentPages\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"> <div class=\"sbkUsm_TextWithImage\">Web Content Pages</div></a></li>");
+
+
                     Output.WriteLine("    </ul></li>");
                 }
            

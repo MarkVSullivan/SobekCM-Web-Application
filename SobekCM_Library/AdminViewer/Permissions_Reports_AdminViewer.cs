@@ -165,7 +165,7 @@ namespace SobekCM.Library.AdminViewer
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Users;
             string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-            Output.WriteLine("  <p style=\"text-align: left; padding:0 20px 0 70px;width:800px;\">Use the <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">administrative Users &amp; Groups</a> to assign any new collection-specific user permissions.");
+            Output.WriteLine("  <p style=\"text-align: left; padding:0 20px 0 70px;width:800px;\">Use the <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">administrative Users &amp; Groups</a> to assign any new collection-specific user permissions.</p>");
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.User_Permissions_Reports;
 
             //Output.WriteLine("    <ul>");

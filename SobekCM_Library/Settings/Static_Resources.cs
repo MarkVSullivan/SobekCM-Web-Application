@@ -369,6 +369,12 @@ namespace SobekCM.Library.Settings
             WebContent_Img = "http://cdn.sobekrepository.org/images/misc/web_content_medium.png";
             WebContent_Img_Small = "http://cdn.sobekrepository.org/images/misc/web_content_small.png";
             WebContent_Img_Large = "http://cdn.sobekrepository.org/images/misc/web_content_large.png";
+            WebContent_History_Img = "http://cdn.sobekrepository.org/images/misc/webcontent_history.png";
+            WebContent_History_Img_Small = "http://cdn.sobekrepository.org/images/misc/webcontent_history_small.png";
+            WebContent_History_Img_Large = "http://cdn.sobekrepository.org/images/misc/webcontent_history_large.png";
+            WebContent_Usage_Img = "http://cdn.sobekrepository.org/images/misc/webcontent_usage.png";
+            WebContent_Usage_Img_Small = "http://cdn.sobekrepository.org/images/misc/webcontent_usage_small.png";
+            WebContent_Usage_Img_Large = "http://cdn.sobekrepository.org/images/misc/webcontent_usage_large.png";
             Wizard_Img = "http://cdn.sobekrepository.org/images/misc/wizard.png";
             Wizard_Img_Large = "http://cdn.sobekrepository.org/images/misc/wizard_lg.png";
             Wordmarks_Img = "http://cdn.sobekrepository.org/images/misc/wordmarks.png";
@@ -1438,6 +1444,24 @@ namespace SobekCM.Library.Settings
 
         /// <summary> URL for the default resource 'web_content_large.png' file ( http://cdn.sobekrepository.org/images/misc/web_content_large.png by default)</summary>
         public static string WebContent_Img_Large { get; private set; }
+
+        /// <summary> URL for the default resource 'webcontent_history.png' file ( http://cdn.sobekrepository.org/images/misc/webcontent_history.png by default)</summary>
+        public static string WebContent_History_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'webcontent_history_small.png' file ( http://cdn.sobekrepository.org/images/misc/webcontent_history_small.png by default)</summary>
+        public static string WebContent_History_Img_Small { get; private set; }
+
+        /// <summary> URL for the default resource 'webcontent_history_large.png' file ( http://cdn.sobekrepository.org/images/misc/webcontent_history_large.png by default)</summary>
+        public static string WebContent_History_Img_Large { get; private set; }
+
+        /// <summary> URL for the default resource 'webcontent_usage.png' file ( http://cdn.sobekrepository.org/images/misc/webcontent_usage.png by default)</summary>
+        public static string WebContent_Usage_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'webcontent_usage_small.png' file ( http://cdn.sobekrepository.org/images/misc/webcontent_usage_small.png by default)</summary>
+        public static string WebContent_Usage_Img_Small { get; private set; }
+
+        /// <summary> URL for the default resource 'webcontent_usage_large.png' file ( http://cdn.sobekrepository.org/images/misc/webcontent_usage_large.png by default)</summary>
+        public static string WebContent_Usage_Img_Large { get; private set; }
 
         /// <summary> URL for the default resource 'wizard.png' file ( http://cdn.sobekrepository.org/images/misc/wizard.png by default)</summary>
         public static string Wizard_Img { get; private set; }
@@ -2889,6 +2913,30 @@ namespace SobekCM.Library.Settings
 
                 case "webcontent_img_large":
                     WebContent_Img_Large = Source;
+                    break;
+
+                case "webcontent_history_img":
+                    WebContent_History_Img = Source;
+                    break;
+
+                case "webcontent_history_img_small":
+                    WebContent_History_Img_Small = Source;
+                    break;
+
+                case "webcontent_history_img_large":
+                    WebContent_History_Img_Large = Source;
+                    break;
+
+                case "webcontent_usage_img":
+                    WebContent_Usage_Img = Source;
+                    break;
+
+                case "webcontent_usage_img_small":
+                    WebContent_Usage_Img_Small = Source;
+                    break;
+
+                case "webcontent_usage_img_large":
+                    WebContent_Usage_Img_Large = Source;
                     break;
 
                 case "wizard_img":

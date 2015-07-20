@@ -438,6 +438,11 @@ namespace SobekCM.Core.Navigation
                                 return this_base_url + "admin/permissions/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
                             return this_base_url + "admin/permissions" + urlOptions1;
 
+                        case Admin_Type_Enum.WebContent_Mgmt:
+                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                return this_base_url + "admin/webcontent/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
+                            return this_base_url + "admin/webcontent" + urlOptions1;
+
                         case Admin_Type_Enum.Wordmarks:
                             return this_base_url + "admin/wordmarks" + urlOptions1;
 

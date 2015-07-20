@@ -134,7 +134,7 @@ namespace SobekCM.Core.WebContent
             int head_end = Display_Text.IndexOf("</head>", StringComparison.OrdinalIgnoreCase);
             if ((head_start >= 0) && (head_end > head_start))
             {
-                bool read_as_xml = false;
+                bool read_as_xml;
                 try
                 {
                     if (Tracer != null)

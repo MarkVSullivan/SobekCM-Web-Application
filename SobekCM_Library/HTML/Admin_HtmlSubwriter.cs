@@ -478,6 +478,7 @@ namespace SobekCM.Library.HTML
                         break;
 
                     case Admin_Type_Enum.User_Permissions_Reports:
+                    case Admin_Type_Enum.WebContent_Mgmt:
                         return "sbkUpav_ContainerInner";
 				}
 				return base.Container_CssClass;

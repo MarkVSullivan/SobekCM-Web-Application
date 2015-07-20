@@ -186,7 +186,7 @@ namespace SobekCM.Engine_Library.Endpoints
             string level8 = UrlSegments.Count > 7 ? UrlSegments[7] : null;
 
             // Ensure the web page does not already exist
-            int newContentId = Engine_Database.WebContent_Add_Page(level1, level2, level3, level4, level5, level6, level7, level8, user, basicInfo.Title, basicInfo.Summary, tracer);
+            int newContentId = Engine_Database.WebContent_Add_Page(level1, level2, level3, level4, level5, level6, level7, level8, user, basicInfo.Title, basicInfo.Summary, basicInfo.Redirect, tracer);
 
             // If this is -1, then an error occurred
             if (newContentId < 0)

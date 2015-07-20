@@ -3896,10 +3896,11 @@ namespace SobekCM.Engine_Library.Database
 		/// <param name="Username"> Name of the user that performed this ADD (or restored of a previously deleted page)</param>
 		/// <param name="Title"> Title for this new web page </param>
 		/// <param name="Summary"> Summary for this new web page </param>
+		/// <param name="Redirect"> If this is actually a redirect URL, this will be the URL that it should resolve to </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
 		/// <returns> Primary key for this new web content page ( or -1 if ERROR ) </returns>
 		/// <remarks> This calls the 'SobekCM_WebContent_Add' stored procedure </remarks> 
-		public static int WebContent_Add_Page(string Level1, string Level2, string Level3, string Level4, string Level5, string Level6, string Level7, string Level8, string Username, string Title, string Summary, Custom_Tracer Tracer)
+		public static int WebContent_Add_Page(string Level1, string Level2, string Level3, string Level4, string Level5, string Level6, string Level7, string Level8, string Username, string Title, string Summary, string Redirect, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -3908,7 +3909,7 @@ namespace SobekCM.Engine_Library.Database
 
 			try
 			{
-				EalDbParameter[] parameters = new EalDbParameter[12];
+				EalDbParameter[] parameters = new EalDbParameter[13];
 				parameters[0] = new EalDbParameter("@level1", Level1);
 				parameters[1] = new EalDbParameter("@level2", Level2);
 				parameters[2] = new EalDbParameter("@level3", Level3);
@@ -3920,13 +3921,14 @@ namespace SobekCM.Engine_Library.Database
 				parameters[8] = new EalDbParameter("@username", Username);
 				parameters[9] = new EalDbParameter("@title", Title);
 				parameters[10] = new EalDbParameter("@summary", Summary);
-				parameters[11] = new EalDbParameter("@WebContentID", -1) { Direction = ParameterDirection.InputOutput };
+                parameters[11] = new EalDbParameter("@redirect", Redirect);
+				parameters[12] = new EalDbParameter("@WebContentID", -1) { Direction = ParameterDirection.InputOutput };
 
 			    // Define a temporary dataset
 				EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_Add", parameters);
 
 				// Get the new primary key and return it
-				return Int32.Parse(parameters[11].Value.ToString());
+				return Int32.Parse(parameters[12].Value.ToString());
 			}
 			catch (Exception ee)
 			{
@@ -4025,9 +4027,10 @@ namespace SobekCM.Engine_Library.Database
 				string title = pageRow["Title"].ToString();
 				string summary = pageRow["Summary"].ToString();
 				bool deleted = bool.Parse(pageRow["Deleted"].ToString());
+			    string redirect = pageRow["Redirect"].ToString();
 
 				// Build and return the basic info object
-				return new Web_Content_Basic_Info(webid, title, summary, deleted);
+				return new Web_Content_Basic_Info(webid, title, summary, deleted, redirect);
 			}
 			catch (Exception ee)
 			{

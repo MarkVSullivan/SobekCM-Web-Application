@@ -40,6 +40,12 @@ namespace SobekCM.Core.WebContent
         [ProtoMember(4)]
         public bool? Deleted { get; set; }
 
+        /// <summary> URL to which a request for this page should be redirected </summary>
+        [DataMember(EmitDefaultValue = false, Name = "redirect")]
+        [XmlAttribute("redirect")]
+        [ProtoMember(5)]
+        public string Redirect { get; set; }
+
         #region Methods to control XML serialization
 
         /// <summary> Method suppresses XML Serialization of the Footer_Has_Container_Directive property if it is NULL </summary>
@@ -69,12 +75,14 @@ namespace SobekCM.Core.WebContent
         /// <param name="Title"> Title for this web content page, from the database </param>
         /// <param name="Summary"> Summary for this web content page, from the database </param>
         /// <param name="Deleted"> Flag indicates if this web content page is currently deleted within the database </param>
-        public Web_Content_Basic_Info(int WebContentID, string Title, string Summary, bool Deleted)
+        /// <param name="Redirect"> URL to which a request for this page should be redirected </param>
+        public Web_Content_Basic_Info(int WebContentID, string Title, string Summary, bool Deleted, string Redirect )
         {
             this.WebContentID = WebContentID;
             this.Title = Title;
             this.Summary = Summary;
             this.Deleted = Deleted;
+            this.Redirect = Redirect;
         }
     }
 }
