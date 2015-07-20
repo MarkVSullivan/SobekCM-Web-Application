@@ -72,7 +72,7 @@ namespace SobekCM.Resource_Object.Utilities
 
 			// Save the location for temporary files
 			temp_folder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-			temp_folder = temp_folder + "\\DLC Toolbox\\Temporary";
+			temp_folder = temp_folder + "\\SobekCM\\Temporary";
 		}
 
 		/// <summary> Gets the count of the number of failures Kakadu experienced while creating JPEG2000 derivatives </summary>

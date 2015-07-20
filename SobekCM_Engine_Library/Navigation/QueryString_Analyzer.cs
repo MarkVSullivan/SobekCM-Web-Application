@@ -701,6 +701,16 @@ namespace SobekCM.Engine_Library.Navigation
 
                                         case "webcontent":
                                             Navigator.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            break;
+
+                                        case "webhistory":
+                                            Navigator.Admin_Type = Admin_Type_Enum.WebContent_History;
+                                            break;
+                                            
+                                        case "webusage":
+                                            Navigator.Admin_Type = Admin_Type_Enum.WebContent_Usage;
                                             break;
 
                                         case "wordmarks":

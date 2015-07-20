@@ -105,6 +105,14 @@ namespace SobekCM.Library.HTML
                     adminViewer = new WebContent_Mgmt_AdminViewer(RequestSpecificValues);
                     break;
 
+                case Admin_Type_Enum.WebContent_History:
+                    adminViewer = new WebContent_History_AdminViewer(RequestSpecificValues);
+                    break;
+
+                case Admin_Type_Enum.WebContent_Usage:
+                    adminViewer = new WebContent_Usage_AdminViewer(RequestSpecificValues);
+                    break;
+
                 case Admin_Type_Enum.Wordmarks:
                     adminViewer = new Wordmarks_AdminViewer(RequestSpecificValues);
                     break;
@@ -479,6 +487,8 @@ namespace SobekCM.Library.HTML
 
                     case Admin_Type_Enum.User_Permissions_Reports:
                     case Admin_Type_Enum.WebContent_Mgmt:
+                    case Admin_Type_Enum.WebContent_History:
+                    case Admin_Type_Enum.WebContent_Usage:
                         return "sbkUpav_ContainerInner";
 				}
 				return base.Container_CssClass;

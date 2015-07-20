@@ -1367,11 +1367,23 @@ namespace SobekCM.Library.HTML
 
                     Output.WriteLine("      </ul></li>");
 
+
                     // Web content pages
+                    Output.WriteLine("      <li id=\"sbkUsm_WebContentMenu\"><a href=\"" + current_url + "#webcontent\"> <div class=\"sbkUsm_TextWithImage\">Web Content Pages</div></a><ul>");
+
+                    // Manage web content pages
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
-                    Output.WriteLine("      <li id=\"sbkUsm_WebContentPages\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"> <div class=\"sbkUsm_TextWithImage\">Web Content Pages</div></a></li>");
+                    Output.WriteLine("        <li id=\"sbkUsm_WebContentPages\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.WebContent_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Manage Web Content Pages</div></a></li>");
 
+                    // Manage web content pages
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_History;
+                    Output.WriteLine("        <li id=\"sbkUsm_WebContentHistory\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.WebContent_History_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Web Content Recent Updates</div></a></li>");
 
+                    // Manage web content pages
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Usage;
+                    Output.WriteLine("        <li id=\"sbkUsm_WebContentUsage\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources.WebContent_Usage_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Web Content Usage Reports</div></a></li>");
+
+                    Output.WriteLine("      </ul></li>");
                     Output.WriteLine("    </ul></li>");
                 }
            

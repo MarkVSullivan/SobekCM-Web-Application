@@ -52,7 +52,9 @@ namespace SobekCM.Library.AdminViewer
 		private const string SETTINGS_BRIEF = "These settings control the basic operation and behavior of the entire repository.";
         private const string RESET_CACHE_BRIEF = "This resets the cache and many of the application values and forces the web application to pull all the data fresh from the design folders and from the database.";
 		private const string PERMISSIONS_BRIEF = "View reports on the different top-level permissions that have been provided to users, either directly or through user group membership.";
-        private const string WEB_MGMT_BRIEF = "Manage the top-level static web content pages within this system, view recent updates to the pages, and review the usage statistics on the web content pages.";
+        private const string WEB_MGMT_BRIEF = "Manage the top-level static web content pages within this system and all the existing web content redirects.";
+        private const string WEB_HISTORY_BRIEF = "View the complete list of recent updates to the top-level static web content pages, including page, user, and change type.";
+        private const string WEB_USAGE_BRIEF = "View the online usage statistics reports related to the top-level static web content pages.";
 
 
 	    /// <summary> Constructor for a new instance of the Home_AdminViewer class </summary>
@@ -222,9 +224,23 @@ namespace SobekCM.Library.AdminViewer
             // Web content pages management
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
             string webContentUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-            string webContentIcon = "  <a href=\"" + webContentUrl + "\" title=\"" + WEB_MGMT_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources.WebContent_Img + "\" /><span class=\"sbkHav_ButtonText\">Web Content<br />Pages</span></div></a>";
+            string webContentIcon = "  <a href=\"" + webContentUrl + "\" title=\"" + WEB_MGMT_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources.WebContent_Img + "\" /><span class=\"sbkHav_ButtonText\">Manage Web<br />Content Pages</span></div></a>";
             icons["Web Content Pages"] = webContentIcon;
             categories_dictionary["web"].Add(webContentIcon);
+
+            // Web content pages history
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_History;
+            string webHistoryUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            string webHistoryIcon = "  <a href=\"" + webHistoryUrl + "\" title=\"" + WEB_HISTORY_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources.WebContent_History_Img + "\" /><span class=\"sbkHav_ButtonText\">Web Content<br />Recent Changes</span></div></a>";
+            icons["Web Content Recent Changes"] = webHistoryIcon;
+            categories_dictionary["web"].Add(webHistoryIcon);
+
+            // Web content pages usage statistics
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Usage;
+            string webUsageUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            string webUsageIcon = "  <a href=\"" + webUsageUrl + "\" title=\"" + WEB_USAGE_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources.WebContent_Usage_Img + "\" /><span class=\"sbkHav_ButtonText\">Web Content<br />Usage Reports</span></div></a>";
+            icons["Web Content Usage Statistics"] = webUsageIcon;
+            categories_dictionary["web"].Add(webUsageIcon);
 
 	        // Edit users (REPEAT FROM COMMON TASKS CATEGORY)
             if ((RequestSpecificValues.Current_User != null) && ( RequestSpecificValues.Current_User.Is_System_Admin))
@@ -559,15 +575,37 @@ namespace SobekCM.Library.AdminViewer
 
             // Manage web content pages
             Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"permissions\">Web Content Pages</h2></td></tr>");
+
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
             string webcontent_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <td>&nbsp;</td>");
-            Output.WriteLine("      <td><a href=\"" + permissions_url + "\"><img src=\"" + Static_Resources.WebContent_Img_Large + "\" /></a></td>");
+            Output.WriteLine("      <td><a href=\"" + webcontent_url + "\"><img src=\"" + Static_Resources.WebContent_Img_Large + "\" /></a></td>");
             Output.WriteLine("      <td>");
-            Output.WriteLine("        <a href=\"" + webcontent_url + "\">Web Content Pages</a>");
+            Output.WriteLine("        <a href=\"" + webcontent_url + "\">Manage Web Content Pages</a>");
             Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + WEB_MGMT_BRIEF + "</div>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
+
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_History;
+            string webhistory_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td>&nbsp;</td>");
+            Output.WriteLine("      <td><a href=\"" + webhistory_url + "\"><img src=\"" + Static_Resources.WebContent_History_Img_Large + "\" /></a></td>");
+            Output.WriteLine("      <td>");
+            Output.WriteLine("        <a href=\"" + webhistory_url + "\">Web Content Recent Changes</a>");
+            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + WEB_HISTORY_BRIEF + "</div>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
+
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Usage;
+            string webusage_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td>&nbsp;</td>");
+            Output.WriteLine("      <td><a href=\"" + webusage_url + "\"><img src=\"" + Static_Resources.WebContent_Usage_Img_Large + "\" /></a></td>");
+            Output.WriteLine("      <td>");
+            Output.WriteLine("        <a href=\"" + webusage_url + "\">Web Content Usage Reports</a>");
+            Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + WEB_USAGE_BRIEF + "</div>");
             Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");
 
@@ -652,7 +690,7 @@ namespace SobekCM.Library.AdminViewer
             if (icons["Builder Status"] != null) Output.WriteLine(icons["Builder Status"].Replace("sbkHav_ButtonDiv", "sbkHav_ButtonDiv2").Replace("<br />", " "));
 
             // Reset cache
-            if (icons["Web Content Pages"] != null) Output.WriteLine(icons["Web Content Pages"].Replace("sbkHav_ButtonDiv", "sbkHav_ButtonDiv2").Replace("<br />", " "));
+            if (icons["Web Content Pages"] != null) Output.WriteLine(icons["Web Content Pages"].Replace("Manage ","").Replace("sbkHav_ButtonDiv", "sbkHav_ButtonDiv2").Replace("<br />", " "));
 
             // Reset cache
             if (icons["Reset Cache"] != null) Output.WriteLine(icons["Reset Cache"].Replace("sbkHav_ButtonDiv", "sbkHav_ButtonDiv2").Replace("<br />", " "));

@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
@@ -8,20 +11,18 @@ using SobekCM.Tools;
 
 namespace SobekCM.Library.AdminViewer
 {
-    /// <summary> Admin viewer lists all of the top-level static web content pages, as well as all the related
-    /// top-level redirects within the system </summary>
-    public class WebContent_Mgmt_AdminViewer : abstract_AdminViewer
+    public class WebContent_History_AdminViewer : abstract_AdminViewer
     {
         private string actionMessage;
 
-        /// <summary> Constructor for a new instance of the WebContent_Mgmt_AdminViewer class </summary>
+        /// <summary> Constructor for a new instance of the WebContent_History_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <remarks> Postback from handling an edit or new aggregation is handled here in the constructor </remarks>
-        public WebContent_Mgmt_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public WebContent_History_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            RequestSpecificValues.Tracer.Add_Trace("WebContent_Mgmt_AdminViewer.Constructor", String.Empty);
+            RequestSpecificValues.Tracer.Add_Trace("WebContent_History_AdminViewer.Constructor", String.Empty);
             actionMessage = String.Empty;
-            
+
             // Ensure the user is the system admin or portal admin
             if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin)))
             {
@@ -54,16 +55,16 @@ namespace SobekCM.Library.AdminViewer
         }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
-        /// <value> This always returns the value 'Web Content Page Management' </value>
+        /// <value> This always returns the value 'Web Content Recent Updates' </value>
         public override string Web_Title
         {
-            get { return "Web Content Page Management"; }
+            get { return "Web Content Recent Updates"; }
         }
 
         /// <summary> Gets the URL for the icon related to this administrative task </summary>
         public override string Viewer_Icon
         {
-            get { return Static_Resources.WebContent_Img; }
+            get { return Static_Resources.WebContent_History_Img; }
         }
 
 
@@ -73,7 +74,7 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This class does nothing, since the interface list is added as controls, not HTML </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("WebContent_Mgmt_AdminViewer.Write_HTML", "Do nothing");
+            Tracer.Add_Trace("WebContent_History_AdminViewer.Write_HTML", "Do nothing");
         }
 
         /// <summary> This is an opportunity to write HTML directly into the main form, without
@@ -83,9 +84,9 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
         public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("WebContent_Mgmt_AdminViewer.Write_ItemNavForm_Closing", "");
+            Tracer.Add_Trace("WebContent_History_AdminViewer.Write_ItemNavForm_Closing", "");
 
-            Output.WriteLine("<!-- WebContent_Mgmt_AdminViewer.Write_ItemNavForm_Closing -->");
+            Output.WriteLine("<!-- WebContent_History_AdminViewer.Write_ItemNavForm_Closing -->");
             Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
             int page = 1;
@@ -140,8 +141,9 @@ namespace SobekCM.Library.AdminViewer
             string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
 
-            string tab1_title = "WEB PAGES";
-            string tab2_title = "REDIRECTS";
+            string tab1_title = "ALL PAGES";
+            string tab2_title = "RECENT UPDATES";
+            string tab3_title = "USAGE STATISTICS";
 
             if (page == 1)
             {
@@ -161,6 +163,14 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "b") + "';return false;\"> " + tab2_title + " </li>");
             }
 
+            if (page == 3)
+            {
+                Output.WriteLine("      <li class=\"tabActiveHeader\"> " + tab3_title + " </li>");
+            }
+            else
+            {
+                Output.WriteLine("    <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "c") + "';return false;\"> " + tab3_title + " </li>");
+            }
 
             Output.WriteLine("    </ul>");
             Output.WriteLine("  </div>");
@@ -184,6 +194,15 @@ namespace SobekCM.Library.AdminViewer
                     break;
 
                 case 2:
+                    break;
+
+                case 3:
+                    break;
+
+                case 4:
+                    break;
+
+                case 5:
                     break;
             }
 
