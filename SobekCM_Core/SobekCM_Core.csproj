@@ -108,6 +108,7 @@
     <Compile Include="MemoryMgmt\CachedDataManager.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_AggregationServices.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_Settings.cs" />
+    <Compile Include="MemoryMgmt\CachedDataManager_WebContentServices.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_WebSkinServices.cs" />
     <Compile Include="MemoryMgmt\Cached_Object_Info.cs" />
     <Compile Include="Message\ErrorRestMessage.cs" />
@@ -165,8 +166,12 @@
     <Compile Include="WebContent\HTML_Based_Content.cs" />
     <Compile Include="WebContent\HTML_Based_Content_Reader.cs" />
     <Compile Include="WebContent\Single_WebContent_Month_Year_Usage.cs" />
+    <Compile Include="WebContent\WebContent_Basic_Pages.cs" />
+    <Compile Include="WebContent\WebContent_Page_Usage.cs" />
     <Compile Include="WebContent\WebContent_Recent_Changed_Page.cs" />
-    <Compile Include="WebContent\Web_Content_Basic_Info.cs" />
+    <Compile Include="WebContent\WebContent_Recent_Changes.cs" />
+    <Compile Include="WebContent\WebContent_Basic_Info.cs" />
+    <Compile Include="WebContent\WebContent_Usage_Report.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj">

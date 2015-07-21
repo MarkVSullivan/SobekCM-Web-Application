@@ -32,6 +32,9 @@ namespace SobekCM.Core.MemoryMgmt
         /// <summary> Web skin-specific cached data manager services  </summary>
         public static CachedDataManager_WebSkinServices WebSkins { get; private set; }
 
+        /// <summary> Top-level static web content specific cached data manager services  </summary>
+        public static CachedDataManager_WebContentServices WebContent { get; private set; }
+
 
         /// <summary> Static constructor initializes several variables </summary>
         static CachedDataManager()
@@ -39,6 +42,7 @@ namespace SobekCM.Core.MemoryMgmt
             Settings = new CachedDataManager_Settings();
             Aggregations = new CachedDataManager_AggregationServices(Settings);
             WebSkins = new CachedDataManager_WebSkinServices(Settings);
+            WebContent = new CachedDataManager_WebContentServices(Settings);
             Settings.Disabled = false;
         }
 

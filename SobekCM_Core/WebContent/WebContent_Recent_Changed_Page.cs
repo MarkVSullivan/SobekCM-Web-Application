@@ -76,7 +76,7 @@ namespace SobekCM.Core.WebContent
         public string Level7 { get; set; }
 
         /// <summary> Level 8 of this recently changed static webcontent page </summary>
-        [DataMember(EmitDefaultValue = false, Name = "level7")]
+        [DataMember(EmitDefaultValue = false, Name = "level8")]
         [XmlAttribute("level8")]
         [ProtoMember(11)]
         public string Level8 { get; set; }

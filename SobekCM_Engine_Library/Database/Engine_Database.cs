@@ -3959,10 +3959,13 @@ namespace SobekCM.Engine_Library.Database
 
 			try
 			{
-				EalDbParameter[] parameters = new EalDbParameter[3];
+				EalDbParameter[] parameters = new EalDbParameter[6];
 				parameters[0] = new EalDbParameter("@WebContentID", WebContentID);
-				parameters[1] = new EalDbParameter("@title", Title);
-				parameters[2] = new EalDbParameter("@summary", Summary);
+                parameters[1] = new EalDbParameter("@UserName", Title);
+				parameters[2] = new EalDbParameter("@Title", Title);
+				parameters[3] = new EalDbParameter("@Summary", Summary);
+                parameters[4] = new EalDbParameter("@Redirect", Summary);
+                parameters[5] = new EalDbParameter("@MilestoneText", Summary);
 
 				// Define a temporary dataset
 				EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_Edit", parameters);
@@ -3995,7 +3998,7 @@ namespace SobekCM.Engine_Library.Database
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
 		/// <returns> Built web content basic info object, or NULL if not found at all </returns>
 		/// <remarks> This calls the 'SobekCM_WebContent_Get_Page' stored procedure </remarks> 
-		public static Web_Content_Basic_Info WebContent_Get_Page(string Level1, string Level2, string Level3, string Level4, string Level5, string Level6, string Level7, string Level8, Custom_Tracer Tracer)
+		public static WebContent_Basic_Info WebContent_Get_Page(string Level1, string Level2, string Level3, string Level4, string Level5, string Level6, string Level7, string Level8, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -4030,7 +4033,7 @@ namespace SobekCM.Engine_Library.Database
 			    string redirect = pageRow["Redirect"].ToString();
 
 				// Build and return the basic info object
-				return new Web_Content_Basic_Info(webid, title, summary, deleted, redirect);
+				return new WebContent_Basic_Info(webid, title, summary, deleted, redirect);
 			}
 			catch (Exception ee)
 			{
@@ -4244,91 +4247,20 @@ namespace SobekCM.Engine_Library.Database
             }
         }
 
-        /// <summary> Get the milestones / history for a single web content page </summary>
+        /// <summary> Get the global milestones of all changes to all top-level static html pages </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> List of milestones </returns>
+        /// <returns> DataSet of milestones </returns>
         /// <remarks> This calls the 'SobekCM_WebContent_Get_Recent_Changes' stored procedure </remarks> 
-        public static List<WebContent_Recent_Changed_Page> WebContent_Get_Recent_Changes(Custom_Tracer Tracer)
+        public static DataSet WebContent_Get_Recent_Changes(Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Engine_Database.WebContent_Get_Recent_Changes", "Pull list of recenly changed web pages from the database");
+                Tracer.Add_Trace("Engine_Database.WebContent_Get_Recent_Changes", "Pull list of recently changed web pages from the database");
             }
-
-            // Build return list
-            List<WebContent_Recent_Changed_Page> returnValue = new List<WebContent_Recent_Changed_Page>();
 
             try
             {
-                // Create the database agnostic reader
-                EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_Get_Recent_Changes");
-
-                // Read through each changed page
-                DbDataReader reader = readerWrapper.Reader;
-                while (readerWrapper.Reader.Read())
-                {
-                    // Start to buid the object to report this work
-                    WebContent_Recent_Changed_Page recentChange = new WebContent_Recent_Changed_Page();
-                    
-                    // Grab the values out and assign them
-                    recentChange.WebContentID = reader.GetInt32(0);
-                    recentChange.Level1 = reader.GetString(1);
-                    string level_temp = reader.GetString(2);
-                    if (!String.IsNullOrEmpty(level_temp))
-                    {
-                        recentChange.Level2 = level_temp;
-
-                        level_temp = reader.GetString(3);
-                        if (!String.IsNullOrEmpty(level_temp))
-                        {
-                            recentChange.Level3 = level_temp;
-
-                            level_temp = reader.GetString(4);
-                            if (!String.IsNullOrEmpty(level_temp))
-                            {
-                                recentChange.Level4 = level_temp;
-
-                                level_temp = reader.GetString(5);
-                                if (!String.IsNullOrEmpty(level_temp))
-                                {
-                                    recentChange.Level5 = level_temp;
-
-                                    level_temp = reader.GetString(6);
-                                    if (!String.IsNullOrEmpty(level_temp))
-                                    {
-                                        recentChange.Level6 = level_temp;
-
-                                        level_temp = reader.GetString(7);
-                                        if (!String.IsNullOrEmpty(level_temp))
-                                        {
-                                            recentChange.Level7 = level_temp;
-
-                                            level_temp = reader.GetString(8);
-                                            if (!String.IsNullOrEmpty(level_temp))
-                                            {
-                                                recentChange.Level8 = level_temp;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    
-                    recentChange.MilestoneDate = reader.GetDateTime(9);
-                    recentChange.User = reader.GetString(10);
-                    recentChange.Notes = reader.GetString(11);
-                    recentChange.Title = reader.GetString(12);
-
-                    // Add the change page object to the list
-                    returnValue.Add(recentChange);
-                }
-
-                // Close the reader (which also closes the connection)
-                readerWrapper.Close();
-
-                // Return the built list
-                return returnValue;
+                return EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_Get_Recent_Changes");
             }
             catch (Exception ee)
             {
@@ -4338,6 +4270,124 @@ namespace SobekCM.Engine_Library.Database
                     Tracer.Add_Trace("Engine_Database.WebContent_Get_Recent_Changes", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
                     Tracer.Add_Trace("Engine_Database.WebContent_Get_Recent_Changes", ee.Message, Custom_Trace_Type_Enum.Error);
                     Tracer.Add_Trace("Engine_Database.WebContent_Get_Recent_Changes", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+        /// <summary> Gets the dataset of all global content pages (excluding redirects) </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> DataSet of milestones </returns>
+        /// <remarks> This calls the 'SobekCM_WebContent_All_Pages' stored procedure </remarks> 
+        public static DataSet WebContent_Get_All_Pages(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.WebContent_Get_All_Pages", "Gets the list of all content pages (excluding redirects)");
+            }
+
+            try
+            {
+                return EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_All_Pages");
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_All_Pages", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_All_Pages", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_All_Pages", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+        /// <summary> Gets the dataset of all global redirects </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> DataSet of redirects from within the web content system </returns>
+        /// <remarks> This calls the 'SobekCM_WebContent_All_Redirects' stored procedure </remarks> 
+        public static DataSet WebContent_Get_All_Redirects(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.WebContent_Get_All_Redirects", "Gets the list of all global redirects");
+            }
+
+            try
+            {
+                return EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_All_Redirects");
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_All_Redirects", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_All_Redirects", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_All_Redirects", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+        /// <summary> Gets the dataset of all global content pages AND redirects </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> DataSet of pages and redirects </returns>
+        /// <remarks> This calls the 'SobekCM_WebContent_Get_All' stored procedure </remarks> 
+        public static DataSet WebContent_Get_All(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.WebContent_Get_All", "Gets the list of all content pages and redirects");
+            }
+
+            try
+            {
+                return EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_Get_All");
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_All", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_All", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_All", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+        /// <summary> Gets the usage report for all top-level web content pages between two dates </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Dataset of usage on top-level pages between two dates </returns>
+        /// <remarks> This calls the 'SobekCM_WebContent_Usage_Report' stored procedure </remarks> 
+        public static DataSet WebContent_Get_Usage_Report(int Year1, int Month1, int Year2, int Month2, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.WebContent_Get_Usage_Report", "Pull the stats between " + Month1 + "/" + Year1 + " and " + Month2 + "/" + Year2 );
+            }
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[4];
+                parameters[0] = new EalDbParameter("@year1", Year1);
+                parameters[1] = new EalDbParameter("@month1", Month1);
+                parameters[2] = new EalDbParameter("@year2", Year2);
+                parameters[3] = new EalDbParameter("@month2", Month2);
+
+                return EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_Usage_Report", parameters);
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_Usage_Report", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_Usage_Report", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_Usage_Report", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return null;
             }
