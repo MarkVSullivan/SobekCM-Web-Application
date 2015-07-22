@@ -1470,6 +1470,178 @@ namespace SobekCM.Engine_Library.Endpoints
             Response.Output.WriteLine("}");
         }
 
+        /// <summary> Gets the list of possible next level from an existing point in the hierarchy </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        public void Get_All_Pages_NextLevel(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+            tracer.Add_Trace("WebContentServices.Get_All_Pages_NextLevel", "Into endpoint code");
+
+            // Get the dataset of pages
+            DataSet pages = get_all_content_pages(tracer);
+
+            // If null was returned, an error occurred
+            if (pages == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull pages list from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (QueryString["debug"] == "debug")
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // Start the return list
+            List<string> returnValue = new List<string>();
+
+            try
+            {
+
+                // There are two special cases that we are already prepared for from the database.
+                //    - The very top level
+                //    - The second level
+                if (UrlSegments.Count <= 1)
+                {
+                    // One of the two special cases
+                    if (UrlSegments.Count == 0)
+                    {
+                        tracer.Add_Trace("WebContentServices.Get_All_Pages_NextLevel", "Special case, top level");
+                        foreach (DataRow thisRow in pages.Tables[1].Rows)
+                        {
+                            returnValue.Add(thisRow[0].ToString());
+                        }
+                    }
+                    else
+                    {
+                        tracer.Add_Trace("WebContentServices.Get_All_Pages_NextLevel", "Special case, second level");
+                        string level1_special = UrlSegments[0];
+                        DataView specialView = new DataView(pages.Tables[2])
+                        {
+                            RowFilter = "Level1 = '" + level1_special + "'"
+                        };
+
+                        foreach (DataRowView thisRow in specialView)
+                        {
+                            returnValue.Add(thisRow[1].ToString());
+                        }
+                    }
+                }
+                else
+                {
+                    tracer.Add_Trace("WebContentServices.Get_All_Pages_NextLevel", "Deeper, non-special case.  Preparing to scan list.");
+                    string level1 = UrlSegments[0];
+                    string level2 = UrlSegments[1];
+
+                    // Build the filter
+                    StringBuilder filterBuilder = new StringBuilder("Level1='" + level1 + "' and Level2='" + level2 + "'");
+                    int column_counter = 3;
+                    if ((UrlSegments.Count > 2) && ( !String.IsNullOrWhiteSpace(UrlSegments[2])))
+                    {
+                        filterBuilder.Append(" and Level3='" + UrlSegments[2] + "'");
+                        column_counter++;
+
+                        if ((UrlSegments.Count > 3) && ( !String.IsNullOrWhiteSpace(UrlSegments[3])))
+                        {
+                            filterBuilder.Append(" and Level4='" + UrlSegments[3] + "'");
+                            column_counter++;
+
+                            if ((UrlSegments.Count > 4) && ( !String.IsNullOrWhiteSpace(UrlSegments[4])))
+                            {
+                                filterBuilder.Append(" and Level5='" + UrlSegments[4] + "'");
+                                column_counter++;
+
+                                if ((UrlSegments.Count > 5) && ( !String.IsNullOrWhiteSpace(UrlSegments[5])))
+                                {
+                                    filterBuilder.Append(" and Level6='" + UrlSegments[5] + "'");
+                                    column_counter++;
+
+                                    if ((UrlSegments.Count > 6) && (!String.IsNullOrWhiteSpace(UrlSegments[6])))
+                                    {
+                                        filterBuilder.Append(" and Level7='" + UrlSegments[6] + "'");
+                                        column_counter++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    tracer.Add_Trace("WebContentServices.Get_All_Pages_NextLevel", filterBuilder.ToString());
+
+                    // Create the dataview
+                    DataView specialView = new DataView(pages.Tables[0])
+                    {
+                        RowFilter = filterBuilder.ToString()
+                    };
+
+
+                    // Step through and add each NEW term
+                    foreach (DataRowView thisRow in specialView)
+                    {
+                        if (thisRow[column_counter] != DBNull.Value)
+                        {
+                            string thisTerm = thisRow[column_counter].ToString().ToLower();
+                            if (( !String.IsNullOrEmpty(thisTerm)) && (!returnValue.Contains(thisTerm)))
+                                returnValue.Add(thisTerm);
+                        }
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Error encountered determing next level");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (QueryString["debug"] == "debug")
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.Message);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.StackTrace);
+
+                }
+                return;
+            }
+
+            // If this was debug mode, then just write the tracer
+            if (QueryString["debug"] == "debug")
+            {
+                tracer.Add_Trace("WebContentServices.Get_All_Pages_NextLevel", "Debug mode detected");
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseAllWebNextLevel";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
+        }
 
         private WebContent_Basic_Info datarow_to_basic_info(DataRow ChangeRow)
         {
@@ -1722,8 +1894,6 @@ namespace SobekCM.Engine_Library.Endpoints
             ErrorType = WebContentEndpointErrorEnum.No_File_Found;
             return null;
         }
-
-
 
         #endregion
 
