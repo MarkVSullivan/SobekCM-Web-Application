@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Web;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
@@ -181,45 +182,60 @@ namespace SobekCM.Library.AdminViewer
             switch (page)
             {
                 case 1:
-                Output.WriteLine("  <table id=\"sbkDvd_MainTable\" class=\"sbkAsav_Table display\">");
-				Output.WriteLine("    <thead>");
-				Output.WriteLine("      <tr>");
-				Output.WriteLine("        <th>Level1</th>");
-                Output.WriteLine("        <th>Level2</th>");
-                Output.WriteLine("        <th>Level3</th>");
-                Output.WriteLine("        <th>Level4</th>");
-                Output.WriteLine("        <th>Title</th>");
-				Output.WriteLine("      </tr>");
-				Output.WriteLine("    </thead>");
-				Output.WriteLine("    <tbody>");
-				Output.WriteLine("      <tr><td colspan=\"5\" class=\"dataTables_empty\">Loading data from server</td></tr>");
-				Output.WriteLine("    </tbody>");
-				Output.WriteLine("  </table>");
+                    Output.WriteLine("  <table id=\"sbkWcav_MainTable\" class=\"sbkWcav_Table display\">");
+                    Output.WriteLine("    <thead>");
+                    Output.WriteLine("      <tr>");
+                    Output.WriteLine("        <th>URL</th>");
+                    Output.WriteLine("        <th>Title</th>");
+                    Output.WriteLine("      </tr>");
+                    Output.WriteLine("    </thead>");
+                    Output.WriteLine("    <tbody>");
+                    Output.WriteLine("      <tr><td colspan=\"5\" class=\"dataTables_empty\">Loading data from server</td></tr>");
+                    Output.WriteLine("    </tbody>");
+                    Output.WriteLine("  </table>");
 
-				Output.WriteLine();
-				Output.WriteLine("<script type=\"text/javascript\">");
-				Output.WriteLine("  $(document).ready(function() {");
-				Output.WriteLine("      var oTable = $('#sbkDvd_MainTable').DataTable({");
-                Output.WriteLine("           \"lengthMenu\": [ [50, 100, 500, 1000, -1], [50, 100, 500, 1000, \"All\"] ],");
-				Output.WriteLine("           \"pageLength\": 50,");
-				//  Output.WriteLine("           \"aaSorting\": [[1, \"asc\"]],");
-				Output.WriteLine("           \"bFilter\": false,");
-                //Output.WriteLine("           \"sDom\": 'ipRr<\"tablebuttonsdiv\"><\"tablescroll\"t>',");
-                //Output.WriteLine("           \"sPaginationType\": \"full_numbers\",");
-				Output.WriteLine("           \"bProcessing\": true,");
-				Output.WriteLine("           \"bServerSide\": true,");
+                    Output.WriteLine();
+                    Output.WriteLine("<script type=\"text/javascript\">");
+                    Output.WriteLine("  $(document).ready(function() {");
+                    Output.WriteLine("     var shifted=false;");
+                    Output.WriteLine("     $(document).on('keydown', function(e){shifted = e.shiftKey;} );");
+                    Output.WriteLine("     $(document).on('keyup', function(e){shifted = false;} );");
+
+                    Output.WriteLine();
+                    Output.WriteLine("      var oTable = $('#sbkWcav_MainTable').dataTable({");
+                    Output.WriteLine("           \"lengthMenu\": [ [50, 100, 500, 1000, -1], [50, 100, 500, 1000, \"All\"] ],");
+                    Output.WriteLine("           \"pageLength\": 50,");
+                    //Output.WriteLine("           \"bFilter\": false,");
+                    Output.WriteLine("           \"processing\": true,");
+                    Output.WriteLine("           \"serverSide\": true,");
+                    Output.WriteLine("           \"sDom\": \"lprtip\",");
 
 
-                string redirect_url = RequestSpecificValues.Current_Mode.Base_URL + "engine/webcontent/all/list/jtable";
+                    string redirect_url = RequestSpecificValues.Current_Mode.Base_URL + "engine/webcontent/all/list/jtable";
+                    string l1 = HttpContext.Current.Request.QueryString["l1"];
+                    if (!String.IsNullOrEmpty(l1))
+                        redirect_url = redirect_url + "?l1=" + l1;
 
-				Output.WriteLine("           \"sAjaxSource\": \"" + redirect_url + "\",");
-				Output.WriteLine("           \"aoColumns\": [ null, null, null, null, null ],");
-				Output.WriteLine("           \"bAutoWidth\": false });");
-				Output.WriteLine();
-				Output.WriteLine("  });");
-				Output.WriteLine("</script>");
-				Output.WriteLine();
-                break;
+
+                    Output.WriteLine("           \"sAjaxSource\": \"" + redirect_url + "\",");
+                    Output.WriteLine("           \"aoColumns\": [ null, null ]  });");
+                    Output.WriteLine();
+
+                    Output.WriteLine("     $('#sbkWcav_MainTable tbody').on( 'click', 'tr', function () {");
+                    Output.WriteLine("          var aData = oTable.fnGetData( this );");
+                    Output.WriteLine("          var iId = aData[0];");
+                    Output.WriteLine("          if ( shifted == true )");
+                    Output.WriteLine("          {");
+                    Output.WriteLine("             window.open('" + RequestSpecificValues.Current_Mode.Base_URL + "' + iId);");
+                    Output.WriteLine("             shifted=false;");
+                    Output.WriteLine("          }");
+                    Output.WriteLine("          else");
+                    Output.WriteLine("             window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "' + iId;");
+                    Output.WriteLine("     });");
+                    Output.WriteLine("  });");
+                    Output.WriteLine("</script>");
+                    Output.WriteLine();
+                    break;
 
                 case 2:
                     break;

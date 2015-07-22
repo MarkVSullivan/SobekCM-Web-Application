@@ -1337,21 +1337,18 @@ namespace SobekCM.Engine_Library.Endpoints
             int displayLength;
             int sortingColumn1;
             string sortDirection1 = "asc";
-            int sortingColumn2;
-
 
             // Get the display start and length from the DataTables generated data URL
-            Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayStart"], out displayStart);
-            Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayLength"], out displayLength);
+            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
+            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayLength"], out displayLength)) displayLength = 50;
 
             // Get the echo value
             string sEcho = HttpContext.Current.Request.QueryString["sEcho"];
 
             // Get the sorting column and sorting direction
-            Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_0"], out sortingColumn1);
+            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_0"], out sortingColumn1)) sortingColumn1 = 0;
             if ((HttpContext.Current.Request.QueryString["sSortDir_0"] != null) && (HttpContext.Current.Request.QueryString["sSortDir_0"] == "desc"))
                 sortDirection1 = "desc";
-            Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_1"], out sortingColumn2);
 
             // Get the dataset of pages
             DataSet pages = get_all_content_pages(tracer);
@@ -1375,18 +1372,23 @@ namespace SobekCM.Engine_Library.Endpoints
                 return;
             }
 
+            // Create the view for sorting and filtering
             DataView resultsView = new DataView(pages.Tables[0]);
 
-            //// Should a filter be applied?
-            //if (term.Length > 0)
-            //{
-            //    int column = Convert.ToInt32(field.Replace("col", "")) - 1;
-            //    if ((column >= 0) && (column < results.Columns.Count))
-            //    {
-            //        string columnname = results.Columns[column].ColumnName;
-            //        resultsView.RowFilter = columnname + " like '%" + term.Replace("'", "''") + "%'";
-            //    }
-            //}
+            // Should a filter be applied?
+            if (!String.IsNullOrEmpty(QueryString["l1"]))
+            {
+                string level1_filter = QueryString["l1"];
+                if (!String.IsNullOrEmpty(QueryString["l2"]))
+                {
+                    string level2_filter = QueryString["l2"];
+                    resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "'";
+                }
+                else
+                {
+                    resultsView.RowFilter = "Level1='" + level1_filter + "'";
+                }
+            }
 
             // Get the count of results
             int total_results = resultsView.Count;
@@ -1405,69 +1407,57 @@ namespace SobekCM.Engine_Library.Endpoints
             Response.Output.WriteLine("\"iTotalDisplayRecords\": \"" + total_results + "\",");
             Response.Output.WriteLine("\"aaData\": [");
 
-            // Get columns to display 
-            List<DataColumn> columns_to_display = pages.Tables[0].Columns.Cast<DataColumn>().ToList();
-
             // Sort by the correct column
-            DataColumn sortColumn = null;
-            if (sortingColumn1 > 0)
+            if ((sortingColumn1 > 0) || ( sortDirection1 != "asc"))
             {
-                sortColumn = columns_to_display[sortingColumn1 - 1];
-                string column_name_for_sort = sortColumn.ColumnName;
-                resultsView.Sort = column_name_for_sort + " " + sortDirection1;
-
-                //if (column_name_for_sort == "InstitutionName")
-                //	resultsView.Sort = resultsView.Sort + ", Standard1 asc";
-
-                if (sortColumn.DataType == Type.GetType("System.Int32"))
+                if (sortingColumn1 == 0)
                 {
-                    if (resultsView.RowFilter.Length > 0)
-                        resultsView.RowFilter = resultsView.RowFilter + " and " + column_name_for_sort + " >= 0 and " + column_name_for_sort + " is not null";
-                    else
-                        resultsView.RowFilter = column_name_for_sort + " >= 0 and " + column_name_for_sort + " is not null";
+                    // Must be descending column zero then
+                    resultsView.Sort = "Level1 desc, Level2 desc, Level3 desc, Level4 desc, Level5 desc, Level6 desc, Level7 desc, Level8 desc";
                 }
-                if (sortColumn.DataType == Type.GetType("System.String"))
+                else if ( sortingColumn1 == 1 )
                 {
-                    if (resultsView.RowFilter.Length > 0)
-                        resultsView.RowFilter = resultsView.RowFilter + " and " + column_name_for_sort + " <> '' and " + column_name_for_sort + " is not null";
-                    else
-                        resultsView.RowFilter = column_name_for_sort + " <> '' and " + column_name_for_sort + " is not null";
+                    resultsView.Sort = "Title " + sortDirection1;
                 }
             }
 
             // Add the data for the rows to show
-            int adjust_for_filter = 0;
-            bool filter_modified = false;
             for (int i = displayStart; (i < displayStart + displayLength) && (i < total_results); i++)
             {
+                // Start the JSON response for this row
+                DataRow thisRow = resultsView[i].Row;
 
-                // Is this now over the resultsView count, possibly due to a sort?
-                if (i - adjust_for_filter > resultsView.Count - 1)
+                Response.Output.Write("[ \"" + thisRow["Level1"]);
+                if ((thisRow["Level2"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level2"].ToString())))
                 {
-                    if ((resultsView.RowFilter.Length > 0) && (sortColumn != null) && (!filter_modified))
+                    Response.Output.Write("/" + thisRow["Level2"]);
+                    if ((thisRow["Level3"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level3"].ToString())))
                     {
-                        adjust_for_filter = resultsView.Count;
-                        filter_modified = true;
-
-                        if (sortColumn.DataType == Type.GetType("System.Int32"))
-                            resultsView.RowFilter = sortColumn.ColumnName + " < 0 or " + sortColumn.ColumnName + " is null";
-                        if (sortColumn.DataType == Type.GetType("System.String"))
-                            resultsView.RowFilter = sortColumn.ColumnName + " = '' or " + sortColumn.ColumnName + " is null";
-                    }
-                    else
-                    {
-                        // Should never get here, but just in case, exit cleanly
-                        break;
+                        Response.Output.Write("/" + thisRow["Level3"]);
+                        if ((thisRow["Level4"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level4"].ToString())))
+                        {
+                            Response.Output.Write("/" + thisRow["Level4"]);
+                            if ((thisRow["Level5"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level5"].ToString())))
+                            {
+                                Response.Output.Write("/" + thisRow["Level5"]);
+                                if ((thisRow["Level6"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level6"].ToString())))
+                                {
+                                    Response.Output.Write("/" + thisRow["Level6"]);
+                                    if ((thisRow["Level7"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level7"].ToString())))
+                                    {
+                                        Response.Output.Write("/" + thisRow["Level7"]);
+                                        if ((thisRow["Level8"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level8"].ToString())))
+                                        {
+                                            Response.Output.Write("/" + thisRow["Level8"]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
-                // Start the JSON response for this row
-                DataRow thisRow = resultsView[i - adjust_for_filter].Row;
-                Response.Output.Write("[ \"" + thisRow["Level1"] + "\",");
-                Response.Output.Write(" \"" + thisRow["Level2"] + "\",");
-                Response.Output.Write(" \"" + thisRow["Level3"] + "\",");
-                Response.Output.Write(" \"" + thisRow["Level4"] + "\",");
-                Response.Output.Write(" \"" + thisRow["Title"] + "\"");
+                Response.Output.Write("\", \"" + thisRow["Title"] + "\"");
 
                 // Finish this row
                 if ((i < displayStart + displayLength - 1) && (i < total_results - 1))
