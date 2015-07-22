@@ -181,7 +181,45 @@ namespace SobekCM.Library.AdminViewer
             switch (page)
             {
                 case 1:
-                    break;
+                Output.WriteLine("  <table id=\"sbkDvd_MainTable\" class=\"sbkAsav_Table display\">");
+				Output.WriteLine("    <thead>");
+				Output.WriteLine("      <tr>");
+				Output.WriteLine("        <th>Level1</th>");
+                Output.WriteLine("        <th>Level2</th>");
+                Output.WriteLine("        <th>Level3</th>");
+                Output.WriteLine("        <th>Level4</th>");
+                Output.WriteLine("        <th>Title</th>");
+				Output.WriteLine("      </tr>");
+				Output.WriteLine("    </thead>");
+				Output.WriteLine("    <tbody>");
+				Output.WriteLine("      <tr><td colspan=\"5\" class=\"dataTables_empty\">Loading data from server</td></tr>");
+				Output.WriteLine("    </tbody>");
+				Output.WriteLine("  </table>");
+
+				Output.WriteLine();
+				Output.WriteLine("<script type=\"text/javascript\">");
+				Output.WriteLine("  $(document).ready(function() {");
+				Output.WriteLine("      var oTable = $('#sbkDvd_MainTable').DataTable({");
+                Output.WriteLine("           \"lengthMenu\": [ [50, 100, 500, 1000, -1], [50, 100, 500, 1000, \"All\"] ],");
+				Output.WriteLine("           \"pageLength\": 50,");
+				//  Output.WriteLine("           \"aaSorting\": [[1, \"asc\"]],");
+				Output.WriteLine("           \"bFilter\": false,");
+                //Output.WriteLine("           \"sDom\": 'ipRr<\"tablebuttonsdiv\"><\"tablescroll\"t>',");
+                //Output.WriteLine("           \"sPaginationType\": \"full_numbers\",");
+				Output.WriteLine("           \"bProcessing\": true,");
+				Output.WriteLine("           \"bServerSide\": true,");
+
+
+                string redirect_url = RequestSpecificValues.Current_Mode.Base_URL + "engine/webcontent/all/list/jtable";
+
+				Output.WriteLine("           \"sAjaxSource\": \"" + redirect_url + "\",");
+				Output.WriteLine("           \"aoColumns\": [ null, null, null, null, null ],");
+				Output.WriteLine("           \"bAutoWidth\": false });");
+				Output.WriteLine();
+				Output.WriteLine("  });");
+				Output.WriteLine("</script>");
+				Output.WriteLine();
+                break;
 
                 case 2:
                     break;

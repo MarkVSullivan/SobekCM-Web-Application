@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
@@ -825,6 +826,157 @@ namespace SobekCM.Engine_Library.Endpoints
             Serialize(returnValue, Response, Protocol, json_callback);
         }
 
+        /// <summary> Get usage of all web content pages between two dates, to be output for consumption by the jQuery DataTables.net plugin </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        public void Get_Global_Usage_Report_JDataTable(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+
+
+
+
+
+
+
+
+            // Set the default page information
+            int page = 1;
+            int rows_per_page = 100;
+
+            // Check for rows_per_page from the query string
+            if (!String.IsNullOrEmpty(QueryString["rowsPerPage"]))
+            {
+                if (!Int32.TryParse(QueryString["rowsPerPage"], out rows_per_page))
+                    rows_per_page = 100;
+                else if (rows_per_page < 1)
+                    rows_per_page = 100;
+            }
+
+            // Look for the page number
+            if (UrlSegments.Count > 0)
+            {
+                if (!Int32.TryParse(UrlSegments[0], out page))
+                    page = 1;
+                else if (page < 1)
+                    page = 1;
+            }
+
+            // Add a trace
+            tracer.Add_Trace("WebContenServices.Get_Global_Usage_Report", "Pull usage report page " + page + " with " + rows_per_page + " rows per page");
+
+            // Determine the range
+            int year1 = 2000;
+            int month1 = 1;
+            int year2 = DateTime.Now.Year + 1;
+            int month2 = 1;
+            int temp;
+            if ((!String.IsNullOrEmpty(QueryString["year1"])) && (Int32.TryParse(QueryString["year1"].ToUpper(), out temp)))
+                year1 = temp;
+            if ((!String.IsNullOrEmpty(QueryString["month1"])) && (Int32.TryParse(QueryString["month1"].ToUpper(), out temp)))
+                month1 = temp;
+            if ((!String.IsNullOrEmpty(QueryString["year2"])) && (Int32.TryParse(QueryString["year2"].ToUpper(), out temp)))
+                year2 = temp;
+            if ((!String.IsNullOrEmpty(QueryString["month2"])) && (Int32.TryParse(QueryString["month2"].ToUpper(), out temp)))
+                month2 = temp;
+
+            // Add a trace
+            tracer.Add_Trace("WebContenServices.Get_Global_Usage_Report", "Report will be from " + year1 + "/" + month1 + " and " + year2 + "/" + month2);
+
+            // Get the dataset of results
+            DataSet pages = get_global_usage_report_dataset(year1, month1, year2, month2, tracer);
+
+            // If null was returned, an error occurred
+            if (pages == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull usage report from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (QueryString["debug"] == "debug")
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // Create the list for the results
+            WebContent_Usage_Report returnValue = new WebContent_Usage_Report
+            {
+                Page = page,
+                RowsPerPage = rows_per_page,
+                RangeStart = year1 + "-" + month1,
+                RangeEnd = year2 + "-" + month2
+            };
+
+            // Prepare to step through the rows requested and convert them for returning
+            int row_counter = (page - 1) * rows_per_page;
+            int final_row_counter = page * rows_per_page;
+
+
+            try
+            {
+                // Set the total number of changes 
+                returnValue.Total = pages.Tables[0].Rows.Count;
+
+                // Add the changes within the page requested
+                while ((row_counter < pages.Tables[0].Rows.Count) && (row_counter < final_row_counter))
+                {
+                    returnValue.Pages.Add(datarow_to_page_usage(pages.Tables[0].Rows[row_counter]));
+                    row_counter++;
+                }
+            }
+            catch (Exception ee)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Error converting rows to return objects");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (QueryString["debug"] == "debug")
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.Message);
+                    Response.Output.WriteLine(ee.StackTrace);
+                }
+                return;
+            }
+
+            // If this was debug mode, then just write the tracer
+            if (QueryString["debug"] == "debug")
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseWebContentUsageReport";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
+        }
+
 
         private WebContent_Page_Usage datarow_to_page_usage(DataRow ChangeRow)
         {
@@ -1166,6 +1318,166 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Use the base class to serialize the object according to request protocol
             Serialize(returnValue, Response, Protocol, json_callback);
+        }
+
+
+        /// <summary> Get the list of all the web content pages ( excluding redirects ) for
+        /// consumption by the jQuery DataTable.net plug-in </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        public void Get_All_Pages_JDataTable(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Get ready to pull the informaiton from the query string which the
+            // jquery datatables library pass in
+            int displayStart;
+            int displayLength;
+            int sortingColumn1;
+            string sortDirection1 = "asc";
+            int sortingColumn2;
+
+
+            // Get the display start and length from the DataTables generated data URL
+            Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayStart"], out displayStart);
+            Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayLength"], out displayLength);
+
+            // Get the echo value
+            string sEcho = HttpContext.Current.Request.QueryString["sEcho"];
+
+            // Get the sorting column and sorting direction
+            Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_0"], out sortingColumn1);
+            if ((HttpContext.Current.Request.QueryString["sSortDir_0"] != null) && (HttpContext.Current.Request.QueryString["sSortDir_0"] == "desc"))
+                sortDirection1 = "desc";
+            Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_1"], out sortingColumn2);
+
+            // Get the dataset of pages
+            DataSet pages = get_all_content_pages(tracer);
+
+            // If null was returned, an error occurred
+            if (pages == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull pages list from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (QueryString["debug"] == "debug")
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            DataView resultsView = new DataView(pages.Tables[0]);
+
+            //// Should a filter be applied?
+            //if (term.Length > 0)
+            //{
+            //    int column = Convert.ToInt32(field.Replace("col", "")) - 1;
+            //    if ((column >= 0) && (column < results.Columns.Count))
+            //    {
+            //        string columnname = results.Columns[column].ColumnName;
+            //        resultsView.RowFilter = columnname + " like '%" + term.Replace("'", "''") + "%'";
+            //    }
+            //}
+
+            // Get the count of results
+            int total_results = resultsView.Count;
+
+            // If this was set to show ALL results, set some page/length information
+            if (displayLength == -1)
+            {
+                displayStart = 0;
+                displayLength = total_results;
+            }
+
+            // Start the JSON response
+            Response.Output.WriteLine("{");
+            Response.Output.WriteLine("\"sEcho\": " + sEcho + ",");
+            Response.Output.WriteLine("\"iTotalRecords\": \"" + total_results + "\",");
+            Response.Output.WriteLine("\"iTotalDisplayRecords\": \"" + total_results + "\",");
+            Response.Output.WriteLine("\"aaData\": [");
+
+            // Get columns to display 
+            List<DataColumn> columns_to_display = pages.Tables[0].Columns.Cast<DataColumn>().ToList();
+
+            // Sort by the correct column
+            DataColumn sortColumn = null;
+            if (sortingColumn1 > 0)
+            {
+                sortColumn = columns_to_display[sortingColumn1 - 1];
+                string column_name_for_sort = sortColumn.ColumnName;
+                resultsView.Sort = column_name_for_sort + " " + sortDirection1;
+
+                //if (column_name_for_sort == "InstitutionName")
+                //	resultsView.Sort = resultsView.Sort + ", Standard1 asc";
+
+                if (sortColumn.DataType == Type.GetType("System.Int32"))
+                {
+                    if (resultsView.RowFilter.Length > 0)
+                        resultsView.RowFilter = resultsView.RowFilter + " and " + column_name_for_sort + " >= 0 and " + column_name_for_sort + " is not null";
+                    else
+                        resultsView.RowFilter = column_name_for_sort + " >= 0 and " + column_name_for_sort + " is not null";
+                }
+                if (sortColumn.DataType == Type.GetType("System.String"))
+                {
+                    if (resultsView.RowFilter.Length > 0)
+                        resultsView.RowFilter = resultsView.RowFilter + " and " + column_name_for_sort + " <> '' and " + column_name_for_sort + " is not null";
+                    else
+                        resultsView.RowFilter = column_name_for_sort + " <> '' and " + column_name_for_sort + " is not null";
+                }
+            }
+
+            // Add the data for the rows to show
+            int adjust_for_filter = 0;
+            bool filter_modified = false;
+            for (int i = displayStart; (i < displayStart + displayLength) && (i < total_results); i++)
+            {
+
+                // Is this now over the resultsView count, possibly due to a sort?
+                if (i - adjust_for_filter > resultsView.Count - 1)
+                {
+                    if ((resultsView.RowFilter.Length > 0) && (sortColumn != null) && (!filter_modified))
+                    {
+                        adjust_for_filter = resultsView.Count;
+                        filter_modified = true;
+
+                        if (sortColumn.DataType == Type.GetType("System.Int32"))
+                            resultsView.RowFilter = sortColumn.ColumnName + " < 0 or " + sortColumn.ColumnName + " is null";
+                        if (sortColumn.DataType == Type.GetType("System.String"))
+                            resultsView.RowFilter = sortColumn.ColumnName + " = '' or " + sortColumn.ColumnName + " is null";
+                    }
+                    else
+                    {
+                        // Should never get here, but just in case, exit cleanly
+                        break;
+                    }
+                }
+
+                // Start the JSON response for this row
+                DataRow thisRow = resultsView[i - adjust_for_filter].Row;
+                Response.Output.Write("[ \"" + thisRow["Level1"] + "\",");
+                Response.Output.Write(" \"" + thisRow["Level2"] + "\",");
+                Response.Output.Write(" \"" + thisRow["Level3"] + "\",");
+                Response.Output.Write(" \"" + thisRow["Level4"] + "\",");
+                Response.Output.Write(" \"" + thisRow["Title"] + "\"");
+
+                // Finish this row
+                if ((i < displayStart + displayLength - 1) && (i < total_results - 1))
+                    Response.Output.WriteLine("],");
+                else
+                    Response.Output.WriteLine("]");
+            }
+
+            Response.Output.WriteLine("]");
+            Response.Output.WriteLine("}");
         }
 
 
