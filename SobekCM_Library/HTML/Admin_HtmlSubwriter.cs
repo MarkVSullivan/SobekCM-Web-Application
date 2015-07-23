@@ -109,6 +109,10 @@ namespace SobekCM.Library.HTML
                     adminViewer = new WebContent_History_AdminViewer(RequestSpecificValues);
                     break;
 
+                case Admin_Type_Enum.WebContent_Single:
+                    adminViewer = new WebContent_Single_AdminViewer(RequestSpecificValues);
+                    break;
+
                 case Admin_Type_Enum.WebContent_Usage:
                     adminViewer = new WebContent_Usage_AdminViewer(RequestSpecificValues);
                     break;
@@ -227,7 +231,11 @@ namespace SobekCM.Library.HTML
 				if (RequestSpecificValues.Current_User == null)
 					return false;
 
-                if ((RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Wordmarks) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Aggregation_Single) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Skins_Single) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Add_Collection_Wizard))
+                if ((RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Wordmarks) || 
+                    (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Aggregation_Single) || 
+                    (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Skins_Single) || 
+                    (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Add_Collection_Wizard) || 
+                    (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.WebContent_Single))
 					return true;
 
 
@@ -490,6 +498,9 @@ namespace SobekCM.Library.HTML
                     case Admin_Type_Enum.WebContent_History:
                     case Admin_Type_Enum.WebContent_Usage:
                         return "sbkUpav_ContainerInner";
+
+                    case Admin_Type_Enum.WebContent_Single:
+                        return "sbkSaav_ContainerInner";
 				}
 				return base.Container_CssClass;
 			}

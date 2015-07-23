@@ -38,7 +38,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void GetCompleteAggregationByCode(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void GetCompleteAggregationByCode(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             if (UrlSegments.Count > 0)
             {
@@ -54,7 +55,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     Complete_Item_Aggregation returnValue = get_complete_aggregation(aggrCode, true, tracer);
 
                     // If this was debug mode, then just write the tracer
-                    if (QueryString["debug"] == "debug")
+                    if ( IsDebug )
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -76,7 +77,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
                 catch (Exception ee)
                 {
-                    if (QueryString["debug"] == "debug")
+                    if ( IsDebug )
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -101,7 +102,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void GetAggregationByCode(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void GetAggregationByCode(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             if (UrlSegments.Count > 1)
             {
@@ -124,7 +126,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     Item_Aggregation returnValue = get_item_aggregation(aggrCode, languageEnum, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, tracer);
 
                     // If this was debug mode, then just write the tracer
-                    if (QueryString["debug"] == "debug")
+                    if ( IsDebug )
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -146,7 +148,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
                 catch (Exception ee)
                 {
-                    if (QueryString["debug"] == "debug")
+                    if ( IsDebug )
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -171,7 +173,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void GetAllAggregations(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void GetAllAggregations(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("AggregationServices.GetAllAggregations", "Return the list of all aggregations (including inactive and hidden)");
@@ -188,7 +191,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
 
                 // If this was debug mode, then just write the tracer
-                if (QueryString["debug"] == "debug")
+                if ( IsDebug )
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -210,7 +213,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
             catch (Exception ee)
             {
-                if (QueryString["debug"] == "debug")
+                if ( IsDebug )
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -234,8 +237,9 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
         /// <remarks> This REST API should be publicly available for users that are performing administrative work </remarks>
-        public void GetAggregationUploadedImages(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void GetAggregationUploadedImages(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             if (UrlSegments.Count > 0)
             {
@@ -279,7 +283,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void GetCollectionHierarchy(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void GetCollectionHierarchy(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("AggregationServices.GetCollectionHierarchy", "Return the hierarchical list of all active and unhidden aggregations");
@@ -290,7 +295,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Aggregation_Hierarchy returnValue = get_aggregation_hierarchy(tracer);
 
                 // If this was debug mode, then just write the tracer
-                if (QueryString["debug"] == "debug")
+                if ( IsDebug )
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -312,7 +317,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
             catch (Exception ee)
             {
-                if (QueryString["debug"] == "debug")
+                if ( IsDebug )
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -336,7 +341,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void GetCollectionStaticPage(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void GetCollectionStaticPage(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             if (UrlSegments.Count > 2)
             {
@@ -363,7 +369,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     HTML_Based_Content returnValue = get_item_aggregation_html_child_page(aggrCode, langEnum, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, childCode, tracer);
 
                     // If this was debug mode, then just write the tracer
-                    if (QueryString["debug"] == "debug")
+                    if ( IsDebug )
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -385,7 +391,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
                 catch (Exception ee)
                 {
-                    if (QueryString["debug"] == "debug")
+                    if ( IsDebug )
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("EXCEPTION CAUGHT!");

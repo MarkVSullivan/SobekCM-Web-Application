@@ -28,7 +28,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void GetCompleteWebSkin(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void GetCompleteWebSkin(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             if (UrlSegments.Count > 0)
             {
@@ -42,7 +43,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     Complete_Web_Skin_Object returnValue = get_complete_web_skin(skinCode, tracer);
 
                     // If this was debug mode, then just write the tracer
-                    if (QueryString["debug"] == "debug")
+                    if ( IsDebug )
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -64,7 +65,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
                 catch (Exception ee)
                 {
-                    if (QueryString["debug"] == "debug")
+                    if ( IsDebug )
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -89,7 +90,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void GetWebSkin(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void GetWebSkin(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             if (UrlSegments.Count > 1)
             {
@@ -108,7 +110,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     returnValue = get_web_skin(skinCode, languageEnum, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, tracer);
 
                     // If this was debug mode, then just write the tracer
-                    if (QueryString["debug"] == "debug")
+                    if ( IsDebug )
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -120,7 +122,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
                 catch ( Exception ee )
                 {
-                    if (QueryString["debug"] == "debug")
+                    if ( IsDebug )
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -157,7 +159,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void GetOrderedCodes(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void GetOrderedCodes(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             // Get the JSON-P callback function
             string json_callback = "parseSkinCodes";
@@ -175,8 +178,9 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
         /// <remarks> This REST API should be publicly available for users that are performing administrative work </remarks>
-        public void GetWebSkinUploadedImages(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        public void GetWebSkinUploadedImages(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             if (UrlSegments.Count > 0)
             {

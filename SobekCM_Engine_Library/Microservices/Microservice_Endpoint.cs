@@ -59,7 +59,8 @@ namespace SobekCM.Engine_Library.Microservices
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="RequestForm"></param>
-        public void Invoke(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, NameValueCollection RequestForm )
+        /// <param name="IsDebug"></param>
+        public void Invoke(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, NameValueCollection RequestForm, bool IsDebug )
         {
             if ((methodInfo == null) || (restApiObject == null))
             {
@@ -72,7 +73,7 @@ namespace SobekCM.Engine_Library.Microservices
 
             // Invokation is different, dependingon whether this is a PUT or POST
             if ( RequestType == Microservice_Endpoint_RequestType_Enum.GET )
-                methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, QueryString, Protocol });
+                methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, QueryString, Protocol, IsDebug });
             else
                 methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, Protocol, RequestForm });
         }

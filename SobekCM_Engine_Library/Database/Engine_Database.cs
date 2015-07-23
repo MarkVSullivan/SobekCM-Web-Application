@@ -4359,8 +4359,12 @@ namespace SobekCM.Engine_Library.Database
             }
         }
 
-        /// <summary> Gets the usage report for all top-level web content pages between two dates </summary>
+        /// <summary> Gets the usage report for all top-level web content pages between two dates </summary> 
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="Year1"> Year for the beginning of the range to pull stats for </param>
+        /// <param name="Month1"> Month for the beginning of the range to pull stats for </param>
+        /// <param name="Year2"> Year for the end of the range to pull stats for </param>
+        /// <param name="Month2"> Month for the end of the range to pull stats for </param>
         /// <returns> Dataset of usage on top-level pages between two dates </returns>
         /// <remarks> This calls the 'SobekCM_WebContent_Usage_Report' stored procedure </remarks> 
         public static DataSet WebContent_Get_Usage_Report(int Year1, int Month1, int Year2, int Month2, Custom_Tracer Tracer)

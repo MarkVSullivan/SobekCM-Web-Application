@@ -172,14 +172,23 @@ namespace SobekCM.Core.Navigation
                     string simple_html_cms_url = this_base_url + Current_Mode.Info_Browse_Mode + urlOptions1;
                     switch (Current_Mode.WebContent_Type)
                     {
+                        case WebContent_Type_Enum.Delete_Verify:
+                            return (simple_html_cms_url.IndexOf("?") > 0) ? simple_html_cms_url + "&mode=verify" : simple_html_cms_url + "?mode=verify";
+
                         case WebContent_Type_Enum.Edit:
                             return (simple_html_cms_url.IndexOf("?") > 0) ? simple_html_cms_url + "&mode=edit" : simple_html_cms_url + "?mode=edit";
+
+                        case WebContent_Type_Enum.Manage_Menu:
+                            return (simple_html_cms_url.IndexOf("?") > 0) ? simple_html_cms_url + "&mode=menu" : simple_html_cms_url + "?mode=menu";
 
                         case WebContent_Type_Enum.Milestones:
                             return (simple_html_cms_url.IndexOf("?") > 0) ? simple_html_cms_url + "&mode=miletsones" : simple_html_cms_url + "?mode=miletsones";
 
                         case WebContent_Type_Enum.Permissions:
                             return (simple_html_cms_url.IndexOf("?") > 0) ? simple_html_cms_url + "&mode=permissions" : simple_html_cms_url + "?mode=permissions";
+
+                        case WebContent_Type_Enum.Usage:
+                            return (simple_html_cms_url.IndexOf("?") > 0) ? simple_html_cms_url + "&mode=usage" : simple_html_cms_url + "?mode=usage";
 
                         default:
                             return simple_html_cms_url;

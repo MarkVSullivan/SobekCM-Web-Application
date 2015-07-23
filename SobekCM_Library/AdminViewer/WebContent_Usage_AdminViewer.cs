@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
@@ -11,6 +8,8 @@ using SobekCM.Tools;
 
 namespace SobekCM.Library.AdminViewer
 {
+    /// <summary> Class allows an administrator to view overall usage across all web content pages </summary>
+    /// <remarks> This class extends the <see cref="abstract_AdminViewer"/> class. </remarks>
     public class WebContent_Usage_AdminViewer : abstract_AdminViewer
     {
         private string actionMessage;

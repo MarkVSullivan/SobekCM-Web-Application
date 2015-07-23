@@ -174,7 +174,7 @@ namespace SobekCM.Core.MicroservicesClient
         /// <param name="PostData"> Data that should be posted to the microservice endpoint for this request </param>
         /// <returns> An object of the type requested, from the serializing effort </returns>
         /// <remarks> This only works for simple GET requests at the moment, as no object is POSTed to the remote microservice URL </remarks>
-        private static T Deserialize<T>(string MicroserviceUri, Microservice_Endpoint_Protocol_Enum MicroserviceProtocol, List<KeyValuePair<string,string>> PostData )
+        protected T Deserialize<T>(string MicroserviceUri, Microservice_Endpoint_Protocol_Enum MicroserviceProtocol, List<KeyValuePair<string,string>> PostData )
         {
             try
             {

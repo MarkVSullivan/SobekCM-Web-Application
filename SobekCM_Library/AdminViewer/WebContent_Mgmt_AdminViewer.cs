@@ -11,6 +11,7 @@ namespace SobekCM.Library.AdminViewer
 {
     /// <summary> Admin viewer lists all of the top-level static web content pages, as well as all the related
     /// top-level redirects within the system </summary>
+    /// <remarks> This class extends the <see cref="abstract_AdminViewer"/> class. </remarks>
     public class WebContent_Mgmt_AdminViewer : abstract_AdminViewer
     {
         private string actionMessage;
@@ -185,6 +186,7 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("  <table id=\"sbkWcav_MainTable\" class=\"sbkWcav_Table display\">");
                     Output.WriteLine("    <thead>");
                     Output.WriteLine("      <tr>");
+                    Output.WriteLine("        <th>ID</th>");
                     Output.WriteLine("        <th>URL</th>");
                     Output.WriteLine("        <th>Title</th>");
                     Output.WriteLine("      </tr>");
@@ -218,12 +220,12 @@ namespace SobekCM.Library.AdminViewer
 
 
                     Output.WriteLine("           \"sAjaxSource\": \"" + redirect_url + "\",");
-                    Output.WriteLine("           \"aoColumns\": [ null, null ]  });");
+                    Output.WriteLine("           \"aoColumns\": [ { \"bVisible\": false }, null, null ]  });");
                     Output.WriteLine();
 
                     Output.WriteLine("     $('#sbkWcav_MainTable tbody').on( 'click', 'tr', function () {");
                     Output.WriteLine("          var aData = oTable.fnGetData( this );");
-                    Output.WriteLine("          var iId = aData[0];");
+                    Output.WriteLine("          var iId = aData[1];");
                     Output.WriteLine("          if ( shifted == true )");
                     Output.WriteLine("          {");
                     Output.WriteLine("             window.open('" + RequestSpecificValues.Current_Mode.Base_URL + "' + iId);");

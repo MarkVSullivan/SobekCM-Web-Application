@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Web.ModelBinding;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Microservices;
@@ -84,9 +85,12 @@ namespace SobekCM.Engine_Library
                     if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.BINARY)
                         Context.Request.ContentType = "application/octet-stream";
 
+                    // Determine if this is currently in a valid DEBUG mode
+                    bool debug = (Context.Request.QueryString["debug"] == "debug");
+
                     try
                     {
-                        endpoint.Invoke(Context.Response, paths, Context.Request.QueryString, Context.Request.Form);
+                        endpoint.Invoke(Context.Response, paths, Context.Request.QueryString, Context.Request.Form, debug);
                     }
                     catch (Exception ee)
                     {

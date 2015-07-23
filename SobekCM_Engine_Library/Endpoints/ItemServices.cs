@@ -31,7 +31,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void GetItemCitation(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void GetItemCitation(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             // Must at least have one URL segment for the BibID
             if (UrlSegments.Count > 0)
@@ -56,7 +57,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         if (returnValue == null)
                         {
                             // If this was debug mode, then just write the tracer
-                            if (QueryString["debug"] == "debug")
+                            if ( IsDebug )
                             {
                                 tracer.Add_Trace("ItemServices.GetItemCitation", "NULL value returned from getBriefItem method");
 
@@ -73,7 +74,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         BriefItem_CitationResponse responder = new BriefItem_CitationResponse(returnValue);
 
                         // If this was debug mode, then just write the tracer
-                        if (QueryString["debug"] == "debug")
+                        if ( IsDebug )
                         {
                             Response.ContentType = "text/plain";
                             Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -98,7 +99,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         tracer.Add_Trace("ItemServices.GetItemCitation", "Requested VID 0000 - Currently invalid");
 
                         // If this was debug mode, then just write the tracer
-                        if (QueryString["debug"] == "debug")
+                        if ( IsDebug )
                         {
                             Response.ContentType = "text/plain";
                             Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -109,7 +110,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
                 catch (Exception ee)
                 {
-                    if (QueryString["debug"] == "debug")
+                    if ( IsDebug )
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -135,7 +136,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void GetItemBrief(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void GetItemBrief(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             // Must at least have one URL segment for the BibID
             if (UrlSegments.Count > 0)
@@ -159,7 +161,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         if (returnValue == null)
                         {
                             // If this was debug mode, then just write the tracer
-                            if (QueryString["debug"] == "debug")
+                            if ( IsDebug )
                             {
                                 tracer.Add_Trace("ItemServices.GetItemBrief", "NULL value returned from getBriefItem method");
 
@@ -172,7 +174,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         }
 
                         // If this was debug mode, then just write the tracer
-                        if (QueryString["debug"] == "debug")
+                        if ( IsDebug )
                         {
                             Response.ContentType = "text/plain";
                             Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -197,7 +199,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         tracer.Add_Trace("ItemServices.GetItemBrief", "Requested VID 0000 - Currently invalid");
 
                         // If this was debug mode, then just write the tracer
-                        if (QueryString["debug"] == "debug")
+                        if ( IsDebug )
                         {
                             Response.ContentType = "text/plain";
                             Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -208,7 +210,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
                 catch (Exception ee)
                 {
-                    if (QueryString["debug"] == "debug")
+                    if ( IsDebug )
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -235,7 +237,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void Get_Item_Info_Legacy(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void Get_Item_Info_Legacy(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             // Must at least have one URL segment for the BibID
             if (UrlSegments.Count > 0)
@@ -267,7 +270,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         if (returnValue == null)
                         {
                             // If this was debug mode, then just write the tracer
-                            if (QueryString["debug"] == "debug")
+                            if ( IsDebug )
                             {
                                 tracer.Add_Trace("ItemServices.Get_Item_Info_Legacy", "NULL value returned from getBriefItem method");
 
@@ -280,7 +283,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         }
 
                         // If this was debug mode, then just write the tracer
-                        if (QueryString["debug"] == "debug")
+                        if ( IsDebug )
                         {
                             Response.ContentType = "text/plain";
                             Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -300,7 +303,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         tracer.Add_Trace("ItemServices.Get_Item_Info_Legacy", "Requested VID 0000 - Invalid");
 
                         // If this was debug mode, then just write the tracer
-                        if (QueryString["debug"] == "debug")
+                        if ( IsDebug )
                         {
                             Response.ContentType = "text/plain";
                             Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -311,7 +314,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
                 catch (Exception ee)
                 {
-                    if (QueryString["debug"] == "debug")
+                    if ( IsDebug )
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -507,7 +510,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void GetRandomItem(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void GetRandomItem(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON) || ( Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P ))
             {
@@ -539,7 +543,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void GetItemRdf(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void GetItemRdf(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             if (Protocol == Microservice_Endpoint_Protocol_Enum.XML)
             {
@@ -576,7 +581,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void GetItemXml(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void GetItemXml(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             if (Protocol == Microservice_Endpoint_Protocol_Enum.XML)
             {

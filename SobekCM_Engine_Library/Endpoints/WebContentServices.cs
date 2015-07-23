@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
@@ -46,7 +45,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void Get_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void Get_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
             WebContentEndpointErrorEnum errorType;
@@ -54,7 +54,7 @@ namespace SobekCM.Engine_Library.Endpoints
             if (returnValue == null)
             {
                 // If this was debug mode, then just write the tracer
-                if (QueryString["debug"] == "debug")
+                if ( IsDebug )
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -85,8 +85,9 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // If this was debug mode, then just write the tracer
-            if (QueryString["debug"] == "debug")
+            if ( IsDebug )
             {
+                tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content", "Debug mode detected");
                 Response.ContentType = "text/plain";
                 Response.Output.WriteLine("DEBUG MODE DETECTED");
                 Response.Output.WriteLine();
@@ -374,7 +375,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void Get_Global_Recent_Updates(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void Get_Global_Recent_Updates(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -419,7 +421,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if (QueryString["debug"] == "debug")
+                if ( IsDebug )
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -471,7 +473,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     Response.StatusCode = 500;
 
                     // If this was debug mode, then just write the tracer
-                    if (QueryString["debug"] == "debug")
+                    if ( IsDebug )
                     {
                         Response.Output.WriteLine();
                         Response.Output.WriteLine();
@@ -506,7 +508,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     Response.StatusCode = 500;
 
                     // If this was debug mode, then just write the tracer
-                    if (QueryString["debug"] == "debug")
+                    if ( IsDebug )
                     {
                         Response.Output.WriteLine();
                         Response.Output.WriteLine();
@@ -523,8 +525,9 @@ namespace SobekCM.Engine_Library.Endpoints
 
             
             // If this was debug mode, then just write the tracer
-            if (QueryString["debug"] == "debug")
+            if ( IsDebug )
             {
+                tracer.Add_Trace("WebContentServices.Get_Global_Recent_Updates", "Debug mode detected");
                 Response.ContentType = "text/plain";
                 Response.Output.WriteLine("DEBUG MODE DETECTED");
                 Response.Output.WriteLine();
@@ -544,12 +547,352 @@ namespace SobekCM.Engine_Library.Endpoints
             Serialize(returnValue, Response, Protocol, json_callback);
         }
 
+        /// <summary> Get the list of all the recent updates for consumption by the jQuery DataTable.net plug-in </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_Global_Recent_Updates_JDataTable(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Get ready to pull the informaiton from the query string which the
+            // jquery datatables library pass in
+            int displayStart;
+            int displayLength;
+            int sortingColumn1;
+            string sortDirection1 = "asc";
+
+            // Get the display start and length from the DataTables generated data URL
+            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
+            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayLength"], out displayLength)) displayLength = 50;
+
+            // Get the echo value
+            string sEcho = HttpContext.Current.Request.QueryString["sEcho"];
+
+            // Get the sorting column and sorting direction
+            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_0"], out sortingColumn1)) sortingColumn1 = 0;
+            if ((HttpContext.Current.Request.QueryString["sSortDir_0"] != null) && (HttpContext.Current.Request.QueryString["sSortDir_0"] == "desc"))
+                sortDirection1 = "desc";
+
+            // Get the dataset of recent updates
+            DataSet changes = get_global_recent_updates_set(tracer); 
+
+            // If null was returned, an error occurred
+            if (changes == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull pages list from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // Create the view for sorting and filtering
+            DataView resultsView = new DataView(changes.Tables[0]);
+
+            // Should a filter be applied?
+            if (!String.IsNullOrEmpty(QueryString["l1"]))
+            {
+                string level1_filter = QueryString["l1"];
+                if (!String.IsNullOrEmpty(QueryString["l2"]))
+                {
+                    string level2_filter = QueryString["l2"];
+                    resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "'";
+                }
+                else
+                {
+                    resultsView.RowFilter = "Level1='" + level1_filter + "'";
+                }
+            }
+
+            // Get the count of results
+            int total_results = resultsView.Count;
+
+            // If this was set to show ALL results, set some page/length information
+            if (displayLength == -1)
+            {
+                displayStart = 0;
+                displayLength = total_results;
+            }
+
+            // Start the JSON response
+            Response.Output.WriteLine("{");
+            Response.Output.WriteLine("\"sEcho\": " + sEcho + ",");
+            Response.Output.WriteLine("\"iTotalRecords\": \"" + total_results + "\",");
+            Response.Output.WriteLine("\"iTotalDisplayRecords\": \"" + total_results + "\",");
+            Response.Output.WriteLine("\"aaData\": [");
+
+            // Sort by the correct column
+            if ((sortingColumn1 > 0) || (sortDirection1 != "asc"))
+            {
+                if (sortingColumn1 == 0)
+                {
+                    // Must be descending column zero then
+                    resultsView.Sort = "Level1 desc, Level2 desc, Level3 desc, Level4 desc, Level5 desc, Level6 desc, Level7 desc, Level8 desc";
+                }
+                else if (sortingColumn1 == 1)
+                {
+                    resultsView.Sort = "Title " + sortDirection1;
+                }
+                else if (sortingColumn1 == 2)
+                {
+                    resultsView.Sort = "MilestoneDate " + sortDirection1;
+                }
+                else if (sortingColumn1 == 3)
+                {
+                    resultsView.Sort = "MilestoneUser " + sortDirection1;
+                }
+                else if (sortingColumn1 == 4)
+                {
+                    resultsView.Sort = "Milestone " + sortDirection1;
+                }
+            }
+
+            // Add the data for the rows to show
+            for (int i = displayStart; (i < displayStart + displayLength) && (i < total_results); i++)
+            {
+                // Start the JSON response for this row
+                DataRow thisRow = resultsView[i].Row;
+
+                Response.Output.Write("[\"" + thisRow["Level1"]);
+                if ((thisRow["Level2"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level2"].ToString())))
+                {
+                    Response.Output.Write("/" + thisRow["Level2"]);
+                    if ((thisRow["Level3"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level3"].ToString())))
+                    {
+                        Response.Output.Write("/" + thisRow["Level3"]);
+                        if ((thisRow["Level4"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level4"].ToString())))
+                        {
+                            Response.Output.Write("/" + thisRow["Level4"]);
+                            if ((thisRow["Level5"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level5"].ToString())))
+                            {
+                                Response.Output.Write("/" + thisRow["Level5"]);
+                                if ((thisRow["Level6"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level6"].ToString())))
+                                {
+                                    Response.Output.Write("/" + thisRow["Level6"]);
+                                    if ((thisRow["Level7"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level7"].ToString())))
+                                    {
+                                        Response.Output.Write("/" + thisRow["Level7"]);
+                                        if ((thisRow["Level8"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level8"].ToString())))
+                                        {
+                                            Response.Output.Write("/" + thisRow["Level8"]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                Response.Output.Write("\", \"" + thisRow["Title"] + "\", ");
+                Response.Output.Write("\", \"" + (DateTime.Parse(thisRow["MilestoneDate"].ToString())).ToString() + "\", ");
+                Response.Output.Write("\", \"" + thisRow["MilestoneUser"] + "\", ");
+                Response.Output.Write("\", \"" + thisRow["Milestone"] + "\" ");
+
+                // Finish this row
+                if ((i < displayStart + displayLength - 1) && (i < total_results - 1))
+                    Response.Output.WriteLine("],");
+                else
+                    Response.Output.WriteLine("]");
+            }
+
+            Response.Output.WriteLine("]");
+            Response.Output.WriteLine("}");
+        }
+
+        /// <summary> Gets the list of possible next level from an existing page in the recent updates </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_Global_Recent_Updates_NextLevel(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+            tracer.Add_Trace("WebContentServices.Get_Global_Recent_Updates_NextLevel", "Into endpoint code");
+
+            // Get the dataset of recent updates
+            DataSet changes = get_global_recent_updates_set(tracer); 
+
+            // If null was returned, an error occurred
+            if (changes == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull recent updates from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // Start the return list
+            List<string> returnValue = new List<string>();
+
+            try
+            {
+
+                // There are two special cases that we are already prepared for from the database.
+                //    - The very top level
+                //    - The second level
+                if (UrlSegments.Count <= 1)
+                {
+                    // One of the two special cases
+                    if (UrlSegments.Count == 0)
+                    {
+                        tracer.Add_Trace("WebContentServices.Get_Global_Recent_Updates_NextLevel", "Special case, top level");
+                        foreach (DataRow thisRow in changes.Tables[2].Rows)
+                        {
+                            returnValue.Add(thisRow[0].ToString());
+                        }
+                    }
+                    else
+                    {
+                        tracer.Add_Trace("WebContentServices.Get_Global_Recent_Updates_NextLevel", "Special case, second level");
+                        string level1_special = UrlSegments[0];
+                        DataView specialView = new DataView(changes.Tables[3])
+                        {
+                            RowFilter = "Level1 = '" + level1_special + "'"
+                        };
+
+                        foreach (DataRowView thisRow in specialView)
+                        {
+                            returnValue.Add(thisRow[1].ToString());
+                        }
+                    }
+                }
+                else
+                {
+                    tracer.Add_Trace("WebContentServices.Get_Global_Recent_Updates_NextLevel", "Deeper, non-special case.  Preparing to scan list.");
+                    string level1 = UrlSegments[0];
+                    string level2 = UrlSegments[1];
+
+                    // Build the filter
+                    StringBuilder filterBuilder = new StringBuilder("Level1='" + level1 + "' and Level2='" + level2 + "'");
+                    int column_counter = 3;
+                    if ((UrlSegments.Count > 2) && (!String.IsNullOrWhiteSpace(UrlSegments[2])))
+                    {
+                        filterBuilder.Append(" and Level3='" + UrlSegments[2] + "'");
+                        column_counter++;
+
+                        if ((UrlSegments.Count > 3) && (!String.IsNullOrWhiteSpace(UrlSegments[3])))
+                        {
+                            filterBuilder.Append(" and Level4='" + UrlSegments[3] + "'");
+                            column_counter++;
+
+                            if ((UrlSegments.Count > 4) && (!String.IsNullOrWhiteSpace(UrlSegments[4])))
+                            {
+                                filterBuilder.Append(" and Level5='" + UrlSegments[4] + "'");
+                                column_counter++;
+
+                                if ((UrlSegments.Count > 5) && (!String.IsNullOrWhiteSpace(UrlSegments[5])))
+                                {
+                                    filterBuilder.Append(" and Level6='" + UrlSegments[5] + "'");
+                                    column_counter++;
+
+                                    if ((UrlSegments.Count > 6) && (!String.IsNullOrWhiteSpace(UrlSegments[6])))
+                                    {
+                                        filterBuilder.Append(" and Level7='" + UrlSegments[6] + "'");
+                                        column_counter++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    tracer.Add_Trace("WebContentServices.Get_Global_Recent_Updates_NextLevel", filterBuilder.ToString());
+
+                    // Create the dataview
+                    DataView specialView = new DataView(changes.Tables[0])
+                    {
+                        RowFilter = filterBuilder.ToString()
+                    };
+
+
+                    // Step through and add each NEW term
+                    foreach (DataRowView thisRow in specialView)
+                    {
+                        if (thisRow[column_counter] != DBNull.Value)
+                        {
+                            string thisTerm = thisRow[column_counter].ToString().ToLower();
+                            if ((!String.IsNullOrEmpty(thisTerm)) && (!returnValue.Contains(thisTerm)))
+                                returnValue.Add(thisTerm);
+                        }
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Error encountered determing next level");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.Message);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.StackTrace);
+
+                }
+                return;
+            }
+
+            // If this was debug mode, then just write the tracer
+            if (IsDebug)
+            {
+                tracer.Add_Trace("WebContentServices.Get_Global_Recent_Updates_NextLevel", "Debug mode detected");
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseGlobalUpdatesNextLevel";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
+        }
+
         /// <summary> Get the list of all users that have participated in the recent updates to all top-level static web content pages </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void Get_Global_Recent_Updates_Users(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void Get_Global_Recent_Updates_Users(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -567,7 +910,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if (QueryString["debug"] == "debug")
+                if ( IsDebug )
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -589,8 +932,9 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // If this was debug mode, then just write the tracer
-            if (QueryString["debug"] == "debug")
+            if ( IsDebug )
             {
+                tracer.Add_Trace("WebContentServices.Get_Global_Recent_Updates_Users", "Debug mode detected");
                 Response.ContentType = "text/plain";
                 Response.Output.WriteLine("DEBUG MODE DETECTED");
                 Response.Output.WriteLine();
@@ -688,7 +1032,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void Get_Global_Usage_Report(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void Get_Global_Usage_Report(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -746,7 +1091,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if (QueryString["debug"] == "debug")
+                if ( IsDebug )
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -790,7 +1135,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if (QueryString["debug"] == "debug")
+                if ( IsDebug )
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -805,8 +1150,9 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // If this was debug mode, then just write the tracer
-            if (QueryString["debug"] == "debug")
+            if ( IsDebug )
             {
+                tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report", "Debug mode detected");
                 Response.ContentType = "text/plain";
                 Response.Output.WriteLine("DEBUG MODE DETECTED");
                 Response.Output.WriteLine();
@@ -826,157 +1172,7 @@ namespace SobekCM.Engine_Library.Endpoints
             Serialize(returnValue, Response, Protocol, json_callback);
         }
 
-        /// <summary> Get usage of all web content pages between two dates, to be output for consumption by the jQuery DataTables.net plugin </summary>
-        /// <param name="Response"></param>
-        /// <param name="UrlSegments"></param>
-        /// <param name="QueryString"></param>
-        /// <param name="Protocol"></param>
-        public void Get_Global_Usage_Report_JDataTable(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
-        {
-            Custom_Tracer tracer = new Custom_Tracer();
-
-
-
-
-
-
-
-
-
-            // Set the default page information
-            int page = 1;
-            int rows_per_page = 100;
-
-            // Check for rows_per_page from the query string
-            if (!String.IsNullOrEmpty(QueryString["rowsPerPage"]))
-            {
-                if (!Int32.TryParse(QueryString["rowsPerPage"], out rows_per_page))
-                    rows_per_page = 100;
-                else if (rows_per_page < 1)
-                    rows_per_page = 100;
-            }
-
-            // Look for the page number
-            if (UrlSegments.Count > 0)
-            {
-                if (!Int32.TryParse(UrlSegments[0], out page))
-                    page = 1;
-                else if (page < 1)
-                    page = 1;
-            }
-
-            // Add a trace
-            tracer.Add_Trace("WebContenServices.Get_Global_Usage_Report", "Pull usage report page " + page + " with " + rows_per_page + " rows per page");
-
-            // Determine the range
-            int year1 = 2000;
-            int month1 = 1;
-            int year2 = DateTime.Now.Year + 1;
-            int month2 = 1;
-            int temp;
-            if ((!String.IsNullOrEmpty(QueryString["year1"])) && (Int32.TryParse(QueryString["year1"].ToUpper(), out temp)))
-                year1 = temp;
-            if ((!String.IsNullOrEmpty(QueryString["month1"])) && (Int32.TryParse(QueryString["month1"].ToUpper(), out temp)))
-                month1 = temp;
-            if ((!String.IsNullOrEmpty(QueryString["year2"])) && (Int32.TryParse(QueryString["year2"].ToUpper(), out temp)))
-                year2 = temp;
-            if ((!String.IsNullOrEmpty(QueryString["month2"])) && (Int32.TryParse(QueryString["month2"].ToUpper(), out temp)))
-                month2 = temp;
-
-            // Add a trace
-            tracer.Add_Trace("WebContenServices.Get_Global_Usage_Report", "Report will be from " + year1 + "/" + month1 + " and " + year2 + "/" + month2);
-
-            // Get the dataset of results
-            DataSet pages = get_global_usage_report_dataset(year1, month1, year2, month2, tracer);
-
-            // If null was returned, an error occurred
-            if (pages == null)
-            {
-                Response.ContentType = "text/plain";
-                Response.Output.WriteLine("Unable to pull usage report from the database");
-                Response.StatusCode = 500;
-
-                // If this was debug mode, then just write the tracer
-                if (QueryString["debug"] == "debug")
-                {
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine("DEBUG MODE DETECTED");
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine(tracer.Text_Trace);
-                }
-                return;
-            }
-
-            // Create the list for the results
-            WebContent_Usage_Report returnValue = new WebContent_Usage_Report
-            {
-                Page = page,
-                RowsPerPage = rows_per_page,
-                RangeStart = year1 + "-" + month1,
-                RangeEnd = year2 + "-" + month2
-            };
-
-            // Prepare to step through the rows requested and convert them for returning
-            int row_counter = (page - 1) * rows_per_page;
-            int final_row_counter = page * rows_per_page;
-
-
-            try
-            {
-                // Set the total number of changes 
-                returnValue.Total = pages.Tables[0].Rows.Count;
-
-                // Add the changes within the page requested
-                while ((row_counter < pages.Tables[0].Rows.Count) && (row_counter < final_row_counter))
-                {
-                    returnValue.Pages.Add(datarow_to_page_usage(pages.Tables[0].Rows[row_counter]));
-                    row_counter++;
-                }
-            }
-            catch (Exception ee)
-            {
-                Response.ContentType = "text/plain";
-                Response.Output.WriteLine("Error converting rows to return objects");
-                Response.StatusCode = 500;
-
-                // If this was debug mode, then just write the tracer
-                if (QueryString["debug"] == "debug")
-                {
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine("DEBUG MODE DETECTED");
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine(tracer.Text_Trace);
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine(ee.Message);
-                    Response.Output.WriteLine(ee.StackTrace);
-                }
-                return;
-            }
-
-            // If this was debug mode, then just write the tracer
-            if (QueryString["debug"] == "debug")
-            {
-                Response.ContentType = "text/plain";
-                Response.Output.WriteLine("DEBUG MODE DETECTED");
-                Response.Output.WriteLine();
-                Response.Output.WriteLine(tracer.Text_Trace);
-
-                return;
-            }
-
-            // Get the JSON-P callback function
-            string json_callback = "parseWebContentUsageReport";
-            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
-            {
-                json_callback = QueryString["callback"];
-            }
-
-            // Use the base class to serialize the object according to request protocol
-            Serialize(returnValue, Response, Protocol, json_callback);
-        }
-
+ 
 
         private WebContent_Page_Usage datarow_to_page_usage(DataRow ChangeRow)
         {
@@ -1022,312 +1218,13 @@ namespace SobekCM.Engine_Library.Endpoints
             return usedPage;
         }
 
-        /// <summary> Get the full data set of all top-level static pages (excluding redirects) </summary>
-        /// <param name="Tracer"> Custom tracer </param>
-        /// <returns></returns>
-        private DataSet get_global_usage_report_dataset(int Year1, int Month1, int Year2, int Month2, Custom_Tracer Tracer)
-        {
-            // Look in the cache first
-            DataSet fromCache = CachedDataManager.WebContent.Retrieve_Global_Usage_Report(Year1, Month1, Year2, Month2, Tracer);
-            if (fromCache != null)
-                return fromCache;
-
-            // Try to pull from the database
-            DataSet fromDb = Engine_Database.WebContent_Get_Usage_Report(Year1, Month1, Year2, Month2, Tracer);
-
-            // Store in the cache if not null
-            if (fromDb != null)
-            {
-                CachedDataManager.WebContent.Store_Global_Usage_Report(fromDb, Year1, Month1, Year2, Month2, Tracer);
-            }
-
-            return fromDb;
-        }
-
-        #endregion
-
-        #region Endpoints related to the complete list of global redirects
-
-        /// <summary> Get the list of all the global redirects </summary>
+        /// <summary> Get the list of usage for a global usage report for consumption by the jQuery DataTable.net plug-in </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void Get_All_Redirects(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
-        {
-            Custom_Tracer tracer = new Custom_Tracer();
-
-            // Set the default page information
-            int page = 1;
-            int rows_per_page = 100;
-
-            // Check for rows_per_page from the query string
-            if (!String.IsNullOrEmpty(QueryString["rowsPerPage"]))
-            {
-                if (!Int32.TryParse(QueryString["rowsPerPage"], out rows_per_page))
-                    rows_per_page = 100;
-                else if (rows_per_page < 1)
-                    rows_per_page = 100;
-            }
-
-            // Look for the page number
-            if (UrlSegments.Count > 0)
-            {
-                if (!Int32.TryParse(UrlSegments[0], out page))
-                    page = 1;
-                else if (page < 1)
-                    page = 1;
-            }
-
-            // Add a trace
-            tracer.Add_Trace("WebContenServices.Get_All_Redirects", "Get list of global redirects, page " + page + " with " + rows_per_page + " rows per page");
-
-            // Get the dataset of redirects
-            DataSet pages = get_all_redirects(tracer);
-
-            // If null was returned, an error occurred
-            if (pages == null)
-            {
-                Response.ContentType = "text/plain";
-                Response.Output.WriteLine("Unable to pull pages list from the database");
-                Response.StatusCode = 500;
-
-                // If this was debug mode, then just write the tracer
-                if (QueryString["debug"] == "debug")
-                {
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine("DEBUG MODE DETECTED");
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine(tracer.Text_Trace);
-                }
-                return;
-            }
-
-            // Create the list for the results
-            WebContent_Basic_Pages returnValue = new WebContent_Basic_Pages
-            {
-                Page = page,
-                RowsPerPage = rows_per_page
-            };
-
-            // Prepare to step through the rows requested and convert them for returning
-            int row_counter = (page - 1) * rows_per_page;
-            int final_row_counter = page * rows_per_page;
-
-
-            try
-            {
-                // Set the total number of changes 
-                returnValue.Total = pages.Tables[0].Rows.Count;
-
-                // Add the changes within the page requested
-                while ((row_counter < pages.Tables[0].Rows.Count) && (row_counter < final_row_counter))
-                {
-                    returnValue.ContentCollection.Add(datarow_to_basic_info(pages.Tables[0].Rows[row_counter]));
-                    row_counter++;
-                }
-            }
-            catch (Exception ee)
-            {
-                Response.ContentType = "text/plain";
-                Response.Output.WriteLine("Error converting rows to return objects");
-                Response.StatusCode = 500;
-
-                // If this was debug mode, then just write the tracer
-                if (QueryString["debug"] == "debug")
-                {
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine("DEBUG MODE DETECTED");
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine(tracer.Text_Trace);
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine(ee.Message);
-                    Response.Output.WriteLine(ee.StackTrace);
-                }
-                return;
-            }
-
-            // If this was debug mode, then just write the tracer
-            if (QueryString["debug"] == "debug")
-            {
-                Response.ContentType = "text/plain";
-                Response.Output.WriteLine("DEBUG MODE DETECTED");
-                Response.Output.WriteLine();
-                Response.Output.WriteLine(tracer.Text_Trace);
-
-                return;
-            }
-
-            // Get the JSON-P callback function
-            string json_callback = "parseAllRedirects";
-            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
-            {
-                json_callback = QueryString["callback"];
-            }
-
-            // Use the base class to serialize the object according to request protocol
-            Serialize(returnValue, Response, Protocol, json_callback);
-        }
-
-        /// <summary> Get the full data set of all global redirects </summary>
-        /// <param name="Tracer"> Custom tracer </param>
-        /// <returns></returns>
-        private DataSet get_all_redirects(Custom_Tracer Tracer)
-        {
-            // Look in the cache first
-            DataSet fromCache = CachedDataManager.WebContent.Retrieve_Redirects(Tracer);
-            if (fromCache != null)
-                return fromCache;
-
-            // Try to pull from the database
-            DataSet fromDb = Engine_Database.WebContent_Get_All_Redirects(Tracer);
-
-            // Store in the cache if not null
-            if (fromDb != null)
-            {
-                CachedDataManager.WebContent.Store_Redirects(fromDb, Tracer);
-            }
-
-            return fromDb;
-        }
-
-        #endregion
-
-        #region Endpoints related to the complete list of web content pages (excluding redirects)
-
-        /// <summary> Get the list of all the web content pages ( excluding redirects ) </summary>
-        /// <param name="Response"></param>
-        /// <param name="UrlSegments"></param>
-        /// <param name="QueryString"></param>
-        /// <param name="Protocol"></param>
-        public void Get_All_Pages(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
-        {
-            Custom_Tracer tracer = new Custom_Tracer();
-
-            // Set the default page information
-            int page = 1;
-            int rows_per_page = 100;
-
-            // Check for rows_per_page from the query string
-            if (!String.IsNullOrEmpty(QueryString["rowsPerPage"]))
-            {
-                if (!Int32.TryParse(QueryString["rowsPerPage"], out rows_per_page))
-                    rows_per_page = 100;
-                else if (rows_per_page < 1)
-                    rows_per_page = 100;
-            }
-
-            // Look for the page number
-            if (UrlSegments.Count > 0)
-            {
-                if (!Int32.TryParse(UrlSegments[0], out page))
-                    page = 1;
-                else if (page < 1)
-                    page = 1;
-            }
-
-            // Add a trace
-            tracer.Add_Trace("WebContenServices.Get_All_Pages", "Get list of web content pages, page " + page + " with " + rows_per_page + " rows per page");
-
-            // Get the dataset of pages
-            DataSet pages = get_all_content_pages(tracer);
-
-            // If null was returned, an error occurred
-            if (pages == null)
-            {
-                Response.ContentType = "text/plain";
-                Response.Output.WriteLine("Unable to pull pages list from the database");
-                Response.StatusCode = 500;
-
-                // If this was debug mode, then just write the tracer
-                if (QueryString["debug"] == "debug")
-                {
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine("DEBUG MODE DETECTED");
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine(tracer.Text_Trace);
-                }
-                return;
-            }
-
-            // Create the list for the results
-            WebContent_Basic_Pages returnValue = new WebContent_Basic_Pages
-            {
-                Page = page,
-                RowsPerPage = rows_per_page
-            };
-
-            // Prepare to step through the rows requested and convert them for returning
-            int row_counter = (page - 1) * rows_per_page;
-            int final_row_counter = page * rows_per_page;
-
-
-            try
-            {
-                // Set the total number of changes 
-                returnValue.Total = pages.Tables[0].Rows.Count;
-
-                // Add the changes within the page requested
-                while ((row_counter < pages.Tables[0].Rows.Count) && (row_counter < final_row_counter))
-                {
-                    returnValue.ContentCollection.Add(datarow_to_basic_info(pages.Tables[0].Rows[row_counter]));
-                    row_counter++;
-                }
-            }
-            catch (Exception ee)
-            {
-                Response.ContentType = "text/plain";
-                Response.Output.WriteLine("Error converting rows to return objects");
-                Response.StatusCode = 500;
-
-                // If this was debug mode, then just write the tracer
-                if (QueryString["debug"] == "debug")
-                {
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine("DEBUG MODE DETECTED");
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine(tracer.Text_Trace);
-                    Response.Output.WriteLine();
-                    Response.Output.WriteLine(ee.Message);
-                    Response.Output.WriteLine(ee.StackTrace);
-                }
-                return;
-            }
-
-            // If this was debug mode, then just write the tracer
-            if (QueryString["debug"] == "debug")
-            {
-                Response.ContentType = "text/plain";
-                Response.Output.WriteLine("DEBUG MODE DETECTED");
-                Response.Output.WriteLine();
-                Response.Output.WriteLine(tracer.Text_Trace);
-
-                return;
-            }
-
-            // Get the JSON-P callback function
-            string json_callback = "parseAllWebContentPages";
-            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
-            {
-                json_callback = QueryString["callback"];
-            }
-
-            // Use the base class to serialize the object according to request protocol
-            Serialize(returnValue, Response, Protocol, json_callback);
-        }
-
-
-        /// <summary> Get the list of all the web content pages ( excluding redirects ) for
-        /// consumption by the jQuery DataTable.net plug-in </summary>
-        /// <param name="Response"></param>
-        /// <param name="UrlSegments"></param>
-        /// <param name="QueryString"></param>
-        /// <param name="Protocol"></param>
-        public void Get_All_Pages_JDataTable(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void Get_Global_Usage_Report_JDataTable(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -1350,18 +1247,36 @@ namespace SobekCM.Engine_Library.Endpoints
             if ((HttpContext.Current.Request.QueryString["sSortDir_0"] != null) && (HttpContext.Current.Request.QueryString["sSortDir_0"] == "desc"))
                 sortDirection1 = "desc";
 
-            // Get the dataset of pages
-            DataSet pages = get_all_content_pages(tracer);
+            // Determine the range
+            int year1 = 2000;
+            int month1 = 1;
+            int year2 = DateTime.Now.Year + 1;
+            int month2 = 1;
+            int temp;
+            if ((!String.IsNullOrEmpty(QueryString["year1"])) && (Int32.TryParse(QueryString["year1"].ToUpper(), out temp)))
+                year1 = temp;
+            if ((!String.IsNullOrEmpty(QueryString["month1"])) && (Int32.TryParse(QueryString["month1"].ToUpper(), out temp)))
+                month1 = temp;
+            if ((!String.IsNullOrEmpty(QueryString["year2"])) && (Int32.TryParse(QueryString["year2"].ToUpper(), out temp)))
+                year2 = temp;
+            if ((!String.IsNullOrEmpty(QueryString["month2"])) && (Int32.TryParse(QueryString["month2"].ToUpper(), out temp)))
+                month2 = temp;
+
+            // Add a trace
+            tracer.Add_Trace("WebContenServices.Get_Global_Usage_Report_JDataTable", "Report will be from " + year1 + "/" + month1 + " and " + year2 + "/" + month2);
+
+            // Get the dataset of results
+            DataSet pages = get_global_usage_report_dataset(year1, month1, year2, month2, tracer);
 
             // If null was returned, an error occurred
             if (pages == null)
             {
                 Response.ContentType = "text/plain";
-                Response.Output.WriteLine("Unable to pull pages list from the database");
+                Response.Output.WriteLine("Unable to pull usage report from the database");
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if (QueryString["debug"] == "debug")
+                if (IsDebug)
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -1408,16 +1323,24 @@ namespace SobekCM.Engine_Library.Endpoints
             Response.Output.WriteLine("\"aaData\": [");
 
             // Sort by the correct column
-            if ((sortingColumn1 > 0) || ( sortDirection1 != "asc"))
+            if ((sortingColumn1 > 0) || (sortDirection1 != "asc"))
             {
                 if (sortingColumn1 == 0)
                 {
                     // Must be descending column zero then
                     resultsView.Sort = "Level1 desc, Level2 desc, Level3 desc, Level4 desc, Level5 desc, Level6 desc, Level7 desc, Level8 desc";
                 }
-                else if ( sortingColumn1 == 1 )
+                else if (sortingColumn1 == 1)
                 {
                     resultsView.Sort = "Title " + sortDirection1;
+                }
+                else if (sortingColumn1 == 2)
+                {
+                    resultsView.Sort = "Hits " + sortDirection1;
+                }
+                else if (sortingColumn1 == 3)
+                {
+                    resultsView.Sort = "HitsHierarchical " + sortDirection1;
                 }
             }
 
@@ -1428,6 +1351,980 @@ namespace SobekCM.Engine_Library.Endpoints
                 DataRow thisRow = resultsView[i].Row;
 
                 Response.Output.Write("[ \"" + thisRow["Level1"]);
+                if ((thisRow["Level2"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level2"].ToString())))
+                {
+                    Response.Output.Write("/" + thisRow["Level2"]);
+                    if ((thisRow["Level3"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level3"].ToString())))
+                    {
+                        Response.Output.Write("/" + thisRow["Level3"]);
+                        if ((thisRow["Level4"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level4"].ToString())))
+                        {
+                            Response.Output.Write("/" + thisRow["Level4"]);
+                            if ((thisRow["Level5"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level5"].ToString())))
+                            {
+                                Response.Output.Write("/" + thisRow["Level5"]);
+                                if ((thisRow["Level6"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level6"].ToString())))
+                                {
+                                    Response.Output.Write("/" + thisRow["Level6"]);
+                                    if ((thisRow["Level7"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level7"].ToString())))
+                                    {
+                                        Response.Output.Write("/" + thisRow["Level7"]);
+                                        if ((thisRow["Level8"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level8"].ToString())))
+                                        {
+                                            Response.Output.Write("/" + thisRow["Level8"]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Response.Output.Write("\", \"" + thisRow["Title"] + "\", " + thisRow["Hits"] + ", " + thisRow["HitsHierarchical"] );
+
+                // Finish this row
+                if ((i < displayStart + displayLength - 1) && (i < total_results - 1))
+                    Response.Output.WriteLine(" ],");
+                else
+                    Response.Output.WriteLine(" ]");
+            }
+
+            Response.Output.WriteLine("]");
+            Response.Output.WriteLine("}");
+        }
+
+        /// <summary> Gets the list of possible next level from an existing used page in a global usage report </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_Global_Usage_Report_NextLevel(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+            tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report_NextLevel", "Into endpoint code");
+
+            // Determine the range
+            int year1 = 2000;
+            int month1 = 1;
+            int year2 = DateTime.Now.Year + 1;
+            int month2 = 1;
+            int temp;
+            if ((!String.IsNullOrEmpty(QueryString["year1"])) && (Int32.TryParse(QueryString["year1"].ToUpper(), out temp)))
+                year1 = temp;
+            if ((!String.IsNullOrEmpty(QueryString["month1"])) && (Int32.TryParse(QueryString["month1"].ToUpper(), out temp)))
+                month1 = temp;
+            if ((!String.IsNullOrEmpty(QueryString["year2"])) && (Int32.TryParse(QueryString["year2"].ToUpper(), out temp)))
+                year2 = temp;
+            if ((!String.IsNullOrEmpty(QueryString["month2"])) && (Int32.TryParse(QueryString["month2"].ToUpper(), out temp)))
+                month2 = temp;
+
+            // Add a trace
+            tracer.Add_Trace("WebContenServices.Get_Global_Usage_Report_NextLevel", "Report will be from " + year1 + "/" + month1 + " and " + year2 + "/" + month2);
+
+            // Get the dataset of results
+            DataSet pages = get_global_usage_report_dataset(year1, month1, year2, month2, tracer);
+
+            // If null was returned, an error occurred
+            if (pages == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull usage report from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // Start the return list
+            List<string> returnValue = new List<string>();
+
+            try
+            {
+
+                // There are two special cases that we are already prepared for from the database.
+                //    - The very top level
+                //    - The second level
+                if (UrlSegments.Count <= 1)
+                {
+                    // One of the two special cases
+                    if (UrlSegments.Count == 0)
+                    {
+                        tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report_NextLevel", "Special case, top level");
+                        foreach (DataRow thisRow in pages.Tables[1].Rows)
+                        {
+                            returnValue.Add(thisRow[0].ToString());
+                        }
+                    }
+                    else
+                    {
+                        tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report_NextLevel", "Special case, second level");
+                        string level1_special = UrlSegments[0];
+                        DataView specialView = new DataView(pages.Tables[2])
+                        {
+                            RowFilter = "Level1 = '" + level1_special + "'"
+                        };
+
+                        foreach (DataRowView thisRow in specialView)
+                        {
+                            returnValue.Add(thisRow[1].ToString());
+                        }
+                    }
+                }
+                else
+                {
+                    tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report_NextLevel", "Deeper, non-special case.  Preparing to scan list.");
+                    string level1 = UrlSegments[0];
+                    string level2 = UrlSegments[1];
+
+                    // Build the filter
+                    StringBuilder filterBuilder = new StringBuilder("Level1='" + level1 + "' and Level2='" + level2 + "'");
+                    int column_counter = 3;
+                    if ((UrlSegments.Count > 2) && (!String.IsNullOrWhiteSpace(UrlSegments[2])))
+                    {
+                        filterBuilder.Append(" and Level3='" + UrlSegments[2] + "'");
+                        column_counter++;
+
+                        if ((UrlSegments.Count > 3) && (!String.IsNullOrWhiteSpace(UrlSegments[3])))
+                        {
+                            filterBuilder.Append(" and Level4='" + UrlSegments[3] + "'");
+                            column_counter++;
+
+                            if ((UrlSegments.Count > 4) && (!String.IsNullOrWhiteSpace(UrlSegments[4])))
+                            {
+                                filterBuilder.Append(" and Level5='" + UrlSegments[4] + "'");
+                                column_counter++;
+
+                                if ((UrlSegments.Count > 5) && (!String.IsNullOrWhiteSpace(UrlSegments[5])))
+                                {
+                                    filterBuilder.Append(" and Level6='" + UrlSegments[5] + "'");
+                                    column_counter++;
+
+                                    if ((UrlSegments.Count > 6) && (!String.IsNullOrWhiteSpace(UrlSegments[6])))
+                                    {
+                                        filterBuilder.Append(" and Level7='" + UrlSegments[6] + "'");
+                                        column_counter++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report_NextLevel", filterBuilder.ToString());
+
+                    // Create the dataview
+                    DataView specialView = new DataView(pages.Tables[0])
+                    {
+                        RowFilter = filterBuilder.ToString()
+                    };
+
+
+                    // Step through and add each NEW term
+                    foreach (DataRowView thisRow in specialView)
+                    {
+                        if (thisRow[column_counter] != DBNull.Value)
+                        {
+                            string thisTerm = thisRow[column_counter].ToString().ToLower();
+                            if ((!String.IsNullOrEmpty(thisTerm)) && (!returnValue.Contains(thisTerm)))
+                                returnValue.Add(thisTerm);
+                        }
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Error encountered determing next level");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.Message);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.StackTrace);
+
+                }
+                return;
+            }
+
+            // If this was debug mode, then just write the tracer
+            if (IsDebug)
+            {
+                tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report_NextLevel", "Debug mode detected");
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseGlobalUsageReportNextLevel";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Get the full data set of all top-level static pages (excluding redirects) </summary>
+        /// <param name="Month2"></param>
+        /// <param name="Tracer"> Custom tracer </param>
+        /// <param name="Year1"></param>
+        /// <param name="Month1"></param>
+        /// <param name="Year2"></param>
+        /// <returns></returns>
+        private DataSet get_global_usage_report_dataset(int Year1, int Month1, int Year2, int Month2, Custom_Tracer Tracer)
+        {
+            // Look in the cache first
+            DataSet fromCache = CachedDataManager.WebContent.Retrieve_Global_Usage_Report(Year1, Month1, Year2, Month2, Tracer);
+            if (fromCache != null)
+                return fromCache;
+
+            // Try to pull from the database
+            DataSet fromDb = Engine_Database.WebContent_Get_Usage_Report(Year1, Month1, Year2, Month2, Tracer);
+
+            // Store in the cache if not null
+            if (fromDb != null)
+            {
+                CachedDataManager.WebContent.Store_Global_Usage_Report(fromDb, Year1, Month1, Year2, Month2, Tracer);
+            }
+
+            return fromDb;
+        }
+
+        #endregion
+
+        #region Endpoints related to the complete list of global redirects
+
+        /// <summary> Get the list of all the global redirects </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_All_Redirects(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Set the default page information
+            int page = 1;
+            int rows_per_page = 100;
+
+            // Check for rows_per_page from the query string
+            if (!String.IsNullOrEmpty(QueryString["rowsPerPage"]))
+            {
+                if (!Int32.TryParse(QueryString["rowsPerPage"], out rows_per_page))
+                    rows_per_page = 100;
+                else if (rows_per_page < 1)
+                    rows_per_page = 100;
+            }
+
+            // Look for the page number
+            if (UrlSegments.Count > 0)
+            {
+                if (!Int32.TryParse(UrlSegments[0], out page))
+                    page = 1;
+                else if (page < 1)
+                    page = 1;
+            }
+
+            // Add a trace
+            tracer.Add_Trace("WebContenServices.Get_All_Redirects", "Get list of global redirects, page " + page + " with " + rows_per_page + " rows per page");
+
+            // Get the dataset of redirects
+            DataSet pages = get_all_redirects(tracer);
+
+            // If null was returned, an error occurred
+            if (pages == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull pages list from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if ( IsDebug )
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // Create the list for the results
+            WebContent_Basic_Pages returnValue = new WebContent_Basic_Pages
+            {
+                Page = page,
+                RowsPerPage = rows_per_page
+            };
+
+            // Prepare to step through the rows requested and convert them for returning
+            int row_counter = (page - 1) * rows_per_page;
+            int final_row_counter = page * rows_per_page;
+
+
+            try
+            {
+                // Set the total number of changes 
+                returnValue.Total = pages.Tables[0].Rows.Count;
+
+                // Add the changes within the page requested
+                while ((row_counter < pages.Tables[0].Rows.Count) && (row_counter < final_row_counter))
+                {
+                    returnValue.ContentCollection.Add(datarow_to_basic_info(pages.Tables[0].Rows[row_counter]));
+                    row_counter++;
+                }
+            }
+            catch (Exception ee)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Error converting rows to return objects");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if ( IsDebug )
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.Message);
+                    Response.Output.WriteLine(ee.StackTrace);
+                }
+                return;
+            }
+
+            // If this was debug mode, then just write the tracer
+            if ( IsDebug )
+            {
+                tracer.Add_Trace("WebContentServices.Get_All_Redirects", "Debug mode detected");
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseAllRedirects";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Get the list of all the global redirects for consumption by the jQuery DataTable.net plug-in </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_All_Redirects_JDataTable(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Get ready to pull the informaiton from the query string which the
+            // jquery datatables library pass in
+            int displayStart;
+            int displayLength;
+            int sortingColumn1;
+            string sortDirection1 = "asc";
+
+            // Get the display start and length from the DataTables generated data URL
+            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
+            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayLength"], out displayLength)) displayLength = 50;
+
+            // Get the echo value
+            string sEcho = HttpContext.Current.Request.QueryString["sEcho"];
+
+            // Get the sorting column and sorting direction
+            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_0"], out sortingColumn1)) sortingColumn1 = 0;
+            if ((HttpContext.Current.Request.QueryString["sSortDir_0"] != null) && (HttpContext.Current.Request.QueryString["sSortDir_0"] == "desc"))
+                sortDirection1 = "desc";
+
+            // Get the dataset of pages
+            DataSet pages = get_all_redirects(tracer);
+
+            // If null was returned, an error occurred
+            if (pages == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull pages list from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // Create the view for sorting and filtering
+            DataView resultsView = new DataView(pages.Tables[0]);
+
+            // Should a filter be applied?
+            if (!String.IsNullOrEmpty(QueryString["l1"]))
+            {
+                string level1_filter = QueryString["l1"];
+                if (!String.IsNullOrEmpty(QueryString["l2"]))
+                {
+                    string level2_filter = QueryString["l2"];
+                    resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "'";
+                }
+                else
+                {
+                    resultsView.RowFilter = "Level1='" + level1_filter + "'";
+                }
+            }
+
+            // Get the count of results
+            int total_results = resultsView.Count;
+
+            // If this was set to show ALL results, set some page/length information
+            if (displayLength == -1)
+            {
+                displayStart = 0;
+                displayLength = total_results;
+            }
+
+            // Start the JSON response
+            Response.Output.WriteLine("{");
+            Response.Output.WriteLine("\"sEcho\": " + sEcho + ",");
+            Response.Output.WriteLine("\"iTotalRecords\": \"" + total_results + "\",");
+            Response.Output.WriteLine("\"iTotalDisplayRecords\": \"" + total_results + "\",");
+            Response.Output.WriteLine("\"aaData\": [");
+
+            // Sort by the correct column
+            if ((sortingColumn1 > 0) || (sortDirection1 != "asc"))
+            {
+                if (sortingColumn1 == 0)
+                {
+                    // Must be descending column zero then
+                    resultsView.Sort = "Level1 desc, Level2 desc, Level3 desc, Level4 desc, Level5 desc, Level6 desc, Level7 desc, Level8 desc";
+                }
+                else if (sortingColumn1 == 1)
+                {
+                    resultsView.Sort = "Redirect " + sortDirection1;
+                }
+            }
+
+            // Add the data for the rows to show
+            for (int i = displayStart; (i < displayStart + displayLength) && (i < total_results); i++)
+            {
+                // Start the JSON response for this row
+                DataRow thisRow = resultsView[i].Row;
+                Response.Output.Write("[ " + thisRow["WebContentID"] + ", ");
+
+                Response.Output.Write("\"" + thisRow["Level1"]);
+                if ((thisRow["Level2"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level2"].ToString())))
+                {
+                    Response.Output.Write("/" + thisRow["Level2"]);
+                    if ((thisRow["Level3"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level3"].ToString())))
+                    {
+                        Response.Output.Write("/" + thisRow["Level3"]);
+                        if ((thisRow["Level4"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level4"].ToString())))
+                        {
+                            Response.Output.Write("/" + thisRow["Level4"]);
+                            if ((thisRow["Level5"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level5"].ToString())))
+                            {
+                                Response.Output.Write("/" + thisRow["Level5"]);
+                                if ((thisRow["Level6"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level6"].ToString())))
+                                {
+                                    Response.Output.Write("/" + thisRow["Level6"]);
+                                    if ((thisRow["Level7"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level7"].ToString())))
+                                    {
+                                        Response.Output.Write("/" + thisRow["Level7"]);
+                                        if ((thisRow["Level8"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level8"].ToString())))
+                                        {
+                                            Response.Output.Write("/" + thisRow["Level8"]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Response.Output.Write("\", \"" + thisRow["Redirect"] + "\"");
+
+                // Finish this row
+                if ((i < displayStart + displayLength - 1) && (i < total_results - 1))
+                    Response.Output.WriteLine("],");
+                else
+                    Response.Output.WriteLine("]");
+            }
+
+            Response.Output.WriteLine("]");
+            Response.Output.WriteLine("}");
+        }
+
+        /// <summary> Gets the list of possible next level from an existing point in the redirects hierarchy </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_All_Redirects_NextLevel(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+            tracer.Add_Trace("WebContentServices.Get_All_Redirects_NextLevel", "Into endpoint code");
+
+            // Get the dataset of pages
+            DataSet pages = get_all_redirects(tracer);
+
+            // If null was returned, an error occurred
+            if (pages == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull redirects list from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // Start the return list
+            List<string> returnValue = new List<string>();
+
+            try
+            {
+
+                // There are two special cases that we are already prepared for from the database.
+                //    - The very top level
+                //    - The second level
+                if (UrlSegments.Count <= 1)
+                {
+                    // One of the two special cases
+                    if (UrlSegments.Count == 0)
+                    {
+                        tracer.Add_Trace("WebContentServices.Get_All_Redirects_NextLevel", "Special case, top level");
+                        foreach (DataRow thisRow in pages.Tables[1].Rows)
+                        {
+                            returnValue.Add(thisRow[0].ToString());
+                        }
+                    }
+                    else
+                    {
+                        tracer.Add_Trace("WebContentServices.Get_All_Redirects_NextLevel", "Special case, second level");
+                        string level1_special = UrlSegments[0];
+                        DataView specialView = new DataView(pages.Tables[2])
+                        {
+                            RowFilter = "Level1 = '" + level1_special + "'"
+                        };
+
+                        foreach (DataRowView thisRow in specialView)
+                        {
+                            returnValue.Add(thisRow[1].ToString());
+                        }
+                    }
+                }
+                else
+                {
+                    tracer.Add_Trace("WebContentServices.Get_All_Redirects_NextLevel", "Deeper, non-special case.  Preparing to scan list.");
+                    string level1 = UrlSegments[0];
+                    string level2 = UrlSegments[1];
+
+                    // Build the filter
+                    StringBuilder filterBuilder = new StringBuilder("Level1='" + level1 + "' and Level2='" + level2 + "'");
+                    int column_counter = 3;
+                    if ((UrlSegments.Count > 2) && (!String.IsNullOrWhiteSpace(UrlSegments[2])))
+                    {
+                        filterBuilder.Append(" and Level3='" + UrlSegments[2] + "'");
+                        column_counter++;
+
+                        if ((UrlSegments.Count > 3) && (!String.IsNullOrWhiteSpace(UrlSegments[3])))
+                        {
+                            filterBuilder.Append(" and Level4='" + UrlSegments[3] + "'");
+                            column_counter++;
+
+                            if ((UrlSegments.Count > 4) && (!String.IsNullOrWhiteSpace(UrlSegments[4])))
+                            {
+                                filterBuilder.Append(" and Level5='" + UrlSegments[4] + "'");
+                                column_counter++;
+
+                                if ((UrlSegments.Count > 5) && (!String.IsNullOrWhiteSpace(UrlSegments[5])))
+                                {
+                                    filterBuilder.Append(" and Level6='" + UrlSegments[5] + "'");
+                                    column_counter++;
+
+                                    if ((UrlSegments.Count > 6) && (!String.IsNullOrWhiteSpace(UrlSegments[6])))
+                                    {
+                                        filterBuilder.Append(" and Level7='" + UrlSegments[6] + "'");
+                                        column_counter++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    tracer.Add_Trace("WebContentServices.Get_All_Redirects_NextLevel", filterBuilder.ToString());
+
+                    // Create the dataview
+                    DataView specialView = new DataView(pages.Tables[0])
+                    {
+                        RowFilter = filterBuilder.ToString()
+                    };
+
+
+                    // Step through and add each NEW term
+                    foreach (DataRowView thisRow in specialView)
+                    {
+                        if (thisRow[column_counter] != DBNull.Value)
+                        {
+                            string thisTerm = thisRow[column_counter].ToString().ToLower();
+                            if ((!String.IsNullOrEmpty(thisTerm)) && (!returnValue.Contains(thisTerm)))
+                                returnValue.Add(thisTerm);
+                        }
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Error encountered determing next level");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.Message);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.StackTrace);
+
+                }
+                return;
+            }
+
+            // If this was debug mode, then just write the tracer
+            if (IsDebug)
+            {
+                tracer.Add_Trace("WebContentServices.Get_All_Redirects_NextLevel", "Debug mode detected");
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseAllRedirectsNextLevel";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Get the full data set of all global redirects </summary>
+        /// <param name="Tracer"> Custom tracer </param>
+        /// <returns></returns>
+        private DataSet get_all_redirects(Custom_Tracer Tracer)
+        {
+            // Look in the cache first
+            DataSet fromCache = CachedDataManager.WebContent.Retrieve_Redirects(Tracer);
+            if (fromCache != null)
+                return fromCache;
+
+            // Try to pull from the database
+            DataSet fromDb = Engine_Database.WebContent_Get_All_Redirects(Tracer);
+
+            // Store in the cache if not null
+            if (fromDb != null)
+            {
+                CachedDataManager.WebContent.Store_Redirects(fromDb, Tracer);
+            }
+
+            return fromDb;
+        }
+
+        #endregion
+
+        #region Endpoints related to the complete list of web content pages (excluding redirects)
+
+        /// <summary> Get the list of all the web content pages ( excluding redirects ) </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_All_Pages(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Set the default page information
+            int page = 1;
+            int rows_per_page = 100;
+
+            // Check for rows_per_page from the query string
+            if (!String.IsNullOrEmpty(QueryString["rowsPerPage"]))
+            {
+                if (!Int32.TryParse(QueryString["rowsPerPage"], out rows_per_page))
+                    rows_per_page = 100;
+                else if (rows_per_page < 1)
+                    rows_per_page = 100;
+            }
+
+            // Look for the page number
+            if (UrlSegments.Count > 0)
+            {
+                if (!Int32.TryParse(UrlSegments[0], out page))
+                    page = 1;
+                else if (page < 1)
+                    page = 1;
+            }
+
+            // Add a trace
+            tracer.Add_Trace("WebContenServices.Get_All_Pages", "Get list of web content pages, page " + page + " with " + rows_per_page + " rows per page");
+
+            // Get the dataset of pages
+            DataSet pages = get_all_content_pages(tracer);
+
+            // If null was returned, an error occurred
+            if (pages == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull pages list from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if ( IsDebug )
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // Create the list for the results
+            WebContent_Basic_Pages returnValue = new WebContent_Basic_Pages
+            {
+                Page = page,
+                RowsPerPage = rows_per_page
+            };
+
+            // Prepare to step through the rows requested and convert them for returning
+            int row_counter = (page - 1) * rows_per_page;
+            int final_row_counter = page * rows_per_page;
+
+
+            try
+            {
+                // Set the total number of changes 
+                returnValue.Total = pages.Tables[0].Rows.Count;
+
+                // Add the changes within the page requested
+                while ((row_counter < pages.Tables[0].Rows.Count) && (row_counter < final_row_counter))
+                {
+                    returnValue.ContentCollection.Add(datarow_to_basic_info(pages.Tables[0].Rows[row_counter]));
+                    row_counter++;
+                }
+            }
+            catch (Exception ee)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Error converting rows to return objects");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if ( IsDebug )
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.Message);
+                    Response.Output.WriteLine(ee.StackTrace);
+                }
+                return;
+            }
+
+            // If this was debug mode, then just write the tracer
+            if ( IsDebug )
+            {
+                tracer.Add_Trace("WebContentServices.Get_All_Pages", "Debug mode detected");
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseAllWebContentPages";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
+        }
+
+
+        /// <summary> Get the list of all the web content pages ( excluding redirects ) for
+        /// consumption by the jQuery DataTable.net plug-in </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_All_Pages_JDataTable(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Get ready to pull the informaiton from the query string which the
+            // jquery datatables library pass in
+            int displayStart;
+            int displayLength;
+            int sortingColumn1;
+            string sortDirection1 = "asc";
+
+            // Get the display start and length from the DataTables generated data URL
+            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
+            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayLength"], out displayLength)) displayLength = 50;
+
+            // Get the echo value
+            string sEcho = HttpContext.Current.Request.QueryString["sEcho"];
+
+            // Get the sorting column and sorting direction
+            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_0"], out sortingColumn1)) sortingColumn1 = 0;
+            if ((HttpContext.Current.Request.QueryString["sSortDir_0"] != null) && (HttpContext.Current.Request.QueryString["sSortDir_0"] == "desc"))
+                sortDirection1 = "desc";
+
+            // Get the dataset of pages
+            DataSet pages = get_all_content_pages(tracer);
+
+            // If null was returned, an error occurred
+            if (pages == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull pages list from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if ( IsDebug )
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // Create the view for sorting and filtering
+            DataView resultsView = new DataView(pages.Tables[0]);
+
+            // Should a filter be applied?
+            if (!String.IsNullOrEmpty(QueryString["l1"]))
+            {
+                string level1_filter = QueryString["l1"];
+                if (!String.IsNullOrEmpty(QueryString["l2"]))
+                {
+                    string level2_filter = QueryString["l2"];
+                    resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "'";
+                }
+                else
+                {
+                    resultsView.RowFilter = "Level1='" + level1_filter + "'";
+                }
+            }
+
+            // Get the count of results
+            int total_results = resultsView.Count;
+
+            // If this was set to show ALL results, set some page/length information
+            if (displayLength == -1)
+            {
+                displayStart = 0;
+                displayLength = total_results;
+            }
+
+            // Start the JSON response
+            Response.Output.WriteLine("{");
+            Response.Output.WriteLine("\"sEcho\": " + sEcho + ",");
+            Response.Output.WriteLine("\"iTotalRecords\": \"" + total_results + "\",");
+            Response.Output.WriteLine("\"iTotalDisplayRecords\": \"" + total_results + "\",");
+            Response.Output.WriteLine("\"aaData\": [");
+
+            // Sort by the correct column
+            if ((sortingColumn1 > 1) || ( sortDirection1 != "asc"))
+            {
+                if (sortingColumn1 == 1)
+                {
+                    // Must be descending column zero then
+                    resultsView.Sort = "Level1 desc, Level2 desc, Level3 desc, Level4 desc, Level5 desc, Level6 desc, Level7 desc, Level8 desc";
+                }
+                else if ( sortingColumn1 == 2 )
+                {
+                    resultsView.Sort = "Title " + sortDirection1;
+                }
+            }
+
+            // Add the data for the rows to show
+            for (int i = displayStart; (i < displayStart + displayLength) && (i < total_results); i++)
+            {
+                // Start the JSON response for this row
+                DataRow thisRow = resultsView[i].Row;
+                Response.Output.Write("[ " + thisRow["WebContentID"] + ", ");
+
+                Response.Output.Write("\"" + thisRow["Level1"]);
                 if ((thisRow["Level2"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level2"].ToString())))
                 {
                     Response.Output.Write("/" + thisRow["Level2"]);
@@ -1475,7 +2372,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void Get_All_Pages_NextLevel(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void Get_All_Pages_NextLevel(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("WebContentServices.Get_All_Pages_NextLevel", "Into endpoint code");
@@ -1491,7 +2389,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if (QueryString["debug"] == "debug")
+                if ( IsDebug )
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -1604,7 +2502,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then just write the tracer
-                if (QueryString["debug"] == "debug")
+                if ( IsDebug )
                 {
                     Response.Output.WriteLine();
                     Response.Output.WriteLine();
@@ -1621,7 +2519,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // If this was debug mode, then just write the tracer
-            if (QueryString["debug"] == "debug")
+            if ( IsDebug )
             {
                 tracer.Add_Trace("WebContentServices.Get_All_Pages_NextLevel", "Debug mode detected");
                 Response.ContentType = "text/plain";
@@ -1714,8 +2612,484 @@ namespace SobekCM.Engine_Library.Endpoints
 
         #endregion
 
+        #region Endpoints related to the complete list of web content entities, including pages and redirects
+
+        /// <summary> Get the list of all the web content entities, including pages and redirects </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_All(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Set the default page information
+            int page = 1;
+            int rows_per_page = 100;
+
+            // Check for rows_per_page from the query string
+            if (!String.IsNullOrEmpty(QueryString["rowsPerPage"]))
+            {
+                if (!Int32.TryParse(QueryString["rowsPerPage"], out rows_per_page))
+                    rows_per_page = 100;
+                else if (rows_per_page < 1)
+                    rows_per_page = 100;
+            }
+
+            // Look for the page number
+            if (UrlSegments.Count > 0)
+            {
+                if (!Int32.TryParse(UrlSegments[0], out page))
+                    page = 1;
+                else if (page < 1)
+                    page = 1;
+            }
+
+            // Add a trace
+            tracer.Add_Trace("WebContenServices.Get_All", "Get list of web content entities, page " + page + " with " + rows_per_page + " rows per page");
+
+            // Get the dataset of pages
+            DataSet pages = get_all_content_entities(tracer);
+
+            // If null was returned, an error occurred
+            if (pages == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull entities list from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // Create the list for the results
+            WebContent_Basic_Pages returnValue = new WebContent_Basic_Pages
+            {
+                Page = page,
+                RowsPerPage = rows_per_page
+            };
+
+            // Prepare to step through the rows requested and convert them for returning
+            int row_counter = (page - 1) * rows_per_page;
+            int final_row_counter = page * rows_per_page;
+
+
+            try
+            {
+                // Set the total number of changes 
+                returnValue.Total = pages.Tables[0].Rows.Count;
+
+                // Add the changes within the page requested
+                while ((row_counter < pages.Tables[0].Rows.Count) && (row_counter < final_row_counter))
+                {
+                    returnValue.ContentCollection.Add(datarow_to_basic_info(pages.Tables[0].Rows[row_counter]));
+                    row_counter++;
+                }
+            }
+            catch (Exception ee)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Error converting rows to return objects");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.Message);
+                    Response.Output.WriteLine(ee.StackTrace);
+                }
+                return;
+            }
+
+            // If this was debug mode, then just write the tracer
+            if (IsDebug)
+            {
+                tracer.Add_Trace("WebContentServices.Get_All", "Debug mode detected");
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseAllWebContentPages";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
+        }
+
+
+        /// <summary> Get the list of all the web content entities, including pages and redirects, for
+        /// consumption by the jQuery DataTable.net plug-in </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_All_JDataTable(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Get ready to pull the informaiton from the query string which the
+            // jquery datatables library pass in
+            int displayStart;
+            int displayLength;
+            int sortingColumn1;
+            string sortDirection1 = "asc";
+
+            // Get the display start and length from the DataTables generated data URL
+            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
+            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayLength"], out displayLength)) displayLength = 50;
+
+            // Get the echo value
+            string sEcho = HttpContext.Current.Request.QueryString["sEcho"];
+
+            // Get the sorting column and sorting direction
+            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_0"], out sortingColumn1)) sortingColumn1 = 0;
+            if ((HttpContext.Current.Request.QueryString["sSortDir_0"] != null) && (HttpContext.Current.Request.QueryString["sSortDir_0"] == "desc"))
+                sortDirection1 = "desc";
+
+            // Get the dataset of pages
+            DataSet pages = get_all_content_entities(tracer);
+
+            // If null was returned, an error occurred
+            if (pages == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull entities list from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // Create the view for sorting and filtering
+            DataView resultsView = new DataView(pages.Tables[0]);
+
+            // Should a filter be applied?
+            if (!String.IsNullOrEmpty(QueryString["l1"]))
+            {
+                string level1_filter = QueryString["l1"];
+                if (!String.IsNullOrEmpty(QueryString["l2"]))
+                {
+                    string level2_filter = QueryString["l2"];
+                    resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "'";
+                }
+                else
+                {
+                    resultsView.RowFilter = "Level1='" + level1_filter + "'";
+                }
+            }
+
+            // Get the count of results
+            int total_results = resultsView.Count;
+
+            // If this was set to show ALL results, set some page/length information
+            if (displayLength == -1)
+            {
+                displayStart = 0;
+                displayLength = total_results;
+            }
+
+            // Start the JSON response
+            Response.Output.WriteLine("{");
+            Response.Output.WriteLine("\"sEcho\": " + sEcho + ",");
+            Response.Output.WriteLine("\"iTotalRecords\": \"" + total_results + "\",");
+            Response.Output.WriteLine("\"iTotalDisplayRecords\": \"" + total_results + "\",");
+            Response.Output.WriteLine("\"aaData\": [");
+
+            // Sort by the correct column
+            if ((sortingColumn1 > 1) || (sortDirection1 != "asc"))
+            {
+                if (sortingColumn1 == 1)
+                {
+                    // Must be descending column zero then
+                    resultsView.Sort = "Level1 desc, Level2 desc, Level3 desc, Level4 desc, Level5 desc, Level6 desc, Level7 desc, Level8 desc";
+                }
+                else if (sortingColumn1 == 2)
+                {
+                    resultsView.Sort = "Title " + sortDirection1;
+                }
+            }
+
+            // Add the data for the rows to show
+            for (int i = displayStart; (i < displayStart + displayLength) && (i < total_results); i++)
+            {
+                // Start the JSON response for this row
+                DataRow thisRow = resultsView[i].Row;
+                Response.Output.Write("[ " + thisRow["WebContentID"] + ", ");
+
+                Response.Output.Write("\"" + thisRow["Level1"]);
+                if ((thisRow["Level2"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level2"].ToString())))
+                {
+                    Response.Output.Write("/" + thisRow["Level2"]);
+                    if ((thisRow["Level3"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level3"].ToString())))
+                    {
+                        Response.Output.Write("/" + thisRow["Level3"]);
+                        if ((thisRow["Level4"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level4"].ToString())))
+                        {
+                            Response.Output.Write("/" + thisRow["Level4"]);
+                            if ((thisRow["Level5"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level5"].ToString())))
+                            {
+                                Response.Output.Write("/" + thisRow["Level5"]);
+                                if ((thisRow["Level6"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level6"].ToString())))
+                                {
+                                    Response.Output.Write("/" + thisRow["Level6"]);
+                                    if ((thisRow["Level7"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level7"].ToString())))
+                                    {
+                                        Response.Output.Write("/" + thisRow["Level7"]);
+                                        if ((thisRow["Level8"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level8"].ToString())))
+                                        {
+                                            Response.Output.Write("/" + thisRow["Level8"]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Response.Output.Write("\", \"" + thisRow["Title"] + "\"");
+
+                // Finish this row
+                if ((i < displayStart + displayLength - 1) && (i < total_results - 1))
+                    Response.Output.WriteLine("],");
+                else
+                    Response.Output.WriteLine("]");
+            }
+
+            Response.Output.WriteLine("]");
+            Response.Output.WriteLine("}");
+        }
+
+        /// <summary> Gets the list of possible next level from an existing point in the hierarchy </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_All_NextLevel(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+            tracer.Add_Trace("WebContentServices.Get_All_NextLevel", "Into endpoint code");
+
+            // Get the dataset of pages
+            DataSet pages = get_all_content_entities(tracer);
+
+            // If null was returned, an error occurred
+            if (pages == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull entities list from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // Start the return list
+            List<string> returnValue = new List<string>();
+
+            try
+            {
+
+                // There are two special cases that we are already prepared for from the database.
+                //    - The very top level
+                //    - The second level
+                if (UrlSegments.Count <= 1)
+                {
+                    // One of the two special cases
+                    if (UrlSegments.Count == 0)
+                    {
+                        tracer.Add_Trace("WebContentServices.Get_All_NextLevel", "Special case, top level");
+                        foreach (DataRow thisRow in pages.Tables[1].Rows)
+                        {
+                            returnValue.Add(thisRow[0].ToString());
+                        }
+                    }
+                    else
+                    {
+                        tracer.Add_Trace("WebContentServices.Get_All_NextLevel", "Special case, second level");
+                        string level1_special = UrlSegments[0];
+                        DataView specialView = new DataView(pages.Tables[2])
+                        {
+                            RowFilter = "Level1 = '" + level1_special + "'"
+                        };
+
+                        foreach (DataRowView thisRow in specialView)
+                        {
+                            returnValue.Add(thisRow[1].ToString());
+                        }
+                    }
+                }
+                else
+                {
+                    tracer.Add_Trace("WebContentServices.Get_All_NextLevel", "Deeper, non-special case.  Preparing to scan list.");
+                    string level1 = UrlSegments[0];
+                    string level2 = UrlSegments[1];
+
+                    // Build the filter
+                    StringBuilder filterBuilder = new StringBuilder("Level1='" + level1 + "' and Level2='" + level2 + "'");
+                    int column_counter = 3;
+                    if ((UrlSegments.Count > 2) && (!String.IsNullOrWhiteSpace(UrlSegments[2])))
+                    {
+                        filterBuilder.Append(" and Level3='" + UrlSegments[2] + "'");
+                        column_counter++;
+
+                        if ((UrlSegments.Count > 3) && (!String.IsNullOrWhiteSpace(UrlSegments[3])))
+                        {
+                            filterBuilder.Append(" and Level4='" + UrlSegments[3] + "'");
+                            column_counter++;
+
+                            if ((UrlSegments.Count > 4) && (!String.IsNullOrWhiteSpace(UrlSegments[4])))
+                            {
+                                filterBuilder.Append(" and Level5='" + UrlSegments[4] + "'");
+                                column_counter++;
+
+                                if ((UrlSegments.Count > 5) && (!String.IsNullOrWhiteSpace(UrlSegments[5])))
+                                {
+                                    filterBuilder.Append(" and Level6='" + UrlSegments[5] + "'");
+                                    column_counter++;
+
+                                    if ((UrlSegments.Count > 6) && (!String.IsNullOrWhiteSpace(UrlSegments[6])))
+                                    {
+                                        filterBuilder.Append(" and Level7='" + UrlSegments[6] + "'");
+                                        column_counter++;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    tracer.Add_Trace("WebContentServices.Get_All_NextLevel", filterBuilder.ToString());
+
+                    // Create the dataview
+                    DataView specialView = new DataView(pages.Tables[0])
+                    {
+                        RowFilter = filterBuilder.ToString()
+                    };
+
+
+                    // Step through and add each NEW term
+                    foreach (DataRowView thisRow in specialView)
+                    {
+                        if (thisRow[column_counter] != DBNull.Value)
+                        {
+                            string thisTerm = thisRow[column_counter].ToString().ToLower();
+                            if ((!String.IsNullOrEmpty(thisTerm)) && (!returnValue.Contains(thisTerm)))
+                                returnValue.Add(thisTerm);
+                        }
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Error encountered determing next level");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.Message);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.StackTrace);
+
+                }
+                return;
+            }
+
+            // If this was debug mode, then just write the tracer
+            if (IsDebug)
+            {
+                tracer.Add_Trace("WebContentServices.Get_All_NextLevel", "Debug mode detected");
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseAllNextLevel";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Get the full data set of all top-level web content entities, including pages and redirects </summary>
+        /// <param name="Tracer"> Custom tracer </param>
+        /// <returns></returns>
+        private DataSet get_all_content_entities(Custom_Tracer Tracer)
+        {
+            // Look in the cache first
+            DataSet fromCache = CachedDataManager.WebContent.Retrieve_All_Web_Content(Tracer);
+            if (fromCache != null)
+                return fromCache;
+
+            // Try to pull from the database
+            DataSet fromDb = Engine_Database.WebContent_Get_All(Tracer);
+
+            // Store in the cache if not null
+            if (fromDb != null)
+            {
+                CachedDataManager.WebContent.Store_All_Web_Content(fromDb, Tracer);
+            }
+
+            return fromDb;
+        }
+
         #endregion
 
+        #endregion
 
         #region Helper methods (ultimately destined to be private)
 

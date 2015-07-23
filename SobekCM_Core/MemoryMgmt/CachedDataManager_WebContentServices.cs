@@ -23,7 +23,7 @@ namespace SobekCM.Core.MemoryMgmt
             settings = Settings;
         }
 
-        #region Method related to the global list of recent updates
+        #region Methods related to the global list of recent updates
 
         /// <summary> Retrieves the list of recent updates to all the top-level web content pages  </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -110,7 +110,7 @@ namespace SobekCM.Core.MemoryMgmt
 
         #endregion
 
-        #region Method related to the list of web content pages (excluding redirects)
+        #region Methods related to the list of web content pages (excluding redirects)
 
         /// <summary> Retrieves the list of web content pages (excluding redirects)  </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -135,7 +135,7 @@ namespace SobekCM.Core.MemoryMgmt
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Web_Content_Pages", "Found recent updates on local cache");
+                    Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Web_Content_Pages", "Found web content pages lists on local cache");
                 }
 
                 return returnValue;
@@ -143,7 +143,7 @@ namespace SobekCM.Core.MemoryMgmt
 
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Web_Content_Pages", "Recent updates not found in the local cache ");
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Web_Content_Pages", "Web content pages lists not found in the local cache ");
             }
 
             // Since everything failed, just return null
@@ -197,7 +197,7 @@ namespace SobekCM.Core.MemoryMgmt
 
         #endregion
 
-        #region Method related to the list of redirects
+        #region Methods related to the list of redirects
 
         /// <summary> Retrieves the list of global redirects  </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
@@ -222,7 +222,7 @@ namespace SobekCM.Core.MemoryMgmt
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Redirects", "Found recent updates on local cache");
+                    Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Redirects", "Found web content redirects list on local cache");
                 }
 
                 return returnValue;
@@ -230,7 +230,7 @@ namespace SobekCM.Core.MemoryMgmt
 
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Redirects", "Recent updates not found in the local cache ");
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Redirects", "Web content redirects list not found in the local cache ");
             }
 
             // Since everything failed, just return null
@@ -284,7 +284,100 @@ namespace SobekCM.Core.MemoryMgmt
 
         #endregion
 
-        #region Method related to the global usage reports 
+        #region Methods related to the list of web content entities, including pages and redirects
+
+        /// <summary> Retrieves the list of web content entities, including pages and redirects </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Either NULL or the data set of all web content pages and redirects </returns>
+        public DataSet Retrieve_All_Web_Content(Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if ((settings.Disabled) || (HttpContext.Current == null))
+                return null;
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Web_Content", "");
+            }
+
+            // Determine the key
+            const string KEY = "WEBCONTENT|ALL";
+
+            // See if this is in the local cache first
+            DataSet returnValue = HttpContext.Current.Cache.Get(KEY) as DataSet;
+            if (returnValue != null)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Web_Content", "Found web content entities (pages and redirects) on local cache");
+                }
+
+                return returnValue;
+            }
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Web_Content", "Web content entities (pages and redirects) not found in the local cache ");
+            }
+
+            // Since everything failed, just return null
+            return null;
+        }
+
+        /// <summary> Stores the list of all top-level web content entities, including pages and redirects </summary>
+        /// <param name="StoreObject"> Data set of all the web content pages and redirects </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Store_All_Web_Content(DataSet StoreObject, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Web_Content", "Entering Store_All_Web_Content method");
+            }
+
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+            {
+                if (Tracer != null) Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Web_Content", "Caching is disabled");
+                return;
+            }
+
+            // Determine the key
+            const string KEY = "WEBCONTENT|ALL";
+
+            const int LOCAL_EXPIRATION = 5;
+
+            // Locally cache if this doesn't exceed the limit
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Web_Content", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            }
+
+            HttpContext.Current.Cache.Insert(KEY, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
+        }
+
+        /// <summary> Clear the global list of all web content entities, including pages and redirects </summary>
+        public void Clear_All_Web_Content_Lists()
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+            {
+                return;
+            }
+
+            // Release all the related info
+            const string KEY1 = "WEBCONTENT|ALL";
+            HttpContext.Current.Cache.Remove(KEY1);
+
+            const string KEY2 = "WEBCONTENT|PAGES";
+            HttpContext.Current.Cache.Remove(KEY2);
+
+            const string KEY3 = "WEBCONTENT|REDIRECTS";
+            HttpContext.Current.Cache.Remove(KEY3);
+        }
+
+        #endregion
+
+        #region Methods related to the global usage reports 
 
         /// <summary> Retrieves the global web content usage report between two dates </summary>
         /// <param name="Year1"> Start year of the year/month range for these usage stats </param>

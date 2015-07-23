@@ -87,6 +87,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Zen.Barcode.Core">
       <HintPath>..\DLLs\Zen.Barcode.Core.dll</HintPath>
@@ -100,6 +101,7 @@
     <Compile Include="AdminViewer\Skin_Single_AdminViewer.cs" />
     <Compile Include="AdminViewer\WebContent_Mgmt_AdminViewer.cs" />
     <Compile Include="AdminViewer\WebContent_History_AdminViewer.cs" />
+    <Compile Include="AdminViewer\WebContent_Single_AdminViewer.cs" />
     <Compile Include="AdminViewer\WebContent_Usage_AdminViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Manage_Menu_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Advanced_Search_MimeType_AggregationViewer.cs" />
@@ -593,6 +595,14 @@
     <Compile Include="Text_Search_Term_Highlighter.cs" />
     <Compile Include="Email\URL_Email_Helper.cs" />
     <Compile Include="Email\Usage_Stats_Email_Helper.cs" />
+    <Compile Include="WebContentViewer\Viewers\abstractWebContentViewer.cs" />
+    <Compile Include="WebContentViewer\Viewers\Delete_Verify_WebContentViewer.cs" />
+    <Compile Include="WebContentViewer\Viewers\Manage_Menu_WebContentViewer.cs" />
+    <Compile Include="WebContentViewer\Viewers\iWebContentViewer.cs" />
+    <Compile Include="WebContentViewer\Viewers\Usage_Statistics_WebContentViewer.cs" />
+    <Compile Include="WebContentViewer\Viewers\User_Permissions_WebContentViewer.cs" />
+    <Compile Include="WebContentViewer\Viewers\Work_History_WebContentViewer.cs" />
+    <Compile Include="WebContentViewer\WebContentViewer_Factory.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj">

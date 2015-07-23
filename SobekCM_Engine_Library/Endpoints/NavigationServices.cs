@@ -23,7 +23,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void ResolveUrl(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void ResolveUrl(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("NavigationServices.ResolveUrl", "Parse request and return navigation object");
@@ -52,7 +53,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 returnValue.Set_Robot_Flag(request.UserAgent, request.UserHostAddress);
 
                 // If this was debug mode, then just write the tracer
-                if (QueryString["debug"] == "debug")
+                if ( IsDebug )
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -74,7 +75,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
             catch (Exception ee)
             {
-                if (QueryString["debug"] == "debug")
+                if ( IsDebug )
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("EXCEPTION CAUGHT!");

@@ -439,6 +439,9 @@
         /// <summary> Manage the list of all top-level static HTML web content pages in this instance </summary>
         WebContent_Mgmt,
 
+        /// <summary> Allows all the information and behaviors about a single web content page to be edited </summary>
+        WebContent_Single,
+
         /// <summary> View the usage stats for the top-level static HTML web content pages in this instance </summary>
         WebContent_Usage,
 
@@ -532,16 +535,26 @@
         /// <summary> No web content display type specified, not applicable </summary>
         NONE,
 
+        /// <summary> Viewer used to verify a delete request </summary>
+        Delete_Verify,
+
         /// <summary> Standard public display of the web content </summary>
         Display,
 
         /// <summary> Edit of the web content </summary>
         Edit,
 
+        /// <summary> Menu for gives access to all the special actions 
+        /// that can be performed against a web content page </summary>
+        Manage_Menu,
+
         /// <summary> Milestones for the web content </summary>
         Milestones,
 
         /// <summary> Permissions admin for the web content </summary>
-        Permissions
+        Permissions,
+
+        /// <summary> Usage report for a single web content page </summary>
+        Usage
     }
 }

@@ -52,7 +52,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void Get_Search_Statistics(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void Get_Search_Statistics(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("ResultsServices.Get_Search_Statistics", "Parse request to determine search requested");
@@ -73,7 +74,7 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 tracer.Add_Trace("ResultsServices.Get_Search_Statistics", "Returned aggregation was NULL... aggregation code may not be valid");
 
-                if (QueryString["debug"] == "debug")
+                if ( IsDebug )
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -96,7 +97,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Was this in debug mode?
             // If this was debug mode, then just write the tracer
-            if (QueryString["debug"] == "debug")
+            if ( IsDebug )
             {
                 Response.ContentType = "text/plain";
                 Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -149,7 +150,8 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void Get_Search_Results_Page(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void Get_Search_Results_Page(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("ResultsServices.Get_Search_Results_Set", "Parse request to determine search requested");
@@ -170,7 +172,7 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 tracer.Add_Trace("ResultsServices.Get_Search_Results_Set", "Returned aggregation was NULL... aggregation code may not be valid");
 
-                if (QueryString["debug"] == "debug")
+                if ( IsDebug )
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -253,7 +255,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Was this in debug mode?
             // If this was debug mode, then just write the tracer
-            if (QueryString["debug"] == "debug")
+            if ( IsDebug )
             {
                 Response.ContentType = "text/plain";
                 Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -307,14 +309,14 @@ namespace SobekCM.Engine_Library.Endpoints
         }
 
         #region Code to support the legacy XML and JSON reports supported prior to v5.0
-        
 
         /// <summary> Gets the search results and returns them in the legacy format supported prior to v5.0 </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
-        public void Get_Search_Results_Legacy(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="IsDebug"></param>
+        public void Get_Search_Results_Legacy(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
         {
             Custom_Tracer tracer = new Custom_Tracer();
             tracer.Add_Trace("ResultsServices.Get_Search_Results_Legacy", "Parse request to determine search requested");
@@ -335,7 +337,7 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 tracer.Add_Trace("ResultsServices.Get_Search_Results_Legacy", "Returned aggregation was NULL... aggregation code may not be valid");
 
-                if (QueryString["debug"] == "debug")
+                if ( IsDebug )
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -358,7 +360,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Was this in debug mode?
             // If this was debug mode, then just write the tracer
-            if (QueryString["debug"] == "debug")
+            if ( IsDebug )
             {
                 Response.ContentType = "text/plain";
                 Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -393,13 +395,6 @@ namespace SobekCM.Engine_Library.Endpoints
                     Response.Output.WriteLine("Unknown error");
                     Response.StatusCode = 500;
                     return;
-            }
-
-            // Get the JSON-P callback function
-            string json_callback = "parseResultsStats";
-            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
-            {
-                json_callback = QueryString["callback"];
             }
 
             // Use the base class to serialize the object according to request protocol

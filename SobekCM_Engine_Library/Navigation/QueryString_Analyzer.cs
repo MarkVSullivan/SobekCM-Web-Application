@@ -708,6 +708,20 @@ namespace SobekCM.Engine_Library.Navigation
                                         case "webhistory":
                                             Navigator.Admin_Type = Admin_Type_Enum.WebContent_History;
                                             break;
+
+                                        case "websingle":
+                                            Navigator.Admin_Type = Admin_Type_Enum.WebContent_Single;
+                                            StringBuilder possibleInfoModeBuilder = new StringBuilder();
+									        if (url_relative_list.Count > 2)
+									        {
+										        possibleInfoModeBuilder.Append(url_relative_list[2]);
+									        }
+									        for (int i = 3; i < url_relative_list.Count; i++)
+									        {
+										        possibleInfoModeBuilder.Append("/" + url_relative_list[i]);
+									        }
+                                            Navigator.My_Sobek_SubMode = possibleInfoModeBuilder.ToString();
+                                            break;
                                             
                                         case "webusage":
                                             Navigator.Admin_Type = Admin_Type_Enum.WebContent_Usage;
@@ -1187,14 +1201,25 @@ namespace SobekCM.Engine_Library.Navigation
 								                    Navigator.WebContent_Type = WebContent_Type_Enum.Edit;
                                                     break;
 
-								                case "permissions":
-								                    Navigator.WebContent_Type = WebContent_Type_Enum.Permissions;
+                                                case "menu":
+                                                    Navigator.WebContent_Type = WebContent_Type_Enum.Manage_Menu;
                                                     break;
 
                                                 case "milestones":
                                                     Navigator.WebContent_Type = WebContent_Type_Enum.Milestones;
                                                     break;
 
+                                                case "permissions":
+                                                    Navigator.WebContent_Type = WebContent_Type_Enum.Permissions;
+                                                    break;
+
+                                                case "usage":
+                                                    Navigator.WebContent_Type = WebContent_Type_Enum.Usage;
+								                    break;
+
+                                                case "verify":
+                                                    Navigator.WebContent_Type = WebContent_Type_Enum.Delete_Verify;
+                                                    break;
 								            }
 								        }
 								    }
