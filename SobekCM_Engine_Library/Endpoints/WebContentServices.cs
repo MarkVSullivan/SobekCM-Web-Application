@@ -370,7 +370,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
         #region Endpoints related to global recent updates
 
-        /// <summary> Get the list of all the recent updates to all top-level static web content pages </summary>
+        /// <summary> Get the list of all the recent updates to all (non aggregation affiliated) static web content pages </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
@@ -2367,7 +2367,7 @@ namespace SobekCM.Engine_Library.Endpoints
             Response.Output.WriteLine("}");
         }
 
-        /// <summary> Gets the list of possible next level from an existing point in the hierarchy </summary>
+        /// <summary> Gets the list of possible next level from an existing point in the page hierarchy </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
@@ -2891,7 +2891,7 @@ namespace SobekCM.Engine_Library.Endpoints
             Response.Output.WriteLine("}");
         }
 
-        /// <summary> Gets the list of possible next level from an existing point in the hierarchy </summary>
+        /// <summary> Gets the list of possible next level from an existing point in the pages AND redirects hierarchy </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
