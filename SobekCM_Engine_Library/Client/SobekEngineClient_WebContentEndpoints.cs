@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Endpoints;
@@ -46,6 +47,38 @@ namespace SobekCM.Core.Client
         }
 
         #region Endpoints related to global recent updates
+
+        /// <summary> Returns a flag indicating if there are any global recent updates to the web content entities (pages and redirects) </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Flag indicating if there are recent updates to web content entities </returns>
+        public bool Has_Global_Recent_Updates(Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.Has_Global_Recent_Updates");
+
+            // Look in the the cache a recently stored value
+            if (Config.UseCache)
+            {
+                bool? cacheFlag = CachedDataManager.WebContent.Retrieve_Has_Global_Recent_Updates_Flag(Tracer);
+                if (cacheFlag.HasValue)
+                    return cacheFlag.Value;
+            }
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Has_Global_Recent_Updates", Tracer);
+
+            // Format the URL
+            string url = endpoint.URL;
+
+            // Call out to the endpoint and return the deserialized object
+            bool returnValue = Deserialize<bool>(url, endpoint.Protocol, Tracer);
+
+            // Store in the cache
+            if (Config.UseCache)
+                CachedDataManager.WebContent.Store_Has_Global_Recent_Updates_Flag(returnValue, Tracer);
+
+            return returnValue;
+        }
 
         /// <summary> Get the list of all the recent updates to all (non aggregation affiliated) static web content pages </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
@@ -100,6 +133,14 @@ namespace SobekCM.Core.Client
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Global_Recent_Updates_NextLevel");
 
+            // Look in the the cache a recently stored value
+            if (Config.UseCache)
+            {
+                List<string> cacheValue = CachedDataManager.WebContent.Retrieve_Global_Recent_Updates_NextLevel(Tracer, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8 );
+                if (cacheValue != null)
+                    return cacheValue;
+            }
+
             // Get the endpoint
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_Global_Recent_Updates_NextLevel", Tracer);
 
@@ -139,8 +180,15 @@ namespace SobekCM.Core.Client
                 }
             }
 
+
             // Call out to the endpoint and return the deserialized object
-            return Deserialize<List<string>>(url, endpoint.Protocol, Tracer);
+            List<string> returnValue = Deserialize<List<string>>(url, endpoint.Protocol, Tracer);
+
+            // Store in the cache
+            if ((Config.UseCache) && (returnValue != null))
+                CachedDataManager.WebContent.Store_Global_Recent_Updates_NextLevel(returnValue, Tracer);
+
+            return returnValue;
         }
 
         /// <summary> Get the list of all users that have participated in the recent updates to all top-level static web content pages </summary>
@@ -151,6 +199,14 @@ namespace SobekCM.Core.Client
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Global_Recent_Updates_Users");
 
+            // Look in the the cache a recently stored value
+            if (Config.UseCache)
+            {
+                List<string> cacheValue = CachedDataManager.WebContent.Retrieve_Global_Recent_Updates_Users( Tracer );
+                if (cacheValue != null)
+                    return cacheValue;
+            }
+
             // Get the endpoint
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_Global_Recent_Updates_Users", Tracer);
 
@@ -158,13 +214,51 @@ namespace SobekCM.Core.Client
             string url = endpoint.URL;
 
             // Call out to the endpoint and return the deserialized object
-            return Deserialize<List<string>>(url, endpoint.Protocol, Tracer);
+            List<string> returnValue = Deserialize<List<string>>(url, endpoint.Protocol, Tracer);
+
+            // Store in the cache
+            if ((Config.UseCache) && (returnValue != null))
+                CachedDataManager.WebContent.Store_Global_Recent_Updates_Users(returnValue, Tracer );
+
+            return returnValue;
         }
 
 
         #endregion
 
         #region Endpoint related to the usage statistics reports of all web content pages
+
+        /// <summary> Returns a flag indicating if any usage has been reported for this instance's web content entities (pages and redirects) </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Flag indicating if any usage has been reported for this instance's web content entities (pages and redirects) </returns>
+        public bool Has_Global_Usage(Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.Has_Global_Usage");
+
+            // Look in the the cache a recently stored value
+            if (Config.UseCache)
+            {
+                bool? cacheFlag = CachedDataManager.WebContent.Retrieve_Has_Global_Usage_Flag(Tracer);
+                if (cacheFlag.HasValue)
+                    return cacheFlag.Value;
+            }
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Has_Global_Usage", Tracer);
+
+            // Format the URL
+            string url = endpoint.URL;
+
+            // Call out to the endpoint and return the deserialized object
+            bool returnValue = Deserialize<bool>(url, endpoint.Protocol, Tracer);
+
+            // Store in the cache
+            if (Config.UseCache)
+                CachedDataManager.WebContent.Store_Has_Global_Usage_Flag(returnValue, Tracer);
+
+            return returnValue;
+        }
 
         /// <summary> Get usage of all web content pages between two dates </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
@@ -225,6 +319,14 @@ namespace SobekCM.Core.Client
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Global_Usage_Report_NextLevel");
 
+            // Look in the the cache a recently stored value
+            if (Config.UseCache)
+            {
+                List<string> cacheValue = CachedDataManager.WebContent.Retrieve_Global_Usage_Report_NextLevel(Tracer, Year1, Month1, Year2, Month2, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8);
+                if (cacheValue != null)
+                    return cacheValue;
+            }
+
             // Get the endpoint
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_Global_Usage_Report_NextLevel", Tracer);
 
@@ -266,13 +368,51 @@ namespace SobekCM.Core.Client
             url = url + "?year1=" + Year1 + "&month1=" + Month1 + "&year2=" + Year2 + "&month2=" + Month2;
 
             // Call out to the endpoint and return the deserialized object
-            return Deserialize<List<string>>(url, endpoint.Protocol, Tracer);
+            List<string> returnValue = Deserialize<List<string>>(url, endpoint.Protocol, Tracer);
+
+            // Store in the cache
+            if ((Config.UseCache) && (returnValue != null))
+                CachedDataManager.WebContent.Store_Global_Usage_Report_NextLevel(returnValue, Tracer, Year1, Month1, Year2, Month2, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8);
+
+            return returnValue;
         }
 
 
         #endregion
 
         #region Endpoints related to the complete list of global redirects
+
+        /// <summary> Returns a flag indicating if there are any global redirects within the web content system </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Flag indicating if there are any global redirects within the web content system </returns>
+        public bool Has_Redirects(Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.Has_Redirects");
+
+            // Look in the the cache a recently stored value
+            if (Config.UseCache)
+            {
+                bool? cacheFlag = CachedDataManager.WebContent.Retrieve_Has_Redirects_Flag(Tracer);
+                if (cacheFlag.HasValue)
+                    return cacheFlag.Value;
+            }
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Has_Redirects", Tracer);
+
+            // Format the URL
+            string url = endpoint.URL; 
+
+            // Call out to the endpoint and return the deserialized object
+            bool returnValue = Deserialize<bool>(url, endpoint.Protocol, Tracer);
+
+            // Store in the cache
+            if (Config.UseCache)
+                CachedDataManager.WebContent.Store_Has_Redirects_Flag(returnValue, Tracer);
+
+            return returnValue;
+        }
 
         /// <summary> Get the list of all the global redirects </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
@@ -323,6 +463,14 @@ namespace SobekCM.Core.Client
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Redirects_NextLevel");
 
+            // Look in the the cache a recently stored value
+            if (Config.UseCache)
+            {
+                List<string> cacheValue = CachedDataManager.WebContent.Retrieve_All_Redirects_NextLevel(Tracer, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8);
+                if (cacheValue != null)
+                    return cacheValue;
+            }
+
             // Get the endpoint
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_All_Redirects_NextLevel", Tracer);
 
@@ -363,13 +511,51 @@ namespace SobekCM.Core.Client
             }
 
             // Call out to the endpoint and return the deserialized object
-            return Deserialize<List<string>>(url, endpoint.Protocol, Tracer);
+            List<string> returnValue = Deserialize<List<string>>(url, endpoint.Protocol, Tracer);
+
+            // Store in the cache
+            if ((Config.UseCache) && (returnValue != null))
+                CachedDataManager.WebContent.Store_All_Redirects_NextLevel(returnValue, Tracer, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8 );
+
+            return returnValue;
         }
 
 
         #endregion
 
         #region Endpoints related to the complete list of web content pages (excluding redirects)
+
+        /// <summary> Returns a flag indicating if there are any web content pages (excluding redirects) </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Flag indicating if there are any web content pages (excluding redirects) </returns>
+        public bool Has_Content_Pages(Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.Has_Content_Pages");
+
+            // Look in the the cache a recently stored value
+            if (Config.UseCache)
+            {
+                bool? cacheFlag = CachedDataManager.WebContent.Retrieve_Has_Content_Pages_Flag(Tracer);
+                if (cacheFlag.HasValue)
+                    return cacheFlag.Value;
+            }
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Has_Content_Pages", Tracer);
+
+            // Format the URL
+            string url = endpoint.URL;
+
+            // Call out to the endpoint and return the deserialized object
+            bool returnValue = Deserialize<bool>(url, endpoint.Protocol, Tracer);
+
+            // Store in the cache
+            if (Config.UseCache)
+                CachedDataManager.WebContent.Store_Has_Content_Pages_Flag(returnValue, Tracer);
+
+            return returnValue;
+        }
 
         /// <summary> Get the list of all the web content pages ( excluding redirects ) </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
@@ -422,6 +608,14 @@ namespace SobekCM.Core.Client
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Pages_NextLevel");
 
+            // Look in the the cache a recently stored value
+            if (Config.UseCache)
+            {
+                List<string> cacheValue = CachedDataManager.WebContent.Retrieve_All_Pages_NextLevel(Tracer, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8);
+                if (cacheValue != null)
+                    return cacheValue;
+            }
+
             // Get the endpoint
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_All_Pages_NextLevel", Tracer);
 
@@ -462,13 +656,53 @@ namespace SobekCM.Core.Client
             }
 
             // Call out to the endpoint and return the deserialized object
-            return Deserialize<List<string>>(url, endpoint.Protocol, Tracer);
+            List<string> returnValue = Deserialize<List<string>>(url, endpoint.Protocol, Tracer);
+
+            // Store in the cache
+            if ((Config.UseCache) && (returnValue != null))
+                CachedDataManager.WebContent.Store_All_Pages_NextLevel(returnValue, Tracer, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8);
+
+            return returnValue;
         }
 
 
         #endregion
 
         #region Endpoints related to the complete list of web content entities, including pages and redirects
+
+
+        /// <summary> Returns a flag indicating if there are any web content entities, including pages and redirects </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Flag indicating if there are any web content entities, including pages and redirects </returns>
+        public bool Has_Pages_Or_Redirects(Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.Has_Pages_Or_Redirects");
+
+            // Look in the the cache a recently stored value
+            if (Config.UseCache)
+            {
+                bool? cacheFlag = CachedDataManager.WebContent.Retrieve_Has_Content_Flag(Tracer);
+                if (cacheFlag.HasValue)
+                    return cacheFlag.Value;
+            }
+
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Has_Pages_Or_Redirects", Tracer);
+
+            // Format the URL
+            string url = endpoint.URL;
+
+            // Call out to the endpoint and return the deserialized object
+            bool returnValue = Deserialize<bool>(url, endpoint.Protocol, Tracer);
+
+            // Store in the cache
+            if (Config.UseCache)
+                CachedDataManager.WebContent.Store_Has_Content_Flag(returnValue, Tracer);
+
+            return returnValue;
+        }
 
         /// <summary> Get the list of all the web content entities, including pages and redirects </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
@@ -521,6 +755,14 @@ namespace SobekCM.Core.Client
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_NextLevel");
 
+            // Look in the the cache a recently stored value
+            if (Config.UseCache)
+            {
+                List<string> cacheValue = CachedDataManager.WebContent.Retrieve_All_Content_NextLevel(Tracer, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8);
+                if (cacheValue != null)
+                    return cacheValue;
+            }
+
             // Get the endpoint
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_All_NextLevel", Tracer);
 
@@ -561,7 +803,13 @@ namespace SobekCM.Core.Client
             }
 
             // Call out to the endpoint and return the deserialized object
-            return Deserialize<List<string>>(url, endpoint.Protocol, Tracer);
+            List<string> returnValue = Deserialize<List<string>>(url, endpoint.Protocol, Tracer);
+
+            // Store in the cache
+            if ((Config.UseCache) && ( returnValue != null ))
+                CachedDataManager.WebContent.Store_All_Content_NextLevel(returnValue, Tracer, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8);
+
+            return returnValue;
         }
 
         #endregion

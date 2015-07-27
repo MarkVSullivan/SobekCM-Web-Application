@@ -349,7 +349,7 @@ namespace SobekCM.Core.MicroservicesClient
         private object ExampleGetMethod(int PrimaryKey, Custom_Tracer Tracer )
         {
             // Get the endpoint
-            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("ConfigUrl1");
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("ConfigUrl1", Tracer);
 
             Tracer.Add_Trace("ExamplePostMethod", "Calling microservice endpoint at: " + endpoint.URL);
 
@@ -360,7 +360,7 @@ namespace SobekCM.Core.MicroservicesClient
         private string ExamplePostMethod(string UserId, object RemoveObject, Custom_Tracer Tracer)
         {
             // Get the endpoint
-            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("ConfigUrl1");
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("ConfigUrl1", Tracer);
 
             // Create the post data
             List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>

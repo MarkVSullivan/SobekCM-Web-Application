@@ -10,7 +10,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
     {
         /// <summary>  Constructor for a new instance of the Delete_Verify_WebContentViewer class  </summary>
         /// <param name="RequestSpecificValues">  All the necessary, non-global data specific to the current request  </param>
-        public Delete_Verify_WebContentViewer(RequestCache RequestSpecificValues)
+        public Delete_Verify_WebContentViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             
         }
@@ -41,7 +41,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 Tracer.Add_Trace("Delete_Verify_WebContentViewer.Add_HTML", "No html added");
             }
 
-            // No html to be added here
+            Output.WriteLine("IN THE DELETE_VERIFY_WEBCONTENTVIEWER");
         }
     }
 }

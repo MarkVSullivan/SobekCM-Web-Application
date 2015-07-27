@@ -15,6 +15,7 @@ namespace SobekCM.Core.MicroservicesClient
         public MicroservicesClient_Configuration()
         {
             endpoints = new Dictionary<string, MicroservicesClient_Endpoint>();
+            UseCache = true;
         }
 
         /// <summary> Reference a single microservices client endpoint configuration, via the lookup key </summary>
@@ -57,5 +58,9 @@ namespace SobekCM.Core.MicroservicesClient
 
         /// <summary> Any error associated with reading the configuration file into this object </summary>
         public string Error { get; internal set; }
+
+        /// <summary> Flag indicates if the sobek engine client should natively use caching to avoid 
+        /// additional round trips to the SobekCM engine endpoints </summary>
+        public bool UseCache { get; set; }
     }
 }

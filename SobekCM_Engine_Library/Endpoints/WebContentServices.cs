@@ -370,6 +370,70 @@ namespace SobekCM.Engine_Library.Endpoints
 
         #region Endpoints related to global recent updates
 
+        /// <summary> Returns a flag indicating if there are any global recent updates to the web content entities (pages and redirects) </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        /// <remarks> This is not the most efficient way to verify existence of the updates since this actually pulls the entire list of 
+        /// recent updates from the database.  However, this will likely be cached and be needed immediately anyway. </remarks>
+        public void Has_Global_Recent_Updates(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Create the tracer and add a trace
+            Custom_Tracer tracer = new Custom_Tracer();
+            tracer.Add_Trace("WebContenServices.Has_Global_Recent_Updates");
+
+            // Get the dataset of recent updates
+            DataSet changes = get_global_recent_updates_set(tracer);
+
+            // If null was returned, an error occurred
+            if (changes == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull recent updates from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // Were there updates?
+            bool returnValue = changes.Tables[0].Rows.Count > 0;
+            tracer.Add_Trace("WebContenServices.Has_Global_Recent_Updates","Will return value " + returnValue.ToString().ToUpper());
+
+
+            // If this was debug mode, then just write the tracer
+            if (IsDebug)
+            {
+                tracer.Add_Trace("WebContentServices.Has_Global_Recent_Updates", "Debug mode detected");
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseHasGlobalRecentUpdates";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
+        }
+
         /// <summary> Get the list of all the recent updates to all (non aggregation affiliated) static web content pages </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
@@ -1027,6 +1091,54 @@ namespace SobekCM.Engine_Library.Endpoints
 
         #region Endpoint related to the usage statistics reports of all web content pages
 
+        /// <summary> Returns a flag indicating if any usage has been reported for this instance's web content entities (pages and redirects) </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Has_Global_Usage(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Create the tracer and add a trace
+            Custom_Tracer tracer = new Custom_Tracer();
+            tracer.Add_Trace("WebContenServices.Has_Global_Usage");
+
+            // Look in the cache
+            bool? cacheFlag = CachedDataManager.WebContent.Retrieve_Has_Global_Usage_Flag(tracer);
+            bool flag = false;
+            if (cacheFlag.HasValue)
+                flag = cacheFlag.Value;
+            else
+            {
+                // Get the flag
+                flag = Engine_Database.WebContent_Has_Usage(tracer);
+
+                CachedDataManager.WebContent.Store_Has_Global_Usage_Flag(flag, tracer);
+            }
+
+            // If this was debug mode, then just write the tracer
+            if (IsDebug)
+            {
+                tracer.Add_Trace("WebContentServices.Has_Global_Usage", "Debug mode detected");
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseHasWebContentUsage";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(flag, Response, Protocol, json_callback);
+        }
+
         /// <summary> Get usage of all web content pages between two dates </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
@@ -1615,6 +1727,70 @@ namespace SobekCM.Engine_Library.Endpoints
 
         #region Endpoints related to the complete list of global redirects
 
+        /// <summary> Returns a flag indicating if there are any global redirects within the web content system </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        /// <remarks> This is not the most efficient way to verify existence of the rediects since this actually pulls the entire list of 
+        /// redirects from the database.  However, this will likely be cached and be needed immediately anyway. </remarks>
+        public void Has_Redirects(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Create the tracer and add a trace
+            Custom_Tracer tracer = new Custom_Tracer();
+            tracer.Add_Trace("WebContenServices.Has_Redirects");
+
+            // Get the dataset of redirects
+            DataSet changes = get_all_redirects(tracer);
+
+            // If null was returned, an error occurred
+            if (changes == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull global redirects from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // Were there redirects?
+            bool returnValue = changes.Tables[0].Rows.Count > 0;
+            tracer.Add_Trace("WebContenServices.Has_Redirects", "Will return value " + returnValue.ToString().ToUpper());
+
+
+            // If this was debug mode, then just write the tracer
+            if (IsDebug)
+            {
+                tracer.Add_Trace("WebContentServices.Has_Redirects", "Debug mode detected");
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseHasRedirects";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
+        }
+
         /// <summary> Get the list of all the global redirects </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
@@ -2089,6 +2265,70 @@ namespace SobekCM.Engine_Library.Endpoints
         #endregion
 
         #region Endpoints related to the complete list of web content pages (excluding redirects)
+
+        /// <summary> Returns a flag indicating if there are any web content pages (excluding redirects) </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        /// <remarks> This is not the most efficient way to verify existence of the pages since this actually pulls the entire list of 
+        /// pages from the database.  However, this will likely be cached and be needed immediately anyway. </remarks>
+        public void Has_Content_Pages(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Create the tracer and add a trace
+            Custom_Tracer tracer = new Custom_Tracer();
+            tracer.Add_Trace("WebContenServices.Has_Content_Pages");
+
+            // Get the dataset of web pages
+            DataSet changes = get_all_content_pages(tracer);
+
+            // If null was returned, an error occurred
+            if (changes == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull web content pages from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // Were there content pages?
+            bool returnValue = changes.Tables[0].Rows.Count > 0;
+            tracer.Add_Trace("WebContenServices.Has_Content_Pages", "Will return value " + returnValue.ToString().ToUpper());
+
+
+            // If this was debug mode, then just write the tracer
+            if (IsDebug)
+            {
+                tracer.Add_Trace("WebContentServices.Has_Content_Pages", "Debug mode detected");
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseHasPages";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
+        }
 
         /// <summary> Get the list of all the web content pages ( excluding redirects ) </summary>
         /// <param name="Response"></param>
@@ -2613,6 +2853,71 @@ namespace SobekCM.Engine_Library.Endpoints
         #endregion
 
         #region Endpoints related to the complete list of web content entities, including pages and redirects
+
+        /// <summary> Returns a flag indicating if there are any web content entities, including pages and redirects </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        /// <remarks> This is not the most efficient way to verify existence of the pages and redirects since this actually 
+        /// pulls the entire list of pages and redirects from the database.  However, this will likely be cached and be 
+        /// needed immediately anyway. </remarks>
+        public void Has_Pages_Or_Redirects(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Create the tracer and add a trace
+            Custom_Tracer tracer = new Custom_Tracer();
+            tracer.Add_Trace("WebContenServices.Has_Pages_Or_Redirects");
+
+            // Get the dataset of web pages or redirects
+            DataSet changes = get_all_content_entities(tracer);
+
+            // If null was returned, an error occurred
+            if (changes == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull web content pages from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // Were there web pages or redirects?
+            bool returnValue = changes.Tables[0].Rows.Count > 0;
+            tracer.Add_Trace("WebContenServices.Has_Pages_Or_Redirects", "Will return value " + returnValue.ToString().ToUpper());
+
+
+            // If this was debug mode, then just write the tracer
+            if (IsDebug)
+            {
+                tracer.Add_Trace("WebContentServices.Has_Pages_Or_Redirects", "Debug mode detected");
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseHasPagesRedirects";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
+        }
 
         /// <summary> Get the list of all the web content entities, including pages and redirects </summary>
         /// <param name="Response"></param>

@@ -11,7 +11,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
     {
         /// <summary>  Constructor for a new instance of the Usage_Statistics_WebContentViewer class  </summary>
         /// <param name="RequestSpecificValues">  All the necessary, non-global data specific to the current request  </param>
-        public Usage_Statistics_WebContentViewer(RequestCache RequestSpecificValues)
+        public Usage_Statistics_WebContentViewer(RequestCache RequestSpecificValues) : base ( RequestSpecificValues )
         {
             
         }
@@ -42,7 +42,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 Tracer.Add_Trace("Usage_Statistics_WebContentViewer.Add_HTML", "No html added");
             }
 
-            // No html to be added here
+            Output.WriteLine("IN THE USAGE_STATISTICS_WEBCONTENTVIEWER");
         }
     }
 }

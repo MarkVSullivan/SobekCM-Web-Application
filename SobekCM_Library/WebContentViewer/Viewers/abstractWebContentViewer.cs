@@ -8,8 +8,18 @@ namespace SobekCM.Library.WebContentViewer.Viewers
     /// <remarks> This implements the <see cref="iWebContentViewer" /> interface. </remarks>
     public abstract class abstractWebContentViewer : iWebContentViewer
     {
+        /// <summary> Protected field contains the information specific to the current request </summary>
+        protected RequestCache RequestSpecificValues;
+
         /// <summary> Gets the type of specialized web content viewer </summary>
         public abstract WebContent_Type_Enum Type { get; }
+
+        /// <summary> Constructor for objects which implement this abstract class  </summary>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        protected abstractWebContentViewer(RequestCache RequestSpecificValues)
+        {
+            this.RequestSpecificValues = RequestSpecificValues;
+        }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <remarks> This returns NULL by default, but can be override by individual viewer implementations </remarks>

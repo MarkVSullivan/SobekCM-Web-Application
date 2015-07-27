@@ -12,6 +12,8 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.SiteMap;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
+using SobekCM.Library.WebContentViewer;
+using SobekCM.Library.WebContentViewer.Viewers;
 using SobekCM.Tools;
 
 #endregion
@@ -28,6 +30,8 @@ namespace SobekCM.Library.HTML
         private bool canEdit;
         private bool excludeSiteMap;
         private bool adminMissingScreen;
+
+        private abstractWebContentViewer viewer;
 
         /// <summary> Constructor for a new instance of the Web_Content_HtmlSubwriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -85,8 +89,14 @@ namespace SobekCM.Library.HTML
 
             // In certain modes, the sitemap should not be displayed
             excludeSiteMap = false;
-            //if (RequestSpecificValues.Current_Mode.WebContent_Type != WebContent_Type_Enum.Display)
-            //    excludeSiteMap = true;
+            
+            // Build the viewer, if there should be one
+            if ((RequestSpecificValues.Current_Mode.WebContent_Type != WebContent_Type_Enum.Edit) && (RequestSpecificValues.Current_Mode.WebContent_Type != WebContent_Type_Enum.Display))
+            {
+                viewer = WebContentViewer_Factory.Get_Viewer(RequestSpecificValues.Current_Mode.WebContent_Type, RequestSpecificValues);
+                if (viewer != null)
+                    excludeSiteMap = true;
+            }
         }
 
         /// <summary> Gets the collection of special behaviors which this subwriter
@@ -489,6 +499,52 @@ namespace SobekCM.Library.HTML
                     write_edit_display(Output, Tracer);
                     break;
 
+                default:
+                    if (viewer != null)
+                    {
+                        Output.WriteLine("<div class=\"sbkWchw_AdminPage\">");
+                        Output.WriteLine("<div class=\"sbkAdm_TitleDiv sbkAdm_TitleDivBorder\">");
+                        Output.WriteLine("  <img id=\"sbkAdm_TitleDivImg\" src=\"" + viewer.Viewer_Icon + "\" alt=\"\" />");
+                        Output.WriteLine("  <h1>" + viewer.Viewer_Title + "</h1>");
+                        Output.WriteLine("</div>");
+
+                        // Get the URL for the home page
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                        RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                        RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.List;
+                        string home_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+                        if (viewer is Manage_Menu_WebContentViewer)
+                        {
+                            // Render the breadcrumbns
+                            Output.WriteLine("<div class=\"sbkAdm_Breadcrumbs\">");
+                            Output.WriteLine("  <a href=\"" + home_url + "\">" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home</a> > ");
+                            Output.WriteLine("  Web Content Management");
+                            Output.WriteLine("</div>");
+                        }
+                        else
+                        {
+                            // Get the URL for the system admin menu
+                            WebContent_Type_Enum current = RequestSpecificValues.Current_Mode.WebContent_Type;
+                            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Simple_HTML_CMS;
+                            RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Manage_Menu;
+                            string menu_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                            RequestSpecificValues.Current_Mode.WebContent_Type = current;
+
+                            // Render the breadcrumbns
+                            Output.WriteLine("<div class=\"sbkAdm_Breadcrumbs\">");
+                            Output.WriteLine("  <a href=\"" + home_url + "\">" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home</a> > ");
+                            Output.WriteLine("  <a href=\"" + menu_url + "\">Web Content Management</a> > ");
+                            Output.WriteLine("  " + viewer.Viewer_Title);
+                            Output.WriteLine("</div>");
+                        }
+
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Simple_HTML_CMS;
+                        viewer.Add_HTML(Output, Tracer);
+                        Output.WriteLine("</div>");
+                    }
+                    break;
+
             }
 
         }
@@ -830,6 +886,12 @@ namespace SobekCM.Library.HTML
 
                 // Add the HTML from the CKEditor object
                 editor.Add_To_Stream(Output);
+            }
+
+            // If this has a viewer than it is a special, non-public view, add the admin CSS
+            if (viewer != null)
+            {
+                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Sobekcm_Admin_Css + "\" /> ");
             }
         }
 

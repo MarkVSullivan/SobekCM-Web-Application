@@ -12,7 +12,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
     {
         /// <summary>  Constructor for a new instance of the User_Permissions_WebContentViewer class  </summary>
         /// <param name="RequestSpecificValues">  All the necessary, non-global data specific to the current request  </param>
-        public User_Permissions_WebContentViewer(RequestCache RequestSpecificValues)
+        public User_Permissions_WebContentViewer(RequestCache RequestSpecificValues) : base ( RequestSpecificValues )
         {
             
         }
@@ -43,7 +43,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 Tracer.Add_Trace("User_Permissions_WebContentViewer.Add_HTML", "No html added");
             }
 
-            // No html to be added here
+            Output.WriteLine("IN THE USER_PERMISSIONS_WEBCONTENTVIEWER");
         }
     }
 }

@@ -317,8 +317,8 @@ namespace SobekCM.Library.HTML
                             Admin_Type_Enum adminType = RequestSpecificValues.Current_Mode.Admin_Type;
                             ushort page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : ((ushort) 1);
                             string browse_code = RequestSpecificValues.Current_Mode.Info_Browse_Mode;
-                            string aggregation = RequestSpecificValues.Current_Mode.Aggregation;
-                            string mySobekMode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
+                            //string aggregation = RequestSpecificValues.Current_Mode.Aggregation;
+                            //string mySobekMode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
 
                             // Get the URL for the home page
                             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
@@ -351,6 +351,10 @@ namespace SobekCM.Library.HTML
                                 Output.WriteLine("  " + adminViewer.Web_Title);
                                 Output.WriteLine("</div>"); 
                             }
+
+                            RequestSpecificValues.Current_Mode.Page = page;
+                            RequestSpecificValues.Current_Mode.Info_Browse_Mode = browse_code;
+                            
                         }
                     }
                 }

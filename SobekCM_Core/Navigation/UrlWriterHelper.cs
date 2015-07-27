@@ -182,7 +182,7 @@ namespace SobekCM.Core.Navigation
                             return (simple_html_cms_url.IndexOf("?") > 0) ? simple_html_cms_url + "&mode=menu" : simple_html_cms_url + "?mode=menu";
 
                         case WebContent_Type_Enum.Milestones:
-                            return (simple_html_cms_url.IndexOf("?") > 0) ? simple_html_cms_url + "&mode=miletsones" : simple_html_cms_url + "?mode=miletsones";
+                            return (simple_html_cms_url.IndexOf("?") > 0) ? simple_html_cms_url + "&mode=miletsones" : simple_html_cms_url + "?mode=milestones";
 
                         case WebContent_Type_Enum.Permissions:
                             return (simple_html_cms_url.IndexOf("?") > 0) ? simple_html_cms_url + "&mode=permissions" : simple_html_cms_url + "?mode=permissions";

@@ -4397,6 +4397,39 @@ namespace SobekCM.Engine_Library.Database
             }
         }
 
+        /// <summary> Flag indicates if there is usage logged for web content pages within the system </summary> 
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Dataset of usage on top-level pages between two dates </returns>
+        /// <remarks> This calls the 'SobekCM_WebContent_Usage_Report' stored procedure </remarks> 
+        public static bool WebContent_Has_Usage( Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.WebContent_Has_Usage", "Pull flag indicating if usage is logged for web content entities (pages or redirects)");
+            }
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@value", false) {Direction = ParameterDirection.InputOutput};
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_Has_Usage", parameters);
+
+                return bool.Parse(parameters[0].Value.ToString());
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.WebContent_Has_Usage", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Has_Usage", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Has_Usage", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
 		#endregion
 
 	}
