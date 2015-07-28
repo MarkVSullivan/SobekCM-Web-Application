@@ -281,19 +281,16 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
             return emails_sent;
         }
 
-        void processor_New_Status(string NewMessage)
+        void processor_New_Status(string NewMessage, bool Error )
         {
-            
-            if (NewMessage == "COMPLETE!")
+            if (Error)
             {
-                Console.WriteLine(NewMessage);
+                OnError("CalculateUsageStatisticsModule : " + NewMessage, null, null, -1);
             }
             else
             {
-                Console.WriteLine(NewMessage);
-                
+                OnProcess("CalculateUsageStatisticsModule : " + NewMessage, String.Empty, null, null, -1);
             }
-
         }
     }
 }
