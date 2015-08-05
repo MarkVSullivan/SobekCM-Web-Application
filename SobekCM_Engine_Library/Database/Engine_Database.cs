@@ -14,6 +14,8 @@ using SobekCM.Core.Search;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
+using SobekCM.Core.WebContent.Hierarchy;
+using SobekCM.Core.WebContent.Single;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Tools;
 
@@ -4132,17 +4134,17 @@ namespace SobekCM.Engine_Library.Database
         /// <summary> Get the usage statistics for a single web content page </summary>
         /// <param name="WebContentID"> Primary key to the web page in question </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> List of usage stats </returns>
+        /// <returns> Single web content usage report wrapper around the list of monthly usage hits </returns>
         /// <remarks> This calls the 'SobekCM_WebContent_Get_Usage' stored procedure </remarks> 
-        public static List<Single_WebContent_Month_Year_Usage> WebContent_Get_Usage(int WebContentID, Custom_Tracer Tracer)
+        public static Single_WebContent_Usage_Report WebContent_Get_Usage(int WebContentID, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Engine_Database.WebContent_Get_Usage", "Pull web page usage from the database");
+                Tracer.Add_Trace("Engine_Database.WebContent_Get_Usage", "Pull single web page usage report from the database");
             }
 
             // Build return list
-            List<Single_WebContent_Month_Year_Usage> returnValue = new List<Single_WebContent_Month_Year_Usage>();
+            Single_WebContent_Usage_Report returnValue = new Single_WebContent_Usage_Report {WebContentID = WebContentID};
 
             try
             {
@@ -4163,10 +4165,10 @@ namespace SobekCM.Engine_Library.Database
                     int hitsComplete = reader.GetInt32(3);
 
                     // Build the hit object
-                    Single_WebContent_Month_Year_Usage hitObject = new Single_WebContent_Month_Year_Usage(year, month, hits, hitsComplete);
+                    Single_WebContent_Usage hitObject = new Single_WebContent_Usage(year, month, hits, hitsComplete);
 
                     // Add the hit object to the list
-                    returnValue.Add(hitObject);
+                    returnValue.Usage.Add(hitObject);
                 }
 
                 // Close the reader (which also closes the connection)
@@ -4192,17 +4194,17 @@ namespace SobekCM.Engine_Library.Database
         /// <summary> Get the milestones / history for a single web content page </summary>
         /// <param name="WebContentID"> Primary key to the web page in question </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> List of milestones </returns>
+        /// <returns> Single page milestone report wrapper </returns>
         /// <remarks> This calls the 'SobekCM_WebContent_Get_Milestones' stored procedure </remarks> 
-        public static List<Milestone_Entry> WebContent_Get_Milestones(int WebContentID, Custom_Tracer Tracer)
+        public static Single_WebContent_Change_Report WebContent_Get_Milestones(int WebContentID, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Engine_Database.WebContent_Get_Milestones", "Pull web page milestones from the database");
+                Tracer.Add_Trace("Engine_Database.WebContent_Get_Milestones", "Pull single web page milestones report from the database");
             }
 
             // Build return list
-            List<Milestone_Entry> returnValue = new List<Milestone_Entry>();
+            Single_WebContent_Change_Report returnValue = new Single_WebContent_Change_Report { WebContentID = WebContentID };
 
             try
             {
@@ -4225,7 +4227,7 @@ namespace SobekCM.Engine_Library.Database
                     Milestone_Entry hitObject = new Milestone_Entry(date, user, milestone );
 
                     // Add the hit object to the list
-                    returnValue.Add(hitObject);
+                    returnValue.Changes.Add(hitObject);
                 }
 
                 // Close the reader (which also closes the connection)
@@ -4354,6 +4356,224 @@ namespace SobekCM.Engine_Library.Database
                     Tracer.Add_Trace("Engine_Database.WebContent_Get_All", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
                     Tracer.Add_Trace("Engine_Database.WebContent_Get_All", ee.Message, Custom_Trace_Type_Enum.Error);
                     Tracer.Add_Trace("Engine_Database.WebContent_Get_All", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+        /// <summary> Gets the hierarchy of all global content pages AND redirects, used for looking for a match from a requested URL </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Hierarchy of small web content nodes, used for looking for a match from a requested URL </returns>
+        /// <remarks> This calls the 'SobekCM_WebContent_All_Brief' stored procedure </remarks> 
+        public static WebContent_Hierarchy WebContent_Get_All_Hierarchy(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.WebContent_Get_All_Hierarchy", "Gets the hierarchy tree of all content pages and redirects");
+            }
+
+            // Start to build the return object
+            WebContent_Hierarchy returnValue = new WebContent_Hierarchy();
+
+            try
+            {
+                // Create the database agnostic reader
+                EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_All_Brief");
+
+                // Get ready to step through all the rows returned from the reader
+                WebContent_Hierarchy_Node[] list = new WebContent_Hierarchy_Node[7];
+
+                // Read through each milestone
+                DbDataReader reader = readerWrapper.Reader;
+                while (readerWrapper.Reader.Read())
+                {
+                    // Grab the values out
+                    string redirect = (!reader.IsDBNull(9)) ? reader.GetString(9) : null;
+                    int id = reader.GetInt32(0);
+ 
+                    // Handle the first segment
+                    string segment1 = reader.GetString(1);
+                    if ((list[0] == null) || (String.Compare(list[0].Segment, segment1, StringComparison.OrdinalIgnoreCase)  != 0))
+                    {
+                        // Build the node and add to the root nodes
+                        WebContent_Hierarchy_Node newNode = new WebContent_Hierarchy_Node(segment1, id, redirect);
+                        returnValue.Add_Child( newNode );
+
+                        // If there are additional non-null segments, than this node does not represent the 
+                        // actual node that corresponds to this web content page or redirect
+                        if (!reader.IsDBNull(2))
+                            newNode.WebContentID = -1;
+
+                        // Also save in the right spot in the list and clear the next level
+                        list[0] = newNode;
+                        list[1] = null;
+                    }
+
+                    // If there is a second segment here, handle that
+                    if (!reader.IsDBNull(2))
+                    {
+                        string segment2 = reader.GetString(2);
+
+                        // Is this a new segment 2 value?
+                        if ((list[1] == null) || (String.Compare(list[1].Segment, segment2, StringComparison.OrdinalIgnoreCase) != 0))
+                        {
+                            // Build the node and add to the current parent node
+                            WebContent_Hierarchy_Node newNode = new WebContent_Hierarchy_Node(segment2, id, redirect);
+                            list[0].Add_Child(newNode);
+
+                            // If there are additional non-null segments, than this node does not represent the 
+                            // actual node that corresponds to this web content page or redirect
+                            if (!reader.IsDBNull(3))
+                                newNode.WebContentID = -1;
+
+                            // Also save in the right spot in the list and clear the next level
+                            list[1] = newNode;
+                            list[2] = null;
+                        }
+
+                        // Is there a third segment to add as well
+                        if (!reader.IsDBNull(3))
+                        {
+                            string segment3 = reader.GetString(3);
+
+                            // Is this a new segment 3 value?
+                            if ((list[2] == null) || (String.Compare(list[2].Segment, segment3, StringComparison.OrdinalIgnoreCase) != 0))
+                            {
+                                // Build the node and add to the current parent node
+                                WebContent_Hierarchy_Node newNode = new WebContent_Hierarchy_Node(segment3, id, redirect);
+                                list[1].Add_Child(newNode);
+
+                                // If there are additional non-null segments, than this node does not represent the 
+                                // actual node that corresponds to this web content page or redirect
+                                if (!reader.IsDBNull(4))
+                                    newNode.WebContentID = -1;
+
+                                // Also save in the right spot in the list and clear the next level
+                                list[2] = newNode;
+                                list[3] = null;
+                            }
+
+                            // Is there a fourth segment to add as well
+                            if (!reader.IsDBNull(4))
+                            {
+                                string segment4 = reader.GetString(4);
+
+                                // Is this a new segment 4 value?
+                                if ((list[3] == null) || (String.Compare(list[3].Segment, segment4, StringComparison.OrdinalIgnoreCase) != 0))
+                                {
+                                    // Build the node and add to the current parent node
+                                    WebContent_Hierarchy_Node newNode = new WebContent_Hierarchy_Node(segment4, id, redirect);
+                                    list[2].Add_Child(newNode);
+
+                                    // If there are additional non-null segments, than this node does not represent the 
+                                    // actual node that corresponds to this web content page or redirect
+                                    if (!reader.IsDBNull(5))
+                                        newNode.WebContentID = -1;
+
+                                    // Also save in the right spot in the list and clear the next level
+                                    list[3] = newNode;
+                                    list[4] = null;
+                                }
+
+                                // Is there a fifth segment to add as well
+                                if (!reader.IsDBNull(5))
+                                {
+                                    string segment5 = reader.GetString(5);
+
+                                    // Is this a new segment 5 value?
+                                    if ((list[4] == null) || (String.Compare(list[4].Segment, segment5, StringComparison.OrdinalIgnoreCase) != 0))
+                                    {
+                                        // Build the node and add to the current parent node
+                                        WebContent_Hierarchy_Node newNode = new WebContent_Hierarchy_Node(segment5, id, redirect);
+                                        list[3].Add_Child(newNode);
+
+                                        // If there are additional non-null segments, than this node does not represent the 
+                                        // actual node that corresponds to this web content page or redirect
+                                        if (!reader.IsDBNull(6))
+                                            newNode.WebContentID = -1;
+
+                                        // Also save in the right spot in the list and clear the next level
+                                        list[4] = newNode;
+                                        list[5] = null;
+                                    }
+
+                                    // Is there a sixth segment to add as well
+                                    if (!reader.IsDBNull(6))
+                                    {
+                                        string segment6 = reader.GetString(6);
+
+                                        // Is this a new segment 6 value?
+                                        if ((list[5] == null) || (String.Compare(list[5].Segment, segment6, StringComparison.OrdinalIgnoreCase) != 0))
+                                        {
+                                            // Build the node and add to the current parent node
+                                            WebContent_Hierarchy_Node newNode = new WebContent_Hierarchy_Node(segment6, id, redirect);
+                                            list[4].Add_Child(newNode);
+
+                                            // If there are additional non-null segments, than this node does not represent the 
+                                            // actual node that corresponds to this web content page or redirect
+                                            if (!reader.IsDBNull(7))
+                                                newNode.WebContentID = -1;
+
+                                            // Also save in the right spot in the list and clear the next level
+                                            list[5] = newNode;
+                                            list[6] = null;
+                                        }
+
+                                        // Is there a seventh segment to add as well
+                                        if (!reader.IsDBNull(7))
+                                        {
+                                            string segment7 = reader.GetString(7);
+
+                                            // Is this a new segment 7 value?
+                                            if ((list[6] == null) || (String.Compare(list[6].Segment, segment7, StringComparison.OrdinalIgnoreCase) != 0))
+                                            {
+                                                // Build the node and add to the current parent node
+                                                WebContent_Hierarchy_Node newNode = new WebContent_Hierarchy_Node(segment7, id, redirect);
+                                                list[5].Add_Child(newNode);
+
+                                                // If there are additional non-null segments, than this node does not represent the 
+                                                // actual node that corresponds to this web content page or redirect
+                                                if (!reader.IsDBNull(8))
+                                                    newNode.WebContentID = -1;
+
+                                                // Also save in the right spot in the list.. no next level to clear
+                                                list[6] = newNode; 
+                                            }
+
+                                            // Is there an eigth segment? (Will always be a new one since the bottom of the unique hierarchy list)
+                                            if (!reader.IsDBNull(8))
+                                            {
+                                                string segment8 = reader.GetString(8);
+
+                                                // Build the node and add to the current parent node
+                                                WebContent_Hierarchy_Node newNode = new WebContent_Hierarchy_Node(segment8, id, redirect);
+                                                list[6].Add_Child(newNode);
+
+                                                // Note, this last node always represents the web content page or redirect if
+                                                // it made it this far.  No need to check next level and assign id to -1 if not null
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
+
+                // Return the built list
+                return returnValue;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_All_Hierarchy", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_All_Hierarchy", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_All_Hierarchy", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
                 return null;
             }

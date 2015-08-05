@@ -7,6 +7,8 @@ using System.Text;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.WebContent;
+using SobekCM.Core.WebContent.Admin;
+using SobekCM.Core.WebContent.Single;
 using SobekCM.Engine_Library.Endpoints;
 using SobekCM.Tools;
 
@@ -26,7 +28,7 @@ namespace SobekCM.Core.Client
 
         /// <summary> Get the information for a single top-level web content page </summary>
         /// <param name="InfoBrowseMode"> Path for the requested web content page ( i.e., software/download/.. ) </param>
-        /// <param name="Tracer">The tracer.</param>
+        /// <param name="Tracer"></param>
         /// <returns> Object with all the information and source text for the top-level web content page </returns>
         public HTML_Based_Content Get_HTML_Based_Content( string InfoBrowseMode, Custom_Tracer Tracer )
         {
@@ -39,12 +41,48 @@ namespace SobekCM.Core.Client
             HTML_Based_Content returnValue = WebContentServices.get_html_content(urlSegments, Tracer, out error);
 
             // Was this null?
-            if (returnValue == null)
-                return null;
-
             return returnValue;
-
         }
+
+        /// <summary> Get the list of milestones affecting a single (non aggregation affiliated) static web content page </summary>
+        /// <param name="WebContentID"> Primary key to the web page in question </param>
+        /// <param name="Tracer"></param>
+        /// <returns> Single page milestone report wrapper </returns>
+        public Single_WebContent_Change_Report Get_Single_Milestones(int WebContentID, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Single_Milestones");
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_Single_Milestones", Tracer);
+
+            // Format the URL
+            string url = String.Format(endpoint.URL, WebContentID);
+
+            // Call out to the endpoint and return the deserialized object
+            return Deserialize<Single_WebContent_Change_Report>(url, endpoint.Protocol, Tracer);
+        }
+
+        /// <summary> Get the complete monthly usage for a single web content page </summary>
+        /// <param name="WebContentID"> Primary key of the web content page for which this the usage report applies </param>
+        /// <param name="Tracer"></param>
+        /// <returns> Single web content usage report wrapper around the list of monthly usage hits </returns>
+        public Single_WebContent_Usage_Report Get_Single_Usage_Report(int WebContentID, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Single_Usage_Report");
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_Single_Usage_Report", Tracer);
+
+            // Format the URL
+            string url = String.Format(endpoint.URL, WebContentID);
+
+            // Call out to the endpoint and return the deserialized object
+            return Deserialize<Single_WebContent_Usage_Report>(url, endpoint.Protocol, Tracer);
+        }
+
+
 
         #region Endpoints related to global recent updates
 
@@ -669,7 +707,6 @@ namespace SobekCM.Core.Client
         #endregion
 
         #region Endpoints related to the complete list of web content entities, including pages and redirects
-
 
         /// <summary> Returns a flag indicating if there are any web content entities, including pages and redirects </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>

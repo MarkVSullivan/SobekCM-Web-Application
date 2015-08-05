@@ -13,6 +13,9 @@ using Jil;
 using ProtoBuf;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.WebContent;
+using SobekCM.Core.WebContent.Admin;
+using SobekCM.Core.WebContent.Hierarchy;
+using SobekCM.Core.WebContent.Single;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Microservices;
@@ -37,6 +40,69 @@ namespace SobekCM.Engine_Library.Endpoints
             /// <summary> Unexpected error reading a source file </summary>
             Error_Reading_File
         }
+
+
+        #region Methods to get the complete web content hierarchy tree
+
+        /// <summary> Get the complete hierarchy of web content pages and redirects, used for navigation </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_Hierarchy(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Add a trace
+            tracer.Add_Trace("WebContentServices.Get_Hierarchy");
+
+            // Get the dataset of results
+            WebContent_Hierarchy returnValue = Engine_Database.WebContent_Get_All_Hierarchy(tracer);
+
+            // If null was returned, an error occurred
+            if (returnValue == null)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull usage report from the database");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then write the tracer
+                if (IsDebug)
+                {
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                }
+                return;
+            }
+
+            // If this was debug mode, then just write the tracer
+            if (IsDebug)
+            {
+                tracer.Add_Trace("WebContentServices.Get_Single_Usage_Report", "Debug mode detected");
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseWebContentHierarchy";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
+        }
+
+        #endregion
 
         #region Methods related to a single top-level static HTML content page
 
@@ -364,6 +430,180 @@ namespace SobekCM.Engine_Library.Endpoints
             Response.End();
         }
 
+        /// <summary> Get the list of milestones affecting a single (non aggregation affiliated) static web content page </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_Single_Milestones(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Add a trace
+            tracer.Add_Trace("WebContentServices.Get_Single_Milestones");
+
+            // Must at least have one URL segment for the ID
+            if (UrlSegments.Count > 0)
+            {
+                int webContentId;
+                if (!Int32.TryParse(UrlSegments[0], out webContentId))
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Invalid parameter - expects primary key integer value to the web content object (WebContentID) as part of URL");
+                    Response.StatusCode = 500;
+
+                    // If this was debug mode, then write the tracer
+                    if (IsDebug)
+                    {
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                    }
+                    return;
+                }
+
+                // Get the report of recent updates
+                Single_WebContent_Change_Report returnValue = Engine_Database.WebContent_Get_Milestones(webContentId, tracer);
+
+                // If null was returned, an error occurred
+                if (returnValue == null)
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Unable to pull milestones from the database");
+                    Response.StatusCode = 500;
+
+                    // If this was debug mode, then just write the tracer
+                    if (IsDebug)
+                    {
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                    }
+                    return;
+                }
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    tracer.Add_Trace("WebContentServices.Get_Single_Milestones", "Debug mode detected");
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+
+                    return;
+                }
+
+                // Get the JSON-P callback function
+                string json_callback = "parseRecentUpdates";
+                if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                {
+                    json_callback = QueryString["callback"];
+                }
+
+                // Use the base class to serialize the object according to request protocol
+                Serialize(returnValue, Response, Protocol, json_callback);
+            }
+            else
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Invalid parameter - expects primary key integer value to the web content object (WebContentID) as part of URL");
+                Response.StatusCode = 500;
+            }
+        }
+
+        /// <summary> Get the complete monthly usage for a single web content page </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_Single_Usage_Report(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Add a trace
+            tracer.Add_Trace("WebContentServices.Get_Single_Usage_Report");
+
+            // Must at least have one URL segment for the ID
+            if (UrlSegments.Count > 0)
+            {
+                int webContentId;
+                if (!Int32.TryParse(UrlSegments[0], out webContentId))
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Invalid parameter - expects primary key integer value to the web content object (WebContentID) as part of URL");
+                    Response.StatusCode = 500;
+
+                    // If this was debug mode, then write the tracer
+                    if (IsDebug)
+                    {
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                    }
+                    return;
+                }
+
+                // Get the dataset of results
+                Single_WebContent_Usage_Report returnValue = Engine_Database.WebContent_Get_Usage(webContentId, tracer);
+
+                // If null was returned, an error occurred
+                if (returnValue == null)
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Unable to pull usage report from the database");
+                    Response.StatusCode = 500;
+
+                    // If this was debug mode, then write the tracer
+                    if (IsDebug)
+                    {
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                    }
+                    return;
+                }
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    tracer.Add_Trace("WebContentServices.Get_Single_Usage_Report", "Debug mode detected");
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+
+                    return;
+                }
+
+                // Get the JSON-P callback function
+                string json_callback = "parseWebContentUsageReport";
+                if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                {
+                    json_callback = QueryString["callback"];
+                }
+
+                // Use the base class to serialize the object according to request protocol
+                Serialize(returnValue, Response, Protocol, json_callback);
+            }
+            else
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Invalid parameter - expects primary key integer value to the web content object (WebContentID) as part of URL");
+                Response.StatusCode = 500;
+            }
+        }
+
         #endregion
 
         #region Endpoints related to overall management of the web content pages through the admin pages
@@ -382,7 +622,7 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             // Create the tracer and add a trace
             Custom_Tracer tracer = new Custom_Tracer();
-            tracer.Add_Trace("WebContenServices.Has_Global_Recent_Updates");
+            tracer.Add_Trace("WebContentServices.Has_Global_Recent_Updates");
 
             // Get the dataset of recent updates
             DataSet changes = get_global_recent_updates_set(tracer);
@@ -408,7 +648,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Were there updates?
             bool returnValue = changes.Tables[0].Rows.Count > 0;
-            tracer.Add_Trace("WebContenServices.Has_Global_Recent_Updates","Will return value " + returnValue.ToString().ToUpper());
+            tracer.Add_Trace("WebContentServices.Has_Global_Recent_Updates","Will return value " + returnValue.ToString().ToUpper());
 
 
             // If this was debug mode, then just write the tracer
@@ -467,12 +707,12 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Add a trace
-            tracer.Add_Trace("WebContenServices.Get_Recent_Updates","Get recent updates page " + page + " with " + rows_per_page + " rows per page");
+            tracer.Add_Trace("WebContentServices.Get_Recent_Updates","Get recent updates page " + page + " with " + rows_per_page + " rows per page");
 
             // Check for a user filter
             string userFilter = QueryString["user"];
             if (!String.IsNullOrWhiteSpace(userFilter))
-                tracer.Add_Trace("WebContenServices.Get_Recent_Updates", "Filter by user '" + userFilter + "'");
+                tracer.Add_Trace("WebContentServices.Get_Recent_Updates", "Filter by user '" + userFilter + "'");
          
             // Get the dataset of recent updates
             DataSet changes = get_global_recent_updates_set(tracer); 
@@ -961,7 +1201,7 @@ namespace SobekCM.Engine_Library.Endpoints
             Custom_Tracer tracer = new Custom_Tracer();
 
             // Add a trace
-            tracer.Add_Trace("WebContenServices.Get_Recent_Updates_Users", "Get the list of all users that have participated in the recent updates to all top-level static web content pages");
+            tracer.Add_Trace("WebContentServices.Get_Recent_Updates_Users", "Get the list of all users that have participated in the recent updates to all top-level static web content pages");
 
             // Get the dataset of recent updates
             DataSet changes = get_global_recent_updates_set(tracer);
@@ -1101,7 +1341,7 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             // Create the tracer and add a trace
             Custom_Tracer tracer = new Custom_Tracer();
-            tracer.Add_Trace("WebContenServices.Has_Global_Usage");
+            tracer.Add_Trace("WebContentServices.Has_Global_Usage");
 
             // Look in the cache
             bool? cacheFlag = CachedDataManager.WebContent.Retrieve_Has_Global_Usage_Flag(tracer);
@@ -1172,7 +1412,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Add a trace
-            tracer.Add_Trace("WebContenServices.Get_Global_Usage_Report", "Pull usage report page " + page + " with " + rows_per_page + " rows per page");
+            tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report", "Pull usage report page " + page + " with " + rows_per_page + " rows per page");
 
             // Determine the range
             int year1 = 2000;
@@ -1190,7 +1430,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 month2 = temp;
 
             // Add a trace
-            tracer.Add_Trace("WebContenServices.Get_Global_Usage_Report", "Report will be from " + year1 + "/" + month1 + " and " + year2 + "/" + month2 );
+            tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report", "Report will be from " + year1 + "/" + month1 + " and " + year2 + "/" + month2 );
             
             // Get the dataset of results
             DataSet pages = get_global_usage_report_dataset(year1, month1, year2, month2, tracer);
@@ -1375,7 +1615,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 month2 = temp;
 
             // Add a trace
-            tracer.Add_Trace("WebContenServices.Get_Global_Usage_Report_JDataTable", "Report will be from " + year1 + "/" + month1 + " and " + year2 + "/" + month2);
+            tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report_JDataTable", "Report will be from " + year1 + "/" + month1 + " and " + year2 + "/" + month2);
 
             // Get the dataset of results
             DataSet pages = get_global_usage_report_dataset(year1, month1, year2, month2, tracer);
@@ -1532,7 +1772,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 month2 = temp;
 
             // Add a trace
-            tracer.Add_Trace("WebContenServices.Get_Global_Usage_Report_NextLevel", "Report will be from " + year1 + "/" + month1 + " and " + year2 + "/" + month2);
+            tracer.Add_Trace("WebContentServices.Get_Global_Usage_Report_NextLevel", "Report will be from " + year1 + "/" + month1 + " and " + year2 + "/" + month2);
 
             // Get the dataset of results
             DataSet pages = get_global_usage_report_dataset(year1, month1, year2, month2, tracer);
@@ -1739,7 +1979,7 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             // Create the tracer and add a trace
             Custom_Tracer tracer = new Custom_Tracer();
-            tracer.Add_Trace("WebContenServices.Has_Redirects");
+            tracer.Add_Trace("WebContentServices.Has_Redirects");
 
             // Get the dataset of redirects
             DataSet changes = get_all_redirects(tracer);
@@ -1765,7 +2005,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Were there redirects?
             bool returnValue = changes.Tables[0].Rows.Count > 0;
-            tracer.Add_Trace("WebContenServices.Has_Redirects", "Will return value " + returnValue.ToString().ToUpper());
+            tracer.Add_Trace("WebContentServices.Has_Redirects", "Will return value " + returnValue.ToString().ToUpper());
 
 
             // If this was debug mode, then just write the tracer
@@ -1824,7 +2064,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Add a trace
-            tracer.Add_Trace("WebContenServices.Get_All_Redirects", "Get list of global redirects, page " + page + " with " + rows_per_page + " rows per page");
+            tracer.Add_Trace("WebContentServices.Get_All_Redirects", "Get list of global redirects, page " + page + " with " + rows_per_page + " rows per page");
 
             // Get the dataset of redirects
             DataSet pages = get_all_redirects(tracer);
@@ -2278,7 +2518,7 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             // Create the tracer and add a trace
             Custom_Tracer tracer = new Custom_Tracer();
-            tracer.Add_Trace("WebContenServices.Has_Content_Pages");
+            tracer.Add_Trace("WebContentServices.Has_Content_Pages");
 
             // Get the dataset of web pages
             DataSet changes = get_all_content_pages(tracer);
@@ -2304,7 +2544,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Were there content pages?
             bool returnValue = changes.Tables[0].Rows.Count > 0;
-            tracer.Add_Trace("WebContenServices.Has_Content_Pages", "Will return value " + returnValue.ToString().ToUpper());
+            tracer.Add_Trace("WebContentServices.Has_Content_Pages", "Will return value " + returnValue.ToString().ToUpper());
 
 
             // If this was debug mode, then just write the tracer
@@ -2363,7 +2603,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Add a trace
-            tracer.Add_Trace("WebContenServices.Get_All_Pages", "Get list of web content pages, page " + page + " with " + rows_per_page + " rows per page");
+            tracer.Add_Trace("WebContentServices.Get_All_Pages", "Get list of web content pages, page " + page + " with " + rows_per_page + " rows per page");
 
             // Get the dataset of pages
             DataSet pages = get_all_content_pages(tracer);
@@ -2867,7 +3107,7 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             // Create the tracer and add a trace
             Custom_Tracer tracer = new Custom_Tracer();
-            tracer.Add_Trace("WebContenServices.Has_Pages_Or_Redirects");
+            tracer.Add_Trace("WebContentServices.Has_Pages_Or_Redirects");
 
             // Get the dataset of web pages or redirects
             DataSet changes = get_all_content_entities(tracer);
@@ -2893,7 +3133,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Were there web pages or redirects?
             bool returnValue = changes.Tables[0].Rows.Count > 0;
-            tracer.Add_Trace("WebContenServices.Has_Pages_Or_Redirects", "Will return value " + returnValue.ToString().ToUpper());
+            tracer.Add_Trace("WebContentServices.Has_Pages_Or_Redirects", "Will return value " + returnValue.ToString().ToUpper());
 
 
             // If this was debug mode, then just write the tracer
@@ -2952,7 +3192,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Add a trace
-            tracer.Add_Trace("WebContenServices.Get_All", "Get list of web content entities, page " + page + " with " + rows_per_page + " rows per page");
+            tracer.Add_Trace("WebContentServices.Get_All", "Get list of web content entities, page " + page + " with " + rows_per_page + " rows per page");
 
             // Get the dataset of pages
             DataSet pages = get_all_content_entities(tracer);
