@@ -20,7 +20,7 @@ namespace SobekCM.Core.MicroservicesClient
     public class MicroservicesClient_Endpoint
     {
         /// <summary> Complete URL for this microservices endpoint </summary>
-        public readonly string URL;
+        public string URL { get; internal set; }
 
         /// <summary> Protocol to use when connecting to this endpoint, via the URL </summary>
         public readonly Microservice_Endpoint_Protocol_Enum Protocol;

@@ -4362,18 +4362,16 @@ namespace SobekCM.Engine_Library.Database
         }
 
         /// <summary> Gets the hierarchy of all global content pages AND redirects, used for looking for a match from a requested URL </summary>
+        /// <param name="ReturnValue"> Web content hierarchy object to populate - should be pre-cleared </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Hierarchy of small web content nodes, used for looking for a match from a requested URL </returns>
+        /// <returns> Flag indicating if this ran successfully, TRUE if successful, otherwise FALSE </returns>
         /// <remarks> This calls the 'SobekCM_WebContent_All_Brief' stored procedure </remarks> 
-        public static WebContent_Hierarchy WebContent_Get_All_Hierarchy(Custom_Tracer Tracer)
+        public static bool WebContent_Populate_All_Hierarchy(WebContent_Hierarchy ReturnValue, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Engine_Database.WebContent_Get_All_Hierarchy", "Gets the hierarchy tree of all content pages and redirects");
+                Tracer.Add_Trace("Engine_Database.WebContent_Populate_All_Hierarchy", "Gets the hierarchy tree of all content pages and redirects");
             }
-
-            // Start to build the return object
-            WebContent_Hierarchy returnValue = new WebContent_Hierarchy();
 
             try
             {
@@ -4397,7 +4395,7 @@ namespace SobekCM.Engine_Library.Database
                     {
                         // Build the node and add to the root nodes
                         WebContent_Hierarchy_Node newNode = new WebContent_Hierarchy_Node(segment1, id, redirect);
-                        returnValue.Add_Child( newNode );
+                        ReturnValue.Add_Child( newNode );
 
                         // If there are additional non-null segments, than this node does not represent the 
                         // actual node that corresponds to this web content page or redirect
@@ -4564,18 +4562,18 @@ namespace SobekCM.Engine_Library.Database
                 readerWrapper.Close();
 
                 // Return the built list
-                return returnValue;
+                return true;
             }
             catch (Exception ee)
             {
                 Last_Exception = ee;
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("Engine_Database.WebContent_Get_All_Hierarchy", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("Engine_Database.WebContent_Get_All_Hierarchy", ee.Message, Custom_Trace_Type_Enum.Error);
-                    Tracer.Add_Trace("Engine_Database.WebContent_Get_All_Hierarchy", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Populate_All_Hierarchy", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Populate_All_Hierarchy", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Populate_All_Hierarchy", ee.StackTrace, Custom_Trace_Type_Enum.Error);
                 }
-                return null;
+                return false;
             }
         }
 

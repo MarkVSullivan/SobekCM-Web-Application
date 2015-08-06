@@ -110,7 +110,7 @@ namespace SobekCM.Engine_Library.Endpoints
             keys["urlrelative"] = redirect_url;
 
             Navigation_Object currentMode = new Navigation_Object();
-            QueryString_Analyzer.Parse_Query(keys, currentMode, BaseUrl, RequestUserLanguages, Engine_ApplicationCache_Gateway.Codes, Engine_ApplicationCache_Gateway.Collection_Aliases, Engine_ApplicationCache_Gateway.Items, Engine_ApplicationCache_Gateway.URL_Portals, Tracer);
+            QueryString_Analyzer.Parse_Query(keys, currentMode, BaseUrl, RequestUserLanguages, Engine_ApplicationCache_Gateway.Codes, Engine_ApplicationCache_Gateway.Collection_Aliases, Engine_ApplicationCache_Gateway.Items, Engine_ApplicationCache_Gateway.URL_Portals, Engine_ApplicationCache_Gateway.WebContent_Hierarchy, Tracer);
 
             return currentMode;
         }

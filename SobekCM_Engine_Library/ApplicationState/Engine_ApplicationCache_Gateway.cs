@@ -9,6 +9,7 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
+using SobekCM.Core.WebContent.Hierarchy;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Settings;
 using SobekCM.Engine_Library.Skins;
@@ -53,6 +54,7 @@ namespace SobekCM.Engine_Library.ApplicationState
             error = error | !RefreshIcons();
             error = error | !RefreshDefaultMetadataTemplates();
             error = error | !RefreshUrlPortals();
+            error = error | !RefreshWebContentHierarchy();
 
             Last_Refresh = DateTime.Now;
 
@@ -79,6 +81,7 @@ namespace SobekCM.Engine_Library.ApplicationState
             error = error | !RefreshIcons();
             error = error | !RefreshDefaultMetadataTemplates();
             error = error | !RefreshUrlPortals();
+            error = error | !RefreshWebContentHierarchy();
 
             Last_Refresh = DateTime.Now;
 
@@ -971,6 +974,64 @@ namespace SobekCM.Engine_Library.ApplicationState
             defaultMetadataList = null;
             templateList = null;
             return true;
+        }
+
+        #endregion
+
+        #region Properties and methods related to the hierarchy of non-aggregational web content pages
+
+        private static WebContent_Hierarchy webContentHierarchy;
+        private static readonly Object webContentHierarchyLock = new Object();
+
+        /// <summary> Refresh the hierarchy of non-aggregational web content pages by pulling the data back from the database </summary>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        public static bool RefreshWebContentHierarchy()
+        {
+            try
+            {
+                lock (webContentHierarchyLock)
+                {
+                    // Either create a new hierarchy object , or clear the existing
+                    if (webContentHierarchy == null)
+                        webContentHierarchy = new WebContent_Hierarchy();
+                    else
+                        webContentHierarchy.Clear();
+
+                    if (!Engine_Database.WebContent_Populate_All_Hierarchy(webContentHierarchy, null))
+                    {
+                        webContentHierarchy = null;
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary> Get the complete hierarchy of non-aggregational web content pages and redirects, used for navigation </summary>
+        public static WebContent_Hierarchy WebContent_Hierarchy
+        {
+            get
+            {
+                lock (webContentHierarchyLock)
+                {
+                    if (webContentHierarchy == null)
+                    {
+                        webContentHierarchy = new WebContent_Hierarchy();
+                        if (!Engine_Database.WebContent_Populate_All_Hierarchy(webContentHierarchy, null))
+                        {
+                            webContentHierarchy = null;
+                            throw Engine_Database.Last_Exception;
+                        }
+                    }
+
+                    return webContentHierarchy;
+                }
+            }
         }
 
         #endregion

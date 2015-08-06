@@ -38,10 +38,18 @@ namespace SobekCM.Core.WebContent.Hierarchy
             }
         }
 
+        /// <summary> Number of child root nodes in this hierarchy </summary>
+        [IgnoreDataMember]
+        [XmlIgnore]
+        public int Root_Count
+        {
+            get { return Children != null ? Children.Count : 0; }
+        }
+
         /// <summary> Constructor for a new instance of the WebContent_Hierarchy class </summary>
         public WebContent_Hierarchy()
         {
-            Children = new Dictionary<string, WebContent_Hierarchy_Node>();
+            Children = new Dictionary<string, WebContent_Hierarchy_Node>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary> Add a new child node to this node </summary>
@@ -52,7 +60,7 @@ namespace SobekCM.Core.WebContent.Hierarchy
         {
             // Ensure the collection has been built
             if (Children == null)
-                Children = new Dictionary<string, WebContent_Hierarchy_Node>();
+                Children = new Dictionary<string, WebContent_Hierarchy_Node>(StringComparer.OrdinalIgnoreCase);
 
             // Build the child node
             WebContent_Hierarchy_Node returnValue = new WebContent_Hierarchy_Node { Segment = NewSegment };
@@ -69,11 +77,40 @@ namespace SobekCM.Core.WebContent.Hierarchy
         {
             // Ensure the collection has been built
             if (Children == null)
-                Children = new Dictionary<string, WebContent_Hierarchy_Node>();
+                Children = new Dictionary<string, WebContent_Hierarchy_Node>(StringComparer.OrdinalIgnoreCase);
 
             // Build the child node
             Children[NewNode.Segment] = NewNode;
         }
 
+        /// <summary> Clear this hierarchy object, by clearing the collection of root nodes </summary>
+        public void Clear()
+        {
+            if ( Children != null )
+                Children.Clear();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="UrlSegments"></param>
+        /// <returns></returns>
+        public WebContent_Hierarchy_Node Find(List<string> UrlSegments)
+        {
+            WebContent_Hierarchy_Node currentNode = Children[UrlSegments[0]];
+            if (currentNode == null)
+                return null;
+
+            int i = 1;
+            while (i < UrlSegments.Count)
+            {
+                currentNode = currentNode.Children[UrlSegments[i]];
+                if (currentNode == null)
+                    return null;
+                i++;
+            }
+
+            return currentNode;
+        }
     }
 }

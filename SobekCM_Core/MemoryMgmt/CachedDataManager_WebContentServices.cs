@@ -6,8 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
-using SobekCM.Core.Aggregations;
-using SobekCM.Core.WebContent;
+using SobekCM.Core.WebContent.Hierarchy;
 using SobekCM.Tools;
 
 namespace SobekCM.Core.MemoryMgmt
@@ -706,7 +705,7 @@ namespace SobekCM.Core.MemoryMgmt
             // Locally cache if this doesn't exceed the limit
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Recent_Updates_NextLevel", "Adding object '" + keyBuilder.ToString() + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Recent_Updates_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
             HttpContext.Current.Cache.Insert(keyBuilder.ToString(), StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
@@ -1035,7 +1034,7 @@ namespace SobekCM.Core.MemoryMgmt
             // Locally cache if this doesn't exceed the limit
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Pages_NextLevel", "Adding object '" + keyBuilder.ToString() + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Pages_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
             HttpContext.Current.Cache.Insert(keyBuilder.ToString(), StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
@@ -1282,7 +1281,7 @@ namespace SobekCM.Core.MemoryMgmt
             // Locally cache if this doesn't exceed the limit
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Redirects_NextLevel", "Adding object '" + keyBuilder.ToString() + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Redirects_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
             HttpContext.Current.Cache.Insert(keyBuilder.ToString(), StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
@@ -1529,7 +1528,7 @@ namespace SobekCM.Core.MemoryMgmt
             // Locally cache if this doesn't exceed the limit
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Content_NextLevel", "Adding object '" + keyBuilder.ToString() + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Content_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
             HttpContext.Current.Cache.Insert(keyBuilder.ToString(), StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
@@ -1784,7 +1783,7 @@ namespace SobekCM.Core.MemoryMgmt
             // Locally cache if this doesn't exceed the limit
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Usage_Report_NextLevel", "Adding object '" + keyBuilder.ToString() + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Usage_Report_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
             HttpContext.Current.Cache.Insert(keyBuilder.ToString(), StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
@@ -1811,8 +1810,90 @@ namespace SobekCM.Core.MemoryMgmt
 
         #endregion
 
+        #region Methods related to the complete hierarchy of pages (client side - not used by default UI)
 
+        /// <summary> Retrieves the complete hierarchy of non-aggregational static web content pages and redirects, used for navigation </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Complete hierarchy of non-aggregational static web content pages and redirects, used for navigation </returns>
+        /// <remarks> By default, this method is not used, but is exposed for others that are utilizing the engine client code </remarks>
+        public WebContent_Hierarchy Retrieve_Hierarchy(Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if ((settings.Disabled) || (HttpContext.Current == null))
+                return null;
 
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Hierarchy", "");
+            }
+
+            // Determine the key
+            const string KEY = "WEBCONTENT|CLIENT|HIERARCHY";
+
+            // See if this is in the local cache first
+            WebContent_Hierarchy returnValue = HttpContext.Current.Cache.Get(KEY) as WebContent_Hierarchy;
+            if (returnValue != null)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Hierarchy", "Found complete web content hierarchy on local cache");
+                }
+
+                return returnValue;
+            }
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Hierarchy", "Complete web content hierarchy not found in the local cache ");
+            }
+
+            // Since everything failed, just return null
+            return null;
+        }
+
+        /// <summary> Stores the complete hierarchy of non-aggregational static web content pages and redirects, used for navigation </summary>
+        /// <param name="StoreObject"> List of next level values </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Store_Hierarchy(WebContent_Hierarchy StoreObject, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Hierarchy");
+            }
+
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+            {
+                if (Tracer != null) Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Hierarchy", "Caching is disabled");
+                return;
+            }
+
+            // Determine the key
+            const string KEY = "WEBCONTENT|CLIENT|HIERARCHY";
+            const int LOCAL_EXPIRATION = 15;
+
+            // Locally cache if this doesn't exceed the limit
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Hierarchy", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            }
+
+            HttpContext.Current.Cache.Insert(KEY, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
+        }
+
+        /// <summary> Clear the complete hierarchy of non-aggregational static web content pages and redirects, used for navigation </summary>
+        public void Clear_Hierarchy()
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+            {
+                return;
+            }
+
+            HttpContext.Current.Cache.Remove("WEBCONTENT|CLIENT|HIERARCHY");
+        }
+
+        #endregion
 
         #endregion
     }

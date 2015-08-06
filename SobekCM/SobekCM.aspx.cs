@@ -6,8 +6,6 @@ using System.Web;
 using System.Web.UI;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
-using SobekCM.Engine_Library.Configuration;
-using SobekCM.Engine_Library.Database;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
@@ -296,6 +294,19 @@ namespace SobekCM
             // Ensure the microservices client has read the configuration file
 		    if (!SobekEngineClient.Config_Read_Attempted)
 		    {
+#if DEBUG
+                string base_url = Request.Url.AbsoluteUri.ToLower().Replace("sobekcm.aspx", "");
+            	if (base_url.IndexOf("localhost:") > 0)
+			    {
+                    if (base_url.IndexOf("?") > 0)
+				        base_url = base_url.Substring(0, base_url.IndexOf("?"));
+			        UI_ApplicationCache_Gateway.Settings.System_Base_URL = base_url;
+			        UI_ApplicationCache_Gateway.Settings.Base_URL = base_url;
+
+			    }
+#endif
+
+                // Get the base URL
                 string path = Server.MapPath("config/default/sobekcm_microservices.config");
                 SobekEngineClient.Read_Config_File(path, UI_ApplicationCache_Gateway.Settings.System_Base_URL);
 		    }

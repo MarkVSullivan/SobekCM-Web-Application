@@ -50,7 +50,8 @@ namespace SobekCM.Core.MicroservicesClient
             MicroservicesClient_Endpoint endpoint = Config[Key];
             if (endpoint == null)
             {
-                Tracer.Add_Trace("MicroservicesClientBase.GetEndpointConfig", "No microservice endpoint defined in the client application for key '" + Key + "'", Custom_Trace_Type_Enum.Error); 
+                if ( Tracer != null )
+                    Tracer.Add_Trace("MicroservicesClientBase.GetEndpointConfig", "No microservice endpoint defined in the client application for key '" + Key + "'", Custom_Trace_Type_Enum.Error); 
                 throw new ApplicationException("No microservice endpoint defined in the client application for key '" + Key + "'");
             }
 
@@ -69,7 +70,8 @@ namespace SobekCM.Core.MicroservicesClient
             try
             {
                 // Add a trace
-                Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Microservice endpoint call: [GET] " + MicroserviceUri );
+                if ( Tracer != null )
+                    Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Microservice endpoint call: [GET] " + MicroserviceUri );
 
                 // Create the request for the remote microservice, by URI
                 WebRequest request = WebRequest.Create(MicroserviceUri);
@@ -83,7 +85,8 @@ namespace SobekCM.Core.MicroservicesClient
                 // If the datastream is null, some unknown exception occurred here.. (seems like an exception should already have been thrown though)
                 if (dataStream == null)
                 {
-                    Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Unable to get the response stream from the web response while connecting to microservice URL", Custom_Trace_Type_Enum.Error);
+                    if (Tracer != null)
+                        Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Unable to get the response stream from the web response while connecting to microservice URL", Custom_Trace_Type_Enum.Error);
                     throw new ApplicationException("Unable to get the response stream from the web response while connecting to microservice URL ( '" + MicroserviceUri + " ').");
                 }
 
@@ -115,7 +118,8 @@ namespace SobekCM.Core.MicroservicesClient
             {
                 if (ee.Message == "The URI prefix is not recognized.")
                 {
-                    Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Microservice URL is not a supported format due to invalid URI prefix", Custom_Trace_Type_Enum.Error );
+                    if (Tracer != null)
+                        Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Microservice URL is not a supported format due to invalid URI prefix", Custom_Trace_Type_Enum.Error );
                     throw new ApplicationException("Microservice URL ( '" + MicroserviceUri + "' ) is not a supported format due to invalid URI prefix.", ee);
                 }
 
@@ -123,7 +127,8 @@ namespace SobekCM.Core.MicroservicesClient
             }
             catch (UriFormatException ee)
             {
-                Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Microservice URL is invalid format", Custom_Trace_Type_Enum.Error);
+                if (Tracer != null)
+                    Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Microservice URL is invalid format", Custom_Trace_Type_Enum.Error);
                 throw new ApplicationException("Microservice URL ( '" + MicroserviceUri + "' ) is invalid format.", ee);
             }
             catch (WebException ee)
@@ -131,7 +136,8 @@ namespace SobekCM.Core.MicroservicesClient
                 switch (ee.Status)
                 {
                     case WebExceptionStatus.ConnectFailure:
-                        Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Connection failure while connecting to microservice URL: " + ee.Message, Custom_Trace_Type_Enum.Error);
+                        if (Tracer != null)
+                            Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Connection failure while connecting to microservice URL: " + ee.Message, Custom_Trace_Type_Enum.Error);
                         throw new ApplicationException("Connection failure while connecting to microservice URL ( '" + MicroserviceUri + "' ): " + ee.Message, ee);
 
                     case WebExceptionStatus.ProtocolError:
@@ -141,7 +147,8 @@ namespace SobekCM.Core.MicroservicesClient
                             switch (response.StatusCode)
                             {
                                 case HttpStatusCode.NotImplemented:
-                                    Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "No matching endpoint implemented for microservice URL", Custom_Trace_Type_Enum.Error);
+                                    if (Tracer != null)
+                                        Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "No matching endpoint implemented for microservice URL", Custom_Trace_Type_Enum.Error);
                                     throw new ApplicationException("No matching endpoint implemented for microservice URL ( '" + MicroserviceUri + "' )", ee);
 
                                 case HttpStatusCode.BadRequest:
@@ -152,36 +159,43 @@ namespace SobekCM.Core.MicroservicesClient
                                         TextReader reader = new StreamReader(responseStream);
                                         string responsemsg = reader.ReadToEnd();
 
-                                        Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Bad request sent to microservice URL: " + responsemsg, Custom_Trace_Type_Enum.Error);
+                                        if (Tracer != null)
+                                            Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Bad request sent to microservice URL: " + responsemsg, Custom_Trace_Type_Enum.Error);
                                         throw new ApplicationException("Bad request sent to microservice URL ( '" + MicroserviceUri + "' ): " + responsemsg, ee);
                                     }
-                                    Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Bad request sent to microservice URL", Custom_Trace_Type_Enum.Error);
+                                    if (Tracer != null)
+                                        Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Bad request sent to microservice URL", Custom_Trace_Type_Enum.Error);
                                     throw new ApplicationException("Bad request sent to microservice URL ( '" + MicroserviceUri + "' )", ee);
 
 
                                 default:
-                                    Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Protocol error returned from microservice URL: " + ee.Message, Custom_Trace_Type_Enum.Error);
+                                    if (Tracer != null)
+                                        Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Protocol error returned from microservice URL: " + ee.Message, Custom_Trace_Type_Enum.Error);
                                     throw new ApplicationException("Protocol error returned from microservice URL ( '" + MicroserviceUri + "' ): " + ee.Message, ee);
                             }
                         }
 
                     case WebExceptionStatus.Timeout:
-                        Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Timeout experienced while waiting for response from microservice URL", Custom_Trace_Type_Enum.Error);
+                        if (Tracer != null)
+                            Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Timeout experienced while waiting for response from microservice URL", Custom_Trace_Type_Enum.Error);
                         throw new ApplicationException("Timeout experienced while waiting for response from microservice URL ( '" + MicroserviceUri + "' ).", ee);
 
                     default:
-                        Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Unexpected web exception connecting to microservice URL: " + ee.Message, Custom_Trace_Type_Enum.Error);
+                        if (Tracer != null)
+                            Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Unexpected web exception connecting to microservice URL: " + ee.Message, Custom_Trace_Type_Enum.Error);
                         throw new ApplicationException("Unexpected web exception connecting to microservice URL ( '" + MicroserviceUri + "' ): " + ee.Message, ee);
                 }
             }
             catch (DeserializationException ee)
             {
-                Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Error deserializing the JSON response from microservice URL into " + typeof(T) + ".  (" + ee.Message + ")", Custom_Trace_Type_Enum.Error);
+                if (Tracer != null)
+                    Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Error deserializing the JSON response from microservice URL into " + typeof(T) + ".  (" + ee.Message + ")", Custom_Trace_Type_Enum.Error);
                 throw new ApplicationException("Error deserializing the JSON response from microservice URL ( '" + MicroserviceUri + "' ) into " + typeof(T) + ".  (" + ee.Message + ")", ee);
             }
             catch (ProtoException ee)
             {
-                Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Error deserializing the Protocol Buffer response from microservice URL into " + typeof(T) + ".  (" + ee.Message + ")", Custom_Trace_Type_Enum.Error);
+                if (Tracer != null)
+                    Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Error deserializing the Protocol Buffer response from microservice URL into " + typeof(T) + ".  (" + ee.Message + ")", Custom_Trace_Type_Enum.Error);
                 throw new ApplicationException("Error deserializing the Protocol Buffer response from microservice URL ( '" + MicroserviceUri + "' ) into " + typeof(T) + ".  (" + ee.Message + ")", ee);
             }
 

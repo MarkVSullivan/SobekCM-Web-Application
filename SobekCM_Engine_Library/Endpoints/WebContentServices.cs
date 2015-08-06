@@ -44,7 +44,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
         #region Methods to get the complete web content hierarchy tree
 
-        /// <summary> Get the complete hierarchy of web content pages and redirects, used for navigation </summary>
+        /// <summary> Get the complete hierarchy of non-aggregational static web content pages and redirects, used for navigation </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
@@ -55,16 +55,42 @@ namespace SobekCM.Engine_Library.Endpoints
             Custom_Tracer tracer = new Custom_Tracer();
 
             // Add a trace
-            tracer.Add_Trace("WebContentServices.Get_Hierarchy");
+            tracer.Add_Trace("WebContentServices.Get_Hierarchy", "Get the hierarchy object from the application cache gateway");
 
             // Get the dataset of results
-            WebContent_Hierarchy returnValue = Engine_Database.WebContent_Get_All_Hierarchy(tracer);
+            WebContent_Hierarchy returnValue;
+            try
+            {
+                returnValue = Engine_ApplicationCache_Gateway.WebContent_Hierarchy;
+            }
+            catch (Exception ee)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Exception pulling the web content hierarchy - " + ee.Message );
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then write the tracer
+                if (IsDebug)
+                {
+                    tracer.Add_Trace("WebContentServices.Get_Hierarchy", "Exception caught " + ee.Message );
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.StackTrace);
+                }
+                return;
+                throw;
+            }
+            
 
             // If null was returned, an error occurred
             if (returnValue == null)
             {
                 Response.ContentType = "text/plain";
-                Response.Output.WriteLine("Unable to pull usage report from the database");
+                Response.Output.WriteLine("Unable to pull usage report from the application cache / database");
                 Response.StatusCode = 500;
 
                 // If this was debug mode, then write the tracer

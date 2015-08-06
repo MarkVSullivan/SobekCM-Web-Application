@@ -8,6 +8,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.WebContent;
 using SobekCM.Core.WebContent.Admin;
+using SobekCM.Core.WebContent.Hierarchy;
 using SobekCM.Core.WebContent.Single;
 using SobekCM.Engine_Library.Endpoints;
 using SobekCM.Tools;
@@ -80,6 +81,39 @@ namespace SobekCM.Core.Client
 
             // Call out to the endpoint and return the deserialized object
             return Deserialize<Single_WebContent_Usage_Report>(url, endpoint.Protocol, Tracer);
+        }
+
+        /// <summary> Get the complete hierarchy of web content pages and redirects, used for navigation </summary>
+        /// <param name="UseCache"> Flag indicates whether this should look in the cache and store in the cache </param>
+        /// <param name="Tracer"></param>
+        /// <returns> Complete hierarchy of non-aggregational web content pages and redirects, used for navigation </returns>
+        public WebContent_Hierarchy Get_Hierarchy(bool UseCache, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            if ( Tracer != null )
+                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Hierarchy");
+
+            // Look in the cache if that is included here
+            if ((Config.UseCache) && (UseCache))
+            {
+                WebContent_Hierarchy cacheValue = CachedDataManager.WebContent.Retrieve_Hierarchy(Tracer);
+                if (cacheValue != null)
+                    return cacheValue;
+            }
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_Hierarchy", Tracer);
+
+            // Call out to the endpoint and return the deserialized object
+            WebContent_Hierarchy returnValue = Deserialize<WebContent_Hierarchy>(endpoint.URL, endpoint.Protocol, Tracer);
+
+            // If there was a result and cache should be used, cache if 
+            if ((returnValue != null) && (UseCache) && ( Config.UseCache ))
+            {
+                CachedDataManager.WebContent.Store_Hierarchy(returnValue, Tracer);
+            }
+
+            return returnValue;
         }
 
 

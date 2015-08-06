@@ -4,9 +4,11 @@ using System;
 using System.Collections.Generic;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Client;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
+using SobekCM.Core.WebContent.Hierarchy;
 using SobekCM.Engine_Library.ApplicationState;
 
 #endregion
@@ -147,6 +149,25 @@ namespace SobekCM.Library.UI
         public static Item_Lookup_Object Items
         {
             get { return Engine_ApplicationCache_Gateway.Items; }
+        }
+
+
+        private static WebContent_Hierarchy webContentHierarchy;
+
+        /// <summary> Get the complete hierarchy of non-aggregational static web content pages and redirects, used for navigation </summary>
+        public static WebContent_Hierarchy WebContent_Hierarchy
+        {
+            get
+            {
+                // If the web content hierarchy object is already built, return it
+                if (webContentHierarchy != null)
+                    return webContentHierarchy;
+
+                // Not built, so retrieve from the engine and then store
+                // this commonly used object here in this static class
+                webContentHierarchy = SobekEngineClient.WebContent.Get_Hierarchy(false, null);
+                return webContentHierarchy;
+            }
         }
     }
 }
