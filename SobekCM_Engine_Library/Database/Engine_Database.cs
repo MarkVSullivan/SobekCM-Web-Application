@@ -3988,7 +3988,90 @@ namespace SobekCM.Engine_Library.Database
 			}
 		}
 
-		/// <summary> Gets the basic information about a web content page, from the database </summary>
+        /// <summary> Gets the basic information about a web content page, by primary key </summary>
+        /// <param name="WebContentID"> Primary key for this web content page in the database </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Built web content basic info object, or NULL if not found at all </returns>
+        /// <remarks> This calls the 'SobekCM_WebContent_Get_Page_ID' stored procedure </remarks> 
+        public static WebContent_Basic_Info WebContent_Get_Page(int WebContentID, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.WebContent_Get_Page (by id)", "");
+            }
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@WebContentID", WebContentID);
+
+                // Define a temporary dataset
+                DataSet value = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_Get_Page_ID", parameters);
+
+                // If nothing was returned, return NULL
+                if ((value.Tables.Count == 0) || (value.Tables[0].Rows.Count == 0))
+                    return null;
+
+                // Get the values from the returned object
+                DataRow pageRow = value.Tables[0].Rows[0];
+                int webid = Int32.Parse(pageRow["WebContentID"].ToString());
+                string title = pageRow["Title"].ToString();
+                string summary = pageRow["Summary"].ToString();
+                bool deleted = bool.Parse(pageRow["Deleted"].ToString());
+                string redirect = pageRow["Redirect"].ToString();
+
+                // Build and return the basic info object
+                WebContent_Basic_Info returnValue = new WebContent_Basic_Info(webid, title, summary, deleted, redirect);
+
+                // Also, add the levels
+                if ((pageRow["Level1"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level1"].ToString())))
+                {
+                    returnValue.Level1 = pageRow["Level1"].ToString();
+                    if ((pageRow["Level2"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level2"].ToString())))
+                    {
+                        returnValue.Level2 = pageRow["Level2"].ToString();
+                        if ((pageRow["Level3"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level3"].ToString())))
+                        {
+                            returnValue.Level3 = pageRow["Level3"].ToString();
+                            if ((pageRow["Level4"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level4"].ToString())))
+                            {
+                                returnValue.Level4 = pageRow["Level4"].ToString();
+                                if ((pageRow["Level5"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level5"].ToString())))
+                                {
+                                    returnValue.Level5 = pageRow["Level5"].ToString();
+                                    if ((pageRow["Level6"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level6"].ToString())))
+                                    {
+                                        returnValue.Level6 = pageRow["Level6"].ToString();
+                                        if ((pageRow["Level7"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level7"].ToString())))
+                                        {
+                                            returnValue.Level7 = pageRow["Level7"].ToString();
+                                            if ((pageRow["Level8"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level8"].ToString())))
+                                                returnValue.Level8 = pageRow["Level8"].ToString();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return returnValue;
+
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_Page (by id)", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_Page (by id)", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.WebContent_Get_Page (by id)", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+		/// <summary> Gets the basic information about a web content page, by the URL segments </summary>
 		/// <param name="Level1"> Level 1 of the URL for this web content page </param>
 		/// <param name="Level2"> Level 2 of the URL for this web content page </param>
 		/// <param name="Level3"> Level 3 of the URL for this web content page </param>
@@ -4035,7 +4118,42 @@ namespace SobekCM.Engine_Library.Database
 			    string redirect = pageRow["Redirect"].ToString();
 
 				// Build and return the basic info object
-				return new WebContent_Basic_Info(webid, title, summary, deleted, redirect);
+				WebContent_Basic_Info returnValue = new WebContent_Basic_Info(webid, title, summary, deleted, redirect);
+
+                // Also, add the levels
+			    if ((pageRow["Level1"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level1"].ToString())))
+			    {
+			        returnValue.Level1 = pageRow["Level1"].ToString();
+			        if ((pageRow["Level2"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level2"].ToString())))
+			        {
+			            returnValue.Level2 = pageRow["Level2"].ToString();
+			            if ((pageRow["Level3"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level3"].ToString())))
+			            {
+			                returnValue.Level3 = pageRow["Level3"].ToString();
+			                if ((pageRow["Level4"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level4"].ToString())))
+			                {
+			                    returnValue.Level4 = pageRow["Level4"].ToString();
+			                    if ((pageRow["Level5"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level5"].ToString())))
+			                    {
+			                        returnValue.Level5 = pageRow["Level5"].ToString();
+			                        if ((pageRow["Level6"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level6"].ToString())))
+			                        {
+			                            returnValue.Level6 = pageRow["Level6"].ToString();
+			                            if ((pageRow["Level7"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level7"].ToString())))
+			                            {
+			                                returnValue.Level7 = pageRow["Level7"].ToString();
+                                            if ((pageRow["Level8"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level8"].ToString()))) 
+                                                returnValue.Level8 = pageRow["Level8"].ToString();
+			                            }
+			                        }
+			                    }
+			                }
+			            }
+			        }
+			    }
+
+                return returnValue;
+
 			}
 			catch (Exception ee)
 			{

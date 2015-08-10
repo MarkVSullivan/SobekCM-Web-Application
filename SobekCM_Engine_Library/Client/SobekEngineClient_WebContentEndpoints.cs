@@ -27,21 +27,92 @@ namespace SobekCM.Core.Client
             // All work done in the base constructor
         }
 
+        /// <summary> Get the information for a single non-aggregational web content page </summary>
+        /// <param name="WebContentID"> Primary key for this non-aggregational web content page </param>
+        /// <param name="Tracer"></param>
+        /// <returns> Object with all the information and source text for the top-level web content page </returns>
+        public HTML_Based_Content Get_HTML_Based_Content(int WebContentID, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_HTML_Based_Content", "Get by primary key");
+
+            // Look in the cache
+            HTML_Based_Content fromCache = CachedDataManager.WebContent.Retrieve_Page_Details(WebContentID, Tracer);
+            if (fromCache != null)
+            {
+                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_HTML_Based_Content", "Found page in the local cache");
+                return fromCache;
+            }
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_HTML_Based_Content_By_ID", Tracer);
+
+            // Format the URL
+            string url = String.Format(endpoint.URL, WebContentID);
+
+            // Call out to the endpoint and deserialize the object
+            HTML_Based_Content returnValue = Deserialize<HTML_Based_Content>(url, endpoint.Protocol, Tracer);
+
+            // Add to the local cache
+            if (returnValue != null)
+            {
+                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_HTML_Based_Content", "Store page in the local cache");
+                CachedDataManager.WebContent.Store_Page_Details(returnValue, Tracer);
+            }
+
+            // Return the object
+            return returnValue;
+        }
+
         /// <summary> Get the information for a single top-level web content page </summary>
         /// <param name="InfoBrowseMode"> Path for the requested web content page ( i.e., software/download/.. ) </param>
         /// <param name="Tracer"></param>
         /// <returns> Object with all the information and source text for the top-level web content page </returns>
         public HTML_Based_Content Get_HTML_Based_Content( string InfoBrowseMode, Custom_Tracer Tracer )
         {
-            // Get the array of portions of the URL to pass into the web content services helper method for now
-            string[] splitter = InfoBrowseMode.Split("\\/".ToCharArray());
-            List<string> urlSegments = splitter.ToList();
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_HTML_Based_Content", "Get by URL, or info/browse code");
 
-            // Call the web content services endpoint
-            WebContentServices.WebContentEndpointErrorEnum error;
-            HTML_Based_Content returnValue = WebContentServices.get_html_content(urlSegments, Tracer, out error);
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_HTML_Based_Content_By_URL", Tracer);
 
-            // Was this null?
+            // Format the URL
+            string url = String.Format(endpoint.URL, InfoBrowseMode);
+
+            // Call out to the endpoint and return the deserialized object
+            return Deserialize<HTML_Based_Content>(url, endpoint.Protocol, Tracer);
+        }
+
+        /// <summary> Gets the special missing web content page, used when a requested resource is missing </summary>
+        /// <param name="Tracer"></param>
+        /// <returns> Object with all the information and source text for the special top-level missing web content page </returns>
+        public HTML_Based_Content Get_Special_Missing_Page(Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Special_Missing_Page", "Get by primary key");
+
+            // Look in the cache
+            HTML_Based_Content fromCache = CachedDataManager.WebContent.Retrieve_Special_Missing_Page(Tracer);
+            if (fromCache != null)
+            {
+                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Special_Missing_Page", "Found page in the local cache");
+                return fromCache;
+            }
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_Special_Missing_Page", Tracer);
+
+            // Call out to the endpoint and deserialize the object
+            HTML_Based_Content returnValue = Deserialize<HTML_Based_Content>(endpoint.URL, endpoint.Protocol, Tracer);
+
+            // Add to the local cache
+            if (returnValue != null)
+            {
+                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_Special_Missing_Page", "Store page in the local cache");
+                CachedDataManager.WebContent.Store_Special_Missing_Page(returnValue, Tracer);
+            }
+
+            // Return the object
             return returnValue;
         }
 

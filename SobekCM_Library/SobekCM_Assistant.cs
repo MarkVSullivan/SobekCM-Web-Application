@@ -58,64 +58,16 @@ namespace SobekCM.Library
             }
 
             Site_Map = null;
+            Simple_Web_Content = null;
 
             // Get the web content object
-            Simple_Web_Content = SobekEngineClient.WebContent.Get_HTML_Based_Content(Current_Mode.Info_Browse_Mode, Tracer);
+            if ((( Current_Mode.WebContentID.HasValue ) && ( Current_Mode.WebContentID.Value > 0 )) && (( !Current_Mode.Missing.HasValue ) || ( !Current_Mode.Missing.Value )))
+                Simple_Web_Content = SobekEngineClient.WebContent.Get_HTML_Based_Content(Current_Mode.WebContentID.Value, Tracer);
 
             // If somehow this is null and this was for DEFAULT, just add the page
-            if ((Simple_Web_Content == null) && ( Current_Mode.Missing.HasValue ) && ( Current_Mode.Missing.Value ))
+            if (Simple_Web_Content == null)
             {
-                string file = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Directory, "design", "webcontent", "missing.html");
-                if (!File.Exists(file))
-                {
-                    try
-                    {
-                        // Try to create the directory
-                        string directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Directory, "design", "webcontent");
-                        if (!Directory.Exists(directory))
-                            Directory.CreateDirectory(directory);
-
-                        // Try to write the file
-                        StreamWriter writer = new StreamWriter(file);
-                        writer.WriteLine("<html>");
-                        writer.WriteLine("<head>");
-                        writer.WriteLine("  <title>No Page Found</title>");
-                        writer.WriteLine("</head>");
-                        writer.WriteLine("<body>");
-                        writer.WriteLine("  <div style=\"padding:10px 40px 20px 40px; text-align:left;\">");
-                        writer.WriteLine("    <div style=\"width: 100%;padding-bottom: 5px; border-bottom: 2px solid #bbbbbb; margin-bottom: 20px;\">");
-                        writer.WriteLine("      <img style=\"float: left;margin-right: 15px;margin-left: 10px;\" src=\"[%BASEURL%]default/images/misc/warning.png\" alt=\"\" />");
-                        writer.WriteLine("      <h1 style=\"text-align: left;font-size: 18px;padding-top: 5px;\">Page Not Found</h1>");
-                        writer.WriteLine("    </div>");
-                        writer.WriteLine();
-
-                        writer.WriteLine("");
-                        writer.WriteLine("    <p>The resource you requested does not exist.</p>");
-                        writer.WriteLine("");
-                        writer.WriteLine("    <p>If you are looking for an individual resource, search from the <a href=\"[%BASEURL%]\">main home page</a>.</p>");
-                        writer.WriteLine("");
-                        writer.WriteLine("    <p>If you are looking for an individual item aggregation, click <a href=\"[%BASEURL%]tree/expanded\">here to view all existing item aggregations</a>.</p>");
-                        writer.WriteLine("");
-                        writer.WriteLine("  </div>");
-                        writer.WriteLine("</body>");
-                        writer.WriteLine("</html>");
-                        writer.Flush();
-                        writer.Close();
-                    }
-                    catch (Exception ee)
-                    {
-                        if (Tracer != null)
-                        {
-                            // This will result in an error anyway, but log it
-                            Tracer.Add_Trace("SobekCM_Assistant.Get_Simple_Web_Content_Text", "Error trying to create the default.html web content page to use for missing content");
-                            Tracer.Add_Trace("SobekCM_Assistant.Get_Simple_Web_Content_Text", "Attempted to create " + file);
-                            Tracer.Add_Trace("SobekCM_Assistant.Get_Simple_Web_Content_Text", "Error was: " + ee.Message);
-                        }
-                    }
-                }
-
-                // Now, try to pull it again
-                Simple_Web_Content = SobekEngineClient.WebContent.Get_HTML_Based_Content("missing", Tracer);
+                Simple_Web_Content = SobekEngineClient.WebContent.Get_Special_Missing_Page(Tracer);
             }
 
             if (Simple_Web_Content == null)

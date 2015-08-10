@@ -132,21 +132,168 @@ namespace SobekCM.Engine_Library.Endpoints
 
         #region Methods related to a single top-level static HTML content page
 
-        /// <summary> Get top-level web content, static HTML </summary>
+
+        /// <summary> Get top-level web content, static HTML, by primary key from the database </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_HTML_Based_Content_By_ID(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
-            WebContentEndpointErrorEnum errorType;
-            HTML_Based_Content returnValue = get_html_content(UrlSegments, tracer, out errorType);
-            if (returnValue == null)
+
+            // Add a trace
+            tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_ID");
+
+            // Must at least have one URL segment for the ID
+            if (UrlSegments.Count > 0)
             {
+                int webContentId;
+                if (!Int32.TryParse(UrlSegments[0], out webContentId))
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Invalid parameter - expects primary key integer value to the web content object (WebContentID) as part of URL");
+                    Response.StatusCode = 500;
+
+                    // If this was debug mode, then write the tracer
+                    if (IsDebug)
+                    {
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                    }
+                    return;
+                }
+
+                // Declare the return object and look this up in the cache by ID
+                HTML_Based_Content returnValue = CachedDataManager.WebContent.Retrieve_Page_Details(webContentId, tracer);
+
+                // If nothing was retrieved, build it
+                if (returnValue == null)
+                {
+
+                    // Try to read and return the html based content 
+                    // Get the details from the database
+                    WebContent_Basic_Info basicInfo = Engine_Database.WebContent_Get_Page(webContentId, tracer);
+                    if (basicInfo == null)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("Unable to pull web content data from the database");
+                        Response.StatusCode = 500;
+                        return;
+                    }
+
+                    // If this has a redirect, return
+                    if (!String.IsNullOrEmpty(basicInfo.Redirect))
+                    {
+                        returnValue = new HTML_Based_Content
+                        {
+                            Redirect = basicInfo.Redirect,
+                            WebContentID = basicInfo.WebContentID
+                        };
+                    }
+                    else
+                    {
+                        // Build the HTML content
+                        WebContentEndpointErrorEnum errorType;
+                        returnValue = read_source_file(basicInfo, tracer, out errorType);
+                        if (returnValue == null)
+                        {
+                            // If this was debug mode, then just write the tracer
+                            if (IsDebug)
+                            {
+                                Response.ContentType = "text/plain";
+                                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                                Response.Output.WriteLine();
+                                Response.Output.WriteLine(tracer.Text_Trace);
+                            }
+
+                            switch (errorType)
+                            {
+                                case WebContentEndpointErrorEnum.Error_Reading_File:
+                                    Response.ContentType = "text/plain";
+                                    Response.Output.WriteLine("Unable to read existing source file");
+                                    Response.StatusCode = 500;
+                                    return;
+
+                                case WebContentEndpointErrorEnum.No_File_Found:
+                                    Response.ContentType = "text/plain";
+                                    Response.Output.WriteLine("Source file does not exist");
+                                    Response.StatusCode = 404;
+                                    return;
+
+                                default:
+                                    Response.ContentType = "text/plain";
+                                    Response.Output.WriteLine("Error occurred");
+                                    Response.StatusCode = 500;
+                                    return;
+                            }
+                        }
+                    }
+
+                    // Now, store in the cache
+                    CachedDataManager.WebContent.Store_Page_Details(returnValue, tracer);
+                }
+                else
+                {
+                    tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_ID", "Object found in the cache");
+                }
+
                 // If this was debug mode, then just write the tracer
-                if ( IsDebug )
+                if (IsDebug)
+                {
+                    tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_ID", "Debug mode detected");
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+
+                    return;
+                }
+
+                // Get the JSON-P callback function
+                string json_callback = "parseWebContent";
+                if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                {
+                    json_callback = QueryString["callback"];
+                }
+
+                // Use the base class to serialize the object according to request protocol
+                Serialize(returnValue, Response, Protocol, json_callback);
+            }
+            else
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Invalid parameter - expects primary key integer value to the web content object (WebContentID) as part of URL");
+                Response.StatusCode = 500;
+            }
+        }
+
+        /// <summary> Get top-level web content, static HTML, by URL </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_HTML_Based_Content_By_URL(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_URL","Compute web content id from url segments");
+
+            if (Engine_ApplicationCache_Gateway.WebContent_Hierarchy == null)
+            {
+                tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_URL", "Unable to pull web content hierarchy from engine application cache");
+
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Unable to pull web content hierarchy from engine application cache");
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
                 {
                     Response.ContentType = "text/plain";
                     Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -154,32 +301,106 @@ namespace SobekCM.Engine_Library.Endpoints
                     Response.Output.WriteLine(tracer.Text_Trace);
                 }
 
-                switch (errorType)
+                return;
+            }
+
+            // Look this up from the web content hierarchy object
+            WebContent_Hierarchy_Node matchedNode = Engine_ApplicationCache_Gateway.WebContent_Hierarchy.Find(UrlSegments);
+            if (matchedNode == null)
+            {
+                tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_URL", "Requested page does not exist");
+
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Requested page does not exist");
+                Response.StatusCode = 404;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
                 {
-                    case WebContentEndpointErrorEnum.Error_Reading_File:
-                        Response.ContentType = "text/plain";
-                        Response.Output.WriteLine("Unable to read existing source file");
-                        Response.StatusCode = 500;
-                        return;
-
-                    case WebContentEndpointErrorEnum.No_File_Found:
-                        Response.ContentType = "text/plain";
-                        Response.Output.WriteLine("Source file does not exist");
-                        Response.StatusCode = 404;
-                        return;
-
-                    default:
-                        Response.ContentType = "text/plain";
-                        Response.Output.WriteLine("Error occurred");
-                        Response.StatusCode = 500;
-                        return;
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
                 }
+                return;
+            }
+
+            // Declare the return object and look this up in the cache by ID
+            HTML_Based_Content returnValue = CachedDataManager.WebContent.Retrieve_Page_Details(matchedNode.WebContentID, tracer);
+
+            // If nothing was retrieved, built it
+            if (returnValue == null)
+            {
+                // If there was a redirect, just return a very lightly built object
+                if (!String.IsNullOrEmpty(matchedNode.Redirect))
+                {
+                    returnValue = new HTML_Based_Content
+                    {
+                        Redirect = matchedNode.Redirect,
+                        WebContentID = matchedNode.WebContentID
+                    };
+                }
+                else
+                {
+                    // Get the details from the database
+                    WebContent_Basic_Info basicInfo = Engine_Database.WebContent_Get_Page(matchedNode.WebContentID, tracer);
+                    if (basicInfo == null)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("Unable to pull web content data from the database");
+                        Response.StatusCode = 500;
+                        return;
+                    }
+
+                    // Build the HTML content
+                    WebContentEndpointErrorEnum errorType;
+                    returnValue = read_source_file(basicInfo, tracer, out errorType);
+                    if (returnValue == null)
+                    {
+                        // If this was debug mode, then just write the tracer
+                        if (IsDebug)
+                        {
+                            Response.ContentType = "text/plain";
+                            Response.Output.WriteLine("DEBUG MODE DETECTED");
+                            Response.Output.WriteLine();
+                            Response.Output.WriteLine(tracer.Text_Trace);
+                        }
+
+                        switch (errorType)
+                        {
+                            case WebContentEndpointErrorEnum.Error_Reading_File:
+                                Response.ContentType = "text/plain";
+                                Response.Output.WriteLine("Unable to read existing source file");
+                                Response.StatusCode = 500;
+                                return;
+
+                            case WebContentEndpointErrorEnum.No_File_Found:
+                                Response.ContentType = "text/plain";
+                                Response.Output.WriteLine("Source file does not exist");
+                                Response.StatusCode = 404;
+                                return;
+
+                            default:
+                                Response.ContentType = "text/plain";
+                                Response.Output.WriteLine("Error occurred");
+                                Response.StatusCode = 500;
+                                return;
+                        }
+                    }
+                }
+
+                // Now, store in the cache
+                CachedDataManager.WebContent.Store_Page_Details(returnValue, tracer);
+            }
+            else
+            {
+                tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_URL", "Object found in the cache");
             }
 
             // If this was debug mode, then just write the tracer
             if ( IsDebug )
             {
-                tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content", "Debug mode detected");
+                tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_URL", "Debug mode detected");
                 Response.ContentType = "text/plain";
                 Response.Output.WriteLine("DEBUG MODE DETECTED");
                 Response.Output.WriteLine();
@@ -189,7 +410,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Get the JSON-P callback function
-            string json_callback = "parseCollectionStaticPage";
+            string json_callback = "parseWebContent";
             if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
             {
                 json_callback = QueryString["callback"];
@@ -197,6 +418,146 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Use the base class to serialize the object according to request protocol
             Serialize(returnValue, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Gets the special missing web content page, used when a requested resource is missing </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_Special_Missing_Page(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            tracer.Add_Trace("WebContentServices.Get_Special_Missing_Page");
+
+            // Declare the return object and look this up in the cache by ID
+            HTML_Based_Content simpleWebContent = CachedDataManager.WebContent.Retrieve_Special_Missing_Page(tracer);
+
+            if (simpleWebContent == null)
+            {
+                string file = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Directory, "design", "webcontent", "missing.html");
+                if (!File.Exists(file))
+                {
+                    try
+                    {
+                        // Try to create the directory
+                        string directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Directory, "design", "webcontent");
+                        if (!Directory.Exists(directory))
+                            Directory.CreateDirectory(directory);
+
+                        // Try to write the file
+                        StreamWriter writer = new StreamWriter(file);
+                        writer.WriteLine("<html>");
+                        writer.WriteLine("<head>");
+                        writer.WriteLine("  <title>No Page Found</title>");
+                        writer.WriteLine("</head>");
+                        writer.WriteLine("<body>");
+                        writer.WriteLine("  <div style=\"padding:10px 40px 20px 40px; text-align:left;\">");
+                        writer.WriteLine("    <div style=\"width: 100%;padding-bottom: 5px; border-bottom: 2px solid #bbbbbb; margin-bottom: 20px;\">");
+                        writer.WriteLine("      <img style=\"float: left;margin-right: 15px;margin-left: 10px;\" src=\"[%BASEURL%]default/images/misc/warning.png\" alt=\"\" />");
+                        writer.WriteLine("      <h1 style=\"text-align: left;font-size: 18px;padding-top: 5px;\">Page Not Found</h1>");
+                        writer.WriteLine("    </div>");
+                        writer.WriteLine();
+
+                        writer.WriteLine("");
+                        writer.WriteLine("    <p>The resource you requested does not exist.</p>");
+                        writer.WriteLine("");
+                        writer.WriteLine("    <p>If you are looking for an individual resource, search from the <a href=\"[%BASEURL%]\">main home page</a>.</p>");
+                        writer.WriteLine("");
+                        writer.WriteLine("    <p>If you are looking for an individual item aggregation, click <a href=\"[%BASEURL%]tree/expanded\">here to view all existing item aggregations</a>.</p>");
+                        writer.WriteLine("");
+                        writer.WriteLine("  </div>");
+                        writer.WriteLine("</body>");
+                        writer.WriteLine("</html>");
+                        writer.Flush();
+                        writer.Close();
+                    }
+                    catch (Exception ee)
+                    {
+                        // This will result in an error anyway, but log it
+                        tracer.Add_Trace("SobekCM_Assistant.Get_Special_Missing_Page", "Error trying to create the default.html web content page to use for missing content");
+                        tracer.Add_Trace("SobekCM_Assistant.Get_Special_Missing_Page", "Attempted to create " + file);
+                        tracer.Add_Trace("SobekCM_Assistant.Get_Special_Missing_Page", "Error was: " + ee.Message);
+                    }
+                }
+
+                // Now, try to pull it again
+                try
+                {
+
+                    simpleWebContent = HTML_Based_Content_Reader.Read_HTML_File(file, true, tracer);
+                    if (simpleWebContent == null)
+                    {
+                        tracer.Add_Trace("WebContentServices.Get_Special_Missing_Page", "Error reading the missing.html special file");
+
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("Unable to read existing source file");
+                        Response.StatusCode = 500;
+
+                        // If this was debug mode, then just write the tracer
+                        if (IsDebug)
+                        {
+                            Response.ContentType = "text/plain";
+                            Response.Output.WriteLine("DEBUG MODE DETECTED");
+                            Response.Output.WriteLine();
+                            Response.Output.WriteLine(tracer.Text_Trace);
+                        }
+                        return;
+                    }
+
+                    simpleWebContent.WebContentID = -1;
+
+                    // Store this on the cache
+                    CachedDataManager.WebContent.Store_Special_Missing_Page(simpleWebContent, tracer);
+                }
+                catch (Exception ee)
+                {
+                    tracer.Add_Trace("WebContentServices.Get_Special_Missing_Page", "Unknown error caught");
+
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Unable to read existing source file");
+                    Response.StatusCode = 500;
+
+                    // If this was debug mode, then just write the tracer
+                    if (IsDebug)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.Message);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.StackTrace);
+                    }
+                    return;
+                }
+            }
+
+            // If this was debug mode, then just write the tracer
+            if (IsDebug)
+            {
+                tracer.Add_Trace("WebContentServices.Get_Special_Missing_Page", "Debug mode detected");
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseWebContent";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(simpleWebContent, Response, Protocol, json_callback);
+
         }
 
 
@@ -3665,24 +4026,44 @@ namespace SobekCM.Engine_Library.Endpoints
         #region Helper methods (ultimately destined to be private)
 
         /// <summary> Helper method retrieves HTML web content </summary>
-        /// <param name="UrlSegments"> URL segments </param>
+        /// <param name="BasicInfo"> Basic information from the database for this endpoint, including the URL segments </param>
         /// <param name="Tracer"></param>
         /// <param name="ErrorType"> Any error enocuntered during the process </param>
         /// <returns> Built HTML content object, or NULL </returns>
-        public static HTML_Based_Content get_html_content(List<string> UrlSegments, Custom_Tracer Tracer, out WebContentEndpointErrorEnum ErrorType)
+        private static HTML_Based_Content read_source_file(WebContent_Basic_Info BasicInfo, Custom_Tracer Tracer, out WebContentEndpointErrorEnum ErrorType)
         {
             // Set a default error message first
             ErrorType = WebContentEndpointErrorEnum.NONE;
 
             // Build the directory to look for the static content
-            StringBuilder possibleInfoModeBuilder = new StringBuilder();
-            if (UrlSegments.Count > 0)
+            StringBuilder possibleInfoModeBuilder = new StringBuilder(BasicInfo.Level1);
+            if (!String.IsNullOrEmpty(BasicInfo.Level2))
             {
-                possibleInfoModeBuilder.Append(UrlSegments[0]);
-            }
-            for (int i = 1; i < UrlSegments.Count; i++)
-            {
-                possibleInfoModeBuilder.Append("/" + UrlSegments[i]);
+                possibleInfoModeBuilder.Append(Path.DirectorySeparatorChar + BasicInfo.Level2);
+                if (!String.IsNullOrEmpty(BasicInfo.Level3))
+                {
+                    possibleInfoModeBuilder.Append(Path.DirectorySeparatorChar + BasicInfo.Level3);
+                    if (!String.IsNullOrEmpty(BasicInfo.Level4))
+                    {
+                        possibleInfoModeBuilder.Append(Path.DirectorySeparatorChar + BasicInfo.Level4);
+                        if (!String.IsNullOrEmpty(BasicInfo.Level5))
+                        {
+                            possibleInfoModeBuilder.Append(Path.DirectorySeparatorChar + BasicInfo.Level5);
+                            if (!String.IsNullOrEmpty(BasicInfo.Level6))
+                            {
+                                possibleInfoModeBuilder.Append(Path.DirectorySeparatorChar + BasicInfo.Level6);
+                                if (!String.IsNullOrEmpty(BasicInfo.Level7))
+                                {
+                                    possibleInfoModeBuilder.Append(Path.DirectorySeparatorChar + BasicInfo.Level7);
+                                    if (!String.IsNullOrEmpty(BasicInfo.Level8))
+                                    {
+                                        possibleInfoModeBuilder.Append(Path.DirectorySeparatorChar + BasicInfo.Level8);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             string possible_info_mode = possibleInfoModeBuilder.ToString().Replace("'", "").Replace("\"", "");
@@ -3709,27 +4090,20 @@ namespace SobekCM.Engine_Library.Endpoints
                     Tracer.Add_Trace("WebContentServices.get_html_content", "Found source file: " + found_source);
                 }
 
-                if (String.IsNullOrEmpty(found_source))
-                {
-                    string[] matching_file = Directory.GetFiles(source, filename + ".htm*");
-                    if (matching_file.Length > 0)
-                    {
-                        found_source = matching_file[0];
-                        Tracer.Add_Trace("WebContentServices.get_html_content", "Found source file: " + found_source);
-                    }
-                }
-
                 // If this was found, build it and return it
                 if (!String.IsNullOrEmpty(found_source))
                 {
                     HTML_Based_Content simpleWebContent = HTML_Based_Content_Reader.Read_HTML_File(found_source, true, Tracer);
-
+                    
                     if ((simpleWebContent == null) || (simpleWebContent.Content.Length == 0))
                     {
                         ErrorType = WebContentEndpointErrorEnum.Error_Reading_File;
                         Tracer.Add_Trace("WebContentServices.get_html_content", "Error reading source file");
                         return null;
                     }
+
+                    // Copy over the primary key for this web content
+                    simpleWebContent.WebContentID = BasicInfo.WebContentID;
 
                     // Now, check for any "server-side include" directorives in the source text
                     int include_index = simpleWebContent.Content.IndexOf("<%INCLUDE");

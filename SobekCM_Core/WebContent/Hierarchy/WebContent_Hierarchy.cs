@@ -90,21 +90,36 @@ namespace SobekCM.Core.WebContent.Hierarchy
                 Children.Clear();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="UrlSegments"></param>
-        /// <returns></returns>
+        /// <summary> Look within this hierarchy for a match for a collection of incoming URL segments  </summary>
+        /// <param name="UrlSegments"> Collection of URL segments to match within this deep hierarchy </param>
+        /// <returns> Matched node, or NULL if there is no match </returns>
         public WebContent_Hierarchy_Node Find(List<string> UrlSegments)
         {
+            // If no children or no matching root nodes, return NULL
+            if ((Children == null) || (!Children.ContainsKey(UrlSegments[0])))
+                return null;
+
+            // Get the matching root node
             WebContent_Hierarchy_Node currentNode = Children[UrlSegments[0]];
+
+            // If no match (or match was NULL actually) return null
+            // This should not ever happen though
             if (currentNode == null)
                 return null;
 
+            // Now, continue to drive down through the hierarchy nodes
             int i = 1;
             while (i < UrlSegments.Count)
             {
+                // Is there a match at this level?  If not, return NULL
+                if ((currentNode.Children == null) || (!currentNode.Children.ContainsKey(UrlSegments[i])))
+                    return null;
+
+                // Get the next level matching node
                 currentNode = currentNode.Children[UrlSegments[i]];
+
+                // If no match (or match was NULL actually) return null
+                // This should not ever happen though
                 if (currentNode == null)
                     return null;
                 i++;

@@ -196,10 +196,16 @@ namespace SobekCM.Core.WebContent
             }
         }
 
+        /// <summary> Redirect URL associated with this web content object </summary>
+        [DataMember(EmitDefaultValue = false, Name = "redirect")]
+        [XmlElement("redirect")]
+        [ProtoMember(15)]
+        public string Redirect { get; set; }
+
         /// <summary> Source for this html-based web content </summary>
         [DataMember(EmitDefaultValue = false, Name = "source")]
         [XmlAttribute("source")]
-        [ProtoMember(15)]
+        [ProtoMember(16)]
         public string Source { get; set; }
 
         /// <summary> Static text included as the body of the static HTML file if item aggregation custom directives

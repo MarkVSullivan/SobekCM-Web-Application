@@ -491,6 +491,7 @@ namespace SobekCM.Library.HTML
             // Depending on mode, display the information
             switch (RequestSpecificValues.Current_Mode.WebContent_Type)
             {
+                case WebContent_Type_Enum.NONE:
                 case WebContent_Type_Enum.Display:
                     write_standard_display(Output, Tracer);
                     break;
