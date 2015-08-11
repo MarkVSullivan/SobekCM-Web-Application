@@ -3035,6 +3035,7 @@ namespace SobekCM.Library.Settings
             }
 
             Sobekcm_Admin_Css = "http://cdn.sobekdigital.com/css/sobekcm-admin/4.9.0/sobekcm_admin.css";
+            Sobekcm_Css = "http://cdn.sobekdigital.com/css/sobekcm/4.9.0/sobekcm.css";
 
             return returnValue;
         }
