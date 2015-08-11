@@ -7,13 +7,13 @@ using ProtoBuf;
 
 #endregion
 
-namespace SobekCM.Core.WebContent
+namespace SobekCM.Core.WebContent.Single
 {
     /// <summary> Object contains the basic usage information for a single web content
     /// page for a single year/month </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("webContentUsage")]
-    public class Single_WebContent_Month_Year_Usage
+    public class Single_WebContent_Usage
     {
         /// <summary> Year for which this is reporting usage </summary>
         [DataMember(Name = "year")]
@@ -54,18 +54,18 @@ namespace SobekCM.Core.WebContent
             }
         }
 
-        /// <summary> Consructor for a new instance of the Single_WebContent_Month_Year_Usage class </summary>
-        public Single_WebContent_Month_Year_Usage()
+        /// <summary> Consructor for a new instance of the Single_WebContent_Usage class </summary>
+        public Single_WebContent_Usage()
         {
             // Empty constructor for serialization purposes
         }
 
-        /// <summary> Consructor for a new instance of the Single_WebContent_Month_Year_Usage class </summary>
+        /// <summary> Constructor for a new instance of the Single_WebContent_Usage class </summary>
         /// <param name="Year"> Year for which this is reporting usage </param>
         /// <param name="Month"> Month for which this is reporting usage </param>
         /// <param name="Hits"> Total number of (non-robotic) hits on this page </param>
         /// <param name="HitsHierarchical"> Total number of (non-robotic) hits on this page or on any child pages </param>
-        public Single_WebContent_Month_Year_Usage(short Year, short Month, int Hits, int HitsHierarchical)
+        public Single_WebContent_Usage(short Year, short Month, int Hits, int HitsHierarchical)
         {
             this.Year = Year;
             this.Month = Month;

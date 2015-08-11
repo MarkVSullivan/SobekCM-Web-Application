@@ -570,8 +570,7 @@ namespace SobekCM.Core.Navigation
                         bool query_string_started = false;
 
                         // Check for any query string to be included 
-                        if (((String.IsNullOrEmpty(Item_View_Code)) && (!String.IsNullOrEmpty(Current_Mode.Page_By_FileName))) || (!String.IsNullOrEmpty(Current_Mode.Text_Search)) || (!String.IsNullOrEmpty(Current_Mode.Coordinates)) ||
-                            (((!String.IsNullOrEmpty(Current_Mode.ViewerCode)) && (Current_Mode.ViewerCode.IndexOf("x") >= 0)) && ((Current_Mode.Viewport_Point_X > 0) || (Current_Mode.Viewport_Point_Y > 0) || (Current_Mode.Viewport_Size != 1) || ((Current_Mode.Viewport_Zoom - 1) > 0) || (Current_Mode.Viewport_Rotation > 0))))
+                        if (((String.IsNullOrEmpty(Item_View_Code)) && (!String.IsNullOrEmpty(Current_Mode.Page_By_FileName))) || (!String.IsNullOrEmpty(Current_Mode.Text_Search)) || (!String.IsNullOrEmpty(Current_Mode.Coordinates)))
                         {
                             // Add either the text search or text display, if they exist
                             if (!String.IsNullOrEmpty(Current_Mode.Text_Search))
@@ -591,70 +590,6 @@ namespace SobekCM.Core.Navigation
                                 else
                                 {
                                     itemDisplayBuilder.Append("&coord=" + Current_Mode.Coordinates);
-                                }
-                            }
-
-
-                            // Add any viewport option information if this is a ZOOMABLE view
-                            if (( !String.IsNullOrEmpty(Current_Mode.ViewerCode)) && ( Current_Mode.ViewerCode.IndexOf("x") >= 0))
-                            {
-                                int currZoom = Current_Mode.Viewport_Zoom.HasValue ? Current_Mode.Viewport_Zoom.Value : 1;
-                                int adjustedZoom = currZoom - 1;
-                                if ((Current_Mode.Viewport_Size != 1) || (adjustedZoom > 0) || (Current_Mode.Viewport_Rotation > 0))
-                                {
-                                    if (Current_Mode.Viewport_Rotation > 0)
-                                    {
-                                        if (!query_string_started)
-                                        {
-                                            itemDisplayBuilder.Append("?vo=" + Current_Mode.Viewport_Size + adjustedZoom + Current_Mode.Viewport_Rotation);
-                                            query_string_started = true;
-                                        }
-                                        else
-                                        {
-                                            itemDisplayBuilder.Append("&vo=" + Current_Mode.Viewport_Size + adjustedZoom + Current_Mode.Viewport_Rotation);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (adjustedZoom > 0)
-                                        {
-                                            if (!query_string_started)
-                                            {
-                                                itemDisplayBuilder.Append("?vo=" + Current_Mode.Viewport_Size + adjustedZoom);
-                                                query_string_started = true;
-                                            }
-                                            else
-                                            {
-                                                itemDisplayBuilder.Append("&vo=" + Current_Mode.Viewport_Size + adjustedZoom);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (!query_string_started)
-                                            {
-                                                itemDisplayBuilder.Append("?vo=" + Current_Mode.Viewport_Size);
-                                                query_string_started = true;
-                                            }
-                                            else
-                                            {
-                                                itemDisplayBuilder.Append("&vo=" + Current_Mode.Viewport_Size);
-                                            }
-                                        }
-                                    }
-                                }
-
-                                // Only add the point if it is not 0,0
-                                if ((Current_Mode.Viewport_Point_X > 0) || (Current_Mode.Viewport_Point_Y > 0))
-                                {
-                                    if (!query_string_started)
-                                    {
-                                        itemDisplayBuilder.Append("?vp=" + Current_Mode.Viewport_Point_X + "," + Current_Mode.Viewport_Point_Y);
-                                        query_string_started = true;
-                                    }
-                                    else
-                                    {
-                                        itemDisplayBuilder.Append("&vp=" + Current_Mode.Viewport_Point_X + "," + Current_Mode.Viewport_Point_Y);
-                                    }
                                 }
                             }
                         }

@@ -10,6 +10,7 @@ using System.Web;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.WebContent.Hierarchy;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Tools;
@@ -31,17 +32,18 @@ namespace SobekCM.Engine_Library.Navigation
 
 		#region iSobekCM_QueryString_Analyzer Members
 
-		/// <summary> Parse the query and set the internal variables </summary>
-		/// <param name="QueryString"> QueryString collection passed from the main page </param>
-		/// <param name="Navigator"> Navigation object to hold the mode information </param>
-		/// <param name="Base_URL">Requested base URL (without query string, etc..)</param>
-		/// <param name="User_Languages"> Languages preferred by user, per their browser settings </param>
-		/// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections </param>
-		/// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregationPermissions</param>
-		/// <param name="All_Items_Lookup"> [REF] Lookup object used to pull basic information about any item loaded into this library</param>
-		/// <param name="URL_Portals"> List of all web portals into this system </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public static void Parse_Query(NameValueCollection QueryString,
+	    /// <summary> Parse the query and set the internal variables </summary>
+	    /// <param name="QueryString"> QueryString collection passed from the main page </param>
+	    /// <param name="Navigator"> Navigation object to hold the mode information </param>
+	    /// <param name="Base_URL">Requested base URL (without query string, etc..)</param>
+	    /// <param name="User_Languages"> Languages preferred by user, per their browser settings </param>
+	    /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections </param>
+	    /// <param name="Aggregation_Aliases"> List of all existing aliases for existing aggregationPermissions</param>
+	    /// <param name="All_Items_Lookup"> [REF] Lookup object used to pull basic information about any item loaded into this library</param>
+	    /// <param name="URL_Portals"> List of all web portals into this system </param>
+	    /// <param name="WebHierarchy"> Hierarchy of all non-aggregational web content pages and redirects </param>
+	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+	    public static void Parse_Query(NameValueCollection QueryString,
 			Navigation_Object Navigator,
 			string Base_URL,
 			string[] User_Languages,
@@ -49,6 +51,7 @@ namespace SobekCM.Engine_Library.Navigation
 			Dictionary<string, string> Aggregation_Aliases,
 			Item_Lookup_Object All_Items_Lookup,
 			Portal_List URL_Portals,
+            WebContent_Hierarchy WebHierarchy,
 			Custom_Tracer Tracer )
 		{
 		    if (Tracer != null)
@@ -966,7 +969,90 @@ namespace SobekCM.Engine_Library.Navigation
 
 							// This was none of the main constant mode settings,
 							default:
-								// First check to see if the first term was an item aggregation alias, which
+                                // Always check the top-level static web content pages and redirects hierarchy first
+						        if ((WebHierarchy != null) && (WebHierarchy.Root_Count > 0))
+						        {
+						            WebContent_Hierarchy_Node matchedNode = WebHierarchy.Find(url_relative_list);
+						            if (matchedNode != null)
+						            {
+                                        // Maybe this is a web content / info page
+                                        Navigator.Mode = Display_Mode_Enum.Simple_HTML_CMS;
+
+                                        // Get the URL reassembled
+                                        string possible_info_mode = String.Empty;
+                                        if (url_relative_list.Count == 1)
+                                            possible_info_mode = url_relative_list[0];
+                                        else if (url_relative_list.Count == 2)
+                                            possible_info_mode = url_relative_list[0] + "/" + url_relative_list[1];
+                                        else if (url_relative_list.Count == 3)
+                                            possible_info_mode = url_relative_list[0] + "/" + url_relative_list[1] + "/" + url_relative_list[2];
+                                        else if (url_relative_list.Count == 4)
+                                            possible_info_mode = url_relative_list[0] + "/" + url_relative_list[1] + "/" + url_relative_list[2] + "/" + url_relative_list[3];
+                                        else if (url_relative_list.Count > 4)
+                                        {
+                                            StringBuilder possibleInfoModeBuilder = new StringBuilder();
+                                            if (url_relative_list.Count > 0)
+                                            {
+                                                possibleInfoModeBuilder.Append(url_relative_list[0]);
+                                            }
+                                            for (int i = 1; i < url_relative_list.Count; i++)
+                                            {
+                                                possibleInfoModeBuilder.Append("/" + url_relative_list[i]);
+                                            }
+                                            possible_info_mode = possibleInfoModeBuilder.ToString().Replace("'", "").Replace("\"", "");
+                                        }
+
+                                        // Set the source location
+                                        Navigator.Info_Browse_Mode = possible_info_mode;
+                                        Navigator.Page_By_FileName = Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + possible_info_mode.Replace("/","\\") + "\\default.html";
+						                Navigator.WebContentID = matchedNode.WebContentID;
+						                Navigator.Redirect = matchedNode.Redirect;
+
+                                        //// If it is missing, mark that
+                                        //if ((!File.Exists(Navigator.Page_By_FileName)) && ( String.IsNullOrEmpty(Navigator.Redirect)))
+                                        //{
+                                        //    Navigator.Missing = true;
+                                        //    Navigator.Info_Browse_Mode = possible_info_mode;
+                                        //    Navigator.Page_By_FileName = Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\missing.html";
+                                        //}
+
+                                        // If something was found, then check for submodes
+                                        Navigator.WebContent_Type = WebContent_Type_Enum.Display;
+						                if (!String.IsNullOrEmpty(QueryString["mode"]))
+						                {
+						                    switch (QueryString["mode"].ToLower())
+						                    {
+						                        case "edit":
+						                            Navigator.WebContent_Type = WebContent_Type_Enum.Edit;
+						                            break;
+
+						                        case "menu":
+						                            Navigator.WebContent_Type = WebContent_Type_Enum.Manage_Menu;
+						                            break;
+
+						                        case "milestones":
+						                            Navigator.WebContent_Type = WebContent_Type_Enum.Milestones;
+						                            break;
+
+						                        case "permissions":
+						                            Navigator.WebContent_Type = WebContent_Type_Enum.Permissions;
+						                            break;
+
+						                        case "usage":
+						                            Navigator.WebContent_Type = WebContent_Type_Enum.Usage;
+						                            break;
+
+						                        case "verify":
+						                            Navigator.WebContent_Type = WebContent_Type_Enum.Delete_Verify;
+						                            break;
+						                    }
+						                }
+
+                                        return;
+						            }
+						        }
+
+								// Check to see if the first term was an item aggregation alias, which
 								// allows for the alias to overwrite an existing aggregation code (limited usability
 								// but can be used to hide an existing aggregation easily)
 								if (Aggregation_Aliases.ContainsKey(url_relative_list[0]))
@@ -1067,44 +1153,6 @@ namespace SobekCM.Engine_Library.Navigation
 										}
 									}
 
-									// Check for any view port option information in the query string
-									if (QueryString["vo"] != null)
-									{
-										string viewport_options = QueryString["vo"];
-										if (viewport_options.Length > 0)
-										{
-											Navigator.Viewport_Size = Convert.ToUInt16("0" + viewport_options[0]);
-
-											if (viewport_options.Length > 1)
-											{
-												Navigator.Viewport_Zoom = (ushort)(Convert.ToUInt16("0" + viewport_options[1]) + 1);
-												if (Navigator.Viewport_Zoom > 5)
-													Navigator.Viewport_Zoom = 5;
-												if (Navigator.Viewport_Zoom < 1)
-													Navigator.Viewport_Zoom = 1;
-
-												if (viewport_options.Length > 2)
-												{
-													Navigator.Viewport_Rotation = Convert.ToUInt16("0" + viewport_options[2]);
-												}
-											}
-										}
-									}
-
-									// Check for view port point in the query string
-									if (QueryString["vp"] != null)
-									{
-										string viewport_point = QueryString["vp"];
-
-										// Get the viewport point
-										if ((viewport_point.Length > 0) && (viewport_point.IndexOf(",") > 0))
-										{
-											string[] split = viewport_point.Split(",".ToCharArray());
-											Navigator.Viewport_Point_X = Convert.ToInt32(split[0]);
-											Navigator.Viewport_Point_Y = Convert.ToInt32(split[1]);
-										}
-									}
-
                                     // Collect number of thumbnails per page
                                     if (QueryString["nt"] != null)
                                     {
@@ -1134,103 +1182,48 @@ namespace SobekCM.Engine_Library.Navigation
 									if (QueryString["file"] != null)
 										Navigator.Page_By_FileName = QueryString["file"];
 								}
-								else
+								else if ((String.IsNullOrEmpty(Navigator.Page_By_FileName)) && ((String.IsNullOrEmpty(Navigator.Default_Aggregation)) || (Navigator.Default_Aggregation == "all")))
 								{
-									// Maybe this is a web content / info page
-									Navigator.Mode = Display_Mode_Enum.Simple_HTML_CMS;
-									StringBuilder possibleInfoModeBuilder = new StringBuilder();
-									if (url_relative_list.Count > 0)
-									{
-										possibleInfoModeBuilder.Append(url_relative_list[0]);
-									}
-									for (int i = 1; i < url_relative_list.Count; i++)
-									{
-										possibleInfoModeBuilder.Append("/" + url_relative_list[i]);
-									}
+                                    // This may be a top-level aggregation call
+								    // aggregation_querystring_analyze(Navigator, QueryString, Navigator.Default_Aggregation, url_relative_list);
 
-									string possible_info_mode = possibleInfoModeBuilder.ToString().Replace("'", "").Replace("\"", "");
-									string filename = possible_info_mode;
-									string base_source = Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent";
-									string source = base_source;
+                                    // Pass this unmatched query to the simple html cms to show the missing (custom) screen
+                                    Navigator.Mode = Display_Mode_Enum.Simple_HTML_CMS;
 
-									if ((possible_info_mode.IndexOf("\\") > 0) || (possible_info_mode.IndexOf("/") > 0))
-									{
-										source = source + "\\" + possible_info_mode.Replace("/", "\\");
-										string[] split = source.Split("\\".ToCharArray());
-										filename = split[split.Length - 1];
-										source = source.Substring(0, source.Length - filename.Length);
-									}
-
-                                    // If the designated source exists, look for the files 
-								    if (Directory.Exists(source))
-								    {
-								        // This may point to the default html in the parent directory
-								        if ((Directory.Exists(source + "\\" + filename)) && (File.Exists(source + "\\" + filename + "\\default.html")))
-								        {
-								            Navigator.Info_Browse_Mode = possible_info_mode;
-								            Navigator.Page_By_FileName = source + "\\" + filename + "\\default.html";
-								        }
-
-								        if ( String.IsNullOrEmpty(Navigator.Page_By_FileName))
-								        {
-								            string[] matching_file = Directory.GetFiles(source, filename + ".htm*");
-								            if (matching_file.Length > 0)
-								            {
-								                Navigator.Info_Browse_Mode = possible_info_mode;
-								                Navigator.Page_By_FileName = matching_file[0];
-								            }
-								        }
-
-                                        if ((String.IsNullOrEmpty(Navigator.Page_By_FileName)) && ((String.IsNullOrEmpty(Navigator.Default_Aggregation)) || (Navigator.Default_Aggregation == "all")))
+								    string possible_info_mode = String.Empty;
+								    if (url_relative_list.Count == 1)
+								        possible_info_mode = url_relative_list[0];
+                                    else if (url_relative_list.Count == 2)
+                                        possible_info_mode = url_relative_list[0] + "/" + url_relative_list[1];
+                                    else if (url_relative_list.Count == 3)
+                                        possible_info_mode = url_relative_list[0] + "/" + url_relative_list[1] + "/" + url_relative_list[2];
+                                    else if (url_relative_list.Count == 4)
+                                        possible_info_mode = url_relative_list[0] + "/" + url_relative_list[1] + "/" + url_relative_list[2] + "/" + url_relative_list[3];
+                                    else if ( url_relative_list.Count > 4)
+                                    {
+                                        StringBuilder possibleInfoModeBuilder = new StringBuilder();
+                                        if (url_relative_list.Count > 0)
                                         {
-                                            Navigator.Missing = true;
-                                            Navigator.Info_Browse_Mode = possibleInfoModeBuilder.ToString();
-								            Navigator.Page_By_FileName = base_source + "\\missing.html";
-								        }
-								    }
+                                            possibleInfoModeBuilder.Append(url_relative_list[0]);
+                                        }
+                                        for (int i = 1; i < url_relative_list.Count; i++)
+                                        {
+                                            possibleInfoModeBuilder.Append("/" + url_relative_list[i]);
+                                        }
+                                        possible_info_mode = possibleInfoModeBuilder.ToString().Replace("'", "").Replace("\"", "");
+                                    }
 
-                                    // If something was found, then check for submodes
-                                    if (!String.IsNullOrEmpty(Navigator.Page_By_FileName))
-								    {
-								        Navigator.WebContent_Type = WebContent_Type_Enum.Display;
-								        if (!String.IsNullOrEmpty(QueryString["mode"]))
-								        {
-								            switch (QueryString["mode"].ToLower())
-								            {
-								                case "edit":
-								                    Navigator.WebContent_Type = WebContent_Type_Enum.Edit;
-                                                    break;
+								    
+                                    string base_source = Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent";
 
-                                                case "menu":
-                                                    Navigator.WebContent_Type = WebContent_Type_Enum.Manage_Menu;
-                                                    break;
-
-                                                case "milestones":
-                                                    Navigator.WebContent_Type = WebContent_Type_Enum.Milestones;
-                                                    break;
-
-                                                case "permissions":
-                                                    Navigator.WebContent_Type = WebContent_Type_Enum.Permissions;
-                                                    break;
-
-                                                case "usage":
-                                                    Navigator.WebContent_Type = WebContent_Type_Enum.Usage;
-								                    break;
-
-                                                case "verify":
-                                                    Navigator.WebContent_Type = WebContent_Type_Enum.Delete_Verify;
-                                                    break;
-								            }
-								        }
-								    }
-
-								    // Last choice would be if this is a default aggregation
-                                    if ((String.IsNullOrEmpty(Navigator.Page_By_FileName)) && ((String.IsNullOrEmpty(Navigator.Default_Aggregation)) || (Navigator.Default_Aggregation == "all")))
-									{
-										aggregation_querystring_analyze(Navigator, QueryString, Navigator.Default_Aggregation, url_relative_list);
-									}
+                                    // Set the source location
+                                    Navigator.Missing = true;
+                                    Navigator.Info_Browse_Mode = possible_info_mode;
+                                    Navigator.WebContent_Type = WebContent_Type_Enum.Display;
+                                    Navigator.Page_By_FileName = base_source + "\\missing.html";
+						            Navigator.WebContentID = -1;
 								}
-								break;
+						        break;
 						}
 					}
 				}				

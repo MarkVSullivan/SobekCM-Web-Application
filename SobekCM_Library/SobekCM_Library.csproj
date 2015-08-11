@@ -193,9 +193,6 @@
     <Compile Include="ItemViewer\Fragments\Share_Fragment_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="ItemViewer\Viewers\Aware_JP2_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="ItemViewer\Viewers\Dataset_CodeBook_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>

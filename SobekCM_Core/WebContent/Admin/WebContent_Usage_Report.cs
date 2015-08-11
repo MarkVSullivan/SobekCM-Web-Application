@@ -1,12 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
+using SobekCM.Core.WebContent.Single;
 
-namespace SobekCM.Core.WebContent
+namespace SobekCM.Core.WebContent.Admin
 {
     /// <summary> Collection of pages hit, along with the number of hits, for a date-range
     /// query of usage statistics across many top-level static web content pages </summary>
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("globalUsageReport")]
     public class WebContent_Usage_Report
     {
         /// <summary> Number of pages with hits during this period </summary>

@@ -175,10 +175,37 @@ namespace SobekCM.Core.WebContent
             }
         }
 
+        /// <summary> Primary key of this static webcontent page, if this is a non-aggregational related page </summary>
+        [DataMember(EmitDefaultValue = false, Name = "id")]
+        [XmlIgnore]
+        [ProtoMember(14)]
+        public int? WebContentID { get; set; }
+
+        /// <summary> Primary key of this static webcontent page, if this is a non-aggregational related page, as string </summary>
+        /// <remarks> This is for the XML serialization portions </remarks>
+        [IgnoreDataMember]
+        [XmlAttribute("id")]
+        public string WebContentID_AsString
+        {
+            get { return WebContentID.HasValue ? WebContentID.Value.ToString() : null; }
+            set
+            {
+                int temp;
+                if (Int32.TryParse(value, out temp))
+                    WebContentID = temp;
+            }
+        }
+
+        /// <summary> Redirect URL associated with this web content object </summary>
+        [DataMember(EmitDefaultValue = false, Name = "redirect")]
+        [XmlElement("redirect")]
+        [ProtoMember(15)]
+        public string Redirect { get; set; }
+
         /// <summary> Source for this html-based web content </summary>
         [DataMember(EmitDefaultValue = false, Name = "source")]
         [XmlAttribute("source")]
-        [ProtoMember(14)]
+        [ProtoMember(16)]
         public string Source { get; set; }
 
         /// <summary> Static text included as the body of the static HTML file if item aggregation custom directives

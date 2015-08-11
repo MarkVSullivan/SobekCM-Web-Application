@@ -25,7 +25,7 @@ namespace SobekCM.Core.WebContent
         [XmlAttribute("id")]
         public int WebContentID_XML
         {
-            get { return WebContentID.Value; }
+            get { return  ( WebContentID.HasValue ) ? WebContentID.Value : -1; }
             set { WebContentID = value; }
         }
 

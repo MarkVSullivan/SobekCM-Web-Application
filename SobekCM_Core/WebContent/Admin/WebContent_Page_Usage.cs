@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
 
-namespace SobekCM.Core.WebContent
+namespace SobekCM.Core.WebContent.Single
 {
     /// <summary> Usage information for a single page within a date range </summary>
     [Serializable, DataContract, ProtoContract]

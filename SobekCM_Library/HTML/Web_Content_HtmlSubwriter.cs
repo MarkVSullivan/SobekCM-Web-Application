@@ -10,6 +10,7 @@ using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.SiteMap;
+using SobekCM.Core.Users;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Library.WebContentViewer;
@@ -491,6 +492,7 @@ namespace SobekCM.Library.HTML
             // Depending on mode, display the information
             switch (RequestSpecificValues.Current_Mode.WebContent_Type)
             {
+                case WebContent_Type_Enum.NONE:
                 case WebContent_Type_Enum.Display:
                     write_standard_display(Output, Tracer);
                     break;
@@ -903,5 +905,78 @@ namespace SobekCM.Library.HTML
                 return RequestSpecificValues.Site_Map != null ? String.Empty : base.Container_CssClass;
 			}
 		}
+
+
+        #region Public method to write the internal header
+
+        /// <summary> Adds the internal header HTML for this specific HTML writer </summary>
+        /// <param name="Output"> Stream to which to write the HTML for the internal header information </param>
+        /// <param name="Current_User"> Currently logged on user, to determine specific rights </param>
+        public override void Write_Internal_Header_HTML(TextWriter Output, User_Object Current_User)
+        {
+
+            if ((Current_User.Is_Portal_Admin) || (Current_User.Is_System_Admin) || (Current_User.Is_Host_Admin))
+            {
+                Output.WriteLine("  <table id=\"sbk_InternalHeader\">");
+                Output.WriteLine("    <tr style=\"height:45px;\">");
+                Output.WriteLine("      <td style=\"text-align:left; width:100px;\">");
+                Output.WriteLine("          <button title=\"Hide Internal Header\" class=\"intheader_button_aggr hide_intheader_button_aggr\" onclick=\"return hide_internal_header();\" alt=\"Hide Internal Header\"></button>");
+                Output.WriteLine("      </td>");
+
+                Output.WriteLine("      <td style=\"text-align:center; vertical-align:middle\">");
+
+                // Keep current mode, submode, etc..
+                Display_Mode_Enum displayMode = RequestSpecificValues.Current_Mode.Mode;
+                WebContent_Type_Enum webType = RequestSpecificValues.Current_Mode.WebContent_Type;
+                string submode = RequestSpecificValues.Current_Mode.Info_Browse_Mode;
+
+                // Add button to view usage statistics information
+                RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Usage;
+                Output.WriteLine("          <button title=\"View history of use\" class=\"intheader_button_aggr show_usage_statistics\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\" ></button>");
+
+                // Add button to view work log history
+                RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Milestones;
+                Output.WriteLine("          <button title=\"View change log of work history\" class=\"intheader_button_aggr view_worklog_page_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+
+                if ((Current_User.Is_System_Admin) || (Current_User.Is_Host_Admin))
+                {
+                    // Add button to delete this page
+                    RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Delete_Verify;
+                    Output.WriteLine("          <button title=\"Delete web content page\" class=\"intheader_button_aggr delete_page_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                }
+
+                // Add button to view manage menu
+                RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Manage_Menu;
+                Output.WriteLine("          <button title=\"View all management options\" class=\"intheader_button_aggr manage_page_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+
+                // Add the admin button
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Single;
+                Output.WriteLine("          <button title=\"Edit administrative information\" class=\"intheader_button_aggr admin_view_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\" ></button>");
+
+                Output.WriteLine("      </td>");
+
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = submode;
+                RequestSpecificValues.Current_Mode.Mode = displayMode;
+                RequestSpecificValues.Current_Mode.WebContent_Type = webType;
+
+                // Add the HELP icon next
+                Output.WriteLine("      <td style=\"text-align:left; width:30px;\">");
+                Output.WriteLine("        <span id=\"sbk_InternalHeader_Help\"><a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/aggrheader\" title=\"Help regarding this header\" ><img src=\"" + Static_Resources.Help_Button_Darkgray_Jpg + "\" alt=\"?\" title=\"Help regarding this header\" /></a></span>");
+                Output.WriteLine("      </td>");
+
+                Write_Internal_Header_Search_Box(Output);
+
+                Output.WriteLine("    </tr>");
+
+                Output.WriteLine("  </table>");
+            }
+            else
+            {
+                base.Write_Internal_Header_HTML(Output, Current_User);
+            }
+        }
+
+        #endregion
     }
 }

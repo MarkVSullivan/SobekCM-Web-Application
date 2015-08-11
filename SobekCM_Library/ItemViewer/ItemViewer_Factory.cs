@@ -91,12 +91,6 @@ namespace SobekCM.Library.ItemViewer
 						newJp2Viewer.FileName = ViewObject.FileName;
 						return newJp2Viewer;
 					}
-                    if ( UI_ApplicationCache_Gateway.Settings.JP2ServerType == "Aware")
-                    {
-                        abstractItemViewer jpeg2000Viewer = new Aware_JP2_ItemViewer(Resource_Type, ViewObject.Attributes, Current_Mode);
-                        jpeg2000Viewer.FileName = ViewObject.FileName;
-                        return jpeg2000Viewer;
-                    }
                     return null;
 
 				case View_Enum.MANAGE:

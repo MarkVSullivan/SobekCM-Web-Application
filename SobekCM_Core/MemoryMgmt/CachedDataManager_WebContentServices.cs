@@ -6,8 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
-using SobekCM.Core.Aggregations;
 using SobekCM.Core.WebContent;
+using SobekCM.Core.WebContent.Hierarchy;
 using SobekCM.Tools;
 
 namespace SobekCM.Core.MemoryMgmt
@@ -24,6 +24,185 @@ namespace SobekCM.Core.MemoryMgmt
         {
             settings = Settings;
         }
+
+
+        #region Method used to cache a single non-aggregational web content page details (or redirect)
+
+        /// <summary> Retrieves a fully built non-aggregational static web content page (engine and client side) </summary>
+        /// <param name="WebContentID"> Primary key for this web content page (or redirect) </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Either NULL or the fully built HTML based content object </returns>
+        public HTML_Based_Content Retrieve_Page_Details( int WebContentID, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if ((settings.Disabled) || (HttpContext.Current == null))
+                return null;
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Page_Details", "");
+            }
+
+            // Determine the key
+            string key = "WEBCONTENT|DETAILS|" + WebContentID;
+
+            // See if this is in the local cache first
+            HTML_Based_Content returnValue = HttpContext.Current.Cache.Get(key) as HTML_Based_Content;
+            if (returnValue != null)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Page_Details", "Found page details on local cache");
+                }
+
+                return returnValue;
+            }
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Page_Details", "Page details not found in the local cache ");
+            }
+
+            // Since everything failed, just return null
+            return null;
+        }
+
+        /// <summary> Stores a fully built non-aggregational static web content page (engine and client side) </summary>
+        /// <param name="StoreObject"> Fully built web content page (or redirect) object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Store_Page_Details(HTML_Based_Content StoreObject, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Page_Details");
+            }
+
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+            {
+                if (Tracer != null) Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Page_Details", "Caching is disabled");
+                return;
+            }
+
+            // Determine the key
+            string key = "WEBCONTENT|DETAILS|" + StoreObject.WebContentID;
+
+            const int LOCAL_EXPIRATION = 5;
+
+            // Locally cache if this doesn't exceed the limit
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Page_Details", "Adding object '" + key + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            }
+
+            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
+        }
+
+        /// <summary> Retrieves the special missing web content page, used when a requested resource is missing (engine and client side) </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Either NULL or the fully built HTML based content object </returns>
+        public HTML_Based_Content Retrieve_Special_Missing_Page(Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if ((settings.Disabled) || (HttpContext.Current == null))
+                return null;
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Special_Missing_Pages", "");
+            }
+
+            // Determine the key
+            const string KEY = "WEBCONTENT|DETAILS|!MISSING!";
+
+            // See if this is in the local cache first
+            HTML_Based_Content returnValue = HttpContext.Current.Cache.Get(KEY) as HTML_Based_Content;
+            if (returnValue != null)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Special_Missing_Pages", "Found MISSING page details on local cache");
+                }
+
+                return returnValue;
+            }
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Special_Missing_Pages", "MISSING page details not found in the local cache ");
+            }
+
+            // Since everything failed, just return null
+            return null;
+        }
+
+        /// <summary> Stores the special missing web content page, used when a requested resource is missing (engine and client side) </summary>
+        /// <param name="StoreObject"> Fully built web content page (or redirect) object </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Store_Special_Missing_Page(HTML_Based_Content StoreObject, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Special_Missing_Page");
+            }
+
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+            {
+                if (Tracer != null) Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Special_Missing_Page", "Caching is disabled");
+                return;
+            }
+
+            // Determine the key
+            const string KEY = "WEBCONTENT|DETAILS|!MISSING!";
+
+            const int LOCAL_EXPIRATION = 5;
+
+            // Locally cache if this doesn't exceed the limit
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Special_Missing_Page", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            }
+
+            HttpContext.Current.Cache.Insert(KEY, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
+        }
+
+        /// <summary> Clears a single web content page (or redirect) detail objects that is currently cached (engine and client side) </summary>
+        /// <param name="WebContentID"> Primary key for the web content page to clear</param>
+        public void Clear_Page_Details(int WebContentID)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+            {
+                return;
+            }
+
+            // Determine the key
+            string key = "WEBCONTENT|DETAILS|" + WebContentID;
+            HttpContext.Current.Cache.Remove(key);
+        }
+
+        /// <summary> Clears all the web content page (or redirect) detail objects that are currently cached (engine and client side) </summary>
+        public void Clear_Page_Details()
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+            {
+                return;
+            }
+
+            // Get collection of keys in the Cache
+            List<string> keys = (from DictionaryEntry thisItem in HttpContext.Current.Cache select thisItem.Key.ToString()).ToList();
+
+            // Delete all items from the Cache
+            foreach (string key in keys.Where(Key => Key.StartsWith("WEBCONTENT|DETAILS|")))
+            {
+                HttpContext.Current.Cache.Remove(key);
+            }
+        }
+
+
+        #endregion
 
         #region Methods used to cache the database outputs for use by the SobekCM engine
 
@@ -706,7 +885,7 @@ namespace SobekCM.Core.MemoryMgmt
             // Locally cache if this doesn't exceed the limit
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Recent_Updates_NextLevel", "Adding object '" + keyBuilder.ToString() + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Recent_Updates_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
             HttpContext.Current.Cache.Insert(keyBuilder.ToString(), StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
@@ -1035,7 +1214,7 @@ namespace SobekCM.Core.MemoryMgmt
             // Locally cache if this doesn't exceed the limit
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Pages_NextLevel", "Adding object '" + keyBuilder.ToString() + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Pages_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
             HttpContext.Current.Cache.Insert(keyBuilder.ToString(), StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
@@ -1282,7 +1461,7 @@ namespace SobekCM.Core.MemoryMgmt
             // Locally cache if this doesn't exceed the limit
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Redirects_NextLevel", "Adding object '" + keyBuilder.ToString() + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Redirects_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
             HttpContext.Current.Cache.Insert(keyBuilder.ToString(), StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
@@ -1529,7 +1708,7 @@ namespace SobekCM.Core.MemoryMgmt
             // Locally cache if this doesn't exceed the limit
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Content_NextLevel", "Adding object '" + keyBuilder.ToString() + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Content_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
             HttpContext.Current.Cache.Insert(keyBuilder.ToString(), StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
@@ -1784,7 +1963,7 @@ namespace SobekCM.Core.MemoryMgmt
             // Locally cache if this doesn't exceed the limit
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Usage_Report_NextLevel", "Adding object '" + keyBuilder.ToString() + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Global_Usage_Report_NextLevel", "Adding object '" + keyBuilder + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
             }
 
             HttpContext.Current.Cache.Insert(keyBuilder.ToString(), StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
@@ -1811,8 +1990,90 @@ namespace SobekCM.Core.MemoryMgmt
 
         #endregion
 
+        #region Methods related to the complete hierarchy of pages (client side - not used by default UI)
 
+        /// <summary> Retrieves the complete hierarchy of non-aggregational static web content pages and redirects, used for navigation </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Complete hierarchy of non-aggregational static web content pages and redirects, used for navigation </returns>
+        /// <remarks> By default, this method is not used, but is exposed for others that are utilizing the engine client code </remarks>
+        public WebContent_Hierarchy Retrieve_Hierarchy(Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if ((settings.Disabled) || (HttpContext.Current == null))
+                return null;
 
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Hierarchy", "");
+            }
+
+            // Determine the key
+            const string KEY = "WEBCONTENT|CLIENT|HIERARCHY";
+
+            // See if this is in the local cache first
+            WebContent_Hierarchy returnValue = HttpContext.Current.Cache.Get(KEY) as WebContent_Hierarchy;
+            if (returnValue != null)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Hierarchy", "Found complete web content hierarchy on local cache");
+                }
+
+                return returnValue;
+            }
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Hierarchy", "Complete web content hierarchy not found in the local cache ");
+            }
+
+            // Since everything failed, just return null
+            return null;
+        }
+
+        /// <summary> Stores the complete hierarchy of non-aggregational static web content pages and redirects, used for navigation </summary>
+        /// <param name="StoreObject"> List of next level values </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Store_Hierarchy(WebContent_Hierarchy StoreObject, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Hierarchy");
+            }
+
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+            {
+                if (Tracer != null) Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Hierarchy", "Caching is disabled");
+                return;
+            }
+
+            // Determine the key
+            const string KEY = "WEBCONTENT|CLIENT|HIERARCHY";
+            const int LOCAL_EXPIRATION = 15;
+
+            // Locally cache if this doesn't exceed the limit
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_Hierarchy", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            }
+
+            HttpContext.Current.Cache.Insert(KEY, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
+        }
+
+        /// <summary> Clear the complete hierarchy of non-aggregational static web content pages and redirects, used for navigation </summary>
+        public void Clear_Hierarchy()
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+            {
+                return;
+            }
+
+            HttpContext.Current.Cache.Remove("WEBCONTENT|CLIENT|HIERARCHY");
+        }
+
+        #endregion
 
         #endregion
     }

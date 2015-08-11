@@ -7,7 +7,7 @@ using ProtoBuf;
 
 #endregion
 
-namespace SobekCM.Core.WebContent
+namespace SobekCM.Core.WebContent.Admin
 {
     /// <summary> Represents a recently changed web page, the user who made the changes, and the date 
     /// and type of the change  </summary>

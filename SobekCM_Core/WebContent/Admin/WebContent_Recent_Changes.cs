@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 using ProtoBuf;
 
-namespace SobekCM.Core.WebContent
+namespace SobekCM.Core.WebContent.Admin
 {
     /// <summary> Represents a collection recently changed web pages, the user who made the changes, and 
     /// the dates and types of the changes </summary>

@@ -163,15 +163,19 @@
     <Compile Include="Users\User_Group.cs" />
     <Compile Include="Users\User_Group_Member.cs" />
     <Compile Include="Users\User_Object.cs" />
+    <Compile Include="WebContent\Hierarchy\WebContent_Hierarchy.cs" />
+    <Compile Include="WebContent\Hierarchy\WebContent_Hierarchy_Node.cs" />
     <Compile Include="WebContent\HTML_Based_Content.cs" />
     <Compile Include="WebContent\HTML_Based_Content_Reader.cs" />
-    <Compile Include="WebContent\Single_WebContent_Month_Year_Usage.cs" />
-    <Compile Include="WebContent\WebContent_Basic_Pages.cs" />
-    <Compile Include="WebContent\WebContent_Page_Usage.cs" />
-    <Compile Include="WebContent\WebContent_Recent_Changed_Page.cs" />
-    <Compile Include="WebContent\WebContent_Recent_Changes.cs" />
+    <Compile Include="WebContent\Single\Single_WebContent_Change_Report.cs" />
+    <Compile Include="WebContent\Single\Single_WebContent_Usage.cs" />
+    <Compile Include="WebContent\Admin\WebContent_Basic_Pages.cs" />
+    <Compile Include="WebContent\Admin\WebContent_Page_Usage.cs" />
+    <Compile Include="WebContent\Admin\WebContent_Recent_Changed_Page.cs" />
+    <Compile Include="WebContent\Admin\WebContent_Recent_Changes.cs" />
+    <Compile Include="WebContent\Single\Single_WebContent_Usage_Report.cs" />
     <Compile Include="WebContent\WebContent_Basic_Info.cs" />
-    <Compile Include="WebContent\WebContent_Usage_Report.cs" />
+    <Compile Include="WebContent\Admin\WebContent_Usage_Report.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj">

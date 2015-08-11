@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
 
-namespace SobekCM.Core.WebContent
+namespace SobekCM.Core.WebContent.Admin
 {
     /// <summary> Represents a collection of basic information about web content pages and redirects </summary>
     [Serializable, DataContract, ProtoContract]

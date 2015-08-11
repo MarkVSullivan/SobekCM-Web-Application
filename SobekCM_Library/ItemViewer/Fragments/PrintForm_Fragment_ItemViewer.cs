@@ -88,44 +88,7 @@ namespace SobekCM.Library.ItemViewer.Fragments
                         }
                     }
 
-                    if ((pageViewer != null) && (pageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000))
-                    {
-                        int currViewportZoom = CurrentMode.Viewport_Zoom.HasValue ? CurrentMode.Viewport_Zoom.Value : 1;
-                        int adjustedZoom = currViewportZoom - 1;
-                        if (adjustedZoom > 0)
-                        {
-                            if ((CurrentMode.Viewport_Size > 0) || (adjustedZoom > 0) || (CurrentMode.Viewport_Rotation > 0))
-                            {
-                                if (CurrentMode.Viewport_Rotation > 0)
-                                {
-                                    print_options = "&vo=" + CurrentMode.Viewport_Size.ToString() + adjustedZoom.ToString() + CurrentMode.Viewport_Rotation;
-                                }
-                                else
-                                {
-                                    if (adjustedZoom > 0)
-                                    {
-                                        print_options = "&vo=" + CurrentMode.Viewport_Size.ToString() + adjustedZoom.ToString();
-                                    }
-                                    else
-                                    {
-                                        print_options = "&vo=" + CurrentMode.Viewport_Size.ToString();
-                                    }
-                                }
-                            }
-
-                            // Only add the point if it is not 0,0
-                            if ((CurrentMode.Viewport_Point_X > 0) || (CurrentMode.Viewport_Point_Y > 0))
-                                print_options = print_options + "&vp=" + CurrentMode.Viewport_Point_X + "," + CurrentMode.Viewport_Point_Y;
-
-                            responseBuilder.AppendLine("    <input type=\"radio\" name=\"print_pages\" value=\"current_view\" id=\"current_view\" class=\"print_radiobutton\" checked=\"checked\" /> <label for=\"current_view\">Print current view</label><br />");
-                            responseBuilder.AppendLine("    <input type=\"radio\" name=\"print_pages\" value=\"current_page\" id=\"current_page\" class=\"print_radiobutton\" /> <label for=\"current_page\">Print current page</label><br />");
-                        }
-                        else
-                        {
-                            responseBuilder.AppendLine("    <input type=\"radio\" name=\"print_pages\" value=\"current_page\" id=\"current_page\" class=\"print_radiobutton\" checked=\"checked\" /> <label for=\"current_page\">Print current page</label><br />");
-                        }
-                        something_selected = true;
-                    }
+                   
 
                     if ((pageViewer != null) && (pageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG))
                     {
