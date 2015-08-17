@@ -4454,7 +4454,7 @@ namespace SobekCM.Engine_Library.Database
         /// <summary> Gets the dataset of all global content pages AND redirects </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> DataSet of pages and redirects </returns>
-        /// <remarks> This calls the 'SobekCM_WebContent_Get_All' stored procedure </remarks> 
+        /// <remarks> This calls the 'SobekCM_WebContent_All' stored procedure </remarks> 
         public static DataSet WebContent_Get_All(Custom_Tracer Tracer)
         {
             if (Tracer != null)
@@ -4464,7 +4464,7 @@ namespace SobekCM.Engine_Library.Database
 
             try
             {
-                return EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_Get_All");
+                return EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_All");
             }
             catch (Exception ee)
             {

@@ -2604,7 +2604,31 @@ namespace SobekCM.Engine_Library.Endpoints
                 if (!String.IsNullOrEmpty(QueryString["l2"]))
                 {
                     string level2_filter = QueryString["l2"];
-                    resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "'";
+                    if (!String.IsNullOrEmpty(QueryString["l3"]))
+                    {
+                        string level3_filter = QueryString["l3"];
+                        if (!String.IsNullOrEmpty(QueryString["l4"]))
+                        {
+                            string level4_filter = QueryString["l4"];
+                            if (!String.IsNullOrEmpty(QueryString["l5"]))
+                            {
+                                string level5_filter = QueryString["l5"];
+                                resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "' and Level3='" + level3_filter + "' and Level4='" + level4_filter + "' and Level5='" + level5_filter + "'";
+                            }
+                            else
+                            {
+                                resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "' and Level3='" + level3_filter + "' and Level4='" + level4_filter + "'";
+                            }
+                        }
+                        else
+                        {
+                            resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "' and Level3='" + level3_filter + "'";
+                        }
+                    }
+                    else
+                    {
+                        resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "'";
+                    }
                 }
                 else
                 {
@@ -3145,7 +3169,31 @@ namespace SobekCM.Engine_Library.Endpoints
                 if (!String.IsNullOrEmpty(QueryString["l2"]))
                 {
                     string level2_filter = QueryString["l2"];
-                    resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "'";
+                    if (!String.IsNullOrEmpty(QueryString["l3"]))
+                    {
+                        string level3_filter = QueryString["l3"];
+                        if (!String.IsNullOrEmpty(QueryString["l4"]))
+                        {
+                            string level4_filter = QueryString["l4"];
+                            if (!String.IsNullOrEmpty(QueryString["l5"]))
+                            {
+                                string level5_filter = QueryString["l5"];
+                                resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "' and Level3='" + level3_filter + "' and Level4='" + level4_filter + "' and Level5='" + level5_filter + "'";
+                            }
+                            else
+                            {
+                                resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "' and Level3='" + level3_filter + "' and Level4='" + level4_filter + "'";
+                            }
+                        }
+                        else
+                        {
+                            resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "' and Level3='" + level3_filter + "'";
+                        }
+                    }
+                    else
+                    {
+                        resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "'";
+                    }
                 }
                 else
                 {
@@ -3734,7 +3782,31 @@ namespace SobekCM.Engine_Library.Endpoints
                 if (!String.IsNullOrEmpty(QueryString["l2"]))
                 {
                     string level2_filter = QueryString["l2"];
-                    resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "'";
+                    if (!String.IsNullOrEmpty(QueryString["l3"]))
+                    {
+                        string level3_filter = QueryString["l3"];
+                        if (!String.IsNullOrEmpty(QueryString["l4"]))
+                        {
+                            string level4_filter = QueryString["l4"];
+                            if (!String.IsNullOrEmpty(QueryString["l5"]))
+                            {
+                                string level5_filter = QueryString["l5"];
+                                resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "' and Level3='" + level3_filter + "' and Level4='" + level4_filter + "' and Level5='" + level5_filter + "'";
+                            }
+                            else
+                            {
+                                resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "' and Level3='" + level3_filter + "' and Level4='" + level4_filter + "'";
+                            }
+                        }
+                        else
+                        {
+                            resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "' and Level3='" + level3_filter + "'";
+                        }
+                    }
+                    else
+                    {
+                        resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "'";
+                    }
                 }
                 else
                 {

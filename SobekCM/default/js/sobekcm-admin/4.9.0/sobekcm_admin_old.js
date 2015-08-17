@@ -1071,6 +1071,27 @@ function delete_aggr_upload_file(filename) {
     return false;
 }
 
+
+/// ******** WEB CONTENT ADMIN ************************///
+// Save the web content updates
+function save_webcontent_edits(complete) {
+    var hiddenfield = document.getElementById('admin_webcontent_save');
+    if (complete == true)
+        hiddenfield.value = 'save_exit';
+    else
+        hiddenfield.value = 'save';
+    document.itemNavForm.submit();
+    return false;
+}
+
+function new_webcontent_edit_page(page) {
+    var hiddenfield = document.getElementById('admin_webcontent_save');
+    hiddenfield.value = page;
+    document.itemNavForm.submit();
+    return false;
+}
+
+
 // Trim the input string from the search box
 function trimString (str) 
 {
@@ -1091,49 +1112,5 @@ function new_wizard_edit_page(page) {
     var hiddenfield = document.getElementById('admin_wizard_save');
     hiddenfield.value = page;
     document.itemNavForm.submit();
-    return false;
-}
-
-// Add filter to web content admin pages
-function new_webcontent_filter(base, depth) {
-    var level1_value = $('select[name=lvl1Filter]').val();
-
-    var url = base;
-    if (level1_value.length > 0) {
-        url = url + "?l1=" + level1_value;
-
-        if (depth > 1) {
-            var level2_value = $('select[name=lvl2Filter]').val();
-            if (level2_value.length > 0) {
-                url = url + "&l2=" + level2_value;
-
-                if (depth > 2) {
-                    var level3_value = $('select[name=lvl3Filter]').val();
-                    if (level3_value.length > 0) {
-                        url = url + "&l3=" + level3_value;
-
-                        if (depth > 3) {
-                            var level4_value = $('select[name=lvl4Filter]').val();
-                            if (level4_value.length > 0) {
-                                url = url + "&l4=" + level4_value;
-
-                                if (depth > 4) {
-                                    var level5_value = $('select[name=lvl5Filter]').val();
-                                    if (level5_value.length > 0) {
-                                        url = url + "&l5=" + level5_value;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    } 
-
-    // Change the the browser location to the new url
-    window.location.href = url;
-
-
     return false;
 }

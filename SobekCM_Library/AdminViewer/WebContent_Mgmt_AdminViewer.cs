@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Web;
+using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
@@ -15,6 +17,11 @@ namespace SobekCM.Library.AdminViewer
     public class WebContent_Mgmt_AdminViewer : abstract_AdminViewer
     {
         private string actionMessage;
+        private string level1;
+        private string level2;
+        private string level3;
+        private string level4;
+        private string level5;
 
         /// <summary> Constructor for a new instance of the WebContent_Mgmt_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -46,6 +53,39 @@ namespace SobekCM.Library.AdminViewer
             //        HttpContext.Current.Cache.Remove("GlobalPermissionsReportSubmit");
             //    }
             //}
+
+            // Set filters initially to empty strings
+            level1 = String.Empty;
+            level2 = String.Empty;
+            level3 = String.Empty;
+            level4 = String.Empty;
+            level5 = String.Empty;
+
+            // Get any level filter information from the query string
+            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l1"]))
+            {
+                level1 = HttpContext.Current.Request.QueryString["l1"];
+
+                if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l2"]))
+                {
+                    level2 = HttpContext.Current.Request.QueryString["l2"];
+
+                    if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l3"]))
+                    {
+                        level3 = HttpContext.Current.Request.QueryString["l3"];
+
+                        if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l4"]))
+                        {
+                            level4 = HttpContext.Current.Request.QueryString["l4"];
+
+                            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l5"]))
+                            {
+                                level5 = HttpContext.Current.Request.QueryString["l5"];
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
@@ -180,9 +220,138 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine();
 
+            // Get the base url
+            string base_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
             switch (page)
             {
                 case 1:
+
+                    Output.WriteLine("  <p>Below is this list of all the non-aggregation web content pages and redirects within the system.</p>");
+
+                    // Add the filter boxes
+                    Output.WriteLine("  <p>Use the boxes below to filter the results to only show a subset.</p>");
+                    Output.WriteLine("  <div id=\"sbkWcav_FilterPanel\">");
+                    Output.WriteLine("    Filter: ");
+                    Output.WriteLine("    <select id=\"lvl1Filter\" name=\"lvl1Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + base_url + "',1);\">");
+                    if ( String.IsNullOrEmpty(level1))
+                        Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                    else
+                        Output.WriteLine("      <option value=\"\"></option>");
+
+                    List<string> level1options = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer );
+                    foreach (string thisOption in level1options)
+                    {
+                        if (String.Compare(level1, thisOption, StringComparison.OrdinalIgnoreCase) == 0 )
+                            Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                        else
+                            Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                    }
+                    Output.WriteLine("    </select>");
+                    
+                    // Should the second level be shown?
+                    if ( !String.IsNullOrEmpty(level1 ))
+                    {
+                        List<string> level2options = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer, level1);
+                        if (level2options.Count > 0)
+                        {
+                            Output.WriteLine("    /");
+                            Output.WriteLine("    <select id=\"lvl2Filter\" name=\"lvl2Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + base_url + "',2);\">");
+                            if (String.IsNullOrEmpty(level2))
+                                Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                            else
+                                Output.WriteLine("      <option value=\"\"></option>");
+
+                        
+                            foreach (string thisOption in level2options)
+                            {
+                                if (String.Compare(level2, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                                    Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                                else
+                                    Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                            }
+                            Output.WriteLine("    </select>");
+
+                            // Should the third level be shown?
+                            if (!String.IsNullOrEmpty(level2))
+                            {
+                                List<string> level3options = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer, level1, level2);
+                                if (level3options.Count > 0)
+                                {
+                                    Output.WriteLine("    /");
+                                    Output.WriteLine("    <select id=\"lvl3Filter\" name=\"lvl3Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + base_url + "',3);\">");
+                                    if (String.IsNullOrEmpty(level3))
+                                        Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                                    else  
+                                        Output.WriteLine("      <option value=\"\"></option>");
+
+
+                                    foreach (string thisOption in level3options)
+                                    {
+                                        if (String.Compare(level3, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                                            Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                                        else
+                                            Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                                    }
+                                    Output.WriteLine("    </select>");
+
+                                    // Should the fourth level be shown?
+                                    if (!String.IsNullOrEmpty(level3))
+                                    {
+                                        List<string> level4options = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer, level1, level2, level3);
+                                        if (level4options.Count > 0)
+                                        {
+                                            Output.WriteLine("    /");
+                                            Output.WriteLine("    <select id=\"lvl4Filter\" name=\"lvl4Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + base_url + "',4);\">");
+                                            if (String.IsNullOrEmpty(level4))
+                                                Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                                            else
+                                                Output.WriteLine("      <option value=\"\"></option>");
+
+
+                                            foreach (string thisOption in level4options)
+                                            {
+                                                if (String.Compare(level4, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                                                    Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                                                else
+                                                    Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                                            }
+                                            Output.WriteLine("    </select>");
+
+
+                                            // Should the fifth level be shown?
+                                            if (!String.IsNullOrEmpty(level4))
+                                            {
+                                                List<string> level5options = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer, level1, level2, level3, level4);
+                                                if (level5options.Count > 0)
+                                                {
+                                                    Output.WriteLine("    /");
+                                                    Output.WriteLine("    <select id=\"lvl5Filter\" name=\"lvl5Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + base_url + "',5);\">");
+                                                    if (String.IsNullOrEmpty(level5))
+                                                        Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                                                    else
+                                                        Output.WriteLine("      <option value=\"\"></option>");
+
+
+                                                    foreach (string thisOption in level5options)
+                                                    {
+                                                        if (String.Compare(level5, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                                                            Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                                                        else
+                                                            Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                                                    }
+                                                    Output.WriteLine("    </select>");
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Output.WriteLine("  </div>");
+                    Output.WriteLine();
+
                     Output.WriteLine("  <table id=\"sbkWcav_MainTable\" class=\"sbkWcav_Table display\">");
                     Output.WriteLine("    <thead>");
                     Output.WriteLine("      <tr>");
@@ -212,11 +381,31 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("           \"serverSide\": true,");
                     Output.WriteLine("           \"sDom\": \"lprtip\",");
 
-
+                    // Determine the URL for the results
                     string redirect_url = RequestSpecificValues.Current_Mode.Base_URL + "engine/webcontent/all/list/jtable";
-                    string l1 = HttpContext.Current.Request.QueryString["l1"];
-                    if (!String.IsNullOrEmpty(l1))
-                        redirect_url = redirect_url + "?l1=" + l1;
+
+                    // Add any query string (should probably use StringBuilder, but this should be fairly seldomly used very deeply)
+                    if (!String.IsNullOrEmpty(level1))
+                    {
+                        redirect_url = redirect_url + "?l1=" + level1;
+                        if (!String.IsNullOrEmpty(level2))
+                        {
+                            redirect_url = redirect_url + "&l2=" + level2;
+                            if (!String.IsNullOrEmpty(level3))
+                            {
+                                redirect_url = redirect_url + "&l3=" + level3;
+                                if (!String.IsNullOrEmpty(level4))
+                                {
+                                    redirect_url = redirect_url + "&l4=" + level4;
+                                    if (!String.IsNullOrEmpty(level5))
+                                    {
+                                        redirect_url = redirect_url + "&l5=" + level5;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
 
 
                     Output.WriteLine("           \"sAjaxSource\": \"" + redirect_url + "\",");

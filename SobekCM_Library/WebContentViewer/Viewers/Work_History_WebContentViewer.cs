@@ -1,5 +1,9 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using SobekCM.Core;
+using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.WebContent.Single;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
@@ -42,7 +46,56 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 Tracer.Add_Trace("Work_History_WebContentViewer.Add_HTML", "No html added");
             }
 
-            Output.WriteLine("IN THE WORK_HISTORY_WEBCONTENTVIEWER");
+            Output.WriteLine("<div class=\"Wchs_Text\">");
+            Output.WriteLine("  <p>The list of changes, including the user that performed the change, appear below.</p>");
+            Output.WriteLine("</div>");
+
+            // Get the stats
+            int webcontentid = -1;
+            if (RequestSpecificValues.Current_Mode.WebContentID.HasValue)
+                webcontentid = RequestSpecificValues.Current_Mode.WebContentID.Value;
+
+            Single_WebContent_Change_Report stats;
+            try
+            {
+                stats = SobekEngineClient.WebContent.Get_Single_Milestones(webcontentid, Tracer);
+            }
+            catch (Exception ee)
+            {
+                Output.WriteLine("<div id=\"apiExceptionMsg\">Exception caught: " + ee.Message + "</div>");
+                return;
+            }
+
+
+            // If no stats, show a message for that
+            if ((stats == null) || (stats.Changes == null) || (stats.Changes.Count == 0))
+            {
+                Output.WriteLine("<div id=\"sbkWchs_NoDataMsg\">No change history</div>");
+                return;
+            }
+
+            Output.WriteLine("  <br />");
+            Output.WriteLine("  <table class=\"sbkStatsTbl\" style=\"width: 500px; margin-left:auto; margin-right: auto;\">");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <th style=\"text-align:left;\">DATE</th>");
+            Output.WriteLine("      <th>USER</th>");
+            Output.WriteLine("      <th>CHANGE</th>");
+            Output.WriteLine("    </tr>");
+
+
+            // Add the usage data rows
+            foreach (Milestone_Entry change in stats.Changes)
+            {
+                // Add the data row
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td style=\"text-align:left;\">" + change.MilestoneDate.ToString().Replace("12:00:00 AM", "") + "</td>");
+                Output.WriteLine("      <td>" + change.User + "</td>");
+                Output.WriteLine("      <td>" + change.Notes + "</td>");
+                Output.WriteLine("    </tr>");
+            }
+            Output.WriteLine("  </table>");
+
+            Output.WriteLine("  <br /> <br />");
         }
     }
 }
