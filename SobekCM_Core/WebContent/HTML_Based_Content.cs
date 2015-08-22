@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Text;
 using System.Web;
 using System.Xml.Serialization;
 using ProtoBuf;
@@ -213,6 +214,115 @@ namespace SobekCM.Core.WebContent
         [IgnoreDataMember]
         [XmlIgnore]
         public string ContentSource { get; set; }
+
+        /// <summary> Level 1 of this static webcontent page </summary>
+        [DataMember(EmitDefaultValue = false, Name = "level1")]
+        [XmlAttribute("level1")]
+        [ProtoMember(17)]
+        public string Level1 { get; set; }
+
+        /// <summary> Level 2 of this static webcontent page </summary>
+        [DataMember(EmitDefaultValue = false, Name = "level2")]
+        [XmlAttribute("level2")]
+        [ProtoMember(18)]
+        public string Level2 { get; set; }
+
+        /// <summary> Level 3 of this static webcontent page </summary>
+        [DataMember(EmitDefaultValue = false, Name = "level3")]
+        [XmlAttribute("level3")]
+        [ProtoMember(19)]
+        public string Level3 { get; set; }
+
+        /// <summary> Level 4 of this static webcontent page </summary>
+        [DataMember(EmitDefaultValue = false, Name = "level4")]
+        [XmlAttribute("level4")]
+        [ProtoMember(20)]
+        public string Level4 { get; set; }
+
+        /// <summary> Level 5 of this static webcontent page </summary>
+        [DataMember(EmitDefaultValue = false, Name = "level5")]
+        [XmlAttribute("level5")]
+        [ProtoMember(21)]
+        public string Level5 { get; set; }
+
+        /// <summary> Level 6 of this static webcontent page </summary>
+        [DataMember(EmitDefaultValue = false, Name = "level6")]
+        [XmlAttribute("level6")]
+        [ProtoMember(22)]
+        public string Level6 { get; set; }
+
+        /// <summary> Level 7 of this static webcontent page </summary>
+        [DataMember(EmitDefaultValue = false, Name = "level7")]
+        [XmlAttribute("level7")]
+        [ProtoMember(23)]
+        public string Level7 { get; set; }
+
+        /// <summary> Level 8 of this static webcontent page </summary>
+        [DataMember(EmitDefaultValue = false, Name = "level8")]
+        [XmlAttribute("level8")]
+        [ProtoMember(24)]
+        public string Level8 { get; set; }
+
+        /// <summary> Gets the URL segments for this web content page </summary>
+        /// <returns> Web content page URL segments </returns>
+        [IgnoreDataMember]
+        [XmlIgnore]
+        public string UrlSegments
+        {
+            get
+            {
+                StringBuilder urlBuilder = new StringBuilder();
+
+                if (!String.IsNullOrEmpty(Level1))
+                {
+                    urlBuilder.Append(Level1);
+
+                    if (!String.IsNullOrEmpty(Level2))
+                    {
+                        urlBuilder.Append("/" + Level2);
+                        if (!String.IsNullOrEmpty(Level3))
+                        {
+                            urlBuilder.Append("/" + Level3);
+                            if (!String.IsNullOrEmpty(Level4))
+                            {
+                                urlBuilder.Append("/" + Level4);
+                                if (!String.IsNullOrEmpty(Level5))
+                                {
+                                    urlBuilder.Append("/" + Level5);
+                                    if (!String.IsNullOrEmpty(Level6))
+                                    {
+                                        urlBuilder.Append("/" + Level6);
+                                        if (!String.IsNullOrEmpty(Level7))
+                                        {
+                                            urlBuilder.Append("/" + Level7);
+                                            if (!String.IsNullOrEmpty(Level8))
+                                            {
+                                                urlBuilder.Append("/" + Level8);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return urlBuilder.ToString();
+            }
+        }
+
+        /// <summary> Gets the URL for this web content page, based on the system base URL </summary>
+        /// <param name="BaseURL"> System base URL to use for this web content URL </param>
+        /// <returns> Web content page URL </returns>
+        public string URL(string BaseURL)
+        {
+            if (BaseURL[BaseURL.Length - 1] != '/')
+            {
+                return BaseURL + "/" + UrlSegments;
+            }
+
+            return BaseURL + UrlSegments;
+        }
 
         #endregion
 

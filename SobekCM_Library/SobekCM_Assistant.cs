@@ -62,7 +62,7 @@ namespace SobekCM.Library
 
             // Get the web content object
             if ((( Current_Mode.WebContentID.HasValue ) && ( Current_Mode.WebContentID.Value > 0 )) && (( !Current_Mode.Missing.HasValue ) || ( !Current_Mode.Missing.Value )))
-                Simple_Web_Content = SobekEngineClient.WebContent.Get_HTML_Based_Content(Current_Mode.WebContentID.Value, Tracer);
+                Simple_Web_Content = SobekEngineClient.WebContent.Get_HTML_Based_Content(Current_Mode.WebContentID.Value, true, Tracer);
 
             // If somehow this is null and this was for DEFAULT, just add the page
             if (Simple_Web_Content == null)

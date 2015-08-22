@@ -112,7 +112,7 @@ namespace SobekCM.Builder_Library.Statistics
                         Navigation_Object currentMode = new Navigation_Object();
                         QueryString_Analyzer.Parse_Query(queryStringCollection, currentMode, hit.SobekCM_URL,
                             new string[] { "en" }, Engine_ApplicationCache_Gateway.Codes, Engine_ApplicationCache_Gateway.Collection_Aliases,
-                            Engine_ApplicationCache_Gateway.Items, Engine_ApplicationCache_Gateway.URL_Portals, null);
+                            Engine_ApplicationCache_Gateway.Items, Engine_ApplicationCache_Gateway.URL_Portals, Engine_ApplicationCache_Gateway.WebContent_Hierarchy, null);
 
                         if (currentMode != null)
                             currentMode.Set_Robot_Flag(hit.UserAgent, hit.IP);

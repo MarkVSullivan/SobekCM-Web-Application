@@ -31,17 +31,20 @@ namespace SobekCM.Core.Client
         /// <param name="WebContentID"> Primary key for this non-aggregational web content page </param>
         /// <param name="Tracer"></param>
         /// <returns> Object with all the information and source text for the top-level web content page </returns>
-        public HTML_Based_Content Get_HTML_Based_Content(int WebContentID, Custom_Tracer Tracer)
+        public HTML_Based_Content Get_HTML_Based_Content(int WebContentID, bool UseCache, Custom_Tracer Tracer)
         {
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_HTML_Based_Content", "Get by primary key");
 
             // Look in the cache
-            HTML_Based_Content fromCache = CachedDataManager.WebContent.Retrieve_Page_Details(WebContentID, Tracer);
-            if (fromCache != null)
+            if ((Config.UseCache) && (UseCache))
             {
-                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_HTML_Based_Content", "Found page in the local cache");
-                return fromCache;
+                HTML_Based_Content fromCache = CachedDataManager.WebContent.Retrieve_Page_Details(WebContentID, Tracer);
+                if (fromCache != null)
+                {
+                    Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_HTML_Based_Content", "Found page in the local cache");
+                    return fromCache;
+                }
             }
 
             // Get the endpoint
@@ -54,7 +57,7 @@ namespace SobekCM.Core.Client
             HTML_Based_Content returnValue = Deserialize<HTML_Based_Content>(url, endpoint.Protocol, Tracer);
 
             // Add to the local cache
-            if (returnValue != null)
+            if ((Config.UseCache) && (UseCache) && (returnValue != null))
             {
                 Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_HTML_Based_Content", "Store page in the local cache");
                 CachedDataManager.WebContent.Store_Page_Details(returnValue, Tracer);
@@ -256,7 +259,7 @@ namespace SobekCM.Core.Client
         {
             get
             {
-                return Config["Get_Global_Recent_Updates_JDataTable"] == null ? null : Config["Get_Global_Recent_Updates_JDataTable"].URL;
+                return Config["WebContent.Get_Global_Recent_Updates_JDataTable"] == null ? null : Config["WebContent.Get_Global_Recent_Updates_JDataTable"].URL;
             }
         }
 
@@ -329,7 +332,7 @@ namespace SobekCM.Core.Client
 
             // Store in the cache
             if ((Config.UseCache) && (returnValue != null))
-                CachedDataManager.WebContent.Store_Global_Recent_Updates_NextLevel(returnValue, Tracer);
+                CachedDataManager.WebContent.Store_Global_Recent_Updates_NextLevel(returnValue, Tracer, Level1, Level2, Level3, Level4, Level5, Level6, Level7, Level8);
 
             return returnValue;
         }
@@ -438,7 +441,7 @@ namespace SobekCM.Core.Client
         {
             get
             {
-                return Config["Get_Global_Usage_Report_JDataTable"] == null ? null : Config["Get_Global_Usage_Report_JDataTable"].URL;
+                return Config["WebContent.Get_Global_Usage_Report_JDataTable"] == null ? null : Config["WebContent.Get_Global_Usage_Report_JDataTable"].URL;
             }
         }
 
@@ -586,7 +589,7 @@ namespace SobekCM.Core.Client
         {
             get
             {
-                return Config["Get_All_Redirects_JDataTable"] == null ? null : Config["Get_All_Redirects_JDataTable"].URL;
+                return Config["WebContent.Get_All_Redirects_JDataTable"] == null ? null : Config["WebContent.Get_All_Redirects_JDataTable"].URL;
             }
         }
 
@@ -731,7 +734,7 @@ namespace SobekCM.Core.Client
         {
             get
             {
-                return Config["Get_All_Pages_JDataTable"] == null ? null : Config["Get_All_Pages_JDataTable"].URL;
+                return Config["WebContent.Get_All_Pages_JDataTable"] == null ? null : Config["WebContent.Get_All_Pages_JDataTable"].URL;
             }
         }
 
@@ -877,7 +880,7 @@ namespace SobekCM.Core.Client
         {
             get
             {
-                return Config["Get_All_JDataTable"] == null ? null : Config["Get_All_JDataTable"].URL;
+                return Config["WebContent.Get_All_JDataTable"] == null ? null : Config["WebContent.Get_All_JDataTable"].URL;
             }
         }
 

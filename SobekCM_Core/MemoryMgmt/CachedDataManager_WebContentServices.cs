@@ -809,7 +809,7 @@ namespace SobekCM.Core.MemoryMgmt
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Recent_Updates_NextLevel", "Found next level values on local cache");
+                    Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_Global_Recent_Updates_NextLevel", "Found next level values on local cache ( " + keyBuilder + " )");
                 }
 
                 return returnValue;
