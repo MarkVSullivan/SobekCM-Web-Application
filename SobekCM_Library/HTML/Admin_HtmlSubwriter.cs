@@ -499,9 +499,11 @@ namespace SobekCM.Library.HTML
 
                     case Admin_Type_Enum.User_Permissions_Reports:
                     case Admin_Type_Enum.WebContent_Mgmt:
+                        return "sbkUpav_ContainerInner";
+
                     case Admin_Type_Enum.WebContent_History:
                     case Admin_Type_Enum.WebContent_Usage:
-                        return "sbkUpav_ContainerInner";
+                        return "sbkWcav2_ContainerInner";
 
                     case Admin_Type_Enum.WebContent_Single:
                         return "sbkSaav_ContainerInner";

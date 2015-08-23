@@ -20,6 +20,7 @@ namespace SobekCM.Library.AdminViewer
         private readonly string level3;
         private readonly string level4;
         private readonly string level5;
+        private readonly string userFilter;
 
         /// <summary> Constructor for a new instance of the WebContent_History_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -58,27 +59,38 @@ namespace SobekCM.Library.AdminViewer
             level3 = String.Empty;
             level4 = String.Empty;
             level5 = String.Empty;
+            userFilter = String.Empty;
 
-            // Get any level filter information from the query string
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l1"]))
+            // Get any userfilter
+            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["user"]))
             {
-                level1 = HttpContext.Current.Request.QueryString["l1"];
+                userFilter = HttpContext.Current.Request.QueryString["user"];
+            }
 
-                if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l2"]))
+            // If no user filter, try to find the level filters
+            if (String.IsNullOrEmpty(userFilter))
+            {
+                // Get any level filter information from the query string
+                if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l1"]))
                 {
-                    level2 = HttpContext.Current.Request.QueryString["l2"];
+                    level1 = HttpContext.Current.Request.QueryString["l1"];
 
-                    if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l3"]))
+                    if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l2"]))
                     {
-                        level3 = HttpContext.Current.Request.QueryString["l3"];
+                        level2 = HttpContext.Current.Request.QueryString["l2"];
 
-                        if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l4"]))
+                        if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l3"]))
                         {
-                            level4 = HttpContext.Current.Request.QueryString["l4"];
+                            level3 = HttpContext.Current.Request.QueryString["l3"];
 
-                            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l5"]))
+                            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l4"]))
                             {
-                                level5 = HttpContext.Current.Request.QueryString["l5"];
+                                level4 = HttpContext.Current.Request.QueryString["l4"];
+
+                                if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l5"]))
+                                {
+                                    level5 = HttpContext.Current.Request.QueryString["l5"];
+                                }
                             }
                         }
                     }
@@ -188,7 +200,26 @@ namespace SobekCM.Library.AdminViewer
                 // Add the filter boxes
                 Output.WriteLine("  <p>Use the boxes below to filter the results to only show a subset.</p>");
                 Output.WriteLine("  <div id=\"sbkWcav_FilterPanel\">");
-                Output.WriteLine("    Filter: ");
+                Output.WriteLine("    Filter by user: ");
+
+                Output.WriteLine("    <select id=\"userFilter\" name=\"userFilter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + baseURL + "',1);\">");
+                if (String.IsNullOrEmpty(userFilter))
+                    Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                else
+                    Output.WriteLine("      <option value=\"\"></option>");
+
+                List<string> usersList = SobekEngineClient.WebContent.Get_Global_Recent_Updates_Users(Tracer);
+                foreach (string thisOption in usersList)
+                {
+                    if (String.Compare(userFilter, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                        Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                    else
+                        Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                }
+                Output.WriteLine("    </select>");
+
+                Output.WriteLine("    <br />");
+                Output.WriteLine("    Filter by URL: ");
                 Output.WriteLine("    <select id=\"lvl1Filter\" name=\"lvl1Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + baseURL + "',1);\">");
                 if (String.IsNullOrEmpty(level1))
                     Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");

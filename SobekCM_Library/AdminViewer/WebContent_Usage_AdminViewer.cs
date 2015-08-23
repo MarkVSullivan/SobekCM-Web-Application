@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Web;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.AdminViewer
@@ -13,6 +15,16 @@ namespace SobekCM.Library.AdminViewer
     public class WebContent_Usage_AdminViewer : abstract_AdminViewer
     {
         private string actionMessage;
+        private readonly string level1;
+        private readonly string level2;
+        private readonly string level3;
+        private readonly string level4;
+        private readonly string level5;
+        private readonly int month1;
+        private readonly int year1;
+        private readonly int month2;
+        private readonly int year2;
+
 
         /// <summary> Constructor for a new instance of the WebContent_Usage_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -45,6 +57,88 @@ namespace SobekCM.Library.AdminViewer
             //        HttpContext.Current.Cache.Remove("GlobalPermissionsReportSubmit");
             //    }
             //}
+
+            // Set filters initially to empty strings
+            level1 = String.Empty;
+            level2 = String.Empty;
+            level3 = String.Empty;
+            level4 = String.Empty;
+            level5 = String.Empty;
+            month1 = -1;
+            year1 = -1;
+            month2 = -1;
+            year2 = -1;
+
+            // Get any level filter information from the query string
+            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l1"]))
+            {
+                level1 = HttpContext.Current.Request.QueryString["l1"];
+
+                if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l2"]))
+                {
+                    level2 = HttpContext.Current.Request.QueryString["l2"];
+
+                    if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l3"]))
+                    {
+                        level3 = HttpContext.Current.Request.QueryString["l3"];
+
+                        if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l4"]))
+                        {
+                            level4 = HttpContext.Current.Request.QueryString["l4"];
+
+                            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l5"]))
+                            {
+                                level5 = HttpContext.Current.Request.QueryString["l5"];
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Get the year and month filters
+            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["y1"]))
+            {
+                Int32.TryParse(HttpContext.Current.Request.QueryString["y1"], out year1);
+            }
+            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["m1"]))
+            {
+                Int32.TryParse(HttpContext.Current.Request.QueryString["m1"], out month1);
+            }
+            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["y2"]))
+            {
+                Int32.TryParse(HttpContext.Current.Request.QueryString["y2"], out year2);
+            }
+            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["m2"]))
+            {
+                Int32.TryParse(HttpContext.Current.Request.QueryString["m2"], out month2);
+            }
+
+            // If the end year is filled out, but not the month, set to the end of that year
+            if ((year2 > 1900) && ( month2 < 1 ) || ( month2 > 12 ))
+            {
+                month2 = (year2 == DateTime.Now.Year) ? DateTime.Now.Month : 12;
+            }
+
+            // If no final year/month, set it to now as well
+            if (year2 < 1900)
+            {
+                year2 = DateTime.Now.Year;
+                month2 = DateTime.Now.Month;
+            }
+
+            // If no initial year/month, use the first stats date
+            if ((year1 < 1900) || ( year1 < UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Year ))
+            {
+                year1 = UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Year;
+                month1 = UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Month;
+            }
+
+            if ((month1 < 1) || (month1 > 12))
+            {
+                month1 = 1;
+                if (year1 == UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Year)
+                    month1 = UI.UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Month;
+            }
         }
 
         /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer

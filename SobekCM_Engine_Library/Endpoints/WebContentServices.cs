@@ -4239,8 +4239,16 @@ namespace SobekCM.Engine_Library.Endpoints
                         return null;
                     }
 
-                    // Copy over the primary key for this web content
+                    // Copy over the primary key and URL segments for this web content
                     simpleWebContent.WebContentID = BasicInfo.WebContentID;
+                    simpleWebContent.Level1 = BasicInfo.Level1;
+                    simpleWebContent.Level2 = BasicInfo.Level2;
+                    simpleWebContent.Level3 = BasicInfo.Level3;
+                    simpleWebContent.Level4 = BasicInfo.Level4;
+                    simpleWebContent.Level5 = BasicInfo.Level5;
+                    simpleWebContent.Level6 = BasicInfo.Level6;
+                    simpleWebContent.Level7 = BasicInfo.Level7;
+                    simpleWebContent.Level8 = BasicInfo.Level8;
 
                     // Now, check for any "server-side include" directorives in the source text
                     int include_index = simpleWebContent.Content.IndexOf("<%INCLUDE");
