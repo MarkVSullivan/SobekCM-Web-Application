@@ -435,7 +435,7 @@ namespace SobekCM.Library.HTML
             }
 
 			// Add the uploader libraries if editing an item
-            if ((RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Aggregation_Single) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Wordmarks) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Skins_Single) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Add_Collection_Wizard))
+            if ((RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Aggregation_Single) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Wordmarks) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Skins_Single) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.Add_Collection_Wizard) || (RequestSpecificValues.Current_Mode.Admin_Type == Admin_Type_Enum.WebContent_Single))
 	        {
                 Output.WriteLine("  <script src=\"" + Static_Resources.Jquery_Uploadifive_Js + "\" type=\"text/javascript\"></script>");
                 Output.WriteLine("  <script src=\"" + Static_Resources.Jquery_Uploadify_Js + "\" type=\"text/javascript\"></script>");
@@ -506,7 +506,7 @@ namespace SobekCM.Library.HTML
                         return "sbkWcav2_ContainerInner";
 
                     case Admin_Type_Enum.WebContent_Single:
-                        return "sbkSaav_ContainerInner";
+                        return "sbkWcav_ContainerInner";
 				}
 				return base.Container_CssClass;
 			}

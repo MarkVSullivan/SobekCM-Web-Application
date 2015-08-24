@@ -455,6 +455,15 @@ namespace SobekCM.Core.Navigation
                                 return this_base_url + "admin/webcontent/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
                             return this_base_url + "admin/webcontent" + urlOptions1;
 
+                        case Admin_Type_Enum.WebContent_Single:
+                            if ((Current_Mode.WebContentID.HasValue) && (Current_Mode.WebContentID > 0))
+                            {
+                                if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                    return this_base_url + "admin/websingle/" + Current_Mode.WebContentID + "/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
+                                return this_base_url + "admin/websingle/" + Current_Mode.WebContentID + urlOptions1;
+                            }
+                            return this_base_url + "admin/webcontent" + urlOptions1;
+
                         case Admin_Type_Enum.WebContent_Usage:
                             return this_base_url + "admin/webusage" + urlOptions1;
 
@@ -481,6 +490,8 @@ namespace SobekCM.Core.Navigation
                             if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
                                 return this_base_url + "admin/editskin/" + Current_Mode.My_Sobek_SubMode.Replace("|", "/") + urlOptions1;
                             return this_base_url + "admin/webskins" + urlOptions1;
+
+
 
                         default:
                             return this_base_url + "admin" + urlOptions1;

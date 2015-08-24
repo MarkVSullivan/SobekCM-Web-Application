@@ -12,6 +12,7 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.WebContent;
 using SobekCM.Library.Database;
+using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Library.UploadiFive;
@@ -99,7 +100,7 @@ namespace SobekCM.Library.AdminViewer
 			}
 
 			// Get the aggregation directory and ensure it exists
-            webContentDirectory = Path.GetDirectoryName(webContent.Source);
+            webContentDirectory = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "webcontent\\" + webContent.UrlSegments.Replace("/", "\\");
             if (!Directory.Exists(webContentDirectory))
                 Directory.CreateDirectory(webContentDirectory);
 
@@ -316,6 +317,13 @@ namespace SobekCM.Library.AdminViewer
 			}
 		}
 
+        /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
+        /// requests from the main HTML subwriter. </summary>
+        public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+        {
+            get { return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Banner, HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables }; }
+        }
+
 		/// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
 		/// <value> This always returns the value 'HTML Skins' </value>
 		public override string Web_Title
@@ -471,7 +479,7 @@ namespace SobekCM.Library.AdminViewer
                 //    break;
 
 				case 4:
-					Add_Page_Child_Pages(Output);
+					Add_Page_Child_Pages(Output, Tracer);
 					break;
 
 				case 5:
@@ -622,7 +630,7 @@ namespace SobekCM.Library.AdminViewer
             Output.Write("          <select class=\"sbkSaav_SelectSkin\" name=\"admin_webcontent_skin\" id=\"admin_webcontent_skin\">");
 
             // Add the NONE option first
-            Output.Write(webContent.Web_Skin.Length == 0 ? "<option value=\"\" selected=\"selected\" ></option>" : "<option value=\"\"></option>");
+            Output.Write( String.IsNullOrEmpty(webContent.Web_Skin) ? "<option value=\"\" selected=\"selected\" ></option>" : "<option value=\"\"></option>");
 
             // Get the ordered list of all skin codes
             List<string> skinCodes = UI_ApplicationCache_Gateway.Web_Skin_Collection.Ordered_Skin_Codes;
@@ -668,7 +676,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_sitemap\">SiteMap:</label></td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSaav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_sitemap\" id=\"admin_webcontent_sitemap\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(webContent.Banner) + "\" /></td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSaav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_sitemap\" id=\"admin_webcontent_sitemap\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(webContent.SiteMap) + "\" /></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + SITEMAP_HELP + "');\"  title=\"" + SITEMAP_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
@@ -793,9 +801,53 @@ namespace SobekCM.Library.AdminViewer
             //}
 		}
 
-        private void Add_Page_Child_Pages(TextWriter Output)
-		{
-			const string CODE_HELP = "Enter the code for the new child page.  This code should be less than 20 characters and be as descriptive of the content of your new page as possible.  This code will appear in the URL for the new child page.";
+        private void Add_Page_Child_Pages(TextWriter Output, Custom_Tracer Tracer)
+        {
+            string level1 = webContent.Level1;
+            string level2 = webContent.Level2;
+            string level3 = webContent.Level3;
+            string level4 = webContent.Level4;
+            string level5 = webContent.Level5;
+            int fixed_depth = 1;
+            if (!String.IsNullOrEmpty(webContent.Level2))
+            {
+                fixed_depth = 2;
+                if (!String.IsNullOrEmpty(webContent.Level3))
+                {
+                    fixed_depth = 3;
+                    if (!String.IsNullOrEmpty(webContent.Level4))
+                    {
+                        fixed_depth = 4;
+                        if (!String.IsNullOrEmpty(webContent.Level5))
+                        {
+                            fixed_depth = 5;
+                        }
+                    }
+                }
+            }
+
+            // Get any level filter information from the query string
+            if ((fixed_depth < 2) && (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l2"])))
+            {
+                level2 = HttpContext.Current.Request.QueryString["l2"];
+            }
+            if ((fixed_depth < 3) && (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l3"])))
+            {
+                level3 = HttpContext.Current.Request.QueryString["l3"];
+            }
+            if ((fixed_depth < 4) && (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l4"])))
+            {
+                level4 = HttpContext.Current.Request.QueryString["l2"];
+            }
+            if ((fixed_depth < 5) && (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l5"])))
+            {
+                level5 = HttpContext.Current.Request.QueryString["l5"];
+            }
+
+
+        
+
+            const string CODE_HELP = "Enter the code for the new child page.  This code should be less than 20 characters and be as descriptive of the content of your new page as possible.  This code will appear in the URL for the new child page.";
 			const string LABEL_HELP = "Enter the title for this new child page.  This title should be short, but can include spaces.  This will appear above the child page text.  If this child page appears in the main menu, this will also appear on the menu.  If this child page appears as a browse by, this will appear in the list of possible browse bys as well.";
 			const string VISIBILITY_HELP = "Choose how a link to this child page should appear for the web users.\\n\\nIf you select MAIN MENU, this will appear in the collection main menu system.\\n\\nIf you select BROWSE BY, this will appear with metadata browse bys on the main menu under the BROWSE BY menu item.\\n\\nIf you select NONE, then you will need to add a link to the new child page yourself by editing the text of the home page or an existing linked child page.";
 			const string PARENT_HELP = "If this child page will appear on the main menu, you can select a parent child page already on the main menu.  This will create a drop down menu under, or next to, the parent.";
@@ -837,6 +889,10 @@ namespace SobekCM.Library.AdminViewer
 			}
 			else
 			{
+                // Get the base url
+                string baseURL = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+
 				// Add EXISTING subcollections
 				Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
 				Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
@@ -845,81 +901,206 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
 				Output.WriteLine("    <td>&nbsp;</td>");
 				Output.WriteLine("    <td colspan=\"2\">");
-				Output.WriteLine("      <table class=\"sbkSaav_ChildPageTable sbkSaav_Table\">");
-				Output.WriteLine("        <tr>");
-				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader1\">ACTION</th>");
-				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader2\">CODE</th>");
-				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader3\">TITLE</th>");
-				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader4\">VISIBILITY</th>");
-				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader5\">PARENT</th>");
-				Output.WriteLine("          <th class=\"sbkSaav_ChildPageTableHeader6\">LANGUAGE(S)</th>");
-				Output.WriteLine("        </tr>");
 
-				foreach (Complete_Item_Aggregation_Child_Page childPage in sortedChildren.Values)
-				{
-					Output.WriteLine("        <tr>");
-					Output.Write("          <td class=\"sbkAdm_ActionLink\" style=\"padding-left: 5px;\" >( ");
-					RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-					RequestSpecificValues.Current_Mode.Aggregation_Type = childPage.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By ? Aggregation_Type_Enum.Browse_By : Aggregation_Type_Enum.Browse_Info;
-					RequestSpecificValues.Current_Mode.Info_Browse_Mode = childPage.Code;
 
-					Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"View this child page\" target=\"VIEW_" + childPage.Code + "\">view</a> | ");
+                Output.WriteLine("  <p>Below is this list of all the non-aggregation web content pages and redirects within the system.</p>");
 
-					RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-					RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "g_" + childPage.Code;
-					Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Edit this child page\" >edit</a> | ");
-					Output.WriteLine("<a title=\"Click to delete this child page\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return edit_aggr_delete_child_page('" + childPage.Code + "');\">delete</a> )</td>");
+                // Add the filter boxes
+                Output.WriteLine("  <p>Use the boxes below to filter the results to only show a subset.</p>");
+                Output.WriteLine("  <div id=\"sbkWcav_FilterPanel\">");
+                Output.WriteLine("    Filter: ");
+                Output.WriteLine("    <select id=\"lvl1Filter\" name=\"lvl1Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + baseURL + "',1);\">");
+                if (String.IsNullOrEmpty(level1))
+                    Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                else
+                    Output.WriteLine("      <option value=\"\"></option>");
 
-					Output.WriteLine("          <td>" + childPage.Code + "</td>");
-					Output.WriteLine("          <td>" + childPage.Get_Label(UI_ApplicationCache_Gateway.Settings.Default_UI_Language) + "</td>");
+                List<string> level1Options = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer);
+                foreach (string thisOption in level1Options)
+                {
+                    if (String.Compare(level1, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                        Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                    else
+                        Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                }
+                Output.WriteLine("    </select>");
 
-					switch (childPage.Browse_Type)
-					{
-						case Item_Aggregation_Child_Visibility_Enum.Main_Menu:
-							Output.WriteLine("          <td>Main Menu</td>");
-							break;
+                // Should the second level be shown?
+                if (!String.IsNullOrEmpty(level1))
+                {
+                    List<string> level2Options = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer, level1);
+                    if (level2Options.Count > 0)
+                    {
+                        Output.WriteLine("    /");
+                        Output.WriteLine("    <select id=\"lvl2Filter\" name=\"lvl2Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + baseURL + "',2);\">");
+                        if (String.IsNullOrEmpty(level2))
+                            Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                        else
+                            Output.WriteLine("      <option value=\"\"></option>");
 
-						case Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By:
-							Output.WriteLine("          <td>Browse By</td>");
-							break;
 
-						case Item_Aggregation_Child_Visibility_Enum.None:
-							Output.WriteLine("          <td>None</td>");
-							break;
-					}
-					Output.WriteLine("          <td>" + childPage.Parent_Code + "</td>");
+                        foreach (string thisOption in level2Options)
+                        {
+                            if (String.Compare(level2, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                                Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                            else
+                                Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                        }
+                        Output.WriteLine("    </select>");
 
-					Output.Write("          <td>");
-					int language_count = 0;
-				    if (childPage.Source_Dictionary != null)
-				    {
-				        int total_language_count = childPage.Source_Dictionary.Count;
-				        foreach (Web_Language_Enum thisLanguage in childPage.Source_Dictionary.Keys)
-				        {
-				            string languageName = Web_Language_Enum_Converter.Enum_To_Name(thisLanguage);
-				            if ((thisLanguage == Web_Language_Enum.DEFAULT) || (thisLanguage == Web_Language_Enum.UNDEFINED) || (thisLanguage == RequestSpecificValues.Current_Mode.Default_Language))
-				                languageName = "<span style=\"font-style:italic\">default</span>";
-				            if (language_count == 0)
-				                Output.Write(languageName);
-				            else
-				                Output.Write(", " + languageName);
+                        // Should the third level be shown?
+                        if (!String.IsNullOrEmpty(level2))
+                        {
+                            List<string> level3Options = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer, level1, level2);
+                            if (level3Options.Count > 0)
+                            {
+                                Output.WriteLine("    /");
+                                Output.WriteLine("    <select id=\"lvl3Filter\" name=\"lvl3Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + baseURL + "',3);\">");
+                                if (String.IsNullOrEmpty(level3))
+                                    Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                                else
+                                    Output.WriteLine("      <option value=\"\"></option>");
 
-				            language_count++;
-				            if ((language_count > 4) && (language_count < total_language_count - 1))
-				            {
-				                Output.Write("... (" + (total_language_count - language_count) + "more)");
-				                break;
-				            }
-				        }
-				    }
 
-				    Output.WriteLine("</td>");
+                                foreach (string thisOption in level3Options)
+                                {
+                                    if (String.Compare(level3, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                                        Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                                    else
+                                        Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                                }
+                                Output.WriteLine("    </select>");
 
-					Output.WriteLine("        </tr>");
-				}
-				RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+                                // Should the fourth level be shown?
+                                if (!String.IsNullOrEmpty(level3))
+                                {
+                                    List<string> level4Options = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer, level1, level2, level3);
+                                    if (level4Options.Count > 0)
+                                    {
+                                        Output.WriteLine("    /");
+                                        Output.WriteLine("    <select id=\"lvl4Filter\" name=\"lvl4Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + baseURL + "',4);\">");
+                                        if (String.IsNullOrEmpty(level4))
+                                            Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                                        else
+                                            Output.WriteLine("      <option value=\"\"></option>");
 
-				Output.WriteLine("      </table>");
+
+                                        foreach (string thisOption in level4Options)
+                                        {
+                                            if (String.Compare(level4, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                                                Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                                            else
+                                                Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                                        }
+                                        Output.WriteLine("    </select>");
+
+
+                                        // Should the fifth level be shown?
+                                        if (!String.IsNullOrEmpty(level4))
+                                        {
+                                            List<string> level5Options = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer, level1, level2, level3, level4);
+                                            if (level5Options.Count > 0)
+                                            {
+                                                Output.WriteLine("    /");
+                                                Output.WriteLine("    <select id=\"lvl5Filter\" name=\"lvl5Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + baseURL + "',5);\">");
+                                                if (String.IsNullOrEmpty(level5))
+                                                    Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                                                else
+                                                    Output.WriteLine("      <option value=\"\"></option>");
+
+
+                                                foreach (string thisOption in level5Options)
+                                                {
+                                                    if (String.Compare(level5, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                                                        Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                                                    else
+                                                        Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                                                }
+                                                Output.WriteLine("    </select>");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                Output.WriteLine("  </div>");
+                Output.WriteLine();
+
+                Output.WriteLine("  <table id=\"sbkWcav_MainTable\" class=\"sbkWcav_Table display\">");
+                Output.WriteLine("    <thead>");
+                Output.WriteLine("      <tr>");
+                Output.WriteLine("        <th>ID</th>");
+                Output.WriteLine("        <th>URL</th>");
+                Output.WriteLine("        <th>Title</th>");
+                Output.WriteLine("      </tr>");
+                Output.WriteLine("    </thead>");
+                Output.WriteLine("    <tbody>");
+                Output.WriteLine("      <tr><td colspan=\"5\" class=\"dataTables_empty\">Loading data from server</td></tr>");
+                Output.WriteLine("    </tbody>");
+                Output.WriteLine("  </table>");
+
+                Output.WriteLine();
+                Output.WriteLine("<script type=\"text/javascript\">");
+                Output.WriteLine("  $(document).ready(function() {");
+                Output.WriteLine("     var shifted=false;");
+                Output.WriteLine("     $(document).on('keydown', function(e){shifted = e.shiftKey;} );");
+                Output.WriteLine("     $(document).on('keyup', function(e){shifted = false;} );");
+
+                Output.WriteLine();
+                Output.WriteLine("      var oTable = $('#sbkWcav_MainTable').dataTable({");
+                Output.WriteLine("           \"lengthMenu\": [ [50, 100, 500, 1000, -1], [50, 100, 500, 1000, \"All\"] ],");
+                Output.WriteLine("           \"pageLength\": 50,");
+                //Output.WriteLine("           \"bFilter\": false,");
+                Output.WriteLine("           \"processing\": true,");
+                Output.WriteLine("           \"serverSide\": true,");
+                Output.WriteLine("           \"sDom\": \"lprtip\",");
+
+                // Determine the URL for the results
+                string redirect_url = SobekEngineClient.WebContent.Get_All_JDataTable_URL;
+
+                // Add any query string (should probably use StringBuilder, but this should be fairly seldomly used very deeply)
+                if (!String.IsNullOrEmpty(level1))
+                {
+                    redirect_url = redirect_url + "?l1=" + level1;
+                    if (!String.IsNullOrEmpty(level2))
+                    {
+                        redirect_url = redirect_url + "&l2=" + level2;
+                        if (!String.IsNullOrEmpty(level3))
+                        {
+                            redirect_url = redirect_url + "&l3=" + level3;
+                            if (!String.IsNullOrEmpty(level4))
+                            {
+                                redirect_url = redirect_url + "&l4=" + level4;
+                                if (!String.IsNullOrEmpty(level5))
+                                {
+                                    redirect_url = redirect_url + "&l5=" + level5;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Output.WriteLine("           \"sAjaxSource\": \"" + redirect_url + "\",");
+                Output.WriteLine("           \"aoColumns\": [ { \"bVisible\": false }, null, null ]  });");
+                Output.WriteLine();
+
+                Output.WriteLine("     $('#sbkWcav_MainTable tbody').on( 'click', 'tr', function () {");
+                Output.WriteLine("          var aData = oTable.fnGetData( this );");
+                Output.WriteLine("          var iId = aData[1];");
+                Output.WriteLine("          if ( shifted == true )");
+                Output.WriteLine("          {");
+                Output.WriteLine("             window.open('" + RequestSpecificValues.Current_Mode.Base_URL + "' + iId);");
+                Output.WriteLine("             shifted=false;");
+                Output.WriteLine("          }");
+                Output.WriteLine("          else");
+                Output.WriteLine("             window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "' + iId;");
+                Output.WriteLine("     });");
+                Output.WriteLine("  });");
+                Output.WriteLine("</script>");
+                Output.WriteLine();
+
 				Output.WriteLine("    </td>");
 				Output.WriteLine("  </tr>");
 			}
@@ -1120,7 +1301,7 @@ namespace SobekCM.Library.AdminViewer
 
                         // Build the action links
                         Output.Write("<br /><span class=\"sbkAdm_ActionLink\" >( ");
-                        Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_aggr_upload_file('" + thisImageFile + "');\" title=\"Delete this uploaded file\">delete</a> | ");
+                        Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_webcontent_upload_file('" + thisImageFile + "');\" title=\"Delete this uploaded file\">delete</a> | ");
                         Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"window.prompt('Below is the URL, available to copy to your clipboard.  To copy to clipboard, press Ctrl+C (or Cmd+C) and Enter', '" + thisImageFile_URL + "'); return false;\" title=\"View the URL for this file\">view url</a>");
 
                         Output.WriteLine(" )</span></td>");
@@ -1249,7 +1430,7 @@ namespace SobekCM.Library.AdminViewer
                         // Build the action links
                         Output.Write("<br /><span class=\"sbkAdm_ActionLink\" >( ");
                         Output.Write("<a href=\"" + thisDocFile_URL + "\" target=\"_" + thisDocFile + "\" title=\"Download and view this uploaded file\">download</a> | ");
-                        Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_aggr_upload_file('" + thisDocFile + "');\" title=\"Delete this uploaded file\">delete</a> | ");
+                        Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_webcontent_upload_file('" + thisDocFile + "');\" title=\"Delete this uploaded file\">delete</a> | ");
                         Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"window.prompt('Below is the URL, available to copy to your clipboard.  To copy to clipboard, press Ctrl+C (or Cmd+C) and Enter', '" + thisDocFile_URL + "'); return false;\" title=\"View the URL for this file\">view url</a>");
 
                         Output.WriteLine(" )</span></td>");
@@ -1296,7 +1477,7 @@ namespace SobekCM.Library.AdminViewer
 
 			switch (page)
 			{
-                case 9:
+                case 5:
                     add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg,.ai,.doc,.docx,.eps,.kml,.pdf,.psd,.pub,.txt,.vsd,.vsdx,.xls,.xlsx,.xml,.zip", webContentDirectory, String.Empty, true, webContent.WebContentID + "|Uploads", Tracer);
                     break;
 			}

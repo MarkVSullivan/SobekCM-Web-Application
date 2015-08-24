@@ -218,7 +218,7 @@ namespace SobekCM.Library.AdminViewer
                 }
                 Output.WriteLine("    </select>");
 
-                Output.WriteLine("    <br />");
+                Output.WriteLine("    <br /><br />");
                 Output.WriteLine("    Filter by URL: ");
                 Output.WriteLine("    <select id=\"lvl1Filter\" name=\"lvl1Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + baseURL + "',1);\">");
                 if (String.IsNullOrEmpty(level1))

@@ -714,16 +714,20 @@ namespace SobekCM.Engine_Library.Navigation
 
                                         case "websingle":
                                             Navigator.Admin_Type = Admin_Type_Enum.WebContent_Single;
-                                            StringBuilder possibleInfoModeBuilder = new StringBuilder();
-									        if (url_relative_list.Count > 2)
-									        {
-										        possibleInfoModeBuilder.Append(url_relative_list[2]);
-									        }
-									        for (int i = 3; i < url_relative_list.Count; i++)
-									        {
-										        possibleInfoModeBuilder.Append("/" + url_relative_list[i]);
-									        }
-                                            Navigator.My_Sobek_SubMode = possibleInfoModeBuilder.ToString();
+                                            if (url_relative_list.Count > 2)
+                                            {
+                                                int possiblewebid;
+                                                if (Int32.TryParse(url_relative_list[2], out possiblewebid))
+                                                {
+                                                    Navigator.WebContentID = possiblewebid;
+                                                }
+                                                if (url_relative_list.Count > 3)
+                                                {
+                                                    Navigator.My_Sobek_SubMode = url_relative_list[3];
+                                                }
+                                            }
+                                            if ( Navigator.WebContentID < 1 )
+                                                Navigator.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
                                             break;
                                             
                                         case "webusage":
