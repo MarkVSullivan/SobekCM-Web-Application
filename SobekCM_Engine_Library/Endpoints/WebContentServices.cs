@@ -2115,12 +2115,10 @@ namespace SobekCM.Engine_Library.Endpoints
             Response.Output.WriteLine("\"aaData\": [");
 
             // Sort by the correct column
-            if ((sortingColumn1 > 0) || (sortDirection1 != "asc"))
-            {
                 if (sortingColumn1 == 0)
                 {
                     // Must be descending column zero then
-                    resultsView.Sort = "Level1 desc, Level2 desc, Level3 desc, Level4 desc, Level5 desc, Level6 desc, Level7 desc, Level8 desc";
+                    resultsView.Sort = "Level1 " + sortDirection1 + ", Level2 " + sortDirection1 + ", Level3 " + sortDirection1 + ", Level4 " + sortDirection1 + ", Level5 " + sortDirection1 + ", Level6 " + sortDirection1 + ", Level7 " + sortDirection1 + ", Level8 " + sortDirection1;
                 }
                 else if (sortingColumn1 == 1)
                 {
@@ -2134,7 +2132,6 @@ namespace SobekCM.Engine_Library.Endpoints
                 {
                     resultsView.Sort = "HitsHierarchical " + sortDirection1;
                 }
-            }
 
             // Add the data for the rows to show
             for (int i = displayStart; (i < displayStart + displayLength) && (i < total_results); i++)

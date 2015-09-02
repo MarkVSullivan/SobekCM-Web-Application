@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Web;
+using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
@@ -96,21 +98,33 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Get the year and month filters
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["y1"]))
+            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["d1"]))
             {
-                Int32.TryParse(HttpContext.Current.Request.QueryString["y1"], out year1);
+                string date1 = HttpContext.Current.Request.QueryString["d1"];
+                if (date1.Length == 6)
+                {
+                    int year1possible;
+                    int month1possible;
+                    if ((Int32.TryParse(date1.Substring(0, 4), out year1possible)) && (Int32.TryParse(date1.Substring(4), out month1possible)))
+                    {
+                        year1 = year1possible;
+                        month1 = month1possible;
+                    }
+                }
             }
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["m1"]))
+            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["d2"]))
             {
-                Int32.TryParse(HttpContext.Current.Request.QueryString["m1"], out month1);
-            }
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["y2"]))
-            {
-                Int32.TryParse(HttpContext.Current.Request.QueryString["y2"], out year2);
-            }
-            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["m2"]))
-            {
-                Int32.TryParse(HttpContext.Current.Request.QueryString["m2"], out month2);
+                string date2 = HttpContext.Current.Request.QueryString["d2"];
+                if (date2.Length == 6)
+                {
+                    int year2possible;
+                    int month2possible;
+                    if ((Int32.TryParse(date2.Substring(0, 4), out year2possible)) && (Int32.TryParse(date2.Substring(4), out month2possible)))
+                    {
+                        year2 = year2possible;
+                        month2 = month2possible;
+                    }
+                }
             }
 
             // If the end year is filled out, but not the month, set to the end of that year
@@ -122,8 +136,8 @@ namespace SobekCM.Library.AdminViewer
             // If no final year/month, set it to now as well
             if (year2 < 1900)
             {
-                year2 = DateTime.Now.Year;
-                month2 = DateTime.Now.Month;
+                year2 = UI_ApplicationCache_Gateway.Stats_Date_Range.Latest_Year;
+                month2 = UI_ApplicationCache_Gateway.Stats_Date_Range.Latest_Month;
             }
 
             // If no initial year/month, use the first stats date
@@ -137,7 +151,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 month1 = 1;
                 if (year1 == UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Year)
-                    month1 = UI.UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Month;
+                    month1 = UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Month;
             }
         }
 
@@ -183,29 +197,13 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<!-- WebContent_Usage_AdminViewer.Write_ItemNavForm_Closing -->");
             Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
-            int page = 1;
-            string submode = "a";
             string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
-            if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode))
-            {
-                switch (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.ToLower())
-                {
-                    case "b":
-                        page = 2;
-                        break;
-
-                    case "c":
-                        page = 3;
-                        break;
-                }
-
-                submode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
-            }
-
-            Output.WriteLine("  <div class=\"sbkAdm_HomeText\">");
+            
+            
 
             if (actionMessage.Length > 0)
             {
+                Output.WriteLine("  <div class=\"sbkAdm_HomeText\">");
                 Output.WriteLine("  <br />");
                 if (actionMessage.IndexOf("Error", StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
@@ -218,54 +216,19 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("  <div id=\"sbkAdm_ActionMessageSuccess\">" + actionMessage + "</div>");
                 }
                 Output.WriteLine("  <br />");
+                Output.WriteLine("  </div>");
             }
 
-
-            Output.WriteLine("  <p style=\"text-align: left; padding:0 20px 0 70px;width:800px;\">This report allows you to view the permissions that are set for users and groups within this repository both globally and at the individual aggregation and user level.</p>");
-
-            Output.WriteLine("  </div>");
+            
 
             // Start the outer tab containe
             Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs sbkAdm_HomeTabs\">");
             Output.WriteLine("  <div class=\"tabs\">");
             Output.WriteLine("    <ul>");
 
-
-            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "XyzzyXyzzy";
-            string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
-
-            string tab1_title = "ALL PAGES";
-            string tab2_title = "RECENT UPDATES";
-            string tab3_title = "USAGE STATISTICS";
-
-            if (page == 1)
-            {
-                Output.WriteLine("      <li class=\"tabActiveHeader\"> " + tab1_title + " </li>");
-            }
-            else
-            {
-                Output.WriteLine("      <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "a") + "';return false;\"> " + tab1_title + " </li>");
-            }
-
-            if (page == 2)
-            {
-                Output.WriteLine("      <li class=\"tabActiveHeader\"> " + tab2_title + " </li>");
-            }
-            else
-            {
-                Output.WriteLine("    <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "b") + "';return false;\"> " + tab2_title + " </li>");
-            }
-
-            if (page == 3)
-            {
-                Output.WriteLine("      <li class=\"tabActiveHeader\"> " + tab3_title + " </li>");
-            }
-            else
-            {
-                Output.WriteLine("    <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "c") + "';return false;\"> " + tab3_title + " </li>");
-            }
-
+            string tab1_title = "USAGE";
+            Output.WriteLine("      <li class=\"tabActiveHeader\"> " + tab1_title + " </li>");
+           
             Output.WriteLine("    </ul>");
             Output.WriteLine("  </div>");
 
@@ -282,40 +245,383 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine();
 
-            switch (page)
+            // Determine the two URLS needed (one for the GO button, and another for the jQuery datatable results)
+            StringBuilder script_builder = new StringBuilder(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
+            StringBuilder results_builder = new StringBuilder(SobekEngineClient.WebContent.Get_Global_Usage_Report_JDataTable_URL);
+
+            // Get the base URL without any filtering
+            string filterUrl = script_builder + "?d1=" + year1 + month1.ToString().PadLeft(2, '0') + "&d2=" + year2 + month2.ToString().PadLeft(2, '0');
+
+            // Add the month/year query stuff to the results
+            results_builder.Append("?year1=" + year1 + "&month1=" + month1.ToString().PadLeft(2, '0') + "&year2=" + year2 + "&month2=" + month2.ToString().PadLeft(2, '0'));
+
+            // Add any query string related to the filter levels
+            if (!String.IsNullOrEmpty(level1))
+            {
+                script_builder.Append("?l1=" + level1);
+                results_builder.Append("&l1=" + level1);
+                if (!String.IsNullOrEmpty(level2))
+                {
+                    script_builder.Append("&l2=" + level2);
+                    results_builder.Append("&l2=" + level2);
+                    if (!String.IsNullOrEmpty(level3))
+                    {
+                        script_builder.Append("&l3=" + level3);
+                        results_builder.Append("&l3=" + level3);
+                        if (!String.IsNullOrEmpty(level4))
+                        {
+                            script_builder.Append("&l4=" + level4);
+                            results_builder.Append("&l4=" + level4);
+                            if (!String.IsNullOrEmpty(level5))
+                            {
+                                script_builder.Append("&l5=" + level5);
+                                results_builder.Append("&l5=" + level5);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Get the URLS from the string builders
+            string goUrl = script_builder.ToString();
+            string dataUrl = results_builder.ToString();
+
+
+
+
+
+
+            // If there are none whatsoever, show  a special message and don't bother with the table
+            if (!SobekEngineClient.WebContent.Has_Global_Usage(Tracer))
+            {
+                Output.WriteLine("<div id=\"sbkWchs_NoDataMsg\">No usage statistics collected</div>");
+            }
+            else
+            {
+                Output.WriteLine("  <p>Usage statistics for the web content pages over time appears below.");
+                Output.WriteLine("     Views are the number of times this page was requested.  Hierarchical views includes the hits on this page, as well as all the child pages.");
+                Output.WriteLine("     Usage statistics are collected from the web logs by the SobekCM builder in a regular, monthly automated process.</p>");
+
+
+                Output.WriteLine("  <p>The usage for the web content pages appears below for the following data range:</p>");
+
+                Output.WriteLine("  <div id=\"sbkWcuav_DatePanel\">");
+                Output.WriteLine("    From: <select id=\"date1_selector\" class=\"SobekStatsDateSelector\" >");
+
+                int select_month = UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Month;
+                int select_year = UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Year;
+                while ((select_month != UI_ApplicationCache_Gateway.Stats_Date_Range.Latest_Month) || (select_year != UI_ApplicationCache_Gateway.Stats_Date_Range.Latest_Year))
+                {
+                    if ((month1 == select_month) && (year1 == select_year))
+                    {
+                        Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Month_From_Int(select_month) + " " + select_year + "</option>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\">" + Month_From_Int(select_month) + " " + select_year + "</option>");
+                    }
+
+                    select_month++;
+                    if (select_month > 12)
+                    {
+                        select_month = 1;
+                        select_year++;
+                    }
+                }
+                if ((month1 == select_month) && (year1 == select_year))
+                {
+                    Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Month_From_Int(select_month) + " " + select_year + "</option>");
+                }
+                else
+                {
+                    Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\">" + Month_From_Int(select_month) + " " + select_year + "</option>");
+                }
+                Output.WriteLine("    </select>");
+                Output.WriteLine("    &nbsp; &nbsp;");
+                Output.WriteLine("    To: <select id=\"date2_selector\" class=\"SobekStatsDateSelector\" >");
+
+                select_month = UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Month;
+                select_year = UI_ApplicationCache_Gateway.Stats_Date_Range.Earliest_Year;
+                while ((select_month != UI_ApplicationCache_Gateway.Stats_Date_Range.Latest_Month) || (select_year != UI_ApplicationCache_Gateway.Stats_Date_Range.Latest_Year))
+                {
+                    if ((month2 == select_month) && (year2 == select_year))
+                    {
+                        Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Month_From_Int(select_month) + " " + select_year + "</option>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\">" + Month_From_Int(select_month) + " " + select_year + "</option>");
+                    }
+
+                    select_month++;
+                    if (select_month > 12)
+                    {
+                        select_month = 1;
+                        select_year++;
+                    }
+                }
+                if ((month2 == select_month) && (year2 == select_year))
+                {
+                    Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\" selected=\"selected\" >" + Month_From_Int(select_month) + " " + select_year + "</option>");
+                }
+                else
+                {
+                    Output.WriteLine("      <option value=\"" + select_year + select_month.ToString().PadLeft(2, '0') + "\">" + Month_From_Int(select_month) + " " + select_year + "</option>");
+                }
+
+                Output.WriteLine("    </select>");
+                Output.WriteLine("    &nbsp; &nbsp;");
+                Output.WriteLine("    <button title=\"Select Range\" class=\"sbkShw_RoundButton\" onclick=\"date_jump_sobekcm('" + goUrl + "'); return false;\">GO <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+                Output.WriteLine("  </div>");
+
+
+                // Add the filter boxes
+                Output.WriteLine("  <p>Use the boxes below to filter the results to only show a subset.</p>");
+                Output.WriteLine("  <div id=\"sbkWcuav_FilterPanel\">");
+
+                Output.WriteLine("    Filter by URL: ");
+                Output.WriteLine("    <select id=\"lvl1Filter\" name=\"lvl1Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + filterUrl + "',1);\">");
+                if (String.IsNullOrEmpty(level1))
+                    Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                else
+                    Output.WriteLine("      <option value=\"\"></option>");
+
+                List<string> level1Options = SobekEngineClient.WebContent.Get_Global_Recent_Updates_NextLevel(Tracer);
+                foreach (string thisOption in level1Options)
+                {
+                    if (String.Compare(level1, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                        Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                    else
+                        Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                }
+                Output.WriteLine("    </select>");
+
+                // Should the second level be shown?
+                if (!String.IsNullOrEmpty(level1))
+                {
+                    List<string> level2Options = SobekEngineClient.WebContent.Get_Global_Recent_Updates_NextLevel(Tracer, level1);
+                    if (level2Options.Count > 0)
+                    {
+                        Output.WriteLine("    /");
+                        Output.WriteLine("    <select id=\"lvl2Filter\" name=\"lvl2Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + filterUrl + "',2);\">");
+                        if (String.IsNullOrEmpty(level2))
+                            Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                        else
+                            Output.WriteLine("      <option value=\"\"></option>");
+
+
+                        foreach (string thisOption in level2Options)
+                        {
+                            if (String.Compare(level2, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                                Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                            else
+                                Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                        }
+                        Output.WriteLine("    </select>");
+
+                        // Should the third level be shown?
+                        if (!String.IsNullOrEmpty(level2))
+                        {
+                            List<string> level3Options = SobekEngineClient.WebContent.Get_Global_Recent_Updates_NextLevel(Tracer, level1, level2);
+                            if (level3Options.Count > 0)
+                            {
+                                Output.WriteLine("    /");
+                                Output.WriteLine("    <select id=\"lvl3Filter\" name=\"lvl3Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + filterUrl + "',3);\">");
+                                if (String.IsNullOrEmpty(level3))
+                                    Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                                else
+                                    Output.WriteLine("      <option value=\"\"></option>");
+
+
+                                foreach (string thisOption in level3Options)
+                                {
+                                    if (String.Compare(level3, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                                        Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                                    else
+                                        Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                                }
+                                Output.WriteLine("    </select>");
+
+                                // Should the fourth level be shown?
+                                if (!String.IsNullOrEmpty(level3))
+                                {
+                                    List<string> level4Options = SobekEngineClient.WebContent.Get_Global_Recent_Updates_NextLevel(Tracer, level1, level2, level3);
+                                    if (level4Options.Count > 0)
+                                    {
+                                        Output.WriteLine("    /");
+                                        Output.WriteLine("    <select id=\"lvl4Filter\" name=\"lvl4Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + filterUrl + "',4);\">");
+                                        if (String.IsNullOrEmpty(level4))
+                                            Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                                        else
+                                            Output.WriteLine("      <option value=\"\"></option>");
+
+
+                                        foreach (string thisOption in level4Options)
+                                        {
+                                            if (String.Compare(level4, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                                                Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                                            else
+                                                Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                                        }
+                                        Output.WriteLine("    </select>");
+
+
+                                        // Should the fifth level be shown?
+                                        if (!String.IsNullOrEmpty(level4))
+                                        {
+                                            List<string> level5Options = SobekEngineClient.WebContent.Get_Global_Recent_Updates_NextLevel(Tracer, level1, level2, level3, level4);
+                                            if (level5Options.Count > 0)
+                                            {
+                                                Output.WriteLine("    /");
+                                                Output.WriteLine("    <select id=\"lvl5Filter\" name=\"lvl5Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + filterUrl + "',5);\">");
+                                                if (String.IsNullOrEmpty(level5))
+                                                    Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                                                else
+                                                    Output.WriteLine("      <option value=\"\"></option>");
+
+
+                                                foreach (string thisOption in level5Options)
+                                                {
+                                                    if (String.Compare(level5, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                                                        Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                                                    else
+                                                        Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                                                }
+                                                Output.WriteLine("    </select>");
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                Output.WriteLine("  </div>");
+                Output.WriteLine();
+
+                Output.WriteLine("  <table id=\"sbkWcav_MainTable\" class=\"sbkWcuav_Table display\">");
+                Output.WriteLine("    <thead>");
+                Output.WriteLine("      <tr>");
+                Output.WriteLine("        <th>URL</th>");
+                Output.WriteLine("        <th>Title</th>");
+                Output.WriteLine("        <th>Hits</th>");
+                Output.WriteLine("        <th>HitsHierarchical</th>");
+                Output.WriteLine("      </tr>");
+                Output.WriteLine("    </thead>");
+                Output.WriteLine("    <tbody>");
+                Output.WriteLine("      <tr><td colspan=\"5\" class=\"dataTables_empty\">Loading data from server</td></tr>");
+                Output.WriteLine("    </tbody>");
+                Output.WriteLine("  </table>");
+
+                Output.WriteLine();
+                Output.WriteLine("<script type=\"text/javascript\">");
+                Output.WriteLine("  $(document).ready(function() {");
+                Output.WriteLine("     var shifted=false;");
+                Output.WriteLine("     $(document).on('keydown', function(e){shifted = e.shiftKey;} );");
+                Output.WriteLine("     $(document).on('keyup', function(e){shifted = false;} );");
+
+                Output.WriteLine();
+                Output.WriteLine("      var oTable = $('#sbkWcav_MainTable').dataTable({");
+                Output.WriteLine("           \"lengthMenu\": [ [50, 100, 500, 1000, -1], [50, 100, 500, 1000, \"All\"] ],");
+                Output.WriteLine("           \"pageLength\": 50,");
+                //Output.WriteLine("           \"bFilter\": false,");
+                Output.WriteLine("           \"processing\": true,");
+                Output.WriteLine("           \"serverSide\": true,");
+                Output.WriteLine("           \"sDom\": \"lprtip\",");
+
+
+
+
+                Output.WriteLine("           \"sAjaxSource\": \"" + dataUrl + "\",");
+                Output.WriteLine("           \"aoColumns\": [ null, null, null, null ]  });");
+                Output.WriteLine();
+
+                Output.WriteLine("     $('#sbkWcav_MainTable tbody').on( 'click', 'tr', function () {");
+                Output.WriteLine("          var aData = oTable.fnGetData( this );");
+                Output.WriteLine("          var iId = aData[1];");
+                Output.WriteLine("          if ( shifted == true )");
+                Output.WriteLine("          {");
+                Output.WriteLine("             window.open('" + RequestSpecificValues.Current_Mode.Base_URL + "' + iId);");
+                Output.WriteLine("             shifted=false;");
+                Output.WriteLine("          }");
+                Output.WriteLine("          else");
+                Output.WriteLine("             window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "' + iId;");
+                Output.WriteLine("     });");
+                Output.WriteLine("  });");
+                Output.WriteLine("</script>");
+                Output.WriteLine();
+                //// Add the buttons
+                //RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+                //Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
+                //Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return cancel_user_edits();return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+                //Output.WriteLine("    <button title=\"Save changes to this user\" class=\"sbkAdm_RoundButton\" onclick=\"return save_user_edits();return false;\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                //Output.WriteLine("  </div>");
+
+                Output.WriteLine();
+            }
+
+            Output.WriteLine("</div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine("</div>");
+
+            Output.WriteLine("<br />");
+            Output.WriteLine("<br />");
+        }
+
+        private static string Month_From_Int(int Month_Int)
+        {
+            string monthString1 = "Invalid";
+            switch (Month_Int)
             {
                 case 1:
+                    monthString1 = "January";
                     break;
 
                 case 2:
+                    monthString1 = "February";
                     break;
 
                 case 3:
+                    monthString1 = "March";
                     break;
 
                 case 4:
+                    monthString1 = "April";
                     break;
 
                 case 5:
+                    monthString1 = "May";
+                    break;
+
+                case 6:
+                    monthString1 = "June";
+                    break;
+
+                case 7:
+                    monthString1 = "July";
+                    break;
+
+                case 8:
+                    monthString1 = "August";
+                    break;
+
+                case 9:
+                    monthString1 = "September";
+                    break;
+
+                case 10:
+                    monthString1 = "October";
+                    break;
+
+                case 11:
+                    monthString1 = "November";
+                    break;
+
+                case 12:
+                    monthString1 = "December";
                     break;
             }
-
-
-            //// Add the buttons
-            //RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
-            //Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
-            //Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return cancel_user_edits();return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-            //Output.WriteLine("    <button title=\"Save changes to this user\" class=\"sbkAdm_RoundButton\" onclick=\"return save_user_edits();return false;\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
-            //Output.WriteLine("  </div>");
-
-            Output.WriteLine();
-
-            Output.WriteLine("</div>");
-            Output.WriteLine("</div>");
-            Output.WriteLine("</div>");
-
-            Output.WriteLine("<br />");
-            Output.WriteLine("<br />");
+            return monthString1;
         }
     }
 }

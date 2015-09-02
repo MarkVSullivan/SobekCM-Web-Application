@@ -505,9 +505,10 @@ namespace SobekCM.Library.HTML
                     if (viewer != null)
                     {
                         Output.WriteLine("<div class=\"sbkWchw_AdminPage\">");
-                        Output.WriteLine("<div class=\"sbkAdm_TitleDiv sbkAdm_TitleDivBorder\">");
-                        Output.WriteLine("  <img id=\"sbkAdm_TitleDivImg\" src=\"" + viewer.Viewer_Icon + "\" alt=\"\" />");
+                        Output.WriteLine("<div class=\"sbkAdm_TitleDiv_Wchs sbkAdm_TitleDivBorder\">");
+                        Output.WriteLine("  <img id=\"sbkAdm_TitleDivImg_Wchs\" src=\"" + viewer.Viewer_Icon + "\" alt=\"\" />");
                         Output.WriteLine("  <h1>" + viewer.Viewer_Title + "</h1>");
+                        Output.WriteLine("  <h2>" + RequestSpecificValues.Static_Web_Content.Title + "</h2>");
                         Output.WriteLine("</div>");
 
                         // Get the URL for the home page

@@ -1094,13 +1094,62 @@ function new_wizard_edit_page(page) {
     return false;
 }
 
+/// ******** WEB CONTENT ADMIN ************************///
+
+// Function is used for pulling the web content top-level suage for a new date range
+function date_jump_sobekcm(root) {
+    // Collect the values from the drop boxes
+    var date_result = 'd1=' + $('#date1_selector').val() + '&d2=' + $('#date2_selector').val();
+    var url = root + '&' + date_result;
+    if (url.indexOf('?') <= 0)
+        url = root + '?' + date_result;
+
+    window.location.href = url;
+}
+
+// Save the web content updates
+function save_webcontent_edits(complete) {
+    var hiddenfield = document.getElementById('admin_webcontent_save');
+    if (complete == true)
+        hiddenfield.value = 'save_exit';
+    else
+        hiddenfield.value = 'save';
+    document.itemNavForm.submit();
+    return false;
+}
+
+function new_webcontent_edit_page(page) {
+    var hiddenfield = document.getElementById('admin_webcontent_save');
+    hiddenfield.value = page;
+    document.itemNavForm.submit();
+    return false;
+}
+
+// Verify deletion of the existing uploAD
+function delete_webcontent_upload_file(filename) {
+    var input_box = confirm("Do you really want to delete the uploaded file '" + filename + "'?");
+    if (input_box == true) {
+        // Set the hidden value this data
+        var hiddenfield = document.getElementById('admin_webcontent_action');
+        hiddenfield.value = "delete_" + filename;
+
+        document.itemNavForm.submit();
+    }
+
+    // Return false to prevent another return trip to the server
+    return false;
+}
+
 // Add filter to web content admin pages
 function new_webcontent_filter(base, depth) {
     var level1_value = $('select[name=lvl1Filter]').val();
 
     var url = base;
     if (level1_value.length > 0) {
-        url = url + "?l1=" + level1_value;
+        if ( url.indexOf('?') >= 0 )
+            url = url + "&l1=" + level1_value;
+        else
+            url = url + "?l1=" + level1_value;
 
         if (depth > 1) {
             var level2_value = $('select[name=lvl2Filter]').val();

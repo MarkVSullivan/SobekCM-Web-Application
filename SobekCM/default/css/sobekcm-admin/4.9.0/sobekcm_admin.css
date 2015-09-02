@@ -257,9 +257,9 @@ select.sbkBav_select { width: 210px; margin-bottom: 1px; margin-right: 20px; }
 
 /** Home_AdminViewer **/
 .sbkHav_MainText { text-align: justify; padding-bottom: 0;padding-left: 60px;padding-top: 0; font-size:1.1em;  }
-.sbkHav_MainText a:link { color:#000080; }
-.sbkHav_MainText a:visited { color:#000080; }
-.sbkHav_MainText a:hover { color:Blue; text-decoration:underline; }
+.sbkHav_MainText a:link { color:#000080 !important; }
+.sbkHav_MainText a:visited { color:#000080 !important; }
+.sbkHav_MainText a:hover { color:Blue !important; text-decoration:underline; }
 .sbkHav_MainText h1 { color:Black; font-weight: normal; font-size: 1.1em; line-height:25px; }
 .sbkHav_MainText h2 { color:Gray; font-weight: bold; font-size: 1.1em; line-height:25px; }
 .sbkHav_MainText p { font-size: smaller;padding-left: 60px; }
@@ -403,6 +403,45 @@ input.sbkThav_input  {  width: 360px; margin-right: 10px; }
 .sbkPrav_RoundButton {font-size: 1.1em; background-color: #2A1EA6; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 5px 10px 5px 10px; cursor: pointer; letter-spacing: 0.5px; }
 .sbkPrav_RoundButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
 
+/** WebContent related (non admin) viewers */
+.sbkWchw_AdminPage {width: 1000px; max-width: 1000px;min-width: 800px;background-color: white;margin: 5px auto 5px auto;padding: 25px 60px 15px 60px;font-size: 0.90em; }
+
+/** WebContent Admin Viewers */
+#sbkWcav_ContainerInner { margin: 0 auto; padding:0; width: 1300px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }
+#sbkWcav2_ContainerInner { margin: 0 auto; padding:0; width: 1600px; position: relative; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color:#fff; }
+.sbkWcav_Table { margin-left:22px;width: 1050px; }
+.sbkWcav_Table th { text-align: left; padding-left:0 !important;margin-left: 0;}
+.sbkWcav_Table td { text-align: left; padding-left:0 !important;margin-left: 0;}
+.sbkWcuav_Table { margin-left:22px; width: 950px; }
+.sbkWcuav_Table th { text-align: left; padding-left:0 !important;margin-left: 0;}
+.sbkWcuav_Table td { text-align: left; padding-left:0 !important;margin-left: 0;}
+.sbkWcav_TableHeader1 { width: 170px; }
+.sbkWcav_TableHeader2 { width: 120px; }
+.sbkWcav_TableTitleRow { background-color:#7d90d5;color: white;font-weight: bold;}
+.sbkWcav_TableTitleRow td { padding-left: 5px; }
+#sbkWcav_FilterPanel { padding: 10px 0 20px 0; }
+#sbkWcuav_FilterPanel { padding: 5px 0 30px 90px; }
+#sbkWcuav_DatePanel {padding: 5px 0 20px 90px; }
+#sbkWcav_PageContainer { margin-left: 40px;  margin-right: 40px;  text-align:center;  FONT-SIZE: small; }
+.sbkWcav_small_input  { width: 180px;  }
+.sbkWcav_medium_input  { width: 450px;  }
+.sbkWcav_large_input  { width: 666px; padding-bottom: 4px; }
+.sbkWcav_large_textbox { width: 666px; padding-bottom: 4px; }
+.sbkWcav_jumbo_textbox { width: 780px; padding-bottom: 4px;font-size: 0.9em; }
+
+#sbkWcav_MainTable tbody tr.even:hover, #example tbody tr.even td.highlighted { color:#0000a8; background-color: #fbf7b4;cursor: pointer;  }
+#sbkWcav_MainTable tbody tr.odd:hover, #example tbody tr.odd td.highlighted { color:#0000a8; background-color: #fbf7b4;cursor: pointer;  }
+#sbkWcav_MainTable tr.even:hover { color:#0000a8; background-color: #fbf7b4;cursor: pointer;  }
+#sbkWcav_MainTable tr.even:hover td.sorting_1 { color:#0000a8; background-color: #fbf7b4;cursor: pointer;  }
+#sbkWcav_MainTable tr.even:hover td.sorting_2 { color:#0000a8; background-color: #fbf7b4;cursor: pointer;  }
+#sbkWcav_MainTable tr.even:hover td.sorting_3 { color:#0000a8; background-color: #fbf7b4;cursor: pointer;  }
+#sbkWcav_MainTable tr.odd:hover { color:#0000a8; background-color: #fbf7b4;cursor: pointer;  }
+#sbkWcav_MainTable tr.odd:hover td.sorting_1 { color:#0000a8; background-color: #fbf7b4;cursor: pointer;  }
+#sbkWcav_MainTable tr.odd:hover td.sorting_2 { color:#0000a8; background-color: #fbf7b4;cursor: pointer;  }
+#sbkWcav_MainTable tr.odd:hover td.sorting_3 {  color:#0000a8; background-color: #fbf7b4;cursor: pointer; }
+
+
+
 
 /** Wordmarks_AdminViewer **/
 .sbkWav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small;text-align: center; } 
@@ -518,6 +557,13 @@ input.users_large_input_focused  {  color:#0000a8;  width: 400px; margin-top: 6p
 .sbkAdm_TitleDiv h1 {text-align: left;font-size: 18px;padding-top: 5px;   }
 #sbkAdm_TitleDivImg { float: left;margin-right: 15px;margin-left: 10px;   }
 .sbkAdm_TitleDivButtons { float: right;padding-top: 5px;padding-right: 25px;width: 300px;text-align: right; }
+
+.sbkAdm_TitleDiv_Wchs { text-align: left; width: 100%;padding-bottom: 5px;padding-top: 8px; }
+.sbkAdm_TitleDivBorder { border-bottom: 2px solid #bbbbbb; margin-bottom: 5px; }
+.sbkAdm_TitleDiv_Wchs h1 {text-align: left;font-size: 18px;padding: 0;margin: 0;  }
+.sbkAdm_TitleDiv_Wchs h2 {text-align: left;font-size: 14px;padding: 0;font-style: italic;margin: 5px 0 0 0;font-weight: normal; }
+#sbkAdm_TitleDivImg_Wchs { float: left;margin-right: 15px;margin-left: 10px;margin-top: 6px;margin-bottom: 5px;   }
+
 
 .sbkAdm_HomeTabs a { color:#000080; }
 .sbkAdm_HomeTabs a:link { color:#000080; }

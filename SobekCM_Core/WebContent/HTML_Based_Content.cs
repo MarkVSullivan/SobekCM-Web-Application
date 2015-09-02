@@ -316,7 +316,7 @@ namespace SobekCM.Core.WebContent
         /// <returns> Web content page URL </returns>
         public string URL(string BaseURL)
         {
-            if (BaseURL[BaseURL.Length - 1] != '/')
+            if (( !String.IsNullOrEmpty( BaseURL) ) && ( BaseURL[BaseURL.Length - 1] != '/'))
             {
                 return BaseURL + "/" + UrlSegments;
             }
