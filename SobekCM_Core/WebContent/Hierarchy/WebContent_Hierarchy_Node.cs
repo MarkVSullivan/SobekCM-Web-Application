@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 using ProtoBuf;
 
@@ -51,8 +49,8 @@ namespace SobekCM.Core.WebContent.Hierarchy
                 if ((value != null) && ( value.Count > 0 ))
                 {
                     // Ensure the dictionary is not null
-                    if ( Children == null )
-                        Children = new Dictionary<string, WebContent_Hierarchy_Node>();
+                    if (Children == null)
+                        Children = new Dictionary<string, WebContent_Hierarchy_Node>(StringComparer.OrdinalIgnoreCase);
 
                     // Add each child 
                     foreach (WebContent_Hierarchy_Node thisChild in value)
@@ -89,12 +87,12 @@ namespace SobekCM.Core.WebContent.Hierarchy
         {
             // Ensure the collection has been built
             if (Children == null)
-                Children = new Dictionary<string, WebContent_Hierarchy_Node>();
+                Children = new Dictionary<string, WebContent_Hierarchy_Node>(StringComparer.OrdinalIgnoreCase);
 
             // Build the child node
             WebContent_Hierarchy_Node returnValue = new WebContent_Hierarchy_Node { Segment = NewSegment };
             if (NewWebContentID.HasValue) returnValue.WebContentID = NewWebContentID.Value;
-            Children[NewSegment] = returnValue;
+            Children[NewSegment.ToLower()] = returnValue;
 
             // Return the built child node 
             return returnValue;
@@ -106,10 +104,10 @@ namespace SobekCM.Core.WebContent.Hierarchy
         {
             // Ensure the collection has been built
             if (Children == null)
-                Children = new Dictionary<string, WebContent_Hierarchy_Node>();
+                Children = new Dictionary<string, WebContent_Hierarchy_Node>(StringComparer.OrdinalIgnoreCase);
 
             // Add the child node
-            Children[NewChild.Segment] = NewChild;
+            Children[NewChild.Segment.ToLower()] = NewChild;
         }
 
         #region Methods to control XML serialization

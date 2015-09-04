@@ -708,14 +708,14 @@ namespace SobekCM.Library.AdminViewer
 
 
 
-            Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Site Map</td></tr>");
-            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This item can be displayed within a larger collection of pages called a site map.</p></td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Tree Site Navigation </td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>This item can be displayed within a larger collection of pages and include hierarchical tree navigation to the left of the page.  These can assist with navigation between a great number of web content pages and are controlled through sitemap XML files internally.</p></td></tr>");
 
 
             // Add the site map
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
             Output.WriteLine("    <td>&nbsp;</td>");
-            Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_sitemap\">SiteMap:</label></td>");
+            Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_sitemap\">Tree Nav Group:</label></td>");
             Output.WriteLine("    <td>");
             Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_sitemap\" id=\"admin_webcontent_sitemap\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(webContent.SiteMap) + "\" /></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + SITEMAP_HELP + "');\"  title=\"" + SITEMAP_HELP + "\" /></td></tr></table>");
@@ -726,12 +726,12 @@ namespace SobekCM.Library.AdminViewer
             // Add the Include Menu behavior
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
             Output.WriteLine("    <td>&nbsp;</td>");
-            Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_email\">SiteMap Menu:</label></td>");
+            Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_email\">Top Menu Bar:</label></td>");
             Output.WriteLine("    <td>");
 		    Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
             Output.WriteLine((webContent.IncludeMenu.HasValue && webContent.IncludeMenu.Value )
-                    ? "        <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_webcontent_menu\" id=\"admin_webcontent_menu\" checked=\"checked\" /> <label for=\"admin_webcontent_menu\">Include sitemap main menu</label> "
-                    : "        <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_webcontent_menu\" id=\"admin_webcontent_menu\" /> <label for=\"admin_webcontent_menu\">Include sitemap main menu</label> ");
+                    ? "        <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_webcontent_menu\" id=\"admin_webcontent_menu\" checked=\"checked\" /> <label for=\"admin_webcontent_menu\">Include sitemap main menu bar</label> "
+                    : "        <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_webcontent_menu\" id=\"admin_webcontent_menu\" /> <label for=\"admin_webcontent_menu\">Include sitemap main menu bar</label> ");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + MAINMENU_HELP + "');\"  title=\"" + MAINMENU_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
@@ -878,7 +878,7 @@ namespace SobekCM.Library.AdminViewer
             }
             if ((fixed_depth < 4) && (!String.IsNullOrEmpty(level3)) && (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l4"])))
             {
-                level4 = HttpContext.Current.Request.QueryString["l2"];
+                level4 = HttpContext.Current.Request.QueryString["l4"];
             }
             if ((fixed_depth < 5) && (!String.IsNullOrEmpty(level4)) && (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l5"])))
             {
@@ -924,27 +924,27 @@ namespace SobekCM.Library.AdminViewer
 
 		    // Collect all the static-html based browse and info pages 
             if (!hasChildren)
-			{
-				Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-				Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
-				Output.WriteLine("    <td style=\"width: 165px\" class=\"sbkSaav_TableLabel\">Existing Related Pages:</td>");
-				Output.WriteLine("    <td style=\"font-style:italic\">There are no related web content pages or redirects found hierarchically under this page.</td>");
-				Output.WriteLine("  </tr>");
-			}
-			else
-			{
+            {
+                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+                Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
+                Output.WriteLine("    <td style=\"width: 165px\" class=\"sbkSaav_TableLabel\">Existing Related Pages:</td>");
+                Output.WriteLine("    <td style=\"font-style:italic\">There are no related web content pages or redirects found hierarchically under this page.</td>");
+                Output.WriteLine("  </tr>");
+            }
+            else
+            {
                 // Get the base url
                 string baseURL = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
 
-				// Add EXISTING subcollections
-				Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
-				Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
-				Output.WriteLine("    <td style=\"width: 165px\" class=\"sbkSaav_TableLabel2\" colspan=\"2\">Existing Related Pages:</td>");
-				Output.WriteLine("  </tr>");
-				Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
-				Output.WriteLine("    <td>&nbsp;</td>");
-				Output.WriteLine("    <td colspan=\"2\">");
+                // Add EXISTING subcollections
+                Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+                Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
+                Output.WriteLine("    <td style=\"width: 165px\" class=\"sbkSaav_TableLabel2\" colspan=\"2\">Existing Related Pages:</td>");
+                Output.WriteLine("  </tr>");
+                Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");
+                Output.WriteLine("    <td>&nbsp;</td>");
+                Output.WriteLine("    <td colspan=\"2\">");
 
 
                 Output.WriteLine("  <p>Below is this list of all the non-aggregation web content pages and redirects within the system which fall under this page hierarchically.</p>");
@@ -957,71 +957,149 @@ namespace SobekCM.Library.AdminViewer
                 // Start by adding the fixed elements of this web content URL
                 Output.WriteLine("    " + level1 + " /");
 
-			        if (fixed_depth > 1)
-			        {
-			            Output.WriteLine("    " + level2 + " /");
-			        }
-                    if (fixed_depth > 2)
+                if (fixed_depth > 1)
+                {
+                    Output.WriteLine("    " + level2 + " /");
+                }
+                if (fixed_depth > 2)
+                {
+                    Output.WriteLine("    " + level3 + " /");
+                }
+                if (fixed_depth > 3)
+                {
+                    Output.WriteLine("    " + level4 + " /");
+                }
+                if (fixed_depth > 4)
+                {
+                    if (!String.IsNullOrEmpty(webContent.Level6))
                     {
-                        Output.WriteLine("    " + level3 + " /");
-                    }
-                    if (fixed_depth > 3)
-                    {
-                        Output.WriteLine("    " + level4 + " /");
-                    }
-                    if (fixed_depth > 4)
-                    {
-                        
-                        if (!String.IsNullOrEmpty(webContent.Level6))
+                        Output.WriteLine("    " + level5 + " /");
+
+
+                        if (!String.IsNullOrEmpty(webContent.Level7))
                         {
-                            Output.WriteLine("    " + level5 + " /");
-                            
+                            Output.WriteLine("    " + webContent.Level6 + " /");
 
-                            if (!String.IsNullOrEmpty(webContent.Level7))
+
+                            if (!String.IsNullOrEmpty(webContent.Level8))
                             {
-                                Output.WriteLine("    " + webContent.Level6 + " /");
-
-                                
-                                if (!String.IsNullOrEmpty(webContent.Level8))
-                                {
-                                    Output.WriteLine("    " + webContent.Level7 + " /");
-                                    Output.WriteLine("    " + webContent.Level8);
-                                }
-                                else
-                                {
-                                    Output.WriteLine("    " + webContent.Level7);
-                                }
+                                Output.WriteLine("    " + webContent.Level7 + " /");
+                                Output.WriteLine("    " + webContent.Level8);
                             }
                             else
                             {
-                                Output.WriteLine("    " + webContent.Level6);
+                                Output.WriteLine("    " + webContent.Level7);
                             }
                         }
                         else
                         {
-                            Output.WriteLine("    " + level5);
+                            Output.WriteLine("    " + webContent.Level6);
                         }
                     }
+                    else
+                    {
+                        Output.WriteLine("    " + level5);
+                    }
+                }
+
+                // Add the filter select boxes
+                if (fixed_depth <= 1)
+                {
+                    List<string> level2Options = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer, level1);
+                    if (level2Options.Count > 0)
+                    {
+                        Output.WriteLine("    <select id=\"lvl2Filter\" name=\"lvl2Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_child_filter('" + baseURL + "',2," + fixed_depth + ");\">");
+                        if (String.IsNullOrEmpty(level2))
+                            Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                        else
+                            Output.WriteLine("      <option value=\"\"></option>");
 
 
-                    //else
-                    //{
-                    //    Output.WriteLine("    <select id=\"lvl2Filter\" name=\"lvl2Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_child_filter('" + baseURL + "',1," + fixed_depth + ");\">");
-                    //    if (String.IsNullOrEmpty(level1))
-                    //        Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
-                    //    else
-                    //        Output.WriteLine("      <option value=\"\"></option>");
+                        foreach (string thisOption in level2Options)
+                        {
+                            if (String.Compare(level2, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                                Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                            else
+                                Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                        }
+                        Output.WriteLine("    </select>");
+                    }
+                }
+                if ((fixed_depth == 2) || ((!String.IsNullOrEmpty(level2)) && (fixed_depth < 2)))
+                {
+                    List<string> level3Options = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer, level1, level2);
+                    if (level3Options.Count > 0)
+                    {
+                        if (fixed_depth < 2)
+                            Output.WriteLine("    /");
 
-                    //    List<string> level1Options = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer, level1);
-                    //    foreach (string thisOption in level1Options)
-                    //    {
-                    //        if (String.Compare(level1, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
-                    //            Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
-                    //        else
-                    //            Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
-                    //    }
-                    //    Output.WriteLine("    </select>");
-                    //}
+                        Output.WriteLine("    <select id=\"lvl3Filter\" name=\"lvl3Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_child_filter('" + baseURL + "',3," + fixed_depth + ");\">");
+                        if (String.IsNullOrEmpty(level3))
+                            Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                        else
+                            Output.WriteLine("      <option value=\"\"></option>");
+
+
+                        foreach (string thisOption in level3Options)
+                        {
+                            if (String.Compare(level3, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                                Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                            else
+                                Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                        }
+                        Output.WriteLine("    </select>");
+                    }
+                }
+                if ((fixed_depth == 3) || (( !String.IsNullOrEmpty(level3)) && (fixed_depth < 3)))
+                {
+                    List<string> level4Options = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer, level1, level2, level3);
+                    if (level4Options.Count > 0)
+                    {
+                        if (fixed_depth < 3)
+                            Output.WriteLine("    /");
+
+                        Output.WriteLine("    <select id=\"lvl4Filter\" name=\"lvl4Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_child_filter('" + baseURL + "',4," + fixed_depth + ");\">");
+                        if (String.IsNullOrEmpty(level4))
+                            Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                        else
+                            Output.WriteLine("      <option value=\"\"></option>");
+
+
+                        foreach (string thisOption in level4Options)
+                        {
+                            if (String.Compare(level4, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                                Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                            else
+                                Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                        }
+                        Output.WriteLine("    </select>");
+                    }
+                }
+                if ((fixed_depth == 4) || ((!String.IsNullOrEmpty(level4)) && (fixed_depth < 4)))
+                {
+                    List<string> level5Options = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer, level1, level2, level3, level4);
+                    if (level5Options.Count > 0)
+                    {
+                        if (fixed_depth < 4)
+                            Output.WriteLine("    /");
+
+                        Output.WriteLine("    <select id=\"lvl5Filter\" name=\"lvl5Filter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_child_filter('" + baseURL + "',5," + fixed_depth + ");\">");
+                        if (String.IsNullOrEmpty(level5))
+                            Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
+                        else
+                            Output.WriteLine("      <option value=\"\"></option>");
+
+
+                        foreach (string thisOption in level5Options)
+                        {
+                            if (String.Compare(level5, thisOption, StringComparison.OrdinalIgnoreCase) == 0)
+                                Output.WriteLine("      <option value=\"" + thisOption + "\" selected=\"selected\">" + thisOption + "</option>");
+                            else
+                                Output.WriteLine("      <option value=\"" + thisOption + "\">" + thisOption + "</option>");
+                        }
+                        Output.WriteLine("    </select>");
+                    }
+                }
 
 
                 Output.WriteLine("  </div>");
@@ -1057,33 +1135,33 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("           \"sDom\": \"lprtip\",");
 
                 // Determine the URL for the results
-                string redirect_url = SobekEngineClient.WebContent.Get_All_JDataTable_URL;
+                StringBuilder redirect_url_builder = new StringBuilder(SobekEngineClient.WebContent.Get_All_JDataTable_URL);
 
                 // Add any query string (should probably use StringBuilder, but this should be fairly seldomly used very deeply)
                 if (!String.IsNullOrEmpty(level1))
                 {
-                    redirect_url = redirect_url + "?l1=" + level1;
+                    redirect_url_builder.Append("?l1=" + level1);
                     if (!String.IsNullOrEmpty(level2))
                     {
-                        redirect_url = redirect_url + "&l2=" + level2;
+                        redirect_url_builder.Append("&l2=" + level2);
                         if (!String.IsNullOrEmpty(level3))
                         {
-                            redirect_url = redirect_url + "&l3=" + level3;
+                            redirect_url_builder.Append("&l3=" + level3);
                             if (!String.IsNullOrEmpty(level4))
                             {
-                                redirect_url = redirect_url + "&l4=" + level4;
+                                redirect_url_builder.Append("&l4=" + level4);
                                 if (!String.IsNullOrEmpty(level5))
                                 {
-                                    redirect_url = redirect_url + "&l5=" + level5;
+                                    redirect_url_builder.Append("&l5=" + level5);
                                     if (!String.IsNullOrEmpty(webContent.Level6))
                                     {
-                                        redirect_url = redirect_url + "&l6=" + webContent.Level6;
+                                        redirect_url_builder.Append("&l6=" + webContent.Level6);
                                         if (!String.IsNullOrEmpty(webContent.Level7))
                                         {
-                                            redirect_url = redirect_url + "&l7=" + webContent.Level7;
+                                            redirect_url_builder.Append("&l7=" + webContent.Level7);
                                             if (!String.IsNullOrEmpty(webContent.Level8))
                                             {
-                                                redirect_url = redirect_url + "&l8=" + webContent.Level8;
+                                                redirect_url_builder.Append("&l8=" + webContent.Level8);
                                             }
                                         }
                                     }
@@ -1092,6 +1170,8 @@ namespace SobekCM.Library.AdminViewer
                         }
                     }
                 }
+
+                string redirect_url = redirect_url_builder.ToString();
 
                 Output.WriteLine("           \"sAjaxSource\": \"" + redirect_url + "\",");
                 Output.WriteLine("           \"aoColumns\": [ { \"bVisible\": false }, null, null ]  });");
@@ -1106,9 +1186,9 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("</script>");
                 Output.WriteLine();
 
-				Output.WriteLine("    </td>");
-				Output.WriteLine("  </tr>");
-			}
+                Output.WriteLine("    </td>");
+                Output.WriteLine("  </tr>");
+            }
 
             //// Add ability to add NEW chid pages
             //Output.WriteLine("  <tr class=\"sbkSaav_TallRow\">");

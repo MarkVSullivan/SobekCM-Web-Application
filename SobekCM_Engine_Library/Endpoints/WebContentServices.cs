@@ -4157,6 +4157,83 @@ namespace SobekCM.Engine_Library.Endpoints
 
         #endregion
 
+        #region Methods related to the sitemaps
+
+        /// <summary> Gets the list of all sitemaps in the system </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_All_Sitemaps(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Add a trace
+            tracer.Add_Trace("WebContentServices.Get_All_Sitemaps", "Get the list of all sitemaps");
+
+            // Get the sitemaps directory
+            string sitemap_directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "webcontent", "sitemaps");
+            List<string> returnValue;
+            try
+            {
+                // Get the sitemaps files from the directory
+                string[] sitemapFiles = Directory.GetFiles(sitemap_directory, "*.sitemap");
+                returnValue = new List<string>();
+                foreach (string thisSitemap in sitemapFiles)
+                {
+                    returnValue.Add(Path.GetFileName(thisSitemap).Replace(".sitemap", ""));
+                }
+            }
+            catch (Exception ee)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Exception pulling the list of sitemap files - " + ee.Message);
+                Response.Output.WriteLine("Sitemap Directory: " + sitemap_directory );
+                Response.StatusCode = 500;
+
+                // If this was debug mode, then write the tracer
+                if (IsDebug)
+                {
+                    tracer.Add_Trace("WebContentServices.Get_All_Sitemaps", "Exception caught " + ee.Message);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.StackTrace);
+                }
+                return;
+                throw;
+            }
+
+            // If this was debug mode, then just write the tracer
+            if (IsDebug)
+            {
+                tracer.Add_Trace("WebContentServices.Get_All_Sitemaps", "Debug mode detected");
+                tracer.Add_Trace("WebContentServices.Get_All_Sitemaps", "Sitemap directory: " + sitemap_directory);
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseAllSitemaps";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
+        }
+
+        #endregion
+
         #region Helper methods (ultimately destined to be private)
 
         /// <summary> Helper method retrieves HTML web content </summary>

@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using SobekCM.Core.Navigation;
+using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.WebContentViewer.Viewers
@@ -41,7 +42,30 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 Tracer.Add_Trace("Delete_Verify_WebContentViewer.Add_HTML", "No html added");
             }
 
-            Output.WriteLine("IN THE DELETE_VERIFY_WEBCONTENTVIEWER");
+            // Add the hidden field
+            Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
+            Output.WriteLine("<input type=\"hidden\" id=\"admin_delete_item\" name=\"admin_delete_item\" value=\"\" />");
+            Output.WriteLine();
+            Output.WriteLine("<div class=\"Wchs_Text\">");
+            Output.WriteLine("  <p>This form allows you to delete a web content page from the system.  The source files will remain, but the page or redirect will be removed from the system.</p>");
+            Output.WriteLine();
+            Output.WriteLine("  <table id=\"sbkWchs_DeleteTable\">");
+            Output.WriteLine("    <tr><td>Title: &nbsp; </td><td>" + RequestSpecificValues.Static_Web_Content.Title + "</td></tr>");
+            string url = RequestSpecificValues.Static_Web_Content.URL(RequestSpecificValues.Current_Mode.Base_URL);
+            Output.WriteLine("    <tr><td>URL:</td><td><a href=\"" + url + "\">" + url + "</a></td></tr>");
+            Output.WriteLine("  </table>");
+            Output.WriteLine();
+            Output.WriteLine("  <p>Enter DELETE in the textbox below and select GO to complete this deletion.</p>");
+            Output.WriteLine("  <div id=\"sbkWchs_DeleteVerifyDiv\">");
+            Output.WriteLine("    <input class=\"sbkDimv_input sbk_Focusable\" name=\"admin_delete_confirm\" id=\"admin_delete_confirm\" type=\"text\" value=\"\" /> &nbsp; &nbsp; ");
+            Output.WriteLine("    <button title=\"Confirm delete of this page\" class=\"roundbutton\" onclick=\"delete_item(); return false;\">CONFIRM <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("  </div>");
+            Output.WriteLine("</div>");
+
+            Output.WriteLine();
+            Output.WriteLine("<!-- Focus on confirm box -->");
+            Output.WriteLine("<script type=\"text/javascript\">focus_element('admin_delete_confirm');</script>");
+            Output.WriteLine();
         }
     }
 }

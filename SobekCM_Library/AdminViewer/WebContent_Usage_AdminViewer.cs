@@ -371,7 +371,7 @@ namespace SobekCM.Library.AdminViewer
 
                 Output.WriteLine("    </select>");
                 Output.WriteLine("    &nbsp; &nbsp;");
-                Output.WriteLine("    <button title=\"Select Range\" class=\"sbkShw_RoundButton\" onclick=\"date_jump_sobekcm('" + goUrl + "'); return false;\">GO <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Select Range\" class=\"roundbutton\" onclick=\"date_jump_sobekcm('" + goUrl + "'); return false;\">GO <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
                 Output.WriteLine("  </div>");
 
 
