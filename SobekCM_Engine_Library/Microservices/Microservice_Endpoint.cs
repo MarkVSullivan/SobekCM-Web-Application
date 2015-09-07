@@ -14,11 +14,22 @@ namespace SobekCM.Engine_Library.Microservices
     /// <summary> Enumeration indicates the type of HTTP request expected for this microservice endpoint </summary>
     public enum Microservice_Endpoint_RequestType_Enum : byte
     {
-        /// <summary> Endpoint is called with a standard HTTP get, perhaps including arguments in the command line </summary>
+        /// <summary> Endpoint is called with a HTTP DELETE call, which should remove a resource or link </summary>
+        DELETE,
+
+        /// <summary> Endpoint is called with a standard HTTP GET, perhaps including arguments in the command line </summary>
         GET,
 
-        /// <summary> Endpoint is called with a HTTP post call, including some object in the body of the post request </summary>
-        POST
+        /// <summary> Endpoint is called with a HTTP POST call, including some object in the body of the post request and 
+        /// usually adds a new resource </summary>
+        POST,
+
+        /// <summary> Endpoint is called with a HTTP PUT call, including some object in the body of the post request and 
+        /// usually updates a new resource </summary>
+        PUT,
+
+        /// <summary> Invalid HTTP verb found </summary>
+        ERROR
     }
 
     /// <summary> Enumeration indicates the type of protocol utilized by this endpoint</summary>
@@ -50,71 +61,14 @@ namespace SobekCM.Engine_Library.Microservices
     /// <summary> Class defines an microservice endpoint within a collection of path or URI segments </summary>
     public class Microservice_Endpoint : Microservice_Path
     {
-        private MethodInfo methodInfo;
-        private object restApiObject;
-        private IpRangeSetV4 rangeTester;
+        public Microservice_VerbMapping GetMapping;
 
-        /// <summary> Invoke the method in the class specified for this endpoint, from the configuration XML file </summary>
-        /// <param name="Response"></param>
-        /// <param name="UrlSegments"></param>
-        /// <param name="QueryString"></param>
-        /// <param name="RequestForm"></param>
-        /// <param name="IsDebug"></param>
-        public void Invoke(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, NameValueCollection RequestForm, bool IsDebug )
-        {
-            if ((methodInfo == null) || (restApiObject == null))
-            {
-                Assembly dllAssembly = Assembly.GetExecutingAssembly();
-                Type restApiClassType = dllAssembly.GetType(Component.Namespace + "." + Component.Class);
-                restApiObject = Activator.CreateInstance(restApiClassType);
+        public Microservice_VerbMapping DeleteMapping;
 
-                methodInfo = restApiClassType.GetMethod(Method);
-            }
+        public Microservice_VerbMapping PostMapping;
 
-            // Invokation is different, dependingon whether this is a PUT or POST
-            if ( RequestType == Microservice_Endpoint_RequestType_Enum.GET )
-                methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, QueryString, Protocol, IsDebug });
-            else
-                methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, Protocol, RequestForm });
-        }
+        public Microservice_VerbMapping PutMapping;
 
-
-        /// <summary> Constructor for a new instance of the Microservice_Endpoint class </summary>
-        public Microservice_Endpoint()
-        {
-            Enabled = true;
-            RequestType = Microservice_Endpoint_RequestType_Enum.GET;
-            Protocol = Microservice_Endpoint_Protocol_Enum.JSON;
-        }
-
-        /// <summary> Protocol which this endpoint utilizes ( JSON or Protocol Buffer ) </summary>
-        public Microservice_Endpoint_Protocol_Enum Protocol { get; internal set; }
-
-        /// <summary> Component defines the class which is used to fulfil the request </summary>
-        public Microservice_Component Component { get; internal set; }
-
-        /// <summary> Method within the class specified by the component that shuld be called to fulfil the request </summary>
-        public string Method { get; internal set; }
-
-        /// <summary> Flag indicates if this endpoint is enabled or disabled </summary>
-        public bool Enabled { get; internal set; }
-
-        /// <summary> If this endpoint is restricted to some IP ranges, this is the list of restriction ranges that
-        /// can access this endpoint </summary>
-        public List<Microservice_RestrictionRange> RestrictionRanges { get; internal set; }
-
-        /// <summary> Description of this microservice endpoint, for automated creation of documentation </summary>
-        public string Description { get; internal set; }
-
-        /// <summary> Request type expected for this endpoint ( either a GET or a POST ) </summary>
-        public Microservice_Endpoint_RequestType_Enum RequestType { get; internal set; }
-
-        /// <summary> Description of the arguments that should be passed in to this endpoint </summary>
-        /// <remarks> If no arguments are needed, the value of NONE should appear within this tag in the configuration file </remarks>
-        public string Arguments { get; internal set; }
-
-        /// <summary> Description of the type of object (usually specifying at least the class of the object) that is returned in the JSON or XML </summary>
-        public string Returns { get; internal set; }
 
         /// <summary> Flag indicates if this path actually defines a single endpoint </summary>
         /// <remarks> This always returns 'TRUE' in this class </remarks>
@@ -123,36 +77,88 @@ namespace SobekCM.Engine_Library.Microservices
             get { return true; }
         }
 
-        /// <summary> Check to see if this endpoint can be invoked from this IP address </summary>
-        /// <returns> TRUE if permitted, otherwise FALSE </returns>
-        public bool AccessPermitted( string IpAddress )
+        /// <summary> Returns flag if a C# method is mapped to the provided HTTP verb/method </summary>
+        /// <param name="Method"> Method, as upper-case string (i.e., 'DELETE', 'GET', 'POST', 'PUT', etc..) </param>
+        /// <returns> TRUE if a mapping exists for the provided HTTP verb/method </returns>
+        public bool VerbMappingExists(string Method)
         {
-            // If no restriction exists, return TRUE
-            if ((RestrictionRanges == null) || (RestrictionRanges.Count == 0))
-                return true;
-
-            // Was the comparison set built?
-            if (rangeTester == null)
+            switch (Method)
             {
-                rangeTester = new IpRangeSetV4();
-                foreach (Microservice_RestrictionRange thisRangeSet in RestrictionRanges)
+                case "DELETE":
+                case "delete":
+                    return ((DeleteMapping != null) && (DeleteMapping.Enabled));
+
+                case "GET":
+                case "get":
+                    return ((GetMapping != null) && (GetMapping.Enabled));
+
+                case "POST":
+                case "post":
+                    return ((PostMapping != null) && (PostMapping.Enabled));
+
+                case "PUT":
+                case "put":
+                    return ((PutMapping != null) && (PutMapping.Enabled));
+
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary> Gets a flag indicating if any verb mapping exists for this endpoint </summary>
+        public bool HasVerbMapping
+        {
+            get { return ((GetMapping != null) || (PostMapping != null) || (PutMapping != null) || (DeleteMapping != null)); }
+        }
+
+        /// <summary> Get a single verb mapping, by HTTP verb/method  </summary>
+        /// <param name="Method"> Method, as upper-case string (i.e., 'DELETE', 'GET', 'POST', 'PUT', etc..)</param>
+        /// <returns> Matching verb mapping, or NULL </returns>
+        public Microservice_VerbMapping this[string Method]
+        {
+            get
+            {
+                switch (Method)
                 {
-                    foreach (Microservice_IpRange thisRange in thisRangeSet.IpRanges)
-                    {
-                        if ( !String.IsNullOrEmpty(thisRange.EndIp))
-                            rangeTester.AddIpRange(thisRange.StartIp, thisRange.EndIp);
-                        else
-                            rangeTester.AddIpRange(thisRange.StartIp);
-                    }
+                    case "DELETE":
+                    case "delete":
+                        return DeleteMapping;
+
+                    case "GET":
+                    case "get":
+                        return GetMapping;
+
+                    case "POST":
+                    case "post":
+                        return PostMapping;
+
+                    case "PUT":
+                    case "put":
+                        return PutMapping;
+
+                    default:
+                        return null;
                 }
             }
+        }
 
-            // You can always acess from the same machine (first may only be relevant in Visual Studio while debugging)
-            if ((IpAddress == "::1") || (IpAddress == "127.0.0.1"))
-                return true;
+        /// <summary> Get the list of all verb mappings included in this endpoint </summary>
+        public List<Microservice_VerbMapping> AllVerbMappings
+        {
+            get
+            {
+                // Most common case
+                if ((GetMapping != null) && (PostMapping == null) && (PutMapping == null) && (DeleteMapping == null))
+                    return new List<Microservice_VerbMapping> {GetMapping};
 
-            // Now, test the IP against the tester
-            return rangeTester.Contains(new ComparableIpAddress(IpAddress));
+                // Build the list 
+                List<Microservice_VerbMapping> returnValue = new List<Microservice_VerbMapping>();
+                if (GetMapping != null) returnValue.Add(GetMapping);
+                if (PostMapping != null) returnValue.Add(PostMapping);
+                if (PutMapping != null) returnValue.Add(PutMapping);
+                if (DeleteMapping != null) returnValue.Add(DeleteMapping);
+                return returnValue;
+            }
         }
     }
 }

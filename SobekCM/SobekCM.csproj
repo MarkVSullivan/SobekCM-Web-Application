@@ -928,9 +928,9 @@
     <Content Include="config\default\sobekcm_qc.config" />
     <Content Include="config\default\sobekcm_qc_errors.config" />
     <Content Include="HtmlEditFileHandler.ashx" />
-    <Content Include="config\default\sobekcm_engine.config">
+    <None Include="config\default\sobekcm_engine.config.bak">
       <SubType>Designer</SubType>
-    </Content>
+    </None>
     <Content Include="config\default\sobekcm_contactform.config" />
     <Content Include="config\default\sobekcm_microservices.config" />
     <Content Include="config\default\sobekcm_oaipmh.config" />
@@ -971,6 +971,8 @@
     <Content Include="config\default\sobekcm_brief_item_mapping.config">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="config\default\sobekcm_engine.config" />
+    <Content Include="config\user\sobek_engine.config" />
     <None Include="Properties\PublishProfiles\U262189 USF SobekCM local instance.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

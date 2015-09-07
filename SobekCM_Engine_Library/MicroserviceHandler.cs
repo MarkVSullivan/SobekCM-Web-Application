@@ -2,10 +2,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
-using System.Web.ModelBinding;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Microservices;
@@ -17,7 +17,7 @@ namespace SobekCM.Engine_Library
     /// <summary> Handler is used to handle any incoming requests for a microservice exposed by the engine </summary>
     public class MicroserviceHandler : IHttpHandler
     {
-        private Microservices_Configuration microserviceConfig;
+        private Microservice_Server_Configuration microserviceConfig;
         
         /// <summary> Processes the request </summary>
         /// <param name="Context">The context for the current request </param>
@@ -32,8 +32,19 @@ namespace SobekCM.Engine_Library
                 // Make sure the microservices configuration has been read
                 if (microserviceConfig == null)
                 {
-                    string path = Context.Server.MapPath("config/default/sobekcm_engine.config");
-                    microserviceConfig = Microservices_Config_Reader.Read_Config(path);
+                    string default_path = Context.Server.MapPath("config/default/sobekcm_engine.config");
+                    string user_path = Context.Server.MapPath("config/user/sobekcm_engine.config");
+                    if (File.Exists(user_path))
+                    {
+                        string[] config_paths = {default_path, user_path};
+                        microserviceConfig = Microservice_Server_Config_Reader.Read_Config(config_paths);
+                        
+                    }
+                    else
+                    {
+                        microserviceConfig = Microservice_Server_Config_Reader.Read_Config(default_path);
+                    }
+                    
                 }
 
                 // Collect the requested paths
@@ -61,9 +72,21 @@ namespace SobekCM.Engine_Library
                 }
                 else
                 {
+                    string method =  Context.Request.HttpMethod.ToUpper();
+                    if (!endpoint.VerbMappingExists(method))
+                    {
+                        Context.Response.ContentType = "text/plain";
+                        Context.Response.StatusCode = 406;
+                        Context.Response.Write("HTTP method " + method + " is not supported by this URL");
+                        return;
+                    }
+
+                    // Get the specific verb mapping
+                    Microservice_VerbMapping verbMapping = endpoint[method];
+
                     // Ensure this is allowed in the range
                     string requestIp = Context.Request.UserHostAddress;
-                    if (!endpoint.AccessPermitted(requestIp))
+                    if (!verbMapping.AccessPermitted(requestIp))
                     {
                         Context.Response.ContentType = "text/plain";
                         Context.Response.StatusCode = 403;
@@ -72,25 +95,39 @@ namespace SobekCM.Engine_Library
                     }
 
                     // Set the protocoal
-                    if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
-                        Context.Response.ContentType = "application/json";
-                    if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P)
-                        Context.Response.ContentType = "application/javascript";
-                    if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.PROTOBUF)
-                        Context.Response.ContentType = "application/octet-stream";
-                    if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.XML)
-                        Context.Response.ContentType = "text/xml";
-                    if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.SOAP)
-                        Context.Response.ContentType = "text/xml";
-                    if (endpoint.Protocol == Microservice_Endpoint_Protocol_Enum.BINARY)
-                        Context.Request.ContentType = "application/octet-stream";
+                    switch (verbMapping.Protocol)
+                    {
+                        case Microservice_Endpoint_Protocol_Enum.JSON:
+                            Context.Response.ContentType = "application/json";
+                            break;
+
+                        case Microservice_Endpoint_Protocol_Enum.JSON_P:
+                            Context.Response.ContentType = "application/javascript";
+                            break;
+
+                        case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
+                            Context.Response.ContentType = "application/octet-stream";
+                            break;
+
+                        case Microservice_Endpoint_Protocol_Enum.XML:
+                            Context.Response.ContentType = "text/xml";
+                            break;
+
+                        case Microservice_Endpoint_Protocol_Enum.SOAP:
+                            Context.Response.ContentType = "text/xml";
+                            break;
+
+                        case Microservice_Endpoint_Protocol_Enum.BINARY:
+                            Context.Response.ContentType = "application/octet-stream";
+                            break;
+                    }
 
                     // Determine if this is currently in a valid DEBUG mode
                     bool debug = (Context.Request.QueryString["debug"] == "debug");
 
                     try
                     {
-                        endpoint.Invoke(Context.Response, paths, Context.Request.QueryString, Context.Request.Form, debug);
+                        verbMapping.Invoke(Context.Response, paths, Context.Request.QueryString, Context.Request.Form, debug);
                     }
                     catch (Exception ee)
                     {
