@@ -932,7 +932,9 @@
       <SubType>Designer</SubType>
     </None>
     <Content Include="config\default\sobekcm_contactform.config" />
-    <Content Include="config\default\sobekcm_microservices.config" />
+    <Content Include="config\default\sobekcm_microservices.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="config\default\sobekcm_oaipmh.config" />
     <Content Include="default\includes\chartjs\1.0.2\LICENSE.md" />
     <Content Include="default\includes\chartjs\1.0.2\package.json" />
@@ -971,7 +973,9 @@
     <Content Include="config\default\sobekcm_brief_item_mapping.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="config\default\sobekcm_engine.config" />
+    <Content Include="config\default\sobekcm_engine.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="config\user\sobek_engine.config" />
     <None Include="Properties\PublishProfiles\U262189 USF SobekCM local instance.pubxml" />
     <None Include="Web.Debug.config">

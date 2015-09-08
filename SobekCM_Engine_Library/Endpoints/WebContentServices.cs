@@ -21,6 +21,7 @@ using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Microservices;
 using SobekCM.Tools;
+using SolrNet.DSL;
 
 #endregion
 
@@ -133,6 +134,34 @@ namespace SobekCM.Engine_Library.Endpoints
 
         #region Methods related to a single top-level static HTML content page
 
+        /// <summary> Get top-level web content, static HTML, by primary key from the database or by URL </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Get_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Add a trace
+            tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content");
+
+            // Must at least have one URL segment for the ID
+            if (UrlSegments.Count > 0)
+            {
+                int webContentId;
+                if (Int32.TryParse(UrlSegments[0], out webContentId))
+                {
+                    Get_HTML_Based_Content_By_ID(Response, UrlSegments, QueryString, Protocol, IsDebug);
+                }
+                else
+                {
+                    Get_HTML_Based_Content_By_URL(Response, UrlSegments, QueryString, Protocol, IsDebug);
+                }
+            }
+        }
+
 
         /// <summary> Get top-level web content, static HTML, by primary key from the database </summary>
         /// <param name="Response"></param>
@@ -145,7 +174,7 @@ namespace SobekCM.Engine_Library.Endpoints
             Custom_Tracer tracer = new Custom_Tracer();
 
             // Add a trace
-            tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_ID");
+            tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_ID", "Get content based on the primary key");
 
             // Must at least have one URL segment for the ID
             if (UrlSegments.Count > 0)
@@ -419,6 +448,25 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Use the base class to serialize the object according to request protocol
             Serialize(returnValue, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Delete a non-aggregational top-level web content, static HTML page or redirect </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="RequestForm"></param>
+        /// <param name="IsDebug"></param>
+        public void Delete_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Add a trace
+            tracer.Add_Trace("WebContentServices.Delete_HTML_Based_Content");
+
+            string message = "Currently disabled";
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(message, Response, Protocol, "INVALID");
         }
 
         /// <summary> Gets the special missing web content page, used when a requested resource is missing </summary>

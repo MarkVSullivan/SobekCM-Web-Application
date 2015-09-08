@@ -210,7 +210,7 @@ namespace SobekCM.Core.MicroservicesClient
         /// <param name="Tracer">  Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> An object of the type requested, from the serializing effort </returns>
         /// <remarks> This only works for simple GET requests at the moment, as no object is POSTed to the remote microservice URL </remarks>
-        protected T Deserialize<T>(string MicroserviceUri, Microservice_Endpoint_Protocol_Enum MicroserviceProtocol, List<KeyValuePair<string, string>> PostData, Custom_Tracer Tracer )
+        protected T Deserialize<T>(string MicroserviceUri, Microservice_Endpoint_Protocol_Enum MicroserviceProtocol, List<KeyValuePair<string, string>> PostData, string VerbMethod, Custom_Tracer Tracer )
         {
             try
             {
@@ -220,14 +220,17 @@ namespace SobekCM.Core.MicroservicesClient
                 // Create the request for the remote microservice, by URI
                 WebRequest request = WebRequest.Create(MicroserviceUri);
                 request.Credentials = CredentialCache.DefaultCredentials;
-                request.Method = "POST";
+                request.Method = VerbMethod;
                 request.ContentType = "application/x-www-form-urlencoded";
 
                 // Build and encode the post data
                 NameValueCollection outgoingQueryString = HttpUtility.ParseQueryString(String.Empty);
-                foreach (KeyValuePair<string, string> thisFieldData in PostData)
+                if (PostData != null)
                 {
-                    outgoingQueryString.Add( thisFieldData.Key, thisFieldData.Value);
+                    foreach (KeyValuePair<string, string> thisFieldData in PostData)
+                    {
+                        outgoingQueryString.Add(thisFieldData.Key, thisFieldData.Value);
+                    }
                 }
                 byte[] byteArray = Encoding.UTF8.GetBytes(outgoingQueryString.ToString());
 
@@ -386,7 +389,7 @@ namespace SobekCM.Core.MicroservicesClient
             Tracer.Add_Trace("ExamplePostMethod", "Calling microservice endpoint at: " + endpoint.URL );
 
             // Call out to the endpoint and return the deserialized object
-            return Deserialize<string>(endpoint.URL, endpoint.Protocol, postData, Tracer);
+            return Deserialize<string>(endpoint.URL, endpoint.Protocol, postData, "POST", Tracer);
         }
 
         // ReSharper restore UnusedMember.Local

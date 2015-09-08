@@ -85,6 +85,25 @@ namespace SobekCM.Core.Client
             // Call out to the endpoint and return the deserialized object
             return Deserialize<HTML_Based_Content>(url, endpoint.Protocol, Tracer);
         }
+        
+        /// <summary> Delete a web content page </summary>
+        /// <param name="WebContentID"> Primary key for the web content page or redirect to delete </param>
+        /// <param name="Tracer"></param>
+        /// <returns> Message </returns>
+        public string Delete_HTML_Based_Content(int WebContentID, string User, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.Delete_HTML_Based_Content", "Delete a web content page or redirect");
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Delete_HTML_Based_Content", Tracer);
+
+            // Format the URL
+            string url = String.Format(endpoint.URL, WebContentID);
+
+            // Call out to the endpoint and return the deserialized object
+            return Deserialize<string>(url, endpoint.Protocol, null, "DELETE", Tracer);
+        }
 
         /// <summary> Gets the special missing web content page, used when a requested resource is missing </summary>
         /// <param name="Tracer"></param>

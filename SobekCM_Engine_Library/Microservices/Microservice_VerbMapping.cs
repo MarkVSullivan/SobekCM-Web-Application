@@ -72,7 +72,7 @@ namespace SobekCM.Engine_Library.Microservices
             if (RequestType == Microservice_Endpoint_RequestType_Enum.GET)
                 methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, QueryString, Protocol, IsDebug });
             else
-                methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, Protocol, RequestForm });
+                methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, Protocol, RequestForm, IsDebug });
         }
 
         /// <summary> Check to see if this endpoint can be invoked from this IP address </summary>

@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
@@ -9,11 +11,14 @@ namespace SobekCM.Library.WebContentViewer.Viewers
     /// <remarks> This viewer extends the <see cref="abstractWebContentViewer" /> abstract class and implements the <see cref="iWebContentViewer"/> interface. </remarks>
     public class Delete_Verify_WebContentViewer : abstractWebContentViewer
     {
+        private string ErrorMessage;
+
         /// <summary>  Constructor for a new instance of the Delete_Verify_WebContentViewer class  </summary>
         /// <param name="RequestSpecificValues">  All the necessary, non-global data specific to the current request  </param>
         public Delete_Verify_WebContentViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            
+            ErrorMessage = SobekEngineClient.WebContent.Delete_HTML_Based_Content(RequestSpecificValues.Static_Web_Content.WebContentID.Value, "TEST", RequestSpecificValues.Tracer);
+
         }
 
 
@@ -46,6 +51,12 @@ namespace SobekCM.Library.WebContentViewer.Viewers
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_delete_item\" name=\"admin_delete_item\" value=\"\" />");
             Output.WriteLine();
+
+            if (!String.IsNullOrEmpty(ErrorMessage))
+            {
+                Output.WriteLine("<h1>Msg: " + ErrorMessage + "</h1>");
+            }
+
             Output.WriteLine("<div class=\"Wchs_Text\">");
             Output.WriteLine("  <p>This form allows you to delete a web content page from the system.  The source files will remain, but the page or redirect will be removed from the system.</p>");
             Output.WriteLine();
