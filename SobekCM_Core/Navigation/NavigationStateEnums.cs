@@ -433,6 +433,9 @@
         /// <summary> Provides top-level reports regarding permissions granted to users </summary>
         User_Permissions_Reports,
 
+        /// <summary> Form to add a new web content page to the system </summary>
+        WebContent_Add_New,
+
         /// <summary> View recent updates to the top-level static HTML web content pages </summary>
         WebContent_History,
 

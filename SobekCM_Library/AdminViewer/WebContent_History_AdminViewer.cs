@@ -202,7 +202,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  <div id=\"sbkWcav_FilterPanel\">");
                 Output.WriteLine("    Filter by user: ");
 
-                Output.WriteLine("    <select id=\"userFilter\" name=\"userFilter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_filter('" + baseURL + "',1);\">");
+                Output.WriteLine("    <select id=\"userFilter\" name=\"userFilter\" class=\"sbkWcav_FilterBox\" onchange=\"new_webcontent_user_filter('" + baseURL + "');\">");
                 if (String.IsNullOrEmpty(userFilter))
                     Output.WriteLine("      <option value=\"\" selected=\"selected\"></option>");
                 else
@@ -374,7 +374,11 @@ namespace SobekCM.Library.AdminViewer
                 string redirect_url = SobekEngineClient.WebContent.Get_Global_Recent_Updates_JDataTable_URL;
 
                 // Add any query string (should probably use StringBuilder, but this should be fairly seldomly used very deeply)
-                if (!String.IsNullOrEmpty(level1))
+                if (!String.IsNullOrEmpty(userFilter))
+                {
+                    redirect_url = redirect_url + "?user=" + userFilter;
+                }
+                else if (!String.IsNullOrEmpty(level1))
                 {
                     redirect_url = redirect_url + "?l1=" + level1;
                     if (!String.IsNullOrEmpty(level2))
@@ -401,7 +405,7 @@ namespace SobekCM.Library.AdminViewer
 
                 Output.WriteLine("     $('#sbkWcav_MainTable tbody').on( 'click', 'tr', function () {");
                 Output.WriteLine("          var aData = oTable.fnGetData( this );");
-                Output.WriteLine("          var iId = aData[1];");
+                Output.WriteLine("          var iId = aData[0];");
                 Output.WriteLine("          if ( shifted == true )");
                 Output.WriteLine("          {");
                 Output.WriteLine("             window.open('" + RequestSpecificValues.Current_Mode.Base_URL + "' + iId);");

@@ -6,12 +6,9 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.WebContent;
-using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
@@ -34,10 +31,10 @@ namespace SobekCM.Library.AdminViewer
 
 		private readonly int page;
 
-		private string childPageCode;
-		private string childPageLabel;
-		private string childPageVisibility;
-		private string childPageParent;
+        //private string childPageCode;
+        //private string childPageLabel;
+        //private string childPageVisibility;
+        //private string childPageParent;
         private Exception storedException;
 
 
@@ -522,7 +519,6 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine(storedException.Message);
                 Output.WriteLine();
                 Output.WriteLine(storedException.StackTrace);
-                return;
 		    }
 		}
 
@@ -888,10 +884,10 @@ namespace SobekCM.Library.AdminViewer
 
         
 
-            const string CODE_HELP = "Enter the code for the new child page.  This code should be less than 20 characters and be as descriptive of the content of your new page as possible.  This code will appear in the URL for the new child page.";
-			const string LABEL_HELP = "Enter the title for this new child page.  This title should be short, but can include spaces.  This will appear above the child page text.  If this child page appears in the main menu, this will also appear on the menu.  If this child page appears as a browse by, this will appear in the list of possible browse bys as well.";
-			const string VISIBILITY_HELP = "Choose how a link to this child page should appear for the web users.\\n\\nIf you select MAIN MENU, this will appear in the collection main menu system.\\n\\nIf you select BROWSE BY, this will appear with metadata browse bys on the main menu under the BROWSE BY menu item.\\n\\nIf you select NONE, then you will need to add a link to the new child page yourself by editing the text of the home page or an existing linked child page.";
-			const string PARENT_HELP = "If this child page will appear on the main menu, you can select a parent child page already on the main menu.  This will create a drop down menu under, or next to, the parent.";
+            //const string CODE_HELP = "Enter the code for the new child page.  This code should be less than 20 characters and be as descriptive of the content of your new page as possible.  This code will appear in the URL for the new child page.";
+            //const string LABEL_HELP = "Enter the title for this new child page.  This title should be short, but can include spaces.  This will appear above the child page text.  If this child page appears in the main menu, this will also appear on the menu.  If this child page appears as a browse by, this will appear in the list of possible browse bys as well.";
+            //const string VISIBILITY_HELP = "Choose how a link to this child page should appear for the web users.\\n\\nIf you select MAIN MENU, this will appear in the collection main menu system.\\n\\nIf you select BROWSE BY, this will appear with metadata browse bys on the main menu under the BROWSE BY menu item.\\n\\nIf you select NONE, then you will need to add a link to the new child page yourself by editing the text of the home page or an existing linked child page.";
+            //const string PARENT_HELP = "If this child page will appear on the main menu, you can select a parent child page already on the main menu.  This will create a drop down menu under, or next to, the parent.";
 
 			if (actionMessage.Length > 0)
 			{
@@ -1286,7 +1282,7 @@ namespace SobekCM.Library.AdminViewer
             if (HttpContext.Current.Session["WebContent|" + webContentId + "|Uploads"] != null)
             {
                 string files = HttpContext.Current.Session["WebContent|" + webContentId + "|Uploads"].ToString().Replace("|", ", ");
-              //  SobekCM_Database.Save_Item_Aggregation_Milestone(itemAggregation.Code, "Uploaded file(s) " + files, RequestSpecificValues.Current_User.Full_Name);
+                SobekEngineClient.WebContent.Add_Milestone(webContentId, RequestSpecificValues.Current_User.Full_Name, "Uploaded file(s) " + files, RequestSpecificValues.Tracer);
                 HttpContext.Current.Session.Remove("WebContent|" + webContentId + "|Uploads");
             }
 
@@ -1300,7 +1296,7 @@ namespace SobekCM.Library.AdminViewer
                     try
                     {
                         File.Delete(path_file);
-                       // SobekCM_Database.Save_Item_Aggregation_Milestone(itemAggregation.Code, "Deleted upload file " + file, RequestSpecificValues.Current_User.Full_Name);
+                        SobekEngineClient.WebContent.Add_Milestone(webContentId, RequestSpecificValues.Current_User.Full_Name, "Deleted upload file " + file, RequestSpecificValues.Tracer);
                     }
                     catch { }
                 }
@@ -1563,7 +1559,7 @@ namespace SobekCM.Library.AdminViewer
 			switch (page)
 			{
                 case 5:
-                    add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg,.ai,.doc,.docx,.eps,.kml,.pdf,.psd,.pub,.txt,.vsd,.vsdx,.xls,.xlsx,.xml,.zip", webContentDirectory, String.Empty, true, webContent.WebContentID + "|Uploads", Tracer);
+                    add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg,.ai,.doc,.docx,.eps,.kml,.pdf,.psd,.pub,.txt,.vsd,.vsdx,.xls,.xlsx,.xml,.zip", webContentDirectory, String.Empty, true, "WebContent|" + webContent.WebContentID + "|Uploads", Tracer);
                     break;
 			}
 		}

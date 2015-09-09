@@ -350,21 +350,28 @@ namespace SobekCM.Library.HTML
 
                 Output.WriteLine("  <table id=\"sbkHav_OptionsTable3\" style=\"padding-top:10px;\">");
 
+                // Does this have a slash in it, which would make it ONLY a web content page
+                bool contains_slash = RequestSpecificValues.Current_Mode.Info_Browse_Mode.Contains("/");
+
                 // Add collection wizard
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
-                string add_collection_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-                Output.WriteLine("    <tr>");
-                Output.WriteLine("      <td>&nbsp;</td>");
-                Output.WriteLine("      <td><a href=\"" + add_collection_url + "\"><img src=\"" + Static_Resources.Wizard_Img_Large + "\" /></a></td>");
-                Output.WriteLine("      <td>");
-                Output.WriteLine("        <a href=\"" + add_collection_url + "\">Add New Collection</a>");
-                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + String.Format(ADD_COLLECTION_WIZARD_BRIEF, RequestSpecificValues.Current_Mode.Info_Browse_Mode) + "</div>");
-                Output.WriteLine("      </td>");
-                Output.WriteLine("    </tr>");
+                if (!contains_slash)
+                {
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
+                    string add_collection_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                    Output.WriteLine("    <tr>");
+                    Output.WriteLine("      <td>&nbsp;</td>");
+                    Output.WriteLine("      <td><a href=\"" + add_collection_url + "\"><img src=\"" + Static_Resources.Wizard_Img_Large + "\" /></a></td>");
+                    Output.WriteLine("      <td>");
+                    Output.WriteLine("        <a href=\"" + add_collection_url + "\">Add New Collection</a>");
+                    Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + String.Format(ADD_COLLECTION_WIZARD_BRIEF, RequestSpecificValues.Current_Mode.Info_Browse_Mode) + "</div>");
+                    Output.WriteLine("      </td>");
+                    Output.WriteLine("    </tr>");
+                }
+
 
                 // Add new digital resource
-                if (UI_ApplicationCache_Gateway.Settings.Online_Item_Submit_Enabled)
+                if (( !contains_slash ) && ( UI_ApplicationCache_Gateway.Settings.Online_Item_Submit_Enabled))
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
@@ -382,8 +389,20 @@ namespace SobekCM.Library.HTML
 
                 // Add web content page
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
-                string add_webcontent_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Add_New;
+                StringBuilder add_webcontent_url = new StringBuilder(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
+                string[] splitter = RequestSpecificValues.Current_Mode.Info_Browse_Mode.Split("/".ToCharArray());
+                int level = 1;
+                foreach (string thisSplitter in splitter)
+                {
+                    if ( level == 1 )
+                        add_webcontent_url.Append("?l1=" + thisSplitter);
+                    else
+                        add_webcontent_url.Append("&l" + level + "=" + thisSplitter);
+
+                    level++;
+                }
+
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td>&nbsp;</td>");
                 Output.WriteLine("      <td><a href=\"" + add_webcontent_url + "\"><img src=\"" + Static_Resources.WebContent_Img_Large + "\" /></a></td>");
@@ -395,17 +414,20 @@ namespace SobekCM.Library.HTML
 
 
                 // Edit aggregation aliases
-                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
-                string alias_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                if (!contains_slash)
+                {
+                    RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
+                    string alias_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
-                Output.WriteLine("    <tr>");
-                Output.WriteLine("      <td>&nbsp;</td>");
-                Output.WriteLine("      <td><a href=\"" + alias_url + "\"><img src=\"" + Static_Resources.Aliases_Img_Large + "\" /></a></td>");
-                Output.WriteLine("      <td>");
-                Output.WriteLine("        <a href=\"" + alias_url + "\">Add New Aggregation Alias</a>");
-                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + ALIASES_BRIEF + "</div>");
-                Output.WriteLine("      </td>");
-                Output.WriteLine("    </tr>");
+                    Output.WriteLine("    <tr>");
+                    Output.WriteLine("      <td>&nbsp;</td>");
+                    Output.WriteLine("      <td><a href=\"" + alias_url + "\"><img src=\"" + Static_Resources.Aliases_Img_Large + "\" /></a></td>");
+                    Output.WriteLine("      <td>");
+                    Output.WriteLine("        <a href=\"" + alias_url + "\">Add New Aggregation Alias</a>");
+                    Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + ALIASES_BRIEF + "</div>");
+                    Output.WriteLine("      </td>");
+                    Output.WriteLine("    </tr>");
+                }
 
                 Output.WriteLine("  </table>");
 

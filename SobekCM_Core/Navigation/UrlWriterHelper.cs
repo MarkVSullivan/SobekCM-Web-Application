@@ -447,6 +447,9 @@ namespace SobekCM.Core.Navigation
                                 return this_base_url + "admin/permissions/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
                             return this_base_url + "admin/permissions" + urlOptions1;
 
+                        case Admin_Type_Enum.WebContent_Add_New:
+                            return this_base_url + "admin/webadd" + urlOptions1;
+
                         case Admin_Type_Enum.WebContent_History:
                             return this_base_url + "admin/webhistory" + urlOptions1;
 

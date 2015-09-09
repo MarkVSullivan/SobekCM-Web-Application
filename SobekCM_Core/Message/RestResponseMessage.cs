@@ -44,6 +44,17 @@ namespace SobekCM.Core.Message
             this.Message = Message;
         }
 
+        /// <summary> Constructor for a new instance of the RestResponseMessage class </summary>
+        /// <param name="ErrorTypeEnum"> Error type ( NONE, exception, input error, etc.. )</param>
+        /// <param name="Message"> Message about this error (or possible success) assuming an error was encountered</param>
+        /// <param name="Details"> Additional details about a failed request </param>
+        public RestResponseMessage(ErrorRestTypeEnum ErrorTypeEnum, string Message, string Details)
+        {
+            this.ErrorTypeEnum = ErrorTypeEnum;
+            this.Message = Message;
+            this.Details = Details;
+        }
+
         /// <summary> Error type ( NONE, exception, input error, etc.. ) </summary>
         [DataMember(Name = "type")]
         [ProtoMember(1)]

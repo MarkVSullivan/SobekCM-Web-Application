@@ -418,7 +418,7 @@ namespace SobekCM.Library.AdminViewer
         /// requests from the main HTML subwriter </summary>
         public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
         {
-            get { return new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Suppress_Banner, HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables}; }
+            get { return new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Suppress_Banner}; }
         }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>

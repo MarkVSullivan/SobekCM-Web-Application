@@ -702,6 +702,12 @@ namespace SobekCM.Engine_Library.Navigation
                                                 Navigator.My_Sobek_SubMode = url_relative_list[2];
                                             break;
 
+                                        case "webadd":
+                                            Navigator.Admin_Type = Admin_Type_Enum.WebContent_Add_New;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            break;
+
                                         case "webcontent":
                                             Navigator.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
                                             if (url_relative_list.Count > 2)

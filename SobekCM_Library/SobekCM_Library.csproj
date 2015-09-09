@@ -99,6 +99,7 @@
     <Compile Include="AdminViewer\iMySobek_Admin_Viewer.cs" />
     <Compile Include="AdminViewer\Permissions_Reports_AdminViewer.cs" />
     <Compile Include="AdminViewer\Skin_Single_AdminViewer.cs" />
+    <Compile Include="AdminViewer\WebContent_Add_New_AdminViewer.cs" />
     <Compile Include="AdminViewer\WebContent_Mgmt_AdminViewer.cs" />
     <Compile Include="AdminViewer\WebContent_History_AdminViewer.cs" />
     <Compile Include="AdminViewer\WebContent_Single_AdminViewer.cs" />

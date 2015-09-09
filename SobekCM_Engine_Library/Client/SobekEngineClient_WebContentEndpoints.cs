@@ -169,10 +169,10 @@ namespace SobekCM.Core.Client
         /// <summary> Add a milestone to an existing web content page </summary>
         /// <param name="WebContentID"> Primary key for the web content page or redirect to add milestone to</param>
         /// <param name="User"> Name of the user that performed the work </param>
-        /// <param name="Notes"> Notes associated with this milestone </param>
+        /// <param name="Milestone"> Notes associated with this milestone </param>
         /// <param name="Tracer"></param>
         /// <returns> Message </returns>
-        public RestResponseMessage Add_Milestone(int WebContentID, string User, string Notes, Custom_Tracer Tracer)
+        public RestResponseMessage Add_Milestone(int WebContentID, string User, string Milestone, Custom_Tracer Tracer)
         {
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_WebContentServices.Add_Milestone", "Add a milestone to an existing web content page");
@@ -184,14 +184,21 @@ namespace SobekCM.Core.Client
             List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>
             {
                 new KeyValuePair<string, string>("User", User), 
-                new KeyValuePair<string, string>("Notes", Notes)
+                new KeyValuePair<string, string>("Milestone", Milestone)
             };
 
             // Format the URL
             string url = String.Format(endpoint.URL, WebContentID);
 
             // Call out to the endpoint and return the deserialized object
-            return Deserialize<RestResponseMessage>(url, endpoint.Protocol, postData, "POST", Tracer);
+            RestResponseMessage returnValue = Deserialize<RestResponseMessage>(url, endpoint.Protocol, postData, "POST", Tracer);
+
+            // Clear any cached list of global updates
+            CachedDataManager.WebContent.Clear_Global_Recent_Updates();
+            CachedDataManager.WebContent.Clear_Global_Recent_Updates_NextLevel();
+            CachedDataManager.WebContent.Clear_Global_Recent_Updates_Users();
+
+            return returnValue;
         }
 
         /// <summary> Gets the special missing web content page, used when a requested resource is missing </summary>

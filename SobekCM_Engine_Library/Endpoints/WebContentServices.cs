@@ -473,15 +473,41 @@ namespace SobekCM.Engine_Library.Endpoints
                 return;
             }
 
+            // Validate the username is present
+            if (String.IsNullOrEmpty(RequestForm["User"]))
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Required posted object 'User' is missing"), Response, Protocol, null);
+                Response.StatusCode = 500;
+                return;
+            }
+
+            // Get the username
+            string user = RequestForm["User"];
 
 
-            // MAKE ALL CHANGES HERE
+            // Validate the milestone is present
+            if (String.IsNullOrEmpty(RequestForm["Reason"]))
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Required posted object 'Reason' is missing"), Response, Protocol, null);
+                Response.StatusCode = 500;
+                return;
+            }
 
-            // Build return value
-            RestResponseMessage message = new RestResponseMessage(ErrorRestTypeEnum.Exception, "UPDATE is currently disabled");
+            // Get the username
+            string reason = RequestForm["Reason"];
 
-            // Use the base class to serialize the object according to request protocol
-            Serialize(message, Response, Protocol, null);
+            // Ensure the web page does not already exist
+            if (Engine_Database.WebContent_Delete_Page(webcontentId, reason, user, tracer))
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.Successful, null), Response, Protocol, null);
+                Response.StatusCode = 200;
+                return;
+            }
+            else
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.Exception, "Error deleting the web content page", tracer.Text_Trace), Response, Protocol, null);
+                Response.StatusCode = 500;
+            }
         }
 
         // <summary> Delete a non-aggregational top-level web content, static HTML page or redirect </summary>
@@ -490,7 +516,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         /// <param name="RequestForm"></param>
         /// <param name="IsDebug"></param>
-        public void AddUpdate_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
+        public void Update_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -575,7 +601,98 @@ namespace SobekCM.Engine_Library.Endpoints
             Serialize(message, Response, Protocol, null);
         }
 
-        // <summary> Delete a non-aggregational top-level web content, static HTML page or redirect </summary>
+        // <summary> Add a new HTML based web content page or redirect to the system </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="RequestForm"></param>
+        /// <param name="IsDebug"></param>
+        public void Add_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Add a trace
+            tracer.Add_Trace("WebContentServices.AddUpdate_HTML_Based_Content");
+
+            // Validate the web content id exists in the URL
+            int webcontentId;
+            if ((UrlSegments.Count == 0) || (!Int32.TryParse(UrlSegments[0], out webcontentId)))
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Invalid URL.  WebContentID missing from URL"), Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+
+            // Get and validate the required USER (string) posted request object
+            if ((RequestForm["User"] == null) || (String.IsNullOrEmpty(RequestForm["User"])))
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Required posted object 'User' is missing"), Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+            string user = RequestForm["User"];
+
+            // Get and validate the required CONTENT (HTML_Based_Content) posted request objects
+            if ((RequestForm["Content"] == null) || (String.IsNullOrEmpty(RequestForm["Content"])))
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Required posted object 'Content' is missing"), Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+
+            string contentString = RequestForm["Content"];
+            HTML_Based_Content content = null;
+            try
+            {
+                switch (Protocol)
+                {
+                    case Microservice_Endpoint_Protocol_Enum.JSON:
+                    case Microservice_Endpoint_Protocol_Enum.JSON_P:
+                        content = JSON.Deserialize<HTML_Based_Content>(contentString);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
+                        content = JSON.Deserialize<HTML_Based_Content>(contentString);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.XML:
+                        content = JSON.Deserialize<HTML_Based_Content>(contentString);
+                        break;
+                }
+            }
+            catch (Exception ee)
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Unable to deserialize 'Content' parameter to HTML_Based_Content: " + ee.Message), Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+
+            // If content wasnot successfully deserialized, return error
+            if (content == null)
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Unable to deserialize 'Content' parameter to HTML_Based_Content"), Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+
+            // Valiodate the web content id in the URL matches the object
+            if (webcontentId != content.WebContentID)
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "WebContentID from URL does not match Content posted object"), Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+
+            // MAKE ALL CHANGES HERE
+
+            // Build return value
+            RestResponseMessage message = new RestResponseMessage(ErrorRestTypeEnum.Exception, "UPDATE is currently disabled");
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(message, Response, Protocol, null);
+        }
+
+        // <summary> Add a milestone to a static HTML page or redirect </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="Protocol"></param>
@@ -606,20 +723,31 @@ namespace SobekCM.Engine_Library.Endpoints
             }
             string user = RequestForm["User"];
 
-            // Get and validate the required NOTES (string) posted request object
-            if ((RequestForm["Notes"] == null) || (String.IsNullOrEmpty(RequestForm["Notes"])))
+            // Get and validate the required MILESTONE (string) posted request object
+            if ((RequestForm["Milestone"] == null) || (String.IsNullOrEmpty(RequestForm["Milestone"])))
             {
-                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Required posted object 'Notes' is missing"), Response, Protocol, null);
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Required posted object 'Milestone' is missing"), Response, Protocol, null);
                 Response.StatusCode = 400;
                 return;
             }
-            string notes = RequestForm["Notes"];
+            string milestone = RequestForm["Milestone"];
 
-            // Build return value
-            RestResponseMessage message = new RestResponseMessage(ErrorRestTypeEnum.Exception, "MILESTONE ADD is currently disabled");
+            // Ensure the web page does not already exist
+            if (Engine_Database.WebContent_Add_Milestone(webcontentId, milestone, user, tracer))
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.Successful, null), Response, Protocol, null);
+                Response.StatusCode = 200;
+            }
+            else
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.Exception, "Error adding milestone to database", tracer.Text_Trace), Response, Protocol, null);
+                Response.StatusCode = 500;
+            }
 
-            // Use the base class to serialize the object according to request protocol
-            Serialize(message, Response, Protocol, null);
+            // Clear any cached list of global updates
+            CachedDataManager.WebContent.Clear_Global_Recent_Updates();
+            CachedDataManager.WebContent.Clear_Global_Recent_Updates_NextLevel();
+            CachedDataManager.WebContent.Clear_Global_Recent_Updates_Users();
         }
 
         /// <summary> Gets the special missing web content page, used when a requested resource is missing </summary>
@@ -865,158 +993,6 @@ namespace SobekCM.Engine_Library.Endpoints
             // Send back the result
             Response.StatusCode = 201;
             Serialize(basicInfo, Response, Protocol, "addHtmlBasedContent");
-        }
-
-        /// <summary> Add a milestone to an existing web content page </summary>
-        /// <param name="Response"></param>
-        /// <param name="UrlSegments"></param>
-        /// <param name="Protocol"></param>
-        /// <param name="RequestForm"></param>
-        public void Add_WebContent_Milestone(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm)
-        {
-            // Create the custom tracer
-            Custom_Tracer tracer = new Custom_Tracer();
-
-            // Validate the username is present
-            if (String.IsNullOrEmpty(RequestForm["User"]))
-            {
-                Response.ContentType = "text/plain";
-                Response.StatusCode = 500;
-                Response.Output.WriteLine("\"INVALID REQUEST: Required posted 'User' (name of user) is missing.\"");
-                Response.End();
-                return;
-            }
-
-            // Get the username
-            string user = RequestForm["User"];
-
-            // Validate the new page information
-            if (String.IsNullOrEmpty(RequestForm["WebContentID"]))
-            {
-                Response.ContentType = "text/plain";
-                Response.StatusCode = 500;
-                Response.Output.WriteLine("\"INVALID REQUEST: Required posted 'WebContentID' is missing.\"");
-                Response.End();
-                return;
-            }
-
-            // Get the webcontent id
-            string id_as_string = RequestForm["WebContentID"];
-            int id;
-            if (!Int32.TryParse(id_as_string, out id))
-            {
-                Response.ContentType = "text/plain";
-                Response.StatusCode = 500;
-                Response.Output.WriteLine("\"INVALID REQUEST: Invalid data type for  'WebContentID'.  Expected integer.\"");
-                Response.End();
-                return;
-            }
-
-            // Validate the milestone is present
-            if (String.IsNullOrEmpty(RequestForm["Milestone"]))
-            {
-                Response.ContentType = "text/plain";
-                Response.StatusCode = 500;
-                Response.Output.WriteLine("\"INVALID REQUEST: Required posted 'Milestone' is missing.\"");
-                Response.End();
-                return;
-            }
-
-            // Get the username
-            string milestone = RequestForm["Milestone"];
-
-
-            // Ensure the web page does not already exist
-            if (Engine_Database.WebContent_Add_Milestone(id, milestone, user, tracer))
-            {
-                Response.ContentType = "text/plain";
-                Response.StatusCode = 200;
-                Response.Output.WriteLine("\"OK\"");
-                Response.End();
-                return;
-            }
-
-            // AN error occurred
-            Response.ContentType = "text/plain";
-            Response.StatusCode = 500;
-            Response.Output.WriteLine("\"Unknown error adding the milestone\"");
-            Response.End();
-        }
-
-        /// <summary> Delete a web content page </summary>
-        /// <param name="Response"></param>
-        /// <param name="UrlSegments"></param>
-        /// <param name="Protocol"></param>
-        /// <param name="RequestForm"></param>
-        public void Delete_WebContent_Page(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm)
-        {
-            // Create the custom tracer
-            Custom_Tracer tracer = new Custom_Tracer();
-
-            // Validate the username is present
-            if (String.IsNullOrEmpty(RequestForm["User"]))
-            {
-                Response.ContentType = "text/plain";
-                Response.StatusCode = 500;
-                Response.Output.WriteLine("\"INVALID REQUEST: Required posted 'User' (name of user) is missing.\"");
-                Response.End();
-                return;
-            }
-
-            // Get the username
-            string user = RequestForm["User"];
-
-            // Validate the new page information
-            if (String.IsNullOrEmpty(RequestForm["WebContentID"]))
-            {
-                Response.ContentType = "text/plain";
-                Response.StatusCode = 500;
-                Response.Output.WriteLine("\"INVALID REQUEST: Required posted 'WebContentID' is missing.\"");
-                Response.End();
-                return;
-            }
-
-            // Get the webcontent id
-            string id_as_string = RequestForm["WebContentID"];
-            int id;
-            if (!Int32.TryParse(id_as_string, out id))
-            {
-                Response.ContentType = "text/plain";
-                Response.StatusCode = 500;
-                Response.Output.WriteLine("\"INVALID REQUEST: Invalid data type for  'WebContentID'.  Expected integer.\"");
-                Response.End();
-                return;
-            }
-
-            // Validate the milestone is present
-            if (String.IsNullOrEmpty(RequestForm["Reason"]))
-            {
-                Response.ContentType = "text/plain";
-                Response.StatusCode = 500;
-                Response.Output.WriteLine("\"INVALID REQUEST: Required posted 'Reason' is missing.\"");
-                Response.End();
-                return;
-            }
-
-            // Get the username
-            string milestone = RequestForm["Reason"];
-
-
-            // Ensure the web page does not already exist
-            if (Engine_Database.WebContent_Delete_Page(id, milestone, user, tracer))
-            {
-                Response.ContentType = "text/plain";
-                Response.StatusCode = 200;
-                Response.Output.WriteLine("\"OK\"");
-                Response.End();
-                return;
-            }
-
-            // AN error occurred
-            Response.ContentType = "text/plain";
-            Response.StatusCode = 500;
-            Response.Output.WriteLine("\"Unknown error deleting the web content page\"");
-            Response.End();
         }
 
         /// <summary> Get the list of milestones affecting a single (non aggregation affiliated) static web content page </summary>
@@ -1494,42 +1470,52 @@ namespace SobekCM.Engine_Library.Endpoints
             // Create the view for sorting and filtering
             DataView resultsView = new DataView(changes.Tables[0]);
 
-            // Should a filter be applied?
-            if (!String.IsNullOrEmpty(QueryString["l1"]))
+            // Check for a user filter
+            string userFilter = QueryString["user"];
+            if (!String.IsNullOrWhiteSpace(userFilter))
             {
-                string level1_filter = QueryString["l1"];
-                if (!String.IsNullOrEmpty(QueryString["l2"]))
+                resultsView.RowFilter = "MilestoneUser='" + userFilter + "'";
+            }
+            else
+            {
+
+                // Should a filter be applied?
+                if (!String.IsNullOrEmpty(QueryString["l1"]))
                 {
-                    string level2_filter = QueryString["l2"];
-                    if (!String.IsNullOrEmpty(QueryString["l3"]))
+                    string level1_filter = QueryString["l1"];
+                    if (!String.IsNullOrEmpty(QueryString["l2"]))
                     {
-                        string level3_filter = QueryString["l3"];
-                        if (!String.IsNullOrEmpty(QueryString["l4"]))
+                        string level2_filter = QueryString["l2"];
+                        if (!String.IsNullOrEmpty(QueryString["l3"]))
                         {
-                            string level4_filter = QueryString["l4"];
-                            if (!String.IsNullOrEmpty(QueryString["l5"]))
+                            string level3_filter = QueryString["l3"];
+                            if (!String.IsNullOrEmpty(QueryString["l4"]))
                             {
-                                string level5_filter = QueryString["l5"];
-                                resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "' and Level3='" + level3_filter + "' and Level4='" + level4_filter + "' and Level5='" + level5_filter + "'";
+                                string level4_filter = QueryString["l4"];
+                                if (!String.IsNullOrEmpty(QueryString["l5"]))
+                                {
+                                    string level5_filter = QueryString["l5"];
+                                    resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "' and Level3='" + level3_filter + "' and Level4='" + level4_filter + "' and Level5='" + level5_filter + "'";
+                                }
+                                else
+                                {
+                                    resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "' and Level3='" + level3_filter + "' and Level4='" + level4_filter + "'";
+                                }
                             }
                             else
                             {
-                                resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "' and Level3='" + level3_filter + "' and Level4='" + level4_filter + "'";
+                                resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "' and Level3='" + level3_filter + "'";
                             }
                         }
                         else
                         {
-                            resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "' and Level3='" + level3_filter + "'";
+                            resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "'";
                         }
                     }
                     else
                     {
-                        resultsView.RowFilter = "Level1='" + level1_filter + "' and Level2='" + level2_filter + "'";
+                        resultsView.RowFilter = "Level1='" + level1_filter + "'";
                     }
-                }
-                else
-                {
-                    resultsView.RowFilter = "Level1='" + level1_filter + "'";
                 }
             }
 

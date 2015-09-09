@@ -101,6 +101,10 @@ namespace SobekCM.Library.HTML
                     adminViewer = new Aliases_AdminViewer(RequestSpecificValues);
                     break;
 
+                case Admin_Type_Enum.WebContent_Add_New:
+                    adminViewer = new WebContent_Add_New_AdminViewer(RequestSpecificValues);
+                    break;
+
                 case Admin_Type_Enum.WebContent_Mgmt:
                     adminViewer = new WebContent_Mgmt_AdminViewer(RequestSpecificValues);
                     break;
@@ -294,7 +298,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("<br />");
 
                     // Add the box with the title
-                    if ((RequestSpecificValues.Current_Mode.My_Sobek_Type != My_Sobek_Type_Enum.Folder_Management) || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode != "submitted items"))
+                    if (((RequestSpecificValues.Current_Mode.My_Sobek_Type != My_Sobek_Type_Enum.Folder_Management) || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode != "submitted items")) && ( RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.WebContent_Single ))
                     {
                         // Add the title
                         Output.WriteLine("<div class=\"sbkAdm_TitleDiv sbkAdm_TitleDivBorder\">");
@@ -506,6 +510,7 @@ namespace SobekCM.Library.HTML
                         return "sbkWcav2_ContainerInner";
 
                     case Admin_Type_Enum.WebContent_Single:
+                    case Admin_Type_Enum.WebContent_Add_New:
                         return "sbkWcav_ContainerInner";
 				}
 				return base.Container_CssClass;

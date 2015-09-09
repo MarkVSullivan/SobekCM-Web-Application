@@ -75,11 +75,11 @@ namespace SobekCM.Library.WebContentViewer.Viewers
             }
 
             Output.WriteLine("  <br />");
-            Output.WriteLine("  <table class=\"sbkStatsTbl\" style=\"width: 500px; margin-left:auto; margin-right: auto;\">");
+            Output.WriteLine("  <table class=\"sbkStatsTbl\" style=\"width: 900px; margin-left:auto; margin-right: auto;\">");
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <th style=\"text-align:left;\">DATE</th>");
-            Output.WriteLine("      <th>USER</th>");
-            Output.WriteLine("      <th>CHANGE</th>");
+            Output.WriteLine("      <th style=\"text-align:left;width:170px;\">DATE</th>");
+            Output.WriteLine("      <th style=\"text-align:left;\">USER</th>");
+            Output.WriteLine("      <th style=\"text-align:left;\">CHANGE</th>");
             Output.WriteLine("    </tr>");
 
 
@@ -89,8 +89,8 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 // Add the data row
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td style=\"text-align:left;\">" + change.MilestoneDate.ToString().Replace("12:00:00 AM", "") + "</td>");
-                Output.WriteLine("      <td>" + change.User + "</td>");
-                Output.WriteLine("      <td>" + change.Notes + "</td>");
+                Output.WriteLine("      <td style=\"text-align:left;\">" + change.User + "</td>");
+                Output.WriteLine("      <td style=\"text-align:left;\">" + change.Notes + "</td>");
                 Output.WriteLine("    </tr>");
             }
             Output.WriteLine("  </table>");
