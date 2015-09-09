@@ -13,7 +13,13 @@ namespace SobekCM.Core.MicroservicesClient
         JSON = 1,
 
         /// <summary> Output of this endpoint is Protocol Buffer octet-stream </summary>
-        PROTOBUF = 2
+        PROTOBUF = 2,
+
+        /// <summary> Output of this endpoint is JSON-P </summary>
+        JSON_P,
+
+        /// <summary> Output of this endpoint is XML </summary>
+        XML
     }
 
     /// <summary> Defines a single endpoint for a microservices client </summary>

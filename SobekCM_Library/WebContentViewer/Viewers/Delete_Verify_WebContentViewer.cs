@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using SobekCM.Core.Client;
+using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
@@ -17,7 +18,13 @@ namespace SobekCM.Library.WebContentViewer.Viewers
         /// <param name="RequestSpecificValues">  All the necessary, non-global data specific to the current request  </param>
         public Delete_Verify_WebContentViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            ErrorMessage = SobekEngineClient.WebContent.Delete_HTML_Based_Content(RequestSpecificValues.Static_Web_Content.WebContentID.Value, "TEST", RequestSpecificValues.Tracer);
+            RestResponseMessage message = SobekEngineClient.WebContent.Delete_HTML_Based_Content(RequestSpecificValues.Static_Web_Content.WebContentID.Value, "TEST", RequestSpecificValues.Tracer);
+
+            ErrorMessage = message.Message;
+            if ((message.ErrorTypeEnum != ErrorRestTypeEnum.Successful) && (String.IsNullOrEmpty(ErrorMessage)))
+            {
+                ErrorMessage = "Error encountered on SobekCm engine.";
+            }
 
         }
 

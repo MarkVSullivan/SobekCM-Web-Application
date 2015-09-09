@@ -627,7 +627,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> Add a new aggregation to the system </summary>
         /// <param name="NewAggregation"> Information for the new aggregation </param>
         /// <returns> Message indicating success or any errors encountered </returns>
-        public static ErrorRestMessage add_new_aggregation(New_Aggregation_Arguments NewAggregation)
+        public static RestResponseMessage add_new_aggregation(New_Aggregation_Arguments NewAggregation)
         {
             // Convert to the integer id for the parent and begin to do checking
             List<string> errors = new List<string>();
@@ -732,7 +732,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 foreach (string error in errors)
                     actionMessage.Append("<br />" + error);
 
-                return new ErrorRestMessage(ErrorRestTypeEnum.InputError, actionMessage.ToString());
+                return new RestResponseMessage(ErrorRestTypeEnum.InputError, actionMessage.ToString());
             }
 
 
@@ -742,7 +742,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Try to save the new item aggregation
             if (!Engine_Database.Save_Item_Aggregation(NewAggregation.Code, NewAggregation.Name, NewAggregation.ShortName, NewAggregation.Description, thematicHeadingId, NewAggregation.Type, NewAggregation.Active, NewAggregation.Hidden, NewAggregation.External_Link, parentid, NewAggregation.User, language, null))
             {
-                return new ErrorRestMessage(ErrorRestTypeEnum.Exception, "ERROR saving the new item aggregation to the database");
+                return new RestResponseMessage(ErrorRestTypeEnum.Exception, "ERROR saving the new item aggregation to the database");
             }
             // Ensure a folder exists for this, otherwise create one
             try
@@ -881,7 +881,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     Engine_Database.Populate_Code_Manager(Engine_ApplicationCache_Gateway.Codes, null);
                 }
 
-                return new ErrorRestMessage(ErrorRestTypeEnum.Exception, "ERROR completing the new aggregation add");
+                return new RestResponseMessage(ErrorRestTypeEnum.Exception, "ERROR completing the new aggregation add");
             }
 
             // Reload the list of all codes, to include this new one and the new hierarchy
@@ -893,7 +893,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Clear all aggregation information (and thematic heading info) from the cache as well
             CachedDataManager.Aggregations.Clear();
 
-            return new ErrorRestMessage(ErrorRestTypeEnum.Successful, null);
+            return new RestResponseMessage(ErrorRestTypeEnum.Successful, null);
 
         }
 

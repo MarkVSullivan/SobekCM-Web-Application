@@ -111,7 +111,7 @@
     <Compile Include="MemoryMgmt\CachedDataManager_WebContentServices.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_WebSkinServices.cs" />
     <Compile Include="MemoryMgmt\Cached_Object_Info.cs" />
-    <Compile Include="Message\ErrorRestMessage.cs" />
+    <Compile Include="Message\RestResponseMessage.cs" />
     <Compile Include="MicroservicesClient\MicroservicesClient_Configuration.cs" />
     <Compile Include="MicroservicesClient\MicroservicesClient_Config_Reader.cs" />
     <Compile Include="MicroservicesClient\MicroservicesClient_Endpoint.cs" />

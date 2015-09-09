@@ -2,9 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Xml.Serialization;
+using Jil;
+using ProtoBuf;
 using SobekCM.Core.MemoryMgmt;
+using SobekCM.Core.Message;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.WebContent;
 using SobekCM.Core.WebContent.Admin;
@@ -88,9 +93,10 @@ namespace SobekCM.Core.Client
         
         /// <summary> Delete a web content page </summary>
         /// <param name="WebContentID"> Primary key for the web content page or redirect to delete </param>
+        /// <param name="User"> Name of the user that performed the work </param>
         /// <param name="Tracer"></param>
         /// <returns> Message </returns>
-        public string Delete_HTML_Based_Content(int WebContentID, string User, Custom_Tracer Tracer)
+        public RestResponseMessage Delete_HTML_Based_Content(int WebContentID, string User, Custom_Tracer Tracer)
         {
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_WebContentServices.Delete_HTML_Based_Content", "Delete a web content page or redirect");
@@ -102,7 +108,90 @@ namespace SobekCM.Core.Client
             string url = String.Format(endpoint.URL, WebContentID);
 
             // Call out to the endpoint and return the deserialized object
-            return Deserialize<string>(url, endpoint.Protocol, null, "DELETE", Tracer);
+            return Deserialize<RestResponseMessage>(url, endpoint.Protocol, null, "DELETE", Tracer);
+        }
+
+        /// <summary> Add a new or update an existing web content page or redirect </summary>
+        /// <param name="Content"> Newly updated HTML content to be put back on the server </param>
+        /// <param name="User"> Name of the user that performed the work </param>
+        /// <param name="Tracer"></param>
+        /// <returns> Message </returns>
+        public RestResponseMessage AddUpdate_HTML_Based_Content(HTML_Based_Content Content, string User, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.AddUpdate_HTML_Based_Content", "Add a new or update an existing web content page or redirect");
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.AddUpdate_HTML_Based_Content", Tracer);
+
+            // Using the correct protocol, encode the Content
+            string contentString = String.Empty;
+            switch (endpoint.Protocol)
+            {
+                case Microservice_Endpoint_Protocol_Enum.JSON:
+                case Microservice_Endpoint_Protocol_Enum.JSON_P:
+                    contentString = JSON.Serialize(Content);
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
+                    using (MemoryStream memStream = new MemoryStream())
+                    {
+                        Serializer.Serialize(memStream, Content);
+                        contentString = Encoding.ASCII.GetString(memStream.ToArray());
+                    }
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.XML:
+                    XmlSerializer x = new XmlSerializer(Content.GetType());
+                    StringBuilder bldr = new StringBuilder();
+                    using (StringWriter stringWriter = new StringWriter(bldr))
+                    {
+                        x.Serialize(stringWriter, Content);
+                        contentString = bldr.ToString();
+                    }
+                    break;
+            }
+
+            // Create the post data
+            List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("User", User), 
+                new KeyValuePair<string, string>("Content", contentString)
+            };
+
+            // Format the URL
+            string url = String.Format(endpoint.URL, Content.WebContentID);
+
+            // Call out to the endpoint and return the deserialized object
+            return Deserialize<RestResponseMessage>(url, endpoint.Protocol, postData, "PUT", Tracer);
+        }
+
+        /// <summary> Add a milestone to an existing web content page </summary>
+        /// <param name="WebContentID"> Primary key for the web content page or redirect to add milestone to</param>
+        /// <param name="User"> Name of the user that performed the work </param>
+        /// <param name="Notes"> Notes associated with this milestone </param>
+        /// <param name="Tracer"></param>
+        /// <returns> Message </returns>
+        public RestResponseMessage Add_Milestone(int WebContentID, string User, string Notes, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.Add_Milestone", "Add a milestone to an existing web content page");
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Add_Milestone", Tracer);
+
+            // Create the post data
+            List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("User", User), 
+                new KeyValuePair<string, string>("Notes", Notes)
+            };
+
+            // Format the URL
+            string url = String.Format(endpoint.URL, WebContentID);
+
+            // Call out to the endpoint and return the deserialized object
+            return Deserialize<RestResponseMessage>(url, endpoint.Protocol, postData, "POST", Tracer);
         }
 
         /// <summary> Gets the special missing web content page, used when a requested resource is missing </summary>

@@ -333,7 +333,7 @@ namespace SobekCM.Library.AdminViewer
                         }
 
                         // Try to add this aggregation
-                        ErrorRestMessage msg = SobekEngineClient.Aggregations.Add_New_Aggregation(newAggr);
+                        RestResponseMessage msg = SobekEngineClient.Aggregations.Add_New_Aggregation(newAggr);
 
                         if (msg.ErrorTypeEnum == ErrorRestTypeEnum.Successful)
                         {

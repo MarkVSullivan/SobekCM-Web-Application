@@ -13,6 +13,7 @@ using System.Xml.Serialization;
 using Jil;
 using ProtoBuf;
 using SobekCM.Core.MemoryMgmt;
+using SobekCM.Core.Message;
 using SobekCM.Core.WebContent;
 using SobekCM.Core.WebContent.Admin;
 using SobekCM.Core.WebContent.Hierarchy;
@@ -463,10 +464,162 @@ namespace SobekCM.Engine_Library.Endpoints
             // Add a trace
             tracer.Add_Trace("WebContentServices.Delete_HTML_Based_Content");
 
-            string message = "Currently disabled";
+            // Validate the web content id exists in the URL
+            int webcontentId;
+            if ((UrlSegments.Count == 0) || (!Int32.TryParse(UrlSegments[0], out webcontentId)))
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Invalid URL.  WebContentID missing from URL"), Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+
+
+
+            // MAKE ALL CHANGES HERE
+
+            // Build return value
+            RestResponseMessage message = new RestResponseMessage(ErrorRestTypeEnum.Exception, "UPDATE is currently disabled");
 
             // Use the base class to serialize the object according to request protocol
-            Serialize(message, Response, Protocol, "INVALID");
+            Serialize(message, Response, Protocol, null);
+        }
+
+        // <summary> Delete a non-aggregational top-level web content, static HTML page or redirect </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="RequestForm"></param>
+        /// <param name="IsDebug"></param>
+        public void AddUpdate_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Add a trace
+            tracer.Add_Trace("WebContentServices.AddUpdate_HTML_Based_Content");
+
+            // Validate the web content id exists in the URL
+            int webcontentId;
+            if ((UrlSegments.Count == 0) || (!Int32.TryParse(UrlSegments[0], out webcontentId)))
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Invalid URL.  WebContentID missing from URL"), Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+
+            // Get and validate the required USER (string) posted request object
+            if ((RequestForm["User"] == null) || (String.IsNullOrEmpty(RequestForm["User"])))
+            {
+                Serialize( new RestResponseMessage(ErrorRestTypeEnum.InputError, "Required posted object 'User' is missing") , Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+            string user = RequestForm["User"];
+
+            // Get and validate the required CONTENT (HTML_Based_Content) posted request objects
+            if ((RequestForm["Content"] == null) || (String.IsNullOrEmpty(RequestForm["Content"])))
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Required posted object 'Content' is missing"), Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+
+            string contentString = RequestForm["Content"];
+            HTML_Based_Content content = null;
+            try
+            {
+                switch (Protocol)
+                {
+                    case Microservice_Endpoint_Protocol_Enum.JSON:
+                    case Microservice_Endpoint_Protocol_Enum.JSON_P:
+                        content = JSON.Deserialize<HTML_Based_Content>(contentString);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
+                        content = JSON.Deserialize<HTML_Based_Content>(contentString);
+                        break;
+
+                    case Microservice_Endpoint_Protocol_Enum.XML:
+                        content = JSON.Deserialize<HTML_Based_Content>(contentString);
+                        break;
+                }
+            }
+            catch (Exception ee)
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Unable to deserialize 'Content' parameter to HTML_Based_Content: " + ee.Message ), Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+
+            // If content wasnot successfully deserialized, return error
+            if ( content == null )
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Unable to deserialize 'Content' parameter to HTML_Based_Content"), Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+
+            // Valiodate the web content id in the URL matches the object
+            if (webcontentId != content.WebContentID)
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "WebContentID from URL does not match Content posted object"), Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+
+            // MAKE ALL CHANGES HERE
+
+            // Build return value
+            RestResponseMessage message = new RestResponseMessage(ErrorRestTypeEnum.Exception, "UPDATE is currently disabled");
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(message, Response, Protocol, null);
+        }
+
+        // <summary> Delete a non-aggregational top-level web content, static HTML page or redirect </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="RequestForm"></param>
+        /// <param name="IsDebug"></param>
+        public void Add_Milestone(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Add a trace
+            tracer.Add_Trace("WebContentServices.Add_Milestone");
+
+            // Validate the web content id exists in the URL
+            int webcontentId;
+            if ((UrlSegments.Count == 0) || (!Int32.TryParse(UrlSegments[0], out webcontentId)))
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Invalid URL.  WebContentID missing from URL"), Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+
+            // Get and validate the required USER (string) posted request object
+            if ((RequestForm["User"] == null) || (String.IsNullOrEmpty(RequestForm["User"])))
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Required posted object 'User' is missing"), Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+            string user = RequestForm["User"];
+
+            // Get and validate the required NOTES (string) posted request object
+            if ((RequestForm["Notes"] == null) || (String.IsNullOrEmpty(RequestForm["Notes"])))
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Required posted object 'Notes' is missing"), Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+            string notes = RequestForm["Notes"];
+
+            // Build return value
+            RestResponseMessage message = new RestResponseMessage(ErrorRestTypeEnum.Exception, "MILESTONE ADD is currently disabled");
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(message, Response, Protocol, null);
         }
 
         /// <summary> Gets the special missing web content page, used when a requested resource is missing </summary>

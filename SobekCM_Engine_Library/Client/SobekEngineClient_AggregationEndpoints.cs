@@ -66,7 +66,7 @@ namespace SobekCM.Core.Client
         /// <summary> Add a new aggregation to the system </summary>
         /// <param name="NewAggregation"> Information for the new aggregation </param>
         /// <returns> Message indicating success or any errors encountered </returns>
-        public ErrorRestMessage Add_New_Aggregation(New_Aggregation_Arguments NewAggregation)
+        public RestResponseMessage Add_New_Aggregation(New_Aggregation_Arguments NewAggregation)
         {
             return AggregationServices.add_new_aggregation(NewAggregation);
         }

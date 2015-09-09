@@ -316,7 +316,7 @@ namespace SobekCM.Library.AdminViewer
                                 };
 
                                 // Try to add this aggregation
-                                ErrorRestMessage msg = SobekEngineClient.Aggregations.Add_New_Aggregation(args);
+                                RestResponseMessage msg = SobekEngineClient.Aggregations.Add_New_Aggregation(args);
 
                                 // We are going to save some of the values here anyway, to assist with bulk adds
                                 enteredIsActive = is_active;
