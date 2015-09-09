@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using Jil;
+using Microsoft.SqlServer.Server;
 using ProtoBuf;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
@@ -109,6 +110,91 @@ namespace SobekCM.Core.Client
 
             // Call out to the endpoint and return the deserialized object
             return Deserialize<RestResponseMessage>(url, endpoint.Protocol, null, "DELETE", Tracer);
+        }
+
+        /// <summary> Add a new or update an existing web content page or redirect </summary>
+        /// <param name="Content"> Newly updated HTML content to be put back on the server </param>
+        /// <param name="User"> Name of the user that performed the work </param>
+        /// <param name="Tracer"></param>
+        /// <returns> Message </returns>
+        public RestResponseMessage Add_HTML_Based_Content(HTML_Based_Content Content, string User, bool InheritFromAnyParent, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.AddUpdate_HTML_Based_Content", "Add a new or update an existing web content page or redirect");
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Add_HTML_Based_Content", Tracer);
+
+            // Using the correct protocol, encode the Content
+            string contentString = String.Empty;
+            switch (endpoint.Protocol)
+            {
+                case Microservice_Endpoint_Protocol_Enum.JSON:
+                case Microservice_Endpoint_Protocol_Enum.JSON_P:
+                    contentString = JSON.Serialize(Content);
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
+                    using (MemoryStream memStream = new MemoryStream())
+                    {
+                        Serializer.Serialize(memStream, Content);
+                        contentString = Encoding.ASCII.GetString(memStream.ToArray());
+                    }
+                    break;
+
+                case Microservice_Endpoint_Protocol_Enum.XML:
+                    XmlSerializer x = new XmlSerializer(Content.GetType());
+                    StringBuilder bldr = new StringBuilder();
+                    using (StringWriter stringWriter = new StringWriter(bldr))
+                    {
+                        x.Serialize(stringWriter, Content);
+                        contentString = bldr.ToString();
+                    }
+                    break;
+            }
+
+            // Create the post data
+            List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("User", User), 
+                new KeyValuePair<string, string>("Inherit", InheritFromAnyParent.ToString()), 
+                new KeyValuePair<string, string>("Content", contentString)
+            };
+
+            // Format the URL
+            StringBuilder urlBuilder = new StringBuilder( Content.Level1 );
+            if (!String.IsNullOrEmpty(Content.Level2))
+            {
+                urlBuilder.Append("/" + Content.Level2);
+                if (!String.IsNullOrEmpty(Content.Level3))
+                {
+                    urlBuilder.Append("/" + Content.Level3);
+                    if (!String.IsNullOrEmpty(Content.Level4))
+                    {
+                        urlBuilder.Append("/" + Content.Level4);
+                        if (!String.IsNullOrEmpty(Content.Level5))
+                        {
+                            urlBuilder.Append("/" + Content.Level5);
+                            if (!String.IsNullOrEmpty(Content.Level6))
+                            {
+                                urlBuilder.Append("/" + Content.Level6);
+                                if (!String.IsNullOrEmpty(Content.Level7))
+                                {
+                                    urlBuilder.Append("/" + Content.Level7);
+                                    if (!String.IsNullOrEmpty(Content.Level8))
+                                    {
+                                        urlBuilder.Append("/" + Content.Level8);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Call out to the endpoint and return the deserialized object
+            string url = String.Format(endpoint.URL, urlBuilder.ToString());
+            return Deserialize<RestResponseMessage>(url, endpoint.Protocol, postData, "PUT", Tracer);
         }
 
         /// <summary> Add a new or update an existing web content page or redirect </summary>

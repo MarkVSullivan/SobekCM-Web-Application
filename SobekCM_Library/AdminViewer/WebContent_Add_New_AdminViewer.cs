@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using SobekCM.Core.Client;
+using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.WebContent;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
@@ -33,6 +36,7 @@ namespace SobekCM.Library.AdminViewer
         private readonly string description;
         private readonly string redirect_url;
         private readonly string webSkin;
+        private readonly bool inheritFromParent;
 
         /// <summary> Constructor for a new instance of the WebContent_Add_New_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -43,6 +47,7 @@ namespace SobekCM.Library.AdminViewer
 
             // Set some defaults
             actionMessage = String.Empty;
+
 
             // Ensure the user is the system admin or portal admin
             if ((RequestSpecificValues.Current_User == null) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin)))
@@ -56,14 +61,88 @@ namespace SobekCM.Library.AdminViewer
             // If this is posted back, look for the reset
             if (RequestSpecificValues.Current_Mode.isPostBack)
             {
-                string reset_value = HttpContext.Current.Request.Form[""];
-                if ((!String.IsNullOrEmpty(reset_value)) && (reset_value == "reset"))
+                // Pull the standard values
+                NameValueCollection form = HttpContext.Current.Request.Form;
+
+                // Get the values from the form
+                if (form["admin_webcontent_title"] != null) title = form["admin_webcontent_title"];
+                if (form["admin_webcontent_desc"] != null) description = form["admin_webcontent_desc"];
+                if (form["admin_webcontent_redirect"] != null) redirect_url = form["admin_webcontent_redirect"];
+                if (form["admin_webcontent_skin"] != null) webSkin = form["admin_webcontent_skin"];
+                inheritFromParent = form["admin_webcontent_inherit"] != null;
+
+                // Get the level values from the form
+                if ((form["admin_webcontent_level1"] != null) && (!String.IsNullOrEmpty(form["admin_webcontent_level1"])))
+                {
+                    level1 = form["admin_webcontent_level1"];
+                    if ((form["admin_webcontent_level2"] != null) && (!String.IsNullOrEmpty(form["admin_webcontent_level2"])))
+                    {
+                        level2 = form["admin_webcontent_level2"];
+                        if ((form["admin_webcontent_level3"] != null) && (!String.IsNullOrEmpty(form["admin_webcontent_level3"])))
+                        {
+                            level3 = form["admin_webcontent_level3"];
+                            if ((form["admin_webcontent_level4"] != null) && (!String.IsNullOrEmpty(form["admin_webcontent_level4"])))
+                            {
+                                level4 = form["admin_webcontent_level4"];
+                                if ((form["admin_webcontent_level5"] != null) && (!String.IsNullOrEmpty(form["admin_webcontent_level5"])))
+                                {
+                                    level5 = form["admin_webcontent_level5"];
+                                    if ((form["admin_webcontent_level6"] != null) && (!String.IsNullOrEmpty(form["admin_webcontent_level6"])))
+                                    {
+                                        level6 = form["admin_webcontent_level6"];
+                                        if ((form["admin_webcontent_level7"] != null) && (!String.IsNullOrEmpty(form["admin_webcontent_level7"])))
+                                        {
+                                            level7 = form["admin_webcontent_level7"];
+                                            if ((form["admin_webcontent_level8"] != null) && (!String.IsNullOrEmpty(form["admin_webcontent_level8"])))
+                                            {
+                                                level8 = form["admin_webcontent_level8"];
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Perform validation
+                actionMessage = String.Empty;
+                if ((String.IsNullOrEmpty(title)) || (String.IsNullOrEmpty(level1)))
+                {
+                    actionMessage = "Error - required fields are missing<br />";
+                    if (String.IsNullOrEmpty(title))
+                        actionMessage = actionMessage + " &nbsp; &nbsp; &nbsp; TITLE is a required field.<br />";
+                    if (String.IsNullOrEmpty(level1))
+                        actionMessage = actionMessage + " &nbsp; &nbsp; &nbsp; LEVEL1 is a required field.<br />";
+                }
+
+                string save_value = HttpContext.Current.Request.Form["admin_webcontent_save"];
+                if ((!String.IsNullOrEmpty(save_value)) && (save_value == "save"))
                 {
                     // Just ensure everything is emptied out
-                    HttpContext.Current.Cache.Remove("GlobalPermissionsReport");
-                    HttpContext.Current.Cache.Remove("GlobalPermissionsUsersLinked");
-                    HttpContext.Current.Cache.Remove("GlobalPermissionsLinkedAggr");
-                    HttpContext.Current.Cache.Remove("GlobalPermissionsReportSubmit");
+                    if (String.IsNullOrEmpty(actionMessage))
+                    {
+                        // Build this web content page
+                        HTML_Based_Content newContent = new HTML_Based_Content
+                        {
+                            WebContentID = -1, 
+                            Level1 = level1, 
+                            Level2 = level2, 
+                            Level3 = level3, 
+                            Level4 = level4, 
+                            Level5 = level5, 
+                            Level6 = level6, 
+                            Level7 = level7, 
+                            Level8 = level8, 
+                            Title = title, 
+                            Description = description, 
+                            Web_Skin = webSkin
+                        };
+
+                        // Call the engine endpoint to put this
+                        RestResponseMessage msg = SobekEngineClient.WebContent.Add_HTML_Based_Content(newContent, RequestSpecificValues.Current_User.Full_Name, inheritFromParent, RequestSpecificValues.Tracer);
+                        actionMessage = msg.Message;
+                    }
                 }
             }
             else
@@ -96,7 +175,7 @@ namespace SobekCM.Library.AdminViewer
                                             level7 = HttpContext.Current.Request.QueryString["l7"];
                                             if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["l8"]))
                                             {
-                                                level5 = HttpContext.Current.Request.QueryString["l8"];
+                                                level8 = HttpContext.Current.Request.QueryString["l8"];
                                             }
                                         }
                                     }
@@ -152,7 +231,10 @@ namespace SobekCM.Library.AdminViewer
 
             string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
 
-
+            // Add the hidden field
+            Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
+            Output.WriteLine("<input type=\"hidden\" id=\"admin_webcontent_reset\" name=\"admin_webcontent_reset\" value=\"\" />");
+            Output.WriteLine("<input type=\"hidden\" id=\"admin_webcontent_save\" name=\"admin_webcontent_save\" value=\"\" />");
 
             if (actionMessage.Length > 0)
             {
@@ -182,8 +264,8 @@ namespace SobekCM.Library.AdminViewer
 
             // Add the buttons
             Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
-            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return cancel_user_edits();return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-            Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" onclick=\"return save_user_edits();return false;\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='http://sobekrepository.org';\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+            Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" onclick=\"return save_webcontent_edits('false');return false;\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
             Output.WriteLine("  </div>");
             Output.WriteLine();
 
@@ -192,6 +274,7 @@ namespace SobekCM.Library.AdminViewer
             const string DESCRIPTION_HELP = "Help for description";
             const string REDIRECT_HELP = "Help for redirect";
             const string WEBSKIN_HELP = "Help for webskin";
+            const string INHERIT_HELP = "Help for inherit";
 
             string baseUrl = RequestSpecificValues.Current_Mode.Base_URL;
             if (baseUrl[baseUrl.Length - 1] == '/')
@@ -331,6 +414,19 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <tr class=\"sbkSaav_TitleRow2\"><td colspan=\"3\">Appearance</td></tr>");
             Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The value in this section determines how this web content page appears to users by allowing a web skin to be selected for this web content page to appear under.</p></td></tr>");
 
+
+            // Add the Include Menu behavior
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_email\">Inherit From Parent:</label></td>");
+            Output.WriteLine("    <td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
+            Output.WriteLine((inheritFromParent)
+                    ? "        <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_webcontent_inherit\" id=\"admin_webcontent_inherit\" checked=\"checked\" /> <label for=\"admin_webcontent_inherit\">Copy basic design and sitemap info from any parent web page</label> "
+                    : "        <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_webcontent_inherit\" id=\"admin_webcontent_inherit\" /> <label for=\"admin_webcontent_inherit\">Copy basic design and sitemap info from any parent web page</label> ");
+            Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + INHERIT_HELP + "');\"  title=\"" + INHERIT_HELP + "\" /></td></tr></table>");
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
 
             // Add the web skin
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
