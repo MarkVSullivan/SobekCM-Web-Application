@@ -70,6 +70,11 @@ namespace SobekCM.Core.Message
         [ProtoMember(3)]
         public string Details { get; private set; }
 
+        /// <summary> Resource URI for the item addected or added </summary>
+        [DataMember(EmitDefaultValue = false, Name = "uri")]
+        [ProtoMember(4)]
+        public string URI { get; set; }
+
 
     }
 }

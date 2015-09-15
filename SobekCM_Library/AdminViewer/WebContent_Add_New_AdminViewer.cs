@@ -7,7 +7,10 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Caching;
+using System.Web.UI.WebControls;
 using SobekCM.Core.Client;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.WebContent;
@@ -136,12 +139,55 @@ namespace SobekCM.Library.AdminViewer
                             Level8 = level8, 
                             Title = title, 
                             Description = description, 
-                            Web_Skin = webSkin
+                            Web_Skin = webSkin,
+                            Author = RequestSpecificValues.Current_User.Full_Name,
+                            Date = DateTime.Now.ToShortDateString()
                         };
+
+                        if (!String.IsNullOrEmpty(description))
+                        {
+                            newContent.Content = "<h2>" + title + "</h2>" + Environment.NewLine + "<p>" + description + "</p>";
+                        }
+                        else
+                        {
+                            newContent.Content = "<h2>" + title + "</h2>" + Environment.NewLine + "<p>New web content page text goes here.</p>";
+                        }
+                        newContent.ContentSource = newContent.Content;
 
                         // Call the engine endpoint to put this
                         RestResponseMessage msg = SobekEngineClient.WebContent.Add_HTML_Based_Content(newContent, RequestSpecificValues.Current_User.Full_Name, inheritFromParent, RequestSpecificValues.Tracer);
-                        actionMessage = msg.Message;
+
+                        // Clear the hierarchy
+                        CachedDataManager.WebContent.Clear_Hierarchy();
+                        UI_ApplicationCache_Gateway.WebContent_Hierarchy_Clear();
+
+                        // If successful, just send to it
+                        if (msg != null)
+                        {
+                            if (msg.ErrorTypeEnum == ErrorRestTypeEnum.Successful)
+                            {
+                                if (String.IsNullOrEmpty(msg.URI))
+                                {
+                                    actionMessage = "Page added, but new URI was not returned";
+                                }
+                                else
+                                {
+                                    RequestSpecificValues.Current_Mode.Request_Completed = true;
+                                    HttpContext.Current.Response.Redirect(msg.URI, false);
+                                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                actionMessage = "ERROR: " + msg.Message;
+                            }
+                        }
+                        else
+                        {
+                            actionMessage = "ERROR: Exception deserializing the REST response message.";
+                        }
+                        
                     }
                 }
             }

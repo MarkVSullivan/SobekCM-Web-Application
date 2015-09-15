@@ -90,6 +90,189 @@ namespace SobekCM.Core.WebContent.Hierarchy
                 Children.Clear();
         }
 
+        /// <summary> Add a single new node to the web hierarchy </summary>
+        /// <param name="WebContentID"> Primary key to the web content page to add </param>
+        /// <param name="Redirect"> Redirect URL associated with the final web content page </param>
+        /// <param name="Level1"> First level URL segment for the web content page to add </param>
+        /// <param name="Level2"> Second level URL segment for the web content page to add </param>
+        /// <param name="Level3"> Third level URL segment for the web content page to add </param>
+        /// <param name="Level4"> Fourth level URL segment for the web content page to add </param>
+        /// <param name="Level5"> Fifth level URL segment for the web content page to add </param>
+        /// <param name="Level6"> Seventh level URL segment for the web content page to add </param>
+        /// <param name="Level7"> Seventh level URL segment for the web content page to add </param>
+        /// <param name="Level8"> Eighth level URL segment for the web content page to add </param>
+        public void Add_Single_Node(int WebContentID, string Redirect, string Level1, string Level2, string Level3, string Level4, string Level5, string Level6, string Level7, string Level8)
+        {
+            if (String.IsNullOrEmpty(Level1))
+                return;
+
+            WebContent_Hierarchy_Node node;
+
+            // Handle the FIRST level of the hierarchy
+            if (Children.ContainsKey(Level1))
+            {
+                node = Children[Level1];
+            }
+            else
+            {
+                node = new WebContent_Hierarchy_Node {Segment = Level1};
+                Children[Level1] = node;
+            }
+
+            // If no second level, assign the values and return
+            if (( node == null ) || (String.IsNullOrEmpty(Level2)))
+            {
+                if (node != null)
+                {
+                    node.WebContentID = WebContentID;
+                    node.Redirect = Redirect;
+                }
+                return;
+            }
+
+            // Handle the SECOND level of the hierarchy
+            if (( node.Children != null ) && ( node.Children.ContainsKey(Level2)))
+            {
+                node = node.Children[Level2];
+            }
+            else
+            {
+                node = node.Add_Child(Level2);
+            }
+
+            // If no third level, assign the values and return
+            if ((node == null) || (String.IsNullOrEmpty(Level3)))
+            {
+                if (node != null)
+                {
+                    node.WebContentID = WebContentID;
+                    node.Redirect = Redirect;
+                }
+                return;
+            }
+
+            // Handle the THIRD level of the hierarchy
+            if ((node.Children != null) && (node.Children.ContainsKey(Level3)))
+            {
+                node = node.Children[Level3];
+            }
+            else
+            {
+                node = node.Add_Child(Level3);
+            }
+
+            // If no fourth level, assign the values and return
+            if ((node == null) || (String.IsNullOrEmpty(Level4)))
+            {
+                if (node != null)
+                {
+                    node.WebContentID = WebContentID;
+                    node.Redirect = Redirect;
+                }
+                return;
+            }
+
+            // Handle the FOURTH level of the hierarchy
+            if ((node.Children != null) && (node.Children.ContainsKey(Level4)))
+            {
+                node = node.Children[Level4];
+            }
+            else
+            {
+                node = node.Add_Child(Level4);
+            }
+
+            // If no fifth level, assign the values and return
+            if ((node == null) || (String.IsNullOrEmpty(Level5)))
+            {
+                if (node != null)
+                {
+                    node.WebContentID = WebContentID;
+                    node.Redirect = Redirect;
+                }
+                return;
+            }
+
+            // Handle the FIFTH level of the hierarchy
+            if ((node.Children != null) && (node.Children.ContainsKey(Level5)))
+            {
+                node = node.Children[Level5];
+            }
+            else
+            {
+                node = node.Add_Child(Level5);
+            }
+
+            // If no sixth level, assign the values and return
+            if ((node == null) || (String.IsNullOrEmpty(Level6)))
+            {
+                if (node != null)
+                {
+                    node.WebContentID = WebContentID;
+                    node.Redirect = Redirect;
+                }
+                return;
+            }
+
+            // Handle the SIXTH level of the hierarchy
+            if ((node.Children != null) && (node.Children.ContainsKey(Level6)))
+            {
+                node = node.Children[Level6];
+            }
+            else
+            {
+                node = node.Add_Child(Level6);
+            }
+
+            // If no seventh level, assign the values and return
+            if ((node == null) || (String.IsNullOrEmpty(Level7)))
+            {
+                if (node != null)
+                {
+                    node.WebContentID = WebContentID;
+                    node.Redirect = Redirect;
+                }
+                return;
+            }
+
+            // Handle the SEVENTH level of the hierarchy
+            if ((node.Children != null) && (node.Children.ContainsKey(Level7)))
+            {
+                node = node.Children[Level7];
+            }
+            else
+            {
+                node = node.Add_Child(Level7);
+            }
+
+            // If no eighth level, assign the values and return
+            if ((node == null) || (String.IsNullOrEmpty(Level8)))
+            {
+                if (node != null)
+                {
+                    node.WebContentID = WebContentID;
+                    node.Redirect = Redirect;
+                }
+                return;
+            }
+
+            // Handle the EIGHTH level of the hierarchy
+            if ((node.Children != null) && (node.Children.ContainsKey(Level8)))
+            {
+                node = node.Children[Level8];
+            }
+            else
+            {
+                node = node.Add_Child(Level8);
+            }
+            if (node != null)
+            {
+                node.WebContentID = WebContentID;
+                node.Redirect = Redirect;
+            }
+
+        }
+
         /// <summary> Look within this hierarchy for a match for a collection of incoming URL segments  </summary>
         /// <param name="UrlSegments"> Collection of URL segments to match within this deep hierarchy </param>
         /// <returns> Matched node, or NULL if there is no match </returns>

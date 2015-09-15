@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
+using System.Web.UI.WebControls;
 using System.Xml.Serialization;
 using Jil;
 using ProtoBuf;
@@ -85,7 +86,6 @@ namespace SobekCM.Engine_Library.Endpoints
                     Response.Output.WriteLine(ee.StackTrace);
                 }
                 return;
-                throw;
             }
             
 
@@ -501,7 +501,6 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 Serialize(new RestResponseMessage(ErrorRestTypeEnum.Successful, null), Response, Protocol, null);
                 Response.StatusCode = 200;
-                return;
             }
             else
             {
@@ -612,19 +611,19 @@ namespace SobekCM.Engine_Library.Endpoints
             Custom_Tracer tracer = new Custom_Tracer();
 
             // Add a trace
-            tracer.Add_Trace("WebContentServices.AddUpdate_HTML_Based_Content");
+            tracer.Add_Trace("WebContentServices.Add_HTML_Based_Content");
 
-            // Validate the web content id exists in the URL
-            int webcontentId;
-            if ((UrlSegments.Count == 0) || (!Int32.TryParse(UrlSegments[0], out webcontentId)))
-            {
-                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Invalid URL.  WebContentID missing from URL"), Response, Protocol, null);
-                Response.StatusCode = 400;
-                return;
-            }
+            //// Validate the web content id exists in the URL
+            //int webcontentId;
+            //if ((UrlSegments.Count == 0) || (!Int32.TryParse(UrlSegments[0], out webcontentId)))
+            //{
+            //    Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Invalid URL.  WebContentID missing from URL"), Response, Protocol, null);
+            //    Response.StatusCode = 400;
+            //    return;
+            //}
 
             // Get and validate the required USER (string) posted request object
-            if ((RequestForm["User"] == null) || (String.IsNullOrEmpty(RequestForm["User"])))
+            if (String.IsNullOrEmpty(RequestForm["User"]))
             {
                 Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Required posted object 'User' is missing"), Response, Protocol, null);
                 Response.StatusCode = 400;
@@ -633,7 +632,7 @@ namespace SobekCM.Engine_Library.Endpoints
             string user = RequestForm["User"];
 
             // Get and validate the required CONTENT (HTML_Based_Content) posted request objects
-            if ((RequestForm["Content"] == null) || (String.IsNullOrEmpty(RequestForm["Content"])))
+            if (String.IsNullOrEmpty(RequestForm["Content"]))
             {
                 Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Required posted object 'Content' is missing"), Response, Protocol, null);
                 Response.StatusCode = 400;
@@ -652,11 +651,17 @@ namespace SobekCM.Engine_Library.Endpoints
                         break;
 
                     case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
-                        content = JSON.Deserialize<HTML_Based_Content>(contentString);
+                        // Deserialize using the Protocol buffer-net library
+                        byte[] byteArray = Encoding.ASCII.GetBytes(contentString);
+                        MemoryStream mstream = new MemoryStream(byteArray);
+                        content = Serializer.Deserialize<HTML_Based_Content>(mstream);
                         break;
 
                     case Microservice_Endpoint_Protocol_Enum.XML:
-                        content = JSON.Deserialize<HTML_Based_Content>(contentString);
+                        byte[] byteArray2 = Encoding.UTF8.GetBytes(contentString);
+                        MemoryStream mstream2 = new MemoryStream(byteArray2);
+                        XmlSerializer x = new XmlSerializer(typeof(Content));
+                        content = (HTML_Based_Content) x.Deserialize(mstream2);
                         break;
                 }
             }
@@ -675,25 +680,142 @@ namespace SobekCM.Engine_Library.Endpoints
                 return;
             }
 
-            // Valiodate the web content id in the URL matches the object
-            if (webcontentId != content.WebContentID)
+            // Level1 must be neither NULL nor empty
+            if (String.IsNullOrEmpty(content.Level1))
             {
-                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "WebContentID from URL does not match Content posted object"), Response, Protocol, null);
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Level1 of the content cannot be null or empty"), Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+
+            // Since this is a PUT verb, the URL should match the uploaded content
+            bool invalidUrl = ((UrlSegments.Count < 1) || (UrlSegments[0] != content.Level1));
+            if ((!invalidUrl) && (!String.IsNullOrEmpty(content.Level2)) && ((UrlSegments.Count < 2) || (UrlSegments[1] != content.Level2))) invalidUrl = true;
+            if ((!invalidUrl) && (!String.IsNullOrEmpty(content.Level3)) && ((UrlSegments.Count < 3) || (UrlSegments[2] != content.Level3))) invalidUrl = true;
+            if ((!invalidUrl) && (!String.IsNullOrEmpty(content.Level4)) && ((UrlSegments.Count < 4) || (UrlSegments[3] != content.Level4))) invalidUrl = true;
+            if ((!invalidUrl) && (!String.IsNullOrEmpty(content.Level5)) && ((UrlSegments.Count < 5) || (UrlSegments[4] != content.Level5))) invalidUrl = true;
+            if ((!invalidUrl) && (!String.IsNullOrEmpty(content.Level6)) && ((UrlSegments.Count < 6) || (UrlSegments[5] != content.Level6))) invalidUrl = true;
+            if ((!invalidUrl) && (!String.IsNullOrEmpty(content.Level7)) && ((UrlSegments.Count < 7) || (UrlSegments[6] != content.Level7))) invalidUrl = true;
+            if ((!invalidUrl) && (!String.IsNullOrEmpty(content.Level8)) && ((UrlSegments.Count < 8) || (UrlSegments[7] != content.Level8))) invalidUrl = true;
+
+            // Valiodate the web content id in the URL matches the object
+            if (invalidUrl)
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "URL of PUT request does not match Content posted object"), Response, Protocol, null);
                 Response.StatusCode = 400;
                 return;
             }
 
             // Look for the inherit flag
-            bool inheritFromParent = false;
-            if ((RequestForm["Inherit"] != null) || ( RequestForm["Inherit"].ToUpper() == "TRUE" ))
+            bool inheritFromParent = ((RequestForm["Inherit"] != null) && (RequestForm["Inherit"].ToUpper() == "TRUE"));
+
+            // Get the location for this HTML file to be saved
+            StringBuilder dirBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + content.Level1);
+            if (!String.IsNullOrEmpty(content.Level2))
             {
-                inheritFromParent = true;
+                dirBuilder.Append("\\" + content.Level2);
+                if (!String.IsNullOrEmpty(content.Level3))
+                {
+                    dirBuilder.Append("\\" + content.Level3);
+                    if (!String.IsNullOrEmpty(content.Level4))
+                    {
+                        dirBuilder.Append("\\" + content.Level4);
+                        if (!String.IsNullOrEmpty(content.Level5))
+                        {
+                            dirBuilder.Append("\\" + content.Level5);
+                            if (!String.IsNullOrEmpty(content.Level6))
+                            {
+                                dirBuilder.Append("\\" + content.Level6);
+                                if (!String.IsNullOrEmpty(content.Level7))
+                                {
+                                    dirBuilder.Append("\\" + content.Level7);
+                                    if (!String.IsNullOrEmpty(content.Level8))
+                                    {
+                                        dirBuilder.Append("\\" + content.Level8);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
-            // MAKE ALL CHANGES HERE
+            // Ensure this directory exists
+            if (!Directory.Exists(dirBuilder.ToString()))
+            {
+                try
+                {
+                    Directory.CreateDirectory(dirBuilder.ToString());
+                }
+                catch (Exception)
+                {
+                    Serialize(new RestResponseMessage(ErrorRestTypeEnum.Exception, "Unable to create the directory for this web content page"), Response, Protocol, null);
+                    Response.StatusCode = 500;
+                    return;
+                }
+            }
+
+            // Save the HTML file to the file system
+            try
+            {
+                string fileName = Path.Combine(dirBuilder.ToString(), "default.html");
+                content.Save_To_File(fileName);
+            }
+            catch (Exception)
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.Exception, "Unable to save HTML file for this web content page"), Response, Protocol, null);
+                Response.StatusCode = 500;
+                return;
+            }
+
+            // Save to the database
+            try
+            {
+                int webcontentid = Engine_Database.WebContent_Add_Page(content.Level1, content.Level2, content.Level3, content.Level4, content.Level5, content.Level6, content.Level7, content.Level8, user, content.Title, content.Description, content.Redirect, tracer);
+                Engine_ApplicationCache_Gateway.WebContent_Hierarchy.Add_Single_Node(webcontentid, content.Redirect, content.Level1, content.Level2, content.Level3, content.Level4, content.Level5, content.Level6, content.Level7, content.Level8);
+            }
+            catch (Exception)
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.Exception, "Unable to save the information for the new web content page to the database"), Response, Protocol, null);
+                Response.StatusCode = 500;
+                return;
+            }
+
 
             // Build return value
-            RestResponseMessage message = new RestResponseMessage(ErrorRestTypeEnum.Exception, "ADD is currently disabled");
+            RestResponseMessage message = new RestResponseMessage(ErrorRestTypeEnum.Successful, "Added new page");
+
+            // Set the URL
+            StringBuilder urlBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Base_URL + "/" + content.Level1);
+            if (!String.IsNullOrEmpty(content.Level2))
+            {
+                urlBuilder.Append("/" + content.Level2);
+                if (!String.IsNullOrEmpty(content.Level3))
+                {
+                    urlBuilder.Append("/" + content.Level3);
+                    if (!String.IsNullOrEmpty(content.Level4))
+                    {
+                        urlBuilder.Append("/" + content.Level4);
+                        if (!String.IsNullOrEmpty(content.Level5))
+                        {
+                            urlBuilder.Append("/" + content.Level5);
+                            if (!String.IsNullOrEmpty(content.Level6))
+                            {
+                                urlBuilder.Append("/" + content.Level6);
+                                if (!String.IsNullOrEmpty(content.Level7))
+                                {
+                                    urlBuilder.Append("/" + content.Level7);
+                                    if (!String.IsNullOrEmpty(content.Level8))
+                                    {
+                                        urlBuilder.Append("/" + content.Level8);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            message.URI = urlBuilder.ToString();
 
             // Use the base class to serialize the object according to request protocol
             Serialize(message, Response, Protocol, null);
@@ -4399,7 +4521,6 @@ namespace SobekCM.Engine_Library.Endpoints
                     Response.Output.WriteLine(ee.StackTrace);
                 }
                 return;
-                throw;
             }
 
             // If this was debug mode, then just write the tracer

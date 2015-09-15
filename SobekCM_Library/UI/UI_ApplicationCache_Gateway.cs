@@ -169,5 +169,11 @@ namespace SobekCM.Library.UI
                 return webContentHierarchy;
             }
         }
+
+        /// <summary> Clear the cached web content hierarchy data </summary>
+        public static void WebContent_Hierarchy_Clear()
+        {
+            webContentHierarchy = null;
+        }
     }
 }
