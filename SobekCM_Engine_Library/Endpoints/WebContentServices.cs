@@ -560,17 +560,23 @@ namespace SobekCM.Engine_Library.Endpoints
                         break;
 
                     case Microservice_Endpoint_Protocol_Enum.PROTOBUF:
-                        content = JSON.Deserialize<HTML_Based_Content>(contentString);
+                        // Deserialize using the Protocol buffer-net library
+                        byte[] byteArray = Encoding.ASCII.GetBytes(contentString);
+                        MemoryStream mstream = new MemoryStream(byteArray);
+                        content = Serializer.Deserialize<HTML_Based_Content>(mstream);
                         break;
 
                     case Microservice_Endpoint_Protocol_Enum.XML:
-                        content = JSON.Deserialize<HTML_Based_Content>(contentString);
+                        byte[] byteArray2 = Encoding.UTF8.GetBytes(contentString);
+                        MemoryStream mstream2 = new MemoryStream(byteArray2);
+                        XmlSerializer x = new XmlSerializer(typeof(Content));
+                        content = (HTML_Based_Content)x.Deserialize(mstream2);
                         break;
                 }
             }
             catch (Exception ee)
             {
-                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Unable to deserialize 'Content' parameter to HTML_Based_Content: " + ee.Message ), Response, Protocol, null);
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Unable to deserialize 'Content' parameter to HTML_Based_Content: " + ee.Message), Response, Protocol, null);
                 Response.StatusCode = 400;
                 return;
             }
@@ -583,6 +589,14 @@ namespace SobekCM.Engine_Library.Endpoints
                 return;
             }
 
+            // Level1 must be neither NULL nor empty
+            if (String.IsNullOrEmpty(content.Level1))
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.InputError, "Level1 of the content cannot be null or empty"), Response, Protocol, null);
+                Response.StatusCode = 400;
+                return;
+            }
+
             // Valiodate the web content id in the URL matches the object
             if (webcontentId != content.WebContentID)
             {
@@ -591,10 +605,136 @@ namespace SobekCM.Engine_Library.Endpoints
                 return;
             }
 
-            // MAKE ALL CHANGES HERE
+            // Get the location for this HTML file to be saved
+            StringBuilder dirBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + content.Level1);
+            if (!String.IsNullOrEmpty(content.Level2))
+            {
+                dirBuilder.Append("\\" + content.Level2);
+                if (!String.IsNullOrEmpty(content.Level3))
+                {
+                    dirBuilder.Append("\\" + content.Level3);
+                    if (!String.IsNullOrEmpty(content.Level4))
+                    {
+                        dirBuilder.Append("\\" + content.Level4);
+                        if (!String.IsNullOrEmpty(content.Level5))
+                        {
+                            dirBuilder.Append("\\" + content.Level5);
+                            if (!String.IsNullOrEmpty(content.Level6))
+                            {
+                                dirBuilder.Append("\\" + content.Level6);
+                                if (!String.IsNullOrEmpty(content.Level7))
+                                {
+                                    dirBuilder.Append("\\" + content.Level7);
+                                    if (!String.IsNullOrEmpty(content.Level8))
+                                    {
+                                        dirBuilder.Append("\\" + content.Level8);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Ensure this directory exists
+            if (!Directory.Exists(dirBuilder.ToString()))
+            {
+                try
+                {
+                    Directory.CreateDirectory(dirBuilder.ToString());
+                }
+                catch (Exception)
+                {
+                    Serialize(new RestResponseMessage(ErrorRestTypeEnum.Exception, "Unable to create the directory for this web content page"), Response, Protocol, null);
+                    Response.StatusCode = 500;
+                    return;
+                }
+            }
+
+            // Save the HTML file to the file system
+            try
+            {
+                string fileName = Path.Combine(dirBuilder.ToString(), "default.html");
+
+                // Make a backup from today, if none made yet
+                if (File.Exists(fileName))
+                {
+                    DateTime lastWrite = (new FileInfo(fileName)).LastWriteTime;
+                    string new_file = fileName.ToLower().Replace(".txt", "").Replace(".html", "").Replace(".htm", "") + lastWrite.Year + lastWrite.Month.ToString().PadLeft(2, '0') + lastWrite.Day.ToString().PadLeft(2, '0') + ".bak";
+                    if (File.Exists(new_file))
+                        File.Delete(new_file);
+                    File.Move(fileName, new_file);
+                }
+
+                // Save the updated file
+                content.Save_To_File(fileName);
+            }
+            catch (Exception)
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.Exception, "Unable to save HTML file for this web content page"), Response, Protocol, null);
+                Response.StatusCode = 500;
+                return;
+            }
+
+            // Save to the database
+            bool success;
+            try
+            {
+                success = Engine_Database.WebContent_Edit_Page(webcontentId, content.Title, content.Description, content.Redirect, user, "Updated web page details", tracer);
+                Engine_ApplicationCache_Gateway.WebContent_Hierarchy.Add_Single_Node(webcontentId, content.Redirect, content.Level1, content.Level2, content.Level3, content.Level4, content.Level5, content.Level6, content.Level7, content.Level8);
+            }
+            catch (Exception)
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.Exception, "Unable to save the information for the web content page to the database"), Response, Protocol, null);
+                Response.StatusCode = 500;
+                return;
+            }
+
+            // Clear the cache
+            CachedDataManager.WebContent.Clear_Page_Details(webcontentId);
+
+            // If this was a failure, return a message
+            if (!success)
+            {
+                Serialize(new RestResponseMessage(ErrorRestTypeEnum.Exception, "Unable to save the updated information to the database"), Response, Protocol, null);
+                Response.StatusCode = 500;
+                return;
+            }
 
             // Build return value
-            RestResponseMessage message = new RestResponseMessage(ErrorRestTypeEnum.Exception, "UPDATE is currently disabled");
+            RestResponseMessage message = new RestResponseMessage(ErrorRestTypeEnum.Successful, "Updated web page details");
+
+            // Set the URL
+            StringBuilder urlBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Base_URL + "/" + content.Level1);
+            if (!String.IsNullOrEmpty(content.Level2))
+            {
+                urlBuilder.Append("/" + content.Level2);
+                if (!String.IsNullOrEmpty(content.Level3))
+                {
+                    urlBuilder.Append("/" + content.Level3);
+                    if (!String.IsNullOrEmpty(content.Level4))
+                    {
+                        urlBuilder.Append("/" + content.Level4);
+                        if (!String.IsNullOrEmpty(content.Level5))
+                        {
+                            urlBuilder.Append("/" + content.Level5);
+                            if (!String.IsNullOrEmpty(content.Level6))
+                            {
+                                urlBuilder.Append("/" + content.Level6);
+                                if (!String.IsNullOrEmpty(content.Level7))
+                                {
+                                    urlBuilder.Append("/" + content.Level7);
+                                    if (!String.IsNullOrEmpty(content.Level8))
+                                    {
+                                        urlBuilder.Append("/" + content.Level8);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            message.URI = urlBuilder.ToString();
 
             // Use the base class to serialize the object according to request protocol
             Serialize(message, Response, Protocol, null);
@@ -706,6 +846,9 @@ namespace SobekCM.Engine_Library.Endpoints
                 return;
             }
 
+            // Ensure the first segment is not a reserved word
+
+
             // Look for the inherit flag
             bool inheritFromParent = ((RequestForm["Inherit"] != null) && (RequestForm["Inherit"].ToUpper() == "TRUE"));
 
@@ -759,7 +902,10 @@ namespace SobekCM.Engine_Library.Endpoints
             try
             {
                 string fileName = Path.Combine(dirBuilder.ToString(), "default.html");
-                content.Save_To_File(fileName);
+                if (!File.Exists(fileName))
+                {
+                    content.Save_To_File(fileName);
+                }
             }
             catch (Exception)
             {

@@ -112,9 +112,10 @@ namespace SobekCM.Core.Client
             return Deserialize<RestResponseMessage>(url, endpoint.Protocol, null, "DELETE", Tracer);
         }
 
-        /// <summary> Add a new or update an existing web content page or redirect </summary>
+        /// <summary> Add a new web content page or redirect </summary>
         /// <param name="Content"> Newly updated HTML content to be put back on the server </param>
         /// <param name="User"> Name of the user that performed the work </param>
+        /// <param name="InheritFromAnyParent"> Flag indicates if this should inherit some design attributes from any found parent </param>
         /// <param name="Tracer"></param>
         /// <returns> Message </returns>
         public RestResponseMessage Add_HTML_Based_Content(HTML_Based_Content Content, string User, bool InheritFromAnyParent, Custom_Tracer Tracer)
@@ -197,18 +198,18 @@ namespace SobekCM.Core.Client
             return Deserialize<RestResponseMessage>(url, endpoint.Protocol, postData, "PUT", Tracer);
         }
 
-        /// <summary> Add a new or update an existing web content page or redirect </summary>
+        /// <summary> Update an existing web content page or redirect </summary>
         /// <param name="Content"> Newly updated HTML content to be put back on the server </param>
         /// <param name="User"> Name of the user that performed the work </param>
         /// <param name="Tracer"></param>
         /// <returns> Message </returns>
-        public RestResponseMessage AddUpdate_HTML_Based_Content(HTML_Based_Content Content, string User, Custom_Tracer Tracer)
+        public RestResponseMessage Update_HTML_Based_Content(HTML_Based_Content Content, string User, Custom_Tracer Tracer)
         {
             // Add a beginning trace
-            Tracer.Add_Trace("SobekEngineClient_WebContentServices.AddUpdate_HTML_Based_Content", "Add a new or update an existing web content page or redirect");
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.Update_HTML_Based_Content", "Add a new or update an existing web content page or redirect");
 
             // Get the endpoint
-            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.AddUpdate_HTML_Based_Content", Tracer);
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Update_HTML_Based_Content", Tracer);
 
             // Using the correct protocol, encode the Content
             string contentString = String.Empty;
@@ -249,7 +250,7 @@ namespace SobekCM.Core.Client
             string url = String.Format(endpoint.URL, Content.WebContentID);
 
             // Call out to the endpoint and return the deserialized object
-            return Deserialize<RestResponseMessage>(url, endpoint.Protocol, postData, "PUT", Tracer);
+            return Deserialize<RestResponseMessage>(url, endpoint.Protocol, postData, "POST", Tracer);
         }
 
         /// <summary> Add a milestone to an existing web content page </summary>

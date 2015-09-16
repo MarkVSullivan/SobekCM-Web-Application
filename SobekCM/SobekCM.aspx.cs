@@ -71,6 +71,7 @@ namespace SobekCM
 						(pageGlobals.currentMode.Mode != Display_Mode_Enum.Reset) &&
 						(pageGlobals.currentMode.Mode != Display_Mode_Enum.Internal) &&
 						(pageGlobals.currentMode.Mode != Display_Mode_Enum.Public_Folder) &&
+                        ((pageGlobals.currentMode.Mode != Display_Mode_Enum.Simple_HTML_CMS) || ((pageGlobals.currentMode.WebContent_Type != WebContent_Type_Enum.Edit) && (pageGlobals.currentMode.WebContent_Type != WebContent_Type_Enum.Milestones))) &&
 						((pageGlobals.currentMode.Mode != Display_Mode_Enum.Aggregation) || (pageGlobals.currentMode.Aggregation_Type != Aggregation_Type_Enum.Home_Edit)) &&
                         ((pageGlobals.currentMode.Mode != Display_Mode_Enum.Aggregation) || (pageGlobals.currentMode.Aggregation_Type != Aggregation_Type_Enum.Work_History)) &&
                         ((pageGlobals.currentMode.Mode != Display_Mode_Enum.Aggregation) || (pageGlobals.currentMode.Aggregation_Type != Aggregation_Type_Enum.User_Permissions)) &&

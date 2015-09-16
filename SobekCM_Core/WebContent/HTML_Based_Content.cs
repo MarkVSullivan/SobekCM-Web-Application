@@ -8,6 +8,7 @@ using System.Web;
 using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.Users;
 using SobekCM.Tools;
 
 #endregion
@@ -322,6 +323,32 @@ namespace SobekCM.Core.WebContent
             }
 
             return BaseURL + UrlSegments;
+        }
+
+        #endregion
+
+        #region Permissions checks (currently based on admin rights)
+
+        /// <summary> Check to see if a user has the rights to EDIT an existing content page or redirect </summary>
+        /// <param name="CurrentUser"> Current user </param>
+        /// <returns> TRUE if the provided user has rights to edit this page, otherwise FALSE </returns>
+        public bool Can_Edit(User_Object CurrentUser)
+        {
+            if ((CurrentUser.Is_Portal_Admin) || (CurrentUser.Is_System_Admin))
+                return true;
+
+            return false;
+        }
+
+        /// <summary> Check to see if a user has the rights to DELETE an existing content page or redirect </summary>
+        /// <param name="CurrentUser"> Current user </param>
+        /// <returns> TRUE if the provided user has rights to delete this page, otherwise FALSE </returns>
+        public bool Can_Delete(User_Object CurrentUser)
+        {
+            if ((CurrentUser.Is_Portal_Admin) || (CurrentUser.Is_System_Admin))
+                return true;
+
+            return false;
         }
 
         #endregion

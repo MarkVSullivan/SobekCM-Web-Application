@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Web;
 using SobekCM.Core.Client;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
@@ -13,19 +14,60 @@ namespace SobekCM.Library.WebContentViewer.Viewers
     public class Delete_Verify_WebContentViewer : abstractWebContentViewer
     {
         private string ErrorMessage;
+        private bool canDelete;
 
         /// <summary>  Constructor for a new instance of the Delete_Verify_WebContentViewer class  </summary>
         /// <param name="RequestSpecificValues">  All the necessary, non-global data specific to the current request  </param>
         public Delete_Verify_WebContentViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            RestResponseMessage message = SobekEngineClient.WebContent.Delete_HTML_Based_Content(RequestSpecificValues.Static_Web_Content.WebContentID.Value, "TEST", RequestSpecificValues.Tracer);
-
-            ErrorMessage = message.Message;
-            if ((message.ErrorTypeEnum != ErrorRestTypeEnum.Successful) && (String.IsNullOrEmpty(ErrorMessage)))
+            // This should never occur, but just a double check
+            if ((RequestSpecificValues.Static_Web_Content == null) || (!RequestSpecificValues.Static_Web_Content.WebContentID.HasValue))
             {
-                ErrorMessage = "Error encountered on SobekCm engine.";
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
             }
 
+            // Ensure there IS a logged on user 
+            RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Delete_Verify_WebContentViewer", "Validate user");
+            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
+
+            // If the user was logged on, but did not have permissions, show an error message
+            canDelete = true;
+            if (!RequestSpecificValues.Static_Web_Content.Can_Delete(RequestSpecificValues.Current_User))
+            {
+                ErrorMessage = "ERROR: You do not have permission to delete this page";
+                canDelete = false;
+            }
+            else
+            {
+                string save_value = HttpContext.Current.Request.Form["admin_delete_item"];
+
+                // Better say "DELETE", or just send back to the item
+                if ((save_value == null) || (save_value.ToUpper() != "DELETE"))
+                {
+                    ErrorMessage = "ERROR: To verify this deletion, type DELETE into the text box and press CONFIRM";
+                }
+                else
+                {
+                    RestResponseMessage message = SobekEngineClient.WebContent.Delete_HTML_Based_Content(RequestSpecificValues.Static_Web_Content.WebContentID.Value, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Tracer);
+
+                    ErrorMessage = message.Message;
+                    if ((message.ErrorTypeEnum != ErrorRestTypeEnum.Successful) && (String.IsNullOrEmpty(ErrorMessage)))
+                    {
+                        ErrorMessage = "Error encountered on SobekCM engine.";
+                    }
+                    else
+                    {
+                        ErrorMessage = "Success deleting this web content page.";
+                    }
+                }
+            }
         }
 
 
@@ -73,11 +115,16 @@ namespace SobekCM.Library.WebContentViewer.Viewers
             Output.WriteLine("    <tr><td>URL:</td><td><a href=\"" + url + "\">" + url + "</a></td></tr>");
             Output.WriteLine("  </table>");
             Output.WriteLine();
-            Output.WriteLine("  <p>Enter DELETE in the textbox below and select GO to complete this deletion.</p>");
-            Output.WriteLine("  <div id=\"sbkWchs_DeleteVerifyDiv\">");
-            Output.WriteLine("    <input class=\"sbkDimv_input sbk_Focusable\" name=\"admin_delete_confirm\" id=\"admin_delete_confirm\" type=\"text\" value=\"\" /> &nbsp; &nbsp; ");
-            Output.WriteLine("    <button title=\"Confirm delete of this page\" class=\"roundbutton\" onclick=\"delete_item(); return false;\">CONFIRM <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
-            Output.WriteLine("  </div>");
+
+            if (canDelete)
+            {
+                Output.WriteLine("  <p>Enter DELETE in the textbox below and select GO to complete this deletion.</p>");
+                Output.WriteLine("  <div id=\"sbkWchs_DeleteVerifyDiv\">");
+                Output.WriteLine("    <input class=\"sbkDimv_input sbk_Focusable\" name=\"admin_delete_confirm\" id=\"admin_delete_confirm\" type=\"text\" value=\"\" /> &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Confirm delete of this page\" class=\"roundbutton\" onclick=\"delete_item(); return false;\">CONFIRM <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("  </div>");
+            }
+
             Output.WriteLine("</div>");
 
             Output.WriteLine();

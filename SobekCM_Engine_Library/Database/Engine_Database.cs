@@ -3945,14 +3945,17 @@ namespace SobekCM.Engine_Library.Database
 			}
 		}
 
-		/// <summary> Edit an existing web content page </summary>
-		/// <param name="WebContentID"> Primary key to the existing web content page </param>
-		/// <param name="Title"> New title for this web page </param>
-		/// <param name="Summary"> New summary for this new web page </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-		/// <returns> TRUE if successful, otherwise FALSE </returns>
-		/// <remarks> This calls the 'SobekCM_WebContent_Edit' stored procedure </remarks> 
-		public static bool WebContent_Edit_Page(int WebContentID, string Title, string Summary, Custom_Tracer Tracer)
+        /// <summary> Edit an existing web content page </summary>
+        /// <param name="WebContentID"> Primary key to the existing web content page </param>
+        /// <param name="Title"> New title for this web page </param>
+        /// <param name="Summary"> New summary for this new web page </param>
+        /// <param name="Redirect"> If this is actually a redirect URL, this will be the URL that it should resolve to </param>
+        /// <param name="User"> User who edited this page or redirect </param>
+        /// <param name="MilestoneText"> Specific text for the milestone </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_WebContent_Edit' stored procedure </remarks> 
+        public static bool WebContent_Edit_Page(int WebContentID, string Title, string Summary, string Redirect, string User, string MilestoneText, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -3963,11 +3966,11 @@ namespace SobekCM.Engine_Library.Database
 			{
 				EalDbParameter[] parameters = new EalDbParameter[6];
 				parameters[0] = new EalDbParameter("@WebContentID", WebContentID);
-                parameters[1] = new EalDbParameter("@UserName", Title);
+                parameters[1] = new EalDbParameter("@UserName", User);
 				parameters[2] = new EalDbParameter("@Title", Title);
 				parameters[3] = new EalDbParameter("@Summary", Summary);
-                parameters[4] = new EalDbParameter("@Redirect", Summary);
-                parameters[5] = new EalDbParameter("@MilestoneText", Summary);
+                parameters[4] = new EalDbParameter("@Redirect", Redirect);
+                parameters[5] = new EalDbParameter("@MilestoneText", MilestoneText);
 
 				// Define a temporary dataset
 				EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_WebContent_Edit", parameters);

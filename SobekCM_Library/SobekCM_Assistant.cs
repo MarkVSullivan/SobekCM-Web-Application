@@ -76,7 +76,7 @@ namespace SobekCM.Library
                 return false;
             }
 
-            if (Simple_Web_Content.Content.Length == 0)
+            if ( String.IsNullOrEmpty(Simple_Web_Content.Content))
             {
                 Current_Mode.Error_Message = "Unable to read the file for display";
                 return false;
