@@ -437,7 +437,7 @@ namespace SobekCM.Core.WebContent
 				if (!String.IsNullOrEmpty(SiteMap))
 					writer.WriteLine("    <meta name=\"sitemap\" content=\"" + HttpUtility.HtmlEncode(SiteMap) + "\" />");
 				if (!String.IsNullOrEmpty(Web_Skin))
-					writer.WriteLine("    <meta name=\"code\" content=\"" + HttpUtility.HtmlEncode(Web_Skin) + "\" />");
+					writer.WriteLine("    <meta name=\"webskin\" content=\"" + HttpUtility.HtmlEncode(Web_Skin) + "\" />");
                 if ((IncludeMenu.HasValue) && (IncludeMenu.Value))
                     writer.WriteLine("    <meta name=\"menu\" content=\"true\" />");
 

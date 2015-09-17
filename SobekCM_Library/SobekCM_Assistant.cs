@@ -91,8 +91,12 @@ namespace SobekCM.Library
                 // If this was NULL, pull it
                 if (Site_Map == null)
                 {
+                    string sitemap_file = Simple_Web_Content.SiteMap;
+                    if (!sitemap_file.ToLower().Contains(".sitemap"))
+                        sitemap_file = sitemap_file + ".sitemap";
+
                     // Only continue if the file exists
-                    if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + Simple_Web_Content.SiteMap))
+                    if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\sitemaps\\" + sitemap_file))
                     {
                         if (Tracer != null)
                         {
@@ -100,7 +104,24 @@ namespace SobekCM.Library
                         }
 
                         // Try to read this sitemap file
-                        Site_Map = SobekCM_SiteMap_Reader.Read_SiteMap_File(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + Simple_Web_Content.SiteMap);
+                        Site_Map = SobekCM_SiteMap_Reader.Read_SiteMap_File(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\sitemaps\\" + sitemap_file);
+
+                        // If the sitemap file was succesfully read, cache it
+                        if (Site_Map != null)
+                        {
+                            CachedDataManager.Store_Site_Map(Site_Map, Simple_Web_Content.SiteMap, Tracer);
+                        }
+                    }
+                    else if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + sitemap_file))
+                    {
+                        // This is just for some legacy material
+                        if (Tracer != null)
+                        {
+                            Tracer.Add_Trace("SobekCM_Assistant.Get_Simple_Web_Content_Text", "Reading site map file");
+                        }
+
+                        // Try to read this sitemap file
+                        Site_Map = SobekCM_SiteMap_Reader.Read_SiteMap_File(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + sitemap_file);
 
                         // If the sitemap file was succesfully read, cache it
                         if (Site_Map != null)

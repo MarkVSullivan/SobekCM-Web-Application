@@ -180,7 +180,7 @@ namespace SobekCM.Library.AdminViewer
                         if ((action == "save") || (action == "save_exit"))
                         {
                             // Set the date on the page to today
-                            RequestSpecificValues.Static_Web_Content.Date = DateTime.Now.ToShortDateString();
+                            webContent.Date = DateTime.Now.ToShortDateString();
 
                             // Send the update to the endgine
                             RestResponseMessage response = SobekEngineClient.WebContent.Update_HTML_Based_Content(webContent, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Tracer);

@@ -893,6 +893,12 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Metadata_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
             }
 
+            // Include the interface's style sheet if it has one
+            if ((RequestSpecificValues.HTML_Skin != null) && (RequestSpecificValues.HTML_Skin.CSS_Style.Length > 0)) 
+            {
+                Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.HTML_Skin.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            }
+
             // If this is the static html web content view, add any special text which came from the original
             // static html file which was already read, which can include style sheets, etc..
             if ((RequestSpecificValues.Static_Web_Content != null) && ( !String.IsNullOrEmpty(RequestSpecificValues.Static_Web_Content.Extra_Head_Info)))

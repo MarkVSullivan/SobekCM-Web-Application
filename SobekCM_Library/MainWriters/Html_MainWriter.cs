@@ -571,7 +571,7 @@ namespace SobekCM.Library.MainWriters
                 subwriter.Write_Within_HTML_Head(Output, RequestSpecificValues.Tracer);
 
             // Include the interface's style sheet if it has one
-            if ((RequestSpecificValues.HTML_Skin != null) && (RequestSpecificValues.HTML_Skin.CSS_Style.Length > 0))
+            if (((RequestSpecificValues.HTML_Skin != null) && (RequestSpecificValues.HTML_Skin.CSS_Style.Length > 0)) && ( RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Simple_HTML_CMS ))
             {
                 Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.HTML_Skin.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
             }
