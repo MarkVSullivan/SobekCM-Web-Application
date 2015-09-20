@@ -899,11 +899,26 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.HTML_Skin.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
             }
 
-            // If this is the static html web content view, add any special text which came from the original
-            // static html file which was already read, which can include style sheets, etc..
-            if ((RequestSpecificValues.Static_Web_Content != null) && ( !String.IsNullOrEmpty(RequestSpecificValues.Static_Web_Content.Extra_Head_Info)))
+            // Add the special CSS here
+            if (RequestSpecificValues.Static_Web_Content != null)
             {
-                Output.WriteLine("  " + RequestSpecificValues.Static_Web_Content.Extra_Head_Info.Trim());
+                if (!String.IsNullOrEmpty(RequestSpecificValues.Static_Web_Content.CssFile))
+                {
+                    Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/design/webcontent/css/" + RequestSpecificValues.Static_Web_Content.CssFile + "\" rel=\"stylesheet\" type=\"text/css\" id=\"SobekCmControlledCss\" />");
+                }
+
+                // Add the special javascript here
+                if (!String.IsNullOrEmpty(RequestSpecificValues.Static_Web_Content.JavascriptFile))
+                {
+                    Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/design/webcontent/javascript/" + RequestSpecificValues.Static_Web_Content.JavascriptFile + "\" id=\"SobekCmControlledJavascript\" ></script>");
+                }
+
+                // If this is the static html web content view, add any special text which came from the original
+                // static html file which was already read, which can include style sheets, etc..
+                if (!String.IsNullOrEmpty(RequestSpecificValues.Static_Web_Content.Extra_Head_Info))
+                {
+                    Output.WriteLine("  " + RequestSpecificValues.Static_Web_Content.Extra_Head_Info.Trim());
+                }
             }
 
             if ((canEdit) && (RequestSpecificValues.Current_Mode.WebContent_Type == WebContent_Type_Enum.Edit))

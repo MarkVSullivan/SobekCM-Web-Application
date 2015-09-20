@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Xml;
+using Microsoft.SqlServer.Server;
 using SobekCM.Tools;
 
 #endregion
@@ -118,6 +119,8 @@ namespace SobekCM.Core.WebContent
             string sitemap = String.Empty;
             string webskin = String.Empty;
             bool includeMenu = false;
+            string sobekControlledJavascript = String.Empty;
+            string sobekControlledCss = String.Empty;
 
             // StringBuilder keeps track of any other information in the head that should be retained
             StringBuilder headBuilder = new StringBuilder();
@@ -151,14 +154,43 @@ namespace SobekCM.Core.WebContent
                         switch (xmlReader.Name.ToUpper())
                         {
                             case "LINK":
-                                headBuilder.Append("<link ");
-                                int attributeCount = xmlReader.AttributeCount;
-                                for (int i = 0; i < attributeCount; i++)
+                                // Was this the controlled link?
+                                if ((xmlReader.MoveToAttribute("id")) && (xmlReader.Value == "SobekCmControlledCss"))
                                 {
-                                    xmlReader.MoveToAttribute(i);
-                                    headBuilder.Append(xmlReader.Name + "=\"" + xmlReader.Value + "\" ");
+                                    if (xmlReader.MoveToAttribute("href"))
+                                        sobekControlledCss = xmlReader.Value;
                                 }
-                                headBuilder.AppendLine(" />");
+                                else
+                                {
+                                    headBuilder.Append("<link ");
+                                    int attributeCount = xmlReader.AttributeCount;
+                                    for (int i = 0; i < attributeCount; i++)
+                                    {
+                                        xmlReader.MoveToAttribute(i);
+                                        headBuilder.Append(xmlReader.Name + "=\"" + xmlReader.Value + "\" ");
+                                    }
+                                    headBuilder.AppendLine(" />");
+                                }
+                                break;
+
+                            case "SCRIPT":
+                                // Was this the controlled link?
+                                if ((xmlReader.MoveToAttribute("id")) && (xmlReader.Value == "SobekCmControlledJavascript"))
+                                {
+                                    if (xmlReader.MoveToAttribute("src"))
+                                        sobekControlledJavascript = xmlReader.Value;
+                                }
+                                else
+                                {
+                                    headBuilder.Append("<script ");
+                                    int attributeCount = xmlReader.AttributeCount;
+                                    for (int i = 0; i < attributeCount; i++)
+                                    {
+                                        xmlReader.MoveToAttribute(i);
+                                        headBuilder.Append(xmlReader.Name + "=\"" + xmlReader.Value + "\" ");
+                                    }
+                                    headBuilder.AppendLine("></script>");
+                                }
                                 break;
 
                             case "TITLE":
@@ -302,6 +334,10 @@ namespace SobekCM.Core.WebContent
                     returnValue.Extra_Head_Info = headBuilder.ToString();
                 if (includeMenu)
                     returnValue.IncludeMenu = true;
+                if (sobekControlledCss.Length > 0)
+                    returnValue.CssFile = sobekControlledCss;
+                if (sobekControlledJavascript.Length > 0)
+                    returnValue.JavascriptFile = sobekControlledJavascript;
             }
             else
             {

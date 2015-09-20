@@ -4025,6 +4025,8 @@ namespace SobekCM.Engine_Library.Database
 
                 // Build and return the basic info object
                 WebContent_Basic_Info returnValue = new WebContent_Basic_Info(webid, title, summary, deleted, redirect);
+                if (bool.Parse(pageRow["Locked"].ToString()))
+                    returnValue.Locked = true;
 
                 // Also, add the levels
                 if ((pageRow["Level1"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level1"].ToString())))
@@ -4122,6 +4124,8 @@ namespace SobekCM.Engine_Library.Database
 
 				// Build and return the basic info object
 				WebContent_Basic_Info returnValue = new WebContent_Basic_Info(webid, title, summary, deleted, redirect);
+                if (bool.Parse(pageRow["Locked"].ToString()))
+                    returnValue.Locked = true;
 
                 // Also, add the levels
 			    if ((pageRow["Level1"] != DBNull.Value) && (!String.IsNullOrEmpty(pageRow["Level1"].ToString())))

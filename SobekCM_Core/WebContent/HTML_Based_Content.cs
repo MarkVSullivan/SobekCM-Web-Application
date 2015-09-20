@@ -264,6 +264,42 @@ namespace SobekCM.Core.WebContent
         [ProtoMember(24)]
         public string Level8 { get; set; }
 
+        /// <summary> CSS stylesheet for this web content </summary>
+        [DataMember(EmitDefaultValue = false, Name = "css")]
+        [XmlElement("css")]
+        [ProtoMember(25)]
+        public string CssFile { get; set; }
+
+        /// <summary> Javascript file for this web content </summary>
+        [DataMember(EmitDefaultValue = false, Name = "javascript")]
+        [XmlElement("javascript")]
+        [ProtoMember(26)]
+        public string JavascriptFile { get; set; }
+
+        /// <summary> Text to display in the primary display region </summary>
+        [DataMember(EmitDefaultValue = false, Name = "locked")]
+        [XmlIgnore]
+        [ProtoMember(27)]
+        public bool? Locked { get; set; }
+
+        /// <summary> Text to display in the primary display region </summary>
+        /// <remarks> This is for the XML serialization portions </remarks>
+        [IgnoreDataMember]
+        [XmlAttribute("locked")]
+        public string Locked_AsString
+        {
+            get
+            {
+                return Locked.HasValue ? Locked.ToString() : null;
+            }
+            set
+            {
+                bool temp;
+                if (Boolean.TryParse(value, out temp))
+                    Locked = temp;
+            }
+        }
+
         /// <summary> Gets the URL segments for this web content page </summary>
         /// <returns> Web content page URL segments </returns>
         [IgnoreDataMember]
@@ -334,6 +370,9 @@ namespace SobekCM.Core.WebContent
         /// <returns> TRUE if the provided user has rights to edit this page, otherwise FALSE </returns>
         public bool Can_Edit(User_Object CurrentUser)
         {
+            if ((Locked.HasValue ) && ( Locked.Value))
+                return false;
+
             if ((CurrentUser.Is_Portal_Admin) || (CurrentUser.Is_System_Admin))
                 return true;
 
@@ -345,6 +384,9 @@ namespace SobekCM.Core.WebContent
         /// <returns> TRUE if the provided user has rights to delete this page, otherwise FALSE </returns>
         public bool Can_Delete(User_Object CurrentUser)
         {
+            if ((Locked.HasValue) && (Locked.Value))
+                return false;
+
             if ((CurrentUser.Is_Portal_Admin) || (CurrentUser.Is_System_Admin))
                 return true;
 

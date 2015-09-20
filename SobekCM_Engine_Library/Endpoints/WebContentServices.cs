@@ -4784,6 +4784,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     simpleWebContent.Level6 = BasicInfo.Level6;
                     simpleWebContent.Level7 = BasicInfo.Level7;
                     simpleWebContent.Level8 = BasicInfo.Level8;
+                    if ((BasicInfo.Locked.HasValue) && (BasicInfo.Locked.Value)) simpleWebContent.Locked = true;
 
                     // Now, check for any "server-side include" directorives in the source text
                     int include_index = simpleWebContent.Content.IndexOf("<%INCLUDE");

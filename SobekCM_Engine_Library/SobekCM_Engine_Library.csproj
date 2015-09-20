@@ -72,6 +72,7 @@
     <Compile Include="Configuration\Shibboleth_Configuration_Reader.cs" />
     <Compile Include="Email\Email_Helper.cs" />
     <Compile Include="Endpoints\AggregationServices.cs" />
+    <Compile Include="Endpoints\CustomServices.cs" />
     <Compile Include="Endpoints\DataServices.cs" />
     <Compile Include="Endpoints\EndpointBase.cs" />
     <Compile Include="Endpoints\ItemServices.cs" />

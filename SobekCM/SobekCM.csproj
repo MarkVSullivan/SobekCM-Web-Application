@@ -976,7 +976,6 @@
     <Content Include="config\default\sobekcm_engine.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="config\user\sobek_engine.config" />
     <None Include="Properties\PublishProfiles\U262189 USF SobekCM local instance.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

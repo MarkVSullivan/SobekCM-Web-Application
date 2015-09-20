@@ -113,6 +113,22 @@ namespace SobekCM.Core.WebContent
         [ProtoMember(13)]
         public string Level8 { get; set; }
 
+        /// <summary> Flag indicates if this web content page is currently locked so it can't be edited </summary>
+        [DataMember(EmitDefaultValue = false, Name = "locked")]
+        [XmlIgnore]
+        [ProtoMember(14)]
+        public bool? Locked { get; set; }
+
+        /// <summary> For XML serialization, flag indicates if this web content page is currently 
+        /// locked so it can't be edited </summary>
+        [IgnoreDataMember]
+        [XmlAttribute("locked")]
+        public bool Locked_XML
+        {
+            get { return Locked.Value; }
+            set { Locked = value; }
+        }
+
 
         #region Methods to control XML serialization
 
