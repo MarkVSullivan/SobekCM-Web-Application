@@ -1163,6 +1163,15 @@ namespace SobekCM
 				return;
 			}
 
+            // IF this is display mode and this is a redirect, do the redirect
+		    if ((currentMode.Mode == Display_Mode_Enum.Simple_HTML_CMS) && (currentMode.WebContent_Type == WebContent_Type_Enum.Display) && (staticWebContent != null) && (!String.IsNullOrEmpty(staticWebContent.Redirect)))
+		    {
+                currentMode.Request_Completed = true;
+                HttpContext.Current.Response.Redirect(staticWebContent.Redirect, false);
+                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                return;
+		    }
+
 			// If the web skin is indicated in the browse file, set that
 			if ( !String.IsNullOrEmpty(staticWebContent.Web_Skin))
 			{

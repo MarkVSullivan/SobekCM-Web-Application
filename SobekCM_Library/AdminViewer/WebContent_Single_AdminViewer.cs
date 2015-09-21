@@ -612,6 +612,38 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td>&nbsp;</td>");
             Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_webcontent_sitemap\">Tree Nav Group:</label></td>");
             Output.WriteLine("    <td>");
+            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
+
+            // Start the select box
+            Output.Write("          <select class=\"sbkSaav_SelectSkin\" name=\"admin_webcontent_sitemap\" id=\"admin_webcontent_sitemap\">");
+
+            // Add the NONE option first
+            Output.Write(String.IsNullOrEmpty(webContent.SiteMap) ? "<option value=\"\" selected=\"selected\" ></option>" : "<option value=\"\"></option>");
+
+            // Get the ordered list of all skin codes
+		    List<string> sitemaps = SobekEngineClient.WebContent.Get_All_Sitemaps(RequestSpecificValues.Tracer);
+
+            // Add each web skin code to the select box
+		    if (sitemaps != null)
+		    {
+		        foreach (string siteCode in sitemaps)
+		        {
+		            if (String.Compare(webContent.SiteMap, siteCode, StringComparison.OrdinalIgnoreCase) == 0)
+		            {
+		                Output.Write("<option value=\"" + siteCode + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(siteCode) + "</option>");
+		            }
+		            else
+		            {
+		                Output.Write("<option value=\"" + siteCode + "\">" + HttpUtility.HtmlEncode(siteCode) + "</option>");
+		            }
+		        }
+		    }
+		    Output.WriteLine("</select>");
+
+            Output.WriteLine("        </td>");
+
+
+
             Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_sitemap\" id=\"admin_webcontent_sitemap\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(webContent.SiteMap) + "\" /></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + SITEMAP_HELP + "');\"  title=\"" + SITEMAP_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");

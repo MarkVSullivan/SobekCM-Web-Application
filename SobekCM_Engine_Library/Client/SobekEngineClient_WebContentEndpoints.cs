@@ -3,11 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using Jil;
-using Microsoft.SqlServer.Server;
 using ProtoBuf;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
@@ -16,7 +14,6 @@ using SobekCM.Core.WebContent;
 using SobekCM.Core.WebContent.Admin;
 using SobekCM.Core.WebContent.Hierarchy;
 using SobekCM.Core.WebContent.Single;
-using SobekCM.Engine_Library.Endpoints;
 using SobekCM.Tools;
 
 #endregion
@@ -33,8 +30,19 @@ namespace SobekCM.Core.Client
             // All work done in the base constructor
         }
 
+        /// <summary> URL for the list of uploaded file JSON REST API </summary>
+        /// <remarks> This is used by the CKEditor to display previously uploaded file at the web content level </remarks>
+        public string Uploaded_Files_URL
+        {
+            get
+            {
+                return Config["WebContent.Get_Uploaded_Files"] == null ? null : Config["WebContent.Get_Uploaded_Files"].URL;
+            }
+        }
+
         /// <summary> Get the information for a single non-aggregational web content page </summary>
         /// <param name="WebContentID"> Primary key for this non-aggregational web content page </param>
+        /// <param name="UseCache"> Flag indicates whether to use the cache for this request </param>
         /// <param name="Tracer"></param>
         /// <returns> Object with all the information and source text for the top-level web content page </returns>
         public HTML_Based_Content Get_HTML_Based_Content(int WebContentID, bool UseCache, Custom_Tracer Tracer)
@@ -194,7 +202,7 @@ namespace SobekCM.Core.Client
             }
 
             // Call out to the endpoint and return the deserialized object
-            string url = String.Format(endpoint.URL, urlBuilder.ToString());
+            string url = String.Format(endpoint.URL, urlBuilder);
             return Deserialize<RestResponseMessage>(url, endpoint.Protocol, postData, "PUT", Tracer);
         }
 
@@ -1160,5 +1168,126 @@ namespace SobekCM.Core.Client
         }
 
         #endregion
+
+        #region Endpoints related to the sitemaps
+
+        /// <summary> Get the list of all sitemaps from the engine endpoint </summary>
+        /// <param name="Tracer"></param>
+        /// <returns> List of all the sitemaps </returns>
+        public List<string> Get_All_Sitemaps(Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Sitemaps", "Get list of sitemaps from remote endpoint");
+
+            // Look in the cache
+            if (Config.UseCache)
+            {
+                List<string> fromCache = CachedDataManager.WebContent.Retrieve_All_Sitemaps(Tracer);
+                if (fromCache != null)
+                {
+                    Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Sitemaps", "Found list in the local cache");
+                    return fromCache;
+                }
+            }
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_All_Sitemaps", Tracer);
+
+            // Call out to the endpoint and deserialize the object
+            List<string> returnValue = Deserialize<List<string>>(endpoint.URL, endpoint.Protocol, Tracer);
+
+            // Add to the local cache
+            if ((Config.UseCache) && (returnValue != null))
+            {
+                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Sitemaps", "Store list in the local cache");
+                CachedDataManager.WebContent.Store_All_Sitemaps(returnValue, Tracer);
+            }
+
+            // Return the object
+            return returnValue;
+        }
+
+        #endregion
+
+        #region Endpoints related to the controlled CSS stylesheet files
+
+        /// <summary> Get the list of all controlled CSS stylesheet files from the engine endpoint </summary>
+        /// <param name="Tracer"></param>
+        /// <returns> List of all the controlled CSS stylesheet files </returns>
+        public List<string> Get_All_Controlled_Stylesheets(Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Controlled_Stylesheets", "Get list of controlled CSS stylesheet files from remote endpoint");
+
+            // Look in the cache
+            if (Config.UseCache)
+            {
+                List<string> fromCache = CachedDataManager.WebContent.Retrieve_All_Controlled_Stylesheets(Tracer);
+                if (fromCache != null)
+                {
+                    Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Controlled_Stylesheets", "Found list in the local cache");
+                    return fromCache;
+                }
+            }
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_All_Controlled_Stylesheets", Tracer);
+
+            // Call out to the endpoint and deserialize the object
+            List<string> returnValue = Deserialize<List<string>>(endpoint.URL, endpoint.Protocol, Tracer);
+
+            // Add to the local cache
+            if ((Config.UseCache) && (returnValue != null))
+            {
+                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Controlled_Stylesheets", "Store list in the local cache");
+                CachedDataManager.WebContent.Store_All_Controlled_Stylesheets(returnValue, Tracer);
+            }
+
+            // Return the object
+            return returnValue;
+        }
+
+        #endregion
+
+        #region Endpoints related to the controlled javascript files
+
+        /// <summary> Get the list of all controlled javascript files from the engine endpoint </summary>
+        /// <param name="Tracer"></param>
+        /// <returns> List of all the controlled javascript files </returns>
+        public List<string> Get_All_Controlled_Javascript(Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Controlled_Javascript", "Get list of controlled javascript files from remote endpoint");
+
+            // Look in the cache
+            if (Config.UseCache)
+            {
+                List<string> fromCache = CachedDataManager.WebContent.Retrieve_All_Controlled_Javascript(Tracer);
+                if (fromCache != null)
+                {
+                    Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Controlled_Javascript", "Found list in the local cache");
+                    return fromCache;
+                }
+            }
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_All_Controlled_Javascript", Tracer);
+
+            // Call out to the endpoint and deserialize the object
+            List<string> returnValue = Deserialize<List<string>>(endpoint.URL, endpoint.Protocol, Tracer);
+
+            // Add to the local cache
+            if ((Config.UseCache) && (returnValue != null))
+            {
+                Tracer.Add_Trace("SobekEngineClient_WebContentServices.Get_All_Controlled_Javascript", "Store list in the local cache");
+                CachedDataManager.WebContent.Store_All_Controlled_Javascript(returnValue, Tracer);
+            }
+
+            // Return the object
+            return returnValue;
+        }
+
+        #endregion
+
     }
 }

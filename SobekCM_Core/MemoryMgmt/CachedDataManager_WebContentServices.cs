@@ -2076,5 +2076,223 @@ namespace SobekCM.Core.MemoryMgmt
         #endregion
 
         #endregion
+
+        #region Methods related to caching sitemap information
+
+        /// <summary> Retrieves the list of all the sitemaps within the system </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> List of sitemaps within the system </returns>
+        public List<string> Retrieve_All_Sitemaps(Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if ((settings.Disabled) || (HttpContext.Current == null))
+                return null;
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Sitemaps", "");
+            }
+
+            // Determine the key
+            const string KEY = "WEBCONTENT|SITEMAPS|ALL";
+
+            // See if this is in the local cache first
+            List<string> returnValue = HttpContext.Current.Cache.Get(KEY) as List<string>;
+            if (returnValue != null)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Sitemaps", "Found list of sitemaps on local cache");
+                }
+
+                return returnValue;
+            }
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Sitemaps", "List of sitemaps not found in the local cache ");
+            }
+
+            // Since everything failed, just return null
+            return null;
+        }
+
+        /// <summary> Stores the list of all the sitemaps within the system </summary>
+        /// <param name="StoreObject"> List of sitemaps within the system </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Store_All_Sitemaps(List<string> StoreObject, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Sitemaps");
+            }
+
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+            {
+                if (Tracer != null) Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Sitemaps", "Caching is disabled");
+                return;
+            }
+
+            // Determine the key
+            const string KEY = "WEBCONTENT|SITEMAPS|ALL";
+            const int LOCAL_EXPIRATION = 15;
+
+            // Locally cache if this doesn't exceed the limit
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Sitemaps", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            }
+
+            HttpContext.Current.Cache.Insert(KEY, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
+        }
+
+        #endregion
+
+        #region Methods related to caching the controlled javascript information
+
+        /// <summary> Retrieves the list of all the controlled javascript files within the system </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> List of controlled javascript files within the system </returns>
+        public List<string> Retrieve_All_Controlled_Javascript(Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if ((settings.Disabled) || (HttpContext.Current == null))
+                return null;
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Controlled_Javascript", "");
+            }
+
+            // Determine the key
+            const string KEY = "WEBCONTENT|JAVSCRIPTS|ALL";
+
+            // See if this is in the local cache first
+            List<string> returnValue = HttpContext.Current.Cache.Get(KEY) as List<string>;
+            if (returnValue != null)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Controlled_Javascript", "Found list of controlled javascript files on local cache");
+                }
+
+                return returnValue;
+            }
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Controlled_Javascript", "List of controlled javascript files not found in the local cache ");
+            }
+
+            // Since everything failed, just return null
+            return null;
+        }
+
+        /// <summary> Stores the list of all controlled javascript files within the system </summary>
+        /// <param name="StoreObject"> List of controlled javascript files within the system </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Store_All_Controlled_Javascript(List<string> StoreObject, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Controlled_Javascript");
+            }
+
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+            {
+                if (Tracer != null) Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Controlled_Javascript", "Caching is disabled");
+                return;
+            }
+
+            // Determine the key
+            const string KEY = "WEBCONTENT|JAVSCRIPTS|ALL";
+            const int LOCAL_EXPIRATION = 15;
+
+            // Locally cache if this doesn't exceed the limit
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Controlled_Javascript", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            }
+
+            HttpContext.Current.Cache.Insert(KEY, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
+        }
+
+        #endregion
+
+        #region Methods related to caching the controlled CSS stylsheets information
+
+        /// <summary> Retrieves the list of all the controlled CSS stylesheet files within the system </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> List of controlled CSS stylesheet files within the system </returns>
+        public List<string> Retrieve_All_Controlled_Stylesheets(Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if ((settings.Disabled) || (HttpContext.Current == null))
+                return null;
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Controlled_Stylesheets", "");
+            }
+
+            // Determine the key
+            const string KEY = "WEBCONTENT|CSSES|ALL";
+
+            // See if this is in the local cache first
+            List<string> returnValue = HttpContext.Current.Cache.Get(KEY) as List<string>;
+            if (returnValue != null)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Controlled_Stylesheets", "Found list of controlled CSS stylesheet files on local cache");
+                }
+
+                return returnValue;
+            }
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Retrieve_All_Controlled_Stylesheets", "List of controlled CSS stylesheet files not found in the local cache ");
+            }
+
+            // Since everything failed, just return null
+            return null;
+        }
+
+        /// <summary> Stores the list of all controlled CSS stylesheet files within the system </summary>
+        /// <param name="StoreObject"> List of controlled CSS stylesheet files within the system </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Store_All_Controlled_Stylesheets(List<string> StoreObject, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Controlled_Stylesheets");
+            }
+
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+            {
+                if (Tracer != null) Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Controlled_Stylesheets", "Caching is disabled");
+                return;
+            }
+
+            // Determine the key
+            const string KEY = "WEBCONTENT|CSSES|ALL";
+            const int LOCAL_EXPIRATION = 15;
+
+            // Locally cache if this doesn't exceed the limit
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_WebContentServices.Store_All_Controlled_Stylesheets", "Adding object '" + KEY + "' to the local cache with expiration of " + LOCAL_EXPIRATION + " minute(s)");
+            }
+
+            HttpContext.Current.Cache.Insert(KEY, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
+        }
+
+        #endregion
+
+
     }
 }

@@ -76,6 +76,10 @@ namespace SobekCM.Library
                 return false;
             }
 
+            // If this is a redirect, just return 
+            if (!String.IsNullOrEmpty(Simple_Web_Content.Redirect))
+                return true;
+
             if ( String.IsNullOrEmpty(Simple_Web_Content.Content))
             {
                 Current_Mode.Error_Message = "Unable to read the file for display";

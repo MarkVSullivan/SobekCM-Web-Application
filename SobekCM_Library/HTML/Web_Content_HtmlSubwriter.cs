@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
@@ -15,6 +14,7 @@ using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.SiteMap;
 using SobekCM.Core.Users;
+using SobekCM.Core.WebContent;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Library.WebContentViewer;
@@ -919,43 +919,44 @@ namespace SobekCM.Library.HTML
                 {
                     Output.WriteLine("  " + RequestSpecificValues.Static_Web_Content.Extra_Head_Info.Trim());
                 }
-            }
 
-            if ((canEdit) && (RequestSpecificValues.Current_Mode.WebContent_Type == WebContent_Type_Enum.Edit))
-            {
-                // Determine the aggregation upload directory
-                string directory = Path.GetDirectoryName(RequestSpecificValues.Static_Web_Content.Source);
-
-                //string aggregation_upload_dir = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + RequestSpecificValues.Hierarchy_Object.Code + "\\uploads";
-                //string aggregation_upload_url = UI_ApplicationCache_Gateway.Settings.System_Base_URL + "design/aggregations/" + RequestSpecificValues.Hierarchy_Object.Code + "/uploads/";
-
-                // Create the CKEditor object
-                CKEditor.CKEditor editor = new CKEditor.CKEditor
+                // Add the javascript for the HTML Editor
+                if ((canEdit) && (RequestSpecificValues.Current_Mode.WebContent_Type == WebContent_Type_Enum.Edit))
                 {
-                    BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
-                    Language = RequestSpecificValues.Current_Mode.Language,
-                    TextAreaID = "sbkWchs_TextEdit",
-                    FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
-                    UploadPath = directory,
-                    UploadURL = directory
-                };
+                    // Build the folder which will include the uploads
+                    HTML_Based_Content webContent = RequestSpecificValues.Static_Web_Content;
+                    string urlSegments = webContent.UrlSegments;
+                    string webcontent_upload_dir = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "webcontent\\" + urlSegments.Replace("/", "\\");
+                    string webcontent_upload_url = UI_ApplicationCache_Gateway.Settings.System_Base_URL + "design/webcontent/" + urlSegments.Replace("\\","/");
 
-                //// If there are existing files, add a reference to the URL for the image browser
-                //if ((Directory.Exists(aggregation_upload_dir)) && (Directory.GetFiles(aggregation_upload_dir).Length > 0))
-                //{
-                //    // Is there an endpoint defined for looking at uploaded files?
-                //    string upload_files_json_url = SobekEngineClient.Aggregations.Aggregation_Uploaded_Files_URL;
-                //    if (!String.IsNullOrEmpty(upload_files_json_url))
-                //    {
-                //        editor.ImageBrowser_ListUrl = String.Format(upload_files_json_url, RequestSpecificValues.Hierarchy_Object.Code);
-                //    }
-                //}
+                    // Create the CKEditor object
+                    CKEditor.CKEditor editor = new CKEditor.CKEditor
+                    {
+                        BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
+                        Language = RequestSpecificValues.Current_Mode.Language,
+                        TextAreaID = "sbkWchs_TextEdit",
+                        FileBrowser_ImageUploadUrl = RequestSpecificValues.Current_Mode.Base_URL + "HtmlEditFileHandler.ashx",
+                        UploadPath = webcontent_upload_dir,
+                        UploadURL = webcontent_upload_url
+                    };
 
-                if ((RequestSpecificValues.Static_Web_Content.Content.IndexOf("<script", StringComparison.OrdinalIgnoreCase) >= 0) || (RequestSpecificValues.Static_Web_Content.Content.IndexOf("<input", StringComparison.OrdinalIgnoreCase) >= 0))
-                    editor.Start_In_Source_Mode = true;
+                    // If there are existing files, add a reference to the URL for the image browser
+                    if ((Directory.Exists(webcontent_upload_dir)) && (Directory.GetFiles(webcontent_upload_dir).Length > 0))
+                    {
+                        // Is there an endpoint defined for looking at uploaded files?
+                        string upload_files_json_url = SobekEngineClient.WebContent.Uploaded_Files_URL;
+                        if (!String.IsNullOrEmpty(upload_files_json_url))
+                        {
+                            editor.ImageBrowser_ListUrl = String.Format(upload_files_json_url, urlSegments);
+                        }
+                    }
 
-                // Add the HTML from the CKEditor object
-                editor.Add_To_Stream(Output);
+                    if ((RequestSpecificValues.Static_Web_Content.Content.IndexOf("<script", StringComparison.OrdinalIgnoreCase) >= 0) || (RequestSpecificValues.Static_Web_Content.Content.IndexOf("<input", StringComparison.OrdinalIgnoreCase) >= 0))
+                        editor.Start_In_Source_Mode = true;
+
+                    // Add the HTML from the CKEditor object
+                    editor.Add_To_Stream(Output);
+                }
             }
 
             // If this has a viewer than it is a special, non-public view, add the admin CSS

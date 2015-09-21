@@ -5,11 +5,9 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.SqlClient;
-using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using SobekCM.Core.Message;
 using SobekCM.Engine_Library.Microservices;
 using SobekCM.Tools;
 
@@ -17,6 +15,8 @@ using SobekCM.Tools;
 
 namespace SobekCM.Engine_Library.Endpoints
 {
+    /// <summary> Custom services endpoint is used to demonstrate how to add new endpoints to the 
+    /// SobekCM system that are not part of the main system </summary>
     public class CustomServices : EndpointBase
     {
         // <summary> Register a user for the conference </summary>
@@ -85,7 +85,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // If we are missing some required fields, return a comprehensive error
             if (requiredValues.Length > 0)
             {
-                Response.Output.Write("The following fields are required: \n" + requiredValues.ToString() + "\n\nPlease enter the missing data and select REGISTER again.");
+                Response.Output.Write("The following fields are required: \n" + requiredValues + "\n\nPlease enter the missing data and select REGISTER again.");
                 Response.StatusCode = 400;
                 return;
             }
