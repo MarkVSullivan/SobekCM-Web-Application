@@ -382,6 +382,11 @@ namespace SobekCM.Library.HTML
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
                     string add_collection_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                    if (add_collection_url.IndexOf("?") < 0)
+                        add_collection_url = add_collection_url + "?code=" + RequestSpecificValues.Current_Mode.Info_Browse_Mode;
+                    else
+                        add_collection_url = add_collection_url + "&code=" + RequestSpecificValues.Current_Mode.Info_Browse_Mode;
+
                     Output.WriteLine("    <tr>");
                     Output.WriteLine("      <td>&nbsp;</td>");
                     Output.WriteLine("      <td><a href=\"" + add_collection_url + "\"><img src=\"" + Static_Resources.Wizard_Img_Large + "\" /></a></td>");
@@ -396,18 +401,22 @@ namespace SobekCM.Library.HTML
                 // Add new digital resource
                 if (( !contains_slash ) && ( UI_ApplicationCache_Gateway.Settings.Online_Item_Submit_Enabled))
                 {
-                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
-                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1"; ;
-                    string add_new_item_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-                    Output.WriteLine("    <tr>");
-                    Output.WriteLine("      <td>&nbsp;</td>");
-                    Output.WriteLine("      <td><a href=\"" + add_new_item_url + "\"><img src=\"" + Static_Resources.New_Item_Img_Large + "\" /></a></td>");
-                    Output.WriteLine("      <td>");
-                    Output.WriteLine("        <a href=\"" + add_new_item_url + "\">Add New Item</a>");
-                    Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + String.Format(ADD_NEW_ITEM_BRIEF, RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToUpper()) + "</div>");
-                    Output.WriteLine("      </td>");
-                    Output.WriteLine("    </tr>");
+                    if (RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 10)
+                    {
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
+                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
+                        ;
+                        string add_new_item_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                        Output.WriteLine("    <tr>");
+                        Output.WriteLine("      <td>&nbsp;</td>");
+                        Output.WriteLine("      <td><a href=\"" + add_new_item_url + "\"><img src=\"" + Static_Resources.New_Item_Img_Large + "\" /></a></td>");
+                        Output.WriteLine("      <td>");
+                        Output.WriteLine("        <a href=\"" + add_new_item_url + "\">Add New Item</a>");
+                        Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + String.Format(ADD_NEW_ITEM_BRIEF, RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToUpper()) + "</div>");
+                        Output.WriteLine("      </td>");
+                        Output.WriteLine("    </tr>");
+                    }
                 }
 
                 // Add web content page
@@ -441,6 +450,12 @@ namespace SobekCM.Library.HTML
                 {
                     RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aliases;
                     string alias_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+                    if (alias_url.IndexOf("?") < 0)
+                        alias_url = alias_url + "?code=" + RequestSpecificValues.Current_Mode.Info_Browse_Mode;
+                    else
+                        alias_url = alias_url + "&code=" + RequestSpecificValues.Current_Mode.Info_Browse_Mode;
+
 
                     Output.WriteLine("    <tr>");
                     Output.WriteLine("      <td>&nbsp;</td>");
@@ -927,7 +942,7 @@ namespace SobekCM.Library.HTML
                     HTML_Based_Content webContent = RequestSpecificValues.Static_Web_Content;
                     string urlSegments = webContent.UrlSegments;
                     string webcontent_upload_dir = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "webcontent\\" + urlSegments.Replace("/", "\\");
-                    string webcontent_upload_url = UI_ApplicationCache_Gateway.Settings.System_Base_URL + "design/webcontent/" + urlSegments.Replace("\\","/");
+                    string webcontent_upload_url = UI_ApplicationCache_Gateway.Settings.System_Base_URL + "design/webcontent/" + urlSegments.Replace("\\","/") + "/";
 
                     // Create the CKEditor object
                     CKEditor.CKEditor editor = new CKEditor.CKEditor
@@ -998,6 +1013,10 @@ namespace SobekCM.Library.HTML
                 Display_Mode_Enum displayMode = RequestSpecificValues.Current_Mode.Mode;
                 WebContent_Type_Enum webType = RequestSpecificValues.Current_Mode.WebContent_Type;
                 string submode = RequestSpecificValues.Current_Mode.Info_Browse_Mode;
+
+                // Add button to edit this page
+                RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Edit;
+                Output.WriteLine("          <button title=\"View history of use\" class=\"intheader_button_aggr edit_page_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\" ></button>");
 
                 // Add button to view usage statistics information
                 RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Usage;

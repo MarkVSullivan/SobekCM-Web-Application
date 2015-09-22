@@ -223,6 +223,17 @@ namespace SobekCM.Engine_Library.Endpoints
                     {
                         returnValue = new HTML_Based_Content
                         {
+                            Title = basicInfo.Title,
+                            Level1 = basicInfo.Level1,
+                            Level2 = basicInfo.Level2,
+                            Level3 = basicInfo.Level3,
+                            Level4 = basicInfo.Level4,
+                            Level5 = basicInfo.Level5,
+                            Level6 = basicInfo.Level6,
+                            Level7 = basicInfo.Level7,
+                            Level8 = basicInfo.Level8,
+                            Locked = basicInfo.Locked,
+                            Description = basicInfo.Summary,
                             Redirect = basicInfo.Redirect,
                             WebContentID = basicInfo.WebContentID
                         };
@@ -612,7 +623,6 @@ namespace SobekCM.Engine_Library.Endpoints
             // If nothing was retrieved, build it
             if (currentContent == null)
             {
-
                 // Try to read and return the html based content 
                 // Get the details from the database
                 WebContent_Basic_Info basicInfo = Engine_Database.WebContent_Get_Page(webcontentId, tracer);
@@ -633,8 +643,109 @@ namespace SobekCM.Engine_Library.Endpoints
                 content.Level6 = basicInfo.Level6;
                 content.Level7 = basicInfo.Level7;
                 content.Level8 = basicInfo.Level8;
+
+
+                // If this has a redirect, return
+                if (!String.IsNullOrEmpty(basicInfo.Redirect))
+                {
+                    currentContent = new HTML_Based_Content
+                    {
+                        Title = basicInfo.Title,
+                        Level1 = basicInfo.Level1,
+                        Level2 = basicInfo.Level2,
+                        Level3 = basicInfo.Level3,
+                        Level4 = basicInfo.Level4,
+                        Level5 = basicInfo.Level5,
+                        Level6 = basicInfo.Level6,
+                        Level7 = basicInfo.Level7,
+                        Level8 = basicInfo.Level8,
+                        Locked = basicInfo.Locked,
+                        Description = basicInfo.Summary,
+                        Redirect = basicInfo.Redirect,
+                        WebContentID = basicInfo.WebContentID
+                    };
+                }
+                else
+                {
+                    // Build the HTML content
+                    WebContentEndpointErrorEnum errorType;
+                    currentContent = read_source_file(basicInfo, tracer, out errorType);
+                }
             }
 
+            // If the current value was pulled, determine what has been changed for the database note
+            string changeMessage = "Updated web page";
+            if (currentContent != null)
+            {
+                // If the redirect changed, just make that the message
+                string currRedirect = String.Empty;
+                string newRedirect = String.Empty;
+                if (!String.IsNullOrEmpty(content.Redirect)) newRedirect = content.Redirect;
+                if (!String.IsNullOrEmpty(currentContent.Redirect)) currRedirect = currentContent.Redirect;
+                if (String.Compare(newRedirect, currRedirect, StringComparison.OrdinalIgnoreCase) != 0)
+                {
+                    if ((newRedirect.Length > 0) && (currRedirect.Length > 0))
+                    {
+                        changeMessage = "Changed redirect URL";
+                    }
+                    else if ( newRedirect.Length == 0 )
+                    {
+                        changeMessage = "Removed redirect URL";
+                    }
+                    else
+                    {
+                        changeMessage = "Added redirect URL";
+                    }
+                }
+                else if (!AreEqual(content.ContentSource, currentContent.ContentSource))
+                {
+                    changeMessage = "Updated the text/html";
+                }
+                else
+                {
+                    List<string> updatesBuilderList = new List<string>();
+                    if (!AreEqual(content.Author, currentContent.Author)) updatesBuilderList.Add("Author");
+                    if (!AreEqual(content.Banner, currentContent.Banner)) updatesBuilderList.Add("Banner");
+                    if (!AreEqual(content.CssFile, currentContent.CssFile)) updatesBuilderList.Add("Stylesheet");
+                    if (!AreEqual(content.Description, currentContent.Description)) updatesBuilderList.Add("Description");
+                    if (!AreEqual(content.Extra_Head_Info, currentContent.Extra_Head_Info)) updatesBuilderList.Add("Header Data");
+                    if (!AreEqual(content.JavascriptFile, currentContent.JavascriptFile)) updatesBuilderList.Add("Javascript");
+                    if (!AreEqual(content.Keywords, currentContent.Keywords)) updatesBuilderList.Add("Keywords");
+                    if (!AreEqual(content.SiteMap, currentContent.SiteMap)) updatesBuilderList.Add("Tree Nav Group");
+                    if (!AreEqual(content.Title, currentContent.Title)) updatesBuilderList.Add("Title");
+                    if (!AreEqual(content.Web_Skin, currentContent.Web_Skin)) updatesBuilderList.Add("Web Skin");
+
+                    if (updatesBuilderList.Count > 0)
+                    {
+                        if (updatesBuilderList.Count == 1)
+                        {
+                            changeMessage = "Updated the " + updatesBuilderList[0];
+                        }
+                        if (updatesBuilderList.Count == 2)
+                        {
+                            changeMessage = "Updated the " + updatesBuilderList[0] + " and " + updatesBuilderList[1];
+                        }
+                        if (updatesBuilderList.Count > 2)
+                        {
+                            StringBuilder updatesBuilder = new StringBuilder("Updated the ");
+                            for (int i = 0; i < updatesBuilderList.Count; i++)
+                            {
+                                if (i == 0)
+                                    updatesBuilder.Append(updatesBuilderList[0]);
+                                else if (i < updatesBuilderList.Count - 1)
+                                {
+                                    updatesBuilder.Append(", " + updatesBuilderList[i]);
+                                }
+                                else
+                                {
+                                    updatesBuilder.Append(", and " + updatesBuilderList[i]);
+                                }
+                            }
+                            changeMessage = updatesBuilder.ToString();
+                        }
+                    }
+                }
+            }
 
             // Get the location for this HTML file to be saved
             StringBuilder dirBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + content.Level1);
@@ -711,7 +822,7 @@ namespace SobekCM.Engine_Library.Endpoints
             bool success;
             try
             {
-                success = Engine_Database.WebContent_Edit_Page(webcontentId, content.Title, content.Description, content.Redirect, user, "Updated web page details", tracer);
+                success = Engine_Database.WebContent_Edit_Page(webcontentId, content.Title, content.Description, content.Redirect, user, changeMessage, tracer);
                 Engine_ApplicationCache_Gateway.WebContent_Hierarchy.Add_Single_Node(webcontentId, content.Redirect, content.Level1, content.Level2, content.Level3, content.Level4, content.Level5, content.Level6, content.Level7, content.Level8);
             }
             catch (Exception)
@@ -769,6 +880,22 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Use the base class to serialize the object according to request protocol
             Serialize(message, Response, Protocol, null);
+        }
+
+        private static bool AreEqual(string a, string b)
+        {
+            if (String.IsNullOrEmpty(a))
+            {
+                return String.IsNullOrEmpty(b);
+            }
+            else if (String.IsNullOrEmpty(b))
+            {
+                return false;
+            }
+            else
+            {
+                return (String.Compare(a, b, StringComparison.OrdinalIgnoreCase) == 0);
+            }
         }
 
         // <summary> Add a new HTML based web content page or redirect to the system </summary>
@@ -1443,7 +1570,7 @@ namespace SobekCM.Engine_Library.Endpoints
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
-            tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_URL", "Compute web content id from url segments");
+            tracer.Add_Trace("WebContentServices.GetUploadedImages", "Compute web content id from url segments");
 
             // If no URL segments, then invalid
             if (UrlSegments.Count == 0)
@@ -1455,7 +1582,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             if (Engine_ApplicationCache_Gateway.WebContent_Hierarchy == null)
             {
-                tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_URL", "Unable to pull web content hierarchy from engine application cache");
+                tracer.Add_Trace("WebContentServices.GetUploadedImages", "Unable to pull web content hierarchy from engine application cache");
 
                 Response.ContentType = "text/plain";
                 Response.Output.WriteLine("Unable to pull web content hierarchy from engine application cache");
@@ -1477,7 +1604,7 @@ namespace SobekCM.Engine_Library.Endpoints
             WebContent_Hierarchy_Node matchedNode = Engine_ApplicationCache_Gateway.WebContent_Hierarchy.Find(UrlSegments);
             if (matchedNode == null)
             {
-                tracer.Add_Trace("WebContentServices.Get_HTML_Based_Content_By_URL", "Requested page does not exist");
+                tracer.Add_Trace("WebContentServices.GetUploadedImages", "Requested page does not exist");
 
                 Response.ContentType = "text/plain";
                 Response.Output.WriteLine("Requested page does not exist");
@@ -4460,7 +4587,10 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 // Start the JSON response for this row
                 DataRow thisRow = resultsView[i].Row;
-                Response.Output.Write("[ " + thisRow["WebContentID"] + ", ");
+                if (( thisRow["Redirect"] == DBNull.Value ) || ( thisRow["Redirect"].ToString().Length == 0 ))
+                    Response.Output.Write("[ \"" + thisRow["WebContentID"] + "\", ");
+                else
+                    Response.Output.Write("[ \"" + thisRow["WebContentID"] + "R\", ");
 
                 Response.Output.Write("\"" + thisRow["Level1"]);
                 if ((thisRow["Level2"] != DBNull.Value) && (!String.IsNullOrEmpty(thisRow["Level2"].ToString())))

@@ -258,7 +258,11 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("      <table class=\"sbkAdm_PopupTable\">");
 
             // Add line for alias
-			Output.WriteLine("        <tr><td style=\"width:120px;\"><label for=\"admin_forwarding_alias\">Alias:</label></td><td colspan=\"2\"><input class=\"sbkAav_input sbkAdmin_Focusable\" name=\"admin_forwarding_alias\" id=\"admin_forwarding_alias\" type=\"text\" value=\"\" /></td></tr>");
+            string code = String.Empty;
+            if ((HttpContext.Current != null) && (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["code"])))
+                code = HttpContext.Current.Request.QueryString["code"];
+
+			Output.WriteLine("        <tr><td style=\"width:120px;\"><label for=\"admin_forwarding_alias\">Alias:</label></td><td colspan=\"2\"><input class=\"sbkAav_input sbkAdmin_Focusable\" name=\"admin_forwarding_alias\" id=\"admin_forwarding_alias\" type=\"text\" value=\"" + code + "\" /></td></tr>");
 
             // Add line for aggregation
 			Output.WriteLine("        <tr>");

@@ -308,9 +308,14 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <div class=\"tabscontent\">");
             Output.WriteLine("    	<div class=\"sbkUgav_TabPage\" id=\"tabpage_1\">");
 
+            // Determine the URL
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;
+            string cancel_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Add_New;
+        
             // Add the buttons
             Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
-            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='http://sobekrepository.org';\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + cancel_url + "';return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
             Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" onclick=\"return save_webcontent_edits('false');return false;\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
             Output.WriteLine("  </div>");
             Output.WriteLine();

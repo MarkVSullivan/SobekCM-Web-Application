@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.Settings;
 using SobekCM.Tools;
@@ -48,6 +49,11 @@ namespace SobekCM.Library.WebContentViewer.Viewers
 
             string type1 = "web content page";
             string type2 = "Web Content Page";
+            if (!String.IsNullOrEmpty(RequestSpecificValues.Static_Web_Content.Redirect))
+            {
+                type1 = "global redirect";
+                type2 = "Global Redirect";
+            }
 
             Output.WriteLine("    <tr class=\"sbkMmav_HeaderRow\"><td colspan=\"3\">How would you like to manage this " + type1 + " today?</td></tr>");
 
@@ -56,6 +62,9 @@ namespace SobekCM.Library.WebContentViewer.Viewers
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Simple_HTML_CMS;
             RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Display;
             string view_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+            RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Edit;
+            string edit_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
             RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Usage;
             string usage_stats_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
@@ -86,6 +95,18 @@ namespace SobekCM.Library.WebContentViewer.Viewers
             Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("    <tr class=\"sbkMmav_SpacerRow\"><td colspan=\"3\"></td></tr>");
+
+            // Add the link for editing this
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
+            Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + edit_url + "\"><img src=\"" + Static_Resources.Edit_Metadata_Icon_Png + "\" /></a></td>");
+            Output.WriteLine("      <td>");
+            Output.WriteLine("        <a href=\"" + edit_url + "\">Edit " + type2 + "</a>");
+            Output.WriteLine("        <div class=\"sbkMmav_Desc\">Edit the information including the redirect URL, title, subjects, and keywords, and control the general appearance of the page and bulk upload images and documents.</div>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
+            Output.WriteLine("    <tr class=\"sbkMmav_SpacerRow\"><td colspan=\"3\"></td></tr>");
+            
 
             // Add the link for the usage stats
             Output.WriteLine("    <tr>");

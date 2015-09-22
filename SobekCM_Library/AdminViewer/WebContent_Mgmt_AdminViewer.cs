@@ -166,7 +166,20 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  </div>");
             }
 
-            
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Add_New;
+            string wizard_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
+
+            Output.WriteLine("  <table style=\"margin-left: 50px;\">");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td style=\"width:500px; text-align: left;\">");
+            Output.WriteLine("        <p>Press the button to the right to add a new web content page or redirect, or just type the URL for the new web content page. </p>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("      <td style=\"padding-left: 30px;\">");
+            Output.WriteLine("        <button title=\"Add a new web content page or redirect\" class=\"sbkAdm_RoundButton\" style=\"padding: 6px;width: 190px;\" onclick=\"window.location.href='" + wizard_url + "';return false;\"> &nbsp; ADD NEW &nbsp; <br />PAGE OR REDIRECT</button>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
+            Output.WriteLine("  </table>");
 
             // Start the outer tab containe
             Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs sbkAdm_HomeTabs\">");
@@ -457,14 +470,20 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("     $('#sbkWcav_MainTable tbody').on( 'click', 'tr', function () {");
             Output.WriteLine("          var aData = oTable.fnGetData( this );");
-            Output.WriteLine("          var iId = aData[1];");
+            Output.WriteLine("          var iId = aData[0];");
+            Output.WriteLine("          var iUrl = aData[1];");
+            Output.WriteLine("          var url = '" + RequestSpecificValues.Current_Mode.Base_URL + "' + iUrl;");
+            Output.WriteLine("          if ( iId.indexOf('R') > 0 )");
+            Output.WriteLine("          {");
+            Output.WriteLine("              url = '" + RequestSpecificValues.Current_Mode.Base_URL + "' + iUrl + '?mode=menu';");
+            Output.WriteLine("          }");
             Output.WriteLine("          if ( shifted == true )");
             Output.WriteLine("          {");
-            Output.WriteLine("             window.open('" + RequestSpecificValues.Current_Mode.Base_URL + "' + iId);");
+            Output.WriteLine("             window.open(url);");
             Output.WriteLine("             shifted=false;");
             Output.WriteLine("          }");
             Output.WriteLine("          else");
-            Output.WriteLine("             window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "' + iId;");
+            Output.WriteLine("             window.location.href=url;");
             Output.WriteLine("     });");
             Output.WriteLine("  });");
             Output.WriteLine("</script>");
@@ -878,11 +897,11 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("          var iId = aData[1];");
             Output.WriteLine("          if ( shifted == true )");
             Output.WriteLine("          {");
-            Output.WriteLine("             window.open('" + RequestSpecificValues.Current_Mode.Base_URL + "' + iId);");
+            Output.WriteLine("             window.open('" + RequestSpecificValues.Current_Mode.Base_URL + "' + iId + '?mode=menu');");
             Output.WriteLine("             shifted=false;");
             Output.WriteLine("          }");
             Output.WriteLine("          else");
-            Output.WriteLine("             window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "' + iId;");
+            Output.WriteLine("             window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "' + iId + '?mode=menu';");
             Output.WriteLine("     });");
             Output.WriteLine("  });");
             Output.WriteLine("</script>");

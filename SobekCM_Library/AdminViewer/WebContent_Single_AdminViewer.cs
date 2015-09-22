@@ -641,10 +641,6 @@ namespace SobekCM.Library.AdminViewer
 		    Output.WriteLine("</select>");
 
             Output.WriteLine("        </td>");
-
-
-
-            Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkWcav_large_input sbkAdmin_Focusable\" name=\"admin_webcontent_sitemap\" id=\"admin_webcontent_sitemap\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(webContent.SiteMap) + "\" /></td>");
             Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + SITEMAP_HELP + "');\"  title=\"" + SITEMAP_HELP + "\" /></td></tr></table>");
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");

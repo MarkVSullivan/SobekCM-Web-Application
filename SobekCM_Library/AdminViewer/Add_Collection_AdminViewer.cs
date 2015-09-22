@@ -77,6 +77,12 @@ namespace SobekCM.Library.AdminViewer
             New_Aggregation_Arguments cachedInstance = HttpContext.Current.Session["Add_Coll_Wizard"] as New_Aggregation_Arguments;
             newAggr = cachedInstance ?? new New_Aggregation_Arguments("ALL");
 
+            // Set the code?
+            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["code"]))
+            {
+                newAggr.Code = HttpContext.Current.Request.QueryString["code"];
+            }
+
             // Lock the parent?
             if (parent_locked.Length > 0)
             {
@@ -198,7 +204,9 @@ namespace SobekCM.Library.AdminViewer
                                 {
                                     File.Delete(thisFile);
                                 }
-                                catch { }
+                                catch
+                                {
+                                }
                             }
                             string[] button_files = SobekCM_File_Utilities.GetFiles(userInProcessDirectory + "\\images\\buttons", "*.gif");
                             foreach (string thisFile in button_files)
@@ -207,7 +215,9 @@ namespace SobekCM.Library.AdminViewer
                                 {
                                     File.Delete(thisFile);
                                 }
-                                catch { }
+                                catch
+                                {
+                                }
                             }
                         }
 
@@ -222,7 +232,7 @@ namespace SobekCM.Library.AdminViewer
                         {
                             // Send to the main aggregation admin screen
                             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Aggregations_Mgmt;
-                            
+
                         }
                         UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                         return;
@@ -350,7 +360,9 @@ namespace SobekCM.Library.AdminViewer
                                     {
                                         File.Delete(thisFile);
                                     }
-                                    catch { }
+                                    catch
+                                    {
+                                    }
                                 }
                                 string[] button_files = SobekCM_File_Utilities.GetFiles(userInProcessDirectory + "\\images\\buttons", "*.gif");
                                 foreach (string thisFile in button_files)
@@ -359,7 +371,9 @@ namespace SobekCM.Library.AdminViewer
                                     {
                                         File.Delete(thisFile);
                                     }
-                                    catch { }
+                                    catch
+                                    {
+                                    }
                                 }
                             }
 
@@ -407,9 +421,16 @@ namespace SobekCM.Library.AdminViewer
                         RequestSpecificValues.Current_Mode.Request_Completed = true;
                     }
                 }
-                catch 
+                catch
                 {
                     actionMessage = "General error while reading postback information";
+                }
+            }
+            else
+            {
+                if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["code"]))
+                {
+                    newAggr.Code = HttpContext.Current.Request.QueryString["code"];
                 }
             }
         }
