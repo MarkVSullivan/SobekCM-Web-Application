@@ -82,6 +82,10 @@ namespace SobekCM.Core.Settings
 
                 MarcGeneration = new Marc21_Settings();
 
+                // Current hard coded
+                JPEG_Maximum_Height = 1600;
+                JPEG_Maximum_Width = 1200;
+
                 // Define new empty collections
                 dispositionLookup = new Dictionary<int, Disposition_Option>();
                 Metadata_Search_Fields = new List<Metadata_Search_Field>();
@@ -390,9 +394,17 @@ namespace SobekCM.Core.Settings
         [DataMember]
         public int JPEG_Width { get; set; }
 
-        /// <summary> Gets the library-wide setting for height created jpeg derivatives </summary>
+        /// <summary> Gets the library-wide setting for height of created jpeg derivatives </summary>
         [DataMember]
         public int JPEG_Height { get; set; }
+
+        /// <summary> Gets the library-wide setting for MAXIMUM width of uploaded jpegs before they are downsampled and a zoomable image created </summary>
+        [DataMember]
+        public int JPEG_Maximum_Width { get; set; }
+
+        /// <summary> Gets the library-wide setting for MAXIMUM height of uploaded jpegs before they are downsampled and a zoomable image created </summary>
+        [DataMember]
+        public int JPEG_Maximum_Height { get; set; }
 
         /// <summary> Kakadu JPEG2000 script will override the specifications used when creating zoomable images </summary>
         [DataMember]

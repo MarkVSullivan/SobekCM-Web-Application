@@ -145,8 +145,8 @@ namespace SobekCM.Library.ItemViewer.Fragments
                 responseBuilder.AppendLine("    </blockquote>");
                 responseBuilder.AppendLine("  </fieldset><br />");
 				responseBuilder.AppendLine("  <div style=\"text-align:center; font-size:1.3em;\">");
-				responseBuilder.AppendLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return print_form_close();\"> CANCEL </button> &nbsp; &nbsp; ");
-				responseBuilder.AppendLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return print_item('" + CurrentMode.Page + "','" + url_redirect + "','" + print_options + "');\"> PRINT </button>");
+				responseBuilder.AppendLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return print_form_close();return false;\"> CANCEL </button> &nbsp; &nbsp; ");
+                responseBuilder.AppendLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return print_item('" + CurrentMode.Page + "','" + url_redirect + "','" + print_options + "');return false;\"> PRINT </button>");
 				responseBuilder.AppendLine("  </div><br />");
                 responseBuilder.AppendLine("</div>");
                 responseBuilder.AppendLine();

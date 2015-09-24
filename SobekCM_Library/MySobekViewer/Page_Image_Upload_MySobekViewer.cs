@@ -63,14 +63,30 @@ namespace SobekCM.Library.MySobekViewer
             {
 				// Any post-processing to do?
 				string[] files = Directory.GetFiles(digitalResourceDirectory);
+
+                // Make a dictionary of the included files
+                Dictionary<string, string> filesByName = new Dictionary<string, string>();
+                foreach (string thisFile in files)
+                {
+                    string fileName = Path.GetFileName(thisFile);
+                    if (!String.IsNullOrEmpty(fileName))
+                        filesByName[fileName.ToUpper()] = thisFile;
+                }
+
+                // Now, step through each TIFF
 				foreach (string thisFile in files)
 				{
-					FileInfo thisFileInfo = new FileInfo(thisFile);
-					if ((thisFileInfo.Extension.ToUpper() == ".TIF") || (thisFileInfo.Extension.ToUpper() == ".TIFF"))
+                    string extension = Path.GetExtension(thisFile);
+                    string name = Path.GetFileName(thisFile);
+
+                    // Should never happen
+                    if ((extension == null) || (name == null )) continue;
+
+                    if ((String.Compare(extension, ".TIF", StringComparison.OrdinalIgnoreCase) == 0) || (String.Compare(extension, ".TIFF", StringComparison.OrdinalIgnoreCase) == 0))
 					{
 						// Is there a JPEG and/or thumbnail?
-						string jpeg = digitalResourceDirectory + "\\" + thisFileInfo.Name.Replace(thisFileInfo.Extension, "") + ".jpg";
-						string jpeg_thumbnail = digitalResourceDirectory + "\\" + thisFileInfo.Name.Replace(thisFileInfo.Extension, "") + "thm.jpg";
+                        string jpeg = digitalResourceDirectory + "\\" + name.Replace(extension, "") + ".jpg";
+                        string jpeg_thumbnail = digitalResourceDirectory + "\\" + name.Replace(extension, "") + "thm.jpg";
 
 						// Is one missing?
 						if ((!File.Exists(jpeg)) || (!File.Exists(jpeg_thumbnail)))
@@ -91,6 +107,69 @@ namespace SobekCM.Library.MySobekViewer
 						}
 					}
 				}
+
+                // Now, check one more time for JPEGs that do not have thumbnails
+                FileStream reuseStream = null;
+                foreach (string thisFile in files)
+                {
+                    string extension = Path.GetExtension(thisFile);
+                    string name = Path.GetFileName(thisFile);
+
+                    // Should never happen
+                    if ((extension == null) || (name == null)) continue;
+
+                    if ((String.Compare(extension, ".JPG", StringComparison.OrdinalIgnoreCase) == 0) && ( name.IndexOf("THM.JPG", StringComparison.OrdinalIgnoreCase) < 0 ))
+                    {
+                        // Is there a JPEG and/or thumbnail?
+                        string jpeg_thumbnail = digitalResourceDirectory + "\\" + name.Replace(extension, "") + "thm.jpg";
+
+                        // Is one missing?
+                        if (!File.Exists(jpeg_thumbnail))
+                        {
+                            try
+                            {
+                                // Load the JPEG
+                                Image jpegSourceImg = SafeImageFromFile(thisFile, ref reuseStream);
+                                if ((jpegSourceImg.Width > UI_ApplicationCache_Gateway.Settings.JPEG_Maximum_Width) || (jpegSourceImg.Height > UI_ApplicationCache_Gateway.Settings.JPEG_Maximum_Height))
+                                {
+                                    // Copy the JPEG
+                                    string final_destination = RequestSpecificValues.Current_Item.Source_Directory + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name;
+                                    if (Directory.Exists(final_destination))
+                                        Directory.CreateDirectory(final_destination);
+                                    string copy_file = final_destination + "\\" + name.Replace(extension, "") + "_ORIG.jpg";
+                                    File.Copy(thisFile, copy_file, true);
+
+                                    // Create the TIFF
+                                    string tiff_file = digitalResourceDirectory + "\\" + name.Replace(extension, "") + ".tif";
+                                    jpegSourceImg.Save(tiff_file, ImageFormat.Tiff);
+
+                                    // Delete the original JPEG file
+                                    File.Delete(thisFile);
+
+                                    // Now, create the smaller JPEG and JPEG thumbnail
+                                    string jpeg = digitalResourceDirectory + "\\" + name.Replace(extension, "") + ".jpg";
+                                    var mainImg = ScaleImage(jpegSourceImg, UI_ApplicationCache_Gateway.Settings.JPEG_Width, UI_ApplicationCache_Gateway.Settings.JPEG_Height);
+                                    mainImg.Save(jpeg, ImageFormat.Jpeg);
+
+                                    // And save the thumbnasil as well
+                                    var thumbnailImg = ScaleImage(jpegSourceImg, 150, 400);
+                                    thumbnailImg.Save(jpeg_thumbnail, ImageFormat.Jpeg);
+                                }
+                                else
+                                {
+                                    // The JPEG is good to show AS IS, so just create the thumbnail
+                                    var thumbnailImg = ScaleImage(jpegSourceImg, 150, 400);
+                                    thumbnailImg.Save(jpeg_thumbnail, ImageFormat.Jpeg);
+                                }
+                            }
+                            catch ( Exception ee)
+                            {
+                                RequestSpecificValues.Current_Mode.Error_Message = ee.Message;
+                                // Do nothing
+                            }
+                        }
+                    }
+                }
             }
 
             // If this is post-back, handle it
@@ -416,6 +495,29 @@ namespace SobekCM.Library.MySobekViewer
 
 
             return criticalErrorEncountered;
+        }
+
+        #endregion
+
+        #region Method to return an image after closing connectio to the file
+
+        private static Image SafeImageFromFile(string FilePath, ref FileStream ReuseStream)
+        {
+            // http://stackoverflow.com/questions/18250848/how-to-prevent-the-image-fromfile-method-to-lock-the-file
+
+            Bitmap img;
+            ReuseStream = new FileStream(FilePath, FileMode.Open, FileAccess.Read);
+            using (Bitmap b = new Bitmap(ReuseStream))
+            {
+                img = new Bitmap(b.Width, b.Height, b.PixelFormat);
+                using (Graphics g = Graphics.FromImage(img))
+                {
+                    g.DrawImage(b, 0, 0, img.Width, img.Height);
+                    g.Flush();
+                }
+            }
+            ReuseStream.Close();
+            return img;
         }
 
         #endregion

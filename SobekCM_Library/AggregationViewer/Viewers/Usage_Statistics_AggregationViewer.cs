@@ -147,7 +147,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             const string DEFINITIONS = "DEFINITIONS";
 
             Output.WriteLine("<div class=\"ShowSelectRow\">");
-			Output.WriteLine("  <ul class=\"sbk_FauxUpwardTabsList\">");
+			Output.WriteLine("  <ul class=\"sbk_FauxDownwardTabsList\">");
 
             // Save and normalize the submode
             string submode = "views";

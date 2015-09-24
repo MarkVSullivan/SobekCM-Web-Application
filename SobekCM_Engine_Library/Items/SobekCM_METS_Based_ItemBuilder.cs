@@ -638,11 +638,14 @@ namespace SobekCM.Engine_Library.Items
 
 			pageseq = 0;
 			List<Page_TreeNode> pages_encountered = new List<Page_TreeNode>();
-			foreach (abstract_TreeNode rootNode in Package_To_Finalize.Divisions.Physical_Tree.Roots)
-			{
-				recurse_through_nodes(Package_To_Finalize, rootNode, pages_encountered);
-			}
-			Package_To_Finalize.Web.Static_PageCount = pages_encountered.Count;
+		    if (!Package_To_Finalize.Behaviors.Dark_Flag)
+		    {
+		        foreach (abstract_TreeNode rootNode in Package_To_Finalize.Divisions.Physical_Tree.Roots)
+		        {
+		            recurse_through_nodes(Package_To_Finalize, rootNode, pages_encountered);
+		        }
+		    }
+		    Package_To_Finalize.Web.Static_PageCount = pages_encountered.Count;
 			Package_To_Finalize.Web.Static_Division_Count = divseq;
 
 			// Make sure no icons were retained from the METS file itself
@@ -942,7 +945,7 @@ namespace SobekCM.Engine_Library.Items
 			}
 
 			// Step through each download and make sure it is fully built
-			if (Package_To_Finalize.Divisions.Download_Tree.Has_Files)
+			if (( !Package_To_Finalize.Behaviors.Dark_Flag ) && ( Package_To_Finalize.Divisions.Download_Tree.Has_Files))
 			{
 				string ead_file = String.Empty;
 				int pdf_download = 0;
@@ -1086,14 +1089,14 @@ namespace SobekCM.Engine_Library.Items
 			}
 
 			// Look for the HTML type views next, and possible set some defaults
-			if (viewsFromDb.ContainsKey(View_Enum.HTML))
+            if ((!Package_To_Finalize.Behaviors.Dark_Flag) && viewsFromDb.ContainsKey(View_Enum.HTML))
 			{
 				Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.HTML]);
 				viewsFromDb.Remove(View_Enum.HTML);
 			}
 
 			// Copy the TEI flag
-			if (viewsFromDb.ContainsKey(View_Enum.TEI))
+            if ((!Package_To_Finalize.Behaviors.Dark_Flag) && viewsFromDb.ContainsKey(View_Enum.TEI))
 			{
 				Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.TEI]);
 				viewsFromDb.Remove(View_Enum.TEI);
@@ -1117,7 +1120,7 @@ namespace SobekCM.Engine_Library.Items
 			}
 
 			// Finally, add all the ITEM VIEWS
-			if ((Package_To_Finalize.Web.Pages_By_Sequence != null) && (Package_To_Finalize.Web.Pages_By_Sequence.Count > 0))
+            if ((!Package_To_Finalize.Behaviors.Dark_Flag) && (Package_To_Finalize.Web.Pages_By_Sequence != null) && (Package_To_Finalize.Web.Pages_By_Sequence.Count > 0))
 			{
                 // Look for the RELATED IMAGES view next
                 if (viewsFromDb.ContainsKey(View_Enum.RELATED_IMAGES))

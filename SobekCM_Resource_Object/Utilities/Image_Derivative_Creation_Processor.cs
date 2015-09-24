@@ -57,7 +57,8 @@ namespace SobekCM.Resource_Object.Utilities
 		/// <param name="Create_QC_Images"> Flag indicates if medium size JPEGs should be created for the QC windows application </param>
 		/// <param name="Thumbnail_Width"> Width of the bounding box for the thumbnail </param>
 		/// <param name="Thumbnail_Height"> Height of the bounding box for the thumbnail </param>
-		public Image_Derivative_Creation_Processor(string Image_Magick_Path, string Kakadu_Path, bool Create_JPEGs, bool Create_JPEG2000s, int JPEG_Width, int JPEG_Height, bool Create_QC_Images, int Thumbnail_Width, int Thumbnail_Height)
+		/// <param name="TempFolder"> Temporary folder, if a temporary folder should be used for processing </param>
+		public Image_Derivative_Creation_Processor(string Image_Magick_Path, string Kakadu_Path, bool Create_JPEGs, bool Create_JPEG2000s, int JPEG_Width, int JPEG_Height, bool Create_QC_Images, int Thumbnail_Width, int Thumbnail_Height, string TempFolder )
 		{
 			// Save all the parameters
 			image_magick_path = Image_Magick_Path;
@@ -69,10 +70,11 @@ namespace SobekCM.Resource_Object.Utilities
 			jpeg_height = JPEG_Height;
 			thumbnail_height = Thumbnail_Height;
 			thumbnail_width = Thumbnail_Width;
+		    temp_folder = TempFolder;
 
-			// Save the location for temporary files
-			temp_folder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-			temp_folder = temp_folder + "\\SobekCM\\Temporary";
+		    //// Save the location for temporary files
+		    //temp_folder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+		    //temp_folder = temp_folder + "\\SobekCM\\Temporary";
 		}
 
 		/// <summary> Gets the count of the number of failures Kakadu experienced while creating JPEG2000 derivatives </summary>
@@ -100,13 +102,31 @@ namespace SobekCM.Resource_Object.Utilities
 	    /// <param name="VID"> Volume id for the item to derive images for </param>
 	    public bool Process(string Package_Directory, string BibID, string VID, string[] TifFiles, long ParentLogId )
 		{
-			// Create the temp folder
-			if (!Directory.Exists(temp_folder))
-			{
-				Directory.CreateDirectory(temp_folder);
-			}
+            // Ensure the directory does not end in a '\' for later work
+            if (Package_Directory[Package_Directory.Length - 1] == '\\')
+                Package_Directory = Package_Directory.Substring(0, Package_Directory.Length - 1);
 
-			Kakadu_Failures = 0;
+            string processFolder = Package_Directory;
+
+            // Was a temporary processing folder location given?  If so and it doesn't exist create it
+	        if (!String.IsNullOrEmpty(temp_folder))
+	        {
+	            try
+	            {
+	                // Create the temp folder
+	                if (!Directory.Exists(temp_folder))
+	                {
+	                    Directory.CreateDirectory(temp_folder);
+	                }
+	                processFolder = temp_folder;
+	            }
+	            catch
+	            {
+	                // Just don't use the temp folder if unable to create it for whatever reason
+	            }
+	        }
+
+	        Kakadu_Failures = 0;
 			consecutive_image_creation_error = 0;
 			catastrophic_failure_detected = false;
 
@@ -116,7 +136,7 @@ namespace SobekCM.Resource_Object.Utilities
 			// Perform imaging work on all the files, in a try/catch
 			try
 			{
-				if (Create_Derivative_Files(Package_Directory, TifFiles, BibID + ":" + VID, ParentLogId ))
+				if (Create_Derivative_Files(Package_Directory, TifFiles, BibID + ":" + VID, ParentLogId, processFolder ))
 				{
 					kakaduErrorEncountered = true;
 				}
@@ -143,10 +163,23 @@ namespace SobekCM.Resource_Object.Utilities
 			}
 
 			// Delete the temporary folder
-			if (Directory.Exists(temp_folder))
-			{
-				Directory.Delete(temp_folder, true);
-			}
+            // Was a temporary processing folder location given?  If so and it doesn't exist create it
+            if (!String.IsNullOrEmpty(temp_folder))
+            {
+                try
+                {
+                    // Delete the temp folder
+                    if ((Directory.Exists(temp_folder)) && ( Directory.GetFiles(temp_folder).Length == 0 ))
+                    {
+                        
+                        Directory.Delete(temp_folder, true);
+                    }
+                }
+                catch
+                {
+                    // No big whoop
+                }
+            }
 
 			// Fire the process complete event
 			if (!catastrophic_failure_detected)
@@ -193,13 +226,12 @@ namespace SobekCM.Resource_Object.Utilities
 
 		#region Create Derivative Files
 
-		private bool Create_Derivative_Files(string Directory, string[] TifFiles, string PackageName, long ParentLogId )
+		private bool Create_Derivative_Files(string Directory, string[] TifFiles, string PackageName, long ParentLogId, string ProcessFolder )
 		{
 			bool kakadu_error = false;
 
-			// Ensure the directory does not end in a '\' for later work
-			if (Directory[Directory.Length - 1] == '\\')
-				Directory = Directory.Substring(0, Directory.Length - 1);
+            // Is the processing folder the same as the directory?
+            bool useTemp = !Path.Equals(Directory, ProcessFolder);
 
 			// Itereate through all the files in this volume
 			int fileCtr = 1;
@@ -225,46 +257,54 @@ namespace SobekCM.Resource_Object.Utilities
 						OnNewProgress(fileCtr++, (totalCount + 1));
 
 
-						// Get the date for this file and the date for the QC files, if they exist
-						if (((!File.Exists(rootName + ".jpg")) || (!File.Exists(rootName + "thm.jpg")))
-							|| (File.GetLastWriteTime(rootName + ".jpg").CompareTo(File.GetLastWriteTime(tifFile)) < 0))
+						// Get the date for this file and verify thumbnail, jpeg, and jp2 exist
+						if ((((!File.Exists(rootName + ".jpg")) || (!File.Exists(rootName + "thm.jpg")))
+							|| (File.GetLastWriteTime(rootName + ".jpg").CompareTo(File.GetLastWriteTime(tifFile)) < 0)) ||
+                            ((!File.Exists(rootName + ".jp2")) || (File.GetLastWriteTime(rootName + ".jp2").CompareTo(File.GetLastWriteTime(tifFile)) < 0)))
 						{
 							// We'll do the processing on our local machine to avoid pulling the data from the SAN multiple times
-							string localTempFile = temp_folder + "\\TEMP.tif";
-							try
-							{
-								if (File.Exists(localTempFile))
-								{
-									File.Delete(localTempFile);
-								}
-								File.Copy(tifFile, localTempFile, true);
-							}
-							catch
-							{
-								Thread.Sleep(2000);
+                            string useFile = tifFile;
 
-								try
-								{
-									if (File.Exists(localTempFile))
-									{
-										File.Delete(localTempFile);
-									}
-									File.Copy(tifFile, localTempFile, true);
-								}
-								catch
-								{
-									OnErrorEncountered("ERROR DELETING EXISTING TEMP.TIF FILE", ParentLogId, PackageName);
-									consecutive_image_creation_error++;
-								}
-							}
+						    if (useTemp)
+						    {
+						        string localTempFile = temp_folder + "\\TEMP.tif";
+						        try
+						        {
+						            if (File.Exists(localTempFile))
+						            {
+						                File.Delete(localTempFile);
+						            }
+						            File.Copy(tifFile, localTempFile, true);
+                                    useFile = localTempFile;
+						        }
+						        catch
+						        {
+						            Thread.Sleep(2000);
 
-							// Process this file, as necessary
-							if ( create_jpeg_images )	
-								Image_Magick_Process_TIFF_File(localTempFile, tiffNameSansExtension, Directory, true, jpeg_width, jpeg_height, ParentLogId, PackageName);
+						            try
+						            {
+						                if (File.Exists(localTempFile))
+						                {
+						                    File.Delete(localTempFile);
+						                }
+						                File.Copy(tifFile, localTempFile, true);
+                                        useFile = localTempFile;
+						            }
+						            catch
+						            {
+						                // Okay.. I guess we won't use the temp spot
+                                        
+						            }
+						        }
+						    }
+
+						    // Process this file, as necessary
+							if ( create_jpeg_images )
+                                Image_Magick_Process_TIFF_File(useFile, tiffNameSansExtension, Directory, true, jpeg_width, jpeg_height, ParentLogId, PackageName);
 
 							// Create the JPEG2000
 							if ( create_jpeg2000_images )
-								kakadu_error = !Create_JPEG2000(localTempFile, tiffNameSansExtension, Directory, ParentLogId, PackageName);
+                                kakadu_error = !Create_JPEG2000(useFile, tiffNameSansExtension, Directory, ParentLogId, PackageName);
 						}
 					}
 				}

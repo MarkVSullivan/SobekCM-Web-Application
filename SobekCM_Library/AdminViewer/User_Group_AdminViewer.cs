@@ -58,7 +58,7 @@ namespace SobekCM.Library.AdminViewer
             // Get the user to edit, if there was a user id in the submode
             int edit_usergroupid = -100;
             editGroup = null;
-            if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0)
+            if ( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode))
             {
                 if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "new")
                 {
@@ -409,7 +409,6 @@ namespace SobekCM.Library.AdminViewer
                                 }
                             }
                             // Update the aggregationPermissions, if requested
-
                             if (editGroup.Aggregations_Count > 0)
                             {
                                 List<User_Permissioned_Aggregation> aggregationList = editGroup.Aggregations;
@@ -417,10 +416,6 @@ namespace SobekCM.Library.AdminViewer
                                 {
                                     successful_save = false;
                                 }
-                            }
-                            else
-                            {
-                                successful_save = false;
                             }
                         }
                         else

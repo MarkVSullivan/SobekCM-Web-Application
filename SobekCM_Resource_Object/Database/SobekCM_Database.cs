@@ -4007,7 +4007,11 @@ namespace SobekCM.Resource_Object.Database
         {
             try
             {
-                DataSet returnSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_QC_Get_Errors");
+                //Add the parameters to this command
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@itemID", ItemID);
+
+                DataSet returnSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_QC_Get_Errors", parameters);
                 if ((returnSet != null) && (returnSet.Tables.Count > 0))
                 {
                     return returnSet.Tables[0];

@@ -1250,8 +1250,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 
 		    if ((CurrentItem.Bib_Info.hasDonor) && (CurrentItem.Bib_Info.Donor.Full_Name.Length > 0))
-			{
-				result.Append(Single_Citation_HTML_Row("Donor", search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(CurrentItem.Bib_Info.Donor.ToString()).Replace(",", "").Replace("&amp;","&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "DO") + CurrentItem.Bib_Info.Donor + search_link_end, INDENT));
+		    {
+		        string donor_name = CurrentItem.Bib_Info.Donor.ToString(false);
+
+                result.Append(Single_Citation_HTML_Row("Donor", search_link.Replace("<%VALUE%>", HttpUtility.HtmlEncode(donor_name).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "DO") + donor_name + search_link_end, INDENT));
 			}
 
 			if (CurrentItem.Bib_Info.Publishers_Count > 0)

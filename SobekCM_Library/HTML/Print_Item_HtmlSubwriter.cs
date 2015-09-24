@@ -4,6 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Web;
+using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object.Divisions;
@@ -17,11 +20,39 @@ namespace SobekCM.Library.HTML
     /// <remarks> This class extends the <see cref="abstractHtmlSubwriter"/> abstract class. </remarks>
     public class Print_Item_HtmlSubwriter : abstractHtmlSubwriter
     {
+        private bool isRestricted;
+        private string restriction_message;
+
         /// <summary> Constructor for a new instancee of the Print_Item_HtmlSubwriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Print_Item_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
         {
-            // Do nothing
+            // Check for IP restriction
+            restriction_message = String.Empty;
+            if (RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership > 0)
+            {
+                if (HttpContext.Current != null)
+                {
+                    int user_mask = (int)HttpContext.Current.Session["IP_Range_Membership"];
+                    int comparison = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership & user_mask;
+                    if (comparison == 0)
+                    {
+                        int restriction = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership;
+                        int restriction_counter = 1;
+                        while (restriction % 2 != 1)
+                        {
+                            restriction = restriction >> 1;
+                            restriction_counter++;
+                        }
+                        if (UI_ApplicationCache_Gateway.IP_Restrictions[restriction_counter] != null)
+                            restriction_message = UI_ApplicationCache_Gateway.IP_Restrictions[restriction_counter].Item_Restricted_Statement;
+                        else
+                            restriction_message = "Restricted Item";
+                    }
+                }
+            }
+
+            isRestricted = restriction_message.Length > 0;
         }
 
         /// <summary> Writes the HTML generated to print this item directly to the response stream </summary>
@@ -30,6 +61,13 @@ namespace SobekCM.Library.HTML
         /// <returns> TRUE -- Value indicating if html writer should finish the page immediately after this, or if there are other controls or routines which need to be called first </returns>
         public override bool Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
+            // If restricted by IP, just print the message
+            if (isRestricted)
+            {
+                Output.WriteLine(restriction_message);
+                return true;
+            }
+
             Output.WriteLine("<center>");
 
             // Determine some variables
@@ -216,8 +254,15 @@ namespace SobekCM.Library.HTML
             }
 
             Output.WriteLine("<div class=\"SobekCitation\">");
-       //     Citation_ItemViewer citationViewer = new Citation_ItemViewer(RequestSpecificValues, false);
-       //     Output.WriteLine(citationViewer.Standard_Citation_String(false,null));
+            Citation_ItemViewer citationViewer = new Citation_ItemViewer( UI_ApplicationCache_Gateway.Translation, UI_ApplicationCache_Gateway.Aggregations, false);
+            citationViewer.CurrentItem = RequestSpecificValues.Current_Item;
+            citationViewer.CurrentMode = RequestSpecificValues.Current_Mode;
+            citationViewer.Translator = UI_ApplicationCache_Gateway.Translation;
+            citationViewer.CurrentUser = RequestSpecificValues.Current_User;
+            citationViewer.Code_Manager = UI_ApplicationCache_Gateway.Aggregations;
+            citationViewer.Item_Restricted = isRestricted;
+
+            Output.WriteLine(citationViewer.Standard_Citation_String(false,null));
             Output.WriteLine("</div>");
         }
 

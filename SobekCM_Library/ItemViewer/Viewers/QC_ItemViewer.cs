@@ -13,6 +13,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Engine_Library.Email;
 using SobekCM.Engine_Library.Items;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -896,7 +897,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (!Directory.Exists(error_folder))
                     Directory.CreateDirectory(error_folder);
                 string error_message_file = "qc_error_" + DateTime.Now.Year + "_" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Day.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Hour.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Minute.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Second.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Millisecond + ".txt";
-                StreamWriter writer = new StreamWriter(error_message_file, true);
+                StreamWriter writer = new StreamWriter(error_folder + "//" + error_message_file, true);
                 writer.WriteLine("EXCEPTION CAUGHT DURING SAVE_FROM_FORM_REQUEST_TO_ITEM METHOD");
                 writer.WriteLine();
                 writer.WriteLine(e.Message);
@@ -913,6 +914,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
                 writer.Flush();
                 writer.Close();
+
+                // Also, send an email
+                Email_Helper.SendEmail("Mark.V.Sullivan@gmail.com", "QC Error caught on " + qc_item.BibID + ":" + qc_item.VID, "EXCEPTION CAUGHT DURING SAVE_FROM_FORM_REQUEST_TO_ITEM METHOD\n\n" + e.Message + "\n\n" + e.StackTrace, false, UI_ApplicationCache_Gateway.Settings.System_Name);
+
+                // Now, throw again
                 throw new ApplicationException(e.Message);
             }
 	    }
@@ -1289,7 +1295,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (!Directory.Exists(error_folder))
                     Directory.CreateDirectory(error_folder);
                 string error_message_file = "qc_error_" + DateTime.Now.Year + "_" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Day.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Hour.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Minute.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Second.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Millisecond + ".txt";
-                StreamWriter writer = new StreamWriter(error_message_file, true);
+                StreamWriter writer = new StreamWriter(error_folder + "\\" + error_message_file, true);
+                   
                 writer.WriteLine("EXCEPTION CAUGHT DURING SAVE_FROM_FORM_REQUEST_TO_ITEM METHOD (2nd spot)");
                 writer.WriteLine();
                 writer.WriteLine(e.Message);
@@ -1306,6 +1313,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
                 writer.Flush();
                 writer.Close();
+
+                // Also, send an email
+                Email_Helper.SendEmail("Mark.V.Sullivan@gmail.com", "QC Error caught on " + qc_item.BibID + ":" + qc_item.VID, "EXCEPTION CAUGHT DURING SAVE_FROM_FORM_REQUEST_TO_ITEM METHOD\n\n" + e.Message + "\n\n" + e.StackTrace, false, UI_ApplicationCache_Gateway.Settings.System_Name);
+
+                // Rethrow this error
                 throw new ApplicationException(e.Message);
             }
 

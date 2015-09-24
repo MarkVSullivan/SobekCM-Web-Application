@@ -3705,7 +3705,7 @@ namespace SobekCM.Library.Database
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
 		/// <remarks> This calls the 'mySobek_Update_User' stored procedure</remarks> 
-		public static bool Update_SobekCM_User(int UserID, bool CanSubmit, bool IsInternal, bool CanEditAll, bool CanDeleteAll, bool IsSystemAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, string EditTemplate, string EditTemplateMarc, bool ClearProjectsTemplates, bool ClearAggregationLinks, bool ClearUserGroups, Custom_Tracer Tracer)
+		public static bool Update_SobekCM_User(int UserID, bool CanSubmit, bool IsInternal, bool CanEditAll, bool CanDeleteAll, bool IsSystemAdmin, bool IsHostAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, string EditTemplate, string EditTemplateMarc, bool ClearProjectsTemplates, bool ClearAggregationLinks, bool ClearUserGroups, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -3715,7 +3715,7 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				EalDbParameter[] paramList = new EalDbParameter[13];
+				EalDbParameter[] paramList = new EalDbParameter[14];
 				paramList[0] = new EalDbParameter("@userid", UserID);
 				paramList[1] = new EalDbParameter("@can_submit", CanSubmit);
 				paramList[2] = new EalDbParameter("@is_internal", IsInternal);
@@ -3723,12 +3723,13 @@ namespace SobekCM.Library.Database
 				paramList[4] = new EalDbParameter("@can_delete_all", CanDeleteAll);
 				paramList[5] = new EalDbParameter("@is_portal_admin", IsPortalAdmin);
 				paramList[6] = new EalDbParameter("@is_system_admin", IsSystemAdmin);
-				paramList[7] = new EalDbParameter("@include_tracking_standard_forms", IncludeTrackingStandardForms);
-				paramList[8] = new EalDbParameter("@edit_template", EditTemplate);
-				paramList[9] = new EalDbParameter("@edit_template_marc", EditTemplateMarc);
-				paramList[10] = new EalDbParameter("@clear_projects_templates", ClearProjectsTemplates);
-				paramList[11] = new EalDbParameter("@clear_aggregation_links", ClearAggregationLinks);
-				paramList[12] = new EalDbParameter("@clear_user_groups", ClearUserGroups);
+                paramList[7] = new EalDbParameter("@is_host_admin", IsHostAdmin);
+				paramList[8] = new EalDbParameter("@include_tracking_standard_forms", IncludeTrackingStandardForms);
+				paramList[9] = new EalDbParameter("@edit_template", EditTemplate);
+				paramList[10] = new EalDbParameter("@edit_template_marc", EditTemplateMarc);
+				paramList[11] = new EalDbParameter("@clear_projects_templates", ClearProjectsTemplates);
+				paramList[12] = new EalDbParameter("@clear_aggregation_links", ClearAggregationLinks);
+				paramList[13] = new EalDbParameter("@clear_user_groups", ClearUserGroups);
 
 				// Execute this query stored procedure
 				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Update_User", paramList);
@@ -4194,29 +4195,29 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				EalDbParameter[] paramList = new EalDbParameter[17];
+				EalDbParameter[] paramList = new EalDbParameter[16];
 				paramList[0] = new EalDbParameter("@usergroupid", UserGroupID);
 				paramList[1] = new EalDbParameter("@groupname", GroupName);
 				paramList[2] = new EalDbParameter("@groupdescription", GroupDescription);
 				paramList[3] = new EalDbParameter("@can_submit_items", CanSubmit);
 				paramList[4] = new EalDbParameter("@is_internal", IsInternal);
-				paramList[6] = new EalDbParameter("@can_edit_all", CanEditAll);
-				paramList[7] = new EalDbParameter("@is_system_admin", IsSystemAdmin);
-				paramList[8] = new EalDbParameter("@is_portal_admin", IsPortalAdmin);
-				paramList[9] = new EalDbParameter("@include_tracking_standard_forms", IncludeTrackingStandardForms );
-				paramList[10] = new EalDbParameter("@clear_metadata_templates", ClearMetadataTemplates);
-				paramList[11] = new EalDbParameter("@clear_aggregation_links", ClearAggregationLinks);
-				paramList[12] = new EalDbParameter("@clear_editable_links", ClearEditableLinks);
-				paramList[13] = new EalDbParameter("@is_sobek_default", IsSobekDefault);
-                paramList[14] = new EalDbParameter("@is_shibboleth_default", IsShibbolethDefault);
-                paramList[15] = new EalDbParameter("@is_ldap_default", IsLdapDefault);
-				paramList[16] = new EalDbParameter("@new_usergroupid", UserGroupID) {Direction = ParameterDirection.InputOutput};
+				paramList[5] = new EalDbParameter("@can_edit_all", CanEditAll);
+				paramList[6] = new EalDbParameter("@is_system_admin", IsSystemAdmin);
+				paramList[7] = new EalDbParameter("@is_portal_admin", IsPortalAdmin);
+				paramList[8] = new EalDbParameter("@include_tracking_standard_forms", IncludeTrackingStandardForms );
+				paramList[9] = new EalDbParameter("@clear_metadata_templates", ClearMetadataTemplates);
+				paramList[10] = new EalDbParameter("@clear_aggregation_links", ClearAggregationLinks);
+				paramList[11] = new EalDbParameter("@clear_editable_links", ClearEditableLinks);
+				paramList[12] = new EalDbParameter("@is_sobek_default", IsSobekDefault);
+                paramList[13] = new EalDbParameter("@is_shibboleth_default", IsShibbolethDefault);
+                paramList[14] = new EalDbParameter("@is_ldap_default", IsLdapDefault);
+				paramList[15] = new EalDbParameter("@new_usergroupid", UserGroupID) {Direction = ParameterDirection.InputOutput};
 
 				// Execute this query stored procedure
 				EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Save_User_Group", paramList);
 
 				// Succesful, so return new id, if there was one
-				return Convert.ToInt32(paramList[16].Value);
+				return Convert.ToInt32(paramList[15].Value);
 			}
 			catch (Exception ee)
 			{

@@ -457,7 +457,7 @@ namespace SobekCM.Library.MySobekViewer
 
 							// Save the updates to this admin user
                             SobekCM_Database.Save_User(user, password, User_Authentication_Type_Enum.Sobek, RequestSpecificValues.Tracer);
-                            SobekCM_Database.Update_SobekCM_User(user.UserID, true, true, true, true, true, true, true, "edit_internal", "editmarc_internal", true, true, true, RequestSpecificValues.Tracer);
+                            SobekCM_Database.Update_SobekCM_User(user.UserID, true, true, true, true, true, true, true, true, "edit_internal", "editmarc_internal", true, true, true, RequestSpecificValues.Tracer);
                             SobekCM_Database.Update_SobekCM_User_DefaultMetadata(user.UserID, new ReadOnlyCollection<string>(projects), RequestSpecificValues.Tracer);
                             SobekCM_Database.Update_SobekCM_User_Templates(user.UserID, new ReadOnlyCollection<string>(templates), RequestSpecificValues.Tracer);
 
