@@ -61,6 +61,7 @@
     <Compile Include="Aggregations\Item_Aggregation_Front_Banner.cs" />
     <Compile Include="Aggregations\Complete_Item_Aggregation_Highlights.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Highlights.cs" />
+    <Compile Include="Aggregations\Item_Aggregation_Map_Coverage_Info.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Metadata_Type.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Related_Aggregations.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Statistics.cs" />

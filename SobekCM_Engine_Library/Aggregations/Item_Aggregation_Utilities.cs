@@ -388,7 +388,7 @@ namespace SobekCM.Engine_Library.Aggregations
 
             return Engine_Database.Save_Item_Aggregation(ItemAggr.ID, ItemAggr.Code, ItemAggr.Name, ItemAggr.ShortName,
                 ItemAggr.Description, ItemAggr.Thematic_Heading, ItemAggr.Type, ItemAggr.Active, ItemAggr.Hidden,
-                ItemAggr.Display_Options, ItemAggr.Map_Search, ItemAggr.Map_Search_Beta, ItemAggr.Map_Display, ItemAggr.Map_Display_Beta,
+                ItemAggr.Display_Options, 0, ItemAggr.Map_Search_Beta, 0, ItemAggr.Map_Display_Beta,
                 ItemAggr.OAI_Enabled, ItemAggr.OAI_Metadata, ItemAggr.Contact_Email, String.Empty, ItemAggr.External_Link, -1, Username,
                 languageVariantsBuilder.ToString(), Tracer);
         }
@@ -437,14 +437,16 @@ namespace SobekCM.Engine_Library.Aggregations
                 FrontBannerObj = CompAggr.Front_Banner_Image(RequestedLanguage),
                 Hidden = CompAggr.Hidden,
                 Last_Item_Added = CompAggr.Last_Item_Added,
-                Map_Display = CompAggr.Map_Display,
-                Map_Search = CompAggr.Map_Search,
                 Name = CompAggr.Name,
                 Rotating_Highlights = CompAggr.Rotating_Highlights,
                 ShortName = CompAggr.ShortName,
                 Statistics = CompAggr.Statistics,
                 Type = CompAggr.Type
             };
+
+            // Copy the map search and browse information
+	        if (CompAggr.Map_Search_Display != null) returnValue.Map_Search_Display = CompAggr.Map_Search_Display.Copy();
+            if (CompAggr.Map_Browse_Display != null) returnValue.Map_Browse_Display = CompAggr.Map_Browse_Display.Copy();
 
             // Copy any children aggregations over
             if (CompAggr.Active_Children_Count > 0)

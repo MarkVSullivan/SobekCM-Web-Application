@@ -2816,7 +2816,39 @@ namespace SobekCM.Engine_Library.Database
 				add_advanced_terms(aggrInfo, tempSet.Tables[2]);
 
 				// Add the parents
-				add_parents(aggrInfo, tempSet.Tables[tempSet.Tables.Count - 1]);
+				add_parents(aggrInfo, tempSet.Tables[3]);
+
+                // Determine the middle point and zoom for the extent of the coordinates
+			    if (( tempSet.Tables[4].Rows.Count > 0 ) && ( tempSet.Tables[4].Rows[0][0] != DBNull.Value))
+			    {
+                    try
+                    {
+                        DataRow coordsRow = tempSet.Tables[4].Rows[0];
+                        decimal min_latitude = Decimal.Parse(coordsRow["Min_Latitude"].ToString());
+                        decimal max_latitude = Decimal.Parse(coordsRow["Max_Latitude"].ToString());
+                        decimal min_longitude = Decimal.Parse(coordsRow["Min_Longitude"].ToString());
+                        decimal max_longitude = Decimal.Parse(coordsRow["Max_Longitude"].ToString());
+
+                        // Determine the center point
+                        decimal center_latitude = (min_latitude + max_latitude)/2m;
+                        decimal center_longitude = (min_longitude + max_longitude) / 2m;
+
+                        // Determine the zoom
+                        double GLOBE_WIDTH = 256; // a constant in Google's map projection
+                        double angle = (double) (max_longitude - min_longitude);
+                        if (angle < 0)
+                        {
+                            angle += 360;
+                        }
+                        double intermediaryValue = Math.Log(600d*360d/angle/GLOBE_WIDTH);
+                        int zoom = (int) (Math.Round(intermediaryValue/0.6931471805599453));
+
+                        // Add this to the item (may be changed when the aggregation XML config is read though)
+                        aggrInfo.Map_Search_Display = new Item_Aggregation_Map_Coverage_Info(Item_Aggregation_Map_Coverage_Type_Enum.COMPUTED, zoom, center_longitude, center_latitude);
+                    }
+                    catch { }
+
+			    }
 
 				// Return the built argument set
 				return aggrInfo;
@@ -2896,7 +2928,7 @@ namespace SobekCM.Engine_Library.Database
 				lastAdded = Convert.ToDateTime(thisRow[16]);
 
 			// Build the collection group object
-			Complete_Item_Aggregation aggrInfo = new Complete_Item_Aggregation(Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, Engine_ApplicationCache_Gateway.Settings.Base_Design_Location,
+			Complete_Item_Aggregation aggrInfo = new Complete_Item_Aggregation(Engine_ApplicationCache_Gateway.Settings.Default_UI_Language,
 				thisRow[1].ToString().ToLower(), thisRow[4].ToString(), Convert.ToInt32(thisRow[0]), displayOptions, lastAdded)
 			{
 				Name = thisRow[2].ToString(),
@@ -2904,8 +2936,8 @@ namespace SobekCM.Engine_Library.Database
 				Active = Convert.ToBoolean(thisRow[5]),
 				Hidden = Convert.ToBoolean(thisRow[6]),
 				Has_New_Items = Convert.ToBoolean(thisRow[7]),
-				Map_Display = Convert.ToUInt16(thisRow[11]),
-				Map_Search = Convert.ToUInt16(thisRow[12]),
+                //Map_Display = Convert.ToUInt16(thisRow[11]),
+                //Map_Search = Convert.ToUInt16(thisRow[12]),
 				OAI_Enabled = Convert.ToBoolean(thisRow[13]),
 				Items_Can_Be_Described = Convert.ToInt16(thisRow[18]),
 			};

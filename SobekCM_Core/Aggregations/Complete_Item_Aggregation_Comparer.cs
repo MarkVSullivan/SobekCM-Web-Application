@@ -416,9 +416,79 @@ namespace SobekCM.Core.Aggregations
             // other display types? ( all/new item browse, map browse )
 
             // map search default area
-            if (Base.Map_Search != Compared.Map_Search )
+            if ((Base.Map_Search_Display != null ) || ( Compared.Map_Search_Display != null ))
             {
-                changes.Add("Changed default map area display");
+                if (Base.Map_Search_Display == null)
+                {
+                    changes.Add("Added default area for map search display");
+                }
+                else if (Compared.Map_Search_Display == null)
+                {
+                    changes.Add("Removed default area information for map search display");
+
+                }
+                else
+                {
+                    // Are these different?
+                    bool different = false;
+                    if (Base.Map_Search_Display.Type != Compared.Map_Search_Display.Type)
+                    {
+                        different = true;
+                    }
+                    else
+                    {
+                        if ((Base.Map_Search_Display.ZoomLevel.HasValue != Compared.Map_Search_Display.ZoomLevel.HasValue) || 
+                            ((Base.Map_Search_Display.ZoomLevel.HasValue) && (Base.Map_Search_Display.ZoomLevel.Value != Compared.Map_Search_Display.ZoomLevel.Value))) 
+                            different = true;
+                        if ((Base.Map_Search_Display.Latitude.HasValue != Compared.Map_Search_Display.Latitude.HasValue) ||
+                            ((Base.Map_Search_Display.Latitude.HasValue) && (Base.Map_Search_Display.Latitude.Value != Compared.Map_Search_Display.Latitude.Value)))
+                            different = true;
+                        if ((Base.Map_Search_Display.Longitude.HasValue != Compared.Map_Search_Display.Longitude.HasValue) ||
+                            ((Base.Map_Search_Display.Longitude.HasValue) && (Base.Map_Search_Display.Longitude.Value != Compared.Map_Search_Display.Longitude.Value)))
+                            different = true;
+                    }
+
+                    if ( different )
+                        changes.Add("Changed default area for map search display");
+                }
+            }
+
+            // map browse default area
+            if ((Base.Map_Browse_Display != null) || (Compared.Map_Browse_Display != null))
+            {
+                if (Base.Map_Browse_Display == null)
+                {
+                    changes.Add("Added default area for map browse display");
+                }
+                else if (Compared.Map_Browse_Display == null)
+                {
+                    changes.Add("Removed default area information for map browse display");
+
+                }
+                else
+                {
+                    // Are these different?
+                    bool different = false;
+                    if (Base.Map_Browse_Display.Type != Compared.Map_Browse_Display.Type)
+                    {
+                        different = true;
+                    }
+                    else
+                    {
+                        if ((Base.Map_Browse_Display.ZoomLevel.HasValue != Compared.Map_Browse_Display.ZoomLevel.HasValue) ||
+                            ((Base.Map_Browse_Display.ZoomLevel.HasValue) && (Base.Map_Browse_Display.ZoomLevel.Value != Compared.Map_Browse_Display.ZoomLevel.Value)))
+                            different = true;
+                        if ((Base.Map_Browse_Display.Latitude.HasValue != Compared.Map_Browse_Display.Latitude.HasValue) ||
+                            ((Base.Map_Browse_Display.Latitude.HasValue) && (Base.Map_Browse_Display.Latitude.Value != Compared.Map_Browse_Display.Latitude.Value)))
+                            different = true;
+                        if ((Base.Map_Browse_Display.Longitude.HasValue != Compared.Map_Browse_Display.Longitude.HasValue) ||
+                            ((Base.Map_Browse_Display.Longitude.HasValue) && (Base.Map_Browse_Display.Longitude.Value != Compared.Map_Browse_Display.Longitude.Value)))
+                            different = true;
+                    }
+
+                    if (different)
+                        changes.Add("Changed default area for map browse display");
+                }
             }
 
             // facets

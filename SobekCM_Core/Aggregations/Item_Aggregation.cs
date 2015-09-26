@@ -244,22 +244,22 @@ namespace SobekCM.Core.Aggregations
         [ProtoMember(20)]
         public string Display_Options { get; set; }
 
-        /// <summary> Flag that tells what type of map searching to allow for this item aggregation </summary>
-        [DataMember(Name = "mapSearch")]
+        /// <summary> Default map display information ( i.e., center and zoom of map ) for doing a map search within the aggregation </summary>
+        [DataMember(EmitDefaultValue = false, Name = "mapSearch")]
         [XmlElement("mapSearch")]
         [ProtoMember(21)]
-        public ushort Map_Search { get; set; }
+        public Item_Aggregation_Map_Coverage_Info Map_Search_Display { get; set; }
 
         /// <summary> Flag that tells what type of map searching to allow for this item aggregation </summary>
         [IgnoreDataMember]
         [XmlIgnore]
         public ushort Map_Search_Beta { get; set; }
 
-        /// <summary> Flag that tells what type of map display to show for this item aggregation </summary>
-        [DataMember(Name = "mapDisplay")]
+        /// <summary> Default map display information ( i.e., center and zoom of map ) for doing a map browse within the aggregation </summary>
+        [DataMember(EmitDefaultValue = false, Name = "mapDisplay")]
         [XmlElement("mapDisplay")]
         [ProtoMember(22)]
-        public ushort Map_Display { get; set; }
+        public Item_Aggregation_Map_Coverage_Info Map_Browse_Display { get; set; }
 
         /// <summary> Flag that tells what type of map display to show for this item aggregation </summary>
         [IgnoreDataMember]

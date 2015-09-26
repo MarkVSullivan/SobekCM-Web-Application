@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Net.Configuration;
 using System.Text;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
@@ -51,16 +52,29 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             scriptBuilder.AppendLine("  // Initialize the map on load ");
             scriptBuilder.AppendLine("  function load() { ");
 
-            string center_latitude = "27.75";
-            string center_longitude = "-84";
-            if (( coordinates != null ) && ( coordinates.Rows.Count == 1 ))
+            decimal center_latitude = 0;
+            decimal center_longitude = 0;
+            int zoom = 1;
+            bool zoom_to_extent = true;
+            if ((RequestSpecificValues.Hierarchy_Object.Map_Browse_Display != null) && ( RequestSpecificValues.Hierarchy_Object.Map_Browse_Display.Type == Item_Aggregation_Map_Coverage_Type_Enum.FIXED ))
             {
-                center_latitude = coordinates.Rows[0]["Point_Latitude"].ToString();
-                center_longitude = coordinates.Rows[0]["Point_Longitude"].ToString();
+                Item_Aggregation_Map_Coverage_Info mapTypeInfo = RequestSpecificValues.Hierarchy_Object.Map_Browse_Display;
+                if ((mapTypeInfo.Latitude.HasValue) && (mapTypeInfo.Longitude.HasValue))
+                {
+                    center_latitude = mapTypeInfo.Latitude.Value;
+                    center_longitude = mapTypeInfo.Longitude.Value;
+                    zoom = 7;
+
+                    if (mapTypeInfo.ZoomLevel.HasValue)
+                        zoom = mapTypeInfo.ZoomLevel.Value;
+
+                    zoom_to_extent = false;
+                }
             }
+
             scriptBuilder.AppendLine("    // Create the map and set some values");
             scriptBuilder.AppendLine("    var latlng = new google.maps.LatLng(" + center_latitude + ", " + center_longitude + ");"); 
-            scriptBuilder.AppendLine("    var myOptions = { zoom: 7, center: latlng, mapTypeId: google.maps.MapTypeId.TERRAIN, streetViewControl: false  };");
+            scriptBuilder.AppendLine("    var myOptions = { zoom: " + zoom + ", center: latlng, mapTypeId: google.maps.MapTypeId.TERRAIN, streetViewControl: false  };");
 			scriptBuilder.AppendLine("    map = new google.maps.Map(document.getElementById('sbkMbav_MapDiv'), myOptions);");
             scriptBuilder.AppendLine("    map.enableKeyDragZoom();");
 
@@ -130,6 +144,13 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 }
             }
             
+
+            // Zoom to extent?
+            if (zoom_to_extent)
+            {
+                scriptBuilder.AppendLine("    map.fitBounds(bounds);");
+            }
+
             scriptBuilder.AppendLine("  }");
             scriptBuilder.AppendLine();
             scriptBuilder.AppendLine("  // Add a single point ");

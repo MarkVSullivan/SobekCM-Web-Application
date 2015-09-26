@@ -30,8 +30,7 @@ namespace SobekCM.Core.Aggregations
 
 		private string defaultBrowseBy;
 		private readonly Dictionary<string, Complete_Item_Aggregation_Child_Page> childPagesHash;
-		private readonly string baseDesignLocation;
-		private readonly Web_Language_Enum defaultUiLanguage;
+	    private readonly Web_Language_Enum defaultUiLanguage;
 
 
 		#endregion
@@ -46,9 +45,7 @@ namespace SobekCM.Core.Aggregations
 			ShortName = String.Empty;
 			Active = true;
 			Hidden = false;
-			Map_Search = 0;
 			Map_Search_Beta = 0;
-			Map_Display = 0;
 			Map_Display_Beta = 0;
 			OAI_Enabled = false;
 			Has_New_Items = false;
@@ -68,22 +65,18 @@ namespace SobekCM.Core.Aggregations
 			Default_Result_View = Result_Display_Type_Enum.Brief;
 		}
 
-		/// <summary> Constructor for a new instance of the Item_Aggregation_Complete class  </summary>
-		/// <param name="Default_UI_Language"> Default user interface language for this interface </param>
-		/// <param name="Base_Design_Location"> Base design location for this instance </param>
-		public Complete_Item_Aggregation( Web_Language_Enum Default_UI_Language, string Base_Design_Location )
+	    /// <summary> Constructor for a new instance of the Item_Aggregation_Complete class  </summary>
+	    /// <param name="Default_UI_Language"> Default user interface language for this interface </param>
+	    public Complete_Item_Aggregation( Web_Language_Enum Default_UI_Language )
 		{
 			defaultUiLanguage = Default_UI_Language;
-			baseDesignLocation = Base_Design_Location;
 
-			// Set some defaults
+		    // Set some defaults
 			Name = String.Empty;
 			ShortName = String.Empty;
 			Active = true;
 			Hidden = false;
-			Map_Search = 0;
 			Map_Search_Beta = 0;
-			Map_Display = 0;
 			Map_Display_Beta = 0;
 			OAI_Enabled = false;
 			Has_New_Items = false;
@@ -103,15 +96,14 @@ namespace SobekCM.Core.Aggregations
 			Default_Result_View = Result_Display_Type_Enum.Brief;
 		}
 
-		/// <summary> Constructor for a new instance of the Item_Aggregation_Complete class </summary>
-		/// <param name="Default_UI_Language"> Default user interface language for this interface </param>
-		/// <param name="Base_Design_Location"> Base design location for this instance </param>
-		/// <param name = "Code"> Unique code for this item aggregation object </param>
-		/// <param name = "Type"> Type of aggregation object (i.e., collection, institution, exhibit, etc..)</param>
-		/// <param name = "ID"> ID for this aggregation object from the database </param>
-		/// <param name = "Display_Options"> Display options used to determine the views and searches for this item</param>
-		/// <param name = "Last_Item_Added"> Date the last item was added ( or 1/1/2000 by default )</param>
-		public Complete_Item_Aggregation(Web_Language_Enum Default_UI_Language, string Base_Design_Location, string Code, string Type, int ID, string Display_Options, DateTime Last_Item_Added)
+	    /// <summary> Constructor for a new instance of the Item_Aggregation_Complete class </summary>
+	    /// <param name="Default_UI_Language"> Default user interface language for this interface </param>
+	    /// <param name = "Code"> Unique code for this item aggregation object </param>
+	    /// <param name = "Type"> Type of aggregation object (i.e., collection, institution, exhibit, etc..)</param>
+	    /// <param name = "ID"> ID for this aggregation object from the database </param>
+	    /// <param name = "Display_Options"> Display options used to determine the views and searches for this item</param>
+	    /// <param name = "Last_Item_Added"> Date the last item was added ( or 1/1/2000 by default )</param>
+	    public Complete_Item_Aggregation(Web_Language_Enum Default_UI_Language, string Code, string Type, int ID, string Display_Options, DateTime Last_Item_Added)
 		{
 			// Save these parameters
 			this.Code = Code;
@@ -120,16 +112,13 @@ namespace SobekCM.Core.Aggregations
 			this.Last_Item_Added = Last_Item_Added;
 			this.Display_Options = Display_Options;
 			defaultUiLanguage = Default_UI_Language;
-			baseDesignLocation = Base_Design_Location;
 
-			// Set some defaults
+		    // Set some defaults
 			Name = String.Empty;
 			ShortName = String.Empty;
 			Active = true;
 			Hidden = false;
-			Map_Search = 0;
 			Map_Search_Beta = 0;
-			Map_Display = 0;
 			Map_Display_Beta = 0;
 			OAI_Enabled = false;
 			Has_New_Items = false;
@@ -190,9 +179,9 @@ namespace SobekCM.Core.Aggregations
 						Views_And_Searches.Add(Item_Aggregation_Views_Searches_Enum.Map_Search);
 						break;
 
-					case 'Q':
-						Views_And_Searches.Add(Item_Aggregation_Views_Searches_Enum.Map_Search_Beta);
-						break;
+                    //case 'Q':
+                    //    Views_And_Searches.Add(Item_Aggregation_Views_Searches_Enum.Map_Search_Beta);
+                    //    break;
 
 					case 'N':
 						Views_And_Searches.Add(Item_Aggregation_Views_Searches_Enum.Newspaper_Search);
@@ -382,24 +371,27 @@ namespace SobekCM.Core.Aggregations
 		[ProtoMember(22)]
 		public string Display_Options { get; set; }
 
-		/// <summary> Flag that tells what type of map searching to allow for this item aggregation </summary>
-		[DataMember(Name = "mapSearch")]
-		[ProtoMember(23)]
-		public ushort Map_Search { get; set; }
+        /// <summary> Default map display information ( i.e., center and zoom of map ) for doing a map search within the aggregation </summary>
+        [DataMember(EmitDefaultValue = false, Name = "mapSearch")]
+        [XmlElement("mapSearch")]
+        [ProtoMember(23)]
+        public Item_Aggregation_Map_Coverage_Info Map_Search_Display { get; set; }
 
-		/// <summary> Flag that tells what type of map searching to allow for this item aggregation </summary>
-		[IgnoreDataMember]
-		public ushort Map_Search_Beta { get; set; }
+        /// <summary> Flag that tells what type of map searching to allow for this item aggregation </summary>
+        [IgnoreDataMember]
+        [XmlIgnore]
+        public ushort Map_Search_Beta { get; set; }
 
-		/// <summary> Flag that tells what type of map display to show for this item aggregation </summary>
-		[DataMember(Name = "mapDisplay")]
-		[ProtoMember(24)]
-		public ushort Map_Display { get; set; }
+        /// <summary> Default map display information ( i.e., center and zoom of map ) for doing a map browse within the aggregation </summary>
+        [DataMember(EmitDefaultValue = false, Name = "mapDisplay")]
+        [XmlElement("mapDisplay")]
+        [ProtoMember(24)]
+        public Item_Aggregation_Map_Coverage_Info Map_Browse_Display { get; set; }
 
-		/// <summary> Flag that tells what type of map display to show for this item aggregation </summary>
-		[IgnoreDataMember]
-		[XmlIgnore]
-		public ushort Map_Display_Beta { get; set; }
+        /// <summary> Flag that tells what type of map display to show for this item aggregation </summary>
+        [IgnoreDataMember]
+        [XmlIgnore]
+        public ushort Map_Display_Beta { get; set; }
 
 		/// <summary> Flag indicates whether this item aggregation should be made available via OAI-PMH </summary>
 		[DataMember(Name = "oaiEnabled")]
@@ -1103,23 +1095,7 @@ namespace SobekCM.Core.Aggregations
 	            // Write the header for the XML file
 	            writer.WriteLine("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>");
 	            writer.WriteLine();
-	            writer.WriteLine("<!-- ITEM AGGREGATION CONFIGURATION FILE FOR '" + Code.ToUpper() + "'                                      -->");
-	            writer.WriteLine("<!--                                                                                    -->");
-	            writer.WriteLine("<!-- This required file contains most of the configuration information needed for       -->");
-	            writer.WriteLine("<!-- item aggregations within a SobekCM system.                                         -->");
-	            writer.WriteLine("<!--                                                                                    -->");
-	            writer.WriteLine("<!-- For more information, see http://ufdc.ufl.edu/admin/aggrfiles                      -->");
-	            writer.WriteLine("<!--                                                                                    -->");
-	            writer.WriteLine("<!-- This file contains the following possible pieces of data:                          -->");
-	            writer.WriteLine("<!--          1) a number of settings which apply directly to the aggreagtion, such     -->");
-	            writer.WriteLine("<!--             as required web skin, possible facets, etc..                           -->");
-	            writer.WriteLine("<!--          2) home page source files, by language if desired                         -->");
-	            writer.WriteLine("<!--          3) banner source files, by language if desired                            -->");
-	            writer.WriteLine("<!--          4) result and browse view information, including types and default        -->");
-	            writer.WriteLine("<!--          5) 'directives' which act as server-side includes for an aggregation      -->");
-	            writer.WriteLine("<!--          6) highlight information to be displayed in banner or home text           -->");
-	            writer.WriteLine("<!--          7) browses, with title and source by language                             -->");
-	            writer.WriteLine();
+	            writer.WriteLine("<!-- ITEM AGGREGATION CONFIGURATION FILE FOR '" + Code.ToUpper() + "'   -->");
 	            writer.WriteLine("<hi:aggregationInfo xmlns:hi=\"http://sobekrepository.org/schemas/sobekcm_aggregation/\" ");
 	            writer.WriteLine("				  xmlns:xlink=\"http://www.w3.org/1999/xlink\" ");
 	            writer.WriteLine("				  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"");
@@ -1130,9 +1106,6 @@ namespace SobekCM.Core.Aggregations
 	            // Write the settings portion
 	            writer.WriteLine("<!-- Simple aggregation-wide settings, including a specified web skin, facets, etc.. -->");
 	            writer.WriteLine("<hi:settings>");
-	            writer.WriteLine("    <!-- Webskins here LIMIT the skins that this aggregation can appear under    -->");
-	            writer.WriteLine("    <!-- and if none appear here, then the aggregation can appear under any      -->");
-	            writer.WriteLine("    <!-- web skin.  Multiple web skins should appear with a comma between them.  -->");
 	            if ((Web_Skins != null) && (Web_Skins.Count > 0))
 	            {
 	                if (Web_Skins.Count == 1)
@@ -1159,12 +1132,6 @@ namespace SobekCM.Core.Aggregations
 	                writer.WriteLine();
 	            }
 
-
-	            writer.WriteLine("    <!-- Facets here indicate which metadata elements should appear as facets    -->");
-	            writer.WriteLine("    <!-- on the left when viewing browse or search results within this           -->");
-	            writer.WriteLine("    <!-- aggregation.  These are indicated by the primary key for the metadata   -->");
-	            writer.WriteLine("    <!-- type in the SobekCM_Metadata_Types table.  Multiple facets should       -->");
-	            writer.WriteLine("    <!-- appear with a comma between them.                                       -->");
 	            if ((Facets != null) && (Facets.Count > 0))
 	            {
 	                if (Facets.Count == 1)
@@ -1181,11 +1148,51 @@ namespace SobekCM.Core.Aggregations
 	            {
 	                writer.WriteLine("    <hi:facets></hi:facets>");
 	            }
+
+                // Include settings for map SEARCH
+	            if (Map_Search_Display != null)
+	            {
+	                if (Map_Search_Display.Type == Item_Aggregation_Map_Coverage_Type_Enum.EXTENT)
+	                {
+                        writer.WriteLine("    <hi:mapsearch type=\"EXTENT\" />");
+	                }
+                    else if (Map_Search_Display.Type == Item_Aggregation_Map_Coverage_Type_Enum.COMPUTED)
+                    {
+                        writer.WriteLine("    <hi:mapsearch type=\"COMPUTED\" />");
+                    }
+                    else
+                    {
+                        if ((Map_Search_Display.ZoomLevel.HasValue) && (Map_Search_Display.Longitude.HasValue) && (Map_Search_Display.Latitude.HasValue))
+                        {
+                            writer.WriteLine("    <hi:mapsearch type=\"FIXED\" zoom=\"" + Map_Search_Display.ZoomLevel + "\" latitude=\"" + Map_Search_Display.Latitude + "\" longitude=\"" + Map_Search_Display.Longitude + "\" />");
+                        }
+                    }
+	            }
+
+                // Inlude settings for map BROWSE
+                if (Map_Browse_Display != null)
+                {
+                    if (Map_Browse_Display.Type == Item_Aggregation_Map_Coverage_Type_Enum.EXTENT)
+                    {
+                        writer.WriteLine("    <hi:mapbrowse type=\"EXTENT\" />");
+                    }
+                    else if (Map_Browse_Display.Type == Item_Aggregation_Map_Coverage_Type_Enum.COMPUTED)
+                    {
+                        writer.WriteLine("    <hi:mapbrowse type=\"COMPUTED\" />");
+                    }
+                    else
+                    {
+                        if ((Map_Browse_Display.ZoomLevel.HasValue) && (Map_Browse_Display.Longitude.HasValue) && (Map_Browse_Display.Latitude.HasValue))
+                        {
+                            writer.WriteLine("    <hi:mapbrowse type=\"FIXED\" zoom=\"" + Map_Browse_Display.ZoomLevel + "\" latitude=\"" + Map_Browse_Display.Latitude + "\" longitude=\"" + Map_Browse_Display.Longitude + "\" />");
+                        }
+                    }
+                }
+
 	            writer.WriteLine("</hi:settings>");
 	            writer.WriteLine();
 
 	            // Add the home page information
-	            writer.WriteLine("<!-- Source files for the home page, by language -->");
 	            writer.WriteLine("<hi:home>");
 	            if (Home_Page_File_Dictionary != null)
 	            {
@@ -1198,11 +1205,6 @@ namespace SobekCM.Core.Aggregations
 	            writer.WriteLine();
 
 	            // Add the banner information
-	            writer.WriteLine("<!-- Banner source images by language.  Source can either be jpg, gif, or png.     -->");
-	            writer.WriteLine("<!-- Including a TYPE=HIGHLIGHT indicates a special banner to use for the          -->");
-	            writer.WriteLine("<!-- aggregation home page which includes a spot for a rotating highlighted item.  -->");
-	            writer.WriteLine("<!-- If a highlight banner is indicated, the width, height, and side for the       -->");
-	            writer.WriteLine("<!-- highlights must be included in the hi:highlights section.                     -->");
 	            writer.WriteLine("<hi:banner>");
 	            if (Banner_Dictionary != null)
 	            {
@@ -1239,11 +1241,6 @@ namespace SobekCM.Core.Aggregations
 	            writer.WriteLine();
 
 	            // Add any changes to the standard views during browses or search results
-	            writer.WriteLine("<!-- Changes to the standard views included as options when viewing  -->");
-	            writer.WriteLine("<!-- browse or search results.  Standard views are 'BRIEF', 'TABLE', -->");
-	            writer.WriteLine("<!-- 'THUMBNAIL', and 'FULL', with 'BRIEF' as default.               -->");
-	            writer.WriteLine("<!-- Changes are represented here as either ADDS or DELETES from     -->");
-	            writer.WriteLine("<!-- that standard list of views.                                    -->");
 	            List<string> adds = new List<string>();
 	            List<string> deletes = new List<string>
 	            {
@@ -1337,12 +1334,6 @@ namespace SobekCM.Core.Aggregations
 	            // Add the custom derivative information here, if there are some
 	            if ((Custom_Directives != null) && (Custom_Directives.Count > 0))
 	            {
-	                writer.WriteLine(
-	                    "  <!-- Custom directive allows the user to specify that a certain code, embedded -->");
-	                writer.WriteLine(
-	                    "  <!-- as a directive like <%CODE%> should be replaced with some replacement     -->");
-	                writer.WriteLine(
-	                    "  <!-- html read from a source file.                                             -->");
 	                writer.WriteLine("  <hi:directives>");
 	                foreach (KeyValuePair<string, Item_Aggregation_Custom_Directive> thisDirective in Custom_Directives)
 	                {
@@ -1358,11 +1349,6 @@ namespace SobekCM.Core.Aggregations
 	            // Add the highlights, if there are some
 	            if ((Highlights != null) && (Highlights.Count > 0))
 	            {
-	                writer.WriteLine("  <!-- Highlighted items.  Inclusion of more than one will cause the daily -->");
-	                writer.WriteLine("  <!-- displayed highlighted item to slowly change through the items.      -->");
-	                writer.WriteLine("  <!-- Including TYPE=ROTATING will cause up to eight highlighted items    -->");
-	                writer.WriteLine("  <!-- to rotate on the home page or in the special highlight banner.      -->");
-
 	                // Is there a special front banner with highlighted item within it?
 	                if ((Front_Banner_Dictionary != null) && (Front_Banner_Dictionary.Count > 0))
 	                {

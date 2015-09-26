@@ -261,6 +261,89 @@ namespace SobekCM.Engine_Library.Aggregations
                                     HierarchyObject.Add_Facet(Convert.ToInt16(thisSplitter2));
                             }
                             break;
+
+                        case "HI:MAPSEARCH":
+                            if (NodeReader.MoveToAttribute("type"))
+                            {
+                                switch (NodeReader.GetAttribute("type").ToLower())
+                                {
+                                    case "extent":
+                                    case "computed":
+                                        // This should already be set, assuming there were values to be added
+                                        if (HierarchyObject.Map_Search_Display == null)
+                                        {
+                                            HierarchyObject.Map_Search_Display = new Item_Aggregation_Map_Coverage_Info(Item_Aggregation_Map_Coverage_Type_Enum.COMPUTED);
+                                        }
+                                        break;
+
+                                    case "fixed":
+                                        decimal latitude = 999;
+                                        decimal longitude = 999;
+                                        int zoom = 999;
+
+                                        if (NodeReader.MoveToAttribute("latitude"))
+                                        {
+                                            Decimal.TryParse(NodeReader.GetAttribute("latitude"), out latitude);
+                                        }
+                                        if (NodeReader.MoveToAttribute("longitude"))
+                                        {
+                                            Decimal.TryParse(NodeReader.GetAttribute("longitude"), out longitude);
+                                        }
+                                        if (NodeReader.MoveToAttribute("zoom"))
+                                        {
+                                            Int32.TryParse(NodeReader.GetAttribute("zoom"), out zoom);
+                                        }
+
+                                        if ((latitude != 999) && (longitude != 999))
+                                        {
+                                            HierarchyObject.Map_Search_Display = new Item_Aggregation_Map_Coverage_Info(Item_Aggregation_Map_Coverage_Type_Enum.FIXED, zoom, longitude, latitude );
+                                        }
+                                        break;
+                                }
+                            }
+                            break;
+
+                        case "HI:MAPBROWSE":
+                            if (NodeReader.MoveToAttribute("type"))
+                            {
+                                switch (NodeReader.GetAttribute("type").ToLower())
+                                {
+                                    case "extent":
+                                        HierarchyObject.Map_Browse_Display = new Item_Aggregation_Map_Coverage_Info(Item_Aggregation_Map_Coverage_Type_Enum.EXTENT);
+                                        break;
+
+                                    case "computed":
+                                        HierarchyObject.Map_Browse_Display = new Item_Aggregation_Map_Coverage_Info(Item_Aggregation_Map_Coverage_Type_Enum.COMPUTED);
+                                        break;
+
+                                    case "fixed":
+                                        decimal latitude = 999;
+                                        decimal longitude = 999;
+                                        int zoom = 999;
+
+                                        if (NodeReader.MoveToAttribute("latitude"))
+                                        {
+                                            Decimal.TryParse(NodeReader.GetAttribute("latitude"), out latitude);
+                                        }
+                                        if (NodeReader.MoveToAttribute("longitude"))
+                                        {
+                                            Decimal.TryParse(NodeReader.GetAttribute("longitude"), out longitude);
+                                        }
+                                        if (NodeReader.MoveToAttribute("zoom"))
+                                        {
+                                            Int32.TryParse(NodeReader.GetAttribute("zoom"), out zoom);
+                                        }
+
+                                        if ((latitude != 999) && (longitude != 999))
+                                        {
+                                            HierarchyObject.Map_Browse_Display = new Item_Aggregation_Map_Coverage_Info(Item_Aggregation_Map_Coverage_Type_Enum.FIXED, zoom, longitude, latitude);
+                                        }
+                                        break;
+                                }
+                            }
+                            break;
+
+
                     }
                 }
 

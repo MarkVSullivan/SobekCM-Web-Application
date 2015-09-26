@@ -36,6 +36,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         private readonly string text3 = String.Empty;
         private readonly string text4 = String.Empty;
 
+        private bool pointSearchingDisabled = false;
+
         /// <summary> Constructor for a new instance of the Map_Search_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Map_Search_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
@@ -124,57 +126,27 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             scriptBuilder.AppendLine("  //<![CDATA[");
             scriptBuilder.AppendLine("  function load() { ");
 
-            switch (RequestSpecificValues.Hierarchy_Object.Map_Search % 100)
+            // Set the latitude and longitude
+            int zoom = 1;
+            decimal latitude = 0;
+            decimal longitude = 0;
+            if (RequestSpecificValues.Hierarchy_Object.Map_Search_Display != null)
             {
-                case 0:  // WORLD
-                    scriptBuilder.AppendLine("    load_search_map(0, 0, 1, \"map1\");");
-                    break;
-
-                case 1:  // FLORIDA
-                    scriptBuilder.AppendLine("    load_search_map(28, -84.5, 6, \"map1\");");
-                    break;
-
-                case 2:  // UNITED STATES
-                    scriptBuilder.AppendLine("    load_search_map(48, -95, 3, \"map1\");");
-                    break;
-
-                case 3:  // NORTH AMERICA
-                    scriptBuilder.AppendLine("    load_search_map(48, -95, 3, \"map1\");");
-                    mapHeight = 600;
-                    break;
-
-                case 4:  // CARIBBEAN
-                    scriptBuilder.AppendLine("    load_search_map(19, -74, 4, \"map1\");");
-                    break;
-
-                case 5:  // SOUTH AMERICA
-                    scriptBuilder.AppendLine("    load_search_map(-22, -60, 3, \"map1\");");
-                    mapHeight = 600;
-                    break;
-
-                case 6:   // AFRICA
-                    scriptBuilder.AppendLine("    load_search_map(6, 19.5, 3, \"map1\");");
-                    mapHeight = 600;
-                    break;
-
-                case 7:   // EUROPE
-                    scriptBuilder.AppendLine("    load_search_map(49.5, 13.35, 4, \"map1\");");
-                    break;
-
-                case 8:   // ASIA
-                    scriptBuilder.AppendLine("    load_search_map(36, 96, 3, \"map1\");");
-                    break;
-
-                case 9:   // MIDDLE EAST
-                    scriptBuilder.AppendLine("    load_search_map(31, 39, 4, \"map1\");");
-                    break;
+                if ((RequestSpecificValues.Hierarchy_Object.Map_Search_Display.ZoomLevel.HasValue) && (RequestSpecificValues.Hierarchy_Object.Map_Search_Display.Latitude.HasValue) && (RequestSpecificValues.Hierarchy_Object.Map_Search_Display.Longitude.HasValue))
+                {
+                    latitude = RequestSpecificValues.Hierarchy_Object.Map_Search_Display.Latitude.Value;
+                    longitude = RequestSpecificValues.Hierarchy_Object.Map_Search_Display.Longitude.Value;
+                    zoom = RequestSpecificValues.Hierarchy_Object.Map_Search_Display.ZoomLevel.Value;
+                }
             }
-
-            // If no point searching is allowed, disable it
-            if (RequestSpecificValues.Hierarchy_Object.Map_Search >= 100)
-            {
-                scriptBuilder.AppendLine("    disable_point_searching();");
-            }
+            scriptBuilder.AppendLine("    load_search_map(" + latitude + ", " + longitude + ", " + zoom + ", \"map1\");");
+            
+            //// If no point searching is allowed, disable it
+            //if (RequestSpecificValues.Hierarchy_Object.Map_Search >= 100)
+            //{
+            //    pointSearchingDisabled = true;
+            //    scriptBuilder.AppendLine("    disable_point_searching();");
+            //}
 
             if ((text1.Length > 0) && (text2.Length > 0) && (text3.Length > 0) && (text4.Length > 0))
             {
@@ -263,7 +235,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
 
                 case Web_Language_Enum.Spanish:
-                    if (RequestSpecificValues.Hierarchy_Object.Map_Search >= 100)
+                    if (pointSearchingDisabled)
                     {
                         Output.WriteLine("          <table>");
                         Output.WriteLine("            <tr><td><span style=\"line-height:160%\"> &nbsp; &nbsp; 1. Use the <i>Select Area</i> button and click to select opposite corners to draw a search box on the map &nbsp; &nbsp; <br /> &nbsp; &nbsp; 2. Press the <i>Search</i> button to see results &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ( <a href=\"#FAQ\">more help</a> )</span> </td>");
@@ -288,7 +260,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     break;
 
                 default:
-                    if (RequestSpecificValues.Hierarchy_Object.Map_Search >= 100)
+                    if (pointSearchingDisabled)
                     {
                         Output.WriteLine("          <table>");
                         Output.WriteLine("            <tr><td><span style=\"line-height:160%\"> &nbsp; &nbsp; 1. Use the <i>Select Area</i> button and click to select opposite corners to draw a search box on the map &nbsp; &nbsp; <br /> &nbsp; &nbsp; 2. Press the <i>Search</i> button to see results &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ( <a href=\"#FAQ\">more help</a> )</span> </td>");
@@ -313,7 +285,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                     break;
             }
 
-            if (RequestSpecificValues.Hierarchy_Object.Map_Search < 100)
+            if (!pointSearchingDisabled)
             {
                 Output.WriteLine("        <div id=\"sbkMsav_AddressDiv\">");
                 Output.WriteLine("          <label for=\"AddressTextBox\">" + address_text + ":</label> &nbsp; ");
@@ -446,7 +418,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("  <h1>Map Search FAQ</h1>");
                 Output.WriteLine("  <ul>");
                 Output.WriteLine("    <li>How do I search?");
-                if (RequestSpecificValues.Hierarchy_Object.Map_Search < 100)
+                if (!pointSearchingDisabled)
                 {
                     Output.WriteLine("      <p class=\"tagline\">To perform a search, you first need to define your area or point of interest and then perform the search.  There are several ways to define your area of interest.  You can either enter an address to search or you can draw either a region or point on the map.  Once you have defined your search, click the <i>Search</i> button to discover any matches to that location.</p>");
                     Output.WriteLine("      <p class=\"tagline\">To search for addresses, type in an address and click on the <i>Find Address</i> button.   You may also use major landmark names, although addresses may work better.  Be sure to include the city and state in your search as well.   Once the address is located on the map, click <i>Search</i> to discover aerials which include that location. </p>");
@@ -463,7 +435,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Output.WriteLine("      <p class=\"tagline\">Selecting a rectangular area to search is simple once you understand the technique.  First, select the <i>Press to Select Area</i> button on the map.  Then, move to the top left corner of the region you wish to search and click and release the left mouse button.  As you move the mouse now you will notice a rectangle is being drawn which represents your region.  When you click and release the mouse again, you define the lower right corner of the region to search.  Do not press the mouse button and drag the mouse, as this will drag the map around, and will not define a region to select.  Once your region is correctly identified, press the <i>Search</i> button to view matching results.</p>");
                 Output.WriteLine("    </li>");
 
-                if (RequestSpecificValues.Hierarchy_Object.Map_Search < 100)
+                if (!pointSearchingDisabled)
                 {
                     Output.WriteLine("    <li>I am having difficulty searching by address");
                     Output.WriteLine("      <p class=\"tagline\">Be sure to enter the complete address, including state and country.  You can also try to use the name of a major landmark, but using an address often works better.  Once you enter the address or major landmark name, press the <i>Find Address</i> button.  Look at the map and verify that the location found on the map matches your desired search.  Then, press the <i>Search</i> button to view matching results.</p>");
