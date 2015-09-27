@@ -1471,7 +1471,7 @@ namespace SobekCM.Library
                                 }
                                 else
                                 {
-                                    switch (links[i-1])
+                                    switch (links[i])
                                     {
                                         case 0:
                                             searchBuilder.Append(" AND ");
