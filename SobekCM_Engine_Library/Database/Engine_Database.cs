@@ -2898,6 +2898,38 @@ namespace SobekCM.Engine_Library.Database
 				// Add the advanced search values
 				add_advanced_terms(aggrInfo, tempSet.Tables[1]);
 
+                // Determine the middle point and zoom for the extent of the coordinates
+                if ((tempSet.Tables[2].Rows.Count > 0) && (tempSet.Tables[2].Rows[0][0] != DBNull.Value))
+                {
+                    try
+                    {
+                        DataRow coordsRow = tempSet.Tables[2].Rows[0];
+                        decimal min_latitude = Decimal.Parse(coordsRow["Min_Latitude"].ToString());
+                        decimal max_latitude = Decimal.Parse(coordsRow["Max_Latitude"].ToString());
+                        decimal min_longitude = Decimal.Parse(coordsRow["Min_Longitude"].ToString());
+                        decimal max_longitude = Decimal.Parse(coordsRow["Max_Longitude"].ToString());
+
+                        // Determine the center point
+                        decimal center_latitude = (min_latitude + max_latitude) / 2m;
+                        decimal center_longitude = (min_longitude + max_longitude) / 2m;
+
+                        // Determine the zoom
+                        double GLOBE_WIDTH = 256; // a constant in Google's map projection
+                        double angle = (double)(max_longitude - min_longitude);
+                        if (angle < 0)
+                        {
+                            angle += 360;
+                        }
+                        double intermediaryValue = Math.Log(600d * 360d / angle / GLOBE_WIDTH);
+                        int zoom = (int)(Math.Round(intermediaryValue / 0.6931471805599453));
+
+                        // Add this to the item (may be changed when the aggregation XML config is read though)
+                        aggrInfo.Map_Search_Display = new Item_Aggregation_Map_Coverage_Info(Item_Aggregation_Map_Coverage_Type_Enum.COMPUTED, zoom, center_longitude, center_latitude);
+                    }
+                    catch { }
+
+                }
+
 				// Return the built argument set
 				return aggrInfo;
 			}

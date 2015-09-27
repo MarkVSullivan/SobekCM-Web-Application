@@ -808,6 +808,9 @@ namespace SobekCM.Resource_Object.Database
                 }
             }
 
+            // Finally, have the database build the full citation based on each metadata element
+            Create_Full_Citation_Value(ThisPackage.Web.ItemID);
+
             // Return the item id
             return ThisPackage.Web.ItemID;
         }
@@ -2173,9 +2176,6 @@ namespace SobekCM.Resource_Object.Database
                 // Increment curent index
                 current_index += 10;
             }
-
-            // Finally, have the database build the full citation based on each metadata element
-            Create_Full_Citation_Value(ThisPackage.Web.ItemID);
 
             return true;
         }

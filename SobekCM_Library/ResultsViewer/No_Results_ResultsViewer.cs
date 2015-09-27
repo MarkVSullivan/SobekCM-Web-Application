@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
+using System.Web.Caching;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.UI;
@@ -38,84 +39,138 @@ namespace SobekCM.Library.ResultsViewer
                 Tracer.Add_Trace("No_Results_ResultsWriter.Add_HTML", "Adding no result text");
             }
 
+            // Look in the cache for this 
+            string noResultsText = HttpContext.Current.Application["NORESULTS"] as string;
+            if (String.IsNullOrEmpty(noResultsText))
+            {
+                try
+                {
+                    string file = Path.Combine(UI_ApplicationCache_Gateway.Settings.Base_Design_Location, "webcontent", "noresults.html");
+                    if (File.Exists(file))
+                    {
+                        noResultsText = File.ReadAllText(file);
+                        HttpContext.Current.Application["NORESULTS"] = noResultsText;
+                    }
+                    else
+                    {
+                        noResultsText = "NOTPRESENT";
+                        HttpContext.Current.Application["NORESULTS"] = "NOTPRESENT";
+                    }
+                }
+                catch
+                {
+                    noResultsText = "NOTPRESENT";
+                    HttpContext.Current.Application["NORESULTS"] = "NOTPRESENT";
+                }
+            }
+
+            // Now, if still NULL, build it the way we used to
+            if ((String.IsNullOrEmpty(noResultsText)) || (noResultsText == "NOTPRESENT"))
+            {
+                StringBuilder sampleFileContent = new StringBuilder();
+
+
+                sampleFileContent.AppendLine("<span class=\"SobekNoResultsText\"><br />Your search returned no results.<br /><br /></span>");
+                sampleFileContent.AppendLine("<div style=\"display:[%MatchesFoundDivDisplay%]\">");
+                sampleFileContent.AppendLine("    The following matches were found:<br /><br />");
+                sampleFileContent.AppendLine("      <span style=\"display:[%WithinInstanceSpanDisplay%]\"><a href=\"[%WithinInstanceUrl%]\">[%WithinInstanceCount%] found in [%BaseName%]</a><br /><br /></span>");
+                sampleFileContent.AppendLine("      <span style=\"display:[%SusMangoSpanDisplay%]\"><a href=\"http://uf.catalog.fcla.edu/uf.jsp[%SusMangoSearchEnding%]\" target=\"_BLANK\">[%SusMangoCount%] found in the University of Florida Library Catalog</a><br /><br /></span>");
+                sampleFileContent.AppendLine("</div>");
+
+                sampleFileContent.AppendLine("Consider searching one of the following:<br /><br />");
+
+                sampleFileContent.AppendLine("Online Resource: <a href=\"http://scholar.google.com\" target=\"_BLANK\">Google Scholar</a> or <a href=\"http://books.google.com\" target=\"_BLANK\">Google Books</a><br />");
+                sampleFileContent.AppendLine("Physical Holdings: the <a href=\"http://uf.catalog.fcla.edu/uf.jsp[%SusMangoSearchEnding%]\" target=\"_BLANK\">Library Catalog</a> or <a href=\"http://www.worldcat.org\" target=\"_BLANK\">Worldcat</a><br />");
+                sampleFileContent.AppendLine("  <br /><br /><br /><br />");
+
+                string sampleBuild = sampleFileContent.ToString();
+                HttpContext.Current.Application["NORESULTS"] = sampleBuild;
+
+                noResultsText = sampleBuild;
+            }
+
             Literal thisLiteral = new Literal();
 
-            StringBuilder noResultsTextBuilder = new StringBuilder();
 
-         //   noResultsTextBuilder.Append("<div class=\"SobekHomeText\">");
-            noResultsTextBuilder.AppendLine("<span class=\"SobekNoResultsText\"><br />Your search returned no results.<br /><br /></span>");
 
             // Get the list of search terms
             string terms = RequestSpecificValues.Current_Mode.Search_String.Replace(",", " ").Trim();
 
             // Try to search out into the Union catalog
             int union_catalog_matches = 0;
-            try
+            string susMangoSearchQuery = String.Empty;
+            if ((noResultsText.Contains("[%SusMangoSpanDisplay%]")) && (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Mango_Union_Search_Base_URL)))
             {
-                // the html retrieved from the page
-                String strResult;
-                WebRequest objRequest = WebRequest.Create( UI_ApplicationCache_Gateway.Settings.Mango_Union_Search_Base_URL + "&term=" + terms );
-                objRequest.Timeout = 2000;
-                WebResponse objResponse = objRequest.GetResponse();
+                try
+                {
+                    // the html retrieved from the page
+                    String strResult;
+                    WebRequest objRequest = WebRequest.Create(UI_ApplicationCache_Gateway.Settings.Mango_Union_Search_Base_URL + "&term=" + terms);
+                    objRequest.Timeout = 2000;
+                    WebResponse objResponse = objRequest.GetResponse();
 
-                // the using keyword will automatically dispose the object once complete
-                using (StreamReader sr = new StreamReader(objResponse.GetResponseStream()))
-                {
-                    strResult = sr.ReadToEnd().Trim();
-                    // Close and clean up the StreamReader
-                    sr.Close();
-                }
-                if (strResult.Length > 0)
-                {
-                    bool isNumber = strResult.All(Char.IsNumber);
-                    if (isNumber)
+                    // the using keyword will automatically dispose the object once complete
+                    using (StreamReader sr = new StreamReader(objResponse.GetResponseStream()))
                     {
-                        union_catalog_matches = Convert.ToInt32(strResult);
+                        strResult = sr.ReadToEnd().Trim();
+                        // Close and clean up the StreamReader
+                        sr.Close();
+                    }
+                    if (strResult.Length > 0)
+                    {
+                        bool isNumber = strResult.All(Char.IsNumber);
+                        if (isNumber)
+                        {
+                            union_catalog_matches = Convert.ToInt32(strResult);
+                        }
                     }
                 }
-            }
-            catch (Exception)
-            {
-                if (Tracer != null)
-                    Tracer.Add_Trace("No_Results_ResultsWriter.Add_HTML", "Exception caught while querying Mango state union catalog", Custom_Trace_Type_Enum.Error);
+                catch (Exception)
+                {
+                    if (Tracer != null)
+                        Tracer.Add_Trace("No_Results_ResultsWriter.Add_HTML", "Exception caught while querying Mango state union catalog", Custom_Trace_Type_Enum.Error);
+                }
             }
 
-            string union_library_link = "http://uf.catalog.fcla.edu/uf.jsp";
+            // Show or hide the links
             if ((union_catalog_matches > 0) || ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation.ToUpper() != "ALL") && (RequestSpecificValues.Results_Statistics.All_Collections_Items > 0) && (RequestSpecificValues.Current_Mode.Default_Aggregation == "all")))
             {
-                noResultsTextBuilder.AppendLine("The following matches were found:<br /><br />");
+                noResultsText = noResultsText.Replace("[%MatchesFoundDivDisplay%]", "block");
 
-                if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation.ToUpper() != "ALL") && (RequestSpecificValues.Results_Statistics.All_Collections_Items > 0) && (RequestSpecificValues.Current_Mode.Default_Aggregation == "all"))
+                if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation.ToUpper() != "ALL") && (RequestSpecificValues.Results_Statistics.All_Collections_Items.HasValue) && (RequestSpecificValues.Results_Statistics.All_Collections_Items.Value > 0) && (RequestSpecificValues.Current_Mode.Default_Aggregation == "all"))
                 {
                     string aggregation = RequestSpecificValues.Current_Mode.Aggregation;
                     RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
-                    if ((RequestSpecificValues.Results_Statistics.All_Collections_Items.HasValue) && ( RequestSpecificValues.Results_Statistics.All_Collections_Items > 0 ))
-                        noResultsTextBuilder.AppendLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + number_to_string(RequestSpecificValues.Results_Statistics.All_Collections_Items) + " found in the " + RequestSpecificValues.Current_Mode.Instance_Name + "</a><br /><br />");
-                    else
-                        noResultsTextBuilder.AppendLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + RequestSpecificValues.Results_Statistics.All_Collections_Items + " found in the " + RequestSpecificValues.Current_Mode.Instance_Name + "</a><br /><br />");
-
+                    string instance_search_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                     RequestSpecificValues.Current_Mode.Aggregation = aggregation;
+
+
+                    noResultsText = noResultsText.Replace("[%WithinInstanceSpanDisplay%]", "inline-block").Replace("[%WithinInstanceUrl%]", instance_search_url).Replace("[%WithinInstanceCount%]", number_to_string(RequestSpecificValues.Results_Statistics.All_Collections_Items));
+                }
+                else
+                {
+                    noResultsText = noResultsText.Replace("[%WithinInstanceSpanDisplay%]", "none");
                 }
 
                 if (union_catalog_matches > 0)
                 {
-                    union_library_link = union_library_link + "?st=" + HttpUtility.HtmlEncode( terms ) + "&ix=kw";
-                    if ( union_catalog_matches > 1 )
-                        noResultsTextBuilder.AppendLine("<a href=\"" + union_library_link + "\" target=\"_BLANK\">" + number_to_string(union_catalog_matches) + " found in the University of Florida Library Catalog</a><br /><br />");
-                    else
-                        noResultsTextBuilder.AppendLine("<a href=\"" + union_library_link + "\" target=\"_BLANK\">One found in the University of Florida Library Catalog</a><br /><br />");
-                    }
-
-                noResultsTextBuilder.AppendLine("<br />");
+                    susMangoSearchQuery = "?st=" + HttpUtility.HtmlEncode(terms) + "&ix=kw";
+                    noResultsText = noResultsText.Replace("[%SusMangoSpanDisplay%]", "inline-block").Replace("[%SusMangoSearchEnding%]", susMangoSearchQuery).Replace("[%SusMangoCount%]", number_to_string(union_catalog_matches));
+                }
+                else
+                {
+                    noResultsText = noResultsText.Replace("[%SusMangoSpanDisplay%]", "none").Replace("[%SusMangoSearchEnding%]", String.Empty);
+                }
+            }
+            else
+            {
+                noResultsText = noResultsText.Replace("[%MatchesFoundDivDisplay%]", "none").Replace("[%SusMangoSearchEnding%]", String.Empty);
             }
 
-            noResultsTextBuilder.AppendLine("Consider searching one of the following:<br /><br />");
+            // Show the final data
+            StringBuilder noResultsTextBuilder = new StringBuilder(noResultsText.Replace("[%SusMangoSearchEnding%]", String.Empty).Replace("[%BaseName%]", RequestSpecificValues.Current_Mode.Instance_Name));
 
-            noResultsTextBuilder.AppendLine("Online Resource: <a href=\"http://scholar.google.com\" target=\"_BLANK\">Google Scholar</a> or <a href=\"http://books.google.com\" target=\"_BLANK\">Google Books</a><br />");
-            noResultsTextBuilder.AppendLine("Physical Holdings: the <a href=\"" + union_library_link + "\" target=\"_BLANK\">Library Catalog</a> or <a href=\"http://www.worldcat.org\" target=\"_BLANK\">Worldcat</a><br />");
-            noResultsTextBuilder.AppendLine("  <br /><br /><br /><br />");
             noResultsTextBuilder.AppendLine("</td></tr></table>");
-       //   noResultsTextBuilder.Append("</div>");
 
             noResultsTextBuilder.AppendLine();
             noResultsTextBuilder.AppendLine("<!-- place holder for the load() event in the body -->");

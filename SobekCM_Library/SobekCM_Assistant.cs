@@ -811,7 +811,7 @@ namespace SobekCM.Library
         public void Get_Search_Results(Navigation_Object Current_Mode,
                                        Item_Lookup_Object All_Items_Lookup,
                                        Item_Aggregation Aggregation_Object, 
-            List<string> Search_Stop_Words,
+                                       List<string> Search_Stop_Words,
                                        Custom_Tracer Tracer,
                                        out Search_Results_Statistics Complete_Result_Set_Info,
                                        out List<iSearch_Title_Result> Paged_Results )
@@ -834,7 +834,14 @@ namespace SobekCM.Library
             // Depending on type of search, either go to database or Greenstone
 	        if (Current_Mode.Search_Type == Search_Type_Enum.Map)
 	        {
-		        try
+                // If this is showing in the map, only allow sot zero, which is by coordinates
+	            if ((Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map) || (Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Default))
+	            {
+	                Current_Mode.Sort = 0;
+	                sort = 0;
+	            }
+
+	            try
 		        {
 			        double lat1 = 1000;
 			        double long1 = 1000;

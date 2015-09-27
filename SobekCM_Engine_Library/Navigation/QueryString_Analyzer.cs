@@ -974,6 +974,7 @@ namespace SobekCM.Engine_Library.Navigation
                             case "aggrmanage":
                             case "aggrhistory":
                             case "aggrpermissions":
+                            case "geography":
 								aggregation_querystring_analyze(Navigator, QueryString, Navigator.Default_Aggregation, url_relative_list);
 								break;
 
