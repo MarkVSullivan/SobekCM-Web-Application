@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Web;
+using SobekCM.Core.Navigation;
+using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
 
@@ -12,9 +15,61 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// <see cref="iItemViewer" /> interface. </remarks>
     public class Video_ItemViewer : abstractItemViewer
     {
+        private int video;
+        private List<string> videoFileNames;
+        private List<string> videoLabels;
+
         /// <summary> Constructor for a new instance of the Flash_ItemViewer class </summary>
-        public Video_ItemViewer()
+        public Video_ItemViewer(SobekCM_Item CurrentItem )
         {
+            // Determine if a particular video was selected 
+            video = 1;
+            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["video"]))
+            {
+                int tryVideo;
+                if (Int32.TryParse(HttpContext.Current.Request.QueryString["video"], out tryVideo))
+                {
+                    if (tryVideo < 1)
+                        tryVideo = 1;
+                    video = tryVideo;
+                }
+            }
+
+            // Collect the list of videos by stepping through each download page
+            videoFileNames = new List<string>();
+            videoLabels = new List<string>();
+            List<abstract_TreeNode> downloadPages = CurrentItem.Divisions.Download_Tree.Pages_PreOrder;
+            foreach (Page_TreeNode downloadPage in downloadPages)
+            {
+                foreach (SobekCM_File_Info thisFileInfo in downloadPage.Files)
+                {
+                    string extension = thisFileInfo.File_Extension;
+
+                    // Was this a video file?
+                    switch (extension)
+                    {
+                        //case "WAV":
+                        case "WEBM":
+                        case "OGG":
+                      //  case "OGM":
+                       // case "MKV":
+                        case "MP4":
+                      //  case "AVI":
+                      //  case "WMV":
+                      //  case "MPG":
+                       // case "MOV":
+                      //  case "FLV":
+                      //  case "VOB":
+                            videoFileNames.Add(thisFileInfo.System_Name);
+                            videoLabels.Add(downloadPage.Label);
+                            break;
+                    }
+                }
+            }
+
+            // Ensure the video count wasn't too large
+            if (video > videoFileNames.Count)
+                video = 1;
         }
 
         /// <summary> Gets the type of item viewer this object represents </summary>
@@ -74,6 +129,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("Video_ItemViewer.Add_Main_Viewer_Section", "");
             }
 
+
+            ;
+
             ////Determine the name of the FLASH file
             //string flash_file = String.Empty;
             //int current_flash_index = 0;
@@ -99,10 +157,36 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Add the HTML for the image
             Output.WriteLine("        <!-- VIDEO VIEWER OUTPUT -->" );
-            Output.WriteLine("          <td><div id=\"sbkFiv_ViewerTitle\">LABEL HERE</div></td>");
+            Output.WriteLine("          <td><div id=\"sbkFiv_ViewerTitle\">" + videoLabels[video-1] + "</div></td>");
             Output.WriteLine("        </tr>") ;
+
+            if (videoFileNames.Count > 1)
+            {
+                Output.WriteLine("        <tr>");
+                Output.WriteLine("          <td style=\"text-align:center;\">");
+                string url = UrlWriterHelper.Redirect_URL(CurrentMode);
+                Output.WriteLine("            <select id=\"sbkViv_VideoSelect\" name=\"sbkViv_VideoSelect\" onchange=\"item_jump_video('" + url + "');\">");
+
+                for (int i = 0; i < videoFileNames.Count; i++)
+                {
+                    if ( video == i + 1 )
+                        Output.WriteLine("              <option value=\"" + (i+1) + "\" selected=\"selected\">" + videoFileNames[i] + "</option>");
+                    else
+                        Output.WriteLine("              <option value=\"" + (i + 1) + "\">" + videoFileNames[i] + "</option>");
+                }
+                
+                Output.WriteLine("            </select>");
+                Output.WriteLine("          </td>");
+                Output.WriteLine("        </tr>");
+            }
+
+
+            string video_url = CurrentItem.Web.Source_URL + "/" + videoFileNames[video - 1];
+
             Output.WriteLine("        <tr>");
-            Output.WriteLine("          <td id=\"sbkFiv_MainArea\">SHOW THE VIDEO HERE</td>" );
+            Output.WriteLine("          <td id=\"sbkFiv_MainArea\">");
+            Output.WriteLine("            <video id=\"sbkViv_Movie\" src=\"" + video_url + "\" controls autoplay></video>");
+            Output.WriteLine("          </td>"); 
             Output.WriteLine("        <!-- END VIDEO VIEWER OUTPUT -->" );
         }
     }

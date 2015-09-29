@@ -1011,18 +1011,19 @@ namespace SobekCM.Engine_Library.Items
                                 }
                                 break;
 
-                            case "WAV":
+                            
                             case "WEBM":
                             case "OGG":
-                            case "OGM":
-                            case "MKV":
                             case "MP4":
-                            case "AVI":
-                            case "WMV":
-                            case "MPG":
-                            case "MOV":
-                            case "FLV":
-                            case "VOB":
+                            //case "AVI":
+                            //case "WMV":
+                            //case "MPG":
+                            //case "MOV":
+                            //case "FLV":
+                            //case "VOB":
+                            //case "WAV":
+                            //case "OGM":
+                            //case "MKV":
                                 video_download++;
                                 download_handled = true;
                                 break;
@@ -1039,18 +1040,18 @@ namespace SobekCM.Engine_Library.Items
                             // Was this an EAD page?
                             switch (extension)
                             {
-                                case "WAV":
                                 case "WEBM":
                                 case "OGG":
-                                case "OGM":
-                                case "MKV":
                                 case "MP4":
-                                case "AVI":
-                                case "WMV":
-                                case "MPG":
-                                case "MOV":
-                                case "FLV":
-                                case "VOB":
+                                    //case "AVI":
+                                    //case "WMV":
+                                    //case "MPG":
+                                    //case "MOV":
+                                    //case "FLV":
+                                    //case "VOB":
+                                    //case "WAV":
+                                    //case "OGM":
+                                    //case "MKV":
                                     video_download++;
                                     download_handled = true;
                                     break;

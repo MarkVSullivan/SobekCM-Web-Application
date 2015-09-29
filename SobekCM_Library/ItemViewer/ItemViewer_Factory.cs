@@ -135,7 +135,7 @@ namespace SobekCM.Library.ItemViewer
 					return new YouTube_Embedded_Video_ItemViewer();
 
                 case View_Enum.VIDEO:
-                    return new Video_ItemViewer();
+                    return new Video_ItemViewer(Current_Object);
 
             }
 

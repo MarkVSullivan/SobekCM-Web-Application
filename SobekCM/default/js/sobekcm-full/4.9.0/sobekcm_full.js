@@ -528,6 +528,15 @@ function arbitrary_item_count(root) {
 	}
 }
 
+// FUnction used when user selects a new option on the stats reports
+function stats_report_option_change(root) {
+    var newOption = $('#sbkShw_ReportOptionSelect').val();
+    var url = root + "?opt=" + newOption;
+    if (root.indexOf('?') > 0)
+        url = root + "&opt=" + newOption;
+    window.location.href = url;
+}
+
 // Function is used for pulling the statistical information for a new date
 function date_jump_sobekcm(root) {
 	// Collect the values from the drop boxes
@@ -799,21 +808,24 @@ function advanced_search_years_sobekcm(root, browseurl) {
 	var term = trimString(document.search_form.Textbox1.value).replace(",", "+").replace(" ", "+") + "," + trimString(document.search_form.Textbox2.value).replace(",", "+").replace(" ", "+") + "," + trimString(document.search_form.Textbox3.value).replace(",", "+").replace(" ", "+") + "," + trimString(document.search_form.Textbox4.value).replace(",", "+").replace(" ", "+");
 	var fields = document.search_form.Dropdownlist1.value + "," + document.search_form.andOrNotBox1.value + document.search_form.Dropdownlist2.value + "," + document.search_form.andOrNotBox2.value + document.search_form.Dropdownlist3.value + "," + document.search_form.andOrNotBox3.value + document.search_form.Dropdownlist4.value;
 
-	// Get the year range data first
-	var year1 = document.search_form.YearDropDown1.value;
-	var year2 = document.search_form.YearDropDown2.value;
+    // Get the year range data first
 	var year_url_append = '';
-	if ((year1.length > 0) && (year1 != 'ZZ')) {
-		year_url_append = "&yr1=" + year1;
+	if ((document.getElementById('YearDropDown1')) && (document.getElementById('YearDropDown2'))) {
+        var year1 = document.search_form.YearDropDown1.value;
+        var year2 = document.search_form.YearDropDown2.value;
+        
+        if ((year1.length > 0) && (year1 != 'ZZ')) {
+            year_url_append = "&yr1=" + year1;
 
-		if ((year2.length > 0) && (year2 != 'ZZ')) {
-			year_url_append = year_url_append + "&yr2=" + year2;
-		} else {
-			year_url_append = year_url_append + "&yr2=" + new Date().getFullYear();
-		}
-	}
+            if ((year2.length > 0) && (year2 != 'ZZ')) {
+                year_url_append = year_url_append + "&yr2=" + year2;
+            } else {
+                year_url_append = year_url_append + "&yr2=" + new Date().getFullYear();
+            }
+        }
+    }
 
-	if (term.length > 3) {
+    if (term.length > 3) {
 		// Show the progress spinner
 		var circular_div = document.getElementById("circular_progress");
 		circular_div.className = "shown_progress_gray";
@@ -969,10 +981,15 @@ function basic_search_sobekcm(root, browseurl) {
 			// STILL NEED TO REPLACE THESE FOR FRENCH AND SPANISH
 			term = term.toLowerCase().replace(" or ", " =").replace(" and ", " ").replace(" not ", " -").replace(" y no ", " -").replace(" y ", " =").replace(" o ", " ").replace(" no ", " -");
 
+		    // Get the field
+			var field = "t";
+			if ((document.getElementById('sbkBsav_fullTextCheck') != null) && (document.getElementById('sbkBsav_fullTextCheck').checked))
+			    field = "text";
+
 			// Build the destination url by placing the selection option first and redirect
-			var url = root + "?t=" + term;
+			var url = root + "?" + field + "=" + term;
 		    if (root.indexOf("?") > 0)
-		        url = root + "&t=" + term;
+		        url = root + "&" + field + "=" + term;
 
 			window.location.href = url;
 		}
@@ -1999,6 +2016,15 @@ function item_jump_sobekcm(root) {
 	var page_val = document.itemNavForm.page_select.value;
 	var url = root.replace("XX1234567890XX", page_val);
 	window.location.href = url;
+}
+
+// Routine used to jump to a specific video inside the video item viewer
+function item_jump_video(root) {
+    var newOption = $('#sbkViv_VideoSelect').val();
+    var url = root + "?video=" + newOption;
+    if (root.indexOf('?') > 0)
+        url = root + "&video=" + newOption;
+    window.location.href = url;
 }
 
 

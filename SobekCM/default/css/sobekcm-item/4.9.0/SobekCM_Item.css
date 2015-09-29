@@ -353,6 +353,10 @@ UL.sbkEad_TocMenu LI A:hover { BACKGROUND-COLOR: #eeeeee; color:Black; }
 /* TRACKINGSHEET_ITEM_VIEWER */
 .sbkTs_MainTable{ width: 800px; }
 
+/* VIDEO_ITEM_VIEWER */
+#sbkViv_VideoSelect { background-color: #777777; color: white; border: none; margin-left: auto; margin-right: auto;}
+#sbkViv_Movie { width: 900px; }
+
 /** Class used for all item-viewer boxes which take focus */
 .sbkIsw_Focusable:focus { color:#0000a8; background-color: #fbf7b4; }
 

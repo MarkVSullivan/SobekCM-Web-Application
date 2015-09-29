@@ -788,6 +788,9 @@ select.email_bookshelf_input  { color:Blue; width: 322px; margin-top: 6px; borde
 .manage_page_button { background: url(../../../images/misc/manage_page_button.png) no-repeat; width:107px; }
 .manage_page_button:hover { background-position: 0 -39px; }
 
+.edit_page_button { background: url(../../../images/misc/edit_page.png) no-repeat; width:102px; }
+.edit_page_button:hover { background-position: 0 -39px; }
+
 .delete_page_button { width: 97px; background: url(../../../images/misc/delete_page.png) no-repeat;  }
 .delete_page_button:hover { background-position: 0 -39px; }
 

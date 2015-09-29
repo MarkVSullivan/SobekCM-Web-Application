@@ -106,6 +106,30 @@ function save_new_aggr()
     return true;
 }
 
+// Update for choosing the map search default area
+function aggr_mapsearch_changed() {
+    var newValue = $( "#admin_aggr_mapsearch_type" ).val();
+    currmapsearch = newValue;
+    if (newValue == "-1") {
+        $("#admin_aggr_mapsearch_custom_row").show();
+    } else {
+        $("#admin_aggr_mapsearch_custom_row").hide();
+    }
+    return false;
+}
+
+// Update for choosing the map browse default area
+function aggr_mapbrowse_changed() {
+    var newValue = $("#admin_aggr_mapbrowse_type").val();
+    currmapsearch = newValue;
+    if (newValue == "-1") {
+        $("#admin_aggr_mapbrowse_custom_row").show();
+    } else {
+        $("#admin_aggr_mapbrowse_custom_row").hide();
+    }
+    return false;
+}
+
 // Delete an existing aggregation
 function delete_aggr(Code) {
 	
@@ -1118,6 +1142,55 @@ function save_webcontent_edits(complete) {
     return false;
 }
 
+function new_webcontent_determine_url(base) {
+
+    var level1_value = $.trim($('#admin_webcontent_level1').val());
+    var level2_value = $('#admin_webcontent_level2').val();
+    var level3_value = $('#admin_webcontent_level3').val();
+    var level4_value = $('#admin_webcontent_level4').val();
+    var level5_value = $('#admin_webcontent_level5').val();
+    var level6_value = $('#admin_webcontent_level6').val();
+    var level7_value = $('#admin_webcontent_level7').val();
+    var level8_value = $('#admin_webcontent_level8').val();
+
+    var url = base;
+
+    if (level1_value.length > 0) {
+        url = url + "/" + level1_value;
+
+        if (level2_value.length > 0) {
+            url = url + "/" + level2_value;
+
+            if (level3_value.length > 0) {
+                url = url + "/" + level3_value;
+
+                if (level4_value.length > 0) {
+                    url = url + "/" + level4_value;
+
+                    if (level5_value.length > 0) {
+                        url = url + "/" + level5_value;
+
+                        if (level6_value.length > 0) {
+                            url = url + "/" + level6_value;
+
+                            if (level7_value.length > 0) {
+                                url = url + "/" + level7_value;
+
+                                if (level8_value.length > 0) {
+                                    url = url + "/" + level8_value;
+
+                                }
+                            }
+                        }
+                    }
+                }
+            } 
+        }
+    }
+
+    $('#urlSpan').html(url);
+}
+
 function new_webcontent_edit_page(page) {
     var hiddenfield = document.getElementById('admin_webcontent_save');
     hiddenfield.value = page;
@@ -1137,6 +1210,23 @@ function delete_webcontent_upload_file(filename) {
     }
 
     // Return false to prevent another return trip to the server
+    return false;
+}
+
+// Add filter to web content admin pages
+function new_webcontent_user_filter(base) {
+    var user_value = $('select[name=userFilter]').val();
+    var url = base;
+    if (user_value.length > 0) {
+        if (url.indexOf('?') >= 0)
+            url = url + "&user=" + user_value;
+        else
+            url = url + "?user=" + user_value;
+    }
+
+    // Change the the browser location to the new url
+    window.location.href = url;
+
     return false;
 }
 
@@ -1183,6 +1273,61 @@ function new_webcontent_filter(base, depth) {
     // Change the the browser location to the new url
     window.location.href = url;
 
+
+    return false;
+}
+
+
+function new_webcontent_child_filter(base, depth, fixed_depth) {
+
+    var filter = '';
+
+    // Check for the level 2 filter (all web content pages have 1 level fixed)
+    if ((fixed_depth < 2) && (depth >= 2)) {
+        var level2_value = $('select[name=lvl2Filter]').val();
+        if (filter.length > 0)
+            filter = filter + "&l2=" + level2_value;
+        else
+            filter = "l2=" + level2_value;
+    }
+
+    // Check for the level 3 filter 
+    if ((fixed_depth < 3) && (depth >= 3)) {
+        var level3_value = $('select[name=lvl3Filter]').val();
+        if (filter.length > 0)
+            filter = filter + "&l3=" + level3_value;
+        else
+            filter = "l3=" + level3_value;
+    }
+
+    // Check for the level 4 filter 
+    if ((fixed_depth < 4) && (depth >= 4)) {
+        var level4_value = $('select[name=lvl4Filter]').val();
+        if (filter.length > 0)
+            filter = filter + "&l4=" + level4_value;
+        else
+            filter = "l4=" + level4_value;
+    }
+
+    // Check for the level 5 filter 
+    if ((fixed_depth < 5) && (depth >= 5)) {
+        var level5_value = $('select[name=lvl5Filter]').val();
+        if (filter.length > 0)
+            filter = filter + "&l5=" + level5_value;
+        else
+            filter = "l5=" + level5_value;
+    }
+
+    var url = base;
+    if (filter.length > 0) {
+        if (url.indexOf('?') >= 0)
+            url = url + "&" + filter;
+        else
+            url = url + "?" + filter;
+    }
+
+    // Change the the browser location to the new url
+    window.location.href = url;
 
     return false;
 }

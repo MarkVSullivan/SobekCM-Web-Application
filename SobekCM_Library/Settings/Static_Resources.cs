@@ -300,13 +300,13 @@ namespace SobekCM.Library.Settings
             Skins_Img = "http://cdn.sobekrepository.org/images/misc/skins.gif";
             Skins_Img_Small = "http://cdn.sobekrepository.org/images/misc/skins.png";
             Skins_Img_Large = "http://cdn.sobekrepository.org/images/misc/skins_lg.png";
-            Sobekcm_Css = "http://cdn.sobekrepository.org/css/sobekcm/4.8.10/sobekcm.min.css";
-            Sobekcm_Admin_Css = "http://cdn.sobekrepository.org/css/sobekcm-admin/4.8.10/sobekcm_admin.min.css";
-            Sobekcm_Admin_Js = "http://cdn.sobekrepository.org/js/sobekcm-admin/4.8.7/sobekcm_admin.js";
+            Sobekcm_Css = "http://cdn.sobekrepository.org/css/sobekcm/4.9.0/sobekcm.min.css";
+            Sobekcm_Admin_Css = "http://cdn.sobekrepository.org/css/sobekcm-admin/4.9.0/sobekcm_admin.min.css";
+            Sobekcm_Admin_Js = "http://cdn.sobekrepository.org/js/sobekcm-admin/4.9.0/sobekcm_admin.js";
             Sobekcm_Bookturner_Css = "http://cdn.sobekrepository.org/css/sobekcm-bookturner/4.8.4/SobekCM_BookTurner.css";
             Sobekcm_Datatables_Css = "http://cdn.sobekrepository.org/css/sobekcm-datatables/4.8.4/SobekCM_DataTables.css";
-            Sobekcm_Full_Js = "http://cdn.sobekrepository.org/js/sobekcm-full/4.8.10/sobekcm_full.min.js";
-            Sobekcm_Item_Css = "http://cdn.sobekrepository.org/css/sobekcm-item/4.8.10/sobekCM_item.min.css";
+            Sobekcm_Full_Js = "http://cdn.sobekrepository.org/js/sobekcm-full/4.9.0/sobekcm_full.min.js";
+            Sobekcm_Item_Css = "http://cdn.sobekrepository.org/css/sobekcm-item/4.9.0/sobekCM_item.min.css";
             Sobekcm_Map_Editor_Js = "http://cdn.sobekrepository.org/js/sobekcm-map-editor/4.8.4/sobekcm_map_editor.js";
             Sobekcm_Map_Search_Js = "http://cdn.sobekrepository.org/js/sobekcm-map/4.8.4/sobekcm_map_search.js";
             Sobekcm_Map_Tool_Js = "http://cdn.sobekrepository.org/js/sobekcm-map/4.8.11/sobekcm_map_tool.js";
@@ -3041,11 +3041,6 @@ namespace SobekCM.Library.Settings
                 if (readerXml != null) readerXml.Close();
                 if (readerStream != null) readerStream.Close();
             }
-
-            Sobekcm_Admin_Css = "http://cdn.sobekdigital.com/css/sobekcm-admin/4.9.0/sobekcm_admin.css";
-            Sobekcm_Admin_Js = "http://cdn.sobekdigital.com/js/sobekcm-admin/4.9.0/sobekcm_admin.js";
-            Sobekcm_Css = "http://cdn.sobekdigital.com/css/sobekcm/4.9.0/sobekcm.css";
-            Sobekcm_Full_Js = "http://cdn.sobekdigital.com/js/sobekcm-full/4.9.0/sobekcm_full.js";
 
             return returnValue;
         }
