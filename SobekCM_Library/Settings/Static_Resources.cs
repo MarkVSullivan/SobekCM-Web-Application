@@ -288,6 +288,7 @@ namespace SobekCM.Library.Settings
             Search_Basic_Img = "http://cdn.sobekrepository.org/images/misc/search_basic.png";
             Search_Basic_MimeType_Img = "http://cdn.sobekrepository.org/images/misc/search_basic_mimetype.png";
             Search_Basic_Year_Range_Img = "http://cdn.sobekrepository.org/images/misc/search_basic_year_range.png";
+            Search_Basic_With_FullText_Img = "http://cdn.sobekrepository.org/images/misc/search_basic_with_fulltext.png";
             Search_Full_Text_Img = "http://cdn.sobekrepository.org/images/misc/search_full_text.png";
             Search_Full_Text_Exlude_Newspapers_Img = "http://cdn.sobekrepository.org/images/misc/search_fulltext_exclude_newspapers.png";
             Search_Map_Img = "http://cdn.sobekrepository.org/images/misc/search_map.png";
@@ -1201,6 +1202,9 @@ namespace SobekCM.Library.Settings
 
         /// <summary> URL for the default resource 'search_basic_year_range.png' file ( http://cdn.sobekrepository.org/images/misc/search_basic_year_range.png by default)</summary>
         public static string Search_Basic_Year_Range_Img { get; private set; }
+
+        /// <summary> URL for the default resource 'search_basic_year_range.png' file ( http://cdn.sobekrepository.org/images/misc/search_basic_with_fulltext.png by default)</summary>
+        public static string Search_Basic_With_FullText_Img { get; private set; }
 
         /// <summary> URL for the default resource 'search_full_text.png' file ( http://cdn.sobekrepository.org/images/misc/search_full_text.png by default)</summary>
         public static string Search_Full_Text_Img { get; private set; }
@@ -2589,6 +2593,10 @@ namespace SobekCM.Library.Settings
                     Search_Basic_Year_Range_Img = Source;
                     break;
 
+                case "search_basic_with_fulltext_img":
+                    Search_Basic_With_FullText_Img = Source;
+                    break;
+
                 case "search_full_text_img":
                     Search_Full_Text_Img = Source;
                     break;
@@ -3037,6 +3045,7 @@ namespace SobekCM.Library.Settings
             Sobekcm_Admin_Css = "http://cdn.sobekdigital.com/css/sobekcm-admin/4.9.0/sobekcm_admin.css";
             Sobekcm_Admin_Js = "http://cdn.sobekdigital.com/js/sobekcm-admin/4.9.0/sobekcm_admin.js";
             Sobekcm_Css = "http://cdn.sobekdigital.com/css/sobekcm/4.9.0/sobekcm.css";
+            Sobekcm_Full_Js = "http://cdn.sobekdigital.com/js/sobekcm-full/4.9.0/sobekcm_full.js";
 
             return returnValue;
         }

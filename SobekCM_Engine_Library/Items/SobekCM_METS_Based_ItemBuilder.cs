@@ -949,6 +949,7 @@ namespace SobekCM.Engine_Library.Items
 			{
 				string ead_file = String.Empty;
 				int pdf_download = 0;
+			    int video_download = 0;
 				string pdf_download_url = String.Empty;
 				List<abstract_TreeNode> downloadPages = Package_To_Finalize.Divisions.Download_Tree.Pages_PreOrder;
 			    string xsl = String.Empty;
@@ -1009,8 +1010,56 @@ namespace SobekCM.Engine_Library.Items
                                     }
                                 }
                                 break;
+
+                            case "WAV":
+                            case "WEBM":
+                            case "OGG":
+                            case "OGM":
+                            case "MKV":
+                            case "MP4":
+                            case "AVI":
+                            case "WMV":
+                            case "MPG":
+                            case "MOV":
+                            case "FLV":
+                            case "VOB":
+                                video_download++;
+                                download_handled = true;
+                                break;
                         }
                     }
+
+                    // Check for video files
+				    if ((!download_handled) && ( downloadPage.Files != null ))
+				    {
+				        foreach (SobekCM_File_Info thisFileInfo in downloadPage.Files)
+				        {
+                            string extension = thisFileInfo.File_Extension;
+
+                            // Was this an EAD page?
+                            switch (extension)
+                            {
+                                case "WAV":
+                                case "WEBM":
+                                case "OGG":
+                                case "OGM":
+                                case "MKV":
+                                case "MP4":
+                                case "AVI":
+                                case "WMV":
+                                case "MPG":
+                                case "MOV":
+                                case "FLV":
+                                case "VOB":
+                                    video_download++;
+                                    download_handled = true;
+                                    break;
+                            }
+
+                            if (download_handled)
+                                break;
+				        }
+				    }
 
 					// Step through each download file
 					if (!download_handled)
@@ -1033,6 +1082,7 @@ namespace SobekCM.Engine_Library.Items
                                     pdf_download_url = thisFile.System_Name;
                                 }
 							}
+
 						}
 					}
 				}
@@ -1072,6 +1122,11 @@ namespace SobekCM.Engine_Library.Items
 				{
                     Package_To_Finalize.Behaviors.Add_View(View_Enum.PDF).FileName = pdf_download_url;
 				}
+
+			    if (video_download > 0)
+			    {
+			        Package_To_Finalize.Behaviors.Add_View(View_Enum.VIDEO);
+			    }
 			}
 			else
 			{

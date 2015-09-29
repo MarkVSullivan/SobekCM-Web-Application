@@ -64,6 +64,9 @@ namespace SobekCM.Builder_Library.Modules.Items
             // First see if this folder is even eligible for archiving and an archive drop box exists
             if ((Settings.Archive_DropBox.Length > 0) && ((ResourcePackage.Source_Folder.Archive_All_Files) || (ResourcePackage.Source_Folder.Archive_TIFFs)))
             {
+
+                OnProcess("\t\tCopying files to the archive", "Copy To Archive", ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, -1);
+
                 // Get the list of TIFFs
                 string[] tiff_files = Directory.GetFiles(ResourcePackage.Resource_Folder, "*.tif");
 
@@ -84,8 +87,13 @@ namespace SobekCM.Builder_Library.Modules.Items
                             foreach (string thisFile in archive_files)
                             {
                                 string filename = Path.GetFileName(thisFile);
-                                if ( String.Compare(filename, "thumbs.db", StringComparison.OrdinalIgnoreCase) != 0 )
-                                    File.Copy(thisFile, archiveDirectory + "\\" + (new FileInfo(thisFile)).Name, true);
+                                if (String.Compare(filename, "thumbs.db", StringComparison.OrdinalIgnoreCase) != 0)
+                                {
+                                    string newFile = archiveDirectory + "\\" + filename;
+                                  //  OnProcess("\t\tCopying file ( " + thisFile + " -->" + newFile + ")", "Copy To Archive", ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, -1);
+
+                                    File.Copy(thisFile, newFile, true);
+                                }
                             }
                         }
                         else
@@ -93,13 +101,19 @@ namespace SobekCM.Builder_Library.Modules.Items
                             string[] archive_tiff_files = Directory.GetFiles(ResourcePackage.Resource_Folder, "*.tif");
                             foreach (string thisFile in archive_tiff_files)
                             {
-                                File.Copy(thisFile, archiveDirectory + "\\" + (new FileInfo(thisFile)).Name, true);
+                                string filename = Path.GetFileName(thisFile);
+                                string newFile = archiveDirectory + "\\" + filename;
+                              //  OnProcess("\t\tCopying file ( " + thisFile + " -->" + newFile + ")", "Copy To Archive", ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, -1);
+
+                                File.Copy(thisFile, newFile, true);
                             }
                         }
                     }
                     catch (Exception ee)
                     {
                         OnError("Copy to archive failed for " + ResourcePackage.BibID + ":" + ResourcePackage.VID + "\n" + ee.Message, ResourcePackage.BibID + ":" + ResourcePackage.VID, ResourcePackage.METS_Type_String, ResourcePackage.BuilderLogId);
+                        OnError(ee.StackTrace, ResourcePackage.BibID + ":" + ResourcePackage.VID, ResourcePackage.METS_Type_String, ResourcePackage.BuilderLogId);
+
                         returnValue = false;
                     }
                 }

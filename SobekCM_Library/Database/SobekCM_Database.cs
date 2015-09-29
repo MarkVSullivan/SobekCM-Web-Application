@@ -543,11 +543,12 @@ namespace SobekCM.Library.Database
 		}
 
 		/// <summary> Gets the current title, item, and page count for each item aggregation in the item aggregation hierarchy </summary>
+        /// <param name="Option"> Option tells which items to include ( 0 = completed, 1 = entered with files, 2 = all entered items )</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Datatable with all the current title, item, and page count for each item aggregation</returns>
 		/// <remarks> This calls the 'SobekCM_Item_Count_By_Collection' stored procedure  <br /><br />
 		/// This is used by the <see cref="Internal_HtmlSubwriter"/> class</remarks>
-		public static DataTable Get_Item_Aggregation_Count(Custom_Tracer Tracer)
+		public static DataTable Get_Item_Aggregation_Count(int Option, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -556,8 +557,12 @@ namespace SobekCM.Library.Database
 
 			try
 			{
+                // Build the parameter list
+				EalDbParameter[] paramList = new EalDbParameter[1];
+                paramList[0] = new EalDbParameter("@option", Option);
+
 				// Execute this query stored procedure
-				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Count_By_Collection");
+				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Count_By_Collection", paramList);
 				return tempSet.Tables[0];
 			}
 			catch (Exception ee)
@@ -575,11 +580,12 @@ namespace SobekCM.Library.Database
 
 		/// <summary> Gets the title, item, and page count for each item aggregation currently and at some previous point of time </summary>
 		/// <param name="Date1"> Date from which to additionally include item count </param>
+        /// <param name="Option"> Option tells which items to include ( 0 = completed, 1 = entered with files, 2 = all entered items )</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> Datatable with all the  title, item, and page count for each item aggregation currently and at some previous point of time </returns>
 		/// <remarks> This calls the 'SobekCM_Item_Count_By_Collection_By_Dates' stored procedure  <br /><br />
 		/// This is used by the <see cref="Internal_HtmlSubwriter"/> class</remarks>
-		public static DataTable Get_Item_Aggregation_Count(DateTime Date1, Custom_Tracer Tracer)
+		public static DataTable Get_Item_Aggregation_Count(DateTime Date1, int Option, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -589,9 +595,10 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				EalDbParameter[] paramList = new EalDbParameter[2];
+				EalDbParameter[] paramList = new EalDbParameter[3];
 				paramList[0] = new EalDbParameter("@date1", Date1);
 				paramList[1] = new EalDbParameter("@date2", DBNull.Value);
+                paramList[2] = new EalDbParameter("@option", Option);
 
 				// Execute this query stored procedure
 				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Count_By_Collection_By_Date_Range", paramList);
@@ -610,14 +617,15 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		/// <summary> Gets the title, item, and page count for each item aggregation currently and at some previous point of time </summary>
-		/// <param name="Date1"> Date from which to additionally include item count </param>
-		/// <param name="Date2"> Date to which to additionally include item count </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Datatable with all the  title, item, and page count for each item aggregation at some previous point of time and then the increase in these counts between the two provided dates </returns>
-		/// <remarks> This calls the 'SobekCM_Item_Count_By_Collection_By_Date_Range' stored procedure  <br /><br />
-		/// This is used by the <see cref="Internal_HtmlSubwriter"/> class</remarks>
-		public static DataTable Get_Item_Aggregation_Count_DateRange(DateTime Date1, DateTime Date2, Custom_Tracer Tracer)
+	    /// <summary> Gets the title, item, and page count for each item aggregation currently and at some previous point of time </summary>
+	    /// <param name="Date1"> Date from which to additionally include item count </param>
+	    /// <param name="Date2"> Date to which to additionally include item count </param>
+	    /// <param name="Option"> Option tells which items to include ( 0 = completed, 1 = entered with files, 2 = all entered items )</param>
+	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+	    /// <returns> Datatable with all the  title, item, and page count for each item aggregation at some previous point of time and then the increase in these counts between the two provided dates </returns>
+	    /// <remarks> This calls the 'SobekCM_Item_Count_By_Collection_By_Date_Range' stored procedure  <br /><br />
+	    /// This is used by the <see cref="Internal_HtmlSubwriter"/> class</remarks>
+	    public static DataTable Get_Item_Aggregation_Count_DateRange(DateTime Date1, DateTime Date2, int Option, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -627,9 +635,10 @@ namespace SobekCM.Library.Database
 			try
 			{
 				// Build the parameter list
-				EalDbParameter[] paramList = new EalDbParameter[2];
+				EalDbParameter[] paramList = new EalDbParameter[3];
 				paramList[0] = new EalDbParameter("@date1", Date1);
 				paramList[1] = new EalDbParameter("@date2", Date2);
+                paramList[2] = new EalDbParameter("@option", Option);
 
 				// Execute this query stored procedure
 				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Item_Count_By_Collection_By_Date_Range", paramList);

@@ -40,6 +40,9 @@ namespace SobekCM.Library.AggregationViewer
                 case Item_Aggregation_Views_Searches_Enum.Basic_Search_MimeType:
                     return SearchType2 == Search_Type_Enum.Basic;
 
+                case Item_Aggregation_Views_Searches_Enum.Basic_Search_FullTextOption:
+                    return SearchType2 == Search_Type_Enum.Basic;
+
                 case Item_Aggregation_Views_Searches_Enum.FullText_Search:
                     return SearchType2 == Search_Type_Enum.Full_Text;
 

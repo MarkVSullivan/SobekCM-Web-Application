@@ -258,54 +258,56 @@ namespace SobekCM.Resource_Object.Utilities
 
 
 						// Get the date for this file and verify thumbnail, jpeg, and jp2 exist
-						if ((((!File.Exists(rootName + ".jpg")) || (!File.Exists(rootName + "thm.jpg")))
-							|| (File.GetLastWriteTime(rootName + ".jpg").CompareTo(File.GetLastWriteTime(tifFile)) < 0)) ||
-                            ((!File.Exists(rootName + ".jp2")) || (File.GetLastWriteTime(rootName + ".jp2").CompareTo(File.GetLastWriteTime(tifFile)) < 0)))
-						{
-							// We'll do the processing on our local machine to avoid pulling the data from the SAN multiple times
-                            string useFile = tifFile;
+					    if ((((!File.Exists(rootName + ".jpg")) || (!File.Exists(rootName + "thm.jpg")))
+					         || (File.GetLastWriteTime(rootName + ".jpg").CompareTo(File.GetLastWriteTime(tifFile)) < 0)) ||
+					        ((!File.Exists(rootName + ".jp2")) || (File.GetLastWriteTime(rootName + ".jp2").CompareTo(File.GetLastWriteTime(tifFile)) < 0)))
+					    {
+					        // We'll do the processing on our local machine to avoid pulling the data from the SAN multiple times
+					        string useFile = tifFile;
 
-						    if (useTemp)
-						    {
-						        string localTempFile = temp_folder + "\\TEMP.tif";
-						        try
-						        {
-						            if (File.Exists(localTempFile))
-						            {
-						                File.Delete(localTempFile);
-						            }
-						            File.Copy(tifFile, localTempFile, true);
-                                    useFile = localTempFile;
-						        }
-						        catch
-						        {
-						            Thread.Sleep(2000);
+					        if (useTemp)
+					        {
+                                OnNewTask("\t\t\tUSING TEMP!", ParentLogId, PackageName);
 
-						            try
-						            {
-						                if (File.Exists(localTempFile))
-						                {
-						                    File.Delete(localTempFile);
-						                }
-						                File.Copy(tifFile, localTempFile, true);
-                                        useFile = localTempFile;
-						            }
-						            catch
-						            {
-						                // Okay.. I guess we won't use the temp spot
-                                        
-						            }
-						        }
-						    }
+					            string localTempFile = temp_folder + "\\TEMP.tif";
+					            try
+					            {
+					                if (File.Exists(localTempFile))
+					                {
+					                    File.Delete(localTempFile);
+					                }
+					                File.Copy(tifFile, localTempFile, true);
+					                useFile = localTempFile;
+					            }
+					            catch
+					            {
+					                Thread.Sleep(2000);
 
-						    // Process this file, as necessary
-							if ( create_jpeg_images )
-                                Image_Magick_Process_TIFF_File(useFile, tiffNameSansExtension, Directory, true, jpeg_width, jpeg_height, ParentLogId, PackageName);
+					                try
+					                {
+					                    if (File.Exists(localTempFile))
+					                    {
+					                        File.Delete(localTempFile);
+					                    }
+					                    File.Copy(tifFile, localTempFile, true);
+					                    useFile = localTempFile;
+					                }
+					                catch
+					                {
+					                    // Okay.. I guess we won't use the temp spot
 
-							// Create the JPEG2000
-							if ( create_jpeg2000_images )
-                                kakadu_error = !Create_JPEG2000(useFile, tiffNameSansExtension, Directory, ParentLogId, PackageName);
-						}
+					                }
+					            }
+					        }
+
+					        // Process this file, as necessary
+					        if (create_jpeg_images)
+					            Image_Magick_Process_TIFF_File(useFile, tiffNameSansExtension, Directory, true, jpeg_width, jpeg_height, ParentLogId, PackageName);
+
+					        // Create the JPEG2000
+					        if (create_jpeg2000_images)
+					            kakadu_error = !Create_JPEG2000(useFile, tiffNameSansExtension, Directory, ParentLogId, PackageName);
+					    }
 					}
 				}
 			}
@@ -460,26 +462,6 @@ namespace SobekCM.Resource_Object.Utilities
 			{
 				// Save the JPEG2000
 				returnVal = Kakadu_Create_JPEG2000(LocalTempFile, rootFile + ".jp2", ParentLogId, PackageName);
-			}
-
-			try
-			{
-				File.Delete(LocalTempFile);
-			}
-			catch
-			{
-			}
-
-			// Perform some final cleanup
-			if (File.Exists(rootFile + ".tempjp2.tif"))
-			{
-				try
-				{
-					File.Delete(rootFile + ".tempjp2.tif");
-				}
-				catch
-				{
-				}
 			}
 
 			return returnVal;

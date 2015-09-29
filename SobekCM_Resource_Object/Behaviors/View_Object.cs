@@ -127,7 +127,7 @@ namespace SobekCM.Resource_Object.Behaviors
 					return new string[] { "description" };
 
 				case View_Enum.EMBEDDED_VIDEO:
-					return new string[] { "video" };
+					return new string[] { "videoem" };
 
                 case View_Enum.EPHEMERAL_CITIES:
                     return new string[] {"ep"};
@@ -194,6 +194,9 @@ namespace SobekCM.Resource_Object.Behaviors
 
                 case View_Enum.YOUTUBE_VIDEO:
                     return new string[] {"youtube"};
+
+                case View_Enum.VIDEO:
+                    return new string[] { "video" };
 
                 case View_Enum.TEST:
                     return new string[] { "test" };

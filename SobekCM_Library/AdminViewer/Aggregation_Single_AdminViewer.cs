@@ -1764,15 +1764,54 @@ namespace SobekCM.Library.AdminViewer
 
 			// Build the display options string
 			StringBuilder displayOptionsBldr = new StringBuilder();
-			if (Form["admin_aggr_basicsearch"] != null) displayOptionsBldr.Append("B");
-			if (Form["admin_aggr_basicsearch_years"] != null) displayOptionsBldr.Append("Y");
-            if (Form["admin_aggr_basicsearch_mimetype"] != null) displayOptionsBldr.Append("W");
+
+            // Choose the basic search
+		    if (Form["basicsearch"] != null)
+		    {
+                string basicValue = Form["basicsearch"];
+		        switch (basicValue)
+		        {
+		            case "basic":
+                        displayOptionsBldr.Append("B");
+                        break;
+
+                    case "years":
+                        displayOptionsBldr.Append("Y");
+                        break;
+
+                    case "mime":
+                        displayOptionsBldr.Append("W");
+                        break;
+
+                    case "fulltext":
+                        displayOptionsBldr.Append("E");
+                        break;
+		        }
+		    }
+
+            // Choose the advanced search
+            if (Form["advancedsearch"] != null)
+            {
+                string basicValue = Form["advancedsearch"];
+                switch (basicValue)
+                {
+                    case "standard":
+                        displayOptionsBldr.Append("A");
+                        break;
+
+                    case "years":
+                        displayOptionsBldr.Append("Z");
+                        break;
+
+                    case "mime":
+                        displayOptionsBldr.Append("X");
+                        break;
+                }
+            }
+
 			if (Form["admin_aggr_dloctextsearch"] != null) displayOptionsBldr.Append("C");
 			if (Form["admin_aggr_textsearch"] != null) displayOptionsBldr.Append("F");
 			if (Form["admin_aggr_newspsearch"] != null) displayOptionsBldr.Append("N");
-			if (Form["admin_aggr_advsearch"] != null) displayOptionsBldr.Append("A");
-			if (Form["admin_aggr_advsearch_years"] != null) displayOptionsBldr.Append("Z");
-            if (Form["admin_aggr_advsearch_mimetype"] != null) displayOptionsBldr.Append("X");
 			if (Form["admin_aggr_mapsearch"] != null) displayOptionsBldr.Append("M");
           //  if (Form["admin_aggr_mapsearchbeta"] != null) displayOptionsBldr.Append("Q");
 			if (Form["admin_aggr_mapbrowse"] != null) displayOptionsBldr.Append("G");
@@ -1794,12 +1833,26 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Search Options</td></tr>");
 			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>These options control how searching works within this aggregation, such as which search options are made publicly available.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleaggr\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
-			// Add line for basic search type
+			// Add line for NO basic search type
             Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
 			Output.WriteLine("    <td style=\"width:50px;\">&nbsp;</td>");
-			Output.WriteLine("    <td  style=\"width:175px; vertical-align:top;\" class=\"sbkSaav_TableLabel\">Search Types:</label></td>");
+			Output.WriteLine("    <td  style=\"width:175px; vertical-align:top;\" class=\"sbkSaav_TableLabel\">Basic Search:</label></td>");
 			Output.WriteLine("    <td>");
-            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_basicsearch\" id=\"admin_aggr_basicsearch\"");
+            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"radio\" name=\"basicsearch\" id=\"admin_aggr_nobasicsearch\" value=\"none\"");
+                
+            if ((itemAggregation.Display_Options.IndexOf("B") < 0) && (itemAggregation.Display_Options.IndexOf("D") < 0) && (itemAggregation.Display_Options.IndexOf("E") < 0) && (itemAggregation.Display_Options.IndexOf("Y") < 0) && (itemAggregation.Display_Options.IndexOf("W") < 0))
+                Output.Write(" checked=\"checked\"");
+            Output.WriteLine(" /> <label for=\"admin_aggr_nobasicsearch\">None</label></div>");
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
+
+
+            // Add line for basic search 
+            Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
+            Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
+            Output.WriteLine("    <td>");
+            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"radio\" name=\"basicsearch\" id=\"admin_aggr_basicsearch\" value=\"basic\"");
+
 			if (( itemAggregation.Display_Options.IndexOf("B") >= 0 ) || (itemAggregation.Display_Options.IndexOf("D") >= 0 ))
 				Output.Write(" checked=\"checked\"");
             Output.WriteLine(" /> <label for=\"admin_aggr_basicsearch\">Basic Search</label></div>");
@@ -1811,7 +1864,8 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
 			Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
 			Output.WriteLine("    <td>");
-            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_basicsearch_years\" id=\"admin_aggr_basicsearch_years\"");
+            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"radio\" name=\"basicsearch\" id=\"admin_aggr_basicsearch_years\" value=\"years\"");
+
 			if (itemAggregation.Display_Options.IndexOf("Y") >= 0)
 				Output.Write(" checked=\"checked\"");
             Output.WriteLine(" /> <label for=\"admin_aggr_basicsearch_years\">Basic Search<br /> &nbsp; &nbsp; &nbsp; &nbsp; (with Year Range)</label></div>");
@@ -1823,7 +1877,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
             Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
             Output.WriteLine("    <td>");
-            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_basicsearch_mimetype\" id=\"admin_aggr_basicsearch_mimetype\"");
+            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"radio\" name=\"basicsearch\" id=\"admin_aggr_basicsearch_mimetype\" value=\"mime\"");
             if (itemAggregation.Display_Options.IndexOf("W") >= 0)
                 Output.Write(" checked=\"checked\"");
             Output.WriteLine(" /> <label for=\"admin_aggr_basicsearch_mimetype\">Basic search<br /> &nbsp; &nbsp; &nbsp; &nbsp; (with mime-type filter)</label></div>");
@@ -1831,11 +1885,37 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
+            // Add line for basic search ( with FULL TEXT option )
+            Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
+            Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
+            Output.WriteLine("    <td>");
+            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"radio\" name=\"basicsearch\" id=\"admin_aggr_basicsearch_fulltext\" value=\"fulltext\"");
+            if (itemAggregation.Display_Options.IndexOf("E") >= 0)
+                Output.Write(" checked=\"checked\"");
+            Output.WriteLine(" /> <label for=\"admin_aggr_basicsearch_fulltext\">Basic search<br /> &nbsp; &nbsp; &nbsp; &nbsp; (with full text option)</label></div>");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Basic_With_FullText_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
+
+
+            // Add line for noadvanced search type
+            Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("    <td style=\"vertical-align:top;\" class=\"sbkSaav_TableLabel\">Advanced Search:</label></td>");
+            Output.WriteLine("    <td>");
+            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"radio\" name=\"advancedsearch\" id=\"admin_aggr_noadvsearch\" value=\"none\"");
+            if ((itemAggregation.Display_Options.IndexOf("A") < 0) && (itemAggregation.Display_Options.IndexOf("Z") < 0) && (itemAggregation.Display_Options.IndexOf("X") < 0))
+                Output.Write(" checked=\"checked\"");
+            Output.WriteLine(" /> <label for=\"admin_aggr_noadvsearch\">None</label></div>");
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
+
+
 			// Add line for advanced search type
             Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
-			Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
+            Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
 			Output.WriteLine("    <td>");
-			Output.Write(    "      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_advsearch\" id=\"admin_aggr_advsearch\"");
+		    Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"radio\" name=\"advancedsearch\" id=\"admin_aggr_advsearch\" value=\"standard\"");
 			if (itemAggregation.Display_Options.IndexOf("A") >= 0)
 				Output.Write(" checked=\"checked\"");
             Output.WriteLine(" /> <label for=\"admin_aggr_advsearch\">Advanced Search</label></div></div>");
@@ -1847,7 +1927,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
 			Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
 			Output.WriteLine("    <td>");
-            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_advsearch_years\" id=\"admin_aggr_advsearch_years\"");
+		    Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"radio\" name=\"advancedsearch\" id=\"admin_aggr_advsearch_years\" value=\"years\"");
 			if (itemAggregation.Display_Options.IndexOf("Z") >= 0)
 				Output.Write(" checked=\"checked\"");
             Output.WriteLine(" /> <label for=\"admin_aggr_advsearch_years\">Advanced Search<br /> &nbsp; &nbsp; &nbsp; &nbsp; (with Year Range)</label></div>");
@@ -1859,17 +1939,18 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
             Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
             Output.WriteLine("    <td>");
-            Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_advsearch_mimetype\" id=\"admin_aggr_advsearch_mimetype\"");
+		    Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"radio\" name=\"advancedsearch\" id=\"admin_aggr_advsearch_mimetype\"value=\"mime\"");
             if (itemAggregation.Display_Options.IndexOf("X") >= 0)
                 Output.Write(" checked=\"checked\"");
-            Output.WriteLine(" /> <label for=\"admin_aggr_advsearch\">Advanced Search<br /> &nbsp; &nbsp; &nbsp; &nbsp; (with mime-type filter)</label></div>");
+            Output.WriteLine(" /> <label for=\"admin_aggr_advsearch_mimetype\">Advanced Search<br /> &nbsp; &nbsp; &nbsp; &nbsp; (with mime-type filter)</label></div>");
             Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Advanced_MimeType_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
 			// Add line for full text search
             Output.WriteLine("  <tr class=\"sbkSaav_SearchCheckRow\" style=\"vertical-align:top\">");
-			Output.WriteLine("    <td colspan=\"2\">&nbsp;</td>");
+            Output.WriteLine("    <td>&nbsp;</td>");
+            Output.WriteLine("    <td style=\"vertical-align:top;\" class=\"sbkSaav_TableLabel\">Other Searches:</label></td>");
 			Output.WriteLine("    <td>");
             Output.Write("      <div class=\"sbkSaav_SearchCheckDiv\"><input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_textsearch\" id=\"admin_aggr_textsearch\"");
 			if (itemAggregation.Display_Options.IndexOf("F") >= 0)

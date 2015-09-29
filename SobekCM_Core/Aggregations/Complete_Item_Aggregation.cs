@@ -156,7 +156,11 @@ namespace SobekCM.Core.Aggregations
 					case 'C':
 						Views_And_Searches.Add(Item_Aggregation_Views_Searches_Enum.DLOC_FullText_Search);
 						home_search_found = true;
-						break;
+                        break;
+
+                    case 'E':
+                        Views_And_Searches.Add(Item_Aggregation_Views_Searches_Enum.Basic_Search_FullTextOption);
+                        break;
 
 					case 'F':
 						Views_And_Searches.Add(Item_Aggregation_Views_Searches_Enum.FullText_Search);

@@ -2693,7 +2693,7 @@ namespace SobekCM.Engine_Library.Database
 			EalDbParameter[] paramList = new EalDbParameter[3];
 			paramList[0] = new EalDbParameter("@aggregation_code", AggregationCode);
 			paramList[1] = new EalDbParameter("@metadata_name", MetadataCode);
-			paramList[2] = new EalDbParameter("@item_count_to_use_cached", 100);
+			paramList[2] = new EalDbParameter("@item_count_to_use_cached", 1);
 
 			// Define a temporary dataset
 			DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Metadata_Browse", paramList);

@@ -42,6 +42,9 @@ namespace SobekCM.Library.AggregationViewer
 				case Item_Aggregation_Views_Searches_Enum.Basic_Search_YearRange:
                     return new Basic_Search_YearRange_AggregationViewer(RequestSpecificValues);
 
+                case Item_Aggregation_Views_Searches_Enum.Basic_Search_FullTextOption:
+                    return new Basic_Text_Search_Combined_AggregationViewer(RequestSpecificValues);
+
                 case Item_Aggregation_Views_Searches_Enum.Basic_Search_MimeType:
                     Item_Aggregation_Front_Banner frontBannerImage2 = RequestSpecificValues.Hierarchy_Object.FrontBannerObj;
                     if ((frontBannerImage2 != null) && (RequestSpecificValues.Hierarchy_Object.Highlights != null) && (RequestSpecificValues.Hierarchy_Object.Highlights.Count > 0))

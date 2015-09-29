@@ -220,6 +220,10 @@ namespace SobekCM.Library.ItemViewer
                     break;
 
                 case View_Enum.EMBEDDED_VIDEO:
+                    returnVal.Add(HTML_Helper("videoem", Translator.Get_Translation("Video", Current_Mode.Language), Current_Mode));
+                    break;
+
+                case View_Enum.VIDEO:
                     returnVal.Add(HTML_Helper("video", Translator.Get_Translation("Video", Current_Mode.Language), Current_Mode));
                     break;
 
