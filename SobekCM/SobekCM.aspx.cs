@@ -292,6 +292,18 @@ namespace SobekCM
 
 		protected override void OnInit(EventArgs E)
 		{
+            // Ensure there is a base URL
+		    if (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System_Base_URL))
+		    {
+		        string base_url = Request.Url.AbsoluteUri.ToLower().Replace("sobekcm.aspx", "");
+	            if (base_url.IndexOf("?") > 0)
+	                base_url = base_url.Substring(0, base_url.IndexOf("?"));
+		        if (base_url[base_url.Length - 1] != '/')
+		            base_url = base_url + "/";
+                UI_ApplicationCache_Gateway.Settings.System_Base_URL = base_url;
+                UI_ApplicationCache_Gateway.Settings.Base_URL = base_url;
+		    }
+
             // Ensure the microservices client has read the configuration file
 		    if (!SobekEngineClient.Config_Read_Attempted)
 		    {
