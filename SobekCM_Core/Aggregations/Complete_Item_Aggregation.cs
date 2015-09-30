@@ -160,6 +160,7 @@ namespace SobekCM.Core.Aggregations
 
                     case 'E':
                         Views_And_Searches.Add(Item_Aggregation_Views_Searches_Enum.Basic_Search_FullTextOption);
+                        home_search_found = true;
                         break;
 
 					case 'F':

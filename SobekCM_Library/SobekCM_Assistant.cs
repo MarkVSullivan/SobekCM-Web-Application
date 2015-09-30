@@ -1772,7 +1772,7 @@ namespace SobekCM.Library
             }
             else
             {
-                Tracer.Add_Trace("SobekCM_Assistant.Get_HTML_Skin", "SobekEngineClient returned NULL for the requeted web skin");
+                Tracer.Add_Trace("SobekCM_Assistant.Get_HTML_Skin", "SobekEngineClient returned NULL for the requested web skin");
             }
 
             // Return the value

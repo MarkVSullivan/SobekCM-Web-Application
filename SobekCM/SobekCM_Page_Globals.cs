@@ -76,7 +76,7 @@ namespace SobekCM
 			try
 			{
 				tracer = new Custom_Tracer();
-				tracer.Add_Trace("SobekCM_Page_Globals.Constructor", String.Empty);
+				tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Starting");
 			    SobekCM_Database.Connection_String = UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
 
                 // If this is running on localhost, and in debug, set base directory to this one
@@ -126,6 +126,9 @@ namespace SobekCM
 			}
 			catch (Exception ee)
 			{
+                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Exception caught around line 129: " + ee.Message);
+                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", ee.StackTrace);
+
 				// Send to the dashboard
 				if ((HttpContext.Current.Request.UserHostAddress == "127.0.0.1") || (HttpContext.Current.Request.UserHostAddress == HttpContext.Current.Request.ServerVariables["LOCAL_ADDR"]) || (HttpContext.Current.Request.Url.ToString().IndexOf("localhost") >= 0))
 				{
@@ -175,6 +178,8 @@ namespace SobekCM
 				}
 			}
 
+            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "About to parse the URL for the navigation object");
+
 			// Analyze the response and get the mode
 			try
 			{
@@ -192,13 +197,16 @@ namespace SobekCM
 			}
 			catch  ( Exception ee )
 			{
+                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Exception caught around line 198: " + ee.Message);
+                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", ee.StackTrace);
+
 				HttpContext.Current.Response.Status = "301 Moved Permanently";
 				HttpContext.Current.Response.AddHeader("Location", base_url);
 				HttpContext.Current.ApplicationInstance.CompleteRequest();
 				return;
 			}
 
-		    
+            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Navigation parse completed");
 
 			// If this was for HTML, but was at the data, just convert to XML 
 			if ((page_name == "SOBEKCM_DATA") && (currentMode.Writer_Type != Writer_Type_Enum.XML) && (currentMode.Writer_Type != Writer_Type_Enum.JSON) && (currentMode.Writer_Type != Writer_Type_Enum.DataSet) && (currentMode.Writer_Type != Writer_Type_Enum.Data_Provider))
@@ -1026,7 +1034,9 @@ namespace SobekCM
 
 						HttpContext.Current.Response.StatusCode = 404;
 						HttpContext.Current.Response.Output.WriteLine("404 - INVALID URL");
-                        HttpContext.Current.Response.Output.WriteLine("Web skin indicated is invalid, default web skin invalid");
+                        HttpContext.Current.Response.Output.WriteLine("Web skin indicated is invalid, default web skin invalid - line 1029");
+
+				    HttpContext.Current.Response.Output.WriteLine(tracer.Text_Trace);
 						HttpContext.Current.ApplicationInstance.CompleteRequest();
 						currentMode.Request_Completed = true;
 

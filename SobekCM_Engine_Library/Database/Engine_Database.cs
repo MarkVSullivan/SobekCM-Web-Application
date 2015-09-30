@@ -1019,9 +1019,6 @@ namespace SobekCM.Engine_Library.Database
 					return true;
 				}
 
-				if (ItemLookupObject == null)
-					ItemLookupObject = new Item_Lookup_Object();
-
 				// Have the database popoulate the little bit of bibid/vid information we retain
 				bool returnValue = Populate_Item_Lookup_Object(IncludePrivate, ItemLookupObject, Tracer);
 				if (returnValue)

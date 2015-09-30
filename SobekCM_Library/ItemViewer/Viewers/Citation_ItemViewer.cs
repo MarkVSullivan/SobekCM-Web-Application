@@ -139,17 +139,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("Citation_ItemViewer.Write_Main_Viewer_Section", "Write the citation information directly to the output stream");
 			}
 
-			// If this is an internal user or can edit this item, ensure the extra information 
-			// has been pulled for this item
-			if ((userCanEditItem) || (((CurrentUser != null ) && ( CurrentUser.LoggedOn ) && ( CurrentUser.Is_Internal_User ))) || ( CurrentMode.ViewerCode == "tracking" ) || ( CurrentMode.ViewerCode == "media" ) || ( CurrentMode.ViewerCode == "archive" ))
-			{
-				if (!CurrentItem.Tracking.Tracking_Info_Pulled)
-				{
-					DataSet data = SobekCM_Database.Tracking_Get_History_Archives(CurrentItem.Web.ItemID, Tracer);
-					CurrentItem.Tracking.Set_Tracking_Info(data);
-				}
-			}
-
 			// Determine the citation type
 			citationType = Citation_Type.Standard;
 			switch (CurrentMode.ViewerCode)
