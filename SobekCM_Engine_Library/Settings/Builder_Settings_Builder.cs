@@ -15,8 +15,9 @@ namespace SobekCM.Engine_Library.Settings
         /// <summary> Refreshes the specified builder settings object, from the information pulled from the database </summary>
         /// <param name="SettingsObject"> Current builer settings object to refresh </param>
         /// <param name="SobekCM_Settings"> Dataset of all the builder settings, from the instance database </param>
+        /// <param name="IncludeModuleDescriptions"> Flag indicates if the module descriptions should be included for human readability </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool Refresh(Builder_Settings SettingsObject, DataSet SobekCM_Settings)
+        public static bool Refresh(Builder_Settings SettingsObject, DataSet SobekCM_Settings, bool IncludeModuleDescriptions )
         {
             SettingsObject.Clear();
             try
@@ -26,7 +27,7 @@ namespace SobekCM.Engine_Library.Settings
 
                 Set_Builder_Folders(SettingsObject, SobekCM_Settings.Tables[0], folder_to_set_dictionary);
 
-                Set_NonScheduled_Modules(SettingsObject, SobekCM_Settings.Tables[1], setid_to_modules);
+                Set_NonScheduled_Modules(SettingsObject, SobekCM_Settings.Tables[1], setid_to_modules, IncludeModuleDescriptions);
 
                 // Link the folders to the builder module sets
                 foreach (KeyValuePair<int, List<Builder_Module_Setting>> module in setid_to_modules)
@@ -49,12 +50,12 @@ namespace SobekCM.Engine_Library.Settings
             }
         }
 
-        private static void Set_NonScheduled_Modules(Builder_Settings SettingsObject, DataTable BuilderFoldersTable, Dictionary<int, List<Builder_Module_Setting>> SetidToModules)
+        private static void Set_NonScheduled_Modules(Builder_Settings SettingsObject, DataTable BuilderFoldersTable, Dictionary<int, List<Builder_Module_Setting>> SetidToModules, bool IncludeModuleDescriptions )
         {
             //DataColumn moduleIdColumn = BuilderFoldersTable.Columns["ModuleID"];
             DataColumn assemblyColumn = BuilderFoldersTable.Columns["Assembly"];
             DataColumn classColumn = BuilderFoldersTable.Columns["Class"];
-           // DataColumn descColumn = BuilderFoldersTable.Columns["ModuleDesc"];
+            DataColumn descColumn = BuilderFoldersTable.Columns["ModuleDesc"];
             DataColumn args1Column = BuilderFoldersTable.Columns["Argument1"];
             DataColumn args2Column = BuilderFoldersTable.Columns["Argument2"];
             DataColumn args3Column = BuilderFoldersTable.Columns["Argument3"];
@@ -84,6 +85,12 @@ namespace SobekCM.Engine_Library.Settings
                     newSetting.Argument2 = thisRow[args2Column].ToString();
                 if (thisRow[args3Column] != DBNull.Value)
                     newSetting.Argument3 = thisRow[args3Column].ToString();
+
+                if (IncludeModuleDescriptions)
+                {
+                    if (thisRow[descColumn] != DBNull.Value)
+                        newSetting.Description = thisRow[descColumn].ToString();
+                }
 
                 switch (type)
                 {
@@ -147,13 +154,14 @@ namespace SobekCM.Engine_Library.Settings
                     Allow_Deletes = Convert.ToBoolean(thisRow["Allow_Deletes"]),
                     Allow_Folders_No_Metadata = Convert.ToBoolean(thisRow["Allow_Folders_No_Metadata"]),
                     Allow_Metadata_Updates = Convert.ToBoolean(thisRow["Allow_Metadata_Updates"]),
-                    BibID_Roots_Restrictions = thisRow["BibID_Roots_Restrictions"].ToString()
+                    BibID_Roots_Restrictions = thisRow["BibID_Roots_Restrictions"].ToString(),
+                    Builder_Module_SetID = Convert.ToInt32(thisRow["ModuleSetID"])
                 };
 
-                if (thisRow["Can_Move_To_Content_Folder"] == DBNull.Value)
-                    newFolder.Can_Move_To_Content_Folder = null;
-                else
-                    newFolder.Can_Move_To_Content_Folder = Convert.ToBoolean(thisRow["Can_Move_To_Content_Folder"]);
+                //if (thisRow["Can_Move_To_Content_Folder"] == DBNull.Value)
+                //    newFolder.Can_Move_To_Content_Folder = null;
+                //else
+                //    newFolder.Can_Move_To_Content_Folder = Convert.ToBoolean(thisRow["Can_Move_To_Content_Folder"]);
 
                 if (( thisRow["ModuleSetID"] != null) && ( thisRow["ModuleSetID"].ToString().Length > 0 ))
                 {

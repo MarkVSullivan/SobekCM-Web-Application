@@ -60,8 +60,10 @@
     <Compile Include="ApplicationState\Checked_Out_Items_List.cs" />
     <Compile Include="ApplicationState\Engine_ApplicationCache_Gateway.cs" />
     <Compile Include="ApplicationState\Item_Lookup_Object.cs" />
+    <Compile Include="Client\SobekEngineClient_AdminEndpoints.cs" />
     <Compile Include="Client\SobekEngineClient.cs" />
     <Compile Include="Client\SobekEngineClient_AggregationEndpoints.cs" />
+    <Compile Include="Client\SobekEngineClient_BuilderEndpoints.cs" />
     <Compile Include="Client\SobekEngineClient_ItemEndpoints.cs" />
     <Compile Include="Client\SobekEngineClient_NavigationEndpoints.cs" />
     <Compile Include="Client\SobekEngineClient_SearchEndpoints.cs" />
@@ -71,7 +73,9 @@
     <Compile Include="Configuration\OAI_PMH_Configuration_Reader.cs" />
     <Compile Include="Configuration\Shibboleth_Configuration_Reader.cs" />
     <Compile Include="Email\Email_Helper.cs" />
+    <Compile Include="Endpoints\AdministrativeServices.cs" />
     <Compile Include="Endpoints\AggregationServices.cs" />
+    <Compile Include="Endpoints\BuilderServices.cs" />
     <Compile Include="Endpoints\CustomServices.cs" />
     <Compile Include="Endpoints\DataServices.cs" />
     <Compile Include="Endpoints\EndpointBase.cs" />

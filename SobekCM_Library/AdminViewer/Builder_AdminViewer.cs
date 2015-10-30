@@ -34,6 +34,8 @@ namespace SobekCM.Library.AdminViewer
     /// </ul></remarks>
     public class Builder_AdminViewer : abstract_AdminViewer
     {
+        private string actionMessage;
+
         /// <summary> Constructor for a new instance of the Builder_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Builder_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
@@ -93,12 +95,199 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-		public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("Builder_AdminViewer.Write_ItemNavForm_Closing", "Add the current status and add html controls to change status");
 
             Output.WriteLine("<!-- Builder_AdminViewer.Write_ItemNavForm_Closing -->");
 
+            Output.WriteLine("<!-- WebContent_Mgmt_AdminViewer.Write_ItemNavForm_Closing -->");
+            Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
+
+            int page = 1;
+            string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
+            if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode))
+            {
+                switch (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.ToLower())
+                {
+                    case "b":
+                        page = 2;
+                        break;
+
+                    case "c":
+                        page = 3;
+                        break;
+
+                    case "d":
+                        page = 4;
+                        break;
+
+                    case "e":
+                        page = 5;
+                        break;
+                }
+            }
+
+
+
+            // Show any action message
+            if (!String.IsNullOrEmpty( actionMessage))
+            {
+                Output.WriteLine("  <div class=\"sbkAdm_HomeText\">");
+                Output.WriteLine("  <br />");
+                if (actionMessage.IndexOf("Error", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    Output.WriteLine("  <br />");
+                    Output.WriteLine("  <div id=\"sbkAdm_ActionMessageError\">" + actionMessage + "</div>");
+                }
+                else
+                {
+
+                    Output.WriteLine("  <div id=\"sbkAdm_ActionMessageSuccess\">" + actionMessage + "</div>");
+                }
+                Output.WriteLine("  <br />");
+                Output.WriteLine("  </div>");
+            }
+
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Add_New;
+            string wizard_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
+
+            Output.WriteLine("  <table style=\"margin-left: 50px;\">");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td style=\"width:500px; text-align: left;\">");
+            Output.WriteLine("        <p>Press the button to the right to add a new web content page or redirect, or just type the URL for the new web content page. </p>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("      <td style=\"padding-left: 30px;\">");
+            Output.WriteLine("        <button title=\"Add a new web content page or redirect\" class=\"sbkAdm_RoundButton\" style=\"padding: 6px;width: 190px;\" onclick=\"window.location.href='" + wizard_url + "';return false;\"> &nbsp; ADD NEW &nbsp; <br />PAGE OR REDIRECT</button>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
+            Output.WriteLine("  </table>");
+
+            // Start the outer tab containe
+            Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs sbkAdm_HomeTabs\">");
+            Output.WriteLine("  <div class=\"tabs\">");
+            Output.WriteLine("    <ul>");
+
+
+            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "XyzzyXyzzy";
+            string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
+
+            const string TAB1_TITLE = "STATUS";
+            const string TAB2_TITLE = "SETTINGS";
+            const string TAB3_TITLE = "INCOMING FOLDERS"; 
+            const string TAB4_TITLE = "MODULES";
+            const string TAB5_TITLE = "SCHEDULED TASKS";
+
+            if (page == 1)
+            {
+                Output.WriteLine("      <li class=\"tabActiveHeader\"> " + TAB1_TITLE + " </li>");
+            }
+            else
+            {
+                Output.WriteLine("      <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "a") + "';return false;\"> " + TAB1_TITLE + " </li>");
+            }
+
+            if (page == 2)
+            {
+                Output.WriteLine("      <li class=\"tabActiveHeader\"> " + TAB2_TITLE + " </li>");
+            }
+            else
+            {
+                Output.WriteLine("    <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "b") + "';return false;\"> " + TAB2_TITLE + " </li>");
+            }
+
+            if (page == 3)
+            {
+                Output.WriteLine("      <li class=\"tabActiveHeader\"> " + TAB3_TITLE + " </li>");
+            }
+            else
+            {
+                Output.WriteLine("    <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "c") + "';return false;\"> " + TAB3_TITLE + " </li>");
+            }
+
+            if (page == 4)
+            {
+                Output.WriteLine("      <li class=\"tabActiveHeader\"> " + TAB4_TITLE + " </li>");
+            }
+            else
+            {
+                Output.WriteLine("    <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "d") + "';return false;\"> " + TAB4_TITLE + " </li>");
+            }
+
+            if (page == 5)
+            {
+                Output.WriteLine("      <li class=\"tabActiveHeader\"> " + TAB5_TITLE + " </li>");
+            }
+            else
+            {
+                Output.WriteLine("    <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "e") + "';return false;\"> " + TAB5_TITLE + " </li>");
+            }
+
+
+            Output.WriteLine("    </ul>");
+            Output.WriteLine("  </div>");
+
+            Output.WriteLine("    <div class=\"tabscontent\">");
+            Output.WriteLine("    	<div class=\"sbkUgav_TabPage\" id=\"tabpage_1\">");
+
+            //// Add the buttons
+            //Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
+            //Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return cancel_user_edits();return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+            //Output.WriteLine("    <button title=\"Save changes to this user group\" class=\"sbkAdm_RoundButton\" onclick=\"return save_user_edits();return false;\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+            //Output.WriteLine("  </div>");
+            //Output.WriteLine();
+
+
+            Output.WriteLine();
+
+            // Get the base url
+            string base_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+            switch (page)
+            {
+                case 1:
+                    add_builder_status(Output, base_url, Tracer);
+                    break;
+
+                case 2:
+                    add_builder_settings(Output, base_url, Tracer);
+                    break;
+
+                case 3:
+                    add_builder_folders(Output, base_url, Tracer);
+                    break;
+
+                case 4:
+                    add_builder_modules(Output, base_url, Tracer);
+                    break;
+
+                case 5:
+                    add_builder_scheduled_tasks(Output, base_url, Tracer);
+                    break;
+            }
+
+
+            //// Add the buttons
+            //RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+            //Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
+            //Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return cancel_user_edits();return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+            //Output.WriteLine("    <button title=\"Save changes to this user\" class=\"sbkAdm_RoundButton\" onclick=\"return save_user_edits();return false;\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+            //Output.WriteLine("  </div>");
+
+            Output.WriteLine();
+
+            Output.WriteLine("</div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine("</div>");
+
+            Output.WriteLine("<br />");
+            Output.WriteLine("<br />");
+        }
+
+        public void add_builder_status(TextWriter Output, string Base_URL, Custom_Tracer Tracer)
+        {
             // Pull the builder settings
             Dictionary<string, string> builderSettings = SobekCM_Database.Get_Settings(Tracer);
 
@@ -162,44 +351,6 @@ namespace SobekCM.Library.AdminViewer
 	            Output.WriteLine("  </table>");
 				Output.WriteLine();
 
-
-                Output.WriteLine("  <h2>Recent Incoming Logs</h2>");
-
-				string logDirectory = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "extra\\logs";
-                if (Directory.Exists(logDirectory))
-                {
-
-                    string[] logFiles = Directory.GetFiles(logDirectory, "incoming*.html");
-
-                    if (logFiles.Length > 0)
-                    {
-                        Output.WriteLine("  <p>Select a date below to view the recent incoming resources log file:</p>");
-                        Output.WriteLine("  <ul class=\"sbkBav_List\">");
-
-                        for (int i = logFiles.Length - 1; i >= 0; i--)
-                        {
-                            string logFile = logFiles[i];
-                            string logName = (new FileInfo(logFile)).Name;
-                            string date_string = logName.ToLower().Replace("incoming_", "").Replace(".html", "");
-                            if (date_string.Length == 10)
-                            {
-                                DateTime date = new DateTime(Convert.ToInt32(date_string.Substring(0, 4)), Convert.ToInt32(date_string.Substring(5, 2)), Convert.ToInt32(date_string.Substring(8)));
-                                Output.WriteLine("    <li><a href=\"" + logURL + logName + "\">" + date.ToLongDateString() + "</a></li>");
-                            }
-                        }
-                        Output.WriteLine("  </ul>");
-                    }
-                    else
-                    {
-                        Output.WriteLine("  <p>No builder logs found.</p>");
-                        Output.WriteLine("  <br />");
-                    }
-                }
-                else
-                {
-                    Output.WriteLine("  <p>No builder logs found.</p>");
-                    Output.WriteLine("  <br />");
-                }
             }
 
 			Output.WriteLine();
@@ -209,6 +360,26 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("      <li><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/internal/failures\">Failed packages or builder errors</a></li>");
             Output.WriteLine("  </ul>");
             Output.WriteLine("</div>");
+
+        }
+
+        public void add_builder_settings(TextWriter Output, string Base_URL, Custom_Tracer Tracer)
+        {
+
+        }
+
+        public void add_builder_folders(TextWriter Output, string Base_URL, Custom_Tracer Tracer)
+        {
+
+        }
+
+        public void add_builder_modules(TextWriter Output, string Base_URL, Custom_Tracer Tracer)
+        {
+
+        }
+
+        public void add_builder_scheduled_tasks(TextWriter Output, string Base_URL, Custom_Tracer Tracer)
+        {
 
         }
     }

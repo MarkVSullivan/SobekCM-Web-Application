@@ -412,6 +412,8 @@ namespace SobekCM.Core.Navigation
                             return this_base_url + "admin/aggregations" + urlOptions1;
 
                         case Admin_Type_Enum.Builder_Status:
+                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                return this_base_url + "admin/builder/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
                             return this_base_url + "admin/builder" + urlOptions1;
 
                         case Admin_Type_Enum.Aliases:

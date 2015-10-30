@@ -36,7 +36,6 @@ namespace SobekCM.Builder_Library
             Archive_All_Files = ExistingBaseInstance.Archive_All_Files;
             Archive_TIFFs = ExistingBaseInstance.Archive_TIFFs;
             BibID_Roots_Restrictions = ExistingBaseInstance.BibID_Roots_Restrictions;
-            Can_Move_To_Content_Folder = ExistingBaseInstance.Can_Move_To_Content_Folder;
             Failures_Folder = ExistingBaseInstance.Failures_Folder;
             Folder_Name = ExistingBaseInstance.Folder_Name;
             Inbound_Folder = ExistingBaseInstance.Inbound_Folder;

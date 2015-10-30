@@ -143,6 +143,8 @@
     <Compile Include="ResultTitle\ResultTitle_DescriptiveTerm.cs" />
     <Compile Include="Search\Metadata_Search_Field.cs" />
     <Compile Include="Serialization\iSerializationEvents.cs" />
+    <Compile Include="Settings\Admin_Setting_Collection.cs" />
+    <Compile Include="Settings\Admin_Setting_Value.cs" />
     <Compile Include="Settings\Builder_Module_Setting.cs" />
     <Compile Include="Settings\Builder_Settings.cs" />
     <Compile Include="Settings\Builder_Source_Folder.cs" />
@@ -150,6 +152,7 @@
     <Compile Include="Settings\InstanceWide_Settings.cs" />
     <Compile Include="Settings\Marc21_Settings.cs" />
     <Compile Include="Settings\Mime_Type_Info.cs" />
+    <Compile Include="Settings\Simple_Setting.cs" />
     <Compile Include="Settings\Workflow_Type.cs" />
     <Compile Include="SiteMap\SobekCM_SiteMap.cs" />
     <Compile Include="SiteMap\SobekCM_SiteMap_Node.cs" />

@@ -41,6 +41,8 @@ namespace SobekCM.Core.Client
                 Search = new SobekEngineClient_SearchEndpoints(configObj);
                 WebContent = new SobekEngineClient_WebContentEndpoints(configObj);
                 Navigation = new SobekEngineClient_NavigationEndpoints(configObj);
+                Builder = new SobekEngineClient_BuilderEndpoints(configObj);
+                Admin = new SobekEngineClient_AdminEndpoints(configObj);
 
                 return true;
             }
@@ -67,5 +69,10 @@ namespace SobekCM.Core.Client
         /// <summary> Navigation-related endpoints exposed by the SobekCM engine </summary>
         public static SobekEngineClient_NavigationEndpoints Navigation { get; private set; }
 
+        /// <summary> Builder-related endpoints exposed by the SobekCM engine </summary>
+        public static SobekEngineClient_BuilderEndpoints Builder { get; private set; }
+
+        /// <summary> Admin-related endpoints exposed by the SobekCM engine </summary>
+        public static SobekEngineClient_AdminEndpoints Admin { get; private set; }
     }
 }

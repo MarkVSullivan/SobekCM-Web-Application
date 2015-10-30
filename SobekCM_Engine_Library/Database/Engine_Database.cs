@@ -3387,14 +3387,18 @@ namespace SobekCM.Engine_Library.Database
 
 		/// <summary> Gets all the setting information necessary for SobekCM </summary>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+		/// <param name="IncludeAdminViewInfo"> Flag indicates if the administrative view information should be included </param>
 		/// <returns> DataSet with all the data necessary for the Builder, including file destination information,
 		/// general settings, server information</returns>
 		/// <remarks> This calls the 'SobekCM_Get_Settings' stored procedure </remarks> 
-		public static DataSet Get_Settings_Complete(Custom_Tracer Tracer)
+		public static DataSet Get_Settings_Complete( bool IncludeAdminViewInfo, Custom_Tracer Tracer)
 		{
 			try
 			{
-				DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Settings");
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@IncludeAdminViewInfo", IncludeAdminViewInfo);
+
+				DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Settings", parameters);
 				return tempSet;
 			}
 			catch (Exception ee)
@@ -3412,6 +3416,8 @@ namespace SobekCM.Engine_Library.Database
 		/// <remarks> This calls the 'SobekCM_Builder_Get_Settings' stored procedure </remarks> 
 		public static DataSet Get_Builder_Settings( bool IncludeDisabled, Custom_Tracer Tracer  )
 		{
+		    Last_Exception = null;
+
 			try
 			{
 				EalDbParameter[] parameters = new EalDbParameter[1];

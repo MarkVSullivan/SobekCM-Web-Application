@@ -630,6 +630,9 @@ namespace SobekCM.Engine_Library.Navigation
                                     {
                                         case "builder":
                                             Navigator.Admin_Type = Admin_Type_Enum.Builder_Status;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            break;
                                             break;
 
                                         case "addcoll":

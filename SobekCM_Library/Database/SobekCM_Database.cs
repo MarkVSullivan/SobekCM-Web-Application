@@ -2912,33 +2912,33 @@ namespace SobekCM.Library.Database
 		}
 
 
-		/// <summary> Gets the values from the builder settings table in the database </summary>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Dictionary of all the keys and values in the builder settings table </returns>
-		/// <remarks> This calls the 'SobekCM_Get_Settings' stored procedure </remarks> 
-		public static Dictionary<string,string> Get_Settings(Custom_Tracer Tracer)
-		{
-			Dictionary<string, string> returnValue = new Dictionary<string, string>();
+        /// <summary> Gets the values from the builder settings table in the database </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Dictionary of all the keys and values in the builder settings table </returns>
+        /// <remarks> This calls the 'SobekCM_Get_Settings' stored procedure </remarks> 
+        public static Dictionary<string, string> Get_Settings(Custom_Tracer Tracer)
+        {
+            Dictionary<string, string> returnValue = new Dictionary<string, string>();
 
-			try
-			{
+            try
+            {
 
-				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Settings");
-				if ((tempSet.Tables.Count > 0) && (tempSet.Tables[0].Rows.Count > 0))
-				{
-					foreach (DataRow thisRow in tempSet.Tables[0].Rows)
-					{
-						returnValue[thisRow["Setting_Key"].ToString()] = thisRow["Setting_Value"].ToString();
-					}
-				}
-			}
-			catch (Exception ee)
-			{
-				lastException = ee;
-			}
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Settings");
+                if ((tempSet.Tables.Count > 0) && (tempSet.Tables[0].Rows.Count > 0))
+                {
+                    foreach (DataRow thisRow in tempSet.Tables[0].Rows)
+                    {
+                        returnValue[thisRow["Setting_Key"].ToString()] = thisRow["Setting_Value"].ToString();
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+            }
 
-			return returnValue;
-		}
+            return returnValue;
+        }
 
 		/// <summary> Sets a value for an individual user's setting </summary>
 		/// <param name="UserID"> Primary key for this user in the database </param>

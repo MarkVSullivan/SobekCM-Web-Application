@@ -78,7 +78,7 @@ namespace SobekCM.Engine_Library.Settings
             SobekCM_Database.Connection_String = returnValue.Database_Connections[0].Connection_String;
 
             // Get the settings
-            DataSet sobekCMSettings = Engine_Database.Get_Settings_Complete(null);
+            DataSet sobekCMSettings = Engine_Database.Get_Settings_Complete(false, null);
             Refresh(returnValue, sobekCMSettings);
 
             // Try to read the SHIBBOLETH configuration file
@@ -159,7 +159,7 @@ namespace SobekCM.Engine_Library.Settings
             // Don't read the configuration file now.. we already have the db data
             Engine_Database.Connection_String = DbInstance.Connection_String;
 
-            DataSet sobekCMSettings = Engine_Database.Get_Settings_Complete(null);
+            DataSet sobekCMSettings = Engine_Database.Get_Settings_Complete(false, null);
             if (sobekCMSettings == null)
                 return null;
 
