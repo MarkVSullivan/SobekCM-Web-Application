@@ -77,7 +77,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Advanced_Search_AggregationViewer.Add_Secondary_HTML", "Adding simple search tips");
+                Tracer.Add_Trace("Custom_Home_Page_AggregationViewer.Add_Secondary_HTML", "Add the entire custom page, doing suitable replacements");
             }
 
             // Do all the replacements
@@ -85,12 +85,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             StringBuilder textToDisplay = new StringBuilder(text);
            
             // Determine if certain (more costly) replacements are even needed
-            bool header_replacement_needed = false;
-            bool footer_replacement_needed = false;
-            if (text.IndexOf("%HEADER%") > 0) header_replacement_needed = true;
-            if (text.IndexOf("%FOOTER%") > 0) footer_replacement_needed = true;
+            bool header_replacement_needed = text.IndexOf("%HEADER%") > 0;
+            bool footer_replacement_needed = text.IndexOf("%FOOTER%") > 0;
+            bool menu_replacement_needed = text.IndexOf("%MAINMENU%") > 0;
 
-            // If necessary, replace those
+            // If necessary, replace the header
             if (header_replacement_needed)
             {
                 StringBuilder headerBuilder = new StringBuilder();
@@ -99,6 +98,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 string header = headerBuilder.ToString();
                 textToDisplay = textToDisplay.Replace("<%HEADER%>", header).Replace("[%HEADER%]", header);
             }
+
+            // If necessary, replace the footer
             if (footer_replacement_needed)
             {
                 StringBuilder footerBuilder = new StringBuilder();
@@ -106,6 +107,16 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 HeaderFooter_Helper_HtmlSubWriter.Add_Footer(footerWriter, RequestSpecificValues, null);
                 string footer = footerBuilder.ToString();
                 textToDisplay = textToDisplay.Replace("<%FOOTER%>", footer).Replace("[%FOOTER%]", footer);
+            }
+
+            // If necessary, insert the main menu
+            if (menu_replacement_needed)
+            {
+                StringBuilder menuBuilder = new StringBuilder();
+                StringWriter menuWriter = new StringWriter(menuBuilder);
+                MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(menuWriter, RequestSpecificValues);
+                string menu = menuBuilder.ToString();
+                textToDisplay = textToDisplay.Replace("<%MAINMENU%>", menu).Replace("[%MAINMENU%]", menu);
             }
 
             // Determine the different counts as strings

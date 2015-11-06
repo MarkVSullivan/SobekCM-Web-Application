@@ -22,6 +22,8 @@ namespace SobekCM.Library.UI
         public static void ResetAll()
         {
             Engine_ApplicationCache_Gateway.RefreshAll();
+
+            WebContent_Hierarchy_Clear();
         }
 
         /// <summary> Refresh the settings object by pulling the data back from the database </summary>

@@ -479,7 +479,6 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine();
 
             Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
-           // Output.WriteLine("<script src=\"http://localhost:52468/default/js/sobekcm-admin/4.9.0/sobekcm_admin.js\" type=\"text/javascript\"></script>");
             Output.WriteLine("<div id=\"sbkAcw_PageContainer\">");
 
             // Display any action/error message
@@ -1304,8 +1303,6 @@ namespace SobekCM.Library.AdminViewer
         }
 
         #endregion
-
-
 
         #region Methods to render (and parse) page 5 - Success
 

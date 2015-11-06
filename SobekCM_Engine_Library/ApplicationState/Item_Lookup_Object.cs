@@ -22,7 +22,7 @@ namespace SobekCM.Engine_Library.ApplicationState
         /// <summary> Constructor for a new instance of the Item_Lookup_Object class </summary>
         public Item_Lookup_Object()
         {
-            titleLookupByBib = new Dictionary<string, Multiple_Volume_Item>();
+            titleLookupByBib = new Dictionary<string, Multiple_Volume_Item>(StringComparer.OrdinalIgnoreCase);
             Last_Updated = new DateTime(2000, 1, 1);
         }
 

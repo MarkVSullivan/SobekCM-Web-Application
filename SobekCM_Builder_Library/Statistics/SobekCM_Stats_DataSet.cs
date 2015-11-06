@@ -612,54 +612,59 @@ namespace SobekCM.Builder_Library.Statistics
                 newRow["sessions"] = Convert.ToInt32(newRow["sessions"]) + 1;
             }
 
-            if (Text_Search.Length > 0)
+            if ( !String.IsNullOrEmpty(Text_Search))
             {
                 newRow["text_search_hits"] = Convert.ToInt32(newRow["text_search_hits"]) + 1;
                 return;
             }
 
-            if ((ViewerCode.IndexOf("GM") >= 0) || (ViewerCode.IndexOf("MAP") >= 0))
+            if (!String.IsNullOrEmpty(ViewerCode))
             {
-                newRow["google_map_hits"] = Convert.ToInt32(newRow["google_map_hits"]) + 1;
-                return;
-            }
+                ViewerCode = ViewerCode.ToUpper();
 
-            if ((ViewerCode.IndexOf("DO") > 0) || (ViewerCode.IndexOf("DOWNLOAD") >= 0))
-            {
-                newRow["download_hits"] = Convert.ToInt32(newRow["download_hits"]) + 1;
-                return;
-            }
+                if ((ViewerCode.IndexOf("GM") >= 0) || (ViewerCode.IndexOf("MAP") >= 0))
+                {
+                    newRow["google_map_hits"] = Convert.ToInt32(newRow["google_map_hits"]) + 1;
+                    return;
+                }
 
-            if ((ViewerCode.IndexOf("FC") >= 0) || (ViewerCode.IndexOf("CITATION") >= 0) ||
-                (ViewerCode.IndexOf("MARC") >= 0) || (ViewerCode.IndexOf("TRACKING") >= 0) ||
-                (ViewerCode.IndexOf("METADATA") >= 0) || (ViewerCode.IndexOf("USAGE") >= 0))
-            {
-                newRow["citation_hits"] = Convert.ToInt32(newRow["citation_hits"]) + 1;
-                return;
-            }
+                if ((ViewerCode.IndexOf("DO") > 0) || (ViewerCode.IndexOf("DOWNLOAD") >= 0))
+                {
+                    newRow["download_hits"] = Convert.ToInt32(newRow["download_hits"]) + 1;
+                    return;
+                }
 
-            if ((ViewerCode.IndexOf("RI") >= 0) || (ViewerCode.IndexOf("THUMB") >= 0))
-            {
-                newRow["thumbnail_hits"] = Convert.ToInt32(newRow["thumbnail_hits"]) + 1;
-                return;
-            }
+                if ((ViewerCode.IndexOf("FC") >= 0) || (ViewerCode.IndexOf("CITATION") >= 0) ||
+                    (ViewerCode.IndexOf("MARC") >= 0) || (ViewerCode.IndexOf("TRACKING") >= 0) ||
+                    (ViewerCode.IndexOf("METADATA") >= 0) || (ViewerCode.IndexOf("USAGE") >= 0))
+                {
+                    newRow["citation_hits"] = Convert.ToInt32(newRow["citation_hits"]) + 1;
+                    return;
+                }
 
-            if ((ViewerCode.IndexOf("FL") >= 0) || (ViewerCode.IndexOf("FLASH") >= 0))
-            {
-                newRow["flash_hits"] = Convert.ToInt32(newRow["flash_hits"]) + 1;
-                return;
-            }
+                if ((ViewerCode.IndexOf("RI") >= 0) || (ViewerCode.IndexOf("THUMB") >= 0))
+                {
+                    newRow["thumbnail_hits"] = Convert.ToInt32(newRow["thumbnail_hits"]) + 1;
+                    return;
+                }
 
-            if (ViewerCode.IndexOf("J") >= 0)
-            {
-                newRow["jpeg_hits"] = Convert.ToInt32(newRow["jpeg_hits"]) + 1;
-                return;
-            }
+                if ((ViewerCode.IndexOf("FL") >= 0) || (ViewerCode.IndexOf("FLASH") >= 0))
+                {
+                    newRow["flash_hits"] = Convert.ToInt32(newRow["flash_hits"]) + 1;
+                    return;
+                }
 
-            if (ViewerCode.IndexOf("X") >= 0)
-            {
-                newRow["zoomable_hits"] = Convert.ToInt32(newRow["zoomable_hits"]) + 1;
-                return;
+                if (ViewerCode.IndexOf("J") >= 0)
+                {
+                    newRow["jpeg_hits"] = Convert.ToInt32(newRow["jpeg_hits"]) + 1;
+                    return;
+                }
+
+                if (ViewerCode.IndexOf("X") >= 0)
+                {
+                    newRow["zoomable_hits"] = Convert.ToInt32(newRow["zoomable_hits"]) + 1;
+                    return;
+                }
             }
 
             newRow["default_hits"] = Convert.ToInt32(newRow["default_hits"]) + 1;
@@ -767,28 +772,28 @@ namespace SobekCM.Builder_Library.Statistics
                 foreach (DataRow thisRow in webcontent_stats.Rows)
                 {
                     // Calculate the complete hits
-                    StringBuilder sql_builder = new StringBuilder("Level1=\"" + thisRow[2] + "\"");
+                    StringBuilder sql_builder = new StringBuilder("Level1=\"" + thisRow[2].ToString().Replace("\"","").Replace("'","") + "\"");
                     if (thisRow[3].ToString().Length > 0)
                     {
-                        sql_builder.Append(" and Level2=\"" + thisRow[3] + "\"");
+                        sql_builder.Append(" and Level2=\"" + thisRow[3].ToString().Replace("\"", "").Replace("'", "") + "\"");
                         if (thisRow[4].ToString().Length > 0)
                         {
-                            sql_builder.Append(" and Level3=\"" + thisRow[4] + "\"");
+                            sql_builder.Append(" and Level3=\"" + thisRow[4].ToString().Replace("\"", "").Replace("'", "") + "\"");
                             if (thisRow[5].ToString().Length > 0)
                             {
-                                sql_builder.Append(" and Level4=\"" + thisRow[5] + "\"");
+                                sql_builder.Append(" and Level4=\"" + thisRow[5].ToString().Replace("\"", "").Replace("'", "") + "\"");
                                 if (thisRow[6].ToString().Length > 0)
                                 {
-                                    sql_builder.Append(" and Level5=\"" + thisRow[6] + "\"");
+                                    sql_builder.Append(" and Level5=\"" + thisRow[6].ToString().Replace("\"", "").Replace("'", "") + "\"");
                                     if (thisRow[7].ToString().Length > 0)
                                     {
-                                        sql_builder.Append(" and Level6=\"" + thisRow[7] + "\"");
+                                        sql_builder.Append(" and Level6=\"" + thisRow[7].ToString().Replace("\"", "").Replace("'", "") + "\"");
                                         if (thisRow[8].ToString().Length > 0)
                                         {
-                                            sql_builder.Append(" and Level7=\"" + thisRow[8] + "\"");
+                                            sql_builder.Append(" and Level7=\"" + thisRow[8].ToString().Replace("\"", "").Replace("'", "") + "\"");
                                             if (thisRow[9].ToString().Length > 0)
                                             {
-                                                sql_builder.Append(" and Level8=\"" + thisRow[9] + "\"");
+                                                sql_builder.Append(" and Level8=\"" + thisRow[9].ToString().Replace("\"", "").Replace("'", "") + "\"");
                                             }
                                         }
                                     }

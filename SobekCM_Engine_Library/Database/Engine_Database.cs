@@ -3395,10 +3395,13 @@ namespace SobekCM.Engine_Library.Database
 		{
 			try
 			{
-                EalDbParameter[] parameters = new EalDbParameter[1];
-                parameters[0] = new EalDbParameter("@IncludeAdminViewInfo", IncludeAdminViewInfo);
+                //EalDbParameter[] parameters = new EalDbParameter[1];
+                //parameters[0] = new EalDbParameter("@IncludeAdminViewInfo", IncludeAdminViewInfo);
 
-				DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Settings", parameters);
+                //DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Settings", parameters);
+
+
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Settings");
 				return tempSet;
 			}
 			catch (Exception ee)

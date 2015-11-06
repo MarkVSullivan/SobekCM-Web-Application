@@ -14,6 +14,36 @@ namespace SobekCM.Resource_Object.Utilities
     /// if necessary </summary>
     public class SobekCM_METS_Finder
     {
+        /// <summary> Returns the directory name for the indicated digital resource within a 
+        /// SobekCM content folder pair-tree </summary>
+        /// <param name="BaseDir">Base directory for the content folder </param>
+        /// <param name="BibID"> BibID for the digital resource to locate </param>
+        /// <param name="VID"> VID for the digital resource to locate </param>
+        /// <returns> Full directory for the digital resource, under the content folder pair-tree structure </returns>
+        public static string Resource_Folder(string BaseDir, string BibID, string VID)
+        {
+            string item_folder = BibID.Substring(0, 2) + Path.DirectorySeparatorChar + BibID.Substring(2, 2) + Path.DirectorySeparatorChar + BibID.Substring(4, 2) + Path.DirectorySeparatorChar +
+                BibID.Substring(6, 2) + Path.DirectorySeparatorChar + BibID.Substring(8, 2) + Path.DirectorySeparatorChar + VID;
+
+            return Path.Combine(BaseDir, item_folder);
+        }
+
+        /// <summary> Returns the name of the current METS file for the indicated digital resource within a 
+        /// SobekCM content folder pair-tree </summary>
+        /// <param name="BaseDir">Base directory for the content folder </param>
+        /// <param name="BibID"> BibID for the digital resource to locate </param>
+        /// <param name="VID"> VID for the digital resource to locate </param>
+        /// <returns> Full qualified filename for the METS for the digital resource, under the content folder pair-tree structure </returns>
+        public static string METS_File(string BaseDir, string BibID, string VID)
+        {
+            string item_folder = BibID.Substring(0, 2) + Path.DirectorySeparatorChar + BibID.Substring(2, 2) + Path.DirectorySeparatorChar + BibID.Substring(4, 2) + Path.DirectorySeparatorChar +
+                BibID.Substring(6, 2) + Path.DirectorySeparatorChar + BibID.Substring(8, 2) + Path.DirectorySeparatorChar + VID;
+
+            return Path.Combine(BaseDir, item_folder, BibID + "_" + VID + ".mets.xml");
+        }
+
+
+
         private static string SOBEKCM_IMAGE_LOCATION = @"\\cns-uflib-ufdc\UFDC\RESOURCES\";
         private static string SOBEKCM_DROPBOX_LOCATION = @"\\cns-uflib-ufdc\UFDC\INCOMING\";
         private static string SOBEKCM_DATA_LOCATION = @"\\cns-uflib-ufdc\UFDC\DATA\";

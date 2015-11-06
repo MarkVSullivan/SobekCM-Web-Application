@@ -157,10 +157,10 @@ namespace SobekCM.Builder_Library.Statistics
                             if ((currentMode.Mode == Display_Mode_Enum.Item_Display) ||
                                 (currentMode.Mode == Display_Mode_Enum.Item_Print))
                             {
-                                if ((currentMode.ItemID_DEPRECATED > 0) ||
-                                    ((currentMode.VID.Length > 0) && (currentMode.BibID.Length > 0)))
+                                if (((currentMode.ItemID_DEPRECATED.HasValue ) && ( currentMode.ItemID_DEPRECATED > 0)) ||
+                                    (( !String.IsNullOrEmpty(currentMode.VID)) && (!String.IsNullOrEmpty(currentMode.BibID))))
                                 {
-                                    if (currentMode.ItemID_DEPRECATED <= 0)
+                                    if ((!currentMode.ItemID_DEPRECATED.HasValue ) || ( currentMode.ItemID_DEPRECATED < 0 ))
                                     {
                                         DataRow[] sobek2_bib_select =
                                             itemList.Select("bibid = '" + currentMode.BibID + "' and vid='" +
@@ -177,10 +177,10 @@ namespace SobekCM.Builder_Library.Statistics
                                         itemid = currentMode.ItemID_DEPRECATED.Value;
 
                                     returnValue.Add_Item_Hit(itemid, currentMode.BibID,
-                                                             currentMode.VID, currentMode.ViewerCode.ToUpper(),
+                                                             currentMode.VID, currentMode.ViewerCode,
                                                              currentMode.Text_Search, thisSession.SessionID);
                                 }
-                                else if (currentMode.BibID.Length > 0)
+                                else if ( !String.IsNullOrEmpty(currentMode.BibID))
                                 {
                                     returnValue.Add_Bib_Hit(currentMode.BibID.ToUpper(), thisSession.SessionID);
                                 }
@@ -189,25 +189,25 @@ namespace SobekCM.Builder_Library.Statistics
                             {
                                 string code = currentMode.Aggregation;
                                 string institution = String.Empty;
-                                if ((code.Length > 0) && (code.ToUpper()[0] == 'I'))
+                                if (( !String.IsNullOrEmpty(code)) && (code.ToUpper()[0] == 'I'))
                                 {
                                     institution = code;
                                     code = String.Empty;
                                 }
 
 
-                                if ((institution.Length > 0) && (institution.ToUpper()[0] != 'I'))
+                                if (( !String.IsNullOrEmpty(institution)) && (institution.ToUpper()[0] != 'I'))
                                     institution = "i" + institution;
 
                                 // For some collections we are counting the institution hit and collection
                                 // hit just so the full use of the site is recorded
-                                if (code.Length > 0)
+                                if ( !String.IsNullOrEmpty(code))
                                 {
                                     returnValue.Add_Collection_Hit(code.ToLower(), currentMode.Mode, currentMode.Aggregation_Type, thisSession.SessionID);
                                 }
 
                                 // Was this an institutional level hit?
-                                if (institution.Length > 0)
+                                if ( !String.IsNullOrEmpty(institution))
                                 {
                                     returnValue.Add_Institution_Hit(institution.ToLower(), currentMode.Mode, currentMode.Aggregation_Type, thisSession.SessionID);
                                 }
@@ -246,8 +246,10 @@ namespace SobekCM.Builder_Library.Statistics
                                 returnValue.Add_Robot_Hit();
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ee)
                     {
+                        if (ee.Message.Length > 0)
+                            return null;
                         // Do nothing.. not important?
                     }
                 }

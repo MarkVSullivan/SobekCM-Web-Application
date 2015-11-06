@@ -55,7 +55,7 @@ namespace SobekCM.Builder_Library
 
             // Pull the values from the database and assign other setting values
             Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory = logFileDirectory;
-            DataSet settings = Engine_Database.Get_Settings_Complete(null);
+            DataSet settings = Engine_Database.Get_Settings_Complete(false, null);
             if (settings == null)
             {
                 Console.WriteLine("FATAL ERROR pulling latest settings from the database: " + Library.Database.SobekCM_Database.Last_Exception.Message);

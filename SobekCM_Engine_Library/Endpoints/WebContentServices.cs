@@ -1026,12 +1026,11 @@ namespace SobekCM.Engine_Library.Endpoints
                     // Copy the current URL segment list
                     List<string> parentCheck = new List<string>(8);
                     parentCheck.AddRange(UrlSegments);
+                    parentCheck.RemoveAt(parentCheck.Count - 1);
 
                     // Remove the last one
                     while (parentCheck.Count > 0)
                     {
-                        parentCheck.RemoveAt(parentCheck.Count - 1);
-
                         // Is this a match?
                         WebContent_Hierarchy_Node possibleParent = Engine_ApplicationCache_Gateway.WebContent_Hierarchy.Find(parentCheck);
                         if (possibleParent != null)
@@ -1066,6 +1065,8 @@ namespace SobekCM.Engine_Library.Endpoints
                                 }
                             }
                         }
+
+                        parentCheck.RemoveAt(parentCheck.Count - 1);
                     }
                 }
             }

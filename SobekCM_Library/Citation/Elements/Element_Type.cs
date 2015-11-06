@@ -425,6 +425,7 @@ namespace SobekCM.Library.Citation.Elements
                     return Element_Type.Born_Digital;
 
                 case "CATALOGRECORDNUM":
+                case "CATALOG_RECORD_NUM":
                     return Element_Type.Catalog_Record_Number;
 
                 case "CLASSIFICATION":
@@ -443,8 +444,10 @@ namespace SobekCM.Library.Citation.Elements
                     return Element_Type.Creator;
 
                 case "CREATORNOTES":
+                case "CREATOR_NOTES":
                     return Element_Type.CreatorNotes;
 
+                case "DARKFLAG":
                 case "DARK_FLAG":
                     return Element_Type.Dark_Flag;
 
@@ -452,11 +455,14 @@ namespace SobekCM.Library.Citation.Elements
                     return Element_Type.Date;
 
                 case "DATECOPYRIGHTED":
+                case "DATE_COPYRIGHTED":
                     return Element_Type.DateCopyrighted;
 
                 case "DESCRIPTIONSTANDARD":
+                case "DESCRIPTION_STANDARD":
                     return Element_Type.DescriptionStandard;
 
+                case "DISPOSITIONADVICE":
                 case "DISPOSITION_ADVICE":
                     return Element_Type.Disposition_Advice;
 
@@ -476,40 +482,51 @@ namespace SobekCM.Library.Citation.Elements
 					return Element_Type.EmbargoDate;
 
                 case "EMBEDDEDVIDEO":
+                case "EMBEDDED_VIDEO":
                     return Element_Type.EmbeddedVideo;
 
                 case "ENCODINGLEVEL":
+                case "ENCODING_LEVEL":
                     return Element_Type.EncodingLevel;
 
                 case "ETD_COMMITTEECHAIR":
+                case "ETD_COMMITTEE_CHAIR":
                     return Element_Type.ETD_CommitteeChair;
 
                 case "ETD_COMMITTEECOCHAIR":
+                case "ETD_COMMITTEE_COCHAIR":
                     return Element_Type.ETD_CommitteeCoChair;
 
                 case "ETD_COMMITTEEMEMBER":
+                case "ETD_COMMITTEE_MEMBER":
                     return Element_Type.ETD_CommitteeMember;
 
                 case "ETD_DEGREE":
                     return Element_Type.ETD_Degree;
 
                 case "ETD_DEGREEDISCIPLINE":
+                case "ETD_DEGREE_DISCIPLINE":
                     return Element_Type.ETD_DegreeDiscipline;
 
 				case "ETD_DEGREEDIVISION":
-					return Element_Type.ETD_DegreeDivision;
+                case "ETD_DEGREE_DIVISION":
+                    return Element_Type.ETD_DegreeDivision;
 
                 case "ETD_DEGREEGRANTOR":
+                case "ETD_DEGREE_GRANTOR":
                     return Element_Type.ETD_DegreeGrantor;
 
                 case "ETD_DEGREELEVEL":
+                case "ETD_DEGREE_LEVEL":
                     return Element_Type.ETD_DegreeLevel;
 
                 case "ETD_GRADUATIONDATE":
+                case "ETD_GRADUATION_DATE":
                     return Element_Type.ETD_GraduationDate;
 
 				case "ETD_GRADUATIONSEMESTER":
-					return Element_Type.ETD_GraduationSemester;
+                case "ETD_GRADUATION_SEMESTER":
+                    return Element_Type.ETD_GraduationSemester;
 
                 case "ETD_UMI":
                     return Element_Type.ETD_UMI;
@@ -536,6 +553,7 @@ namespace SobekCM.Library.Citation.Elements
                     return Element_Type.Genre;
 
                 case "GROUPTITLE":
+                case "GROUP_TITLE":
                     return Element_Type.Group_Title;
 
                 case "HOLDING":
@@ -589,6 +607,10 @@ namespace SobekCM.Library.Citation.Elements
                 case "LOM_TYPICAL_LEARNING_TIME":
                     return Element_Type.LOM_Typical_Learning_Time;
 
+                case "THUMBNAIL":
+                case "MAIN THUMBNAIL":
+                    return Element_Type.MainThumbnail;
+
                 case "MANUFACTURER":
                     return Element_Type.Manufacturer;
 
@@ -600,18 +622,19 @@ namespace SobekCM.Library.Citation.Elements
                     return Element_Type.METS_ObjectID;
 
                 case "NOTE":
+                case "NOTES":
                     return Element_Type.Note;
 
                 case "OCLCRECORDNUM":
+                case "OCLC_RECORD_NUM":
+                case "OCLC_RECORD_NUMBER":
                     return Element_Type.OCLC_Record_Number;
 
                 case "OTHERFILES":
                     return Element_Type.OtherFiles;
 
-                case "OTHERTITLE":
-                    return Element_Type.Title_Other;
-
                 case "OTHERURL":
+                case "OTHER_URL":
                     return Element_Type.OtherURL;
 
                 case "PRIMARYIDENTIFIER":
@@ -622,21 +645,26 @@ namespace SobekCM.Library.Citation.Elements
                     return Element_Type.Project;
 
                 case "PUBLICATIONPLACE":
+                case "PUBLICATION_PLACE":
                     return Element_Type.Publication_Place;
 
                 case "PUBLICATIONSTATUS":
+                case "PUBLICATION_STATUS":
                     return Element_Type.Publication_Status;
 
                 case "PUBLISHER":
                     return Element_Type.Publisher;
 
                 case "RECORDORIGIN":
+                case "RECORD_ORIGIN":
                     return Element_Type.RecordOrigin;
 
                 case "RECORDSTATUS":
+                case "RECORD_STATUS":
                     return Element_Type.RecordStatus;
 
                 case "RELATEDITEM":
+                case "RELATED_ITEM":
                     return Element_Type.RelatedItem;
 
                 case "RIGHTS":
@@ -649,6 +677,7 @@ namespace SobekCM.Library.Citation.Elements
                     return Element_Type.Scale;
 
                 case "SERIALHIERARCHY":
+                case "SERIAL_HIERARCHY":
                     return Element_Type.SerialHierarchy;
 
                 case "SOURCE":
@@ -667,6 +696,7 @@ namespace SobekCM.Library.Citation.Elements
 					return Element_Type.SuDoc;
 
                 case "TARGETAUDIENCE":
+                case "TARGET_AUDIENCE":
                     return Element_Type.TargetAudience;
 
                 case "TEMPORAL":
@@ -678,14 +708,18 @@ namespace SobekCM.Library.Citation.Elements
                 case "TEXTSEARCHABLE":
                     return Element_Type.TextSearchable;
 
-                case "THUMBNAIL":
-                    return Element_Type.MainThumbnail;
+
 
                 case "TICKLER":
                     return Element_Type.Tickler;
 
                 case "TITLE":
                     return Element_Type.Title;
+
+                case "OTHERTITLE":
+                case "OTHER_TITLE":
+                case "TITLE_OTHER":
+                    return Element_Type.Title_Other;
 
                 case "TRACKING_BOX":
                     return Element_Type.Tracking_Box;
@@ -704,6 +738,8 @@ namespace SobekCM.Library.Citation.Elements
 
                 case "VRA_CULTURALCONTEXT":
                 case "CULTURALCONTEXT":
+                case "VRA_CULTURAL_CONTEXT":
+                case "CULTURAL_CONTEXT":
                     return Element_Type.VRA_CulturalContext;
 
                 case "VRA_INSCRIPTION":
@@ -724,10 +760,14 @@ namespace SobekCM.Library.Citation.Elements
 
                 case "VRA_STATEEDITION":
                 case "STATEEDITION":
+                case "VRA_STATE_EDITION":
+                case "STATE_EDITION":
                     return Element_Type.VRA_StateEdition;
 
                 case "VRA_STYLEPERIOD":
                 case "STYLEPERIOD":
+                case "VRA_STYLE_PERIOD":
+                case "STYLE_PERIOD":
                     return Element_Type.VRA_StylePeriod;
 
                 case "VRA_TECHNIQUE":
@@ -735,6 +775,7 @@ namespace SobekCM.Library.Citation.Elements
                     return Element_Type.VRA_Technique;
 
                 case "WEBSKIN":
+                case "WEB_SKIN":
                 case "INTERFACE":
                     return Element_Type.Web_Skin;
 
