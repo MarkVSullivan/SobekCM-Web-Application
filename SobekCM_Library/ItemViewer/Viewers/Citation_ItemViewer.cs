@@ -38,7 +38,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	public class Citation_ItemViewer : abstractItemViewer
 	{
 		private Citation_Type citationType;
-	    private User_Object currentUser;
+	  //  private User_Object currentUser;
 	    private bool userCanEditItem;
 		private int width = 180;
 
@@ -75,17 +75,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
 	    /// <summary>List of valid collection codes, including mapping from the Sobek collections to Greenstone collections </summary>
 	    public Aggregation_Code_Manager Code_Manager { get; set; }
 
-	    /// <summary> Currently logged on user for determining rights over this item </summary>
-		public User_Object Current_User
-		{
-			set 
-			{
-			    if (value == null) return;
+        ///// <summary> Currently logged on user for determining rights over this item </summary>
+        //public User_Object Current_User
+        //{
+        //    set 
+        //    {
+        //        if (value == null) return;
 
-                userCanEditItem = value.Can_Edit_This_Item(CurrentItem.BibID, CurrentItem.Bib_Info.SobekCM_Type_String, CurrentItem.Bib_Info.Source.Code, CurrentItem.Bib_Info.HoldingCode, CurrentItem.Behaviors.Aggregation_Code_List); ;
-			    currentUser = value;
-			}
-		}
+        //        userCanEditItem = value.Can_Edit_This_Item(CurrentItem.BibID, CurrentItem.Bib_Info.SobekCM_Type_String, CurrentItem.Bib_Info.Source.Code, CurrentItem.Bib_Info.HoldingCode, CurrentItem.Behaviors.Aggregation_Code_List); ;
+        //        currentUser = value;
+        //    }
+        //}
 
 		/// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
 		/// <value> This value depends on the current submode being displayed (i.e., MARC, metadata links, etc..) </value>
@@ -139,6 +139,25 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("Citation_ItemViewer.Write_Main_Viewer_Section", "Write the citation information directly to the output stream");
 			}
 
+            // Determine if user can edit
+            userCanEditItem = false;
+            if (CurrentUser != null)
+            {
+                userCanEditItem = CurrentUser.Can_Edit_This_Item(CurrentItem.BibID, CurrentItem.Bib_Info.SobekCM_Type_String, CurrentItem.Bib_Info.Source.Code, CurrentItem.Bib_Info.HoldingCode, CurrentItem.Behaviors.Aggregation_Code_List); ;
+            }
+
+            // Add the HTML for the citation
+            Output.WriteLine("        <!-- CITATION ITEM VIEWER OUTPUT -->");
+            Output.WriteLine("        <td>");
+
+            // If this is DARK and the user cannot edit and the flag is not set to show citation, show nothing here
+            if ((CurrentItem.Behaviors.Dark_Flag) && (!userCanEditItem) && (!UI_ApplicationCache_Gateway.Settings.Resources.Show_Citation_For_Dark_Items))
+            {
+                Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\">This item is DARK and cannot be viewed at this time</div>" + Environment.NewLine + "</td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
+
+                return;
+            }
+
 			// Determine the citation type
 			citationType = Citation_Type.Standard;
 			switch (CurrentMode.ViewerCode)
@@ -163,9 +182,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					citationType = Citation_Type.Standard;
 			}
 
-			// Add the HTML for the citation
-            Output.WriteLine("        <!-- CITATION ITEM VIEWER OUTPUT -->" );
-			Output.WriteLine("        <td>" );
 
 			// Get  the robot flag (if this is rendering for robots, the other citation views are not available)
 			bool isRobot = CurrentMode.Is_Robot;
@@ -719,8 +735,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
                 options["MarcXML_File_ReaderWriter:MARC XSLT File"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
             }
-            options["MarcXML_File_ReaderWriter:System Name"] = UI_ApplicationCache_Gateway.Settings.System_Name;
-            options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System_Abbreviation;
+            options["MarcXML_File_ReaderWriter:System Name"] = UI_ApplicationCache_Gateway.Settings.System.System_Name;
+            options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
 
 
             builder.AppendLine(CurrentItem.Get_MARC_HTML( options, Width ));
@@ -2024,7 +2040,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 						int tag_counter = 1;
 						foreach (Descriptive_Tag tag in CurrentItem.Behaviors.User_Tags)
 						{
-							if ((currentUser != null) && (currentUser.UserID == tag.UserID))
+                            if ((CurrentUser != null) && (CurrentUser.UserID == tag.UserID))
 							{
 								string citation_value = Convert_String_To_XML_Safe(tag.Description_Tag) + " <br /><em> Description added by you on " + tag.Date_Added.ToShortDateString() + "</em><br />( <a href=\"\" name=\"edit_describe_button" + tag_counter + "\" id=\"edit_describe_button" + tag_counter + "\" onclick=\"return edit_tag( 'edit_describe_button" + tag_counter + "', " + tag.TagID + ", '" + HttpUtility.HtmlEncode(tag.Description_Tag) + "');\">edit</a> | <a href=\"\" onclick=\"return delete_tag(" + tag.TagID + ");\">delete</a> )";
 								result.Append(INDENT + "    <tr>\n" + INDENT + "      <td width=\"15\"> </td>\n" + INDENT + "      <td width=\"" + width + "\" valign=\"top\"><b>" + Translator.Get_Translation("User Description", CurrentMode.Language) + ": </b></td>\n" + INDENT + "      <td style=\"background-color:#eeee88\">" + citation_value + "</td>\n" + INDENT + "    </tr>\n");
@@ -2349,7 +2365,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				result.AppendLine();
 			}
 
-			if ((currentUser != null) && (currentUser.Is_System_Admin))
+            if ((CurrentUser != null) && (CurrentUser.Is_System_Admin))
 			{
 				result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_AdminSection\" >");
 				result.AppendLine(INDENT + "<h2>" + system_info + "</h2>");

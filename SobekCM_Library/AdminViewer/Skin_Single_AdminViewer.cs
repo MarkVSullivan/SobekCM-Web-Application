@@ -1045,7 +1045,7 @@ namespace SobekCM.Library.AdminViewer
 
                 // Determine the aggregation upload directory
                 string skin_upload_dir = skinDirectory + "\\uploads";
-                string skin_upload_url = UI_ApplicationCache_Gateway.Settings.System_Base_URL + "design/skins/" + webSkin.Skin_Code + "/uploads/";
+                string skin_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/skins/" + webSkin.Skin_Code + "/uploads/";
 
                 // Create the CKEditor objects
                 CKEditor.CKEditor editor1 = new CKEditor.CKEditor

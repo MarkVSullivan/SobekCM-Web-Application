@@ -50,7 +50,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			currentItem = Current_Item;
 			CurrentMode = Current_Mode;
 
-			//string resource_directory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
+			//string resource_directory = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + CurrentItem.Web.AssocFilePath;
 			//string current_mets = resource_directory + CurrentItem.METS_Header.ObjectID + ".mets.xml";
 
 			// If there is no user, send to the login
@@ -75,7 +75,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 
 			////create a backup of the mets
-			//string backup_directory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + Current_Item.Web.AssocFilePath + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name;
+			//string backup_directory = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + Current_Item.Web.AssocFilePath + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name;
 			//string backup_mets_name = backup_directory + "\\" + CurrentItem.METS_Header.ObjectID + "_" + DateTime.Now.Year + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + ".mets.bak";
 			//File.Copy(current_mets, backup_mets_name);
 
@@ -96,8 +96,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
                 options["MarcXML_File_ReaderWriter:MARC XSLT File"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
             }
-            options["MarcXML_File_ReaderWriter:System Name"] = UI_ApplicationCache_Gateway.Settings.System_Name;
-            options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System_Abbreviation;
+            options["MarcXML_File_ReaderWriter:System Name"] = UI_ApplicationCache_Gateway.Settings.System.System_Name;
+            options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
 
 		}
 
@@ -441,7 +441,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			#region prep saving dir
 			//create inprocessing directory
 			string userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.User_InProcess_Directory( currentUser, "mapwork");
-            string backupDirectory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + currentItem.Web.AssocFilePath + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name;
+            string backupDirectory = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + currentItem.Web.AssocFilePath + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name;
 
 			//ensure the user's process directory exists
 			if (!Directory.Exists(userInProcessDirectory))
@@ -450,7 +450,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			if (!Directory.Exists(backupDirectory))
 				Directory.CreateDirectory(backupDirectory);
 
-			string resource_directory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + currentItem.Web.AssocFilePath;
+			string resource_directory = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + currentItem.Web.AssocFilePath;
 			string current_mets = resource_directory + currentItem.METS_Header.ObjectID + ".mets.xml";
 			string backup_mets = backupDirectory + "\\" + currentItem.METS_Header.ObjectID + "_" + DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + "_" + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString() + ".mets.xml.BAK";
 			string metsInProcessFile = userInProcessDirectory + "\\" + currentItem.BibID + "_" + currentItem.VID + ".mets.xml";
@@ -662,7 +662,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					collectionIdsFromPage.Add(currentItem.BibID);
 
 					//get settings
-					List<string>[] settings = MapEditor_Configuration.GetSettings(collectionIdsFromPage);
+                    List<string>[] settings = UI_ApplicationCache_Gateway.Settings.MapEditor.GetSettings(collectionIdsFromPage);
 
 					//loop through settings
 					for (int i = 0; i < settings[0].Count; i++)

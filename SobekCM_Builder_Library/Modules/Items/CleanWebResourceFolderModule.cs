@@ -20,7 +20,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             try
             {
                 // Insure subfolder exists
-                string backup_dir = Resource.Resource_Folder + "\\" + Settings.Backup_Files_Folder_Name;
+                string backup_dir = Resource.Resource_Folder + "\\" + Settings.Resources.Backup_Files_Folder_Name;
                 if (!Directory.Exists(backup_dir))
                 {
                     Directory.CreateDirectory(backup_dir);

@@ -22,7 +22,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             string resourceFolder = Resource.Resource_Folder;
 
             // Should we try to convert office files?
-            if (Settings.Convert_Office_Files_To_PDF)
+            if (Settings.Builder.Convert_Office_Files_To_PDF)
             {
                 try
                 {

@@ -21,14 +21,14 @@ namespace SobekCM.Builder_Library.Modules.Items
             string resourceFolder = Resource.Resource_Folder;
 
             // Delete any pre-archive deletes
-            if (Settings.PreArchive_Files_To_Delete.Length > 0)
+            if ( !String.IsNullOrEmpty(Settings.Archive.PreArchive_Files_To_Delete))
             {
                 // Get the list of files again
                 string[] files = Directory.GetFiles(resourceFolder);
                 foreach (string thisFile in files)
                 {
                     FileInfo thisFileInfo = new FileInfo(thisFile);
-                    if (Regex.Match(thisFileInfo.Name, Settings.PreArchive_Files_To_Delete, RegexOptions.IgnoreCase).Success)
+                    if (Regex.Match(thisFileInfo.Name, Settings.Archive.PreArchive_Files_To_Delete, RegexOptions.IgnoreCase).Success)
                     {
                         File.Delete(thisFile);
                     }
@@ -40,14 +40,14 @@ namespace SobekCM.Builder_Library.Modules.Items
                 return false;
 
             // Delete any remaining post-archive deletes
-            if (Settings.PostArchive_Files_To_Delete.Length > 0)
+            if (!String.IsNullOrEmpty(Settings.Archive.PostArchive_Files_To_Delete))
             {
                 // Get the list of files again
                 string[] files = Directory.GetFiles(resourceFolder);
                 foreach (string thisFile in files)
                 {
                     FileInfo thisFileInfo = new FileInfo(thisFile);
-                    if (Regex.Match(thisFileInfo.Name, Settings.PostArchive_Files_To_Delete, RegexOptions.IgnoreCase).Success)
+                    if (Regex.Match(thisFileInfo.Name, Settings.Archive.PostArchive_Files_To_Delete, RegexOptions.IgnoreCase).Success)
                     {
                         File.Delete(thisFile);
                     }
@@ -62,7 +62,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             bool returnValue = true;
 
             // First see if this folder is even eligible for archiving and an archive drop box exists
-            if ((Settings.Archive_DropBox.Length > 0) && ((ResourcePackage.Source_Folder.Archive_All_Files) || (ResourcePackage.Source_Folder.Archive_TIFFs)))
+            if (( !String.IsNullOrEmpty(Settings.Archive.Archive_DropBox)) && ((ResourcePackage.Source_Folder.Archive_All_Files) || (ResourcePackage.Source_Folder.Archive_TIFFs)))
             {
 
                 OnProcess("\t\tCopying files to the archive", "Copy To Archive", ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, -1);
@@ -76,7 +76,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     try
                     {
                         // Calculate and create the archive directory
-                        string archiveDirectory = Settings.Archive_DropBox + "\\" + ResourcePackage.BibID + "\\" + ResourcePackage.VID;
+                        string archiveDirectory = Settings.Archive.Archive_DropBox + "\\" + ResourcePackage.BibID + "\\" + ResourcePackage.VID;
                         if (!Directory.Exists(archiveDirectory))
                             Directory.CreateDirectory(archiveDirectory);
 

@@ -126,9 +126,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			// If the QC work is already in process, we may find a temporary METS file to read.
 
 			// Determine the in process directory for this
-            userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + Current_User.UserName.Replace(".", "").Replace("@", "") + "\\qcwork\\" + qc_item.METS_Header.ObjectID;
+            userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location + "\\" + Current_User.UserName.Replace(".", "").Replace("@", "") + "\\qcwork\\" + qc_item.METS_Header.ObjectID;
 			if (Current_User.ShibbID.Trim().Length > 0)
-                userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + Current_User.ShibbID + "\\qcwork\\" + qc_item.METS_Header.ObjectID;
+                userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location + "\\" + Current_User.ShibbID + "\\qcwork\\" + qc_item.METS_Header.ObjectID;
 
 			// Make the folder for the user in process directory
 			if (!Directory.Exists(userInProcessDirectory))
@@ -177,7 +177,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Get the default QC profile
-			qc_profile = QualityControl_Configuration.Default_Profile;
+			qc_profile = UI_ApplicationCache_Gateway.Settings.QualityControlTool.Default_Profile;
 
             // If this was a post-back keep the required height and width for the qc area
             allThumbnailsOuterDiv1Width = -1;
@@ -893,7 +893,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             catch (Exception e)
             {
-                string error_folder = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + qc_item.Web.AssocFilePath + "\\sobek_files";
+                string error_folder = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + qc_item.Web.AssocFilePath + "\\sobek_files";
                 if (!Directory.Exists(error_folder))
                     Directory.CreateDirectory(error_folder);
                 string error_message_file = "qc_error_" + DateTime.Now.Year + "_" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Day.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Hour.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Minute.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Second.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Millisecond + ".txt";
@@ -916,7 +916,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 writer.Close();
 
                 // Also, send an email
-                Email_Helper.SendEmail("Mark.V.Sullivan@gmail.com", "QC Error caught on " + qc_item.BibID + ":" + qc_item.VID, "EXCEPTION CAUGHT DURING SAVE_FROM_FORM_REQUEST_TO_ITEM METHOD\n\n" + e.Message + "\n\n" + e.StackTrace, false, UI_ApplicationCache_Gateway.Settings.System_Name);
+                Email_Helper.SendEmail("Mark.V.Sullivan@gmail.com", "QC Error caught on " + qc_item.BibID + ":" + qc_item.VID, "EXCEPTION CAUGHT DURING SAVE_FROM_FORM_REQUEST_TO_ITEM METHOD\n\n" + e.Message + "\n\n" + e.StackTrace, false, UI_ApplicationCache_Gateway.Settings.System.System_Name);
 
                 // Now, throw again
                 throw new ApplicationException(e.Message);
@@ -1291,7 +1291,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 			catch (Exception e)
 			{
-                string error_folder = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + qc_item.Web.AssocFilePath + "\\sobek_files";
+                string error_folder = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + qc_item.Web.AssocFilePath + "\\sobek_files";
                 if (!Directory.Exists(error_folder))
                     Directory.CreateDirectory(error_folder);
                 string error_message_file = "qc_error_" + DateTime.Now.Year + "_" + DateTime.Now.Month.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Day.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Hour.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Minute.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Second.ToString().PadLeft(2, '0') + "_" + DateTime.Now.Millisecond + ".txt";
@@ -1315,7 +1315,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 writer.Close();
 
                 // Also, send an email
-                Email_Helper.SendEmail("Mark.V.Sullivan@gmail.com", "QC Error caught on " + qc_item.BibID + ":" + qc_item.VID, "EXCEPTION CAUGHT DURING SAVE_FROM_FORM_REQUEST_TO_ITEM METHOD\n\n" + e.Message + "\n\n" + e.StackTrace, false, UI_ApplicationCache_Gateway.Settings.System_Name);
+                Email_Helper.SendEmail("Mark.V.Sullivan@gmail.com", "QC Error caught on " + qc_item.BibID + ":" + qc_item.VID, "EXCEPTION CAUGHT DURING SAVE_FROM_FORM_REQUEST_TO_ITEM METHOD\n\n" + e.Message + "\n\n" + e.StackTrace, false, UI_ApplicationCache_Gateway.Settings.System.System_Name);
 
                 // Rethrow this error
                 throw new ApplicationException(e.Message);
@@ -1333,11 +1333,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// and clear the temporary files/cache so it can be rebuilt from production if needed  </summary>
 	    private void Move_Temp_Changes_To_Production()
 	    {
-            string resource_directory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + qc_item.Web.AssocFilePath;
+            string resource_directory = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + qc_item.Web.AssocFilePath;
 
 	        if (File.Exists(metsInProcessFile))
 	        {
-                string backup_directory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + qc_item.Web.AssocFilePath + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name;
+                string backup_directory = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + qc_item.Web.AssocFilePath + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name;
 
 	            // Ensure the backup directory exists
 	            if (!Directory.Exists(backup_directory))
@@ -1427,9 +1427,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 	    private void Delete_Resource_File(string FilenameToDelete)
 	    {
-	        string resource_directory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + qc_item.Web.AssocFilePath;
+	        string resource_directory = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + qc_item.Web.AssocFilePath;
             string[] files = Directory.GetFiles(resource_directory, FilenameToDelete + ".*");
-	        string recycle_bin = UI_ApplicationCache_Gateway.Settings.Recycle_Bin + "\\" + qc_item.METS_Header.ObjectID;
+	        string recycle_bin = UI_ApplicationCache_Gateway.Settings.Servers.Recycle_Bin + "\\" + qc_item.METS_Header.ObjectID;
 	        if (!Directory.Exists(recycle_bin))
 	            Directory.CreateDirectory(recycle_bin);
 

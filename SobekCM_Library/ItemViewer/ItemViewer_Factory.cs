@@ -85,7 +85,7 @@ namespace SobekCM.Library.ItemViewer
 					return jpegTextViewer;
 
                 case View_Enum.JPEG2000:
-					if ( UI_ApplicationCache_Gateway.Settings.JP2ServerType == "Built-In IIPImage")
+					if ( UI_ApplicationCache_Gateway.Settings.Servers.JP2ServerType == "Built-In IIPImage")
 					{
 						abstractItemViewer newJp2Viewer = new JPEG2000_ItemViewer();
 						newJp2Viewer.FileName = ViewObject.FileName;

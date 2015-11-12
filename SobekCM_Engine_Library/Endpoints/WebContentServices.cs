@@ -748,7 +748,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Get the location for this HTML file to be saved
-            StringBuilder dirBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + content.Level1);
+            StringBuilder dirBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + content.Level1);
             if (!String.IsNullOrEmpty(content.Level2))
             {
                 dirBuilder.Append("\\" + content.Level2);
@@ -847,7 +847,7 @@ namespace SobekCM.Engine_Library.Endpoints
             RestResponseMessage message = new RestResponseMessage(ErrorRestTypeEnum.Successful, "Updated web page details");
 
             // Set the URL
-            StringBuilder urlBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Base_URL + "/" + content.Level1);
+            StringBuilder urlBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL + "/" + content.Level1);
             if (!String.IsNullOrEmpty(content.Level2))
             {
                 urlBuilder.Append("/" + content.Level2);
@@ -1074,7 +1074,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
 
             // Get the location for this HTML file to be saved
-            StringBuilder dirBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + content.Level1);
+            StringBuilder dirBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + content.Level1);
             if (!String.IsNullOrEmpty(content.Level2))
             {
                 dirBuilder.Append("\\" + content.Level2);
@@ -1153,7 +1153,7 @@ namespace SobekCM.Engine_Library.Endpoints
             RestResponseMessage message = new RestResponseMessage(ErrorRestTypeEnum.Successful, "Added new page");
 
             // Set the URL
-            StringBuilder urlBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Base_URL + "/" + content.Level1);
+            StringBuilder urlBuilder = new StringBuilder(Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL + "/" + content.Level1);
             if (!String.IsNullOrEmpty(content.Level2))
             {
                 urlBuilder.Append("/" + content.Level2);
@@ -1263,13 +1263,13 @@ namespace SobekCM.Engine_Library.Endpoints
 
             if (simpleWebContent == null)
             {
-                string file = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Directory, "design", "webcontent", "missing.html");
+                string file = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory, "design", "webcontent", "missing.html");
                 if (!File.Exists(file))
                 {
                     try
                     {
                         // Try to create the directory
-                        string directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Directory, "design", "webcontent");
+                        string directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory, "design", "webcontent");
                         if (!Directory.Exists(directory))
                             Directory.CreateDirectory(directory);
 
@@ -1636,13 +1636,13 @@ namespace SobekCM.Engine_Library.Endpoints
             if (UrlSegments.Count > 7) designFolderBldr.Append("\\" + UrlSegments[7]);
 
             // Check that folder
-            string design_folder = Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + designFolderBldr;
+            string design_folder = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + designFolderBldr;
             if (Directory.Exists(design_folder))
             {
                 string foldername = "Uploads";
 
                 string[] files = SobekCM_File_Utilities.GetFiles(design_folder, "*.jpg|*.bmp|*.gif|*.png");
-                string design_url = Engine_ApplicationCache_Gateway.Settings.System_Base_URL + "design/" + designFolderBldr.ToString().Replace("\\", "/") + "/";
+                string design_url = Engine_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/" + designFolderBldr.ToString().Replace("\\", "/") + "/";
                 foreach (string thisFile in files)
                 {
                     string filename = Path.GetFileName(thisFile);
@@ -4863,7 +4863,7 @@ namespace SobekCM.Engine_Library.Endpoints
             else
             {
                 // Get the sitemaps directory
-                string sitemap_directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "webcontent", "sitemaps");
+                string sitemap_directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "webcontent", "sitemaps");
 
                 if ( IsDebug )
                     tracer.Add_Trace("WebContentServices.Get_All_Sitemaps", "Sitemap directory: " + sitemap_directory);
@@ -4955,7 +4955,7 @@ namespace SobekCM.Engine_Library.Endpoints
             else
             {
                 // Get the javascript directory
-                string javascript_directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "webcontent", "javascript");
+                string javascript_directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "webcontent", "javascript");
 
                 if (IsDebug)
                     tracer.Add_Trace("WebContentServices.Get_All_Controlled_Javascript", "Javascript directory: " + javascript_directory);
@@ -5047,7 +5047,7 @@ namespace SobekCM.Engine_Library.Endpoints
             else
             {
                 // Get the stylesheet directory
-                string stylesheet_directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "webcontent", "css");
+                string stylesheet_directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "webcontent", "css");
 
                 if (IsDebug)
                     tracer.Add_Trace("WebContentServices.Get_All_Controlled_Stylesheets", "Stylesheet directory: " + stylesheet_directory);
@@ -5160,7 +5160,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
             string possible_info_mode = possibleInfoModeBuilder.ToString().Replace("'", "").Replace("\"", "");
             string filename = possible_info_mode;
-            string base_source = Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent";
+            string base_source = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent";
             string source = base_source;
             string found_source = null;
 
@@ -5262,7 +5262,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                         // Remove the include and either place in the text from the indicated file, 
                         // or just remove
-                        if ((filename_to_include.Length > 0) && (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + filename_to_include)))
+                        if ((filename_to_include.Length > 0) && (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + filename_to_include)))
                         {
                             // Define the value for the include text
                             string include_text;
@@ -5278,7 +5278,7 @@ namespace SobekCM.Engine_Library.Endpoints
                                 try
                                 {
                                     // Pull from the file
-                                    StreamReader reader = new StreamReader(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + filename_to_include);
+                                    StreamReader reader = new StreamReader(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + filename_to_include);
                                     include_text = reader.ReadToEnd();
                                     reader.Close();
 

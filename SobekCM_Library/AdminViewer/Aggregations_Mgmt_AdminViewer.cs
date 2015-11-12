@@ -111,7 +111,7 @@ namespace SobekCM.Library.AdminViewer
                         int errorCode = SobekCM_Database.Delete_Item_Aggregation(delete_aggregation_code, RequestSpecificValues.Current_User.Is_System_Admin, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Tracer, out delete_error);
                         if (errorCode <= 0)
                         {
-                            string delete_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + delete_aggregation_code;
+                            string delete_folder = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + delete_aggregation_code;
                             if (!SobekCM_File_Utilities.Delete_Folders_Recursively(delete_folder))
                                 actionMessage = "Deleted '" + delete_aggregation_code.ToUpper() + "' aggregation<br /><br />Unable to remove aggregation directory<br /><br />Some of the files may be in use";
                             else

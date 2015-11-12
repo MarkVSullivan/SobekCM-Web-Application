@@ -67,11 +67,11 @@ namespace SobekCM.Engine_Library.Settings
             InstanceWide_Settings returnValue = new InstanceWide_Settings();
 
             // Read the main configuration file, with database and error information
-           // returnValue.Base_Directory = AppDomain.CurrentDomain.BaseDirectory;
+           // returnValue.Servers.Base_Directory = AppDomain.CurrentDomain.BaseDirectory;
             Read_Configuration_File(returnValue, ConfigFileLocation);
 
             // Set the error URL
-            UrlWriterHelper.Unhandled_Error_URL = returnValue.System_Error_URL;
+            UrlWriterHelper.Unhandled_Error_URL = returnValue.Servers.System_Error_URL;
 
             // Set the connection string to the database
             Engine_Database.Connection_String = returnValue.Database_Connections[0].Connection_String;
@@ -82,53 +82,53 @@ namespace SobekCM.Engine_Library.Settings
             Refresh(returnValue, sobekCMSettings);
 
             // Try to read the SHIBBOLETH configuration file
-            if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config"))
+            if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config"))
             {
-                returnValue.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config");
+                returnValue.Authentication.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config");
             }
-            else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config"))
+            else if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config"))
             {
-                returnValue.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config");
+                returnValue.Authentication.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config");
             }
 
             // Try to read the CONTACT FORM configuration file
-            if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_contactform.config"))
+            if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_contactform.config"))
             {
-                returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_contactform.config");
+                returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_contactform.config");
             }
-            else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_contactform.config"))
+            else if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_contactform.config"))
             {
-                returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_contactform.config");
+                returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_contactform.config");
             }
 
             // Try to read the QUALITY CONTROL configuration file
-            if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_qc.config"))
-            {
-                QualityControl_Configuration.Read_Metadata_Configuration(returnValue.Base_Directory + "\\config\\user\\sobekcm_qc.config");
-            }
-            else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_qc.config"))
-            {
-                QualityControl_Configuration.Read_Metadata_Configuration(returnValue.Base_Directory + "\\config\\default\\sobekcm_qc.config");
-            }
+            //if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_qc.config"))
+            //{
+            //    QualityControl_Configuration.Read_Metadata_Configuration(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_qc.config");
+            //}
+            //else if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_qc.config"))
+            //{
+            //    QualityControl_Configuration.Read_Metadata_Configuration(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_qc.config");
+            //}
 
             // Try to read the BRIEF ITEM MAPPING configuration file
-            if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_brief_item_mapping.config"))
+            if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_brief_item_mapping.config"))
             {
-                BriefItem_Factory.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_brief_item_mapping.config");
+                BriefItem_Factory.Read_Config(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_brief_item_mapping.config");
             }
-            else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_brief_item_mapping.config"))
+            else if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_brief_item_mapping.config"))
             {
-                BriefItem_Factory.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_brief_item_mapping.config");
+                BriefItem_Factory.Read_Config(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_brief_item_mapping.config");
             }
 
             // Try to read the OAI-PMH configuration file
-            if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config"))
+            if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config"))
             {
-                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config", returnValue.System_Name, returnValue.System_Abbreviation, returnValue.System_Email);
+                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config", returnValue.System.System_Name, returnValue.System.System_Abbreviation, returnValue.Email.System_Email);
             }
-            else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config"))
+            else if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config"))
             {
-                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config", returnValue.System_Name, returnValue.System_Abbreviation, returnValue.System_Email);
+                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config", returnValue.System.System_Name, returnValue.System.System_Abbreviation, returnValue.Email.System_Email);
             }
 
             // Load the OAI-PMH configuration file info into the OAI writer class ( in the resource object library )
@@ -166,33 +166,33 @@ namespace SobekCM.Engine_Library.Settings
             Refresh(returnValue, sobekCMSettings);
 
             // Try to read the SHIBBOLETH configuration file
-            if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config"))
+            if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config"))
             {
-                returnValue.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config");
+                returnValue.Authentication.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config");
             }
-            else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config"))
+            else if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config"))
             {
-                returnValue.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config");
+                returnValue.Authentication.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config");
             }
 
             // Try to read the CONTACT FORM configuration file
-            if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_contactform.config"))
+            if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_contactform.config"))
             {
-                returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_contactform.config");
+                returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_contactform.config");
             }
-            else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_contactform.config"))
+            else if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_contactform.config"))
             {
-                returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_contactform.config");
+                returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_contactform.config");
             }
 
             // Try to read the OAI-PMH configuration file
-            if (File.Exists(returnValue.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config"))
+            if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config"))
             {
-                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config", returnValue.System_Name, returnValue.System_Abbreviation, returnValue.System_Email);
+                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config", returnValue.System.System_Name, returnValue.System.System_Abbreviation, returnValue.Email.System_Email);
             }
-            else if (File.Exists(returnValue.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config"))
+            else if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config"))
             {
-                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config", returnValue.System_Name, returnValue.System_Abbreviation, returnValue.System_Email);
+                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config", returnValue.System.System_Name, returnValue.System.System_Abbreviation, returnValue.Email.System_Email);
             }
 
             // Load the OAI-PMH configuration file info into the OAI writer class ( in the resource object library )
@@ -231,14 +231,14 @@ namespace SobekCM.Engine_Library.Settings
                     "inprocess", "engine", "register", "xyzzyxyzzy", "aggrmanage", "aggrpermissions", "aggrhistory"  };
 
             SettingsObject.Page_Image_Extensions = new List<string> { "JPG", "JP2", "JPX", "GIF", "PNG", "BMP", "JPEG" };
-            SettingsObject.Backup_Files_Folder_Name = BACKUP_FILES_FOLDER_NAME;
+            SettingsObject.Resources.Backup_Files_Folder_Name = BACKUP_FILES_FOLDER_NAME;
             SettingsObject.Current_Web_Version = CURRENT_WEB_VERSION;
             SettingsObject.Current_Builder_Version = CURRENT_BUILDER_VERSION;
             SettingsObject.Complete_Package_Required_Aging = COMPLETE_PACKAGE_REQUIRED_AGING;
             SettingsObject.METS_Only_Package_Required_Aging = METS_ONLY_PACKAGE_REQUIRED_AGING;
-            SettingsObject.VerifyCheckSum = VERIFY_CHECKSUM;
-            SettingsObject.Pull_Facets_On_Browse = true;
-            SettingsObject.Pull_Facets_On_Search = true;
+            SettingsObject.Builder.VerifyCheckSum = VERIFY_CHECKSUM;
+            SettingsObject.Search.Pull_Facets_On_Browse = true;
+            SettingsObject.Search.Pull_Facets_On_Search = true;
 
             try
             {
@@ -255,73 +255,71 @@ namespace SobekCM.Engine_Library.Settings
                 }
 
                 // Pull all of the builder settings value ( from UFDC_Builder_Settings )
-                Get_String_Value(settingsDictionary, "Application Server Network", SettingsObject, X => X.Application_Server_Network, ref error);
-                Get_String_Value(settingsDictionary, "Application Server URL", SettingsObject, X => X.Application_Server_URL, ref error);
-                Get_String_Value(settingsDictionary, "Archive DropBox", SettingsObject, X => X.Archive_DropBox, ref error);
-                Get_Boolean_Value(settingsDictionary, "Builder Add PageTurner ItemViewer", SettingsObject, X => X.Builder_Add_PageTurner_ItemViewer, ref error, false);
-                Get_String_Value(settingsDictionary, "Builder IIS Logs Directory", SettingsObject, X => X.Builder_IIS_Logs_Directory, ref error);
-                Get_Integer_Value(settingsDictionary, "Builder Log Expiration in Days", SettingsObject, X => X.Builder_Log_Expiration_Days, ref error, 10);
-                Get_Integer_Value(settingsDictionary, "Builder Seconds Between Polls", SettingsObject, X => X.Builder_Seconds_Between_Polls, ref error, 60);
-                Get_Boolean_Value(settingsDictionary, "Builder Send Usage Emails", SettingsObject, X => X.Builder_Send_Usage_Emails, ref error, false);
-                Get_Boolean_Value(settingsDictionary, "Builder Verbose Flag", SettingsObject, X => X.Builder_Verbose_Flag, ref error, false);
-                Get_String_Value(settingsDictionary, "Caching Server", SettingsObject, X => X.Caching_Server, ref error);
-                Get_Boolean_Value(settingsDictionary, "Can Remove Single Search Term", SettingsObject, X => X.Can_Remove_Single_Term, ref error, true);
-                Get_Boolean_Value(settingsDictionary, "Can Submit Items Online", SettingsObject, X => X.Online_Item_Submit_Enabled, ref error, true);
-                Get_Boolean_Value(settingsDictionary, "Convert Office Files to PDF", SettingsObject, X => X.Convert_Office_Files_To_PDF, ref error, false);
-                Get_Boolean_Value(settingsDictionary, "Detailed User Permissions", SettingsObject, X => X.Detailed_User_Aggregation_Permissions, ref error, false);
-                Get_Boolean_Value(settingsDictionary, "Disable Standard User Logon Flag", SettingsObject, X => X.Disable_Standard_User_Logon_Flag, ref error, false);
-                Get_String_Value(settingsDictionary, "Disable Standard User Logon Message", SettingsObject, X => X.Disable_Standard_User_Logon_Message, ref error);
-                Get_String_Value(settingsDictionary, "Document Solr Index URL", SettingsObject, X => X.Document_Solr_Index_URL, ref error);
-                Get_String_Value(settingsDictionary, "Email Default From Address", SettingsObject, X => X.EmailDefaultFromAddress, ref error);
-                Get_String_Value(settingsDictionary, "Email Default From Name", SettingsObject, X => X.EmailDefaultFromDisplay, ref error);
-                Get_String_Value(settingsDictionary, "Email Method", SettingsObject, X => X.EmailMethodString, "DATABASE MAIL");
-                Get_Integer_Value(settingsDictionary, "Email SMTP Port", SettingsObject, X => X.EmailSmtpPort, ref error, 25);
-                Get_String_Value(settingsDictionary, "Email SMTP Server", SettingsObject, X => X.EmailSmtpServer, ref error);
-                Get_Boolean_Value(settingsDictionary, "Facets Collapsible", SettingsObject, X => X.Facets_Collapsible, ref error, false);
-                Get_String_Value(settingsDictionary, "FDA Report DropBox", SettingsObject, X => X.FDA_Report_DropBox, ref error);
-                Get_String_Value(settingsDictionary, "Files To Exclude From Downloads", SettingsObject, X => X.Files_To_Exclude_From_Downloads, ref error);
+                Get_String_Value(settingsDictionary, "Application Server Network", SettingsObject, X => X.Servers.Application_Server_Network, ref error);
+                Get_String_Value(settingsDictionary, "Application Server URL", SettingsObject, X => X.Servers.Application_Server_URL, ref error);
+                Get_String_Value(settingsDictionary, "Archive DropBox", SettingsObject, X => X.Archive.Archive_DropBox, ref error);
+                Get_Boolean_Value(settingsDictionary, "Builder Add PageTurner ItemViewer", SettingsObject, X => X.Builder.Add_PageTurner_ItemViewer, ref error, false);
+                Get_String_Value(settingsDictionary, "Builder IIS Logs Directory", SettingsObject, X => X.Builder.IIS_Logs_Directory, ref error);
+                Get_Integer_Value(settingsDictionary, "Builder Log Expiration in Days", SettingsObject, X => X.Builder.Log_Expiration_Days, ref error, 10);
+                Get_Integer_Value(settingsDictionary, "Builder Seconds Between Polls", SettingsObject, X => X.Builder.Seconds_Between_Polls, ref error, 60);
+                Get_Boolean_Value(settingsDictionary, "Builder Send Usage Emails", SettingsObject, X => X.Builder.Send_Usage_Emails, ref error, false);
+                Get_Boolean_Value(settingsDictionary, "Builder Verbose Flag", SettingsObject, X => X.Builder.Verbose_Flag, ref error, false);
+                Get_Boolean_Value(settingsDictionary, "Can Remove Single Search Term", SettingsObject, X => X.Search.Can_Remove_Single_Term, ref error, true);
+                Get_Boolean_Value(settingsDictionary, "Can Submit Items Online", SettingsObject, X => X.Resources.Online_Item_Submit_Enabled, ref error, true);
+                Get_Boolean_Value(settingsDictionary, "Convert Office Files to PDF", SettingsObject, X => X.Builder.Convert_Office_Files_To_PDF, ref error, false);
+                Get_Boolean_Value(settingsDictionary, "Detailed User Permissions", SettingsObject, X => X.System.Detailed_User_Aggregation_Permissions, ref error, false);
+                Get_Boolean_Value(settingsDictionary, "Disable Standard User Logon Flag", SettingsObject, X => X.System.Disable_Standard_User_Logon_Flag, ref error, false);
+                Get_String_Value(settingsDictionary, "Disable Standard User Logon Message", SettingsObject, X => X.System.Disable_Standard_User_Logon_Message, ref error);
+                Get_String_Value(settingsDictionary, "Document Solr Index URL", SettingsObject, X => X.Servers.Document_Solr_Index_URL, ref error);
+                Get_String_Value(settingsDictionary, "Email Default From Address", SettingsObject, X => X.Email.Setup.DefaultFromAddress, ref error);
+                Get_String_Value(settingsDictionary, "Email Default From Name", SettingsObject, X => X.Email.Setup.DefaultFromDisplay, ref error);
+                Get_String_Value(settingsDictionary, "Email Method", SettingsObject, X => X.Email.Setup.MethodString, "DATABASE MAIL");
+                Get_Integer_Value(settingsDictionary, "Email SMTP Port", SettingsObject, X => X.Email.Setup.SmtpPort, ref error, 25);
+                Get_String_Value(settingsDictionary, "Email SMTP Server", SettingsObject, X => X.Email.Setup.SmtpServer, ref error);
+                Get_Boolean_Value(settingsDictionary, "Facets Collapsible", SettingsObject, X => X.Search.Facets_Collapsible, ref error, false);
+                Get_String_Value(settingsDictionary, "FDA Report DropBox", SettingsObject, X => X.Florida.FDA_Report_DropBox, ref error);
+                Get_String_Value(settingsDictionary, "Files To Exclude From Downloads", SettingsObject, X => X.Resources.Files_To_Exclude_From_Downloads, ref error);
                 Get_String_Value(settingsDictionary, "Help URL", SettingsObject, X => X.Help_URL_Base, "http://sobekrepository.org/");
                 Get_String_Value(settingsDictionary, "Help Metadata URL", SettingsObject, X => X.Metadata_Help_URL_Base, "http://sobekrepository.org/");
-                Get_String_Value(settingsDictionary, "Image Server Network", SettingsObject, X => X.Image_Server_Network, ref error);
+                Get_String_Value(settingsDictionary, "Image Server Network", SettingsObject, X => X.Servers.Image_Server_Network, ref error);
                 //add by Keven for FIU dPanther's separate image server
-                Get_String_Value(settingsDictionary, "Image Server Root", SettingsObject, X => X.Image_Server_Root, ref error);
-                Get_String_Value(settingsDictionary, "Image Server URL", SettingsObject, X => X.Image_URL, ref error);
-                Get_Boolean_Value(settingsDictionary, "Include TreeView On System Home", SettingsObject, X => X.Include_TreeView_On_System_Home, ref error, false);
-                Get_Boolean_Value(settingsDictionary, "Include Partners On System Home", SettingsObject, X => X.Include_Partners_On_System_Home, ref error, false);
-                Get_Integer_Value(settingsDictionary, "JPEG Height", SettingsObject, X => X.JPEG_Height, ref error, -1);
-                Get_Integer_Value(settingsDictionary, "JPEG Width", SettingsObject, X => X.JPEG_Width, ref error, -1);
-                Get_String_Value(settingsDictionary, "JPEG2000 Server", SettingsObject, X => X.JP2ServerUrl, ref error);
-                Get_String_Value(settingsDictionary, "JPEG2000 Server Type", SettingsObject, X => X.JP2ServerType, ref error);
+                Get_String_Value(settingsDictionary, "Image Server Root", SettingsObject, X => X.Servers.Image_Server_Root, ref error);
+                Get_String_Value(settingsDictionary, "Image Server URL", SettingsObject, X => X.Servers.Image_URL, ref error);
+                Get_Boolean_Value(settingsDictionary, "Include TreeView On System Home", SettingsObject, X => X.System.Include_TreeView_On_System_Home, ref error, false);
+                Get_Boolean_Value(settingsDictionary, "Include Partners On System Home", SettingsObject, X => X.System.Include_Partners_On_System_Home, ref error, false);
+                Get_Integer_Value(settingsDictionary, "JPEG Height", SettingsObject, X => X.Resources.JPEG_Height, ref error, -1);
+                Get_Integer_Value(settingsDictionary, "JPEG Width", SettingsObject, X => X.Resources.JPEG_Width, ref error, -1);
+                Get_String_Value(settingsDictionary, "JPEG2000 Server", SettingsObject, X => X.Servers.JP2ServerUrl, ref error);
+                Get_String_Value(settingsDictionary, "JPEG2000 Server Type", SettingsObject, X => X.Servers.JP2ServerType, ref error);
                 //Get_String_Value(settingsDictionary, "Kakadu JPEG2000 Create Command", ref kakaduJp2CreateCommand, ref error);
                 Get_String_Value(settingsDictionary, "Log Files Directory", SettingsObject, X => X.Log_Files_Directory, ref error);
                 Get_String_Value(settingsDictionary, "Log Files URL", SettingsObject, X => X.Log_Files_URL, ref error);
                 Get_String_Value(settingsDictionary, "Main Builder Input Folder", SettingsObject, X => X.Main_Builder_Input_Folder, String.Empty);
-                Get_String_Value(settingsDictionary, "Mango Union Search Base URL", SettingsObject, X => X.Mango_Union_Search_Base_URL, ref error);
-                Get_String_Value(settingsDictionary, "Mango Union Search Text", SettingsObject, X => X.Mango_Union_Search_Text, ref error);
+                Get_String_Value(settingsDictionary, "Mango Union Search Base URL", SettingsObject, X => X.Florida.Mango_Union_Search_Base_URL, ref error);
+                Get_String_Value(settingsDictionary, "Mango Union Search Text", SettingsObject, X => X.Florida.Mango_Union_Search_Text, ref error);
                 Get_String_Value(settingsDictionary, "OCR Engine Command", SettingsObject, X => X.OCR_Command_Prompt, String.Empty);
                 Get_String_Value(settingsDictionary, "Package Archival Folder", SettingsObject, X => X.Package_Archival_Folder, String.Empty);
-                Get_String_Value(settingsDictionary, "Page Solr Index URL", SettingsObject, X => X.Page_Solr_Index_URL, String.Empty);
-                Get_String_Value(settingsDictionary, "PostArchive Files To Delete", SettingsObject, X => X.PostArchive_Files_To_Delete, String.Empty);
-                Get_String_Value(settingsDictionary, "PreArchive Files To Delete", SettingsObject, X => X.PreArchive_Files_To_Delete, String.Empty);
-                Get_String_Value(settingsDictionary, "Privacy Email Address", SettingsObject, X => X.Privacy_Email_Address, String.Empty);
-                Get_String_Value(settingsDictionary, "Send Email On Added Aggregation", SettingsObject, X => X.Send_Email_On_Added_Aggregation, "Always");
-                Get_Boolean_Value(settingsDictionary, "Show Florida SUS Settings", SettingsObject, X => X.Show_Florida_SUS_Settings, ref error, false);
-                Get_String_Value(settingsDictionary, "SobekCM Image Server", SettingsObject, X => X.SobekCM_ImageServer, String.Empty);
-                Get_String_Value(settingsDictionary, "SobekCM Web Server IP", SettingsObject, X => X.SobekCM_Web_Server_IP, String.Empty);
-                Get_String_Value(settingsDictionary, "Static Pages Location", SettingsObject, X => X.Static_Pages_Location, ref error);
-                Get_String_Value(settingsDictionary, "Static Resources Source", SettingsObject, X => X.Static_Resources_Config_File, "CDN");          
-                Get_Boolean_Value(settingsDictionary, "Statistics Caching Enabled", SettingsObject, X => X.Statistics_Caching_Enabled, ref error, false);
-                Get_String_Value(settingsDictionary, "System Base Abbreviation", SettingsObject, X => X.System_Abbreviation, String.Empty);
-                Get_String_Value(settingsDictionary, "System Base Name", SettingsObject, X => X.System_Name, SettingsObject.System_Abbreviation);
-                Get_String_Value(settingsDictionary, "System Base URL", SettingsObject, X => X.System_Base_URL, String.Empty);
-                Get_String_Value(settingsDictionary, "System Email", SettingsObject, X => X.System_Email, ref error);
-                Get_String_Value(settingsDictionary, "System Error Email", SettingsObject, X => X.System_Error_Email, String.Empty);
-                Get_Integer_Value(settingsDictionary, "Thumbnail Height", SettingsObject, X => X.Thumbnail_Height, ref error, -1);
-                Get_Integer_Value(settingsDictionary, "Thumbnail Width", SettingsObject, X => X.Thumbnail_Width, ref error, -1);
-                Get_String_Value(settingsDictionary, "Upload File Types", SettingsObject, X => X.Upload_File_Types, ".aif,.aifc,.aiff,.au,.avi,.bz2,.c,.c++,.css,.dbf,.ddl,.doc,.docx,.dtd,.dvi,.flac,.gz,.htm,.html,.java,.jps,.js,.m4p,.mid,.midi,.mp2,.mp3,.mpg,.odp,.ogg,.pdf,.pgm,.ppt,.pptx,.ps,.ra,.ram,.rar,.rm,.rtf,.sgml,.swf,.sxi,.tbz2,.tgz,.wav,.wave,.wma,.wmv,.xls,.xlsx,.xml,.zip");
-                Get_String_Value(settingsDictionary, "Upload Image Types", SettingsObject, X => X.Upload_Image_Types, ".txt,.tif,.jpg,.jp2,.pro");
-                Get_String_Value(settingsDictionary, "Web In Process Submission Location", SettingsObject, X => X.In_Process_Submission_Location, String.Empty);
-                Get_Integer_Value(settingsDictionary, "Web Output Caching Minutes", SettingsObject, X => X.Web_Output_Caching_Minutes, ref error, 0);
+                Get_String_Value(settingsDictionary, "Page Solr Index URL", SettingsObject, X => X.Servers.Page_Solr_Index_URL, String.Empty);
+                Get_String_Value(settingsDictionary, "PostArchive Files To Delete", SettingsObject, X => X.Archive.PostArchive_Files_To_Delete, String.Empty);
+                Get_String_Value(settingsDictionary, "PreArchive Files To Delete", SettingsObject, X => X.Archive.PreArchive_Files_To_Delete, String.Empty);
+                Get_String_Value(settingsDictionary, "Privacy Email Address", SettingsObject, X => X.Email.Privacy_Email, String.Empty);
+                Get_String_Value(settingsDictionary, "Send Email On Added Aggregation", SettingsObject, X => X.Email.Send_On_Added_Aggregation, "Always");
+                Get_String_Value(settingsDictionary, "SobekCM Image Server", SettingsObject, X => X.Servers.SobekCM_ImageServer, String.Empty);
+                Get_String_Value(settingsDictionary, "SobekCM Web Server IP", SettingsObject, X => X.Servers.SobekCM_Web_Server_IP, String.Empty);
+                Get_String_Value(settingsDictionary, "Static Pages Location", SettingsObject, X => X.Servers.Static_Pages_Location, ref error);
+                Get_String_Value(settingsDictionary, "Static Resources Source", SettingsObject, X => X.Servers.Static_Resources_Config_File, "CDN");          
+                Get_Boolean_Value(settingsDictionary, "Statistics Caching Enabled", SettingsObject, X => X.Servers.Statistics_Caching_Enabled, ref error, false);
+                Get_String_Value(settingsDictionary, "System Base Abbreviation", SettingsObject, X => X.System.System_Abbreviation, String.Empty);
+                Get_String_Value(settingsDictionary, "System Base Name", SettingsObject, X => X.System.System_Name, SettingsObject.System.System_Abbreviation);
+                Get_String_Value(settingsDictionary, "System Base URL", SettingsObject, X => X.Servers.System_Base_URL, String.Empty);
+                Get_String_Value(settingsDictionary, "System Email", SettingsObject, X => X.Email.System_Email, ref error);
+                Get_String_Value(settingsDictionary, "System Error Email", SettingsObject, X => X.Email.System_Error_Email, String.Empty);
+                Get_Integer_Value(settingsDictionary, "Thumbnail Height", SettingsObject, X => X.Resources.Thumbnail_Height, ref error, -1);
+                Get_Integer_Value(settingsDictionary, "Thumbnail Width", SettingsObject, X => X.Resources.Thumbnail_Width, ref error, -1);
+                Get_String_Value(settingsDictionary, "Upload File Types", SettingsObject, X => X.Resources.Upload_File_Types, ".aif,.aifc,.aiff,.au,.avi,.bz2,.c,.c++,.css,.dbf,.ddl,.doc,.docx,.dtd,.dvi,.flac,.gz,.htm,.html,.java,.jps,.js,.m4p,.mid,.midi,.mp2,.mp3,.mpg,.odp,.ogg,.pdf,.pgm,.ppt,.pptx,.ps,.ra,.ram,.rar,.rm,.rtf,.sgml,.swf,.sxi,.tbz2,.tgz,.wav,.wave,.wma,.wmv,.xls,.xlsx,.xml,.zip");
+                Get_String_Value(settingsDictionary, "Upload Image Types", SettingsObject, X => X.Resources.Upload_Image_Types, ".txt,.tif,.jpg,.jp2,.pro");
+                Get_String_Value(settingsDictionary, "Web In Process Submission Location", SettingsObject, X => X.Servers.In_Process_Submission_Location, String.Empty);
+                Get_Integer_Value(settingsDictionary, "Web Output Caching Minutes", SettingsObject, X => X.Servers.Web_Output_Caching_Minutes, ref error, 0);
 
                 // Load the subsetting object for MarcXML 
                 Marc21_Settings marcSettings = new Marc21_Settings();
@@ -329,14 +327,14 @@ namespace SobekCM.Engine_Library.Settings
                 Get_Boolean_Value(settingsDictionary, "Create MARC Feed By Default", marcSettings, X => X.Build_MARC_Feed_By_Default, ref error, false);
                 Get_String_Value(settingsDictionary, "MARC Cataloging Source Code", marcSettings, X => X.Cataloging_Source_Code, String.Empty);
                 Get_String_Value(settingsDictionary, "MARC Location Code", marcSettings, X => X.Location_Code, String.Empty);
-                Get_String_Value(settingsDictionary, "MARC Reproduction Agency", marcSettings, X => X.Reproduction_Agency, SettingsObject.System_Name);
+                Get_String_Value(settingsDictionary, "MARC Reproduction Agency", marcSettings, X => X.Reproduction_Agency, SettingsObject.System.System_Name);
                 Get_String_Value(settingsDictionary, "MARC Reproduction Place", marcSettings, X => X.Reproduction_Place, String.Empty);
                 Get_String_Value(settingsDictionary, "MARC XSLT File", marcSettings, X => X.XSLT_File, String.Empty);
                 SettingsObject.MarcGeneration = marcSettings;
 
 
                 // Pull the language last, since it must be converted into a Language_Enum
-                Get_String_Value(settingsDictionary, "System Default Language", SettingsObject, X => X.Default_UI_Language_String, "English");
+                Get_String_Value(settingsDictionary, "System Default Language", SettingsObject, X => X.System.Default_UI_Language_String, "English");
                 
 
                 // Pull out some values, which are stored in this portion of the database, 
@@ -366,8 +364,8 @@ namespace SobekCM.Engine_Library.Settings
                 SettingsObject.PostUnSerialization();
 
                 // Ensure the base directory ends correctly
-                if ((!String.IsNullOrEmpty(SettingsObject.Application_Server_Network)) && (SettingsObject.Application_Server_Network[SettingsObject.Application_Server_Network.Length - 1] != '\\'))
-                    SettingsObject.Application_Server_Network = SettingsObject.Application_Server_Network + "\\";
+                if ((!String.IsNullOrEmpty(SettingsObject.Servers.Application_Server_Network)) && (SettingsObject.Servers.Application_Server_Network[SettingsObject.Servers.Application_Server_Network.Length - 1] != '\\'))
+                    SettingsObject.Servers.Application_Server_Network = SettingsObject.Servers.Application_Server_Network + "\\";
 
                 return true;
             }
@@ -615,12 +613,12 @@ namespace SobekCM.Engine_Library.Settings
 
                         case "erroremails":
                             xmlReader.Read();
-                            SettingsObject.System_Error_Email = xmlReader.Value;
+                            SettingsObject.Email.System_Error_Email = xmlReader.Value;
                             break;
 
                         case "errorpage":
                             xmlReader.Read();
-                            SettingsObject.System_Error_URL = xmlReader.Value;
+                            SettingsObject.Servers.System_Error_URL = xmlReader.Value;
                             break;
 
                         case "ghostscript_executable":
@@ -638,11 +636,6 @@ namespace SobekCM.Engine_Library.Settings
                             int testValue;
                             if (Int32.TryParse(xmlReader.Value, out testValue))
                                 SettingsObject.Builder_Override_Seconds_Between_Polls = testValue;
-                            break;
-
-                        case "publish_logs_directory":
-                            xmlReader.Read();
-                            SettingsObject.Builder_Logs_Publish_Directory = xmlReader.Value;
                             break;
 
                     }

@@ -32,8 +32,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                     writer.WriteLine("            <ipSecurity allowUnlisted=\"false\">");
                     writer.WriteLine("                 <clear />");
                     writer.WriteLine("                 <add ipAddress=\"127.0.0.1\" allowed=\"true\" />");
-                    if (Settings.SobekCM_Web_Server_IP.Length > 0)
-                        writer.WriteLine("                 <add ipAddress=\"" + Settings.SobekCM_Web_Server_IP.Trim() + "\" allowed=\"true\" />");
+                    if ( !String.IsNullOrEmpty(Settings.Servers.SobekCM_Web_Server_IP))
+                        writer.WriteLine("                 <add ipAddress=\"" + Settings.Servers.SobekCM_Web_Server_IP.Trim() + "\" allowed=\"true\" />");
                     writer.WriteLine("            </ipSecurity>");
                     writer.WriteLine("        </security>");
                     writer.WriteLine("        <modules runAllManagedModulesForAllRequests=\"true\" />");

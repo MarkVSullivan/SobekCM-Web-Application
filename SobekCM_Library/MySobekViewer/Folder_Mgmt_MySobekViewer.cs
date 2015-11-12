@@ -216,7 +216,7 @@ namespace SobekCM.Library.MySobekViewer
                                 SobekCM_Item newItem;
                                 Page_TreeNode newPage;
                                 SobekCM_Items_In_Title itemsInTitle;
-	                            newAssistant.Get_Item(RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Items, UI_ApplicationCache_Gateway.Settings.Image_URL, null, null, RequestSpecificValues.Current_User, RequestSpecificValues.Tracer, out newItem, out newPage, out itemsInTitle );
+	                            newAssistant.Get_Item(RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Items, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL, null, null, RequestSpecificValues.Current_User, RequestSpecificValues.Tracer, out newItem, out newPage, out itemsInTitle );
                                 SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, add_bookshelf, split[0], split[1], 1, comments, RequestSpecificValues.Tracer);
 
                                 // Determine the email format

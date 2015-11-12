@@ -68,10 +68,10 @@ namespace SobekCM.Library.HTML
             {
                 // Some values to collect information
                 string subject = "Contact [" + RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Submission]";
-                string message_from = RequestSpecificValues.Current_Mode.Instance_Abbreviation + "<" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">";
-                if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay))
+                string message_from = RequestSpecificValues.Current_Mode.Instance_Abbreviation + "<" + UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress + ">";
+                if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay))
                 {
-                    message_from = UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay + "<" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">";
+                    message_from = UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay + "<" + UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress + ">";
                 }
                 int text_area_count = configuration.TextAreaElementCount;
                 StringBuilder emailBuilder = new StringBuilder();
@@ -115,9 +115,9 @@ namespace SobekCM.Library.HTML
                                 }
 
                                 message_from = RequestSpecificValues.Current_Mode.Instance_Abbreviation + "<" + entered_message_from + ">";
-                                if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay))
+                                if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay))
                                 {
-                                    message_from = UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay + "<" + entered_message_from + ">";
+                                    message_from = UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay + "<" + entered_message_from + ">";
                                 }
 
                                 emailBuilder.Append("Email:\t\t" + entered_message_from + "\n");
@@ -158,7 +158,7 @@ namespace SobekCM.Library.HTML
                 string email_body = emailBuilder + "\n\n" + UserHistoryRequestInfo;
 
                 // Determine the sendee
-                string sendTo = UI_ApplicationCache_Gateway.Settings.System_Email;
+                string sendTo = UI_ApplicationCache_Gateway.Settings.Email.System_Email;
                 if ((RequestSpecificValues.Hierarchy_Object != null) && (!String.IsNullOrEmpty(RequestSpecificValues.Hierarchy_Object.Contact_Email)))
                 {
                     sendTo = RequestSpecificValues.Hierarchy_Object.Contact_Email.Replace(";", ",");
@@ -186,7 +186,7 @@ namespace SobekCM.Library.HTML
                 // Send back to the home for this collection, sub, or group
                 if (email_error)
                 {
-                    HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.System_Error_URL, false);
+                    HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL, false);
                     HttpContext.Current.ApplicationInstance.CompleteRequest();
                 }
                 else

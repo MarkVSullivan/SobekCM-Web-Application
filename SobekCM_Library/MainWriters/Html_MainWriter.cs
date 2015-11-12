@@ -241,7 +241,7 @@ namespace SobekCM.Library.MainWriters
                             }
 
                             // Create the item viewer writer
-                            subwriter = new Item_HtmlSubwriter( show_toc, (UI_ApplicationCache_Gateway.Settings.JP2ServerUrl.Length > 0), restriction_message, RequestSpecificValues );
+                            subwriter = new Item_HtmlSubwriter( show_toc, (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.JP2ServerUrl)), restriction_message, RequestSpecificValues );
                             ((Item_HtmlSubwriter)subwriter).Item_Checked_Out_By_Other_User = itemCheckedOutByOtherUser;
                         }
                         else
@@ -881,7 +881,7 @@ namespace SobekCM.Library.MainWriters
         private static void Email_Information(string EmailTitle, Exception ObjErr, Custom_Tracer Tracer, bool Redirect )
         {
             // Is ther an error email address in the configuration?
-            if (UI_ApplicationCache_Gateway.Settings.System_Error_Email.Length > 0)
+            if (UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email.Length > 0)
             {
                 try
                 {
@@ -917,11 +917,11 @@ namespace SobekCM.Library.MainWriters
                     // Email the error message
                     if (Tracer != null)
                     {
-                        Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.System_Error_Email, EmailTitle, err + "<br /><br />" + Tracer.Text_Trace, true, String.Empty);
+                        Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email, EmailTitle, err + "<br /><br />" + Tracer.Text_Trace, true, String.Empty);
                     }
                     else
                     {
-                        Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.System_Error_Email, EmailTitle, err, true, String.Empty);
+                        Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email, EmailTitle, err, true, String.Empty);
                     }
                 }
                 catch (Exception)
@@ -966,7 +966,7 @@ namespace SobekCM.Library.MainWriters
             // Forward to our error message
             if (Redirect)
             {
-                HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.System_Error_URL, false);
+                HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL, false);
                 HttpContext.Current.ApplicationInstance.CompleteRequest();
             }
         }

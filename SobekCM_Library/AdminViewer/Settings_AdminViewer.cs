@@ -299,7 +299,7 @@ namespace SobekCM.Library.AdminViewer
                 Key = "Error Emails", 
                 Reserved = 3, 
                 SettingID = 9992, 
-                Value = UI_ApplicationCache_Gateway.Settings.System_Error_Email
+                Value = UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email
             };
 
             Admin_Setting_Value errorWebPage = new Admin_Setting_Value
@@ -310,7 +310,7 @@ namespace SobekCM.Library.AdminViewer
                 Key = "Error Web Page", 
                 Reserved = 3, 
                 SettingID = 9993, 
-                Value = UI_ApplicationCache_Gateway.Settings.System_Error_URL
+                Value = UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL
             };
 
             // Add them all to the tab page
@@ -655,7 +655,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("                  </td>");
             Output.WriteLine("                  <td>");
             if ( !String.IsNullOrEmpty(Value.Help))
-                Output.WriteLine("                    <img  class=\"sbkSeav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + Value.Help.Replace("'", "").Replace("\\", "\\\\").Replace("\n", "\\n") + "');\"  title=\"" + Value.Help.Replace("\\", "\\\\").Replace("\n", "") + "\" />");
+                Output.WriteLine("                    <img  class=\"sbkSeav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + Value.Help.Replace("'", "").Replace("\"", "").Replace("\n", "\\n") + "');\"  title=\"" + Value.Help.Replace("'", "").Replace("\"", "").Replace("\n", "\\n") + "\" />");
             Output.WriteLine("                  </td>");
             Output.WriteLine("                </tr>");
             Output.WriteLine("              </table>");

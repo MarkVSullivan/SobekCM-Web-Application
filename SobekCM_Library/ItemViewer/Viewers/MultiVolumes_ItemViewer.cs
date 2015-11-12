@@ -456,7 +456,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<div style=\"margin:5px;text-align:center;\">");
 
             // Find the base address for this thumbnail
-            string jpeg_base = (UI_ApplicationCache_Gateway.Settings.Image_URL + CurrentItem.Web.File_Root + "/").Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
+            string jpeg_base = (UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + CurrentItem.Web.File_Root + "/").Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
 
             // Compute the base redirect URL
             string current_vid = CurrentMode.VID;

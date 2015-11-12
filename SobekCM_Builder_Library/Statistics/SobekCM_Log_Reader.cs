@@ -30,7 +30,7 @@ namespace SobekCM.Builder_Library.Statistics
             itemList = Item_List;
 
             // Set the constant settings base directory value to the production location
-            UI_ApplicationCache_Gateway.Settings.Base_Directory = SobekCM_Web_App_Directory;
+            UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = SobekCM_Web_App_Directory;
         }
 
         /// <summary> Read a IIS web log, analyze completely, and return the corresponding <see cref="SobekCM_Stats_DataSet"/> object </summary>

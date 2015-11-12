@@ -807,7 +807,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine();
 
                 // Configure the way to remove search terms
-                if ((UI_ApplicationCache_Gateway.Settings.Can_Remove_Single_Term) && (term_counter > 0))
+                if ((UI_ApplicationCache_Gateway.Settings.Search.Can_Remove_Single_Term) && (term_counter > 0))
                 {
                     Output.WriteLine("<script>");
                     for (int i = 1; i <= term_counter; i++)
@@ -1127,7 +1127,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine();
 
                 // Configure the way to remove search terms
-                if ((UI_ApplicationCache_Gateway.Settings.Can_Remove_Single_Term) && (term_counter > 0))
+                if ((UI_ApplicationCache_Gateway.Settings.Search.Can_Remove_Single_Term) && (term_counter > 0))
                 {
                     Output.WriteLine("<script>");
                     for (int i = 1; i <= term_counter; i++)
@@ -1266,7 +1266,7 @@ namespace SobekCM.Library.HTML
 				try
 				{
 					// Create this differently depending on whether users can remove a search term from their current search
-					if (UI_ApplicationCache_Gateway.Settings.Can_Remove_Single_Term)
+					if (UI_ApplicationCache_Gateway.Settings.Search.Can_Remove_Single_Term)
 					{
 						string current_search_string = RequestSpecificValues.Current_Mode.Search_String;
 						string current_search_field = RequestSpecificValues.Current_Mode.Search_Fields;

@@ -9,15 +9,15 @@ using System.Xml;
 namespace SobekCM.Core.Configuration
 {
     /// <summary> Instance-wide configuration information for the map editor </summary>
-    public static class MapEditor_Configuration
+    public class MapEditor_Configuration
     {
         //assign config file
-        private static string configFilePath = AppDomain.CurrentDomain.BaseDirectory + "/config/default/sobekcm_mapeditor.config";
+        private string configFilePath = AppDomain.CurrentDomain.BaseDirectory + "/config/default/sobekcm_mapeditor.config";
 
         /// <summary> Gets all settings from config file </summary>
         /// <param name="IdsFromPage"> The IDs from the page </param>
         /// <returns> List of settings to use for that ID(?) </returns>
-        public static List<string>[] GetSettings(List<string> IdsFromPage)
+        public List<string>[] GetSettings(List<string> IdsFromPage)
         {
             //get defaults as base
             List<string>[] settings = GetDefaultSettings();
@@ -42,7 +42,7 @@ namespace SobekCM.Core.Configuration
         /// <summary> Determines if there are custom settings </summary>
         /// <param name="IdsFromPage">The ids from page.</param>
         /// <returns></returns>
-        private static bool HasCustomSettings(List<string> IdsFromPage)
+        private bool HasCustomSettings(List<string> IdsFromPage)
         {
             bool hasCustomSettings = false;
             foreach (string idFromPage in IdsFromPage)
@@ -59,7 +59,7 @@ namespace SobekCM.Core.Configuration
 
         /// <summary> Get all the collection ids from the config file  </summary>
         /// <returns> List of ids from the config file </returns>
-        private static List<string> GetIdsFromConfig()
+        private List<string> GetIdsFromConfig()
         {
             //init IdsFromConfig
             List<string> idsFromConfig = new List<string>();
@@ -89,7 +89,7 @@ namespace SobekCM.Core.Configuration
 
         /// <summary> Gets the default settings </summary>
         /// <returns></returns>
-        private static List<string>[] GetDefaultSettings()
+        private List<string>[] GetDefaultSettings()
         {
             //init LoadParams
             List<string>[] settings = new List<string>[2];
@@ -133,7 +133,7 @@ namespace SobekCM.Core.Configuration
         /// <summary> Gets all the custom settigns as defined from page itself </summary>
         /// <param name="IdsFromPage"> The ids from page.</param>
         /// <returns></returns>
-        private static List<string>[] GetCustomSettings(List<string> IdsFromPage)
+        private List<string>[] GetCustomSettings(List<string> IdsFromPage)
         {
             //init LoadParams
             List<string>[] settings = new List<string>[2];

@@ -103,7 +103,7 @@ namespace SobekCM.Library.AdminViewer
                 }
 
                 // Get the web content directory and ensure it exists
-                webContentDirectory = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "webcontent\\" + webContent.UrlSegments.Replace("/", "\\");
+                webContentDirectory = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "webcontent\\" + webContent.UrlSegments.Replace("/", "\\");
                 if (!Directory.Exists(webContentDirectory))
                     Directory.CreateDirectory(webContentDirectory);
 
@@ -145,7 +145,7 @@ namespace SobekCM.Library.AdminViewer
                             HttpContext.Current.Session["Edit_WebContent|" + webContentId] = null;
 
                             // Redirect the RequestSpecificValues.Current_User
-                            string url = webContent.URL(UI_ApplicationCache_Gateway.Settings.Base_URL);
+                            string url = webContent.URL(UI_ApplicationCache_Gateway.Settings.Servers.Base_URL);
                             RequestSpecificValues.Current_Mode.Request_Completed = true;
                             HttpContext.Current.Response.Redirect(url, false);
                             HttpContext.Current.ApplicationInstance.CompleteRequest();
@@ -486,7 +486,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
 			Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");
 			Output.WriteLine("    <td style=\"width: 145px\" class=\"sbkSaav_TableLabel\">URL:</td>");
-			Output.WriteLine("    <td> " + webContent.URL( UI_ApplicationCache_Gateway.Settings.Base_URL ) + "</td>");
+			Output.WriteLine("    <td> " + webContent.URL( UI_ApplicationCache_Gateway.Settings.Servers.Base_URL ) + "</td>");
 			Output.WriteLine("  </tr>");
 
 			// Add the Title
@@ -721,7 +721,7 @@ namespace SobekCM.Library.AdminViewer
             //        else
             //        {
             //            Complete_Item_Aggregation_Child_Page newPage = new Complete_Item_Aggregation_Child_Page { Code = childPageCode, Parent_Code = childPageParent, Source_Data_Type = Item_Aggregation_Child_Source_Data_Enum.Static_HTML };
-            //            newPage.Add_Label(childPageLabel, UI_ApplicationCache_Gateway.Settings.Default_UI_Language);
+            //            newPage.Add_Label(childPageLabel, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
             //            switch (childPageVisibility)
             //            {
             //                case "none":
@@ -741,7 +741,7 @@ namespace SobekCM.Library.AdminViewer
             //            string html_source_dir =  "\\html\\browse";
             //            if (!Directory.Exists(html_source_dir))
             //                Directory.CreateDirectory(html_source_dir);
-            //            string html_source_file = html_source_dir + "\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.Default_UI_Language) + ".html";
+            //            string html_source_file = html_source_dir + "\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language) + ".html";
             //            if (!File.Exists(html_source_file))
             //            {
             //                HTML_Based_Content htmlContent = new HTML_Based_Content
@@ -753,7 +753,7 @@ namespace SobekCM.Library.AdminViewer
             //                };
             //                htmlContent.Save_To_File(html_source_file);
             //            }
-            //            newPage.Add_Static_HTML_Source("html\\browse\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.Default_UI_Language) + ".html", UI_ApplicationCache_Gateway.Settings.Default_UI_Language);
+            //            newPage.Add_Static_HTML_Source("html\\browse\\" + childPageCode + "_" + Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language) + ".html", UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
 
             //            itemAggregation.Add_Child_Page(newPage);
 

@@ -63,9 +63,9 @@ namespace SobekCM.Library.MySobekViewer
                 RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Reading CompleteTemplate file");
 
                 // Look in the user-defined templates portion first
-                string user_template = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\user\\standard\\" + TEMPLATE_CODE + ".xml";
+                string user_template = UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "templates\\user\\standard\\" + TEMPLATE_CODE + ".xml";
                 if (!File.Exists(user_template))
-                    user_template = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\default\\standard\\" + TEMPLATE_CODE + ".xml";
+                    user_template = UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "templates\\default\\standard\\" + TEMPLATE_CODE + ".xml";
 
 
                 // Read this CompleteTemplate

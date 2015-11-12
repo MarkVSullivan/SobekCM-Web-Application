@@ -25,7 +25,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             Resource.File_Root = Resource.BibID.Substring(0, 2) + "\\" + Resource.BibID.Substring(2, 2) + "\\" + Resource.BibID.Substring(4, 2) + "\\" + Resource.BibID.Substring(6, 2) + "\\" + Resource.BibID.Substring(8, 2);
 
             // Determine the destination folder for this resource
-            string serverPackageFolder = Settings.Image_Server_Network + Resource.File_Root + "\\" + Resource.VID;
+            string serverPackageFolder = Settings.Servers.Image_Server_Network + Resource.File_Root + "\\" + Resource.VID;
 
             // If this is re-processing the resource in situ, then just return.. nothing to move
             if (NormalizePath(Resource.Resource_Folder) == NormalizePath(serverPackageFolder))

@@ -90,7 +90,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 
 
             //Create the temporary location for saving the barcode images
-           image_location = UI_ApplicationCache_Gateway.Settings.Base_Temporary_Directory + "tsBarcodes\\" + itemID.ToString();
+           image_location = UI_ApplicationCache_Gateway.Settings.Servers.Base_Temporary_Directory + "tsBarcodes\\" + itemID.ToString();
 
 
             // Create the folder for the user in the temp directory

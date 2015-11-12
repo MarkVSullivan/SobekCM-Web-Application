@@ -63,7 +63,7 @@ namespace SobekCM.Engine_Library.Skins
 
             if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin_Complete", "Verifying existence of the CSS file");
 
-            string style_file = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "skins", code, this_style);
+            string style_file = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "skins", code, this_style);
             if (!File.Exists(style_file))
                 this_style = String.Empty;
 
@@ -84,7 +84,7 @@ namespace SobekCM.Engine_Library.Skins
             // Look for source files
             if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin_Complete", "Look for all the source files in the design folder");
 
-	        string html_soure_directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "skins", code, "html");
+	        string html_soure_directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "skins", code, "html");
 
             if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin_Complete", "Design folder = " + html_soure_directory  );
 
@@ -260,7 +260,7 @@ namespace SobekCM.Engine_Library.Skins
 	        {
 	            try
 	            {
-                    string banner_source_directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "skins", code);
+                    string banner_source_directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "skins", code);
 	                if (Directory.Exists(banner_source_directory))
 	                {
 	                    string[] possible_banner_files = Directory.GetFiles(banner_source_directory, "banner*.*");
@@ -343,7 +343,7 @@ namespace SobekCM.Engine_Library.Skins
             {
                 if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Language requested ( " + Web_Language_Enum_Converter.Enum_To_Name(language) + " ) not in language list");
 
-                language = Engine_ApplicationCache_Gateway.Settings.Default_UI_Language;
+                language = Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language;
                 if (( original_language == language ) || ( !CompleteSkin.SourceFiles.ContainsKey(language)))
                 {
                     
@@ -396,7 +396,7 @@ namespace SobekCM.Engine_Library.Skins
 
             // Set the language code
             if ( language == Web_Language_Enum.DEFAULT )
-                returnValue.Language_Code = Web_Language_Enum_Converter.Enum_To_Code(Engine_ApplicationCache_Gateway.Settings.Default_UI_Language);
+                returnValue.Language_Code = Web_Language_Enum_Converter.Enum_To_Code(Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
             else if ( language == Web_Language_Enum.UNDEFINED )
                 returnValue.Language_Code = Web_Language_Enum_Converter.Enum_To_Code(language);
 
@@ -445,10 +445,10 @@ namespace SobekCM.Engine_Library.Skins
 
             // Now, set the header and footer html
             if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Determine the header footer source HTML files");
-            string this_header = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "skins", CompleteSkin.Skin_Code, sourceFiles.Header_Source_File);
-            string this_footer = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "skins", CompleteSkin.Skin_Code, sourceFiles.Footer_Source_File);
-            string this_item_header = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "skins", CompleteSkin.Skin_Code, sourceFiles.Header_Item_Source_File);
-            string this_item_footer = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, "skins", CompleteSkin.Skin_Code, sourceFiles.Footer_Item_Source_File); 
+            string this_header = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "skins", CompleteSkin.Skin_Code, sourceFiles.Header_Source_File);
+            string this_footer = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "skins", CompleteSkin.Skin_Code, sourceFiles.Footer_Source_File);
+            string this_item_header = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "skins", CompleteSkin.Skin_Code, sourceFiles.Header_Item_Source_File);
+            string this_item_footer = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "skins", CompleteSkin.Skin_Code, sourceFiles.Footer_Item_Source_File); 
 
             // If the item specific stuff doesn't exist, use the regular 
             if (!File.Exists(this_item_header))

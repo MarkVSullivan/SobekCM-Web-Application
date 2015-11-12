@@ -49,7 +49,7 @@ namespace SobekCM.Engine_Library.Aggregations
 	        if (hierarchyObject != null)
 	        {
 	            // Add all the values to this object
-	            string xmlDataFile = Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + hierarchyObject.ObjDirectory + "\\" + hierarchyObject.Code + ".xml";
+	            string xmlDataFile = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + hierarchyObject.ObjDirectory + "\\" + hierarchyObject.Code + ".xml";
 	            if (File.Exists(xmlDataFile))
 	            {
 	                if (Tracer != null)
@@ -95,11 +95,11 @@ namespace SobekCM.Engine_Library.Aggregations
                     }
 
 	                // Since there was no configuration file, save one
-	                hierarchyObject.Write_Configuration_File(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + hierarchyObject.ObjDirectory);
+	                hierarchyObject.Write_Configuration_File(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + hierarchyObject.ObjDirectory);
 	            }
 
 	            // Now, look for any satellite configuration files
-	            string contactFormFile = Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + hierarchyObject.ObjDirectory + "\\config\\sobekcm_contactform.config";
+	            string contactFormFile = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + hierarchyObject.ObjDirectory + "\\config\\sobekcm_contactform.config";
 	            if (File.Exists(contactFormFile))
 	            {
                     if (Tracer != null)
@@ -160,9 +160,9 @@ namespace SobekCM.Engine_Library.Aggregations
         protected static void Add_Browse_Files(Complete_Item_Aggregation ThisObject, Custom_Tracer Tracer)
 		{
 			// Collect the list of items in the browse folder
-			if (Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/browse"))
+			if (Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/browse"))
 			{
-				string[] files = Directory.GetFiles(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/browse", "*.htm*");
+				string[] files = Directory.GetFiles(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/browse", "*.htm*");
 				foreach (string thisFile in files)
 				{
 					// Get the new browse info object
@@ -175,9 +175,9 @@ namespace SobekCM.Engine_Library.Aggregations
 			}
 
 			// Collect the list of items in the info folder
-			if (Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/info"))
+			if (Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/info"))
 			{
-				string[] files = Directory.GetFiles(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/info", "*.htm*");
+				string[] files = Directory.GetFiles(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/info", "*.htm*");
 				foreach (string thisFile in files)
 				{
 					// Get the title for this file
@@ -210,27 +210,27 @@ namespace SobekCM.Engine_Library.Aggregations
         protected static void Add_HTML(Complete_Item_Aggregation ThisObject)
 		{
 			// Just use the standard home text
-            if ( File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text.html"))
-    			ThisObject.Add_Home_Page_File(  "html/home/text.html", Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, false );
-            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_en.html"))
+            if ( File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text.html"))
+    			ThisObject.Add_Home_Page_File(  "html/home/text.html", Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language, false );
+            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_en.html"))
                 ThisObject.Add_Home_Page_File("html/home/text_en.html",  Web_Language_Enum.English, false );
-            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_fr.html"))
+            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_fr.html"))
                 ThisObject.Add_Home_Page_File("html/home/text_fr.html", Web_Language_Enum.French, false);
-            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_es.html"))
+            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_es.html"))
                 ThisObject.Add_Home_Page_File("html/home/text_es.html", Web_Language_Enum.Spanish, false);
-            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_sp.html"))
+            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "html/home/text_sp.html"))
                 ThisObject.Add_Home_Page_File("html/home/text_sp.html", Web_Language_Enum.Spanish, false);
 
 			// Just use the standard banner image
-            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll.jpg"))
-                ThisObject.Add_Banner_Image("images/banners/coll.jpg", Engine_ApplicationCache_Gateway.Settings.Default_UI_Language);
-            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_en.jpg"))
+            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll.jpg"))
+                ThisObject.Add_Banner_Image("images/banners/coll.jpg", Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
+            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_en.jpg"))
                 ThisObject.Add_Banner_Image("images/banners/coll_en.jpg", Web_Language_Enum.English);
-            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_fr.jpg"))
+            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_fr.jpg"))
                 ThisObject.Add_Banner_Image("images/banners/coll_fr.jpg", Web_Language_Enum.French);
-            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_es.jpg"))
+            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_es.jpg"))
                 ThisObject.Add_Banner_Image("images/banners/coll_es.jpg", Web_Language_Enum.Spanish);
-            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_sp.jpg"))
+            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ThisObject.ObjDirectory + "images/banners/coll_sp.jpg"))
                 ThisObject.Add_Banner_Image("images/banners/coll_sp.jpg", Web_Language_Enum.Spanish);
 		}
 
@@ -329,7 +329,7 @@ namespace SobekCM.Engine_Library.Aggregations
             // Build the list of language variants
             List<string> languageVariants = new List<string>
             {
-                Web_Language_Enum_Converter.Enum_To_Code(Engine_ApplicationCache_Gateway.Settings.Default_UI_Language)
+                Web_Language_Enum_Converter.Enum_To_Code(Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language)
             };
 	        if (ItemAggr.Home_Page_File_Dictionary != null)
             {
@@ -667,7 +667,7 @@ namespace SobekCM.Engine_Library.Aggregations
             string homeFileSource = "";
             // Get the home file source
             if(CompAggr.Home_Page_File(Language) != null)
-               homeFileSource = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location, CompAggr.ObjDirectory, CompAggr.Home_Page_File(Language).Source);
+               homeFileSource = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, CompAggr.ObjDirectory, CompAggr.Home_Page_File(Language).Source);
 
             // If no home file source even found, return a message to that affect
             if (homeFileSource.Length == 0)

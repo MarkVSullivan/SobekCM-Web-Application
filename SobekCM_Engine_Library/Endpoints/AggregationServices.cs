@@ -123,7 +123,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                     // Build the language-specific item aggregation
                     tracer.Add_Trace("AggregationServices.GetCompleteAggregationByCode", "Build and return '" + aggrCode + "' language-specific item aggregation for '" + Web_Language_Enum_Converter.Enum_To_Name(languageEnum) + "'");
-                    Item_Aggregation returnValue = get_item_aggregation(aggrCode, languageEnum, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, tracer);
+                    Item_Aggregation returnValue = get_item_aggregation(aggrCode, languageEnum, Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language, tracer);
 
                     // If this was debug mode, then just write the tracer
                     if ( IsDebug )
@@ -251,7 +251,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 {
                     List<UploadedFileFolderInfo> serverFiles = new List<UploadedFileFolderInfo>();
 
-                    string design_folder = Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + aggregation + "\\uploads";
+                    string design_folder = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + aggregation + "\\uploads";
                     if (Directory.Exists(design_folder))
                     {
                         string foldername = aggrInfo.ShortName;
@@ -267,7 +267,7 @@ namespace SobekCM.Engine_Library.Endpoints
                             // Exclude some files
                             if ((!String.IsNullOrEmpty(extension)) && (extension.ToLower().IndexOf(".db") < 0) && (extension.ToLower().IndexOf("bridge") < 0) && (extension.ToLower().IndexOf("cache") < 0))
                             {
-                                string url = Engine_ApplicationCache_Gateway.Settings.System_Base_URL + "design/aggregations/" + aggregation + "/uploads/" + filename;
+                                string url = Engine_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/aggregations/" + aggregation + "/uploads/" + filename;
                                 serverFiles.Add(new UploadedFileFolderInfo(url, foldername));
                             }
                         }
@@ -366,7 +366,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     tracer.Add_Trace("AggregationServices.GetCollectionStaticPage", "Build and return child page '" + childCode + "' in aggregation '" + aggrCode + "' for '" + Web_Language_Enum_Converter.Enum_To_Name(langEnum) + "'");
 
                     // Get the aggregation code manager
-                    HTML_Based_Content returnValue = get_item_aggregation_html_child_page(aggrCode, langEnum, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, childCode, tracer);
+                    HTML_Based_Content returnValue = get_item_aggregation_html_child_page(aggrCode, langEnum, Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language, childCode, tracer);
 
                     // If this was debug mode, then just write the tracer
                     if ( IsDebug )
@@ -737,7 +737,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
 
 
-            string language = Web_Language_Enum_Converter.Enum_To_Code(Engine_ApplicationCache_Gateway.Settings.Default_UI_Language);
+            string language = Web_Language_Enum_Converter.Enum_To_Code(Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
 
             // Try to save the new item aggregation
             if (!Engine_Database.Save_Item_Aggregation(NewAggregation.Code, NewAggregation.Name, NewAggregation.ShortName, NewAggregation.Description, thematicHeadingId, NewAggregation.Type, NewAggregation.Active, NewAggregation.Hidden, NewAggregation.External_Link, parentid, NewAggregation.User, language, null))
@@ -747,7 +747,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // Ensure a folder exists for this, otherwise create one
             try
             {
-                string folder = Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + NewAggregation.Code.ToLower();
+                string folder = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + NewAggregation.Code.ToLower();
                 if (!Directory.Exists(folder))
                 {
                     // Create this directory and all the subdirectories
@@ -786,10 +786,10 @@ namespace SobekCM.Engine_Library.Endpoints
                     else
                     {
                         // Copy the default banner and buttons from images
-                        if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design/aggregations/default_button.png"))
-                            File.Copy(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design/aggregations/default_button.png", folder + "/images/buttons/coll.png");
-                        if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design/aggregations/default_button.gif"))
-                            File.Copy(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design/aggregations/default_button.gif", folder + "/images/buttons/coll.gif");
+                        if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design/aggregations/default_button.png"))
+                            File.Copy(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design/aggregations/default_button.png", folder + "/images/buttons/coll.png");
+                        if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design/aggregations/default_button.gif"))
+                            File.Copy(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design/aggregations/default_button.gif", folder + "/images/buttons/coll.gif");
 
                     }
 
@@ -807,11 +807,11 @@ namespace SobekCM.Engine_Library.Endpoints
                         bool custom_banner_created = false;
 
                         // Create the banner with the name of the collection
-                        if (Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Application_Server_Network + "\\default\\banner_images"))
+                        if (Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network + "\\default\\banner_images"))
                         {
                             try
                             {
-                                string[] banners = Directory.GetFiles(Engine_ApplicationCache_Gateway.Settings.Application_Server_Network + "\\default\\banner_images", "*.jpg");
+                                string[] banners = Directory.GetFiles(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network + "\\default\\banner_images", "*.jpg");
                                 if (banners.Length > 0)
                                 {
                                     Random randomizer = new Random();
@@ -843,10 +843,10 @@ namespace SobekCM.Engine_Library.Endpoints
 
                         if ((!custom_banner_created) && (!File.Exists(folder + "/images/banners/coll.jpg")))
                         {
-                            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design/aggregations/default_banner.jpg"))
+                            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design/aggregations/default_banner.jpg"))
                             {
                                 banner_file = "images/banners/coll.jpg";
-                                File.Copy(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design/aggregations/default_banner.jpg", folder + "/images/banners/coll.jpg", true);
+                                File.Copy(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design/aggregations/default_banner.jpg", folder + "/images/banners/coll.jpg", true);
                             }
                         }
                     }
@@ -857,19 +857,19 @@ namespace SobekCM.Engine_Library.Endpoints
                     if (banner_file.Length > 0)
                     {
                         itemAggregation.Banner_Dictionary.Clear();
-                        itemAggregation.Add_Banner_Image(banner_file, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language);
+                        itemAggregation.Add_Banner_Image(banner_file, Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language);
                     }
-                    itemAggregation.Write_Configuration_File(Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + itemAggregation.ObjDirectory);
+                    itemAggregation.Write_Configuration_File(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + itemAggregation.ObjDirectory);
 
                     // If an email shoudl be sent, do that now
-                    if (String.Compare(Engine_ApplicationCache_Gateway.Settings.Send_Email_On_Added_Aggregation, "always", StringComparison.OrdinalIgnoreCase) == 0)
+                    if (String.Compare(Engine_ApplicationCache_Gateway.Settings.Email.Send_On_Added_Aggregation, "always", StringComparison.OrdinalIgnoreCase) == 0)
                     {
                         string user = String.Empty;
                         if (!String.IsNullOrEmpty(NewAggregation.User))
                             user = NewAggregation.User;
 
-                        string body = "New aggregation added to this system:\n\n\tCode:\t" + itemAggregation.Code + "\n\tType:\t" + itemAggregation.Type + "\n\tName:\t" + itemAggregation.Name + "\n\tShort:\t" + itemAggregation.ShortName + "\n\tUser:\t" + user + "\n\n" + Engine_ApplicationCache_Gateway.Settings.Application_Server_URL + "/" + itemAggregation.Code;
-                        Email_Helper.SendEmail(Engine_ApplicationCache_Gateway.Settings.System_Email, "New " + itemAggregation.Type + " - " + itemAggregation.ShortName, body, false, Engine_ApplicationCache_Gateway.Settings.System_Name);
+                        string body = "New aggregation added to this system:\n\n\tCode:\t" + itemAggregation.Code + "\n\tType:\t" + itemAggregation.Type + "\n\tName:\t" + itemAggregation.Name + "\n\tShort:\t" + itemAggregation.ShortName + "\n\tUser:\t" + user + "\n\n" + Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL + "/" + itemAggregation.Code;
+                        Email_Helper.SendEmail(Engine_ApplicationCache_Gateway.Settings.Email.System_Email, "New " + itemAggregation.Type + " - " + itemAggregation.ShortName, body, false, Engine_ApplicationCache_Gateway.Settings.System.System_Name);
                     }
                 }
             }

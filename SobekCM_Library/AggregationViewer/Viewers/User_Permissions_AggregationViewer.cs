@@ -146,7 +146,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             // Is this using detailed permissions?
-            bool detailedPermissions = UI_ApplicationCache_Gateway.Settings.Detailed_User_Aggregation_Permissions;
+            bool detailedPermissions = UI_ApplicationCache_Gateway.Settings.System.Detailed_User_Aggregation_Permissions;
 
             Output.WriteLine("  <table id=\"sbkPrav_DetailedUsers\">");
             Output.WriteLine("  <thead>");

@@ -45,7 +45,7 @@ namespace SobekCM.Library.ResultsViewer
             {
                 try
                 {
-                    string file = Path.Combine(UI_ApplicationCache_Gateway.Settings.Base_Design_Location, "webcontent", "noresults.html");
+                    string file = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "webcontent", "noresults.html");
                     if (File.Exists(file))
                     {
                         noResultsText = File.ReadAllText(file);
@@ -99,13 +99,13 @@ namespace SobekCM.Library.ResultsViewer
             // Try to search out into the Union catalog
             int union_catalog_matches = 0;
             string susMangoSearchQuery = String.Empty;
-            if ((noResultsText.Contains("[%SusMangoSpanDisplay%]")) && (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Mango_Union_Search_Base_URL)))
+            if ((noResultsText.Contains("[%SusMangoSpanDisplay%]")) && (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Florida.Mango_Union_Search_Base_URL)))
             {
                 try
                 {
                     // the html retrieved from the page
                     String strResult;
-                    WebRequest objRequest = WebRequest.Create(UI_ApplicationCache_Gateway.Settings.Mango_Union_Search_Base_URL + "&term=" + terms);
+                    WebRequest objRequest = WebRequest.Create(UI_ApplicationCache_Gateway.Settings.Florida.Mango_Union_Search_Base_URL + "&term=" + terms);
                     objRequest.Timeout = 2000;
                     WebResponse objResponse = objRequest.GetResponse();
 

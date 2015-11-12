@@ -571,7 +571,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         private void add_usage_definitions(TextWriter Output, Custom_Tracer Tracer)
         {
             // See if the FAQ is present for this collection
-            string directory = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "\\extra\\stats";
+            string directory = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "\\extra\\stats";
             string usageDefinitions = String.Empty;
             if (Directory.Exists(directory))
             {

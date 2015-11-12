@@ -55,8 +55,8 @@ namespace SobekCM.Library.MainWriters
         protected internal void display_search_results(TextWriter Output )
         {
             // Get the URL and network roots
-            string url = UI_ApplicationCache_Gateway.Settings.Image_URL;
-            string network = UI_ApplicationCache_Gateway.Settings.Image_Server_Network;
+            string url = UI_ApplicationCache_Gateway.Settings.Servers.Image_URL;
+            string network = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network;
             string base_url = RequestSpecificValues.Current_Mode.Base_URL.Replace("sobekcm_data.aspx", "");
 
             // Write the header first

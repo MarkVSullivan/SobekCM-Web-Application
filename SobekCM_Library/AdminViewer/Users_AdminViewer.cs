@@ -152,7 +152,7 @@ namespace SobekCM.Library.AdminViewer
 							}
 							else
 							{
-                                if ( Email_Helper.SendEmail(reset_user.Email, "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation.ToUpper() + " Password Reset", reset_user.Full_Name + ",\n\nYour my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation.ToUpper() + " password has been reset to a temporary password.  The first time you logon, you will be required to change it.\n\n\tUsername: " + reset_user.UserName + "\n\tPassword: " + password + "\n\nYour password is case-sensitive and must be entered exactly as it appears above when logging on.\n\nIf you have any questions or problems logging on, feel free to contact us at " + UI_ApplicationCache_Gateway.Settings.System_Email + ", or reply to this email.\n\n" + RequestSpecificValues.Current_Mode.Base_URL + "my/home\n", false, RequestSpecificValues.Current_Mode.Instance_Name))
+                                if ( Email_Helper.SendEmail(reset_user.Email, "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation.ToUpper() + " Password Reset", reset_user.Full_Name + ",\n\nYour my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation.ToUpper() + " password has been reset to a temporary password.  The first time you logon, you will be required to change it.\n\n\tUsername: " + reset_user.UserName + "\n\tPassword: " + password + "\n\nYour password is case-sensitive and must be entered exactly as it appears above when logging on.\n\nIf you have any questions or problems logging on, feel free to contact us at " + UI_ApplicationCache_Gateway.Settings.Email.System_Email + ", or reply to this email.\n\n" + RequestSpecificValues.Current_Mode.Base_URL + "my/home\n", false, RequestSpecificValues.Current_Mode.Instance_Name))
 								{
 									if ((RequestSpecificValues.Current_User.UserID == 1) || (RequestSpecificValues.Current_User.UserID == 2))
 										actionMessage = "Reset of password (" + password + ") for '" + reset_user.Full_Name + "' complete";
@@ -922,7 +922,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("<table border=\"0px\" cellspacing=\"0px\" class=\"statsWhiteTable\">");
 
                 // Is this using detailed permissions?
-                bool detailedPermissions = UI_ApplicationCache_Gateway.Settings.Detailed_User_Aggregation_Permissions;
+                bool detailedPermissions = UI_ApplicationCache_Gateway.Settings.System.Detailed_User_Aggregation_Permissions;
 
                 // Dertermine the number of columns
                 int columns = 7;
@@ -1386,7 +1386,7 @@ namespace SobekCM.Library.AdminViewer
 
 					// Determine if this is a detailed view of rights
 		            int columns = 8;
-					if (UI_ApplicationCache_Gateway.Settings.Detailed_User_Aggregation_Permissions)
+					if (UI_ApplicationCache_Gateway.Settings.System.Detailed_User_Aggregation_Permissions)
 					{
 						columns = 13;
 					}
@@ -1409,7 +1409,7 @@ namespace SobekCM.Library.AdminViewer
                         Output.WriteLine("    <td width=\"55px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Is on user's custom home page\">ON<br />HOME</acronym></span></td>");
                         Output.WriteLine("    <td width=\"57px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can select this aggregation when editing or submitting an item\">CAN<br />SELECT</acronym></span></td>");
 
-						if (UI_ApplicationCache_Gateway.Settings.Detailed_User_Aggregation_Permissions)
+						if (UI_ApplicationCache_Gateway.Settings.System.Detailed_User_Aggregation_Permissions)
 						{
 							Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">ITEM<br />EDIT<br />METADATA</acronym></span></td>");
 							Output.WriteLine("    <td width=\"50px\" align=\"left\"><span style=\"color: White\"><acronym title=\"Can edit anything about an item in this aggregation ( i.e., behaviors, metadata, visibility, etc.. )\">ITEM<br />EDIT<br />BEHAVIORS</acronym></span></td>");
@@ -1440,7 +1440,7 @@ namespace SobekCM.Library.AdminViewer
                                 Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_onhome_" + thisAggr.Code + "\" id=\"admin_project_onhome_" + thisAggr.Code + "\" /></td>");
                                 Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_select_" + thisAggr.Code + "\" id=\"admin_project_select_" + thisAggr.Code + "\" /></td>");
 
-								if (UI_ApplicationCache_Gateway.Settings.Detailed_User_Aggregation_Permissions)
+								if (UI_ApplicationCache_Gateway.Settings.System.Detailed_User_Aggregation_Permissions)
 								{
 									Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_metadata_" + thisAggr.Code + "\" id=\"admin_project_edit_metadata_" + thisAggr.Code + "\" /></td>");
 									Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_edit_behavior_" + thisAggr.Code + "\" id=\"admin_project_edit_behavior_" + thisAggr.Code + "\" /></td>");
@@ -1605,7 +1605,7 @@ namespace SobekCM.Library.AdminViewer
 		                            Output.WriteLine("    <td><input type=\"checkbox\" name=\"admin_project_select_" + thisAggr.Code + "\" id=\"admin_project_select_" + thisAggr.Code + "\" /></td>");
 
 
-	                            if (UI_ApplicationCache_Gateway.Settings.Detailed_User_Aggregation_Permissions)
+	                            if (UI_ApplicationCache_Gateway.Settings.System.Detailed_User_Aggregation_Permissions)
 								{
 									if (can_edit_metadata)
 									{

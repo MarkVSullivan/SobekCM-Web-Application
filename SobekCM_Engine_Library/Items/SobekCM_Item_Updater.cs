@@ -29,9 +29,9 @@ namespace SobekCM.Engine_Library.Items
             Error_Message = String.Empty;
 
             // Determine the in process directory for this
-            string user_bib_vid_process_directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.In_Process_Submission_Location, User.ShibbID + "\\metadata_updates\\" + Item.BibID + "_" + Item.VID);
+            string user_bib_vid_process_directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location, User.ShibbID + "\\metadata_updates\\" + Item.BibID + "_" + Item.VID);
             if (User.ShibbID.Trim().Length == 0)
-                user_bib_vid_process_directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.In_Process_Submission_Location, User.UserName.Replace(".", "").Replace("@", "") + "\\metadata_updates\\" + Item.BibID + "_" + Item.VID);
+                user_bib_vid_process_directory = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location, User.UserName.Replace(".", "").Replace("@", "") + "\\metadata_updates\\" + Item.BibID + "_" + Item.VID);
 
             // Ensure the folder exists and is empty to start with
             if (!Directory.Exists(user_bib_vid_process_directory))
@@ -68,9 +68,9 @@ namespace SobekCM.Engine_Library.Items
                 options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
                 options["MarcXML_File_ReaderWriter:MARC XSLT File"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
             }
-            options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System_Name;
-            options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System_Abbreviation;
-            //  options["MarcXML_File_ReaderWriter:Additional_Tags"] = Item.MARC_Sobek_Standard_Tags(true, Engine_ApplicationCache_Gateway.Settings.System_Name, Engine_ApplicationCache_Gateway.Settings.System_Abbreviation);
+            options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System.System_Name;
+            options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
+            //  options["MarcXML_File_ReaderWriter:Additional_Tags"] = Item.MARC_Sobek_Standard_Tags(true, Engine_ApplicationCache_Gateway.Settings.System.System_Name, Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation);
  
 
             // Save the METS file and related Items
@@ -88,17 +88,17 @@ namespace SobekCM.Engine_Library.Items
             //string base_url = RequestSpecificValues.Current_Mode.Base_URL;
             //try
             //{
-            //    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(Engine_AppliationCache_Gateway.Settings.System_Base_URL, Engine_AppliationCache_Gateway.Settings.Base_Data_Directory, RequestSpecificValues.HTML_Skin.Skin_Code);
+            //    Static_Pages_Builder staticBuilder = new Static_Pages_Builder(Engine_AppliationCache_Gateway.Settings.Servers.System_Base_URL, Engine_AppliationCache_Gateway.Settings.Servers.Base_Data_Directory, RequestSpecificValues.HTML_Skin.Skin_Code);
             //    string filename = user_bib_vid_process_directory + "\\" + Item.BibID + "_" + Item.VID + ".html";
-            //    staticBuilder.Create_Item_Citation_HTML(Item, filename, Engine_AppliationCache_Gateway.Settings.Image_Server_Network + Item.Web.AssocFilePath);
+            //    staticBuilder.Create_Item_Citation_HTML(Item, filename, Engine_AppliationCache_Gateway.Settings.Servers.Image_Server_Network + Item.Web.AssocFilePath);
 
             //    // Copy the static HTML file to the web server
             //    try
             //    {
-            //        if (!Directory.Exists(Engine_AppliationCache_Gateway.Settings.Static_Pages_Location + Item.BibID.Substring(0, 2) + "\\" + Item.BibID.Substring(2, 2) + "\\" + Item.BibID.Substring(4, 2) + "\\" + Item.BibID.Substring(6, 2) + "\\" + Item.BibID.Substring(8)))
-            //            Directory.CreateDirectory(Engine_AppliationCache_Gateway.Settings.Static_Pages_Location + Item.BibID.Substring(0, 2) + "\\" + Item.BibID.Substring(2, 2) + "\\" + Item.BibID.Substring(4, 2) + "\\" + Item.BibID.Substring(6, 2) + "\\" + Item.BibID.Substring(8));
+            //        if (!Directory.Exists(Engine_AppliationCache_Gateway.Settings.Servers.Static_Pages_Location + Item.BibID.Substring(0, 2) + "\\" + Item.BibID.Substring(2, 2) + "\\" + Item.BibID.Substring(4, 2) + "\\" + Item.BibID.Substring(6, 2) + "\\" + Item.BibID.Substring(8)))
+            //            Directory.CreateDirectory(Engine_AppliationCache_Gateway.Settings.Servers.Static_Pages_Location + Item.BibID.Substring(0, 2) + "\\" + Item.BibID.Substring(2, 2) + "\\" + Item.BibID.Substring(4, 2) + "\\" + Item.BibID.Substring(6, 2) + "\\" + Item.BibID.Substring(8));
             //        if (File.Exists(user_bib_vid_process_directory + "\\" + Item.BibID + "_" + Item.VID + ".html"))
-            //            File.Copy(user_bib_vid_process_directory + "\\" + Item.BibID + "_" + Item.VID + ".html", Engine_AppliationCache_Gateway.Settings.Static_Pages_Location + Item.BibID.Substring(0, 2) + "\\" + Item.BibID.Substring(2, 2) + "\\" + Item.BibID.Substring(4, 2) + "\\" + Item.BibID.Substring(6, 2) + "\\" + Item.BibID.Substring(8) + "\\" + Item.BibID + "_" + Item.VID + ".html", true);
+            //            File.Copy(user_bib_vid_process_directory + "\\" + Item.BibID + "_" + Item.VID + ".html", Engine_AppliationCache_Gateway.Settings.Servers.Static_Pages_Location + Item.BibID.Substring(0, 2) + "\\" + Item.BibID.Substring(2, 2) + "\\" + Item.BibID.Substring(4, 2) + "\\" + Item.BibID.Substring(6, 2) + "\\" + Item.BibID.Substring(8) + "\\" + Item.BibID + "_" + Item.VID + ".html", true);
             //    }
             //    catch
             //    {
@@ -136,33 +136,33 @@ namespace SobekCM.Engine_Library.Items
             marcWriter.Write_Metadata(Item.Source_Directory + "\\marc.xml", Item, options, out errorMessage);
 
             // Determine the server folder
-            string serverNetworkFolder = Engine_ApplicationCache_Gateway.Settings.Image_Server_Network + Item.Web.AssocFilePath;
+            string serverNetworkFolder = Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + Item.Web.AssocFilePath;
 
             // Create the folder
             if (!Directory.Exists(serverNetworkFolder))
             {
                 Directory.CreateDirectory(serverNetworkFolder);
-                if (!Directory.Exists(serverNetworkFolder + "\\" + Engine_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name))
-                    Directory.CreateDirectory(serverNetworkFolder + "\\" + Engine_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name);
+                if (!Directory.Exists(serverNetworkFolder + "\\" + Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name))
+                    Directory.CreateDirectory(serverNetworkFolder + "\\" + Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name);
             }
             else
             {
-                if (!Directory.Exists(serverNetworkFolder + "\\" + Engine_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name))
-                    Directory.CreateDirectory(serverNetworkFolder + "\\" + Engine_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name);
+                if (!Directory.Exists(serverNetworkFolder + "\\" + Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name))
+                    Directory.CreateDirectory(serverNetworkFolder + "\\" + Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name);
 
                 // Rename any existing standard mets to keep a backup
                 if (File.Exists(serverNetworkFolder + "\\" + Item.BibID + "_" + Item.VID + ".mets.xml"))
                 {
                     FileInfo currentMetsFileInfo = new FileInfo(serverNetworkFolder + "\\" + Item.BibID + "_" + Item.VID + ".mets.xml");
                     DateTime lastModDate = currentMetsFileInfo.LastWriteTime;
-                    File.Copy(serverNetworkFolder + "\\" + Item.BibID + "_" + Item.VID + ".mets.xml", serverNetworkFolder + "\\" + Engine_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name + "\\" + Item.BibID + "_" + Item.VID + "_" + lastModDate.Year + "_" + lastModDate.Month + "_" + lastModDate.Day + ".mets.bak", true);
+                    File.Copy(serverNetworkFolder + "\\" + Item.BibID + "_" + Item.VID + ".mets.xml", serverNetworkFolder + "\\" + Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + Item.BibID + "_" + Item.VID + "_" + lastModDate.Year + "_" + lastModDate.Month + "_" + lastModDate.Day + ".mets.bak", true);
                 }
             }
 
             // Copy the static HTML page over first
             if (File.Exists(user_bib_vid_process_directory + "\\" + Item.BibID + "_" + Item.VID + ".html"))
             {
-                File.Copy(user_bib_vid_process_directory + "\\" + Item.BibID + "_" + Item.VID + ".html", serverNetworkFolder + "\\" + Engine_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name + "\\" + Item.BibID + "_" + Item.VID + ".html", true);
+                File.Copy(user_bib_vid_process_directory + "\\" + Item.BibID + "_" + Item.VID + ".html", serverNetworkFolder + "\\" + Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + Item.BibID + "_" + Item.VID + ".html", true);
                 File.Delete(user_bib_vid_process_directory + "\\" + Item.BibID + "_" + Item.VID + ".html");
             }
 

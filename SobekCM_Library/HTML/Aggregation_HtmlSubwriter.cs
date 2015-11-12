@@ -151,7 +151,7 @@ namespace SobekCM.Library.HTML
 
             if (( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit ) && ( form["sbkAghsw_HomeTextEdit"] != null))
 			{
-				string aggregation_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + RequestSpecificValues.Hierarchy_Object.Code + "\\";
+				string aggregation_folder = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + RequestSpecificValues.Hierarchy_Object.Code + "\\";
 			    if (!Directory.Exists(aggregation_folder))
 			        Directory.CreateDirectory(aggregation_folder);
 
@@ -433,8 +433,8 @@ namespace SobekCM.Library.HTML
 	        if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
 	        {
                 // Determine the aggregation upload directory
-                string aggregation_upload_dir = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + RequestSpecificValues.Hierarchy_Object.Code + "\\uploads";
-                string aggregation_upload_url = UI_ApplicationCache_Gateway.Settings.System_Base_URL + "design/aggregations/" + RequestSpecificValues.Hierarchy_Object.Code + "/uploads/";
+                string aggregation_upload_dir = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + RequestSpecificValues.Hierarchy_Object.Code + "\\uploads";
+                string aggregation_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/aggregations/" + RequestSpecificValues.Hierarchy_Object.Code + "/uploads/";
 
                 // Create the CKEditor object
                 CKEditor.CKEditor editor = new CKEditor.CKEditor
@@ -466,8 +466,8 @@ namespace SobekCM.Library.HTML
 			if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit))
 			{
                 // Determine the aggregation upload directory
-                string aggregation_upload_dir = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + RequestSpecificValues.Hierarchy_Object.Code + "\\uploads";
-			    string aggregation_upload_url = UI_ApplicationCache_Gateway.Settings.System_Base_URL + "design/aggregations/" + RequestSpecificValues.Hierarchy_Object.Code + "/uploads/";
+                string aggregation_upload_dir = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + RequestSpecificValues.Hierarchy_Object.Code + "\\uploads";
+			    string aggregation_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/aggregations/" + RequestSpecificValues.Hierarchy_Object.Code + "/uploads/";
 
                 // Create the CKEditor object
                 CKEditor.CKEditor editor = new CKEditor.CKEditor
@@ -1328,7 +1328,7 @@ namespace SobekCM.Library.HTML
                 {
                     // See if there are actually aggregationPermissions linked to the  thematic headings
                     bool aggrsLinkedToThemes = false;
-                    if ((!UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home) && ( UI_ApplicationCache_Gateway.Thematic_Headings.Count > 0 ))
+                    if ((!UI_ApplicationCache_Gateway.Settings.System.Include_TreeView_On_System_Home) && ( UI_ApplicationCache_Gateway.Thematic_Headings.Count > 0 ))
                     {
                         if (UI_ApplicationCache_Gateway.Thematic_Headings.Any(ThisTheme => UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_ThemeID(ThisTheme.ID).Count > 0))
                         {
@@ -1337,7 +1337,7 @@ namespace SobekCM.Library.HTML
                     }
 
                     // If aggregationPermissions are linked to themes, or if the tree view should always be displayed on home
-                    if ((aggrsLinkedToThemes) || (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home))
+                    if ((aggrsLinkedToThemes) || (UI_ApplicationCache_Gateway.Settings.System.Include_TreeView_On_System_Home))
                     {
                         string listText = "LIST VIEW";
                         string descriptionText = "BRIEF VIEW";
@@ -1380,7 +1380,7 @@ namespace SobekCM.Library.HTML
 		                        }
 
 
-		                        if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+		                        if (UI_ApplicationCache_Gateway.Settings.System.Include_TreeView_On_System_Home)
 		                        {
 			                        if (startHomeType == Home_Type_Enum.Tree) 
 			                        {
@@ -1416,7 +1416,7 @@ namespace SobekCM.Library.HTML
                                 Output.WriteLine("  <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + THUMBNAIL_TEXT + "</a></li>" );
                             }
 
-							if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+							if (UI_ApplicationCache_Gateway.Settings.System.Include_TreeView_On_System_Home)
 							{
 								if (startHomeType == Home_Type_Enum.Tree) 
 								{
@@ -2268,7 +2268,7 @@ namespace SobekCM.Library.HTML
 						break;
 
                     case Aggregation_Type_Enum.User_Permissions:
-				        if (UI_ApplicationCache_Gateway.Settings.Detailed_User_Aggregation_Permissions)
+				        if (UI_ApplicationCache_Gateway.Settings.System.Detailed_User_Aggregation_Permissions)
 				        {
 				            return "container-inner1215";
 				        }

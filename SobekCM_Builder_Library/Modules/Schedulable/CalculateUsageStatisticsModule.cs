@@ -26,7 +26,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
         public override void DoWork(InstanceWide_Settings Settings)
         {
             // If there is no IIS web log set, then do nothing.  Don't even need a log here.
-            if (String.IsNullOrEmpty(Settings.Builder_IIS_Logs_Directory))
+            if (String.IsNullOrEmpty(Settings.Builder.IIS_Logs_Directory))
                 return;
 
             // Just don't run the first day of the month - ensures logs still not being written
@@ -34,7 +34,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
                 return;
 
             // Ensure directory exists and is accessible
-            string log_directory = Settings.Builder_IIS_Logs_Directory;
+            string log_directory = Settings.Builder.IIS_Logs_Directory;
             try
             {
                 if (!Directory.Exists(log_directory))
@@ -79,14 +79,14 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
 
 
             // Get (and double check) the web directory 
-            if (String.IsNullOrEmpty(Settings.Application_Server_Network))
+            if (String.IsNullOrEmpty(Settings.Servers.Application_Server_Network))
             {
                 OnError("CalculateUsageStatisticsModule : No application server network setting!  Correct ASAP!", null, null, -1);
                 return;
             }
 
             // Ensure directory exists and is accessible
-            string sobekcm_directory = Settings.Application_Server_Network;
+            string sobekcm_directory = Settings.Servers.Application_Server_Network;
             try
             {
                 if (!Directory.Exists(sobekcm_directory))
@@ -208,7 +208,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
             // Delete the cached file, if one exists
             try
             {
-                string temp_directory = Path.Combine(Settings.Application_Server_Network, "temp");
+                string temp_directory = Path.Combine(Settings.Servers.Application_Server_Network, "temp");
                 if (Directory.Exists(temp_directory))
                 {
                     string cache_xml_file = Path.Combine(temp_directory, "overall_usage.xml");
@@ -219,10 +219,10 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
             catch { }
 
             // Shoudl emails be sent?
-            if (Settings.Builder_Send_Usage_Emails)
+            if (Settings.Builder.Send_Usage_Emails)
             {
                 // Load the text
-                string possible_email_body_dir = Path.Combine(Settings.Application_Server_Network, "design", "extra", "stats");
+                string possible_email_body_dir = Path.Combine(Settings.Servers.Application_Server_Network, "design", "extra", "stats");
                 Usage_Stats_Email_Helper.Set_Email_Body(Path.Combine(possible_email_body_dir, "stats_email_body.txt"));
 
                 // Send emails for each year/month (in order)
@@ -231,7 +231,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
                     int year = Convert.ToInt32(thisYearMonth.Substring(0, 4));
                     int month = Convert.ToInt32(thisYearMonth.Substring(4, 2));
 
-                    Send_Usage_Emails(year, month, Settings.System_Base_URL, Settings.System_Name, Settings.EmailDefaultFromAddress, Settings.EmailDefaultFromDisplay );
+                    Send_Usage_Emails(year, month, Settings.Servers.System_Base_URL, Settings.System.System_Name, Settings.Email.Setup.DefaultFromAddress, Settings.Email.Setup.DefaultFromDisplay );
 
                 }
             }

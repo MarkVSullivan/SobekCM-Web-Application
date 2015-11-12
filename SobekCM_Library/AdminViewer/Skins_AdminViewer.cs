@@ -182,7 +182,7 @@ namespace SobekCM.Library.AdminViewer
                                         // Ensure a folder exists for this, otherwise create one
                                         try
                                         {
-                                            string folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + save_value.ToLower();
+                                            string folder = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "skins/" + save_value.ToLower();
                                             if (!Directory.Exists(folder))
                                             {
                                                 // Create this directory and the necessary subdirectories
@@ -282,7 +282,7 @@ namespace SobekCM.Library.AdminViewer
                                                 {
                                                     // Copy the web skin information over?
                                                     string current_web_skin = RequestSpecificValues.Current_Mode.Skin;
-                                                    string current_web_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + current_web_skin;
+                                                    string current_web_folder = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "skins/" + current_web_skin;
                                                     copy_entire_folder(current_web_folder, folder);
                                                     //if (File.Exists(current_web_folder + "\\" + current_web_skin + ".css"))
                                                     //{
@@ -318,7 +318,7 @@ namespace SobekCM.Library.AdminViewer
                                                 if (new_base_code.Length == 0)
                                                 {
                                                     // What is the current base skin folder then?
-                                                    string base_skin_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin;
+                                                    string base_skin_folder = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin;
                                                     copy_entire_folder(base_skin_folder + "/buttons", folder + "/buttons");
                                                     copy_entire_folder(base_skin_folder + "/tabs", folder + "/tabs");
                                                 }
@@ -350,27 +350,27 @@ namespace SobekCM.Library.AdminViewer
                                     // Try to create the directory
                                     try
                                     {
-                                        if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value))
+                                        if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "skins\\" + save_value))
                                         {
-                                            Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value);
+                                            Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "skins\\" + save_value);
                                         }
-                                        if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\html"))
+                                        if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "skins\\" + save_value + "\\html"))
                                         {
-                                            Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\html");
+                                            Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "skins\\" + save_value + "\\html");
                                         }
                                         if (new_base_code.Length == 0)
                                         {
-                                            if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\buttons"))
+                                            if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "skins\\" + save_value + "\\buttons"))
                                             {
-                                                Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\buttons");
+                                                Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "skins\\" + save_value + "\\buttons");
                                             }
-                                            if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\tabs"))
+                                            if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "skins\\" + save_value + "\\tabs"))
                                             {
-                                                Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\tabs");
+                                                Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "skins\\" + save_value + "\\tabs");
                                             }
-                                            if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\zoom_controls"))
+                                            if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "skins\\" + save_value + "\\zoom_controls"))
                                             {
-                                                Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + save_value + "\\zoom_controls");
+                                                Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "skins\\" + save_value + "\\zoom_controls");
                                             }
                                         }
                                     }

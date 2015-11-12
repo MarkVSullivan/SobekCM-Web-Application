@@ -172,13 +172,13 @@ namespace SobekCM.Library.HTML
                                 if (Engine_Database.Get_All_Template_DefaultMetadatas(RequestSpecificValues.Tracer).Tables[0].Select("MetadataCode='" + project_code + "'").Length > 0)
                                 {
                                     RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Building default metadata set from (possible) PMETS");
-                                    string pmets_file = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "projects\\" + RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Substring(1) + ".pmets";
+                                    string pmets_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "projects\\" + RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Substring(1) + ".pmets";
                                     SobekCM_Item pmets_item = File.Exists(pmets_file) ? SobekCM_Item.Read_METS(pmets_file) : new SobekCM_Item();
                                     pmets_item.Bib_Info.Main_Title.Title = "Default metadata set for '" + project_code + "'";
                                     pmets_item.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Project;
                                     pmets_item.BibID = project_code.ToUpper();
                                     pmets_item.VID = "00001";
-                                    pmets_item.Source_Directory = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory +  "projects\\";
+                                    pmets_item.Source_Directory = UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory +  "projects\\";
 
                                     RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Adding project file to cache");
 

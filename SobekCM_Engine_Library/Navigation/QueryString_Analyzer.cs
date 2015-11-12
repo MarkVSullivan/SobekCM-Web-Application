@@ -1018,7 +1018,7 @@ namespace SobekCM.Engine_Library.Navigation
 
                                         // Set the source location
                                         Navigator.Info_Browse_Mode = possible_info_mode;
-                                        Navigator.Page_By_FileName = Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + possible_info_mode.Replace("/","\\") + "\\default.html";
+                                        Navigator.Page_By_FileName = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + possible_info_mode.Replace("/","\\") + "\\default.html";
 						                Navigator.WebContentID = matchedNode.WebContentID;
 						                Navigator.Redirect = matchedNode.Redirect;
 
@@ -1027,7 +1027,7 @@ namespace SobekCM.Engine_Library.Navigation
                                         //{
                                         //    Navigator.Missing = true;
                                         //    Navigator.Info_Browse_Mode = possible_info_mode;
-                                        //    Navigator.Page_By_FileName = Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\missing.html";
+                                        //    Navigator.Page_By_FileName = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\missing.html";
                                         //}
 
                                         // If something was found, then check for submodes
@@ -1143,7 +1143,9 @@ namespace SobekCM.Engine_Library.Navigation
 													}
 
 													// Get the page
-													Navigator.Page = Convert.ToUInt16(Navigator.ViewerCode.Substring(0, numberEnd));
+                                                    ushort testPage;
+                                                    if (UInt16.TryParse(Navigator.ViewerCode.Substring(0, numberEnd), out testPage))
+                                                        Navigator.Page = testPage;
 												}
 											}
 											else
@@ -1161,7 +1163,9 @@ namespace SobekCM.Engine_Library.Navigation
 												string possible_subpage = url_relative_list[current_list_index].Trim();
 												if (is_String_Number(possible_subpage))
 												{
-													Navigator.SubPage = Convert.ToUInt16(possible_subpage);
+                                                    ushort testSubPage;
+                                                    if (UInt16.TryParse(possible_subpage, out testSubPage))
+                                                        Navigator.SubPage = testSubPage;
 												}
 											}
 										}
@@ -1228,7 +1232,7 @@ namespace SobekCM.Engine_Library.Navigation
                                     }
 
 								    
-                                    string base_source = Engine_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent";
+                                    string base_source = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent";
 
                                     // Set the source location
                                     Navigator.Missing = true;

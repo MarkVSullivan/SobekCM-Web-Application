@@ -107,7 +107,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     Web_Language_Enum languageEnum = Web_Language_Enum_Converter.Code_To_Enum(language);
                     tracer.Add_Trace("WebSkinServices.GetWebSkin", "Getting skin for language '" + Web_Language_Enum_Converter.Enum_To_Name(languageEnum) + "'");
 
-                    returnValue = get_web_skin(skinCode, languageEnum, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, tracer);
+                    returnValue = get_web_skin(skinCode, languageEnum, Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language, tracer);
 
                     // If this was debug mode, then just write the tracer
                     if ( IsDebug )
@@ -192,7 +192,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 {
                     List<UploadedFileFolderInfo> serverFiles = new List<UploadedFileFolderInfo>();
 
-                    string design_folder = Engine_ApplicationCache_Gateway.Settings.Base_Design_Location + "skins\\" + webSkin + "\\uploads";
+                    string design_folder = Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "skins\\" + webSkin + "\\uploads";
                     if (Directory.Exists(design_folder))
                     {
                         string foldername = webSkin;
@@ -206,7 +206,7 @@ namespace SobekCM.Engine_Library.Endpoints
                             // Exclude some files
                             if ((!String.IsNullOrEmpty(extension)) && (extension.ToLower().IndexOf(".db") < 0) && (extension.ToLower().IndexOf("bridge") < 0) && (extension.ToLower().IndexOf("cache") < 0))
                             {
-                                string url = Engine_ApplicationCache_Gateway.Settings.System_Base_URL + "design/skins/" + webSkin + "/uploads/" + filename;
+                                string url = Engine_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/skins/" + webSkin + "/uploads/" + filename;
                                 serverFiles.Add(new UploadedFileFolderInfo(url, foldername));
                             }
                         }

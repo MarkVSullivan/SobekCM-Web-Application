@@ -112,7 +112,7 @@ namespace SobekCM.Library.Email
                 if (String.IsNullOrEmpty(Item.Behaviors.Main_Thumbnail))
                     messageBuilder.AppendLine("<tr>");
                 else
-                    messageBuilder.AppendLine("<tr valign=\"top\"><td><a href=\"" + URL + "\"><img src=\"" + UI_ApplicationCache_Gateway.Settings.Image_URL + Item.Web.AssocFilePath.Replace("\\", "/") + "/" + Item.Behaviors.Main_Thumbnail + "\" alt=\"BLOCKED THUMBNAIL IMAGE\" border=\"1px\" /></a></td>\n");
+                    messageBuilder.AppendLine("<tr valign=\"top\"><td><a href=\"" + URL + "\"><img src=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + Item.Web.AssocFilePath.Replace("\\", "/") + "/" + Item.Behaviors.Main_Thumbnail + "\" alt=\"BLOCKED THUMBNAIL IMAGE\" border=\"1px\" /></a></td>\n");
 
                 messageBuilder.AppendLine("<td>");
                 messageBuilder.AppendLine("<table style=\"font-family:Arial, Helvetica, sans-serif; font-size:smaller;\">");
@@ -313,12 +313,12 @@ namespace SobekCM.Library.Email
                         isHTML = true,
                         Subject = subject,
                         RecipientsList = thisReceipient,
-                        FromAddress = SobekCM_Instance_Name + " <" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">",
+                        FromAddress = SobekCM_Instance_Name + " <" + UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress + ">",
                         UserID = UserID
                     };
 
-                    if (! String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay))
-                        newEmail.FromAddress = UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay + " <" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">";
+                    if (! String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay))
+                        newEmail.FromAddress = UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay + " <" + UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress + ">";
 
                     if (CcList.Length > 0)
                         newEmail.RecipientsList = thisReceipient.Trim() + "," + CcList;
@@ -599,12 +599,12 @@ namespace SobekCM.Library.Email
                         isHTML = false,
                         Subject = subject,
                         RecipientsList = thisReceipient,
-                        FromAddress = SobekCM_Instance_Name + " <" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">",
+                        FromAddress = SobekCM_Instance_Name + " <" + UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress + ">",
                         UserID = UserID
                     };
 
-                    if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay))
-                        newEmail.FromAddress = UI_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay + " <" + UI_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">";
+                    if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay))
+                        newEmail.FromAddress = UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay + " <" + UI_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress + ">";
 
 
                     if (CcList.Length > 0)

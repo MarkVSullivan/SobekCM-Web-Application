@@ -52,9 +52,9 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // Determine the in process directory for this
-            digitalResourceDirectory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", "") + "\\uploadimages\\" + RequestSpecificValues.Current_Item.METS_Header.ObjectID;
+            digitalResourceDirectory = UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", "") + "\\uploadimages\\" + RequestSpecificValues.Current_Item.METS_Header.ObjectID;
             if (RequestSpecificValues.Current_User.ShibbID.Trim().Length > 0)
-                digitalResourceDirectory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.ShibbID + "\\uploadimages\\" + RequestSpecificValues.Current_Item.METS_Header.ObjectID;
+                digitalResourceDirectory = UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.ShibbID + "\\uploadimages\\" + RequestSpecificValues.Current_Item.METS_Header.ObjectID;
 
             // Make the folder for the RequestSpecificValues.Current_User in process directory
             if (!Directory.Exists(digitalResourceDirectory))
@@ -94,7 +94,7 @@ namespace SobekCM.Library.MySobekViewer
 							try
 							{
 								var tiffImg = Image.FromFile(thisFile);
-								var mainImg = ScaleImage(tiffImg, UI_ApplicationCache_Gateway.Settings.JPEG_Width, UI_ApplicationCache_Gateway.Settings.JPEG_Height);
+								var mainImg = ScaleImage(tiffImg, UI_ApplicationCache_Gateway.Settings.Resources.JPEG_Width, UI_ApplicationCache_Gateway.Settings.Resources.JPEG_Height);
 								mainImg.Save(jpeg, ImageFormat.Jpeg);
 								var thumbnailImg = ScaleImage(tiffImg, 150, 400);
 								thumbnailImg.Save(jpeg_thumbnail, ImageFormat.Jpeg);
@@ -130,10 +130,10 @@ namespace SobekCM.Library.MySobekViewer
                             {
                                 // Load the JPEG
                                 Image jpegSourceImg = SafeImageFromFile(thisFile, ref reuseStream);
-                                if ((jpegSourceImg.Width > UI_ApplicationCache_Gateway.Settings.JPEG_Maximum_Width) || (jpegSourceImg.Height > UI_ApplicationCache_Gateway.Settings.JPEG_Maximum_Height))
+                                if ((jpegSourceImg.Width > UI_ApplicationCache_Gateway.Settings.Resources.JPEG_Maximum_Width) || (jpegSourceImg.Height > UI_ApplicationCache_Gateway.Settings.Resources.JPEG_Maximum_Height))
                                 {
                                     // Copy the JPEG
-                                    string final_destination = RequestSpecificValues.Current_Item.Source_Directory + "\\" + UI_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name;
+                                    string final_destination = RequestSpecificValues.Current_Item.Source_Directory + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name;
                                     if (Directory.Exists(final_destination))
                                         Directory.CreateDirectory(final_destination);
                                     string copy_file = final_destination + "\\" + name.Replace(extension, "") + "_ORIG.jpg";
@@ -148,7 +148,7 @@ namespace SobekCM.Library.MySobekViewer
 
                                     // Now, create the smaller JPEG and JPEG thumbnail
                                     string jpeg = digitalResourceDirectory + "\\" + name.Replace(extension, "") + ".jpg";
-                                    var mainImg = ScaleImage(jpegSourceImg, UI_ApplicationCache_Gateway.Settings.JPEG_Width, UI_ApplicationCache_Gateway.Settings.JPEG_Height);
+                                    var mainImg = ScaleImage(jpegSourceImg, UI_ApplicationCache_Gateway.Settings.Resources.JPEG_Width, UI_ApplicationCache_Gateway.Settings.Resources.JPEG_Height);
                                     mainImg.Save(jpeg, ImageFormat.Jpeg);
 
                                     // And save the thumbnasil as well
@@ -400,8 +400,8 @@ namespace SobekCM.Library.MySobekViewer
                     options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
                     options["MarcXML_File_ReaderWriter:MARC XSLT File"] = UI_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
                 }
-                options["MarcXML_File_ReaderWriter:System Name"] = UI_ApplicationCache_Gateway.Settings.System_Name;
-                options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System_Abbreviation;
+                options["MarcXML_File_ReaderWriter:System Name"] = UI_ApplicationCache_Gateway.Settings.System.System_Name;
+                options["MarcXML_File_ReaderWriter:System Abbreviation"] = UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
 
 
                 // Save to the database
@@ -458,9 +458,9 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 // This may be called from QC, so check on that as well
-                string userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", "") + "\\qcwork\\" + Item_To_Complete.METS_Header.ObjectID;
+                string userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", "") + "\\qcwork\\" + Item_To_Complete.METS_Header.ObjectID;
                 if (RequestSpecificValues.Current_User.ShibbID.Trim().Length > 0)
-                    userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.ShibbID + "\\qcwork\\" + Item_To_Complete.METS_Header.ObjectID;
+                    userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location + "\\" + RequestSpecificValues.Current_User.ShibbID + "\\qcwork\\" + Item_To_Complete.METS_Header.ObjectID;
 
                 // Make the folder for the RequestSpecificValues.Current_User in process directory
                 if (Directory.Exists(userInProcessDirectory))
@@ -487,9 +487,9 @@ namespace SobekCM.Library.MySobekViewer
 
                 string error_body = "<strong>ERROR ENCOUNTERED DURING ONLINE PAGE IMAGE UPLOAD</strong><br /><br /><blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Permanent Link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + RequestSpecificValues.Current_Mode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "</a><br />RequestSpecificValues.Current_User: " + RequestSpecificValues.Current_User.Full_Name + "<br /><br /></blockquote>" + ee.ToString().Replace("\n", "<br />");
                 string error_subject = "Error during file management for '" + Item_To_Complete.Bib_Info.Main_Title.Title + "'";
-                string email_to = UI_ApplicationCache_Gateway.Settings.System_Error_Email;
+                string email_to = UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email;
                 if (email_to.Length == 0)
-                    email_to = UI_ApplicationCache_Gateway.Settings.System_Email;
+                    email_to = UI_ApplicationCache_Gateway.Settings.Email.System_Email;
                 Email_Helper.SendEmail(email_to, error_subject, error_body, true, String.Empty);
             }
 
@@ -690,7 +690,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<br />");
             Output.WriteLine("The following extensions are accepted:");
             Output.WriteLine("<blockquote>");
-            Output.WriteLine(UI_ApplicationCache_Gateway.Settings.Upload_Image_Types.Replace(",", ", "));
+            Output.WriteLine(UI_ApplicationCache_Gateway.Settings.Resources.Upload_Image_Types.Replace(",", ", "));
             Output.WriteLine("</blockquote>");
             Output.WriteLine("</div>");
 			Output.WriteLine("</div>");
@@ -727,7 +727,7 @@ namespace SobekCM.Library.MySobekViewer
 			{
 			    UploadPath = digitalResourceDirectory, 
                 UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx", 
-                AllowedFileExtensions = UI_ApplicationCache_Gateway.Settings.Upload_Image_Types, 
+                AllowedFileExtensions = UI_ApplicationCache_Gateway.Settings.Resources.Upload_Image_Types, 
                 SubmitWhenQueueCompletes = true, 
                 RemoveCompleted = true, 
                 Swf = Static_Resources.Uploadify_Swf, 

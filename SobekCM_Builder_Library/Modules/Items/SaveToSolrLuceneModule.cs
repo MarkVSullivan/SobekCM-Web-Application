@@ -18,11 +18,11 @@ namespace SobekCM.Builder_Library.Modules.Items
         {
 
             // Save this to the Solr/Lucene database
-            if (Settings.Document_Solr_Index_URL.Length > 0)
+            if ( !String.IsNullOrEmpty(Settings.Servers.Document_Solr_Index_URL))
             {
                 try
                 {
-                    Solr_Controller.Update_Index(Settings.Document_Solr_Index_URL, Settings.Page_Solr_Index_URL, Resource.Metadata, true);
+                    Solr_Controller.Update_Index(Settings.Servers.Document_Solr_Index_URL, Settings.Servers.Page_Solr_Index_URL, Resource.Metadata, true);
                 }
                 catch (Exception ee)
                 {

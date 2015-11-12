@@ -304,7 +304,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if ((browseObject != null) && (browseObject.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Static_HTML))
             {
                 // Read the content file for this browse
-                string source_file = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + RequestSpecificValues.Hierarchy_Object.ObjDirectory.Replace("/", "\\") + browseObject.Source;
+                string source_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + RequestSpecificValues.Hierarchy_Object.ObjDirectory.Replace("/", "\\") + browseObject.Source;
                 HTML_Based_Content staticBrowseContent = HTML_Based_Content_Reader.Read_HTML_File( source_file, true, Tracer );
                 if (staticBrowseContent == null)
                 {

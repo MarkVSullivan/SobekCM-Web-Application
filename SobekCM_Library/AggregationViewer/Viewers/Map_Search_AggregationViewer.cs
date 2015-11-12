@@ -357,7 +357,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             string language_code = RequestSpecificValues.Current_Mode.Language_Code;
             if (language_code.Length > 0)
                 language_code = "_" + language_code;
-            string directory = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "\\aggregations\\" + RequestSpecificValues.Current_Mode.Aggregation + "\\extra";
+            string directory = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "\\aggregations\\" + RequestSpecificValues.Current_Mode.Aggregation + "\\extra";
             string aggregation_specific_faq = String.Empty;
             if ( Directory.Exists( directory ))
             {
@@ -384,7 +384,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // If no aggregation level FAQ was found, look for a collection wide
             if (aggregation_specific_faq.Length == 0)
             {
-                directory = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "\\extra\\searchtips";
+                directory = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "\\extra\\searchtips";
                 if (Directory.Exists(directory))
                 {
                     if (File.Exists(directory + "\\map_faq" + language_code + ".txt"))

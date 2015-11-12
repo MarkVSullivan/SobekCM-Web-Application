@@ -118,7 +118,7 @@ namespace SobekCM.Builder_Library.Tools
                                         string assocFilePath = bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8) + "\\" + vid;
 
                                         // Determine the destination folder for this resource
-                                        string serverPackageFolder = Engine_ApplicationCache_Gateway.Settings.Image_Server_Network + assocFilePath;
+                                        string serverPackageFolder = Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + assocFilePath;
 
                                         // Make sure a directory exists here
                                         if (!Directory.Exists(serverPackageFolder))

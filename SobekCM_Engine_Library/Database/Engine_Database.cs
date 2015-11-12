@@ -2957,7 +2957,7 @@ namespace SobekCM.Engine_Library.Database
 				lastAdded = Convert.ToDateTime(thisRow[16]);
 
 			// Build the collection group object
-			Complete_Item_Aggregation aggrInfo = new Complete_Item_Aggregation(Engine_ApplicationCache_Gateway.Settings.Default_UI_Language,
+			Complete_Item_Aggregation aggrInfo = new Complete_Item_Aggregation(Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language,
 				thisRow[1].ToString().ToLower(), thisRow[4].ToString(), Convert.ToInt32(thisRow[0]), displayOptions, lastAdded)
 			{
 				Name = thisRow[2].ToString(),
@@ -3395,13 +3395,13 @@ namespace SobekCM.Engine_Library.Database
 		{
 			try
 			{
-                //EalDbParameter[] parameters = new EalDbParameter[1];
-                //parameters[0] = new EalDbParameter("@IncludeAdminViewInfo", IncludeAdminViewInfo);
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@IncludeAdminViewInfo", IncludeAdminViewInfo);
 
-                //DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Settings", parameters);
+                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Settings", parameters);
 
 
-                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Settings");
+                //DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Settings");
 				return tempSet;
 			}
 			catch (Exception ee)

@@ -76,7 +76,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG);
                     if ( jpeg_files > 1 )
                         Resource.Metadata.Behaviors.Add_View(View_Enum.RELATED_IMAGES);
-                    if ((jpeg_files >= 4) && (Settings.Builder_Add_PageTurner_ItemViewer))
+                    if ((jpeg_files >= 4) && (Settings.Builder.Add_PageTurner_ItemViewer))
                         Resource.Metadata.Behaviors.Add_View(View_Enum.PAGE_TURNER);
                     if (jpeg2000_added)
                         Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG2000);

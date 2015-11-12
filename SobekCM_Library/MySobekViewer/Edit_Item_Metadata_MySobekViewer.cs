@@ -92,9 +92,9 @@ namespace SobekCM.Library.MySobekViewer
                     RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Reading project-specific template file");
 
                     // Look in the user-defined portion
-                    string user_template = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\user\\standard\\project.xml";
+                    string user_template = UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "templates\\user\\standard\\project.xml";
                     if (!File.Exists(user_template))
-                        user_template = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\default\\standard\\project.xml";
+                        user_template = UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "templates\\default\\standard\\project.xml";
 
                     // Read this CompleteTemplate
                     Template_XML_Reader reader = new Template_XML_Reader();
@@ -120,9 +120,9 @@ namespace SobekCM.Library.MySobekViewer
                     RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Reading template file");
 
                     // Look in the user-defined portion
-                    string user_template = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\user\\edit\\" + template_code + ".xml";
+                    string user_template = UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "templates\\user\\edit\\" + template_code + ".xml";
                     if (!File.Exists(user_template))
-                        user_template = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "templates\\default\\edit\\" + template_code + ".xml";
+                        user_template = UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "templates\\default\\edit\\" + template_code + ".xml";
 
                     // Read this CompleteTemplate
                     Template_XML_Reader reader = new Template_XML_Reader();

@@ -100,7 +100,7 @@ namespace SobekCM.Library
                         sitemap_file = sitemap_file + ".sitemap";
 
                     // Only continue if the file exists
-                    if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\sitemaps\\" + sitemap_file))
+                    if (File.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\sitemaps\\" + sitemap_file))
                     {
                         if (Tracer != null)
                         {
@@ -108,7 +108,7 @@ namespace SobekCM.Library
                         }
 
                         // Try to read this sitemap file
-                        Site_Map = SobekCM_SiteMap_Reader.Read_SiteMap_File(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\sitemaps\\" + sitemap_file);
+                        Site_Map = SobekCM_SiteMap_Reader.Read_SiteMap_File(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\sitemaps\\" + sitemap_file);
 
                         // If the sitemap file was succesfully read, cache it
                         if (Site_Map != null)
@@ -116,7 +116,7 @@ namespace SobekCM.Library
                             CachedDataManager.Store_Site_Map(Site_Map, Simple_Web_Content.SiteMap, Tracer);
                         }
                     }
-                    else if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + sitemap_file))
+                    else if (File.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + sitemap_file))
                     {
                         // This is just for some legacy material
                         if (Tracer != null)
@@ -125,7 +125,7 @@ namespace SobekCM.Library
                         }
 
                         // Try to read this sitemap file
-                        Site_Map = SobekCM_SiteMap_Reader.Read_SiteMap_File(UI_ApplicationCache_Gateway.Settings.Base_Directory + "design\\webcontent\\" + sitemap_file);
+                        Site_Map = SobekCM_SiteMap_Reader.Read_SiteMap_File(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + sitemap_file);
 
                         // If the sitemap file was succesfully read, cache it
                         if (Site_Map != null)
@@ -317,7 +317,7 @@ namespace SobekCM.Library
         /// <returns> File name to read for the static browse HTML to display </returns>
         public string Get_All_Browse_Static_HTML(Navigation_Object Current_Mode, Custom_Tracer Tracer)
         {
-            string base_image_url = UI_ApplicationCache_Gateway.Settings.Base_Data_Directory + Current_Mode.Aggregation + "_all.html";
+            string base_image_url = UI_ApplicationCache_Gateway.Settings.Servers.Base_Data_Directory + Current_Mode.Aggregation + "_all.html";
             return base_image_url;
         }
 
@@ -488,7 +488,7 @@ namespace SobekCM.Library
                     break;
 
                 case Item_Aggregation_Child_Source_Data_Enum.Static_HTML:
-                    Browse_Info_Display_Text = SobekEngineClient.Aggregations.Get_Aggregation_HTML_Child_Page(Aggregation_Object.Code, Aggregation_Object.Language, UI_ApplicationCache_Gateway.Settings.Default_UI_Language, Browse_Object.Code, Tracer);
+                    Browse_Info_Display_Text = SobekEngineClient.Aggregations.Get_Aggregation_HTML_Child_Page(Aggregation_Object.Code, Aggregation_Object.Language, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Browse_Object.Code, Tracer);
                     break;
             }
             return true;
@@ -549,7 +549,7 @@ namespace SobekCM.Library
             string bibid = Current_Mode.BibID;
             string vid = selected_item.VID.PadLeft(5, '0');
             Current_Mode.VID = vid;
-            string base_image_url = UI_ApplicationCache_Gateway.Settings.Base_Data_Directory + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + bibid + "_" + vid + ".html";
+            string base_image_url = UI_ApplicationCache_Gateway.Settings.Servers.Base_Data_Directory + bibid.Substring(0, 2) + "\\" + bibid.Substring(2, 2) + "\\" + bibid.Substring(4, 2) + "\\" + bibid.Substring(6, 2) + "\\" + bibid.Substring(8, 2) + "\\" + bibid + "_" + vid + ".html";
             return base_image_url;
         }
 
@@ -1703,7 +1703,7 @@ namespace SobekCM.Library
                 return cacheInstance;
 
             // Get the item aggregation from the Sobek Engine Client
-            Item_Aggregation returned = SobekEngineClient.Aggregations.Get_Aggregation(Aggregation_Code, Web_Language_Enum_Converter.Code_To_Enum(Language_Code), UI_ApplicationCache_Gateway.Settings.Default_UI_Language, Tracer );
+            Item_Aggregation returned = SobekEngineClient.Aggregations.Get_Aggregation(Aggregation_Code, Web_Language_Enum_Converter.Code_To_Enum(Language_Code), UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Tracer );
                 
             // Return the object
             return returned;
@@ -1726,7 +1726,7 @@ namespace SobekCM.Library
                     return cacheInstance;
 
                 // Get the item aggregation from the Sobek Engine Client
-                Item_Aggregation returned = SobekEngineClient.Aggregations.Get_Aggregation("all", Web_Language_Enum_Converter.Code_To_Enum(Language_Code), UI_ApplicationCache_Gateway.Settings.Default_UI_Language, Tracer);
+                Item_Aggregation returned = SobekEngineClient.Aggregations.Get_Aggregation("all", Web_Language_Enum_Converter.Code_To_Enum(Language_Code), UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Tracer);
 
                 // Return the object
                 return returned;
@@ -1762,7 +1762,7 @@ namespace SobekCM.Library
         public Web_Skin_Object Get_HTML_Skin(string Web_Skin_Code, Navigation_Object Current_Mode, Web_Skin_Collection Skin_Collection, bool Cache_On_Build, Custom_Tracer Tracer)
         {
             // Get the interface object
-            Web_Skin_Object htmlSkin = SobekEngineClient.WebSkins.Get_LanguageSpecific_Web_Skin(Web_Skin_Code, Current_Mode.Language, UI_ApplicationCache_Gateway.Settings.Default_UI_Language, Cache_On_Build, Tracer);
+            Web_Skin_Object htmlSkin = SobekEngineClient.WebSkins.Get_LanguageSpecific_Web_Skin(Web_Skin_Code, Current_Mode.Language, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Cache_On_Build, Tracer);
 
             // If there is still no interface, this is an ERROR
             if (htmlSkin != null)

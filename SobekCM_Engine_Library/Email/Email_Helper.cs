@@ -25,13 +25,13 @@ namespace SobekCM.Engine_Library.Email
         {
             EmailInfo newEmail = new EmailInfo {RecipientsList = ToAddress, Subject = Subject, Body = Body, isHTML = isHtml};
 
-            if (String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay))
+            if (String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay))
             {
-                newEmail.FromAddress = InstanceName + " <" + Engine_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">";
+                newEmail.FromAddress = InstanceName + " <" + Engine_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress + ">";
             }
             else
             {
-                newEmail.FromAddress = Engine_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay + " <" + Engine_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress + ">";
+                newEmail.FromAddress = Engine_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay + " <" + Engine_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress + ">";
  
             }
 
@@ -54,7 +54,7 @@ namespace SobekCM.Engine_Library.Email
             if (Email.UserID.HasValue)
                 userId = Email.UserID.Value;
 
-            if (Engine_ApplicationCache_Gateway.Settings.EmailMethod == Email_Method_Enum.MsSqlDatabaseMail)
+            if (Engine_ApplicationCache_Gateway.Settings.Email.Setup.Method == Email_Method_Enum.MsSqlDatabaseMail)
             {
                 try
                 {
@@ -71,8 +71,8 @@ namespace SobekCM.Engine_Library.Email
             {
                 try
                 {
-                    string email_name = Engine_ApplicationCache_Gateway.Settings.EmailDefaultFromDisplay;
-                    string email_address = Engine_ApplicationCache_Gateway.Settings.EmailDefaultFromAddress;
+                    string email_name = Engine_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromDisplay;
+                    string email_address = Engine_ApplicationCache_Gateway.Settings.Email.Setup.DefaultFromAddress;
                     if (!String.IsNullOrEmpty(Email.FromAddress))
                     {
                         string[] splitter = Email.FromAddress.Trim().Split("<>".ToCharArray());
@@ -100,7 +100,7 @@ namespace SobekCM.Engine_Library.Email
                     }
 
                     // Mail this
-                    SmtpClient client = new SmtpClient(Engine_ApplicationCache_Gateway.Settings.EmailSmtpServer, Engine_ApplicationCache_Gateway.Settings.EmailSmtpPort);
+                    SmtpClient client = new SmtpClient(Engine_ApplicationCache_Gateway.Settings.Email.Setup.SmtpServer, Engine_ApplicationCache_Gateway.Settings.Email.Setup.SmtpPort);
                     client.Send(myMail);
 
                     // Log this in the database

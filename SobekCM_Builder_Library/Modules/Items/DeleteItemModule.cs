@@ -29,7 +29,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             SobekCM_Database.Builder_Clear_Item_Error_Log(Resource.BibID, Resource.VID, "SobekCM Builder");
 
             Resource.File_Root = Resource.BibID.Substring(0, 2) + "\\" + Resource.BibID.Substring(2, 2) + "\\" + Resource.BibID.Substring(4, 2) + "\\" + Resource.BibID.Substring(6, 2) + "\\" + Resource.BibID.Substring(8);
-            string existing_folder = Settings.Image_Server_Network + Resource.File_Root + "\\" + Resource.VID;
+            string existing_folder = Settings.Servers.Image_Server_Network + Resource.File_Root + "\\" + Resource.VID;
 
             // Remove from the primary collection area
             try
@@ -37,13 +37,13 @@ namespace SobekCM.Builder_Library.Modules.Items
                 if (Directory.Exists(existing_folder))
                 {
                     // Make sure the delete folder exists
-                    if (!Directory.Exists(Settings.Image_Server_Network + "\\RECYCLE BIN"))
+                    if (!Directory.Exists(Settings.Servers.Image_Server_Network + "\\RECYCLE BIN"))
                     {
-                        Directory.CreateDirectory(Settings.Image_Server_Network + "\\RECYCLE BIN");
+                        Directory.CreateDirectory(Settings.Servers.Image_Server_Network + "\\RECYCLE BIN");
                     }
 
                     // Create the final directory
-                    string final_folder = Settings.Image_Server_Network + "\\RECYCLE BIN\\" + Resource.File_Root + "\\" + Resource.VID;
+                    string final_folder = Settings.Servers.Image_Server_Network + "\\RECYCLE BIN\\" + Resource.File_Root + "\\" + Resource.VID;
                     if (!Directory.Exists(final_folder))
                     {
                         Directory.CreateDirectory(final_folder);
@@ -68,12 +68,12 @@ namespace SobekCM.Builder_Library.Modules.Items
             }
 
             // Delete the static page
-            string static_page1 = Settings.Static_Pages_Location + Resource.BibID.Substring(0, 2) + "\\" + Resource.BibID.Substring(2, 2) + "\\" + Resource.BibID.Substring(4, 2) + "\\" + Resource.BibID.Substring(6, 2) + "\\" + Resource.BibID.Substring(8) + "\\" + Resource.VID + "\\" + Resource.BibID + "_" + Resource.VID + ".html";
+            string static_page1 = Settings.Servers.Static_Pages_Location + Resource.BibID.Substring(0, 2) + "\\" + Resource.BibID.Substring(2, 2) + "\\" + Resource.BibID.Substring(4, 2) + "\\" + Resource.BibID.Substring(6, 2) + "\\" + Resource.BibID.Substring(8) + "\\" + Resource.VID + "\\" + Resource.BibID + "_" + Resource.VID + ".html";
             if (File.Exists(static_page1))
             {
                 File.Delete(static_page1);
             }
-            string static_page2 = Settings.Static_Pages_Location + Resource.BibID.Substring(0, 2) + "\\" + Resource.BibID.Substring(2, 2) + "\\" + Resource.BibID.Substring(4, 2) + "\\" + Resource.BibID.Substring(6, 2) + "\\" + Resource.BibID.Substring(8) + "\\" + Resource.BibID + "_" + Resource.VID + ".html";
+            string static_page2 = Settings.Servers.Static_Pages_Location + Resource.BibID.Substring(0, 2) + "\\" + Resource.BibID.Substring(2, 2) + "\\" + Resource.BibID.Substring(4, 2) + "\\" + Resource.BibID.Substring(6, 2) + "\\" + Resource.BibID.Substring(8) + "\\" + Resource.BibID + "_" + Resource.VID + ".html";
             if (File.Exists(static_page2))
             {
                 File.Delete(static_page2);
@@ -83,11 +83,11 @@ namespace SobekCM.Builder_Library.Modules.Items
             SobekCM_Database.Delete_SobekCM_Item(Resource.BibID, Resource.VID, true, "Deleted upon request by builder");
 
             // Delete from the solr/lucene indexes
-            if (Settings.Document_Solr_Index_URL.Length > 0)
+            if (Settings.Servers.Document_Solr_Index_URL.Length > 0)
             {
                 try
                 {
-                    Solr_Controller.Delete_Resource_From_Index(Settings.Document_Solr_Index_URL, Settings.Page_Solr_Index_URL, Resource.BibID, Resource.VID);
+                    Solr_Controller.Delete_Resource_From_Index(Settings.Servers.Document_Solr_Index_URL, Settings.Servers.Page_Solr_Index_URL, Resource.BibID, Resource.VID);
                 }
                 catch (Exception ee)
                 {

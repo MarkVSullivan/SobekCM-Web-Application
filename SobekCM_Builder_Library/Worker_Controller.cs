@@ -115,7 +115,7 @@ namespace SobekCM.Builder_Library
             // Set the variable which will control background execution
 	        int time_between_polls = Engine_ApplicationCache_Gateway.Settings.Builder_Override_Seconds_Between_Polls;
 			if (( time_between_polls < 0 ) || ( Engine_ApplicationCache_Gateway.Settings.Database_Connections.Count == 1 ))
-				time_between_polls = Convert.ToInt32(Engine_ApplicationCache_Gateway.Settings.Builder_Seconds_Between_Polls);
+				time_between_polls = Convert.ToInt32(Engine_ApplicationCache_Gateway.Settings.Builder.Seconds_Between_Polls);
 
             // Determine the new log name
             string log_name = "incoming_" + controllerStarted.Year + "_" + controllerStarted.Month.ToString().PadLeft(2, '0') + "_" + controllerStarted.Day.ToString().PadLeft(2, '0') + ".html";
@@ -325,14 +325,14 @@ namespace SobekCM.Builder_Library
 								Console.WriteLine(dbInstance.Name + " - Expiring old log entries");
 								preloader_logger.AddNonError(dbInstance.Name + " - Expiring old log entries");
 								Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Expiring old log entries", String.Empty);
-								Library.Database.SobekCM_Database.Builder_Expire_Log_Entries(Engine_ApplicationCache_Gateway.Settings.Builder_Log_Expiration_Days);
+								Library.Database.SobekCM_Database.Builder_Expire_Log_Entries(Engine_ApplicationCache_Gateway.Settings.Builder.Log_Expiration_Days);
 
 								// Rebuild all the static pages
 								Console.WriteLine(dbInstance.Name + " - Rebuilding all static pages");
 								preloader_logger.AddNonError(dbInstance.Name + " - Rebuilding all static pages");
 								long staticRebuildLogId = Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Rebuilding all static pages", String.Empty);
 
-                                Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Static_Pages_Location, Engine_ApplicationCache_Gateway.URL_Portals.Default_Portal.Default_Web_Skin);
+                                Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location, Engine_ApplicationCache_Gateway.URL_Portals.Default_Portal.Default_Web_Skin);
 								builder.Rebuild_All_Static_Pages(preloader_logger, false, Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory, dbInstance.Name, staticRebuildLogId);
 
 							}
@@ -460,11 +460,11 @@ namespace SobekCM.Builder_Library
 		{
 			try
 			{
-				if ((Engine_ApplicationCache_Gateway.Settings.Builder_Logs_Publish_Directory.Length > 0) && (Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Builder_Logs_Publish_Directory)))
-				{
-					if ( File.Exists(LocalLogName))
-						File.Copy(LocalLogName, Engine_ApplicationCache_Gateway.Settings.Builder_Logs_Publish_Directory + "\\" + Path.GetFileName(LocalLogName), true );
-				}
+                //if ((Engine_ApplicationCache_Gateway.Settings.Builder_Logs_Publish_Directory.Length > 0) && (Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Builder_Logs_Publish_Directory)))
+                //{
+                //    if ( File.Exists(LocalLogName))
+                //        File.Copy(LocalLogName, Engine_ApplicationCache_Gateway.Settings.Builder_Logs_Publish_Directory + "\\" + Path.GetFileName(LocalLogName), true );
+                //}
 			}
 			catch
 			{
@@ -566,14 +566,14 @@ namespace SobekCM.Builder_Library
             {
 				Console.WriteLine("Beginning static rebuild");
                 LogFileXhtml staticRebuildLog = new LogFileXhtml( logFileDirectory  + "\\static_rebuild.html");
-				Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Application_Server_Network);
+                Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network);
                 builder.Rebuild_All_Static_Pages(staticRebuildLog, true, Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory, String.Empty, -1);
             }
             
             if ( MarcRebuild )
             {
-				Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Application_Server_Network);
-                builder.Rebuild_All_MARC_Files( Engine_ApplicationCache_Gateway.Settings.Image_Server_Network );
+                Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network);
+                builder.Rebuild_All_MARC_Files(Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network);
             }
 
             if (BuildProductionMarcxmlFeed)

@@ -153,12 +153,12 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("\t\t\t<li id=\"sbkShs_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
             RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Descriptions;
             Output.WriteLine("\t\t\t<li id=\"sbkShs_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
-            if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+            if (UI_ApplicationCache_Gateway.Settings.System.Include_TreeView_On_System_Home)
             {
                 RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
                 Output.WriteLine("\t\t\t<li id=\"sbkShs_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
             }
-            if (UI_ApplicationCache_Gateway.Settings.Include_Partners_On_System_Home)
+            if (UI_ApplicationCache_Gateway.Settings.System.Include_Partners_On_System_Home)
             {
                 RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Partners_List;
                 Output.WriteLine("\t\t\t<li id=\"sbkShs_HomePartners\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + partners_text + "</a></li>");
@@ -923,7 +923,7 @@ namespace SobekCM.Library.HTML
         private void add_usage_definitions(TextWriter Output, Custom_Tracer Tracer)
         {
             // See if the FAQ is present for this collection
-            string directory = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "\\extra\\stats";
+            string directory = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "\\extra\\stats";
             string usage_definitions = String.Empty;
             if (Directory.Exists(directory))
             {
@@ -2165,8 +2165,8 @@ namespace SobekCM.Library.HTML
         {
             // Pull the data, first looking in the temp folder
             DataTable statsCount = null;
-            string possible_source_file = UI_ApplicationCache_Gateway.Settings.Base_Temporary_Directory + "overall_usage.xml";
-            if (UI_ApplicationCache_Gateway.Settings.Statistics_Caching_Enabled)
+            string possible_source_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Temporary_Directory + "overall_usage.xml";
+            if (UI_ApplicationCache_Gateway.Settings.Servers.Statistics_Caching_Enabled)
             {
                 try
                 {
@@ -2195,14 +2195,14 @@ namespace SobekCM.Library.HTML
                 statsCount = SobekCM_Database.Get_Aggregation_Statistics_History("ALL", Tracer);
 
                 // Save as XML in the temporary folder
-                if ((statsCount != null) && (UI_ApplicationCache_Gateway.Settings.Statistics_Caching_Enabled))
+                if ((statsCount != null) && (UI_ApplicationCache_Gateway.Settings.Servers.Statistics_Caching_Enabled))
                 {
                     statsCount.WriteXml(possible_source_file, XmlWriteMode.WriteSchema);
                 }
             }
 
             // See if the FAQ is present for this collection
-            string directory = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "\\extra\\stats";
+            string directory = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "\\extra\\stats";
             string overall_stats_header = String.Empty;
             if (Directory.Exists(directory))
             {
@@ -2500,17 +2500,17 @@ namespace SobekCM.Library.HTML
 
             // Determine the date
             DataTable itemCount = null;
-            string possible_source_file = UI_ApplicationCache_Gateway.Settings.Base_Temporary_Directory + "item_count.xml";
+            string possible_source_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Temporary_Directory + "item_count.xml";
             string possible_source_url = RequestSpecificValues.Current_Mode.Base_URL + "temp/item_count.xml";
             if (IncludesFytd)
             {
-                possible_source_file = UI_ApplicationCache_Gateway.Settings.Base_Temporary_Directory + "item_count_growth.xml";
+                possible_source_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Temporary_Directory + "item_count_growth.xml";
                 possible_source_url = RequestSpecificValues.Current_Mode.Base_URL + "temp/item_count_growth.xml";
             }
 
             try
             {
-                if ((UI_ApplicationCache_Gateway.Settings.Statistics_Caching_Enabled) && (File.Exists(possible_source_file)))
+                if ((UI_ApplicationCache_Gateway.Settings.Servers.Statistics_Caching_Enabled) && (File.Exists(possible_source_file)))
                 {
                     FileInfo sourceFileInfo = new FileInfo(possible_source_file);
                     TimeSpan fileAge = DateTime.Now.Subtract(sourceFileInfo.LastWriteTime);
@@ -2546,7 +2546,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 // Save as XML in the temporary folder
-                if ((itemCount != null) && (UI_ApplicationCache_Gateway.Settings.Statistics_Caching_Enabled))
+                if ((itemCount != null) && (UI_ApplicationCache_Gateway.Settings.Servers.Statistics_Caching_Enabled))
                 {
                     itemCount.WriteXml(possible_source_file, XmlWriteMode.WriteSchema);
                 }
@@ -2881,17 +2881,17 @@ namespace SobekCM.Library.HTML
 
             // Determine the date
             DataTable itemCount = null;
-            string possible_source_file = UI_ApplicationCache_Gateway.Settings.Base_Temporary_Directory + "item_count.xml";
+            string possible_source_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Temporary_Directory + "item_count.xml";
             string possible_source_url = RequestSpecificValues.Current_Mode.Base_URL + "temp/item_count.xml";
             if (IncludesFytd)
             {
-                possible_source_file = UI_ApplicationCache_Gateway.Settings.Base_Temporary_Directory + "item_count_growth.xml";
+                possible_source_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Temporary_Directory + "item_count_growth.xml";
                 possible_source_url = RequestSpecificValues.Current_Mode.Base_URL + "temp/item_count_growth.xml";
             }
 
             try
             {
-                if ((UI_ApplicationCache_Gateway.Settings.Statistics_Caching_Enabled) && (File.Exists(possible_source_file)))
+                if ((UI_ApplicationCache_Gateway.Settings.Servers.Statistics_Caching_Enabled) && (File.Exists(possible_source_file)))
                 {
                     FileInfo sourceFileInfo = new FileInfo(possible_source_file);
                     TimeSpan fileAge = DateTime.Now.Subtract(sourceFileInfo.LastWriteTime);
@@ -2927,7 +2927,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 // Save as XML in the temporary folder
-                if ((itemCount != null) && (UI_ApplicationCache_Gateway.Settings.Statistics_Caching_Enabled))
+                if ((itemCount != null) && (UI_ApplicationCache_Gateway.Settings.Servers.Statistics_Caching_Enabled))
                 {
                     itemCount.WriteXml(possible_source_file, XmlWriteMode.WriteSchema);
                 }

@@ -14,7 +14,7 @@ namespace SobekCM.Core.Configuration
 {
     /// <summary> Class keeps all the system-wide quality control profiles which 
     /// can be used within the system  </summary>
-    public static class QualityControl_Configuration
+    public class QualityControl_Configuration
     {
         private static bool attemptedRead;
         private static Dictionary<string, QualityControl_Profile> profiles;
@@ -23,7 +23,7 @@ namespace SobekCM.Core.Configuration
 
         
         /// <summary> Static constructor for the QualityControl_Configuration class </summary>
-         static QualityControl_Configuration()
+        public QualityControl_Configuration()
         {
             // Declare all the new collections in this configuration 
             profiles = new Dictionary<string, QualityControl_Profile>();
@@ -43,7 +43,7 @@ namespace SobekCM.Core.Configuration
 
 
 
-        private static void Clear()
+        private void Clear()
         {
             profiles.Clear();
             defaultProfile = null;
@@ -52,7 +52,7 @@ namespace SobekCM.Core.Configuration
         /// <summary> Flag indicates if the method to read the configuration file has been called </summary>
         /// <remarks> Even if the read is unsuccesful for any reason, this returns TRUE to prevent 
         /// the read method from being called over and over </remarks>
-        public static bool Attempted_To_Read_Config_File
+        public bool Attempted_To_Read_Config_File
         {
             get { return attemptedRead; }
         }
@@ -61,7 +61,7 @@ namespace SobekCM.Core.Configuration
         /// <summary> Add a quality control profile with user settings, such as which 
         /// division types to include for selection </summary>
         /// <param name="New_Profile"> New profile to add </param>
-        public static void Add_Profile(QualityControl_Profile New_Profile)
+        public void Add_Profile(QualityControl_Profile New_Profile)
         {
             // Add to the dictionary of profiles
             profiles[New_Profile.Profile_Name] = New_Profile;
@@ -72,7 +72,7 @@ namespace SobekCM.Core.Configuration
         }
 
         /// <summary> Default quality control profile </summary>
-        public static QualityControl_Profile Default_Profile
+        public QualityControl_Profile Default_Profile
         {
             get
             {
@@ -87,7 +87,7 @@ namespace SobekCM.Core.Configuration
         #region Set default values (used if no config file is present)
 
         /// <summary> Set the default profile with the default values </summary>
-        public static void Set_Default_Values()
+        public void Set_Default_Values()
         {
             // Clear everything, just in case
             Clear();
@@ -200,7 +200,7 @@ namespace SobekCM.Core.Configuration
         /// <summary> Save this quality control configuration to a XML config file </summary>
         /// <param name="FilePath"> File/path for the resulting XML config file </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool Save_To_Config_File(string FilePath)
+        public bool Save_To_Config_File(string FilePath)
         {
             bool returnValue = true;
             StreamWriter writer = null;
@@ -271,7 +271,7 @@ namespace SobekCM.Core.Configuration
         /// <summary> Converts a basic string into an XML-safe string </summary>
         /// <param name="Element"> Element data to convert </param>
         /// <returns> Data converted into an XML-safe string</returns>
-        private static string Convert_String_To_XML_Safe(string Element)
+        private string Convert_String_To_XML_Safe(string Element)
         {
             if (Element == null)
                 return string.Empty;
@@ -298,7 +298,7 @@ namespace SobekCM.Core.Configuration
         /// <summary> Read the metadata configuration from a correctly-formatted metadata configuration XML file </summary>
         /// <param name="Configuration_XML_File"> File/path for the metadata configuration XML file to read </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool Read_Metadata_Configuration(string Configuration_XML_File)
+        public bool Read_Metadata_Configuration(string Configuration_XML_File)
         {
             attemptedRead = true;
 
@@ -358,7 +358,7 @@ namespace SobekCM.Core.Configuration
         }
 
 
-        private static void read_qc_profiles(XmlReader ReaderXml)
+        private void read_qc_profiles(XmlReader ReaderXml)
         {
             int unnamed_profile_counter = 1;
 

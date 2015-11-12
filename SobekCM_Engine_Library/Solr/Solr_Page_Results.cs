@@ -76,7 +76,7 @@ namespace SobekCM.Engine_Library.Solr
                 ResultsPage = 1;
 
             // Create the solr worker to query the page index
-            var solrWorker = Solr_Operations_Cache<Solr_Page_Result>.GetSolrOperations(Engine_ApplicationCache_Gateway.Settings.Page_Solr_Index_URL);
+            var solrWorker = Solr_Operations_Cache<Solr_Page_Result>.GetSolrOperations(Engine_ApplicationCache_Gateway.Settings.Servers.Page_Solr_Index_URL);
 
             // Create the query options
             QueryOptions options = new QueryOptions

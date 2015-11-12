@@ -258,10 +258,10 @@ namespace SobekCM.Builder_Library
         {
             try
             {
-                if (!Directory.Exists(Resource_Folder + "\\" + Engine_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name))
-                    Directory.CreateDirectory(Resource_Folder + "\\" + Engine_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name);
+                if (!Directory.Exists(Resource_Folder + "\\" + Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name))
+                    Directory.CreateDirectory(Resource_Folder + "\\" + Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name);
 
-                string filename = Resource_Folder + "\\" + Engine_ApplicationCache_Gateway.Settings.Backup_Files_Folder_Name + "\\" + Metadata.BibID + "_" + Metadata.VID + ".html";
+                string filename = Resource_Folder + "\\" + Engine_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + Metadata.BibID + "_" + Metadata.VID + ".html";
                 StaticBuilder.Create_Item_Citation_HTML(Metadata, filename, resourceFolder);
 
                 return filename;
@@ -280,7 +280,7 @@ namespace SobekCM.Builder_Library
             try
             {
                 // Set the image location
-                Metadata.Web.Image_Root = Engine_ApplicationCache_Gateway.Settings.Image_URL + Metadata.Web.File_Root.Replace("\\", "/");
+                Metadata.Web.Image_Root = Engine_ApplicationCache_Gateway.Settings.Servers.Image_URL + Metadata.Web.File_Root.Replace("\\", "/");
                 Metadata.Web.Set_BibID_VID(Metadata.BibID, Metadata.VID);
 
 
@@ -301,8 +301,8 @@ namespace SobekCM.Builder_Library
                     options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
                     options["MarcXML_File_ReaderWriter:MARC XSLT File"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
                 }
-                options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System_Name;
-                options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System_Abbreviation;
+                options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System.System_Name;
+                options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
 
                 // Save the marc xml file
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();
@@ -341,8 +341,8 @@ namespace SobekCM.Builder_Library
                     options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
                     options["MarcXML_File_ReaderWriter:MARC XSLT File"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
                 }
-                options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System_Name;
-                options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System_Abbreviation;
+                options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System.System_Name;
+                options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
 
                 // Set the file root again
                 Metadata.Web.File_Root = fileRoot;
@@ -470,7 +470,7 @@ namespace SobekCM.Builder_Library
         {
             get
             {
-                return Engine_ApplicationCache_Gateway.Settings.System_Base_URL + "/" + Metadata.BibID + "/" + Metadata.VID;
+                return Engine_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "/" + Metadata.BibID + "/" + Metadata.VID;
             }
         }
 

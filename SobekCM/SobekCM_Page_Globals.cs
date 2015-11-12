@@ -83,30 +83,30 @@ namespace SobekCM
 #if DEBUG
 			    if (base_url.IndexOf("localhost:") > 0)
 			    {
-			        UI_ApplicationCache_Gateway.Settings.System_Base_URL = base_url;
-			        UI_ApplicationCache_Gateway.Settings.Base_URL = base_url;
+			        UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL = base_url;
+			        UI_ApplicationCache_Gateway.Settings.Servers.Base_URL = base_url;
 
 			    }
 #endif
 
                 // Ensure the settings base directory is set correctly 
-			    if ( String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Base_Directory))
+			    if ( String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory))
 			    {
                     string baseDir = System.Web.HttpContext.Current.Server.MapPath("~");
 			        if ((baseDir.Length > 0) && (baseDir[baseDir.Length - 1] != '\\'))
 			            baseDir = baseDir + "\\";
-                    UI_ApplicationCache_Gateway.Settings.Base_Directory = baseDir;
+                    UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = baseDir;
 
                     SobekCM_Database.Set_Setting("Application Server Network", baseDir);
 			    }
 
                 // Ensure the web server IP address is set correctly
-			    if (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.SobekCM_Web_Server_IP))
+			    if (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.SobekCM_Web_Server_IP))
 			    {
 			        string ip = get_local_ip();
 			        if (ip.Length > 0)
 			        {
-                        UI_ApplicationCache_Gateway.Settings.SobekCM_Web_Server_IP = ip;
+                        UI_ApplicationCache_Gateway.Settings.Servers.SobekCM_Web_Server_IP = ip;
 
                         SobekCM_Database.Set_Setting("SobekCM Web Server IP", ip);
 			        }
@@ -114,10 +114,10 @@ namespace SobekCM
 
 
                 // (TEMPORARY FOR UF)
-			    if (( !String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System_Abbreviation)) && ( UI_ApplicationCache_Gateway.Settings.System_Abbreviation.IndexOf("UFDC") == 0))
+			    if (( !String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation)) && ( UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation.IndexOf("UFDC") == 0))
 			    {
                     string baseDir = System.Web.HttpContext.Current.Server.MapPath("~");
-                    UI_ApplicationCache_Gateway.Settings.Base_Directory = baseDir;
+                    UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = baseDir;
 			    }
 
 				// Check that something is saved for the original requested URL (may not exist if not forwarded)
@@ -626,14 +626,14 @@ namespace SobekCM
 			if (HttpContext.Current.Session["user"] == null)
 			{
 				// If this is a responce from Shibboleth/Gatorlink, get the user information and register them if necessary
-			    if ((UI_ApplicationCache_Gateway.Settings.Shibboleth != null) && (UI_ApplicationCache_Gateway.Settings.Shibboleth.Enabled))
+			    if ((UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth != null) && (UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Enabled))
 			    {
-			        string shibboleth_id = HttpContext.Current.Request.ServerVariables[UI_ApplicationCache_Gateway.Settings.Shibboleth.UserIdentityAttribute];
+			        string shibboleth_id = HttpContext.Current.Request.ServerVariables[UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.UserIdentityAttribute];
 			        if (shibboleth_id == null)
 			        {
-			            if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			            if (UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Debug)
 			            {
-                            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Settings.Shibboleth.UserIdentityAttribute + " server variable NOT found");
+                            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.UserIdentityAttribute + " server variable NOT found");
 
 			                // For debugging purposes, if this SHOULD have included SHibboleth information, show in the trace route
 			                if (HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth"))
@@ -647,11 +647,11 @@ namespace SobekCM
 			        }
 			        else
 			        {
-			            if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			            if (UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Debug)
 			            {
-                            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Settings.Shibboleth.UserIdentityAttribute + " server variable found");
+                            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.UserIdentityAttribute + " server variable found");
 
-                            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Settings.Shibboleth.UserIdentityAttribute + " server variable = '" + shibboleth_id + "'");
+                            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.UserIdentityAttribute + " server variable = '" + shibboleth_id + "'");
 
 			                // For debugging purposes, if this SHOULD have included SHibboleth information, show in the trace route
                             if (HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth"))
@@ -672,33 +672,33 @@ namespace SobekCM
 			                // Check to see if we got a valid user back
 			                if (possible_user_by_shibboleth_id != null)
 			                {
-			                    if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			                    if (UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Debug)
 			                    {
 			                        // Set the user information from the server variables here 
 			                        foreach (string var in HttpContext.Current.Request.ServerVariables)
 			                        {
-			                            User_Object_Attribute_Mapping_Enum mapping = UI_ApplicationCache_Gateway.Settings.Shibboleth.Get_User_Object_Mapping(var);
+			                            User_Object_Attribute_Mapping_Enum mapping = UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Get_User_Object_Mapping(var);
 			                            if (mapping != User_Object_Attribute_Mapping_Enum.NONE)
 			                            {
 			                                string value = HttpContext.Current.Request.ServerVariables[var];
 
-			                                if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			                                if (UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Debug)
 			                                {
 			                                    tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variable " + var + " ( " + value + " ) would have been mapped to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(mapping));
 			                                }
 			                            }
-			                            else if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			                            else if (UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Debug)
 			                            {
 			                                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variable " + var + " is not mapped to a user attribute");
 			                            }
 			                        }
 
 			                        // Set any constants as well
-			                        foreach (KeyValuePair<User_Object_Attribute_Mapping_Enum, string> constantMapping in UI_ApplicationCache_Gateway.Settings.Shibboleth.Constants)
+			                        foreach (KeyValuePair<User_Object_Attribute_Mapping_Enum, string> constantMapping in UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Constants)
 			                        {
 			                            if (constantMapping.Key != User_Object_Attribute_Mapping_Enum.NONE)
 			                            {
-			                                if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			                                if (UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Debug)
 			                                {
 			                                    tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Constant value ( " + constantMapping.Value + " ) would have been set to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(constantMapping.Key));
 			                                }
@@ -731,31 +731,31 @@ namespace SobekCM
 			                    // Set the user information from the server variables here 
 			                    foreach (string var in HttpContext.Current.Request.ServerVariables)
 			                    {
-			                        User_Object_Attribute_Mapping_Enum mapping = UI_ApplicationCache_Gateway.Settings.Shibboleth.Get_User_Object_Mapping(var);
+			                        User_Object_Attribute_Mapping_Enum mapping = UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Get_User_Object_Mapping(var);
 			                        if (mapping != User_Object_Attribute_Mapping_Enum.NONE)
 			                        {
 			                            string value = HttpContext.Current.Request.ServerVariables[var];
 			                            newUser.Set_Value_By_Mapping(mapping, value);
 
-			                            if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			                            if (UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Debug)
 			                            {
 			                                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variable " + var + " ( " + value + " ) mapped to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(mapping));
 			                            }
 			                        }
-			                        else if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			                        else if (UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Debug)
 			                        {
 			                            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Server Variable " + var + " is not mapped to a user attribute");
 			                        }
 			                    }
 
 			                    // Set any constants as well
-			                    foreach (KeyValuePair<User_Object_Attribute_Mapping_Enum, string> constantMapping in UI_ApplicationCache_Gateway.Settings.Shibboleth.Constants)
+			                    foreach (KeyValuePair<User_Object_Attribute_Mapping_Enum, string> constantMapping in UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Constants)
 			                    {
 			                        if (constantMapping.Key != User_Object_Attribute_Mapping_Enum.NONE)
 			                        {
                                         newUser.Set_Value_By_Mapping(constantMapping.Key, constantMapping.Value);
 
-			                            if (UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			                            if (UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Debug)
 			                            {
 			                                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Setting constant value ( " + constantMapping.Value + " ) to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(constantMapping.Key));
 			                            }
@@ -806,7 +806,7 @@ namespace SobekCM
 			                    currentMode.Aggregation = String.Empty;
 			                }
 
-			                if (!UI_ApplicationCache_Gateway.Settings.Shibboleth.Debug)
+			                if (!UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Debug)
 			                {
 			                    UrlWriterHelper.Redirect(currentMode);
 			                }
@@ -1079,7 +1079,7 @@ namespace SobekCM
 			// Load the JSON writer
 			if (currentMode.Writer_Type == Writer_Type_Enum.JSON)
 			{
-                mainWriter = new Json_MainWriter(RequestSpecificValues, UI_ApplicationCache_Gateway.Settings.Image_URL);
+                mainWriter = new Json_MainWriter(RequestSpecificValues, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL);
 			}
 
 			// Load the HTML ECHO writer
@@ -1134,7 +1134,7 @@ namespace SobekCM
 			}
 			else
 			{
-                if (!assistant.Get_Item(currentMode, UI_ApplicationCache_Gateway.Items, UI_ApplicationCache_Gateway.Settings.Image_URL,
+                if (!assistant.Get_Item(currentMode, UI_ApplicationCache_Gateway.Items, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL,
                                         UI_ApplicationCache_Gateway.Icon_List, UI_ApplicationCache_Gateway.Item_Viewer_Priority, currentUser, tracer, out currentItem, out currentPage, out itemsInTitle))
 				{
 					if ((currentMode.Mode == Display_Mode_Enum.Legacy_URL) || (currentMode.Invalid_Item.HasValue && currentMode.Invalid_Item.Value ))
@@ -1166,7 +1166,7 @@ namespace SobekCM
 			tracer.Add_Trace("SobekCM_Page_Globals.Simple_Web_Content_Text_Block", "Retrieiving Simple Web Content Object");
 
 			SobekCM_Assistant assistant = new SobekCM_Assistant();
-            if (!assistant.Get_Simple_Web_Content_Text(currentMode, UI_ApplicationCache_Gateway.Settings.Base_Directory, tracer,
+            if (!assistant.Get_Simple_Web_Content_Text(currentMode, UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory, tracer,
 			                                           out staticWebContent, out siteMap))
 			{
 				currentMode.Mode = Display_Mode_Enum.Error;
@@ -1208,7 +1208,7 @@ namespace SobekCM
 			}
 			else
 			{
-                if (!assistant.Get_Browse_Info(currentMode, hierarchyObject, UI_ApplicationCache_Gateway.Settings.Base_Directory, tracer, out thisBrowseObject, out searchResultStatistics, out pagedSearchResults, out staticWebContent))
+                if (!assistant.Get_Browse_Info(currentMode, hierarchyObject, UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory, tracer, out thisBrowseObject, out searchResultStatistics, out pagedSearchResults, out staticWebContent))
 				{
 					currentMode.Mode = Display_Mode_Enum.Error;
 				}
@@ -1446,7 +1446,7 @@ namespace SobekCM
 					      "Error Message: " + EmailTitle;
 				}
 
-                Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.System_Error_Email, EmailTitle, err, true, String.Empty);
+                Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email, EmailTitle, err, true, String.Empty);
 			}
 			catch (Exception)
 			{
@@ -1457,7 +1457,7 @@ namespace SobekCM
 			if (Redirect)
 			{
 				// Forward to our error message
-                HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.System_Error_URL, false);
+                HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL, false);
 				HttpContext.Current.ApplicationInstance.CompleteRequest();
 				if (currentMode != null)
 					currentMode.Request_Completed = true;
@@ -1511,7 +1511,7 @@ namespace SobekCM
 				// Send this email
 				try
 				{
-                    Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.System_Error_Email, "SobekCM Exception Caught  [Invalid Item Requested]", builder.ToString(), false, String.Empty);
+                    Email_Helper.SendEmail(UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email, "SobekCM Exception Caught  [Invalid Item Requested]", builder.ToString(), false, String.Empty);
 				}
 				catch (Exception)
 				{
@@ -1525,7 +1525,7 @@ namespace SobekCM
 			}
 
 			// Forward to our error message
-            HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.System_Error_URL, false);
+            HttpContext.Current.Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL, false);
 			HttpContext.Current.ApplicationInstance.CompleteRequest();
 			if (currentMode != null)
 				currentMode.Request_Completed = true;

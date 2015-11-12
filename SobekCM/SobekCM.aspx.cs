@@ -59,7 +59,7 @@ namespace SobekCM
 					}
 				}
 
-				if ((UI_ApplicationCache_Gateway.Settings.Web_Output_Caching_Minutes > 0) && (String.IsNullOrEmpty(Request.QueryString["refresh"])))
+				if ((UI_ApplicationCache_Gateway.Settings.Servers.Web_Output_Caching_Minutes > 0) && (String.IsNullOrEmpty(Request.QueryString["refresh"])))
 				{
 					if ((pageGlobals.currentMode.Mode != Display_Mode_Enum.Error) &&
 						(pageGlobals.currentMode.Mode != Display_Mode_Enum.My_Sobek) &&
@@ -81,7 +81,7 @@ namespace SobekCM
 						((pageGlobals.currentMode.Mode != Display_Mode_Enum.Item_Display) || ((pageGlobals.currentMode.ViewerCode.Length > 0) && (pageGlobals.currentMode.ViewerCode.ToUpper().IndexOf("citation") < 0) && (pageGlobals.currentMode.ViewerCode.ToUpper().IndexOf("allvolumes3") < 0))))
 					{
 						Response.Cache.SetCacheability(HttpCacheability.Private);
-						Response.Cache.SetMaxAge(new TimeSpan(0, UI_ApplicationCache_Gateway.Settings.Web_Output_Caching_Minutes, 0));
+						Response.Cache.SetMaxAge(new TimeSpan(0, UI_ApplicationCache_Gateway.Settings.Servers.Web_Output_Caching_Minutes, 0));
 					}
 					else
 					{
@@ -149,7 +149,7 @@ namespace SobekCM
 
 	        if (pageGlobals.currentMode.Language == Core.Configuration.Web_Language_Enum.DEFAULT)
 	        {
-	            Response.Output.Write(Core.Configuration.Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.Default_UI_Language));
+	            Response.Output.Write(Core.Configuration.Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language));
 	        }
 	        else
 	        {
@@ -293,15 +293,15 @@ namespace SobekCM
 		protected override void OnInit(EventArgs E)
 		{
             // Ensure there is a base URL
-		    if (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System_Base_URL))
+		    if (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL))
 		    {
 		        string base_url = Request.Url.AbsoluteUri.ToLower().Replace("sobekcm.aspx", "");
 	            if (base_url.IndexOf("?") > 0)
 	                base_url = base_url.Substring(0, base_url.IndexOf("?"));
 		        if (base_url[base_url.Length - 1] != '/')
 		            base_url = base_url + "/";
-                UI_ApplicationCache_Gateway.Settings.System_Base_URL = base_url;
-                UI_ApplicationCache_Gateway.Settings.Base_URL = base_url;
+                UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL = base_url;
+                UI_ApplicationCache_Gateway.Settings.Servers.Base_URL = base_url;
 		    }
 
             // Ensure the microservices client has read the configuration file
@@ -313,15 +313,15 @@ namespace SobekCM
 			    {
                     if (base_url.IndexOf("?") > 0)
 				        base_url = base_url.Substring(0, base_url.IndexOf("?"));
-			        UI_ApplicationCache_Gateway.Settings.System_Base_URL = base_url;
-			        UI_ApplicationCache_Gateway.Settings.Base_URL = base_url;
+			        UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL = base_url;
+			        UI_ApplicationCache_Gateway.Settings.Servers.Base_URL = base_url;
 
 			    }
 #endif
 
                 // Get the base URL
                 string path = Server.MapPath("config/default/sobekcm_microservices.config");
-                SobekEngineClient.Read_Config_File(path, UI_ApplicationCache_Gateway.Settings.System_Base_URL);
+                SobekEngineClient.Read_Config_File(path, UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL);
 		    }
 
             // Also, ensure the static resource locations have been read
@@ -336,26 +336,26 @@ namespace SobekCM
 
                     if (base_url.IndexOf("localhost:") > 0)
                     {
-                        UI_ApplicationCache_Gateway.Settings.Application_Server_URL = base_url;
+                        UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL = base_url;
                     }
 #endif
 
 		            // Try to read the static resources configuration file
-		            string static_config_file = UI_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\default\\sobekcm_static_resources_" + UI_ApplicationCache_Gateway.Settings.Static_Resources_Config_File.Replace(" ", "_") + ".config";
+		            string static_config_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "\\config\\default\\sobekcm_static_resources_" + UI_ApplicationCache_Gateway.Settings.Servers.Static_Resources_Config_File.Replace(" ", "_") + ".config";
 		            if (File.Exists(static_config_file))
 		            {
-		                Static_Resources.Read_Config(static_config_file, UI_ApplicationCache_Gateway.Settings.Application_Server_URL + "default");
+		                Static_Resources.Read_Config(static_config_file, UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL + "default");
 		            }
-		            else if (File.Exists(UI_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\default\\sobekcm_static_resources_cdn.config"))
+		            else if (File.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "\\config\\default\\sobekcm_static_resources_cdn.config"))
 		            {
-                        Static_Resources.Read_Config(UI_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\default\\sobekcm_static_resources_cdn.config", UI_ApplicationCache_Gateway.Settings.Application_Server_URL + "default");
+                        Static_Resources.Read_Config(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "\\config\\default\\sobekcm_static_resources_cdn.config", UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL + "default");
 		            }
 
                     // Look for the user override settings file 
-                    string user_config_file = UI_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\user\\sobekcm_static_resources.config";
+                    string user_config_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "\\config\\user\\sobekcm_static_resources.config";
 		            if (File.Exists(user_config_file))
 		            {
-                        Static_Resources.Read_Config(user_config_file, UI_ApplicationCache_Gateway.Settings.Application_Server_URL + "default");
+                        Static_Resources.Read_Config(user_config_file, UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL + "default");
 		            }
 		        }
 		        catch
@@ -381,8 +381,8 @@ namespace SobekCM
 			if ((pageGlobals.currentMode == null) || (pageGlobals.currentMode.Request_Completed))
 				return;
 
-			if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System_Name))
-				Response.Output.Write(UI_ApplicationCache_Gateway.Settings.System_Name + " : SobekCM Digital Repository");
+			if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System.System_Name))
+				Response.Output.Write(UI_ApplicationCache_Gateway.Settings.System.System_Name + " : SobekCM Digital Repository");
 			else
 				Response.Output.Write("SobekCM Digital Repository");
 		}

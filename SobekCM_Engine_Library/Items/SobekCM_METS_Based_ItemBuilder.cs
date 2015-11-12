@@ -62,7 +62,7 @@ namespace SobekCM.Engine_Library.Items
 			string metsFile = metsLocation.Replace("\\", "/") + "/" + BibID + ".xml";
 			if (metsFile.IndexOf("http:") < 0)
 			{
-                metsFile = Engine_ApplicationCache_Gateway.Settings.Image_Server_Network + metsFile;
+                metsFile = Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + metsFile;
 			}
 
 			// Try to read this METS file
@@ -88,7 +88,7 @@ namespace SobekCM.Engine_Library.Items
 			Item_Group_Object.Behaviors.Text_Searchable = false;
 
 			Item_Group_Object.Web.File_Root = String.Empty;
-            Item_Group_Object.Web.Image_Root = Engine_ApplicationCache_Gateway.Settings.Image_URL;
+            Item_Group_Object.Web.Image_Root = Engine_ApplicationCache_Gateway.Settings.Servers.Image_URL;
 			Item_Group_Object.Web.Siblings = 2;
 			Item_Group_Object.Web.Static_PageCount = 0;
 			Item_Group_Object.Web.Static_Division_Count = 0;
@@ -249,7 +249,7 @@ namespace SobekCM.Engine_Library.Items
 				string mets_file = mets_location.Replace("\\", "/") + "/" + BibID + "_" + VID + ".mets.xml";
 				if (mets_file.IndexOf("http:") < 0)
 				{
-					mets_file = Engine_ApplicationCache_Gateway.Settings.Image_Server_Network + mets_file;
+					mets_file = Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + mets_file;
 				}
 
 				// Could point directly to a METS file in some off-site location, in which case, use it
@@ -446,7 +446,7 @@ namespace SobekCM.Engine_Library.Items
 
 		        // Set more of the sobekcm web portions in the item 
 		        Package_To_Finalize.Web.Set_BibID_VID(Package_To_Finalize.BibID, Package_To_Finalize.VID);
-		        Package_To_Finalize.Web.Image_Root = Engine_ApplicationCache_Gateway.Settings.Image_URL;
+		        Package_To_Finalize.Web.Image_Root = Engine_ApplicationCache_Gateway.Settings.Servers.Image_URL;
 		        if (Multiple)
 		            Package_To_Finalize.Web.Siblings = 2;
 
@@ -724,7 +724,7 @@ namespace SobekCM.Engine_Library.Items
 			// If there is no PURL, add one based on how SobekCM operates
 			if (Package_To_Finalize.Bib_Info.Location.PURL.Length == 0)
 			{
-                Package_To_Finalize.Bib_Info.Location.PURL = Engine_ApplicationCache_Gateway.Settings.System_Base_URL + Package_To_Finalize.BibID + "/" + Package_To_Finalize.VID;
+                Package_To_Finalize.Bib_Info.Location.PURL = Engine_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + Package_To_Finalize.BibID + "/" + Package_To_Finalize.VID;
 				
 			}
 
@@ -1092,11 +1092,11 @@ namespace SobekCM.Engine_Library.Items
 				if ((Package_To_Finalize.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD) && (ead_file.Length > 0))
 				{
 					// Now, read this EAD file information 
-					string ead_file_location = Engine_ApplicationCache_Gateway.Settings.Image_Server_Network + Package_To_Finalize.Web.AssocFilePath + ead_file;
+					string ead_file_location = Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + Package_To_Finalize.Web.AssocFilePath + ead_file;
 					EAD_File_ReaderWriter reader = new EAD_File_ReaderWriter();
 					string errorMessage;
 					Dictionary<string, object> options = new Dictionary<string, object>();
-                    options["EAD_File_ReaderWriter:XSL_Location"] = Engine_ApplicationCache_Gateway.Settings.System_Base_URL + "default/sobekcm_default.xsl";
+                    options["EAD_File_ReaderWriter:XSL_Location"] = Engine_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "default/sobekcm_default.xsl";
 
 					reader.Read_Metadata(ead_file_location, Package_To_Finalize, options, out errorMessage);
 

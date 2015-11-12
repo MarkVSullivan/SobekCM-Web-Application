@@ -43,7 +43,7 @@ namespace SobekCM.Library.CKEditor
             }
 
             if ( Include_Script_Reference )
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + UI_ApplicationCache_Gateway.Settings.Application_Server_URL + "default/ckeditor/4.4.7/ckeditor.js\"></script>");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL + "default/ckeditor/4.4.7/ckeditor.js\"></script>");
 
             Output.WriteLine("  <script type=\"text/javascript\">");
 

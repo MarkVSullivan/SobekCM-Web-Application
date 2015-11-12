@@ -115,9 +115,9 @@ namespace SobekCM
 					else
 					{
 						// Forward if there is a place to forward to.
-						if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.System_Error_URL))
+						if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL))
 						{
-							Response.Redirect(UI_ApplicationCache_Gateway.Settings.System_Error_URL, false);
+							Response.Redirect(UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL, false);
 						}
 						else
 						{

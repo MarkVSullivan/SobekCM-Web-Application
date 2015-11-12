@@ -47,7 +47,7 @@ namespace SobekCM.Engine_Library.Solr
 					Page_Number = 1;
 
 				// Create the solr worker to query the document index
-				var solrWorker = Solr_Operations_Cache<Solr_Document_Result>.GetSolrOperations(Engine_ApplicationCache_Gateway.Settings.Document_Solr_Index_URL);
+				var solrWorker = Solr_Operations_Cache<Solr_Document_Result>.GetSolrOperations(Engine_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL);
 
 				// Create the query options
 				QueryOptions options = new QueryOptions

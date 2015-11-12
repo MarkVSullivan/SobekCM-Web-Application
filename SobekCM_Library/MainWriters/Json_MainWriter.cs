@@ -100,9 +100,9 @@ namespace SobekCM.Library.MainWriters
                 {
                     // Get the list of all TEXT files
                     List<string> existing_text_files = new List<string>();
-                    if (Directory.Exists(UI_ApplicationCache_Gateway.Settings.Image_Server_Network + RequestSpecificValues.Current_Item.Web.AssocFilePath))
+                    if (Directory.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + RequestSpecificValues.Current_Item.Web.AssocFilePath))
                     {
-                        string[] allFiles = Directory.GetFiles(UI_ApplicationCache_Gateway.Settings.Image_Server_Network + RequestSpecificValues.Current_Item.Web.AssocFilePath, "*.txt");
+                        string[] allFiles = Directory.GetFiles(UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + RequestSpecificValues.Current_Item.Web.AssocFilePath, "*.txt");
                         existing_text_files.AddRange(allFiles.Select(ThisFile => (new FileInfo(ThisFile)).Name.ToUpper()));
                     }
 
@@ -173,7 +173,7 @@ namespace SobekCM.Library.MainWriters
                 // Was a previous item/title included here?
                 if (i > 1)
                     Output.Write(",");
-                Output.Write("{\"collection_item\":{\"name\":\"" + firstItemResult.Title.Trim().Replace("\"", "'") + "\",\"url\":\"" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + titleResult.BibID + "/" + firstItemResult.VID + "\",\"collection_code\":\"\",\"id\":\"" + titleResult.BibID + "_" + firstItemResult.VID + "\",\"thumb_url\":\"" + thumb + "\"}}");
+                Output.Write("{\"collection_item\":{\"name\":\"" + firstItemResult.Title.Trim().Replace("\"", "'") + "\",\"url\":\"" + UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + titleResult.BibID + "/" + firstItemResult.VID + "\",\"collection_code\":\"\",\"id\":\"" + titleResult.BibID + "_" + firstItemResult.VID + "\",\"thumb_url\":\"" + thumb + "\"}}");
 
                 i++;
             }

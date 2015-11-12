@@ -399,7 +399,7 @@ namespace SobekCM.Library.HTML
 
 
                 // Add new digital resource
-                if (( !contains_slash ) && ( UI_ApplicationCache_Gateway.Settings.Online_Item_Submit_Enabled))
+                if (( !contains_slash ) && ( UI_ApplicationCache_Gateway.Settings.Resources.Online_Item_Submit_Enabled))
                 {
                     if (RequestSpecificValues.Current_Mode.Info_Browse_Mode.Length == 10)
                     {
@@ -941,8 +941,8 @@ namespace SobekCM.Library.HTML
                     // Build the folder which will include the uploads
                     HTML_Based_Content webContent = RequestSpecificValues.Static_Web_Content;
                     string urlSegments = webContent.UrlSegments;
-                    string webcontent_upload_dir = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "webcontent\\" + urlSegments.Replace("/", "\\");
-                    string webcontent_upload_url = UI_ApplicationCache_Gateway.Settings.System_Base_URL + "design/webcontent/" + urlSegments.Replace("\\","/") + "/";
+                    string webcontent_upload_dir = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "webcontent\\" + urlSegments.Replace("/", "\\");
+                    string webcontent_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/webcontent/" + urlSegments.Replace("\\","/") + "/";
 
                     // Create the CKEditor object
                     CKEditor.CKEditor editor = new CKEditor.CKEditor

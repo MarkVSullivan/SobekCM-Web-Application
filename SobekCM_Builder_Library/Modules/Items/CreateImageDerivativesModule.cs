@@ -49,7 +49,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     string kakadu_path = Path.Combine(startupPath, "Kakadu");
 
                     // Create the image process object for creating 
-                    Image_Derivative_Creation_Processor imageProcessor = new Image_Derivative_Creation_Processor(imagemagick_executable, kakadu_path, true, true, Settings.JPEG_Width, Settings.JPEG_Height, false, Settings.Thumbnail_Width, Settings.Thumbnail_Height, null);
+                    Image_Derivative_Creation_Processor imageProcessor = new Image_Derivative_Creation_Processor(imagemagick_executable, kakadu_path, true, true, Settings.Resources.JPEG_Width, Settings.Resources.JPEG_Height, false, Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, null);
                     imageProcessor.New_Task_String += imageProcessor_New_Task_String;
                     imageProcessor.Error_Encountered += imageProcessor_Error_Encountered;
 
@@ -66,7 +66,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                                 string name_sans_extension = jpegFileInfo.Name.Replace(jpegFileInfo.Extension, "");
                                 if (!File.Exists(resourceFolder + "\\" + name_sans_extension + "thm.jpg"))
                                 {
-                                    imageProcessor.ImageMagick_Create_JPEG(jpegFile, resourceFolder + "\\" + name_sans_extension + "thm.jpg", Settings.Thumbnail_Width, Settings.Thumbnail_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
+                                    imageProcessor.ImageMagick_Create_JPEG(jpegFile, resourceFolder + "\\" + name_sans_extension + "thm.jpg", Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
                                 }
                             }
                         }

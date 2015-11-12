@@ -25,7 +25,7 @@ namespace SobekCM.Library.MainWriters
     {
         private readonly DataTable oaiSets;
         private readonly NameValueCollection queryString;
-        private readonly string url = UI_ApplicationCache_Gateway.Settings.System_Base_URL;
+        private readonly string url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL;
         private readonly List<string> validArgs;
 
         private readonly string oai_resource_identifier_base;
@@ -82,9 +82,9 @@ namespace SobekCM.Library.MainWriters
                 config.Set_Default();
                 config.Enabled = true;
             }
-            if (String.IsNullOrEmpty(oai_resource_identifier_base)) oai_resource_identifier_base = "oai:" + UI_ApplicationCache_Gateway.Settings.System_Abbreviation + ":";
-            if (String.IsNullOrEmpty(oai_repository_name)) oai_resource_identifier_base = UI_ApplicationCache_Gateway.Settings.System_Name;
-            if (String.IsNullOrEmpty(oai_repository_identifier)) oai_resource_identifier_base = UI_ApplicationCache_Gateway.Settings.System_Abbreviation;
+            if (String.IsNullOrEmpty(oai_resource_identifier_base)) oai_resource_identifier_base = "oai:" + UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation + ":";
+            if (String.IsNullOrEmpty(oai_repository_name)) oai_resource_identifier_base = UI_ApplicationCache_Gateway.Settings.System.System_Name;
+            if (String.IsNullOrEmpty(oai_repository_identifier)) oai_resource_identifier_base = UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
 
             // Get the list of metadata prefixes permissiable by the system
             metadataPrefixes = new List<string>();
@@ -356,7 +356,7 @@ namespace SobekCM.Library.MainWriters
                 Output.WriteLine("<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">");
                 Output.WriteLine("\t<dc:title>" + thisRow["Name"].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</dc:title> ");
                 Output.WriteLine("\t<dc:identifier>" + oai_resource_identifier_base + ":" + thisRow["Code"].ToString().ToLower() + "</dc:identifier>");
-                Output.WriteLine("\t<dc:identifier>" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + "/" + thisRow["Code"].ToString().ToLower() + "</dc:identifier>");
+                Output.WriteLine("\t<dc:identifier>" + UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "/" + thisRow["Code"].ToString().ToLower() + "</dc:identifier>");
                 if ( thisRow["Description"].ToString().Length > 0 )
                     Output.WriteLine("\t<dc:description>" + thisRow["Description"].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "</dc:description>");
                 if (thisRow["OAI_Metadata"].ToString().Length > 0)
@@ -742,7 +742,7 @@ namespace SobekCM.Library.MainWriters
             }
             else
             {
-                Output.WriteLine("\t<adminEmail>" + UI_ApplicationCache_Gateway.Settings.System_Email + "</adminEmail>");
+                Output.WriteLine("\t<adminEmail>" + UI_ApplicationCache_Gateway.Settings.Email.System_Email + "</adminEmail>");
             }
             Output.WriteLine("\t<earliestDatestamp>2005-12-15</earliestDatestamp>");
             Output.WriteLine("\t<deletedRecord>transient</deletedRecord>");
@@ -760,7 +760,7 @@ namespace SobekCM.Library.MainWriters
             Output.WriteLine("\t<oai_dc:dc xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd\">");
             Output.WriteLine("\t\t<dc:title>" + oai_repository_name + "</dc:title> ");
             Output.WriteLine("\t\t<dc:identifier>" + oai_resource_identifier_base + "</dc:identifier>");
-            Output.WriteLine("\t\t<dc:identifier>" + UI_ApplicationCache_Gateway.Settings.System_Base_URL + "</dc:identifier>");
+            Output.WriteLine("\t\t<dc:identifier>" + UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "</dc:identifier>");
 
             if ((config.Descriptions != null) && (config.Descriptions.Count > 0))
             {

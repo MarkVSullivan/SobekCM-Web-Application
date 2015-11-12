@@ -213,7 +213,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 string link = Current_Mode.Base_URL + thisBibId;
 
                 // Calculate the thumbnail
-                string thumb = UI_ApplicationCache_Gateway.Settings.Image_URL + groupThumbnail.Replace("\\", "/").Replace("//", "/");
+                string thumb = UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + groupThumbnail.Replace("\\", "/").Replace("//", "/");
                 if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
                 {
                     thumb = Static_Resources.Nothumb_Jpg;

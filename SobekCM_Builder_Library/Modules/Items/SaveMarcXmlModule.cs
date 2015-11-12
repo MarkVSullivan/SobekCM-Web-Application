@@ -21,7 +21,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             try
             {
                 // Set the image location
-                Resource.Metadata.Web.Image_Root = Settings.Image_URL + Resource.Metadata.Web.File_Root.Replace("\\", "/");
+                Resource.Metadata.Web.Image_Root = Settings.Servers.Image_URL + Resource.Metadata.Web.File_Root.Replace("\\", "/");
                 Resource.Metadata.Web.Set_BibID_VID(Resource.Metadata.BibID, Resource.Metadata.VID);
 
                 // Create the options dictionary used when saving information to the database, or writing MarcXML
@@ -34,8 +34,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                     options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
                     options["MarcXML_File_ReaderWriter:MARC XSLT File"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
                 }
-                options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System_Name;
-                options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System_Abbreviation;
+                options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System.System_Name;
+                options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
 
                 // Save the marc xml file
                 MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();

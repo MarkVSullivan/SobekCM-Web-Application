@@ -133,7 +133,7 @@ namespace SobekCM
 					if ((!String.IsNullOrEmpty(bibID)) && (!String.IsNullOrEmpty(vid)))
 					{
 						// Determine the new URL
-                        StringBuilder urlBuilder = new StringBuilder(UI_ApplicationCache_Gateway.Settings.Image_Server_Network + bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8) + "\\" + vid + "\\" + url_relative_list[4], 250);
+                        StringBuilder urlBuilder = new StringBuilder(UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8) + "\\" + vid + "\\" + url_relative_list[4], 250);
 						for (int i = 5; i < url_relative_list.Count; i++)
 						{
 							urlBuilder.Append("\\" + url_relative_list[i]);
@@ -188,7 +188,7 @@ namespace SobekCM
 									// Should this be forwarded for this mimetype?
 									if (mimeType.shouldForward)
 									{
-                                        StringBuilder forwardBuilder = new StringBuilder(UI_ApplicationCache_Gateway.Settings.Image_URL + bibID.Substring(0, 2) + "/" + bibID.Substring(2, 2) + "/" + bibID.Substring(4, 2) + "/" + bibID.Substring(6, 2) + "/" + bibID.Substring(8) + "/" + vid + "/" + url_relative_list[4], 250);
+                                        StringBuilder forwardBuilder = new StringBuilder(UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + bibID.Substring(0, 2) + "/" + bibID.Substring(2, 2) + "/" + bibID.Substring(4, 2) + "/" + bibID.Substring(6, 2) + "/" + bibID.Substring(8) + "/" + vid + "/" + url_relative_list[4], 250);
 										for (int i = 5; i < url_relative_list.Count; i++)
 										{
 											forwardBuilder.Append("/" + url_relative_list[i]);

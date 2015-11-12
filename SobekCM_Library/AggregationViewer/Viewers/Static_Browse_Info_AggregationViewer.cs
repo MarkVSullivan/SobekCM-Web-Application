@@ -43,7 +43,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			NameValueCollection form = HttpContext.Current.Request.Form;
 			if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit) && (form["sbkSbia_ChildTextEdit"] != null) && ( RequestSpecificValues.Current_User != null ))
 			{
-				string aggregation_folder = UI_ApplicationCache_Gateway.Settings.Base_Design_Location + "aggregations\\" + RequestSpecificValues.Hierarchy_Object.Code + "\\";
+				string aggregation_folder = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + "aggregations\\" + RequestSpecificValues.Hierarchy_Object.Code + "\\";
 
 			    string file = aggregation_folder + RequestSpecificValues.Browse_Object.Source;
 

@@ -36,8 +36,8 @@ namespace SobekCM.Library
                     writer.WriteLine("            <ipSecurity allowUnlisted=\"false\">");
                     writer.WriteLine("                 <clear />");
                     writer.WriteLine("                 <add ipAddress=\"127.0.0.1\" allowed=\"true\" />");
-                    if (UI_ApplicationCache_Gateway.Settings.SobekCM_Web_Server_IP.Length > 0)
-                        writer.WriteLine("                 <add ipAddress=\"" + UI_ApplicationCache_Gateway.Settings.SobekCM_Web_Server_IP.Trim() + "\" allowed=\"true\" />");
+                    if ( !String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.SobekCM_Web_Server_IP))
+                        writer.WriteLine("                 <add ipAddress=\"" + UI_ApplicationCache_Gateway.Settings.Servers.SobekCM_Web_Server_IP.Trim() + "\" allowed=\"true\" />");
                     writer.WriteLine("            </ipSecurity>");
                     writer.WriteLine("        </security>");
                     writer.WriteLine("        <modules runAllManagedModulesForAllRequests=\"true\" />");

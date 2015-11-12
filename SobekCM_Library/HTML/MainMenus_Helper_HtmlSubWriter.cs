@@ -167,7 +167,7 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("      <li id=\"sbkAgm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
                         RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Descriptions;
                         Output.WriteLine("      <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
-                        if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+                        if (UI_ApplicationCache_Gateway.Settings.System.Include_TreeView_On_System_Home)
                         {
                             RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
                             Output.WriteLine("      <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
@@ -233,7 +233,7 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("        <li id=\"sbkAgm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
                         RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Descriptions;
                         Output.WriteLine("        <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
-                        if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+                        if (UI_ApplicationCache_Gateway.Settings.System.Include_TreeView_On_System_Home)
                         {
                             RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
                             Output.WriteLine("        <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
@@ -244,7 +244,7 @@ namespace SobekCM.Library.HTML
                         RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Personalized;
                         Output.WriteLine("        <li id=\"sbkAgm_HomePersonalized\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + myCollections + "</a></li>");
                     }
-                    if (UI_ApplicationCache_Gateway.Settings.Include_Partners_On_System_Home)
+                    if (UI_ApplicationCache_Gateway.Settings.System.Include_Partners_On_System_Home)
                     {
                         RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Partners_List;
                         Output.WriteLine("        <li id=\"sbkAgm_HomePartners\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + partners_text + "</a></li>");
@@ -571,7 +571,7 @@ namespace SobekCM.Library.HTML
             if (RequestSpecificValues.Hierarchy_Object.Code == "all")
             {
                 // Is this library set to show the partners tab?
-                if (UI_ApplicationCache_Gateway.Settings.Include_Partners_On_System_Home)
+                if (UI_ApplicationCache_Gateway.Settings.System.Include_Partners_On_System_Home)
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                     RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
@@ -798,7 +798,7 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("      <li id=\"sbkAgm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
                         RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Descriptions;
                         Output.WriteLine("      <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
-                        if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+                        if (UI_ApplicationCache_Gateway.Settings.System.Include_TreeView_On_System_Home)
                         {
                             RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
                             Output.WriteLine("      <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
@@ -849,7 +849,7 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("        <li id=\"sbkAgm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
                         RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Descriptions;
                         Output.WriteLine("        <li id=\"sbkAgm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
-                        if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+                        if (UI_ApplicationCache_Gateway.Settings.System.Include_TreeView_On_System_Home)
                         {
                             RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
                             Output.WriteLine("        <li id=\"sbkAgm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
@@ -864,7 +864,7 @@ namespace SobekCM.Library.HTML
                         RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Personalized;
                         Output.WriteLine("        <li id=\"sbkAgm_HomePersonalized\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + myCollections + "</a></li>");
                     }
-                    if (UI_ApplicationCache_Gateway.Settings.Include_Partners_On_System_Home)
+                    if (UI_ApplicationCache_Gateway.Settings.System.Include_Partners_On_System_Home)
                     {
                         RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Partners_List;
                         Output.WriteLine("        <li id=\"sbkAgm_HomePartners\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + partners_text + "</a></li>");
@@ -1106,7 +1106,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("      <li id=\"sbkUsm_HomeListView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + list_view_text + "</a></li>");
                 RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Descriptions;
                 Output.WriteLine("      <li id=\"sbkUsm_HomeBriefView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + brief_view_text + "</a></li>");
-                if (UI_ApplicationCache_Gateway.Settings.Include_TreeView_On_System_Home)
+                if (UI_ApplicationCache_Gateway.Settings.System.Include_TreeView_On_System_Home)
                 {
                     RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Tree;
                     Output.WriteLine("      <li id=\"sbkUsm_HomeTreeView\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + tree_view_text + "</a></li>");
@@ -1122,7 +1122,7 @@ namespace SobekCM.Library.HTML
                 RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Personalized;
                 Output.WriteLine("      <li id=\"sbkUsm_HomePersonalized\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + myCollections + "</a></li>");
             }
-            if (UI_ApplicationCache_Gateway.Settings.Include_Partners_On_System_Home)
+            if (UI_ApplicationCache_Gateway.Settings.System.Include_Partners_On_System_Home)
             {
                 RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.Partners_List;
                 Output.WriteLine("      <li id=\"sbkUsm_HomePartners\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + partners_text + "</a></li>");
@@ -1139,7 +1139,7 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("    <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + my_sobek_home_text + "</a><ul id=\"sbkUsm_MySubMenu\">");
 
                 // If a user can submit, add a link to start a new item
-                if ((RequestSpecificValues.Current_User.Can_Submit) && (UI_ApplicationCache_Gateway.Settings.Online_Item_Submit_Enabled))
+                if ((RequestSpecificValues.Current_User.Can_Submit) && (UI_ApplicationCache_Gateway.Settings.Resources.Online_Item_Submit_Enabled))
                 {
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";

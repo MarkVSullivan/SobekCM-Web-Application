@@ -342,8 +342,8 @@ namespace SobekCM.Engine_Library.Endpoints
         protected internal void legacy_json_display_item_info(TextWriter Output, BriefItemInfo BriefItem, int Page, string Viewer )
         {
             // Get the URL and network roots
-            string network = Engine_ApplicationCache_Gateway.Settings.Image_Server_Network;
-            string image_url = Engine_ApplicationCache_Gateway.Settings.Image_URL;
+            string network = Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network;
+            string image_url = Engine_ApplicationCache_Gateway.Settings.Servers.Image_URL;
             if ((image_url.Length > 0) && (image_url[image_url.Length - 1] != '/'))
                 image_url = image_url + "/";
 
@@ -638,8 +638,8 @@ namespace SobekCM.Engine_Library.Endpoints
                                 options["MarcXML_File_ReaderWriter:MARC Reproduction Place"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
                                 options["MarcXML_File_ReaderWriter:MARC XSLT File"] = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.XSLT_File;
                             }
-                            options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System_Name;
-                            options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System_Abbreviation;
+                            options["MarcXML_File_ReaderWriter:System Name"] = Engine_ApplicationCache_Gateway.Settings.System.System_Name;
+                            options["MarcXML_File_ReaderWriter:System Abbreviation"] = Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
 
 
                             MarcXML_File_ReaderWriter marcWriter = new MarcXML_File_ReaderWriter();

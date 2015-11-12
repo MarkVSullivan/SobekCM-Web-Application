@@ -153,7 +153,7 @@ namespace SobekCM.Library.MySobekViewer
 		        //	{
 		        //		// Get the location for this METS file from the returned value
 		        //		DataRow mainItemRow = itemDetails.Tables[2].Rows[0];
-		        //		bib_location = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + mainItemRow["File_Location"].ToString().Replace("/", "\\");
+		        //		bib_location = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + mainItemRow["File_Location"].ToString().Replace("/", "\\");
 		        //		vid_location = bib_location + "\\" + currentMode.VID;
 		        //	}
 		        //}     
@@ -164,7 +164,7 @@ namespace SobekCM.Library.MySobekViewer
 
 		        // Perform the SOLR delete
 		        RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Perform solr delete");
-		        Solr_Controller.Delete_Resource_From_Index(UI_ApplicationCache_Gateway.Settings.Document_Solr_Index_URL, UI_ApplicationCache_Gateway.Settings.Page_Solr_Index_URL, RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID);
+		        Solr_Controller.Delete_Resource_From_Index(UI_ApplicationCache_Gateway.Settings.Servers.Document_Solr_Index_URL, UI_ApplicationCache_Gateway.Settings.Servers.Page_Solr_Index_URL, RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID);
 
 		        if (!database_result2)
 		        {
@@ -179,17 +179,17 @@ namespace SobekCM.Library.MySobekViewer
 		                RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Move resource files to RECYCLE BIN folder");
 
 		                // Make sure upper RECYCLE BIN folder exists, or create it
-		                string delete_folder = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + "RECYCLE BIN";
+		                string delete_folder = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + "RECYCLE BIN";
 		                if (!Directory.Exists(delete_folder))
 		                    Directory.CreateDirectory(delete_folder);
 
 		                // Create the bib level folder next
-		                string bib_folder = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + "RECYCLE BIN\\" + RequestSpecificValues.Current_Mode.BibID;
+		                string bib_folder = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + "RECYCLE BIN\\" + RequestSpecificValues.Current_Mode.BibID;
 		                if (!Directory.Exists(bib_folder))
 		                    Directory.CreateDirectory(bib_folder);
 
 		                // Ensure the VID folder does not exist
-		                string vid_folder = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + "RECYCLE BIN\\" + RequestSpecificValues.Current_Mode.BibID + "\\" + RequestSpecificValues.Current_Mode.VID;
+		                string vid_folder = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + "RECYCLE BIN\\" + RequestSpecificValues.Current_Mode.BibID + "\\" + RequestSpecificValues.Current_Mode.VID;
 		                if (Directory.Exists(vid_folder))
 		                    Directory.Move(vid_folder, vid_folder + "_OLD");
 

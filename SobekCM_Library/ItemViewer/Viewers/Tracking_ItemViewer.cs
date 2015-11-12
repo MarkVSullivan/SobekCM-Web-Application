@@ -461,8 +461,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             try
             {
-                string directory = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath;
-                string url = UI_ApplicationCache_Gateway.Settings.Image_URL + CurrentItem.Web.AssocFilePath;
+                string directory = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + CurrentItem.Web.AssocFilePath;
+                string url = UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + CurrentItem.Web.AssocFilePath;
 
                 FileInfo[] files = (new DirectoryInfo(directory)).GetFiles();
 
@@ -534,7 +534,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     string thisFileUpper = thisFile.System_Name.ToUpper();
                                     if (sortedFiles.ContainsKey(thisFileUpper))
                                     {
-                                       // string file = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + thisFile.System_Name;
+                                       // string file = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + CurrentItem.Web.AssocFilePath + thisFile.System_Name;
                                         Add_File_HTML(sortedFiles[thisFileUpper], builder, url, true);
                                         sortedFiles.Remove(thisFileUpper);
                                     }
@@ -546,7 +546,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 {
                                     if (sortedFiles.ContainsKey(fileName.ToUpper() + thisFileEnder))
                                     {
-                                        //string file = UI_ApplicationCache_Gateway.Settings.Image_Server_Network + CurrentItem.Web.AssocFilePath + fileName + thisFileEnder.ToLower();
+                                        //string file = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + CurrentItem.Web.AssocFilePath + fileName + thisFileEnder.ToLower();
                                         Add_File_HTML(sortedFiles[fileName.ToUpper() + thisFileEnder], builder, url, true);
                                         sortedFiles.Remove(fileName.ToUpper() + thisFileEnder);
                                     }

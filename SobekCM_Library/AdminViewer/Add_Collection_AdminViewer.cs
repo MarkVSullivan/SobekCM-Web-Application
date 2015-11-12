@@ -163,13 +163,13 @@ namespace SobekCM.Library.AdminViewer
             // Determine the in process directory for this
             if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_User.ShibbID)) && ( RequestSpecificValues.Current_User.ShibbID.Trim().Length > 0 ))
             {
-                userInProcessDirectory = Path.Combine(UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location, RequestSpecificValues.Current_User.ShibbID + "\\addcoll");
-                userInProcessUrl = Path.Combine(UI_ApplicationCache_Gateway.Settings.Application_Server_URL, "mySobek/InProcess", RequestSpecificValues.Current_User.ShibbID, "addcoll").Replace("\\","/");
+                userInProcessDirectory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location, RequestSpecificValues.Current_User.ShibbID + "\\addcoll");
+                userInProcessUrl = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, "mySobek/InProcess", RequestSpecificValues.Current_User.ShibbID, "addcoll").Replace("\\","/");
             }
             else
             {
-                userInProcessDirectory = Path.Combine(UI_ApplicationCache_Gateway.Settings.In_Process_Submission_Location, RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", "") + "\\addcoll");
-                userInProcessUrl = Path.Combine(UI_ApplicationCache_Gateway.Settings.Application_Server_URL, "mySobek/InProcess", RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", ""), "addcoll").Replace("\\", "/"); 
+                userInProcessDirectory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location, RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", "") + "\\addcoll");
+                userInProcessUrl = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, "mySobek/InProcess", RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", ""), "addcoll").Replace("\\", "/"); 
             }
 
             // If this is a postback, handle any events first
@@ -1263,7 +1263,7 @@ namespace SobekCM.Library.AdminViewer
             }
             else
             {
-                string default_button = UI_ApplicationCache_Gateway.Settings.Application_Server_Network + "design\\aggregations\\default_button.gif";
+                string default_button = UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network + "design\\aggregations\\default_button.gif";
                 if (File.Exists(default_button))
                 {
                     Output.WriteLine("  <tr class=\"sbkAcw_TallRow\">");
@@ -1271,7 +1271,7 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"admin_aggr_desc\">Current Button:</label></td>");
                     Output.WriteLine("    <td>");
 
-                    string url = UI_ApplicationCache_Gateway.Settings.Application_Server_URL + "design/aggregations/default_button.gif";
+                    string url = UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL + "design/aggregations/default_button.gif";
                     Output.WriteLine("      <img src=\"" + url + "\" alt=\"Access Denied\" style=\"border: 1px #888888 solid;\" />");
                     Output.WriteLine("    </td>");
                     Output.WriteLine("  </tr>"); 

@@ -92,7 +92,7 @@ namespace SobekCM.Library.AdminViewer
                             actionMessage = "Deleted default metadata '" + delete_value + "'";
 
                             // Look for the file to delete as well
-                            string pmets_file = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "projects\\" + delete_value + ".pmets";
+                            string pmets_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "projects\\" + delete_value + ".pmets";
                             if (File.Exists(pmets_file))
                             {
                                 try
@@ -177,8 +177,8 @@ namespace SobekCM.Library.AdminViewer
                                 {
                                     if (entered_base.Length > 0)
                                     {
-                                        string pmets_file = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "projects\\" + code_value + ".pmets";
-                                        string base_pmets_file = UI_ApplicationCache_Gateway.Settings.Base_MySobek_Directory + "projects\\" + entered_base + ".pmets";
+                                        string pmets_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "projects\\" + code_value + ".pmets";
+                                        string base_pmets_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "projects\\" + entered_base + ".pmets";
 
                                         if (File.Exists(base_pmets_file))
                                             File.Copy(base_pmets_file, pmets_file, true);

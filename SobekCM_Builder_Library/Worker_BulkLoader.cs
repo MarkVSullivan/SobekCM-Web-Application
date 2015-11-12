@@ -92,9 +92,9 @@ namespace SobekCM.Builder_Library
             
 			// Ensure there is SOME instance name
 	        if (instanceName.Length == 0)
-		        instanceName = settings.System_Name;
+		        instanceName = settings.System.System_Name;
             if (verbose)
-                settings.Builder_Verbose_Flag = true;
+                settings.Builder.Verbose_Flag = true;
 
 
             Add_NonError_To_Log("Worker_BulkLoader.Constructor: Created Static Pages Builder", verbose, String.Empty, String.Empty, -1);
@@ -133,7 +133,7 @@ namespace SobekCM.Builder_Library
             // If not already verbose, check settings
             if (!verbose)
             {
-                verbose = settings.Builder_Verbose_Flag;
+                verbose = settings.Builder.Verbose_Flag;
             }
 
             Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Refreshed settings and item list", verbose, String.Empty, String.Empty, -1);
@@ -360,13 +360,13 @@ namespace SobekCM.Builder_Library
 
             // Also, pull the engine configuration
             // Try to read the OAI-PMH configuration file
-            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\user\\sobekcm_microservices.config"))
+            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "\\config\\user\\sobekcm_microservices.config"))
             {
-                SobekEngineClient.Read_Config_File(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\user\\sobekcm_microservices.config", Engine_ApplicationCache_Gateway.Settings.System_Base_URL);
+                SobekEngineClient.Read_Config_File(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "\\config\\user\\sobekcm_microservices.config", Engine_ApplicationCache_Gateway.Settings.Servers.System_Base_URL);
             }
-            else if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\default\\sobekcm_microservices.config"))
+            else if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "\\config\\default\\sobekcm_microservices.config"))
             {
-                SobekEngineClient.Read_Config_File(Engine_ApplicationCache_Gateway.Settings.Base_Directory + "\\config\\default\\sobekcm_microservices.config", Engine_ApplicationCache_Gateway.Settings.System_Base_URL);
+                SobekEngineClient.Read_Config_File(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "\\config\\default\\sobekcm_microservices.config", Engine_ApplicationCache_Gateway.Settings.Servers.System_Base_URL);
             }
 
 		    if (settings == null)
@@ -460,7 +460,7 @@ namespace SobekCM.Builder_Library
                     string file_root = bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8, 2);
 
                     // Determine the source folder for this resource
-                    string resource_folder = settings.Image_Server_Network + file_root + "\\" + vid;
+                    string resource_folder = settings.Servers.Image_Server_Network + file_root + "\\" + vid;
 
                     // Determine the METS file name
                     string mets_file = resource_folder + "\\" + bibID + "_" + vid + ".mets.xml";

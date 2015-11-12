@@ -19,13 +19,13 @@ namespace SobekCM.Builder_Library.Modules.PreProcess
         public override void DoWork(InstanceWide_Settings Settings)
         {
             // Step through each incoming folder and look for FDA reports
-            if ((Settings.FDA_Report_DropBox.Length > 0) && (Directory.Exists(Settings.FDA_Report_DropBox)))
+            if (( !String.IsNullOrEmpty(Settings.Florida.FDA_Report_DropBox)) && (Directory.Exists(Settings.Florida.FDA_Report_DropBox)))
             {
                 // Create the FDA process
                 FDA_Report_Processor fdaProcessor = new FDA_Report_Processor();
 
                 // Process all pending FDA reports
-                fdaProcessor.Process(Settings.FDA_Report_DropBox);
+                fdaProcessor.Process(Settings.Florida.FDA_Report_DropBox);
 
                 // Log successes and failures
                 if ((fdaProcessor.Error_Count > 0) || (fdaProcessor.Success_Count > 0))

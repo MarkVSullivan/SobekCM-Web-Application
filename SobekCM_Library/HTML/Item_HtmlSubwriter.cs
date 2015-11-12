@@ -1244,7 +1244,7 @@ namespace SobekCM.Library.HTML
 
 						    if (RequestSpecificValues.Current_Mode.Is_Robot)
 						    {
-								Output.Write("\t\t<li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Base_URL + "\\" + RequestSpecificValues.Current_Item.BibID + "\">" + all_volumes + "</a></li>");
+								Output.Write("\t\t<li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Base_URL + "\\" + RequestSpecificValues.Current_Item.BibID + "\">" + all_volumes + "</a></li>");
 						    }
 						    else
 						    {
@@ -2198,7 +2198,7 @@ namespace SobekCM.Library.HTML
             // Add a thumbnail to this item
             if ((RequestSpecificValues.Current_Item != null) && (RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail.Length > 0 ))
             {
-                string image_src = UI_ApplicationCache_Gateway.Settings.Image_URL + "/" + RequestSpecificValues.Current_Item.Web.AssocFilePath + "/" + RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail;
+                string image_src = UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + "/" + RequestSpecificValues.Current_Item.Web.AssocFilePath + "/" + RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail;
 
                 Output.WriteLine("  <link rel=\"image_src\" href=\"" + image_src.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://") + "\" />");
             }

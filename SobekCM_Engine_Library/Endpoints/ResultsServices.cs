@@ -422,8 +422,8 @@ namespace SobekCM.Engine_Library.Endpoints
                 return;
 
             // Get the URL and network roots
-            string image_url = Engine_ApplicationCache_Gateway.Settings.Image_URL;
-            string base_url = Engine_ApplicationCache_Gateway.Settings.Base_URL;
+            string image_url = Engine_ApplicationCache_Gateway.Settings.Servers.Image_URL;
+            string base_url = Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL;
             if (HttpContext.Current != null)
             {
                 base_url = HttpContext.Current.Request.Url.AbsoluteUri;
@@ -471,9 +471,9 @@ namespace SobekCM.Engine_Library.Endpoints
         protected internal void legacy_xml_display_search_results(TextWriter Output, Results_Arguments Args, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> ResultsPage)
         {
             // Get the URL and network roots
-            string image_url = Engine_ApplicationCache_Gateway.Settings.Image_URL;
-            string network = Engine_ApplicationCache_Gateway.Settings.Image_Server_Network;
-            string base_url = Engine_ApplicationCache_Gateway.Settings.Base_URL;
+            string image_url = Engine_ApplicationCache_Gateway.Settings.Servers.Image_URL;
+            string network = Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network;
+            string base_url = Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL;
             if (HttpContext.Current != null)
             {
                 base_url = HttpContext.Current.Request.Url.AbsoluteUri;

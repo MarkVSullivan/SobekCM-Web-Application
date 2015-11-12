@@ -34,7 +34,7 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
             // Create the new statics page builder
             // IN THIS CASE, WE DO NEED TO SET THE SINGLETON, SINCE THIS CALLS THE LIBRARIES
             Engine_ApplicationCache_Gateway.Settings = Settings;
-            Static_Pages_Builder staticBuilder = new Static_Pages_Builder(Settings.Application_Server_URL, Settings.Static_Pages_Location, Settings.Application_Server_Network);
+            Static_Pages_Builder staticBuilder = new Static_Pages_Builder(Settings.Servers.Application_Server_URL, Settings.Servers.Static_Pages_Location, Settings.Servers.Application_Server_Network);
 
             // Step through each aggregation with new items
             foreach (string thisAggrCode in AggregationsAffected)
@@ -49,7 +49,7 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
 
                     // Get this item aggregations
                     Complete_Item_Aggregation aggregationCompleteObj = Engine_Database.Get_Item_Aggregation(thisAggrCode, false, null);
-                    Item_Aggregation aggregationObj = Item_Aggregation_Utilities.Get_Item_Aggregation( aggregationCompleteObj, Engine_ApplicationCache_Gateway.Settings.Default_UI_Language, null);
+                    Item_Aggregation aggregationObj = Item_Aggregation_Utilities.Get_Item_Aggregation( aggregationCompleteObj, Engine_ApplicationCache_Gateway.Settings.System.Default_UI_Language, null);
 
                     // Get the list of items for this aggregation
                     DataSet aggregation_items = Engine_Database.Simple_Item_List(thisAggrCode, null);
@@ -58,14 +58,14 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
                     OnProcess("........Building XML item list for " + display_code, "Aggregation Updates", String.Empty, String.Empty, updatedId);
                     try
                     {
-                        string aggregation_list_file = Settings.Static_Pages_Location + "\\" + thisAggrCode.ToLower() + ".xml";
+                        string aggregation_list_file = Settings.Servers.Static_Pages_Location + "\\" + thisAggrCode.ToLower() + ".xml";
                         if (File.Exists(aggregation_list_file))
                             File.Delete(aggregation_list_file);
                         aggregation_items.WriteXml(aggregation_list_file, XmlWriteMode.WriteSchema);
                     }
                     catch (Exception ee)
                     {
-                        OnError("........Error in building XML list for " + display_code + " on " + Settings.Static_Pages_Location + "\n" + ee.Message, String.Empty, String.Empty, updatedId);
+                        OnError("........Error in building XML list for " + display_code + " on " + Settings.Servers.Static_Pages_Location + "\n" + ee.Message, String.Empty, String.Empty, updatedId);
                     }
 
                     OnProcess("........Building RSS feed for " + display_code, "Aggregation Updates", String.Empty, String.Empty, updatedId);
@@ -74,12 +74,12 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
                         staticBuilder.Create_RSS_Feed(thisAggrCode.ToLower(), Settings.Local_Log_Directory, aggregationObj.Name, aggregation_items);
                         try
                         {
-                            File.Copy(Settings.Local_Log_Directory + thisAggrCode.ToLower() + "_rss.xml", Settings.Static_Pages_Location + "\\rss\\" + thisAggrCode.ToLower() + "_rss.xml", true);
-                            File.Copy(Settings.Local_Log_Directory + thisAggrCode.ToLower() + "_short_rss.xml", Settings.Static_Pages_Location + "\\rss\\" + thisAggrCode.ToLower() + "_short_rss.xml", true);
+                            File.Copy(Settings.Local_Log_Directory + thisAggrCode.ToLower() + "_rss.xml", Settings.Servers.Static_Pages_Location + "\\rss\\" + thisAggrCode.ToLower() + "_rss.xml", true);
+                            File.Copy(Settings.Local_Log_Directory + thisAggrCode.ToLower() + "_short_rss.xml", Settings.Servers.Static_Pages_Location + "\\rss\\" + thisAggrCode.ToLower() + "_short_rss.xml", true);
                         }
                         catch (Exception ee)
                         {
-                            OnError("........Error in copying RSS feed for " + display_code + " to " + Settings.Static_Pages_Location + "\n" + ee.Message, String.Empty, String.Empty, updatedId);
+                            OnError("........Error in copying RSS feed for " + display_code + " to " + Settings.Servers.Static_Pages_Location + "\n" + ee.Message, String.Empty, String.Empty, updatedId);
                         }
                     }
                     catch (Exception ee)
@@ -93,12 +93,12 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
                         staticBuilder.Build_All_Browse(aggregationObj, aggregation_items);
                         try
                         {
-                            File.Copy(Settings.Local_Log_Directory + thisAggrCode.ToLower() + "_rss.xml", Settings.Static_Pages_Location + "\\rss\\" + thisAggrCode.ToLower() + "_rss.xml", true);
-                            File.Copy(Settings.Local_Log_Directory + thisAggrCode.ToLower() + "_short_rss.xml", Settings.Static_Pages_Location + "\\rss\\" + thisAggrCode.ToLower() + "_short_rss.xml", true);
+                            File.Copy(Settings.Local_Log_Directory + thisAggrCode.ToLower() + "_rss.xml", Settings.Servers.Static_Pages_Location + "\\rss\\" + thisAggrCode.ToLower() + "_rss.xml", true);
+                            File.Copy(Settings.Local_Log_Directory + thisAggrCode.ToLower() + "_short_rss.xml", Settings.Servers.Static_Pages_Location + "\\rss\\" + thisAggrCode.ToLower() + "_short_rss.xml", true);
                         }
                         catch (Exception ee)
                         {
-                            OnError("........Error in copying RSS feed for " + display_code + " to " + Settings.Static_Pages_Location + "\n" + ee.Message, String.Empty, String.Empty, updatedId);
+                            OnError("........Error in copying RSS feed for " + display_code + " to " + Settings.Servers.Static_Pages_Location + "\n" + ee.Message, String.Empty, String.Empty, updatedId);
                         }
                     }
                     catch (Exception ee)
@@ -126,14 +126,14 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
                 {
                     try
                     {
-                        string aggregation_list_file = Settings.Static_Pages_Location + "\\all.xml";
+                        string aggregation_list_file = Settings.Servers.Static_Pages_Location + "\\all.xml";
                         if (File.Exists(aggregation_list_file))
                             File.Delete(aggregation_list_file);
                         simple_list.WriteXml(aggregation_list_file, XmlWriteMode.WriteSchema);
                     }
                     catch (Exception ee)
                     {
-                        OnError("........Error in building XML list for all digital resources on " + Settings.Static_Pages_Location + "\n" + ee.Message, String.Empty, String.Empty, Builderid);
+                        OnError("........Error in building XML list for all digital resources on " + Settings.Servers.Static_Pages_Location + "\n" + ee.Message, String.Empty, String.Empty, Builderid);
                     }
                 }
             }
@@ -151,12 +151,12 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
                 StaticBuilder.Create_RSS_Feed("all", Settings.Local_Log_Directory, "All Items", complete_list);
                 try
                 {
-                    File.Copy(Settings.Local_Log_Directory + "all_rss.xml", Settings.Static_Pages_Location + "\\rss\\all_rss.xml", true);
-                    File.Copy(Settings.Local_Log_Directory + "all_short_rss.xml", Settings.Static_Pages_Location + "\\rss\\all_short_rss.xml", true);
+                    File.Copy(Settings.Local_Log_Directory + "all_rss.xml", Settings.Servers.Static_Pages_Location + "\\rss\\all_rss.xml", true);
+                    File.Copy(Settings.Local_Log_Directory + "all_short_rss.xml", Settings.Servers.Static_Pages_Location + "\\rss\\all_short_rss.xml", true);
                 }
                 catch (Exception ee)
                 {
-                    OnError("........Error in copying RSS feed for all digital resources to " + Settings.Static_Pages_Location + "\n" + ee.Message, String.Empty, String.Empty, Builderid);
+                    OnError("........Error in copying RSS feed for all digital resources to " + Settings.Servers.Static_Pages_Location + "\n" + ee.Message, String.Empty, String.Empty, Builderid);
                 }
             }
             catch (Exception ee)

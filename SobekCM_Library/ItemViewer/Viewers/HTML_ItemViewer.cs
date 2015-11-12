@@ -94,7 +94,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("\t\t<td style=\"align:left;\">");
 
             // Determine some replacement strings here
-            string itemURL = UI_ApplicationCache_Gateway.Settings.Image_URL + CurrentItem.Web.File_Root + "/";
+            string itemURL = UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + CurrentItem.Web.File_Root + "/";
             string itemLink = CurrentMode.Base_URL + "/" + CurrentItem.BibID + "/" + CurrentItem.VID;
 
             // Determine the source string
