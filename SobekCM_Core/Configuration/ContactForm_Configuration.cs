@@ -51,6 +51,7 @@ namespace SobekCM.Core.Configuration
 
     /// <summary> Single element to appear within the Contact Us form's main section </summary>
     [Serializable, DataContract, ProtoContract]
+    [XmlRoot("ContactFormConfigElement")]
     public class ContactForm_Configuration_Element
     {
         /// <summary> Constructor for a new instance of the ContactForm_Configuration_Element class </summary>
@@ -126,6 +127,7 @@ namespace SobekCM.Core.Configuration
     /// <summary> Class stores all the information about the contact us form either for the entire
     /// instance, or for a single aggregation </summary>
     [Serializable, DataContract, ProtoContract]
+    [XmlRoot("ContactFormConfig")]
     public class ContactForm_Configuration
     {
         /// <summary> Constructor for a new instance of the Contact_Us_Configuration class </summary>

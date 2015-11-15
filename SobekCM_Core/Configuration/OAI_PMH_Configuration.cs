@@ -3,13 +3,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Text;
+using System.Xml.Serialization;
+using ProtoBuf;
 
 #endregion
 
 namespace SobekCM.Core.Configuration
 {
     /// <summary> Configuration inforation for serving OAI-PMH from this instance </summary>
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("OaiPmhConfig")]
     public class OAI_PMH_Configuration
     {
         /// <summary> OAI-PMG configuration information for this SobekCM instance </summary>
@@ -20,29 +25,56 @@ namespace SobekCM.Core.Configuration
         }
 
         /// <summary> Base for the identifiers associated with items within this repository </summary>
+        [DataMember(Name = "identifierBase", EmitDefaultValue = false)]
+        [XmlAttribute("identifierBase")]
+        [ProtoMember(1)]
         public string Identifier_Base { get; set; }
 
         /// <summary> Flag indicates if OAI-PMH is allowed to be enabled for collections at all </summary>
         /// <remarks> The default value is TRUE, but can be overidden in the XML  </remarks>
+        [DataMember(Name = "enabled")]
+        [XmlAttribute("enabled")]
+        [ProtoMember(2)]
         public bool Enabled { get; set; }
 
         /// <summary> Name of this repository for dispay within the Identify response of the OAI-PMG protocol </summary>
+        [DataMember(Name = "name", EmitDefaultValue = false)]
+        [XmlAttribute("name")]
+        [ProtoMember(3)]
         public string Name { get; set;  }
 
         /// <summary> Identifier for this repository for display within the Identify response of the OAI-PMH protocol </summary>
+        [DataMember(Name = "identifier", EmitDefaultValue = false)]
+        [XmlAttribute("identifier")]
+        [ProtoMember(4)]
         public string Identifier { get; set;  }
 
         /// <summary> List of the administrative emails for display within the Identify response of the OAI-PMH protocol </summary>
+        [DataMember(Name = "adminEmails")]
+        [XmlArray("adminEmails")]
+        [XmlArrayItem("email", typeof(string))]
+        [ProtoMember(5)]
         public List<string> Admin_Emails { get; private set; }
 
         /// <summary> List of additional descriptions (fully encoded as XML) for display within the Identify response of the OAI-PMG protocol </summary>
+        [DataMember(Name = "descriptions")]
+        [XmlArray("descriptions")]
+        [XmlArrayItem("description", typeof(string))]
+        [ProtoMember(6)]
         public List<string> Descriptions { get; private set;  }
 
         /// <summary> List of all the metadata formats available for this repository with pointers
         /// to the classes that create the OAI-PMH metadata for harvesting  </summary>
+        [DataMember(Name = "metadataFormats")]
+        [XmlArray("metadataFormats")]
+        [XmlArrayItem("format", typeof(OAI_PMH_Metadata_Format))]
+        [ProtoMember(7)]
         public List<OAI_PMH_Metadata_Format> Metadata_Prefixes { get; private set; }
 
         /// <summary> Any error associated with reading the configuration file into this object </summary>
+        [DataMember(Name = "error", EmitDefaultValue = false)]
+        [XmlAttribute("error")]
+        [ProtoMember(8)]
         public string Error { get; set; }
 
         /// <summary> Add a new admin email address within the Identify response of the OAI-PMH protocol </summary>

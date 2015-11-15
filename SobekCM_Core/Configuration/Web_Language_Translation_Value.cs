@@ -2,6 +2,7 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
 using ProtoBuf;
 
 #endregion
@@ -10,15 +11,18 @@ namespace SobekCM.Core.Configuration
 {
     /// <summary> A single translated value, or a pair of the web language and the string itself </summary>
     [Serializable, DataContract, ProtoContract]
+    [XmlRoot("WebLanguageTranslationValue")]
     public class Web_Language_Translation_Value
     {
         /// <summary> Language in which this value is represented </summary>
         [DataMember(Name = "language")]
+        [XmlAttribute("language")]
         [ProtoMember(1)]
         public Web_Language_Enum Language { get; set; }
 
         /// <summary> Value in provided language </summary>
         [DataMember(Name = "value")]
+        [XmlAttribute("value")]
         [ProtoMember(2)]
         public string Value { get; set; }
 
