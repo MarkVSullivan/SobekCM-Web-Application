@@ -27,6 +27,7 @@ namespace SobekCM.Core.Settings
 
     /// <summary> Class provides context to constant settings based on the basic information about this instance of the application and server information </summary>
     [Serializable, DataContract, ProtoContract]
+    [XmlRoot("Settings")]
     public class InstanceWide_Settings : iSerializationEvents
     {
         private readonly Dictionary<int, Disposition_Option> dispositionLookup;
@@ -63,31 +64,34 @@ namespace SobekCM.Core.Settings
             Servers = new Server_Settings();
             Static = new Static_Settings();
             System = new System_Settings();
+
+            // Create some of the configuration stuff
+            Authentication = new Authentication_Configuration();
         }
 
         /// <summary> Settings from the database for built-in archiving functionality </summary>
         [DataMember(Name = "archive", EmitDefaultValue = false)]
         [XmlElement("archive")]
         [ProtoMember(1)]
-        public Archive_Settings Archive { get; private set; }
+        public Archive_Settings Archive { get; set; }
 
         /// <summary> Settings from the database for the builder functionality (values and modules) </summary>
         [DataMember(Name = "builder", EmitDefaultValue = false)]
         [XmlElement("builder")]
         [ProtoMember(2)]
-        public Builder_Settings Builder { get; private set; }
+        public Builder_Settings Builder { get; set; }
 
         /// <summary> Settings for emails, including email setup and main email addresses used in certain situations </summary>
         [DataMember(Name = "email", EmitDefaultValue = false)]
         [XmlElement("email")]
         [ProtoMember(3)]
-        public Email_Settings Email { get; private set; }
+        public Email_Settings Email { get; set; }
 
         /// <summary> Settings for specific to the Florida SUS schools </summary>
         [DataMember(Name = "florida", EmitDefaultValue = false)]
         [XmlElement("florida")]
         [ProtoMember(4)]
-        public Florida_Settings Florida { get; private set; }
+        public Florida_Settings Florida { get; set; }
 
         /// <summary> Setting information about the generation of Marc files, some constants, and information about the MARC feed </summary>
         [DataMember(Name = "marc21", EmitDefaultValue = false)]
@@ -100,32 +104,32 @@ namespace SobekCM.Core.Settings
         [DataMember(Name = "resources", EmitDefaultValue = false)]
         [XmlElement("resources")]
         [ProtoMember(6)]
-        public Resource_Settings Resources { get; private set; }
+        public Resource_Settings Resources { get; set; }
 
         /// <summary> Settings related to the behavior of the aggregation-wide searches within the system </summary>
         [DataMember(Name = "search", EmitDefaultValue = false)]
         [XmlElement("search")]
         [ProtoMember(7)]
-        public Search_Settings Search { get; private set; }
+        public Search_Settings Search { get; set; }
 
         /// <summary> Settings regarding the server architecture, include URLs and network locations </summary>
         [DataMember(Name = "servers", EmitDefaultValue = false)]
         [XmlElement("servers")]
         [ProtoMember(8)]
-        public Server_Settings Servers { get; private set; }
+        public Server_Settings Servers { get; set; }
 
         /// <summary> Top-level settings that are fairly consistent, and don't really load from 
         /// any database or configuration value </summary>
         [DataMember(Name = "static", EmitDefaultValue = false)]
         [XmlElement("static")]
         [ProtoMember(9)]
-        public Static_Settings Static { get; private set; }
+        public Static_Settings Static { get; set; }
 
         /// <summary> Top-level settings that control basic operation and appearance of the entire SobekCM instance </summary>
         [DataMember(Name = "system", EmitDefaultValue = false)]
         [XmlElement("system")]
         [ProtoMember(10)]
-        public System_Settings System { get; private set; }
+        public System_Settings System { get; set; }
 
         /// <summary> Database connection string(s) built from the system config file (usually sits in a config subfolder)</summary>
         [DataMember(Name = "dbConnections", EmitDefaultValue = false)]
@@ -266,26 +270,72 @@ namespace SobekCM.Core.Settings
 
         /// <summary> Additional custom settings associated with this SobekCM system at
         /// the highest level </summary>
-        [DataMember]
+        [XmlIgnore]
         public Dictionary<string, string> Additional_Settings { get; set; }
 
 
         /// <summary> Configuration for authentication for this instance </summary>
+        [DataMember(Name = "authentication", EmitDefaultValue = false)]
+        [XmlElement("authentication")]
+        [ProtoMember(15)]
         public Authentication_Configuration Authentication { get; set; }
 
         /// <summary> Configuration for the default contact form for this instance </summary>
+        [DataMember(Name = "contactForm", EmitDefaultValue = false)]
+        [XmlElement("contactForm")]
+        [ProtoMember(16)]
         public ContactForm_Configuration ContactForm { get; set; }
 
         /// <summary> Configuration information for the map editor function for this instance </summary>
+        //[DataMember(Name = "mapEditor", EmitDefaultValue = false)]
+        //[XmlElement("mapEditor")]
+        //[ProtoMember(17)]
+        [XmlIgnore]
         public MapEditor_Configuration MapEditor { get; set; }
 
         /// <summary> Configuration for instance-wide OAI-PMH settings for this instance </summary>
+        [DataMember(Name = "oai-pmh", EmitDefaultValue = false)]
+        [XmlElement("oai-pmh")]
+        [ProtoMember(18)]
         public OAI_PMH_Configuration OAI_PMH { get; set; }
 
         /// <summary> Configuration for the quality control tool for this instance </summary>
+        //[DataMember(Name = "qcConfig", EmitDefaultValue = false)]
+        //[XmlElement("qcConfig")]
+        //[ProtoMember(20)]
+        [XmlIgnore]
         public QualityControl_Configuration QualityControlTool { get; set; }
 
+        #region Methods that controls XML serialization
 
+        /// <summary> Method suppresses XML Serialization of the Florida property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeFlorida()
+        {
+            return (Florida != null) && ((!String.IsNullOrEmpty(Florida.FDA_Report_DropBox)) || (!String.IsNullOrEmpty(Florida.Mango_Union_Search_Base_URL)) || (!String.IsNullOrEmpty(Florida.Mango_Union_Search_Text)));
+        }
+
+
+        /// <summary> Method suppresses XML Serialization of the Archive property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeArchive()
+        {
+            return (Archive != null) && ((!String.IsNullOrEmpty(Archive.Archive_DropBox)) || (!String.IsNullOrEmpty(Archive.PostArchive_Files_To_Delete)) || (!String.IsNullOrEmpty(Archive.PreArchive_Files_To_Delete)));
+        }
+
+        /// <summary> Method suppresses XML Serialization of the MarcGeneration property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeMarcGeneration()
+        {
+            if (MarcGeneration == null)
+                return false;
+            
+            return ((!String.IsNullOrEmpty(MarcGeneration.Cataloging_Source_Code)) || (!String.IsNullOrEmpty(MarcGeneration.Reproduction_Place)) ||
+                    (!String.IsNullOrEmpty(MarcGeneration.Reproduction_Agency)) || (!String.IsNullOrEmpty(MarcGeneration.Location_Code)) ||
+                    (!String.IsNullOrEmpty(MarcGeneration.XSLT_File)) || (!String.IsNullOrEmpty(MarcGeneration.MarcXML_Feed_Location)));
+        }
+
+        #endregion
 
         /// <summary> Method is called by the serializer after this item is unserialized </summary>
         public void PostUnSerialization()

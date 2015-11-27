@@ -47,7 +47,7 @@ namespace SobekCM.Engine_Library.Configuration
             }
             catch (Exception ee)
             {
-                returnValue.Error = ee.Message;
+                //returnValue.Error = ee.Message;
             }
             finally
             {

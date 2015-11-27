@@ -640,9 +640,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             builder.AppendLine("  <p>This metadata file is the source metadata file submitted along with all the digital resource files. This contains all of the citation and processing information used to build this resource. This file follows the established <a href=\"http://www.loc.gov/standards/mets/\">Metadata Encoding and Transmission Standard</a> (METS) and <a href=\"http://www.loc.gov/standards/mods/\">Metadata Object Description Schema</a> (MODS). This METS/MODS file was just read when this item was loaded into memory and used to display all the information in the standard view and marc view within the citation.</p>");
 		    builder.AppendLine("</div>");
 
+            string baseLocationUrl = String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative) ? String.Empty : UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative;
+
             builder.AppendLine("<div id=\"sbkCiv_MarcXmlDownload\" class=\"sbCiv_DownloadSection\">");
             builder.AppendLine("  <a href=\"" + marc_xml + "\" target=\"_blank\">View MARC XML File</a>");
-            builder.AppendLine("  <p>The entered metadata is also converted to MARC XML format, for interoperability with other library catalog systems.  This represents the same data available in the <a href=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(CurrentMode, "FC2") + "\">MARC VIEW</a> except this is a static XML file.  This file follows the <a href=\"http://www.loc.gov/standards/marcxml/\">MarcXML Schema</a>.</p>");
+            builder.AppendLine("  <p>The entered metadata is also converted to MARC XML format, for interoperability with other library catalog systems.  This represents the same data available in the <a href=\"" + baseLocationUrl + UrlWriterHelper.Redirect_URL(CurrentMode, "FC2") + "\">MARC VIEW</a> except this is a static XML file.  This file follows the <a href=\"http://www.loc.gov/standards/marcxml/\">MarcXML Schema</a>.</p>");
 		    builder.AppendLine("</div>");
 
             // Should the TEI be added here?

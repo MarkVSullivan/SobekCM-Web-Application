@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using SobekCM.Core.Configuration;
@@ -201,6 +202,8 @@ namespace SobekCM.Engine_Library.Configuration
                             if (!subTreeReader.IsEmptyElement)
                             {
                                 subTreeReader.Read();
+                                if (newElement.Options == null)
+                                    newElement.Options = new List<string>();
                                 newElement.Options.Add(subTreeReader.Value.Trim());
                             }
                             break;

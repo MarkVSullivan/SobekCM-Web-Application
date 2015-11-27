@@ -59,7 +59,6 @@ namespace SobekCM.Core.Configuration
         public ContactForm_Configuration_Element(ContactForm_Configuration_Element_Type_Enum Element_Type )
         {
             this.Element_Type = Element_Type;
-            Options = new List<string>();
             UserAttribute = User_Object_Attribute_Mapping_Enum.NONE;
             AlwaysShow = false;
             Required = false;
@@ -173,9 +172,9 @@ namespace SobekCM.Core.Configuration
             }
         }
 
-        #region Code to save this shibboleth configuration to a XML file
+        #region Code to save this configuration to a XML file
 
-        /// <summary> Save this quality control configuration to a XML config file </summary>
+        /// <summary> Save this configuration to a XML config file </summary>
         /// <param name="FilePath"> File/path for the resulting XML config file </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
         public bool Save_To_Config_File(string FilePath)

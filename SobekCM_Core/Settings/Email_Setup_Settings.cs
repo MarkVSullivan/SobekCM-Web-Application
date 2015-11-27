@@ -65,5 +65,25 @@ namespace SobekCM.Core.Settings
                     Method = Email_Method_Enum.SmtpDirect;
             }
         }
+
+
+        #region Methods that controls XML serialization
+
+        /// <summary> Method suppresses XML Serialization of the SmtpServer property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeSmtpServer()
+        {
+            return (!String.IsNullOrEmpty(SmtpServer));
+        }
+
+
+        /// <summary> Method suppresses XML Serialization of the SmtpPort property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeSmtpPort()
+        {
+            return (!String.IsNullOrEmpty(SmtpServer));
+        }
+
+        #endregion
     }
 }

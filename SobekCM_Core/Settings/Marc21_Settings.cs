@@ -48,14 +48,54 @@ namespace SobekCM.Core.Settings
         
         /// <summary> Location where the MarcXML feeds should be placed </summary>
         [DataMember(Name = "marcXmlFeedLocation", EmitDefaultValue = false)]
-        [XmlElement("marcXmlFeedLocation")]
+        [XmlAttribute("marcXmlFeedLocation")]
         [ProtoMember(6)]
         public string MarcXML_Feed_Location { get; set; }
 
         /// <summary> Flag indicates if the MARC feed should be built by default by the bulk loader </summary>
-        [DataMember(Name = "buildMarcFeedByDefault")]
-        [XmlElement("buildMarcFeedByDefault")]
+        [DataMember(Name = "buildMarcFeed")]
+        [XmlAttribute("buildMarcFeed")]
         [ProtoMember(7)]
         public bool Build_MARC_Feed_By_Default { get; set; }
+
+        #region Methods that controls XML serialization
+
+        /// <summary> Method suppresses XML Serialization of the Cataloging_Source_Code property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeCataloging_Source_Code()
+        {
+            return (!String.IsNullOrEmpty(Cataloging_Source_Code));
+        }
+
+        /// <summary> Method suppresses XML Serialization of the Reproduction_Place property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeReproduction_Place()
+        {
+            return (!String.IsNullOrEmpty(Reproduction_Place));
+        }
+
+        /// <summary> Method suppresses XML Serialization of the Reproduction_Agency property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeReproduction_Agency()
+        {
+            return (!String.IsNullOrEmpty(Reproduction_Agency));
+        }
+
+        /// <summary> Method suppresses XML Serialization of the Location_Code property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeLocation_Code()
+        {
+            return (!String.IsNullOrEmpty(Location_Code));
+        }
+
+        /// <summary> Method suppresses XML Serialization of the XSLT_File property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeXSLT_File()
+        {
+            return (!String.IsNullOrEmpty(XSLT_File));
+        }
+
+        #endregion
+
     }
 }

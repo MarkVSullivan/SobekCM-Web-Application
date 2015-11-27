@@ -255,71 +255,71 @@ namespace SobekCM.Engine_Library.Settings
                 }
 
                 // Pull all of the builder settings value ( from UFDC_Builder_Settings )
-                Get_String_Value(settingsDictionary, "Application Server Network", SettingsObject, X => X.Servers.Application_Server_Network, ref error);
-                Get_String_Value(settingsDictionary, "Application Server URL", SettingsObject, X => X.Servers.Application_Server_URL, ref error);
-                Get_String_Value(settingsDictionary, "Archive DropBox", SettingsObject, X => X.Archive.Archive_DropBox, ref error);
-                Get_Boolean_Value(settingsDictionary, "Builder Add PageTurner ItemViewer", SettingsObject, X => X.Builder.Add_PageTurner_ItemViewer, ref error, false);
-                Get_String_Value(settingsDictionary, "Builder IIS Logs Directory", SettingsObject, X => X.Builder.IIS_Logs_Directory, ref error);
-                Get_Integer_Value(settingsDictionary, "Builder Log Expiration in Days", SettingsObject, X => X.Builder.Log_Expiration_Days, ref error, 10);
-                Get_Integer_Value(settingsDictionary, "Builder Seconds Between Polls", SettingsObject, X => X.Builder.Seconds_Between_Polls, ref error, 60);
-                Get_Boolean_Value(settingsDictionary, "Builder Send Usage Emails", SettingsObject, X => X.Builder.Send_Usage_Emails, ref error, false);
-                Get_Boolean_Value(settingsDictionary, "Builder Verbose Flag", SettingsObject, X => X.Builder.Verbose_Flag, ref error, false);
-                Get_Boolean_Value(settingsDictionary, "Can Remove Single Search Term", SettingsObject, X => X.Search.Can_Remove_Single_Term, ref error, true);
-                Get_Boolean_Value(settingsDictionary, "Can Submit Items Online", SettingsObject, X => X.Resources.Online_Item_Submit_Enabled, ref error, true);
-                Get_Boolean_Value(settingsDictionary, "Convert Office Files to PDF", SettingsObject, X => X.Builder.Convert_Office_Files_To_PDF, ref error, false);
-                Get_Boolean_Value(settingsDictionary, "Detailed User Permissions", SettingsObject, X => X.System.Detailed_User_Aggregation_Permissions, ref error, false);
-                Get_Boolean_Value(settingsDictionary, "Disable Standard User Logon Flag", SettingsObject, X => X.System.Disable_Standard_User_Logon_Flag, ref error, false);
-                Get_String_Value(settingsDictionary, "Disable Standard User Logon Message", SettingsObject, X => X.System.Disable_Standard_User_Logon_Message, ref error);
-                Get_String_Value(settingsDictionary, "Document Solr Index URL", SettingsObject, X => X.Servers.Document_Solr_Index_URL, ref error);
-                Get_String_Value(settingsDictionary, "Email Default From Address", SettingsObject, X => X.Email.Setup.DefaultFromAddress, ref error);
-                Get_String_Value(settingsDictionary, "Email Default From Name", SettingsObject, X => X.Email.Setup.DefaultFromDisplay, ref error);
-                Get_String_Value(settingsDictionary, "Email Method", SettingsObject, X => X.Email.Setup.MethodString, "DATABASE MAIL");
-                Get_Integer_Value(settingsDictionary, "Email SMTP Port", SettingsObject, X => X.Email.Setup.SmtpPort, ref error, 25);
-                Get_String_Value(settingsDictionary, "Email SMTP Server", SettingsObject, X => X.Email.Setup.SmtpServer, ref error);
-                Get_Boolean_Value(settingsDictionary, "Facets Collapsible", SettingsObject, X => X.Search.Facets_Collapsible, ref error, false);
-                Get_String_Value(settingsDictionary, "FDA Report DropBox", SettingsObject, X => X.Florida.FDA_Report_DropBox, ref error);
-                Get_String_Value(settingsDictionary, "Files To Exclude From Downloads", SettingsObject, X => X.Resources.Files_To_Exclude_From_Downloads, ref error);
-                Get_String_Value(settingsDictionary, "Help URL", SettingsObject, X => X.System.Help_URL_Base, "http://sobekrepository.org/");
-                Get_String_Value(settingsDictionary, "Help Metadata URL", SettingsObject, X => X.System.Metadata_Help_URL_Base, "http://sobekrepository.org/");
-                Get_String_Value(settingsDictionary, "Image Server Network", SettingsObject, X => X.Servers.Image_Server_Network, ref error);
+                Get_String_Value(settingsDictionary, "Application Server Network", SettingsObject.Servers, X => X.Application_Server_Network, ref error);
+                Get_String_Value(settingsDictionary, "Application Server URL", SettingsObject.Servers, X => X.Application_Server_URL, ref error);
+                Get_String_Value(settingsDictionary, "Archive DropBox", SettingsObject.Archive, X => X.Archive_DropBox, ref error);
+                Get_Boolean_Value(settingsDictionary, "Builder Add PageTurner ItemViewer", SettingsObject.Builder, X => X.Add_PageTurner_ItemViewer, ref error, false);
+                Get_String_Value(settingsDictionary, "Builder IIS Logs Directory", SettingsObject.Builder, X => X.IIS_Logs_Directory, ref error);
+                Get_Integer_Value(settingsDictionary, "Builder Log Expiration in Days", SettingsObject.Builder, X => X.Log_Expiration_Days, ref error, 10);
+                Get_Integer_Value(settingsDictionary, "Builder Seconds Between Polls", SettingsObject.Builder, X => X.Seconds_Between_Polls, ref error, 60);
+                Get_Boolean_Value(settingsDictionary, "Builder Send Usage Emails", SettingsObject.Builder, X => X.Send_Usage_Emails, ref error, false);
+                Get_Boolean_Value(settingsDictionary, "Builder Verbose Flag", SettingsObject.Builder, X => X.Verbose_Flag, ref error, false);
+                Get_Boolean_Value(settingsDictionary, "Can Remove Single Search Term", SettingsObject.Search, X => X.Can_Remove_Single_Term, ref error, true);
+                Get_Boolean_Value(settingsDictionary, "Can Submit Items Online", SettingsObject.Resources, X => X.Online_Item_Submit_Enabled, ref error, true);
+                Get_Boolean_Value(settingsDictionary, "Convert Office Files to PDF", SettingsObject.Builder, X => X.Convert_Office_Files_To_PDF, ref error, false);
+                Get_Boolean_Value(settingsDictionary, "Detailed User Permissions", SettingsObject.System, X => X.Detailed_User_Aggregation_Permissions, ref error, false);
+                Get_Boolean_Value(settingsDictionary, "Disable Standard User Logon Flag", SettingsObject.System, X => X.Disable_Standard_User_Logon_Flag, ref error, false);
+                Get_String_Value(settingsDictionary, "Disable Standard User Logon Message", SettingsObject.System, X => X.Disable_Standard_User_Logon_Message, ref error);
+                Get_String_Value(settingsDictionary, "Document Solr Index URL", SettingsObject.Servers, X => X.Document_Solr_Index_URL, ref error);
+                Get_String_Value(settingsDictionary, "Email Default From Address", SettingsObject.Email.Setup, X => X.DefaultFromAddress, ref error);
+                Get_String_Value(settingsDictionary, "Email Default From Name", SettingsObject.Email.Setup, X => X.DefaultFromDisplay, ref error);
+                Get_String_Value(settingsDictionary, "Email Method", SettingsObject.Email.Setup, X => X.MethodString, "DATABASE MAIL");
+                Get_Integer_Value(settingsDictionary, "Email SMTP Port", SettingsObject.Email.Setup, X => X.SmtpPort, ref error, 25);
+                Get_String_Value(settingsDictionary, "Email SMTP Server", SettingsObject.Email.Setup, X => X.SmtpServer, ref error);
+                Get_Boolean_Value(settingsDictionary, "Facets Collapsible", SettingsObject.Search, X => X.Facets_Collapsible, ref error, false);
+                Get_String_Value(settingsDictionary, "FDA Report DropBox", SettingsObject.Florida, X => X.FDA_Report_DropBox, ref error);
+                Get_String_Value(settingsDictionary, "Files To Exclude From Downloads", SettingsObject.Resources, X => X.Files_To_Exclude_From_Downloads, ref error);
+                Get_String_Value(settingsDictionary, "Help URL", SettingsObject.System, X => X.Help_URL_Base, "http://sobekrepository.org/");
+                Get_String_Value(settingsDictionary, "Help Metadata URL", SettingsObject.System, X => X.Metadata_Help_URL_Base, "http://sobekrepository.org/");
+                Get_String_Value(settingsDictionary, "Image Server Network", SettingsObject.Servers, X => X.Image_Server_Network, ref error);
                 //add by Keven for FIU dPanther's separate image server
-                Get_String_Value(settingsDictionary, "Image Server Root", SettingsObject, X => X.Servers.Image_Server_Root, ref error);
-                Get_String_Value(settingsDictionary, "Image Server URL", SettingsObject, X => X.Servers.Image_URL, ref error);
-                Get_Boolean_Value(settingsDictionary, "Include TreeView On System Home", SettingsObject, X => X.System.Include_TreeView_On_System_Home, ref error, false);
-                Get_Boolean_Value(settingsDictionary, "Include Partners On System Home", SettingsObject, X => X.System.Include_Partners_On_System_Home, ref error, false);
-                Get_Integer_Value(settingsDictionary, "JPEG Height", SettingsObject, X => X.Resources.JPEG_Height, ref error, -1);
-                Get_Integer_Value(settingsDictionary, "JPEG Width", SettingsObject, X => X.Resources.JPEG_Width, ref error, -1);
-                Get_String_Value(settingsDictionary, "JPEG2000 Server", SettingsObject, X => X.Servers.JP2ServerUrl, ref error);
-                Get_String_Value(settingsDictionary, "JPEG2000 Server Type", SettingsObject, X => X.Servers.JP2ServerType, ref error);
+                Get_String_Value(settingsDictionary, "Image Server Root", SettingsObject.Servers, X => X.Image_Server_Root, ref error);
+                Get_String_Value(settingsDictionary, "Image Server URL", SettingsObject.Servers, X => X.Image_URL, ref error);
+                Get_Boolean_Value(settingsDictionary, "Include TreeView On System Home", SettingsObject.System, X => X.Include_TreeView_On_System_Home, ref error, false);
+                Get_Boolean_Value(settingsDictionary, "Include Partners On System Home", SettingsObject.System, X => X.Include_Partners_On_System_Home, ref error, false);
+                Get_Integer_Value(settingsDictionary, "JPEG Height", SettingsObject.Resources, X => X.JPEG_Height, ref error, -1);
+                Get_Integer_Value(settingsDictionary, "JPEG Width", SettingsObject.Resources, X => X.JPEG_Width, ref error, -1);
+                Get_String_Value(settingsDictionary, "JPEG2000 Server", SettingsObject.Servers, X => X.JP2ServerUrl, ref error);
+                Get_String_Value(settingsDictionary, "JPEG2000 Server Type", SettingsObject.Servers, X => X.JP2ServerType, ref error);
                 //Get_String_Value(settingsDictionary, "Kakadu JPEG2000 Create Command", ref kakaduJp2CreateCommand, ref error);
 
                 
-                Get_String_Value(settingsDictionary, "Main Builder Input Folder", SettingsObject, X => X.Builder.Main_Builder_Input_Folder, String.Empty);
-                Get_String_Value(settingsDictionary, "Mango Union Search Base URL", SettingsObject, X => X.Florida.Mango_Union_Search_Base_URL, ref error);
-                Get_String_Value(settingsDictionary, "Mango Union Search Text", SettingsObject, X => X.Florida.Mango_Union_Search_Text, ref error);
-                Get_String_Value(settingsDictionary, "OCR Engine Command", SettingsObject, X => X.Builder.OCR_Command_Prompt, String.Empty);
-                Get_String_Value(settingsDictionary, "Package Archival Folder", SettingsObject, X => X.Servers.Package_Archival_Folder, String.Empty);
-                Get_String_Value(settingsDictionary, "Page Solr Index URL", SettingsObject, X => X.Servers.Page_Solr_Index_URL, String.Empty);
-                Get_String_Value(settingsDictionary, "PostArchive Files To Delete", SettingsObject, X => X.Archive.PostArchive_Files_To_Delete, String.Empty);
-                Get_String_Value(settingsDictionary, "PreArchive Files To Delete", SettingsObject, X => X.Archive.PreArchive_Files_To_Delete, String.Empty);
-                Get_String_Value(settingsDictionary, "Privacy Email Address", SettingsObject, X => X.Email.Privacy_Email, String.Empty);
-                Get_String_Value(settingsDictionary, "Send Email On Added Aggregation", SettingsObject, X => X.Email.Send_On_Added_Aggregation, "Always");
-                Get_String_Value(settingsDictionary, "SobekCM Image Server", SettingsObject, X => X.Servers.SobekCM_ImageServer, String.Empty);
-                Get_String_Value(settingsDictionary, "SobekCM Web Server IP", SettingsObject, X => X.Servers.SobekCM_Web_Server_IP, String.Empty);
-                Get_String_Value(settingsDictionary, "Static Pages Location", SettingsObject, X => X.Servers.Static_Pages_Location, ref error);
-                Get_String_Value(settingsDictionary, "Static Resources Source", SettingsObject, X => X.Servers.Static_Resources_Config_File, "CDN");          
-                Get_Boolean_Value(settingsDictionary, "Statistics Caching Enabled", SettingsObject, X => X.Servers.Statistics_Caching_Enabled, ref error, false);
-                Get_String_Value(settingsDictionary, "System Base Abbreviation", SettingsObject, X => X.System.System_Abbreviation, String.Empty);
-                Get_String_Value(settingsDictionary, "System Base Name", SettingsObject, X => X.System.System_Name, SettingsObject.System.System_Abbreviation);
-                Get_String_Value(settingsDictionary, "System Base URL", SettingsObject, X => X.Servers.System_Base_URL, String.Empty);
-                Get_String_Value(settingsDictionary, "System Email", SettingsObject, X => X.Email.System_Email, ref error);
-                Get_String_Value(settingsDictionary, "System Error Email", SettingsObject, X => X.Email.System_Error_Email, String.Empty);
-                Get_Integer_Value(settingsDictionary, "Thumbnail Height", SettingsObject, X => X.Resources.Thumbnail_Height, ref error, -1);
-                Get_Integer_Value(settingsDictionary, "Thumbnail Width", SettingsObject, X => X.Resources.Thumbnail_Width, ref error, -1);
-                Get_String_Value(settingsDictionary, "Upload File Types", SettingsObject, X => X.Resources.Upload_File_Types, ".aif,.aifc,.aiff,.au,.avi,.bz2,.c,.c++,.css,.dbf,.ddl,.doc,.docx,.dtd,.dvi,.flac,.gz,.htm,.html,.java,.jps,.js,.m4p,.mid,.midi,.mp2,.mp3,.mpg,.odp,.ogg,.pdf,.pgm,.ppt,.pptx,.ps,.ra,.ram,.rar,.rm,.rtf,.sgml,.swf,.sxi,.tbz2,.tgz,.wav,.wave,.wma,.wmv,.xls,.xlsx,.xml,.zip");
-                Get_String_Value(settingsDictionary, "Upload Image Types", SettingsObject, X => X.Resources.Upload_Image_Types, ".txt,.tif,.jpg,.jp2,.pro");
-                Get_String_Value(settingsDictionary, "Web In Process Submission Location", SettingsObject, X => X.Servers.In_Process_Submission_Location, String.Empty);
-                Get_Integer_Value(settingsDictionary, "Web Output Caching Minutes", SettingsObject, X => X.Servers.Web_Output_Caching_Minutes, ref error, 0);
+                Get_String_Value(settingsDictionary, "Main Builder Input Folder", SettingsObject.Builder, X => X.Main_Builder_Input_Folder, String.Empty);
+                Get_String_Value(settingsDictionary, "Mango Union Search Base URL", SettingsObject.Florida, X => X.Mango_Union_Search_Base_URL, ref error);
+                Get_String_Value(settingsDictionary, "Mango Union Search Text", SettingsObject.Florida, X => X.Mango_Union_Search_Text, ref error);
+                Get_String_Value(settingsDictionary, "OCR Engine Command", SettingsObject.Builder, X => X.OCR_Command_Prompt, String.Empty);
+                Get_String_Value(settingsDictionary, "Page Solr Index URL", SettingsObject.Servers, X => X.Page_Solr_Index_URL, String.Empty);
+                Get_String_Value(settingsDictionary, "PostArchive Files To Delete", SettingsObject.Archive, X => X.PostArchive_Files_To_Delete, String.Empty);
+                Get_String_Value(settingsDictionary, "PreArchive Files To Delete", SettingsObject.Archive, X => X.PreArchive_Files_To_Delete, String.Empty);
+                Get_String_Value(settingsDictionary, "Privacy Email Address", SettingsObject.Email, X => X.Privacy_Email, String.Empty);
+                Get_String_Value(settingsDictionary, "Send Email On Added Aggregation", SettingsObject.Email, X => X.Send_On_Added_Aggregation, "Always");
+                Get_Boolean_Value(settingsDictionary, "Show Citation For Dark Items", SettingsObject.Resources, X => X.Show_Citation_For_Dark_Items, ref error, true);
+                Get_String_Value(settingsDictionary, "SobekCM Image Server", SettingsObject.Servers, X => X.SobekCM_ImageServer, String.Empty);
+                Get_String_Value(settingsDictionary, "SobekCM Web Server IP", SettingsObject.Servers, X => X.SobekCM_Web_Server_IP, String.Empty);
+                Get_String_Value(settingsDictionary, "Static Pages Location", SettingsObject.Servers, X => X.Static_Pages_Location, ref error);
+                Get_String_Value(settingsDictionary, "Static Resources Source", SettingsObject.Servers, X => X.Static_Resources_Config_File, "CDN");          
+                Get_Boolean_Value(settingsDictionary, "Statistics Caching Enabled", SettingsObject.Servers, X => X.Statistics_Caching_Enabled, ref error, false);
+                Get_String_Value(settingsDictionary, "System Base Abbreviation", SettingsObject.System, X => X.System_Abbreviation, String.Empty);
+                Get_String_Value(settingsDictionary, "System Base Name", SettingsObject.System, X => X.System_Name, SettingsObject.System.System_Abbreviation);
+                Get_String_Value(settingsDictionary, "System Base URL", SettingsObject.Servers, X => X.System_Base_URL, String.Empty);
+                Get_String_Value(settingsDictionary, "System Email", SettingsObject.Email, X => X.System_Email, ref error);
+                Get_String_Value(settingsDictionary, "System Error Email", SettingsObject.Email, X => X.System_Error_Email, String.Empty);
+                Get_Integer_Value(settingsDictionary, "Thumbnail Height", SettingsObject.Resources, X => X.Thumbnail_Height, ref error, -1);
+                Get_Integer_Value(settingsDictionary, "Thumbnail Width", SettingsObject.Resources, X => X.Thumbnail_Width, ref error, -1);
+                Get_String_Value(settingsDictionary, "Upload File Types", SettingsObject.Resources, X => X.Upload_File_Types, ".aif,.aifc,.aiff,.au,.avi,.bz2,.c,.c++,.css,.dbf,.ddl,.doc,.docx,.dtd,.dvi,.flac,.gz,.htm,.html,.java,.jps,.js,.m4p,.mid,.midi,.mp2,.mp3,.mpg,.odp,.ogg,.pdf,.pgm,.ppt,.pptx,.ps,.ra,.ram,.rar,.rm,.rtf,.sgml,.swf,.sxi,.tbz2,.tgz,.wav,.wave,.wma,.wmv,.xls,.xlsx,.xml,.zip");
+                Get_String_Value(settingsDictionary, "Upload Image Types", SettingsObject.Resources, X => X.Upload_Image_Types, ".txt,.tif,.jpg,.jp2,.pro");
+                Get_String_Value(settingsDictionary, "Web In Process Submission Location", SettingsObject.Servers, X => X.In_Process_Submission_Location, String.Empty);
+                Get_Integer_Value(settingsDictionary, "Web Output Caching Minutes", SettingsObject.Servers, X => X.Web_Output_Caching_Minutes, ref error, 0);
 
                 // Load the subsetting object for MarcXML 
                 Marc21_Settings marcSettings = new Marc21_Settings();
@@ -334,7 +334,7 @@ namespace SobekCM.Engine_Library.Settings
 
 
                 // Pull the language last, since it must be converted into a Language_Enum
-                Get_String_Value(settingsDictionary, "System Default Language", SettingsObject, X => X.System.Default_UI_Language_String, "English");
+                Get_String_Value(settingsDictionary, "System Default Language", SettingsObject.System, X => X.Default_UI_Language_String, "English");
                 
 
                 // Pull out some values, which are stored in this portion of the database, 
@@ -350,10 +350,7 @@ namespace SobekCM.Engine_Library.Settings
                 {
                     SettingsObject.Additional_Settings[thisSetting.Key] = thisSetting.Value;
                 }
-
-
-
-
+                
                 // Save the metadata types
                 Set_Metadata_Types(SettingsObject, SobekCM_Settings.Tables[1]);
 
@@ -369,8 +366,9 @@ namespace SobekCM.Engine_Library.Settings
 
                 return true;
             }
-            catch
+            catch ( Exception ee )
             {
+                return ee.Message.Length > 0;
                 return false;
             }
         }
@@ -520,6 +518,10 @@ namespace SobekCM.Engine_Library.Settings
                 string facet = thisRow[facetColumn].ToString();
                 string solr = thisRow[solrColumn].ToString();
                 string name = thisRow[nameColumn].ToString();
+
+                // Also, only continue if the name is NOT user defined
+                if (name.IndexOf("UserDefined", StringComparison.OrdinalIgnoreCase) == 0)
+                    continue;
 
                 // Create the new field object
                 Metadata_Search_Field newField = new Metadata_Search_Field(id, facet, display, code, solr, name);

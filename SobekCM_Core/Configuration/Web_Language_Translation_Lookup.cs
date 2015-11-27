@@ -3,6 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
+using ProtoBuf;
 
 #endregion
 
@@ -10,6 +13,7 @@ namespace SobekCM.Core.Configuration
 {
     /// <summary> Class encapsulates a simple dictionary with a default value for classes that
     /// contain a simple language lookup ( i.e., what is the query related to this object in XX language? ) </summary>
+    [Serializable, DataContract, ProtoContract]
     public class Web_Language_Translation_Lookup
     {
         private readonly Dictionary<Web_Language_Enum, string> translationLookupObj;
@@ -21,24 +25,33 @@ namespace SobekCM.Core.Configuration
         }
 
         /// <summary> Default value used if the requested language is not present </summary>
+        [DataMember(Name = "default")]
+        [XmlAttribute("default")]
+        [ProtoMember(1)]
         public string DefaultValue { get; set;  }
 
         /// <summary> Return the number of values within this lookup object </summary>
         /// <remarks> If the default value exists and is also added under the default language, this will
         /// return the value 2.  No checks are made to ensure the value in the lookup object is not the
         /// same as the default value.  That is, this does not check for UNIQUE values, just values.</remarks>
+        [XmlIgnore]
+        [IgnoreDataMember]
         public int Count
         {
             get
             {
                 if (!String.IsNullOrEmpty(DefaultValue))
                     return translationLookupObj.Count + 1;
-                else
-                    return translationLookupObj.Count;
+                
+                return translationLookupObj.Count;
             }
         }
 
         /// <summary> Gets the list of translated values with the web language </summary>
+        [DataMember(Name = "translations")]
+        [XmlArray("translations")]
+        [XmlArrayItem("translation", typeof(Web_Language_Translation_Value))]
+        [ProtoMember(2)]
         public List<Web_Language_Translation_Value> Values
         {
             get

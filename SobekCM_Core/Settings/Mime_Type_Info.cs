@@ -13,20 +13,20 @@ namespace SobekCM.Core.Settings
     {
         /// <summary> File extension for this MIME type  </summary>
         [DataMember(EmitDefaultValue = false)]
-        public string Extension { get; private set; }
+        public string Extension { get; set; }
 
         /// <summary> MIME type for files of this extension </summary>
         [DataMember(EmitDefaultValue = false)]
-        public string MIME_Type { get; private set; }
+        public string MIME_Type { get; set; }
 
         /// <summary> Flag indicates files of this extension are explicitly blocked </summary>
         [DataMember]
-        public bool isBlocked { get; private set; }
+        public bool isBlocked { get; set; }
 
         /// <summary> Flag indicates if there are special features within IIS for which
         /// files of this type should be handed to IIS to handle (for example, byte-enabled video) </summary>
         [DataMember]
-        public bool shouldForward { get; private set; }
+        public bool shouldForward { get; set; }
 
         /// <summary> Constructor for a new instance of the Mime_Type_Info class </summary>
         /// <param name="Extension">File extension for this MIME type</param>

@@ -45,7 +45,7 @@ namespace SobekCM.Core.Settings
         [DataMember(Name = "setup", EmitDefaultValue = false)]
         [XmlElement("setup")]
         [ProtoMember(5)]
-        public Email_Setup_Settings Setup { get; private set; }
+        public Email_Setup_Settings Setup { get; set; }
 
 
 

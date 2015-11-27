@@ -11,6 +11,7 @@ using System.Text;
 using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Configuration;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.MicroservicesClient;
@@ -694,13 +695,13 @@ namespace SobekCM
 			                        }
 
 			                        // Set any constants as well
-			                        foreach (KeyValuePair<User_Object_Attribute_Mapping_Enum, string> constantMapping in UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Constants)
+			                        foreach (Shibboleth_Configuration_Mapping constantMapping in UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Constants)
 			                        {
-			                            if (constantMapping.Key != User_Object_Attribute_Mapping_Enum.NONE)
+			                            if (constantMapping.Mapping != User_Object_Attribute_Mapping_Enum.NONE)
 			                            {
 			                                if (UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Debug)
 			                                {
-			                                    tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Constant value ( " + constantMapping.Value + " ) would have been set to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(constantMapping.Key));
+			                                    tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Constant value ( " + constantMapping.Value + " ) would have been set to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(constantMapping.Mapping));
 			                                }
 			                            }
 			                        }
@@ -749,15 +750,15 @@ namespace SobekCM
 			                    }
 
 			                    // Set any constants as well
-			                    foreach (KeyValuePair<User_Object_Attribute_Mapping_Enum, string> constantMapping in UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Constants)
+			                    foreach (Shibboleth_Configuration_Mapping constantMapping in UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Constants)
 			                    {
-			                        if (constantMapping.Key != User_Object_Attribute_Mapping_Enum.NONE)
+			                        if (constantMapping.Mapping != User_Object_Attribute_Mapping_Enum.NONE)
 			                        {
-                                        newUser.Set_Value_By_Mapping(constantMapping.Key, constantMapping.Value);
+                                        newUser.Set_Value_By_Mapping(constantMapping.Mapping, constantMapping.Value);
 
 			                            if (UI_ApplicationCache_Gateway.Settings.Authentication.Shibboleth.Debug)
 			                            {
-			                                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Setting constant value ( " + constantMapping.Value + " ) to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(constantMapping.Key));
+                                            tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Setting constant value ( " + constantMapping.Value + " ) to " + User_Object_Attribute_Mapping_Enum_Converter.ToString(constantMapping.Mapping));
 			                            }
 			                        }
 			                    }

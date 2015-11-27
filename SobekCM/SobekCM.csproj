@@ -923,14 +923,10 @@
     <Content Include="mySobek\projects\UFIR.pmets" />
     <Content Include="mySobek\projects\VODOU2.pmets" />
     <Content Include="config\default\sobekcm_mapeditor.config" />
-    <Content Include="config\default\sobekcm_mapsearch.config" />
     <Content Include="config\default\sobekcm_metadata.config" />
     <Content Include="config\default\sobekcm_qc.config" />
     <Content Include="config\default\sobekcm_qc_errors.config" />
     <Content Include="HtmlEditFileHandler.ashx" />
-    <None Include="config\default\sobekcm_engine.config.bak">
-      <SubType>Designer</SubType>
-    </None>
     <Content Include="config\default\sobekcm_contactform.config" />
     <Content Include="config\default\sobekcm_microservices.config">
       <SubType>Designer</SubType>

@@ -3,7 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Text;
+using System.Xml.Serialization;
+using ProtoBuf;
 using SobekCM.Core.Users;
 
 #endregion
@@ -13,21 +16,21 @@ namespace SobekCM.Core.Configuration
  
 	/// <summary> Static class contains all the Shibboleth configuration details from the configuration file
 	/// as well as methods to do read the configuration file </summary>
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("ShibbolethConfig")]
 	public class Shibboleth_Configuration
 	{
-        
-		private Dictionary<string, User_Object_Attribute_Mapping_Enum> attributeMapping;
-
-	    private List<KeyValuePair<string, string>> canSubmitIndicators;
+        [XmlIgnore]
+        private Dictionary<string, User_Object_Attribute_Mapping_Enum> attributeMappingDictionary;
 
         /// <summary> Constructor for a new instance of the Shibboleth_Configuration class </summary>
 		public Shibboleth_Configuration()
 		{
-			attributeMapping = new Dictionary<string, User_Object_Attribute_Mapping_Enum>();
-			Constants = new List<KeyValuePair<User_Object_Attribute_Mapping_Enum, string>>();
-			canSubmitIndicators = new List<KeyValuePair<string, string>>();
+            AttributeMapping = new List<Shibboleth_Configuration_Mapping>();
+			attributeMappingDictionary = new Dictionary<string, User_Object_Attribute_Mapping_Enum>();
+			Constants = new List<Shibboleth_Configuration_Mapping>();
+			CanSubmitIndicators = new List<KeyValuePair<string, string>>();
 
-			Config_File_Read = false;
 			UserIdentityAttribute = String.Empty;
 			ShibbolethURL = String.Empty;
 			Label = String.Empty;
@@ -37,67 +40,106 @@ namespace SobekCM.Core.Configuration
 
         /// <summary> Flag indicates if this is set to DEBUG mode, in which case data is written to the trace route
         /// during each check, or Shibboleth authentication </summary>
+        [DataMember(Name = "debug")]
+        [XmlAttribute("debug")]
+        [ProtoMember(1)]
         public bool Debug { get; set;  }
 
         /// <summary> Flag indicates if Shibboleth authentication is currently enabled </summary>
+        [DataMember(Name = "enabled")]
+        [XmlAttribute("enabled")]
+        [ProtoMember(2)]
         public bool Enabled { get; set; }
-
-        /// <summary> Error message in case there was an issue pulling this configuration from the configuration files </summary>
-        public string Error { get; set; }
-
-		/// <summary> FLag indicates if a configuration file was read (or an attempt to read, even if 
-		/// the file does not exists, meaning Shibboleth is not configured ) </summary>
-		public bool Config_File_Read { get; set;  }
 
 		/// <summary> Primary attribute from the Shibboleth cookie which identifies the user uniquely </summary>
 		/// <remarks> For example, this is the UFID attribute from the cookie for UFDC </remarks>
+        [DataMember(Name = "userIdentityAttribute")]
+        [XmlAttribute("userIdentityAttribute")]
+        [ProtoMember(3)]
 		public string UserIdentityAttribute { get; set; }
 
 		/// <summary> URL for the instance of Shibboleth </summary>
 		/// <remarks> This can contain "[%TARGET%]", in which case the system will set the target programmatically </remarks>
+        [DataMember(Name = "url")]
+        [XmlAttribute("url")]
+        [ProtoMember(4)]
 		public string ShibbolethURL { get; set; }
 
 		/// <summary> Label for this type of authentication, to be displayed to user during logon </summary>
 		/// <remarks> For example, 'Gatorlink' for UFDC, 'UK Federation', etc.. </remarks>
+        [DataMember(Name = "label")]
+        [XmlAttribute("label")]
+        [ProtoMember(5)]
 		public string Label { get; set; }
 
-        /// <summary> Add a new mapping between a server variable returned from Shibboleth and a user attribute within the SobekCM user object </summary>
-        /// <param name="ServerVariable"> Server variable from the Shibboleth response </param>
-        /// <param name="UserAttribute"> Attribute within the SobekCM user object </param>
-	    public void Add_Attribute_Mapping(string ServerVariable, User_Object_Attribute_Mapping_Enum UserAttribute)
-	    {
-	        attributeMapping[ServerVariable] = UserAttribute;
-	    }
+        /// <summary> List of all the constants to assign to a new user </summary>
+        /// <remarks> These are all lower case </remarks>
+        [DataMember(Name = "constants", EmitDefaultValue = false)]
+        [XmlArray("constants")]
+        [XmlArrayItem("constant", typeof(Shibboleth_Configuration_Mapping))]
+        [ProtoMember(6)]
+        public List<Shibboleth_Configuration_Mapping> Constants { get; private set; }
 
         /// <summary> Add a new constant mapping for all new users that are established using this Shibboleth authentication system </summary>
         /// <param name="UserAttribute"> Attribute within the SobekCM user object </param>
         /// <param name="ConstantValue"> Constant value to apply for all new Shibboleth users established using this Shibboleth authenticaion system </param>
 	    public void Add_Constant(User_Object_Attribute_Mapping_Enum UserAttribute, string ConstantValue)
 	    {
-	        Constants.Add(new KeyValuePair<User_Object_Attribute_Mapping_Enum, string>(UserAttribute, ConstantValue ));
+	        Constants.Add(new Shibboleth_Configuration_Mapping(UserAttribute, ConstantValue ));
 	    }
+
+        [DataMember(Name = "canSubmitIndicators", EmitDefaultValue = false)]
+        [XmlArray("canSubmitIndicators")]
+        [XmlArrayItem("canSubmitIndicator", typeof(KeyValuePair<string, string>))]
+        [ProtoMember(7)]
+        public List<KeyValuePair<string, string>> CanSubmitIndicators { get; private set; }
 
         /// <summary> Add a new indicator that a new user established using this Shibboleth authenticaion system can submit items </summary>
         /// <param name="ServerVariable"> Server variable from the Shibboleth response </param>
         /// <param name="RequiredValue"> Value to match - if the value matches, then the new user should be granted submit rights </param>
         public void Add_CanSubmit_Indicator(string ServerVariable, string RequiredValue)
 	    {
-            canSubmitIndicators.Add(new KeyValuePair<string, string>(ServerVariable, RequiredValue));
+            CanSubmitIndicators.Add(new KeyValuePair<string, string>(ServerVariable, RequiredValue));
 	    }
+
+        /// <summary> List of all the attribute mapping, where attributes returned in the Shibboleth
+        /// token are mapped to the SobekCM user object </summary>
+        [DataMember(Name = "attributeMapping", EmitDefaultValue = false)]
+        [XmlArray("attributeMapping")]
+        [XmlArrayItem("mapping", typeof(Shibboleth_Configuration_Mapping))]
+        [ProtoMember(8)]
+        public List<Shibboleth_Configuration_Mapping> AttributeMapping { get; private set; }
+
+        /// <summary> Add a new mapping between a server variable returned from Shibboleth and a user attribute within the SobekCM user object </summary>
+        /// <param name="ServerVariable"> Server variable from the Shibboleth response </param>
+        /// <param name="UserAttribute"> Attribute within the SobekCM user object </param>
+        public void Add_Attribute_Mapping(string ServerVariable, User_Object_Attribute_Mapping_Enum UserAttribute)
+        {
+            AttributeMapping.Add(new Shibboleth_Configuration_Mapping(UserAttribute, ServerVariable));
+            attributeMappingDictionary[ServerVariable] = UserAttribute;
+        }
 
         /// <summary> Get the mapping from the server variable into the new user object </summary>
         /// <param name="ServerVariable"> Name from the server variable </param>
         /// <returns> Mapping into the user object ( or NONE ) </returns>
-	    public User_Object_Attribute_Mapping_Enum Get_User_Object_Mapping(string ServerVariable)
-	    {
-	        if (attributeMapping.ContainsKey(ServerVariable))
-	            return attributeMapping[ServerVariable];
-	        return User_Object_Attribute_Mapping_Enum.NONE;
-	    }
+        public User_Object_Attribute_Mapping_Enum Get_User_Object_Mapping(string ServerVariable)
+        {
+            // Ensure the attribute mapping has been copied to the dictionary
+            if ((attributeMappingDictionary == null) || (attributeMappingDictionary.Count != AttributeMapping.Count))
+            {
+                attributeMappingDictionary = new Dictionary<string, User_Object_Attribute_Mapping_Enum>();
+                foreach (Shibboleth_Configuration_Mapping thisMapping in AttributeMapping)
+                {
+                    attributeMappingDictionary[thisMapping.Value] = thisMapping.Mapping;
+                }
+            }
 
-        /// <summary> List of all the constants to assign to a new user </summary>
-	    public List<KeyValuePair<User_Object_Attribute_Mapping_Enum, string>> Constants { get; private set; }
+            if (attributeMappingDictionary.ContainsKey(ServerVariable))
+                return attributeMappingDictionary[ServerVariable];
+            return User_Object_Attribute_Mapping_Enum.NONE;
+        }
 
+        
 	    #region Code to save this shibboleth configuration to a XML file
 
         /// <summary> Save this quality control configuration to a XML config file </summary>
@@ -126,11 +168,11 @@ namespace SobekCM.Core.Configuration
                 writer.WriteLine(">");
 
                 // Add the attribute matching
-                if (( attributeMapping != null ) && ( attributeMapping.Count > 0))
+                if (( attributeMappingDictionary != null ) && ( attributeMappingDictionary.Count > 0))
                 {
                     writer.WriteLine("\t\t\t<AttributeMatching>");
 
-                    foreach (KeyValuePair<string, User_Object_Attribute_Mapping_Enum> thisMatch in attributeMapping)
+                    foreach (KeyValuePair<string, User_Object_Attribute_Mapping_Enum> thisMatch in attributeMappingDictionary)
                     {
                         writer.WriteLine("\t\t\t\t<Mapping ServerVariable=\"" + thisMatch.Key + "\" UserAttribute=\"" + User_Object_Attribute_Mapping_Enum_Converter.ToString( thisMatch.Value ) + "\" />");
                     }
@@ -143,20 +185,20 @@ namespace SobekCM.Core.Configuration
                 {
                     writer.WriteLine("\t\t\t<Constants>");
 
-                    foreach (KeyValuePair<User_Object_Attribute_Mapping_Enum, string> thisConstant in Constants)
+                    foreach ( Shibboleth_Configuration_Mapping thisConstant in Constants)
                     {
-                        writer.WriteLine("\t\t\t\t<Constant UserAttribute=\"" + User_Object_Attribute_Mapping_Enum_Converter.ToString(thisConstant.Key) + "\">" + Convert_String_To_XML_Safe(thisConstant.Value) + "</Constant>");
+                        writer.WriteLine("\t\t\t\t<Constant UserAttribute=\"" + User_Object_Attribute_Mapping_Enum_Converter.ToString(thisConstant.Mapping) + "\">" + Convert_String_To_XML_Safe(thisConstant.Value) + "</Constant>");
                     }
 
                     writer.WriteLine("\t\t\t</Constants>");
                 }
 
                 // Add the logic portions
-                if ((canSubmitIndicators != null) && (canSubmitIndicators.Count > 0))
+                if ((CanSubmitIndicators != null) && (CanSubmitIndicators.Count > 0))
                 {
                     writer.WriteLine("\t\t\t<Logic>");
 
-                    foreach (KeyValuePair<string, string> canSubmitIndicator in canSubmitIndicators)
+                    foreach (KeyValuePair<string, string> canSubmitIndicator in CanSubmitIndicators)
                     {
                         writer.WriteLine("\t\t\t\t<CanSubmit ServerVariable=\"" + canSubmitIndicator.Key + "\" Value=\"" + canSubmitIndicator.Value + "\" />");
                     }

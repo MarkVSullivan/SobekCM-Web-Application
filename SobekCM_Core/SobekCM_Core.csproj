@@ -97,6 +97,7 @@
     <Compile Include="Configuration\OAI_PMH_Metadata_Format.cs" />
     <Compile Include="Configuration\QualityControl_Configuration.cs" />
     <Compile Include="Configuration\Shibboleth_Configuration.cs" />
+    <Compile Include="Configuration\Shibboleth_Configuration_Mapping.cs" />
     <Compile Include="Configuration\Web_Language_Enum.cs" />
     <Compile Include="Configuration\Web_Language_Translation_Lookup.cs" />
     <Compile Include="Configuration\Web_Language_Translation_Value.cs" />

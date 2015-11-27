@@ -19,13 +19,13 @@ namespace SobekCM.Core.Settings
         [DataMember(Name = "name", EmitDefaultValue = false)]
         [XmlAttribute("name")]
         [ProtoMember(1)]
-        public string Name { get; internal set; }
+        public string Name { get; set; }
 
         /// <summary> Key to this workflow type </summary>
         [DataMember(Name = "key", EmitDefaultValue = false)]
         [XmlAttribute("key")]
         [ProtoMember(2)]
-        public int Key { get; internal set; }
+        public int Key { get; set; }
 
         /// <summary> Constructor for a new instance of the Workflow_Type class </summary>
         /// <remarks> Empty constructor for serialization purposes </remarks>

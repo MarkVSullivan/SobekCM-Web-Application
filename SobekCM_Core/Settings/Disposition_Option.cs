@@ -19,19 +19,19 @@ namespace SobekCM.Core.Settings
         [DataMember(Name = "future", EmitDefaultValue = false)]
         [XmlAttribute("future")]
         [ProtoMember(1)]
-        public string Future { get; internal set; }
+        public string Future { get; set; }
 
         /// <summary> This disposition in a past tense (default language) </summary>
         [DataMember(Name = "past", EmitDefaultValue = false)]
         [XmlAttribute("past")]
         [ProtoMember(2)]
-        public string Past { get; internal set; }
+        public string Past { get; set; }
 
         /// <summary> Key to this disposition </summary>
         [DataMember(Name = "key", EmitDefaultValue = false)]
         [XmlAttribute("key")]
         [ProtoMember(3)]
-        public int Key { get; internal set; }
+        public int Key { get; set; }
 
         /// <summary> Constructor for a new instance of the Disposition_Option class </summary>
         /// <remarks> Empty constructor for serialization purposes </remarks>

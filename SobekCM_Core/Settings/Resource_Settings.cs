@@ -72,7 +72,7 @@ namespace SobekCM.Core.Settings
         [DataMember(Name = "showCitationForDarkItems")]
         [XmlElement("showCitationForDarkItems")]
         [ProtoMember(8)]
-        public bool Show_Citation_For_Dark_Items { get { return false; } }
+        public bool Show_Citation_For_Dark_Items { get; set; }
 
         /// <summary> Gets the library-wide setting for height for created jpeg thumbnails </summary>
         [DataMember(Name = "thumbnailHeight")]

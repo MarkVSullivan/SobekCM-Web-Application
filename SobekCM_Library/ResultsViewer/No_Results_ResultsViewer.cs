@@ -99,7 +99,7 @@ namespace SobekCM.Library.ResultsViewer
             // Try to search out into the Union catalog
             int union_catalog_matches = 0;
             string susMangoSearchQuery = String.Empty;
-            if ((noResultsText.Contains("[%SusMangoSpanDisplay%]")) && (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Florida.Mango_Union_Search_Base_URL)))
+            if ((noResultsText.Contains("[%SusMangoSpanDisplay%]")) && (UI_ApplicationCache_Gateway.Settings.Florida != null ) && (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Florida.Mango_Union_Search_Base_URL)))
             {
                 try
                 {

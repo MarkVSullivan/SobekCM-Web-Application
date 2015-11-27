@@ -36,35 +36,35 @@ namespace SobekCM.Core.Settings
         [XmlArray("folders")]
         [XmlArrayItem("folder", typeof(Builder_Source_Folder))]
         [ProtoMember(1)]
-        public List<Builder_Source_Folder> IncomingFolders { get; private set; }
+        public List<Builder_Source_Folder> IncomingFolders { get; set; }
 
         /// <summary> [DataMember] List of modules to run before doing any additional processing </summary>
         [DataMember(Name = "preProcessModules")]
         [XmlArray("preProcessModules")]
         [XmlArrayItem("module", typeof(Builder_Module_Setting))]
         [ProtoMember(2)]
-        public List<Builder_Module_Setting> PreProcessModulesSettings { get; private set; }
+        public List<Builder_Module_Setting> PreProcessModulesSettings { get; set; }
 
         /// <summary> [DataMember] List of modules to run after doing any additional processing </summary>
         [DataMember(Name = "postProcessModules")]
         [XmlArray("postProcessModules")]
         [XmlArrayItem("module", typeof(Builder_Module_Setting))]
         [ProtoMember(3)]
-        public List<Builder_Module_Setting> PostProcessModulesSettings { get; private set; }
+        public List<Builder_Module_Setting> PostProcessModulesSettings { get; set; }
 
         /// <summary> [DataMember] List of all the builder modules used for new packages or updates (processed by the builder) </summary>
         [DataMember(Name = "itemProcessModules")]
         [XmlArray("itemProcessModules")]
         [XmlArrayItem("module", typeof(Builder_Module_Setting))]
         [ProtoMember(4)]
-        public List<Builder_Module_Setting> ItemProcessModulesSettings { get; private set; }
+        public List<Builder_Module_Setting> ItemProcessModulesSettings { get; set; }
 
         /// <summary> [DataMember] List of all the builder modules to use for item deletes (processed by the builder) </summary>
         [DataMember(Name = "itemDeleteModules")]
         [XmlArray("itemDeleteModules")]
         [XmlArrayItem("module", typeof(Builder_Module_Setting))]
         [ProtoMember(5)]
-        public List<Builder_Module_Setting> ItemDeleteModulesSettings { get; private set; }
+        public List<Builder_Module_Setting> ItemDeleteModulesSettings { get; set; }
 
         /// <summary> Clear all these settings </summary>
         public virtual void Clear()
@@ -174,6 +174,12 @@ namespace SobekCM.Core.Settings
         [ProtoMember(20)]
         public int? Override_Seconds_Between_Polls { get; set; }
 
+        /// <summary> Flag indicates whether checksums should be verified </summary>
+        [XmlIgnore]
+        public bool VerifyCheckSum { get; set; }
+
+        #region Methods that controls XML serialization for commonly null or empty values
+
         /// <summary> Method suppresses XML Serialization of the Override_Seconds_Between_Polls flag property if it is NULL </summary>
         /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
         public bool ShouldSerializeOverride_Seconds_Between_Polls()
@@ -181,9 +187,53 @@ namespace SobekCM.Core.Settings
             return Override_Seconds_Between_Polls.HasValue;
         }
 
-        /// <summary> Flag indicates whether checksums should be verified </summary>
-        [XmlIgnore]
-        public bool VerifyCheckSum { get; set; }
+        /// <summary> Method suppresses XML Serialization of the OCR_Command_Prompt flag property if it is NULL or empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeOCR_Command_Prompt()
+        {
+            return !String.IsNullOrEmpty(OCR_Command_Prompt);
+        }
+
+        /// <summary> Method suppresses XML Serialization of the IncomingFolders collection if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeIncomingFolders()
+        {
+            return ((IncomingFolders != null) && (IncomingFolders.Count > 0));
+        }
+
+
+        /// <summary> Method suppresses XML Serialization of the PreProcessModulesSettings collection if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializePreProcessModulesSettings()
+        {
+            return ((PreProcessModulesSettings != null) && (PreProcessModulesSettings.Count > 0));
+        }
+
+
+        /// <summary> Method suppresses XML Serialization of the PostProcessModulesSettings collection if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializePostProcessModulesSettings()
+        {
+            return ((PostProcessModulesSettings != null) && (PostProcessModulesSettings.Count > 0));
+        }
+
+
+        /// <summary> Method suppresses XML Serialization of the ItemProcessModulesSettings collection if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeItemProcessModulesSettings()
+        {
+            return ((ItemProcessModulesSettings != null) && (ItemProcessModulesSettings.Count > 0));
+        }
+
+
+        /// <summary> Method suppresses XML Serialization of the ItemDeleteModulesSettings collection if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeItemDeleteModulesSettings()
+        {
+            return ((ItemDeleteModulesSettings != null) && (ItemDeleteModulesSettings.Count > 0));
+        }
+
+        #endregion
 
     }
 }

@@ -47,7 +47,7 @@ namespace SobekCM.Core.Settings
         /// <summary> Gets the URL for the SobekCM engine for this instance </summary>
         [DataMember(Name = "engineUrl")]
         [XmlElement("engineUrl")]
-        [ProtoMember(4)]
+     //   [ProtoMember(4)]
         public string Engine_URL { get { return System_Base_URL + "engine/"; } }
 
         /// <summary> Network directory for the image server which holds all the resource files </summary>
@@ -89,9 +89,8 @@ namespace SobekCM.Core.Settings
         public string Page_Solr_Index_URL { get; set; }
 
         /// <summary> URL to the SobekCM Image Server, initially used just when features need to be drawn on images </summary>
-        [DataMember(Name = "sobekCustomImageServer", EmitDefaultValue = false)]
-        [XmlElement("sobekCustomImageServer")]
-        [ProtoMember(11)]
+        [IgnoreDataMember]
+        [XmlIgnore]
         public string SobekCM_ImageServer { get; set; }
 
         /// <summary> IP address for the SobekCM web server </summary>
@@ -161,13 +160,6 @@ namespace SobekCM.Core.Settings
         [ProtoMember(21)]
         public bool isHosted { get; set; }
 
-        /// <summary> Folder where files bound for archiving are placed </summary>
-        [DataMember(Name = "packageArchivalFolder")]
-        [XmlElement("packageArchivalFolder")]
-        [ProtoMember(22)]
-        public string Package_Archival_Folder { get; set; }
-
-
         #region Derivative properties which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
 
         /// <summary> Base directory where the ASP.net application is running on the application server </summary>
@@ -227,6 +219,25 @@ namespace SobekCM.Core.Settings
         public string Recycle_Bin
         {
             get { return Image_Server_Network + "\\RECYCLE BIN"; }
+        }
+
+        #endregion
+
+
+        #region Methods that controls XML serialization
+
+        /// <summary> Method suppresses XML Serialization of the Base_SobekCM_Location_Relative property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeBase_SobekCM_Location_Relative()
+        {
+            return (!String.IsNullOrEmpty(Base_SobekCM_Location_Relative));
+        }
+
+        /// <summary> Method suppresses XML Serialization of the JP2ServerUrl property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeJP2ServerUrl()
+        {
+            return (!String.IsNullOrEmpty(JP2ServerUrl));
         }
 
         #endregion

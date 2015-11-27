@@ -120,5 +120,18 @@ namespace SobekCM.Core.Settings
             }
             get { return Web_Language_Enum_Converter.Enum_To_Name(Default_UI_Language); }
         }
+
+
+
+        #region Methods that controls XML serialization
+
+        /// <summary> Method suppresses XML Serialization of the Disable_Standard_User_Logon_Message property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeDisable_Standard_User_Logon_Message()
+        {
+            return (!String.IsNullOrEmpty(Disable_Standard_User_Logon_Message)) && (Disable_Standard_User_Logon_Flag = true);
+        }
+
+        #endregion
     }
 }
