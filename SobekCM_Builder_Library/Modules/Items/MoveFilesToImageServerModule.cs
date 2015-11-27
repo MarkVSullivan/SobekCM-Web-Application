@@ -115,7 +115,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     string new_file = ServerPackageFolder + "/" + thisFileInfo.Name;
 
                     // Keep the list of new image files being copied, which may be used later
-                    if (Settings.Page_Image_Extensions.Contains(thisFileInfo.Extension.ToUpper().Replace(".", "")))
+                    if (Settings.System.Page_Image_Extensions.Contains(thisFileInfo.Extension.ToUpper().Replace(".", "")))
                         NewImageFiles.Add(thisFileInfo.Name);
 
                     // If the file exists, delete it, 

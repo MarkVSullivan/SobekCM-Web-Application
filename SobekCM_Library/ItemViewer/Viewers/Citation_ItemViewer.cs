@@ -642,7 +642,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             builder.AppendLine("<div id=\"sbkCiv_MarcXmlDownload\" class=\"sbCiv_DownloadSection\">");
             builder.AppendLine("  <a href=\"" + marc_xml + "\" target=\"_blank\">View MARC XML File</a>");
-            builder.AppendLine("  <p>The entered metadata is also converted to MARC XML format, for interoperability with other library catalog systems.  This represents the same data available in the <a href=\"" + UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(CurrentMode, "FC2") + "\">MARC VIEW</a> except this is a static XML file.  This file follows the <a href=\"http://www.loc.gov/standards/marcxml/\">MarcXML Schema</a>.</p>");
+            builder.AppendLine("  <p>The entered metadata is also converted to MARC XML format, for interoperability with other library catalog systems.  This represents the same data available in the <a href=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(CurrentMode, "FC2") + "\">MARC VIEW</a> except this is a static XML file.  This file follows the <a href=\"http://www.loc.gov/standards/marcxml/\">MarcXML Schema</a>.</p>");
 		    builder.AppendLine("</div>");
 
             // Should the TEI be added here?

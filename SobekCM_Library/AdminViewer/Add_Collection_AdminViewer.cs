@@ -299,7 +299,7 @@ namespace SobekCM.Library.AdminViewer
                         {
                             errors.Add("New code must be unique... <i>" + newAggr.Code + "</i> already exists");
                         }
-                        else if (UI_ApplicationCache_Gateway.Settings.Reserved_Keywords.Contains(newAggr.Code.ToLower()))
+                        else if (UI_ApplicationCache_Gateway.Settings.Static.Reserved_Keywords.Contains(newAggr.Code.ToLower()))
                         {
                             errors.Add("That code is a system-reserved keyword.  Try a different code.");
                         }
@@ -698,7 +698,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 errors.Add("New code must be unique... <i>" + new_aggregation_code + "</i> already exists");
             }
-            else if (UI_ApplicationCache_Gateway.Settings.Reserved_Keywords.Contains(new_aggregation_code.ToLower()))
+            else if (UI_ApplicationCache_Gateway.Settings.Static.Reserved_Keywords.Contains(new_aggregation_code.ToLower()))
             {
                 errors.Add("That code is a system-reserved keyword.  Try a different code.");
             }

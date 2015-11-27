@@ -659,7 +659,7 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 errors.Add("New code must be unique... <i>" + NewAggregation.Code + "</i> already exists");
             }
-            else if (Engine_ApplicationCache_Gateway.Settings.Reserved_Keywords.Contains(NewAggregation.Code.ToLower()))
+            else if (Engine_ApplicationCache_Gateway.Settings.Static.Reserved_Keywords.Contains(NewAggregation.Code.ToLower()))
             {
                 errors.Add("That code is a system-reserved keyword.  Try a different code.");
             }

@@ -382,7 +382,7 @@ namespace SobekCM.Library.HTML
 
             bool end_div = !((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Simple_HTML_CMS) && (RequestSpecificValues.Site_Map != null));
 
-            string version = UI_ApplicationCache_Gateway.Settings.Current_Web_Version;
+            string version = UI_ApplicationCache_Gateway.Settings.Static.Current_Web_Version;
             if (version.IndexOf(" ") > 0)
                 version = version.Split(" ".ToCharArray())[0];
 

@@ -193,7 +193,7 @@ namespace SobekCM.Library.AdminViewer
                             {
                                 errors.Add("New code must be unique... <i>" + new_aggregation_code + "</i> already exists");
                             }
-                            else if (UI_ApplicationCache_Gateway.Settings.Reserved_Keywords.Contains(new_aggregation_code.ToLower()))
+                            else if (UI_ApplicationCache_Gateway.Settings.Static.Reserved_Keywords.Contains(new_aggregation_code.ToLower()))
                             {
                                 errors.Add("That code is a system-reserved keyword.  Try a different code.");
                             }
@@ -421,7 +421,7 @@ namespace SobekCM.Library.AdminViewer
                 }
             }
 
-            Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/aggregations\" target=\"ADMIN_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine("  <p>For clarification of any terms on this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/aggregations\" target=\"ADMIN_INTERFACE_HELP\" >click here to view the help page</a>.</p>");
 
 
             Output.WriteLine("  <h2>New Item Aggregation</h2>");

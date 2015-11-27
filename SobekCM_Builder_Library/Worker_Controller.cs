@@ -53,8 +53,25 @@ namespace SobekCM.Builder_Library
                 instances.Add(dbInfo);
             }
 
+            // Determine, and create the local work space
+            if (String.IsNullOrEmpty(logFileDirectory))
+            {
+                logFileDirectory = Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().CodeBase, "logs");
+            }
+
+            try
+            {
+                Console.WriteLine("Creating local log directory: " + logFileDirectory);
+                if (!Directory.Exists(logFileDirectory))
+                    Directory.CreateDirectory(logFileDirectory);
+            }
+            catch
+            {
+                Console.WriteLine("Error creating the temporary log directory: " + logFileDirectory, null, null, -1);
+                return;
+            }
+
             // Pull the values from the database and assign other setting values
-            Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory = logFileDirectory;
             DataSet settings = Engine_Database.Get_Settings_Complete(false, null);
             if (settings == null)
             {
@@ -72,7 +89,7 @@ namespace SobekCM.Builder_Library
                 Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
 
             // start with warnings on imagemagick and ghostscript not being installed
-            if ((String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.ImageMagick_Executable)) || (!File.Exists(Engine_ApplicationCache_Gateway.Settings.ImageMagick_Executable)))
+            if ((String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable)) || (!File.Exists(Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable)))
             {
                 string possible_imagemagick = Look_For_Variable_Registry_Key("SOFTWARE\\ImageMagick", "BinPath");
                 if ((!String.IsNullOrEmpty(possible_imagemagick)) && (Directory.Exists(possible_imagemagick)) && (File.Exists(Path.Combine(possible_imagemagick, "convert.exe"))))
@@ -82,10 +99,10 @@ namespace SobekCM.Builder_Library
             }
             else
             {
-                MultiInstance_Builder_Settings.ImageMagick_Executable = Engine_ApplicationCache_Gateway.Settings.ImageMagick_Executable;
+                MultiInstance_Builder_Settings.ImageMagick_Executable = Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable;
             }
 
-            if ((String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable)) || (!File.Exists(Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable)))
+            if ((String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Builder.Ghostscript_Executable)) || (!File.Exists(Engine_ApplicationCache_Gateway.Settings.Builder.Ghostscript_Executable)))
             {
                 string possible_ghost = Look_For_Variable_Registry_Key("SOFTWARE\\GPL Ghostscript", "GS_DLL");
                 if (!String.IsNullOrEmpty(possible_ghost))
@@ -102,7 +119,7 @@ namespace SobekCM.Builder_Library
             }
             else
             {
-                MultiInstance_Builder_Settings.Ghostscript_Executable = Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable;
+                MultiInstance_Builder_Settings.Ghostscript_Executable = Engine_ApplicationCache_Gateway.Settings.Builder.Ghostscript_Executable;
             }
         }
 
@@ -113,17 +130,13 @@ namespace SobekCM.Builder_Library
         {
 
             // Set the variable which will control background execution
-	        int time_between_polls = Engine_ApplicationCache_Gateway.Settings.Builder_Override_Seconds_Between_Polls;
+	        int time_between_polls = Engine_ApplicationCache_Gateway.Settings.Builder.Override_Seconds_Between_Polls.HasValue ? Engine_ApplicationCache_Gateway.Settings.Builder.Override_Seconds_Between_Polls.Value : 60;
 			if (( time_between_polls < 0 ) || ( Engine_ApplicationCache_Gateway.Settings.Database_Connections.Count == 1 ))
 				time_between_polls = Convert.ToInt32(Engine_ApplicationCache_Gateway.Settings.Builder.Seconds_Between_Polls);
 
             // Determine the new log name
             string log_name = "incoming_" + controllerStarted.Year + "_" + controllerStarted.Month.ToString().PadLeft(2, '0') + "_" + controllerStarted.Day.ToString().PadLeft(2, '0') + ".html";
-            string local_log_name = Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + "\\" + log_name;
-            if (String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory))
-            {
-                local_log_name = logFileDirectory + "\\" + log_name;
-            }
+            string local_log_name = Path.Combine(logFileDirectory, log_name);
 
             // Create the new log file
             LogFileXhtml preloader_logger = new LogFileXhtml(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
@@ -198,7 +211,7 @@ namespace SobekCM.Builder_Library
 						Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", abort_message, String.Empty);
 
 						// Save information about this last run
-                        Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Current_Builder_Version);
+                        Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version);
 						Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
 						Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", abort_message);
 
@@ -333,7 +346,7 @@ namespace SobekCM.Builder_Library
 								long staticRebuildLogId = Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Rebuilding all static pages", String.Empty);
 
                                 Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location, Engine_ApplicationCache_Gateway.URL_Portals.Default_Portal.Default_Web_Skin);
-								builder.Rebuild_All_Static_Pages(preloader_logger, false, Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory, dbInstance.Name, staticRebuildLogId);
+								builder.Rebuild_All_Static_Pages(preloader_logger, false, dbInstance.Name, staticRebuildLogId);
 
 							}
 
@@ -419,7 +432,7 @@ namespace SobekCM.Builder_Library
 						Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Building ABORTED per request from database key", String.Empty);
 
 						// Save information about this last run
-                        Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Current_Builder_Version);
+                        Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version);
 						Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
 						Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", "Building ABORTED per request");
 
@@ -479,7 +492,7 @@ namespace SobekCM.Builder_Library
                 bool returnValue = Prebuilder.Perform_BulkLoader( Verbose );
 
                 // Save information about this last run
-                Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Current_Builder_Version);
+                Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version);
                 Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
                 Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", Prebuilder.Final_Message);
 
@@ -497,15 +510,15 @@ namespace SobekCM.Builder_Library
         private void Run_BulkLoader( bool Verbose )
         {
             // Create the local log directories
-            if (!Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory))
+            if (!Directory.Exists(logFileDirectory))
             {
-                Console.WriteLine("Creating local log directory: " + Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory);
-                Directory.CreateDirectory(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory);
+                Console.WriteLine("Creating local log directory: " + logFileDirectory);
+                Directory.CreateDirectory(logFileDirectory);
             }
 
             // Determine the new log name
             string log_name = "incoming_" + controllerStarted.Year + "_" + controllerStarted.Month.ToString().PadLeft(2, '0') + "_" + controllerStarted.Day.ToString().PadLeft(2, '0') + ".html";
-            string local_log_name = Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + "\\" + log_name;
+            string local_log_name = Path.Combine(logFileDirectory, log_name);
 
             // Create the new log file
             LogFileXhtml preloader_logger = new LogFileXhtml(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
@@ -528,7 +541,7 @@ namespace SobekCM.Builder_Library
 						newLoader.Perform_BulkLoader(Verbose);
 
 						// Save information about this last run
-                        Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Current_Builder_Version);
+                        Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version);
 						Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
 						Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", newLoader.Final_Message);
 			        }
@@ -553,11 +566,11 @@ namespace SobekCM.Builder_Library
 	    public void Execute_Immediately(bool BuildProductionMarcxmlFeed, bool BuildTestMarcxmlFeed, bool RunBulkloader, bool CompleteStaticRebuild, bool MarcRebuild )
         {
             // start with warnings on imagemagick and ghostscript not being installed
-            if (Engine_ApplicationCache_Gateway.Settings.ImageMagick_Executable.Length == 0)
+            if (Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable.Length == 0)
             {
                 Console.WriteLine("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.");
             }
-            if (Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable.Length == 0)
+            if (Engine_ApplicationCache_Gateway.Settings.Builder.Ghostscript_Executable.Length == 0)
             {
                 Console.WriteLine("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
             }
@@ -567,7 +580,7 @@ namespace SobekCM.Builder_Library
 				Console.WriteLine("Beginning static rebuild");
                 LogFileXhtml staticRebuildLog = new LogFileXhtml( logFileDirectory  + "\\static_rebuild.html");
                 Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network);
-                builder.Rebuild_All_Static_Pages(staticRebuildLog, true, Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory, String.Empty, -1);
+                builder.Rebuild_All_Static_Pages(staticRebuildLog, true, String.Empty, -1);
             }
             
             if ( MarcRebuild )
@@ -587,7 +600,7 @@ namespace SobekCM.Builder_Library
             }
 
             // Create the log
-            string directory = Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory;
+            string directory = logFileDirectory;
             if (!Directory.Exists(directory))
                 Directory.CreateDirectory(directory);
 
@@ -642,13 +655,13 @@ namespace SobekCM.Builder_Library
                 // Create the Mango load stuff
                 Console.WriteLine("Building " + feed_name);
                 MarcXML_Load_Creator createEndeca = new MarcXML_Load_Creator();
-                bool reportSuccess = createEndeca.Create_MarcXML_Data_File( Test_Feed_Flag, Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + file_name);
+                bool reportSuccess = createEndeca.Create_MarcXML_Data_File(Test_Feed_Flag, Path.Combine(logFileDirectory, file_name));
 
                 // Publish this feed
                 if (reportSuccess)
                 {
                     Library.Database.SobekCM_Database.Builder_Clear_Item_Error_Log(feed_name.ToUpper(), "", "UFDC Builder");
-                    File.Copy(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + file_name, Engine_ApplicationCache_Gateway.Settings.MarcGeneration.MarcXML_Feed_Location + file_name, true);
+                    File.Copy(Path.Combine(logFileDirectory, file_name), Engine_ApplicationCache_Gateway.Settings.MarcGeneration.MarcXML_Feed_Location + file_name, true);
                 }
                 else
                 {
@@ -664,7 +677,7 @@ namespace SobekCM.Builder_Library
 
                         Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, feed_name.ToUpper(), "Error", "Resulting file failed validation", "");
 
-                        File.Copy(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + file_name, Engine_ApplicationCache_Gateway.Settings.MarcGeneration.MarcXML_Feed_Location + file_name.Replace(".xml", "_error.xml"), true);
+                        File.Copy(Path.Combine(logFileDirectory, file_name), Engine_ApplicationCache_Gateway.Settings.MarcGeneration.MarcXML_Feed_Location + file_name.Replace(".xml", "_error.xml"), true);
                     }
                 }
             }

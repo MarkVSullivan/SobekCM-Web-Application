@@ -1057,7 +1057,7 @@ namespace SobekCM.Library.HTML
             else
             {
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
-                Output.WriteLine("    <li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + ALL_TYPES + "</a></li>");
+                Output.WriteLine("    <li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + ALL_TYPES + "</a></li>");
             }
 
             if (type == "edit")
@@ -1067,7 +1067,7 @@ namespace SobekCM.Library.HTML
             else
             {
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = "edit";
-                Output.WriteLine("    <li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + online_edits + "</a></li>");
+                Output.WriteLine("    <li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + online_edits + "</a></li>");
             }
 
             if (type == "submit")
@@ -1077,7 +1077,7 @@ namespace SobekCM.Library.HTML
             else
             {
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = "submit";
-                Output.WriteLine("    <li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + online_submits + "</a></li>");
+                Output.WriteLine("    <li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + online_submits + "</a></li>");
             }
 
             if (type == "visibility")
@@ -1087,7 +1087,7 @@ namespace SobekCM.Library.HTML
             else
             {
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = "visibility";
-                Output.WriteLine("    <li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + visibility + "</a></li>");
+                Output.WriteLine("    <li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + visibility + "</a></li>");
             }
 
             if (type == "bulkloaded")
@@ -1097,7 +1097,7 @@ namespace SobekCM.Library.HTML
             else
             {
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = "bulkloaded";
-                Output.WriteLine("    <li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + bulk_loaded + "</a></li>");
+                Output.WriteLine("    <li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + bulk_loaded + "</a></li>");
             }
 
             if (type == "postprocessed")
@@ -1107,7 +1107,7 @@ namespace SobekCM.Library.HTML
             else
             {
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = "postprocessed";
-                Output.WriteLine("    <li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + post_processed + "</a></li>");
+                Output.WriteLine("    <li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + post_processed + "</a></li>");
             }
 			Output.WriteLine("</ul>");
             Output.WriteLine("</div>");

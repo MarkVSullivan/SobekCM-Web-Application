@@ -72,7 +72,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             readOnlyMode = true;
-            if (((RequestSpecificValues.Current_User.Is_System_Admin) && (!UI_ApplicationCache_Gateway.Settings.isHosted)) ||
+            if (((RequestSpecificValues.Current_User.Is_System_Admin) && (!UI_ApplicationCache_Gateway.Settings.Servers.isHosted)) ||
                 (RequestSpecificValues.Current_User.Is_Host_Admin))
             {
                 readOnlyMode = false;            
@@ -441,7 +441,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             Output.WriteLine("  <p>URL portals allow the same SobekCM library to have a very different look and feel and encompass different item aggregations.  Each portal is defined by the incoming URL and the URL for each incoming request is analyzed to ensure it is handled correctly.</p>");
-            Output.WriteLine("  <p>For more information about URL portals, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/portals\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine("  <p>For more information about URL portals, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/portals\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 
             // Add portal admin message
             int columns = 6;

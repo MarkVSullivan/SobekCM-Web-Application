@@ -71,7 +71,7 @@ namespace SobekCM.Library.AdminViewer
             }
             else
             {
-                limitedRightsMode = ((!RequestSpecificValues.Current_User.Is_Host_Admin) && (UI_ApplicationCache_Gateway.Settings.isHosted)); 
+                limitedRightsMode = ((!RequestSpecificValues.Current_User.Is_Host_Admin) && (UI_ApplicationCache_Gateway.Settings.Servers.isHosted)); 
                 readonlyMode = false;
             }
 
@@ -288,7 +288,7 @@ namespace SobekCM.Library.AdminViewer
                 Key = "Hosted Intance",
                 Reserved = 3,
                 SettingID = 9994,
-                Value = UI_ApplicationCache_Gateway.Settings.isHosted.ToString().ToLower()
+                Value = UI_ApplicationCache_Gateway.Settings.Servers.isHosted.ToString().ToLower()
             };
 
             Admin_Setting_Value errorEmails = new Admin_Setting_Value
@@ -383,7 +383,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <div id=\"sbkSeav_Explanation\">");
 	        Output.WriteLine("    <p>This form allows a user to view and edit all the main system-wide settings which allow the SobekCM web application and assorted related applications to function correctly within each custom architecture and each institution.</p>");
-            Output.WriteLine("    <p>For more information about these settings, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/settings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine("    <p>For more information about these settings, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/settings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 	        Output.WriteLine("  </div>");
             Output.WriteLine();
 

@@ -7,6 +7,7 @@ namespace SobekCM.Core.Settings
 {
     /// <summary> Settings regarding the server architecture, include URLs and network locations </summary>
     [Serializable, DataContract, ProtoContract]
+    [XmlRoot("ServerSettings")]
     public class Server_Settings
     {
         private string inProcessLocationOverride;
@@ -21,6 +22,8 @@ namespace SobekCM.Core.Settings
             JP2ServerType = String.Empty;
             Web_Output_Caching_Minutes = 0;
             Static_Resources_Config_File = "CDN";
+            Base_SobekCM_Location_Relative = String.Empty;
+            isHosted = false;
         }
 
         /// <summary> Network directory for the SobekCM web application server </summary>
@@ -117,24 +120,52 @@ namespace SobekCM.Core.Settings
         [ProtoMember(15)]
         public string System_Error_URL { get; set; }
 
+        /// <summary> Relative location to the folders on the web server </summary>
+        /// <remarks> This is only used when building pages in the SobekCM Builder, which allows for
+        /// the replacement of all the relative references ( i.e., '/design/skins/dloc/dloc.css') with the full
+        /// link ( i.e., 'http://example.edu/design/skins/dloc/dloc.css' ) </remarks>
+        [DataMember(Name = "baseLocationRelative", EmitDefaultValue = false)]
+        [XmlElement("baseLocationRelative")]
+        [ProtoMember(16)]
+        public string Base_SobekCM_Location_Relative { get; set; }
 
         /// <summary> Indicates which static resources configuration file to use </summary>
-        [DataMember]
+        [DataMember(Name = "staticResourcesConfigFile", EmitDefaultValue = false)]
+        [XmlElement("staticResourcesConfigFile")]
+        [ProtoMember(17)]
         public string Static_Resources_Config_File { get; set; }
 
         /// <summary> Flag indicates if the statistics information should be cached for very quick 
         /// retrieval for search engine robots. </summary>
-        [DataMember]
+        [DataMember(Name = "statisticsCachingEnabled")]
+        [XmlElement("statisticsCachingEnabled")]
+        [ProtoMember(18)]
         public bool Statistics_Caching_Enabled { get; set; }
 
         /// <summary> Number of minutes clients are suggested to cache the web output </summary>
-        [DataMember]
+        [DataMember(Name = "webOutputCachingMinutes")]
+        [XmlElement("webOutputCachingMinutes")]
+        [ProtoMember(19)]
         public int Web_Output_Caching_Minutes { get; set; }
 
-
         /// <summary> Gets the base URL for this instance, without the application name </summary>
-        [DataMember]
+        [DataMember(Name = "baseUrl")]
+        [XmlElement("baseUrl")]
+        [ProtoMember(20)]
         public string Base_URL { get; set; }
+
+        /// <summary> Flag indicates if this is a 'hosted' solution of SobekCM, in which case
+        /// certain fields should not be made available, even to "system admins" </summary>
+        [DataMember(Name = "isHosted")]
+        [XmlElement("isHosted")]
+        [ProtoMember(21)]
+        public bool isHosted { get; set; }
+
+        /// <summary> Folder where files bound for archiving are placed </summary>
+        [DataMember(Name = "packageArchivalFolder")]
+        [XmlElement("packageArchivalFolder")]
+        [ProtoMember(22)]
+        public string Package_Archival_Folder { get; set; }
 
 
         #region Derivative properties which return the base directory or base url with a constant ending to indicate the SobekCM standard subfolders
@@ -199,8 +230,6 @@ namespace SobekCM.Core.Settings
         }
 
         #endregion
-
-
 
     }
 }

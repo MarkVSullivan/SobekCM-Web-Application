@@ -91,7 +91,7 @@ namespace SobekCM.Core.Settings
 
         /// <summary> IIS web log location (usually a network share) for the builder
         /// to read the logs and add the usage statistics to the database </summary>
-        [DataMember(Name = "iisLogsDirectory")]
+        [DataMember(Name = "iisLogsDirectory", EmitDefaultValue = false)]
         [XmlElement("iisLogsDirectory")]
         [ProtoMember(8)]
         public string IIS_Logs_Directory { get; set; }
@@ -120,6 +120,66 @@ namespace SobekCM.Core.Settings
         [XmlElement("verboseFlag")]
         [ProtoMember(12)]
         public bool Verbose_Flag { get; set; }
+
+        /// <summary> Number of ticks that a complete package must age before being processed </summary>
+        /// <value> This is currently set to 15 minutes (in ticks) </value>
+        [DataMember(Name = "completePackageRequiredAging")]
+        [XmlElement("completePackageRequiredAging")]
+        [ProtoMember(13)]
+        public long Complete_Package_Required_Aging { get; set; }
+
+        /// <summary> Ghostscript executable file </summary>
+        [DataMember(Name = "ghostscriptExecutable", EmitDefaultValue = false)]
+        [XmlElement("ghostscriptExecutable")]
+        [ProtoMember(14)]
+        public string Ghostscript_Executable { get; set; }
+
+        /// <summary> ImageMagick executable file </summary>
+        [DataMember(Name = "imageMagickExecutable", EmitDefaultValue = false)]
+        [XmlElement("imageMagickExecutable")]
+        [ProtoMember(15)]
+        public string ImageMagick_Executable { get; set; }
+
+        /// <summary> Kakadu JPEG2000 script will override the specifications used when creating zoomable images </summary>
+        [DataMember(Name = "kakaduJp2CreateCommand", EmitDefaultValue = false)]
+        [XmlElement("kakaduJp2CreateCommand")]
+        [ProtoMember(16)]
+        public string Kakadu_JP2_Create_Command { get; set; }
+
+        /// <summary> Returns the network location for the main builder, which runs essentially
+        /// without restrictions </summary>
+        [DataMember(Name = "mainBuilderInputFolder", EmitDefaultValue = false)]
+        [XmlElement("mainBuilderInputFolder")]
+        [ProtoMember(17)]
+        public string Main_Builder_Input_Folder { get; set; }
+
+        /// <summary> Number of ticks that a metadata only package must age before being processed </summary>
+        /// <value> This is currently set to 1 minute (in ticks) </value>
+        [DataMember(Name = "metsOnlyPackageRequiredAging")]
+        [XmlElement("metsOnlyPackageRequiredAging")]
+        [ProtoMember(18)]
+        public long METS_Only_Package_Required_Aging { get; set; }
+
+        /// <summary> Command to launch the OCR engine against a single TIFF to produce a single TEXT file </summary>
+        [DataMember(Name = "ocrCommandPrompt", EmitDefaultValue = false)]
+        [XmlElement("ocrCommandPrompt")]
+        [ProtoMember(19)]
+        public string OCR_Command_Prompt { get; set; }
+
+        /// <summary> Number of seconds between polls, from the configuration file (not the database) </summary>
+        /// <remarks> This is used if the SobekCM Builder is working between multiple instances. If the SobekCM
+        /// Builder is only servicing a single instance, then the data can be pulled from the database. </remarks>
+        [DataMember(Name = "overrideSecondsBetweenPolls", EmitDefaultValue = false)]
+        [XmlElement("overrideSecondsBetweenPolls")]
+        [ProtoMember(20)]
+        public int? Override_Seconds_Between_Polls { get; set; }
+
+        /// <summary> Method suppresses XML Serialization of the Override_Seconds_Between_Polls flag property if it is NULL </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeOverride_Seconds_Between_Polls()
+        {
+            return Override_Seconds_Between_Polls.HasValue;
+        }
 
         /// <summary> Flag indicates whether checksums should be verified </summary>
         [XmlIgnore]

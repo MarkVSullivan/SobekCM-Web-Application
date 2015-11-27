@@ -334,7 +334,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
             Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Web Content URL</td></tr>");
-            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Web content pages (and redirects) are defined by the URL.  The URL can be up to eight segments deep.  For example, http://sobekrepository.org/sobekcm/development would have a level1 of 'sobekcm' and level2 of 'development'.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/webcontentadd\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Web content pages (and redirects) are defined by the URL.  The URL can be up to eight segments deep.  For example, http://sobekrepository.org/sobekcm/development would have a level1 of 'sobekcm' and level2 of 'development'.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/webcontentadd\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
             Output.WriteLine("    <td style=\"width:50px\">&nbsp;</td>");

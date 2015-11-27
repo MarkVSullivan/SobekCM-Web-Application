@@ -160,6 +160,7 @@
     <Compile Include="Settings\Search_Settings.cs" />
     <Compile Include="Settings\Server_Settings.cs" />
     <Compile Include="Settings\Simple_Setting.cs" />
+    <Compile Include="Settings\Static_Settings.cs" />
     <Compile Include="Settings\System_Settings.cs" />
     <Compile Include="Settings\Workflow_Type.cs" />
     <Compile Include="SiteMap\SobekCM_SiteMap.cs" />

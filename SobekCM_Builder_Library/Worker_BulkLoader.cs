@@ -795,8 +795,15 @@ namespace SobekCM.Builder_Library
             }
 
 
+            // Determine, and create the local work space
+            string localLogArea = Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().CodeBase, "logs");
+
+            if (!Directory.Exists(localLogArea))
+                Directory.CreateDirectory(localLogArea);
+
+
             // Save the exception to an exception file
-            StreamWriter exception_writer = new StreamWriter(settings.Local_Log_Directory + "\\exceptions_log.txt", true);
+            StreamWriter exception_writer = new StreamWriter(Path.Combine(localLogArea, "exceptions_log.txt"), true);
             exception_writer.WriteLine(String.Empty);
             exception_writer.WriteLine(String.Empty);
             exception_writer.WriteLine("----------------------------------------------------------");

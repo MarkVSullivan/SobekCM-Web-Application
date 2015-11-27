@@ -88,7 +88,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             readOnlyMode = true;
-            if (((RequestSpecificValues.Current_User.Is_System_Admin) && (!UI_ApplicationCache_Gateway.Settings.isHosted)) ||
+            if (((RequestSpecificValues.Current_User.Is_System_Admin) && (!UI_ApplicationCache_Gateway.Settings.Servers.isHosted)) ||
                 (RequestSpecificValues.Current_User.Is_Host_Admin))
             {
                 readOnlyMode = false;
@@ -315,7 +315,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  <br />");
 	            Output.WriteLine("  <table style=\"width:750px;\">");
 	            Output.WriteLine("    <tr>");
-	            Output.WriteLine("      <td> &nbsp; &nbsp; &nbsp; For clarification of any terms on this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/restrictions\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</td>");
+	            Output.WriteLine("      <td> &nbsp; &nbsp; &nbsp; For clarification of any terms on this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/restrictions\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</td>");
 	            Output.WriteLine("      <td style=\"text-align:right\">");
                 if (!readOnlyMode)
 	            {
@@ -420,7 +420,7 @@ namespace SobekCM.Library.AdminViewer
 
 
             Output.WriteLine("  <p>Restrictive ranges of IP addresses may be used to restrict access to digital resources.  This form allows system administrators to edit the individual IP addresses and contiguous IP addresses associated with an existing restrictive range.</p>");
-            Output.WriteLine("  <p>For more information about IP restriction ranges and this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/restrictions\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine("  <p>For more information about IP restriction ranges and this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/restrictions\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 	        Output.WriteLine();
 
 	        if ( !readOnlyMode )

@@ -61,7 +61,7 @@ namespace SobekCM.Builder
                 // Check for versioning option
                 if (thisArgs == "--version")
                 {
-                    Console.WriteLine("You are running version " + Engine_ApplicationCache_Gateway.Settings.Current_Builder_Version + " of the SobekCM Builder.");
+                    Console.WriteLine("You are running version " + Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version + " of the SobekCM Builder.");
                     return;
                 }
 
@@ -259,52 +259,54 @@ namespace SobekCM.Builder
 		        }
 	        }
 
+
+
             // Verify connectivity and rights on the logs subfolder
-            Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory = Application.StartupPath + "\\logs";
-			if (!Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory))
+            string logFileDirectory = Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().CodeBase, "logs");
+            if (!Directory.Exists(logFileDirectory))
             {
                 try
                 {
-					Directory.CreateDirectory(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory);
+                    Directory.CreateDirectory(logFileDirectory);
                 }
                 catch
                 {
                     Console.WriteLine("Error creating necessary logs subfolder under the application folder.\n");
                     Console.WriteLine("Please create manually.\n");
-					Console.WriteLine(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory);
+                    Console.WriteLine(logFileDirectory);
                     return;
                 }
             }
             try
             {
-				StreamWriter testWriter = new StreamWriter(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + "\\test.log", false);
+				StreamWriter testWriter = new StreamWriter(Path.Combine(logFileDirectory, "test.log"), false);
                 testWriter.WriteLine("TEST");
                 testWriter.Flush();
                 testWriter.Close();
 
-				File.Delete(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + "\\test.log");
+                File.Delete(Path.Combine(logFileDirectory, "test.log"));
             }
             catch
             {
                 Console.WriteLine("The service account needs modify rights on the logs subfolder.\n");
                 Console.WriteLine("Please correct manually.\n");
-				Console.WriteLine(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory);
+				Console.WriteLine(logFileDirectory);
                 return;
             }
 
             // Look for Ghostscript from the registry, if not provided in the config file
-            if (Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable.Length == 0)
+            if (Engine_ApplicationCache_Gateway.Settings.Builder.Ghostscript_Executable.Length == 0)
             {
                 // LOOK FOR THE GHOSTSCRIPT DIRECTORY
                 string possible_ghost = Look_For_Variable_Registry_Key("SOFTWARE\\GPL Ghostscript", "GS_DLL");
                 if (!String.IsNullOrEmpty(possible_ghost))
-                   Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable = possible_ghost;
+                   Engine_ApplicationCache_Gateway.Settings.Builder.Ghostscript_Executable = possible_ghost;
             }
 
             // Look for Imagemagick from the registry, if not provided in the config file
             string possible_imagemagick = Look_For_Variable_Registry_Key("SOFTWARE\\ImageMagick", "BinPath");
             if (!String.IsNullOrEmpty(possible_imagemagick))
-                Engine_ApplicationCache_Gateway.Settings.ImageMagick_Executable = possible_imagemagick;
+                Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable = possible_imagemagick;
 
             //// If this is to refresh the OAI, don't use the worker controller
             //if (( refresh_oai ) &&  (Engine_ApplicationCache_Gateway.Settings.Database_Connections.Count == 1))

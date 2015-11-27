@@ -110,7 +110,7 @@ namespace SobekCM.Library.AdminViewer
 								{
 									actionMessage = "Aggregation with this code already exists";
 								}
-								else if (UI_ApplicationCache_Gateway.Settings.Reserved_Keywords.Contains(new_code.ToLower()))
+								else if (UI_ApplicationCache_Gateway.Settings.Static.Reserved_Keywords.Contains(new_code.ToLower()))
 								{
 									actionMessage = "That code is a system-reserved keyword.  Try a different code.";
 								}
@@ -251,7 +251,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <p>Use item aggregation aliases to allow a term to forward to an existing item aggregation. ");
             Output.WriteLine("  This creates a simpler URL and can forward from a discontinued item aggregation.</p>");
-	        Output.WriteLine("  <p>For more information about aggregation aliases and forwarding, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/aggraliases\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+	        Output.WriteLine("  <p>For more information about aggregation aliases and forwarding, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/aggraliases\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 
             Output.WriteLine("  <h2>New Item Aggregation Alias</h2>");
 			Output.WriteLine("    <div class=\"sbkAav_NewDiv\">");

@@ -225,7 +225,7 @@ namespace SobekCM.Builder_Library
             {
                 // Is this resource a candidate to move for continued processing?
                 long resource_age = resource.AgeInTicks;
-                if ((resource_age > Engine_ApplicationCache_Gateway.Settings.Complete_Package_Required_Aging) || ((resource_age > Engine_ApplicationCache_Gateway.Settings.METS_Only_Package_Required_Aging) && (resource.METS_Only_Package)))
+                if ((resource_age > Engine_ApplicationCache_Gateway.Settings.Builder.Complete_Package_Required_Aging) || ((resource_age > Engine_ApplicationCache_Gateway.Settings.Builder.METS_Only_Package_Required_Aging) && (resource.METS_Only_Package)))
                 {
                     if (!resource.Move(Processing_Folder))
                     {

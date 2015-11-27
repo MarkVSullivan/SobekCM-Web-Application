@@ -72,16 +72,16 @@ namespace SobekCM_Builder_Service
             }
 
             // Verify connectivity and rights on the logs subfolder
-            Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory = appDataPath + "\\logs";
-            if (!Directory.Exists(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory))
+            string logFileDirectory = Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().CodeBase, "logs");
+            if (!Directory.Exists(logFileDirectory))
             {
                 try
                 {
-                    Directory.CreateDirectory(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory);
+                    Directory.CreateDirectory(logFileDirectory);
                 }
                 catch
                 {
-                    EventLog.WriteEntry("SobekCM Builder Service", "Error creating necessary logs subfolder under the application folder.\n\nPlease create manually.\n\n" + Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory, EventLogEntryType.Error);
+                    EventLog.WriteEntry("SobekCM Builder Service", "Error creating necessary logs subfolder under the application folder.\n\nPlease create manually.\n\n" + logFileDirectory, EventLogEntryType.Error);
                     return;
                 }
             }
@@ -89,35 +89,35 @@ namespace SobekCM_Builder_Service
             try
             {
 
-                StreamWriter testWriter = new StreamWriter(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + "\\test.log", false);
+                StreamWriter testWriter = new StreamWriter(Path.Combine(logFileDirectory, "test.log"), false);
                 testWriter.WriteLine("TEST");
                 testWriter.Flush();
                 testWriter.Close();
 
-                File.Delete(Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory + "\\test.log");
+                File.Delete(Path.Combine(logFileDirectory, "test.log"));
             }
             catch
             {
-                EventLog.WriteEntry("SobekCM Builder Service", "The service account needs modify rights on the logs subfolder.\n\nPlease create manually.\n\n" + Engine_ApplicationCache_Gateway.Settings.Local_Log_Directory, EventLogEntryType.Error);
+                EventLog.WriteEntry("SobekCM Builder Service", "The service account needs modify rights on the logs subfolder.\n\nPlease create manually.\n\n" + logFileDirectory, EventLogEntryType.Error);
                 return;
             }
 
             // Look for Ghostscript from the registry, if not provided in the config file
-            if (Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable.Length == 0)
+            if (Engine_ApplicationCache_Gateway.Settings.Builder.Ghostscript_Executable.Length == 0)
             {
                 // LOOK FOR THE GHOSTSCRIPT DIRECTORY
                 string possible_ghost = Look_For_Variable_Registry_Key("SOFTWARE\\GPL Ghostscript", "GS_DLL");
                 if (!String.IsNullOrEmpty(possible_ghost))
-                    Engine_ApplicationCache_Gateway.Settings.Ghostscript_Executable = possible_ghost;
+                    Engine_ApplicationCache_Gateway.Settings.Builder.Ghostscript_Executable = possible_ghost;
             }
 
             // Look for Imagemagick from the registry, if not provided in the config file
             string possible_imagemagick = Look_For_Variable_Registry_Key("SOFTWARE\\ImageMagick", "BinPath");
             if (!String.IsNullOrEmpty(possible_imagemagick))
-                Engine_ApplicationCache_Gateway.Settings.ImageMagick_Executable = possible_imagemagick;
+                Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable = possible_imagemagick;
 
             // Two ways to run this... constantly in background or once
-            Worker_Controller controller = new Worker_Controller(true, appDataPath + "\\Logs\\");
+            Worker_Controller controller = new Worker_Controller(true, logFileDirectory);
             controller.Execute_In_Background();
 
             // If this was set to aborting, set to last execution aborted

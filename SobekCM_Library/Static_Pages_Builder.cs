@@ -71,7 +71,7 @@ namespace SobekCM.Library
 
             // Set some constant settings
             // SobekCM.Library.UI_ApplicationCache_Gateway.Settings.Watermarks_URL = primary_web_server_url + "/design/wordmarks/";
-            UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative = primaryWebServerUrl;
+            UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative = primaryWebServerUrl;
 
             // Ensure all the folders exist
             if (!Directory.Exists(staticSobekcmDataLocation))
@@ -185,11 +185,10 @@ namespace SobekCM.Library
 	    /// <summary> Rebuilds all static pages, including the RSS feeds and site maps </summary>
 	    /// <param name="Logger"> Log file to record progress </param>
 	    /// <param name="BuildAllCitationPages"> Flag indicates to build the individual static HTML pages for each digital resource </param>
-	    /// <param name="RssFeedLocation"> Location where the RSS feeds should be updated to </param>
 	    /// <param name="InstanceName"> Name of this instance </param>
 	    /// <param name="PrimaryLogId"> Log ID in the case this is the builder and it has been pre-logged </param>
 	    /// <returns> The number of encountered errors </returns>
-	    public int Rebuild_All_Static_Pages(LogFileXhtml Logger, bool BuildAllCitationPages, string RssFeedLocation, string InstanceName, long PrimaryLogId )
+	    public int Rebuild_All_Static_Pages(LogFileXhtml Logger, bool BuildAllCitationPages, string InstanceName, long PrimaryLogId )
         {
 	        if (InstanceName.Length > 0)
 		        InstanceName = InstanceName + " - ";
@@ -819,7 +818,7 @@ namespace SobekCM.Library
             // Finish writing this
             Finish_writing_html(Current_Item, currentPage, Static_FileName, Text_File_Directory);
 
-            UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative = String.Empty;
+            UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative = String.Empty;
             return true;
 
         }
@@ -951,11 +950,11 @@ namespace SobekCM.Library
 
             //// Create the HTML writer
             //Item_HtmlSubwriter itemWriter = new Item_HtmlSubwriter(CurrentItem, CurrentPage, null, codeManager, translations, true, true, currentMode, null, String.Empty, null, tracer) { Mode = currentMode, Skin = skinObject };
-            //UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative = currentMode.Base_URL;
-            //if ((UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative.Length == 0) || (UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative.Contains("localhost")))
+            //UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative = currentMode.Base_URL;
+            //if ((UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative.Length == 0) || (UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative.Contains("localhost")))
             //{
-            //    UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative = primaryWebServerUrl;
-            //    currentMode.Base_URL = UI_ApplicationCache_Gateway.Settings.Base_SobekCM_Location_Relative;
+            //    UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative = primaryWebServerUrl;
+            //    currentMode.Base_URL = UI_ApplicationCache_Gateway.Settings.Servers.Base_SobekCM_Location_Relative;
             //}
 
             //// Now that the item viewer is built, set the robot flag to suppress some checks

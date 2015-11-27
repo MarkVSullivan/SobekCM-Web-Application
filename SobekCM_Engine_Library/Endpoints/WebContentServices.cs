@@ -1005,7 +1005,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Ensure the first segment is not a reserved word
-            foreach (string thisReserved in Engine_ApplicationCache_Gateway.Settings.Reserved_Keywords)
+            foreach (string thisReserved in Engine_ApplicationCache_Gateway.Settings.Static.Reserved_Keywords)
             {
                 if (String.Compare(thisReserved, content.Level1, StringComparison.OrdinalIgnoreCase) == 0)
                 {

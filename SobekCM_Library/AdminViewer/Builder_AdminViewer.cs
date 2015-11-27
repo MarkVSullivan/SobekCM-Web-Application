@@ -52,7 +52,7 @@ namespace SobekCM.Library.AdminViewer
            // If this is a postback, handle any events first
             if (RequestSpecificValues.Current_Mode.isPostBack)
             {
-                if (((RequestSpecificValues.Current_User.Is_System_Admin) && (!UI_ApplicationCache_Gateway.Settings.isHosted)) ||
+                if (((RequestSpecificValues.Current_User.Is_System_Admin) && (!UI_ApplicationCache_Gateway.Settings.Servers.isHosted)) ||
                     (RequestSpecificValues.Current_User.Is_Host_Admin))
                 {
                     // Pull the hidden value
@@ -299,7 +299,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
             Output.WriteLine("  <p>The SobekCM builder is constantly loading new items and updates and building the full text indexes.  This page can be used to view and update the current status as well as view the most recent log files.</p>");
-            Output.WriteLine("  <p>For more information about the builder and possible actions from this screen, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/builder\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine("  <p>For more information about the builder and possible actions from this screen, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/builder\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 			Output.WriteLine();
 
             // If missing values, display an error
@@ -318,7 +318,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("  <table class=\"sbkBav_table\">");
                 Output.WriteLine("    <tr><td>Current Status: </td><td><strong>" + operationFlag + "</strong></td><td>&nbsp;</td></tr>");
 
-                if (((RequestSpecificValues.Current_User.Is_System_Admin) && ( !UI_ApplicationCache_Gateway.Settings.isHosted )) ||
+                if (((RequestSpecificValues.Current_User.Is_System_Admin) && ( !UI_ApplicationCache_Gateway.Settings.Servers.isHosted )) ||
                     (RequestSpecificValues.Current_User.Is_Host_Admin))
 	            {
 		            Output.WriteLine("    <tr>");

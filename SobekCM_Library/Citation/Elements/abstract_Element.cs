@@ -150,8 +150,8 @@ namespace SobekCM.Library.Citation.Elements
         protected string Help_URL(string Skin_Code, string Current_Base_URL)
         {
 	        if ( String.IsNullOrEmpty(help_page))
-	            return UI_ApplicationCache_Gateway.Settings.Metadata_Help_URL(Current_Base_URL) + "help/" + html_element_name.Replace("_", "");
-	        return UI_ApplicationCache_Gateway.Settings.Metadata_Help_URL(Current_Base_URL) + "help/" + help_page;
+	            return UI_ApplicationCache_Gateway.Settings.System.Metadata_Help_URL(Current_Base_URL) + "help/" + html_element_name.Replace("_", "");
+	        return UI_ApplicationCache_Gateway.Settings.System.Metadata_Help_URL(Current_Base_URL) + "help/" + help_page;
         }
 
 		/// <summary> Returns TRUE if this element has some data </summary>

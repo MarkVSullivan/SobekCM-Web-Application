@@ -135,10 +135,10 @@ namespace SobekCM.Configuration.Database
                 using (SqlConnection connect = new SqlConnection(database_string))
                 {
                     // Create the command 
-                    SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Builder_Settings", connect);
+                    SqlCommand executeCommand = new SqlCommand("SobekCM_Builder_Get_Settings", connect);
                     executeCommand.CommandTimeout = 30;
                     executeCommand.CommandType = CommandType.StoredProcedure;
-                    executeCommand.Parameters.AddWithValue("@include_items", false);
+                    executeCommand.Parameters.AddWithValue("@include_disabled", false);
 
                     // Create the adapter to fill the data set
                     SqlDataAdapter executeAdapter = new SqlDataAdapter(executeCommand);
@@ -148,7 +148,7 @@ namespace SobekCM.Configuration.Database
                     executeAdapter.Fill( returnValue );
                 }
 
-                return returnValue.Tables[1];
+                return returnValue.Tables[0];
             }
             catch (Exception ee)
             {

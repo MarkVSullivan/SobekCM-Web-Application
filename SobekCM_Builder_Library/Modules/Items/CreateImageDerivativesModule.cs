@@ -95,7 +95,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                             {
                                 // If this is a page image type file, add it
                                 FileInfo derivativeFileInfo = new FileInfo(derivativeFile);
-                                if (Settings.Page_Image_Extensions.Contains(derivativeFileInfo.Extension.ToUpper().Replace(".", "")))
+                                if (Settings.System.Page_Image_Extensions.Contains(derivativeFileInfo.Extension.ToUpper().Replace(".", "")))
                                     Resource.NewImageFiles.Add(derivativeFileInfo.Name);
                             }
                         }

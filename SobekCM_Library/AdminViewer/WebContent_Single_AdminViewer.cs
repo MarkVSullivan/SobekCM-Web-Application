@@ -480,7 +480,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Basic Information</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The information in this section is the basic information about the web content page and includes much of the metadata that is provided to search engines to increase page rank on relevant searches.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singlewebcontent\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>The information in this section is the basic information about the web content page and includes much of the metadata that is provided to search engines to increase page rank on relevant searches.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singlewebcontent\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 			// Add the URL
 			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
@@ -696,7 +696,7 @@ namespace SobekCM.Library.AdminViewer
             //            errors.Add("You must enter a CODE for this child page");
 
             //        }
-            //        else if (UI_ApplicationCache_Gateway.Settings.Reserved_Keywords.Contains(childPageCode.ToLower()))
+            //        else if (UI_ApplicationCache_Gateway.Settings.Static.Reserved_Keywords.Contains(childPageCode.ToLower()))
             //        {
             //            errors.Add("That code is a system-reserved keyword.  Try a different code.");
             //        }
@@ -826,7 +826,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
 			Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Related Pages</td></tr>");
-			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Related web content pages are pages that appear hierarhically under this web content page.   Generally, like content is found under similar URLs.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singlewebcontent\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+			Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Related web content pages are pages that appear hierarhically under this web content page.   Generally, like content is found under similar URLs.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singlewebcontent\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 			// Ensure there are child pages
             bool hasChildren = SobekEngineClient.WebContent.Get_All_NextLevel(Tracer, webContent.Level1, webContent.Level2, webContent.Level3, webContent.Level4, webContent.Level5, webContent.Level6, webContent.Level7, webContent.Level8).Count > 0;
@@ -1241,7 +1241,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
             Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Uploaded Images and Documents</td></tr>");
-            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Manage your uploaded images which can be included in this web content page, or linked from other web content pages within this instance.</p><p>The following image types can be uploaded: bmp, gif, jpg, png.  The following other documents can also be uploaded: ai, doc, docx, eps, kml, pdf, psd, pub, txt, vsd, vsdx, xls, xlsx, xml, zip.</p><p>These files are not associated with any digital resources, but are loosely retained with this web content page.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singlewebcontent\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Manage your uploaded images which can be included in this web content page, or linked from other web content pages within this instance.</p><p>The following image types can be uploaded: bmp, gif, jpg, png.  The following other documents can also be uploaded: ai, doc, docx, eps, kml, pdf, psd, pub, txt, vsd, vsdx, xls, xlsx, xml, zip.</p><p>These files are not associated with any digital resources, but are loosely retained with this web content page.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singlewebcontent\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");

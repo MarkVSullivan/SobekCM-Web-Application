@@ -247,7 +247,7 @@ namespace SobekCM.Library.AdminViewer
 							editUser.Include_Tracking_In_Standard_Forms = false;
                             editUser.Can_Delete_All = false;
 
-					        if ((UI_ApplicationCache_Gateway.Settings.isHosted) && (RequestSpecificValues.Current_User.Is_Host_Admin))
+					        if ((UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && (RequestSpecificValues.Current_User.Is_Host_Admin))
 					        {
                                 editUser.Is_Host_Admin = false;
 					        }
@@ -826,7 +826,7 @@ namespace SobekCM.Library.AdminViewer
             if (editUser.Is_System_Admin)
                 text_builder.Append("Is system administrator<br />");
 
-            if (( UI_ApplicationCache_Gateway.Settings.isHosted ) && ( editUser.Is_Host_Admin ))
+            if (( UI_ApplicationCache_Gateway.Settings.Servers.isHosted ) && ( editUser.Is_Host_Admin ))
                 text_builder.Append("Is host administrator<br />");
 
             if (editUser.Include_Tracking_In_Standard_Forms)
@@ -1087,7 +1087,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <b>Edit this users's permissions, abilities, and basic information</b>");
             Output.WriteLine("    <ul>");
             Output.WriteLine("      <li>Enter the permissions for this user below and press the SAVE button when all your edits are complete.</li>");
-            Output.WriteLine("      <li>For clarification of any terms on this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/users\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</li>");
+            Output.WriteLine("      <li>For clarification of any terms on this form, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/users\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</li>");
             Output.WriteLine("     </ul>");
             Output.WriteLine("  </div>");
 
@@ -1210,7 +1210,7 @@ namespace SobekCM.Library.AdminViewer
                                          ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_sysadmin\" id=\"admin_user_sysadmin\" checked=\"checked\" /> <label for=\"admin_user_sysadmin\">Is system administrator</label> <br />"
                                          : "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_sysadmin\" id=\"admin_user_sysadmin\" /> <label for=\"admin_user_sysadmin\">Is system administrator</label> <br />");
 
-                    if ((UI_ApplicationCache_Gateway.Settings.isHosted) && ( RequestSpecificValues.Current_User.Is_Host_Admin ))
+                    if ((UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && ( RequestSpecificValues.Current_User.Is_Host_Admin ))
                     {
                         Output.WriteLine(editUser.Is_Host_Admin
                                 ? "    <input class=\"admin_user_checkbox\" type=\"checkbox\" name=\"admin_user_host\" id=\"admin_user_host\" checked=\"checked\" /> <label for=\"admin_user_host\">Is HOST administrator</label> <br />"

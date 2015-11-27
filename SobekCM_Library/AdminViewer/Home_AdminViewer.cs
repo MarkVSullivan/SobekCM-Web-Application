@@ -341,8 +341,8 @@ namespace SobekCM.Library.AdminViewer
 		    }
 
 
-			Output.WriteLine("  <p>For clarification on any of these options, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/tasks\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
-			Output.WriteLine("  <p>You are currently running version " + UI_ApplicationCache_Gateway.Settings.Current_Web_Version + ". ( <a href=\"http://sobekrepository.org/sobekcm/development/history\">see release notes</a> )</p>");
+			Output.WriteLine("  <p>For clarification on any of these options, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/tasks\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+			Output.WriteLine("  <p>You are currently running version " + UI_ApplicationCache_Gateway.Settings.Static.Current_Web_Version + ". ( <a href=\"http://sobekrepository.org/sobekcm/development/history\">see release notes</a> )</p>");
 			Output.WriteLine("</div>");
 		}
 

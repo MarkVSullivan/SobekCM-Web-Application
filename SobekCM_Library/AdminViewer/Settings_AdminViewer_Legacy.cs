@@ -79,7 +79,7 @@ namespace SobekCM.Library.AdminViewer
 
             // Determine if full rights are provided here, or limited
             limitedRightsMode = true;
-            if (((RequestSpecificValues.Current_User.Is_System_Admin) && (!UI_ApplicationCache_Gateway.Settings.isHosted)) ||
+            if (((RequestSpecificValues.Current_User.Is_System_Admin) && (!UI_ApplicationCache_Gateway.Settings.Servers.isHosted)) ||
                 (RequestSpecificValues.Current_User.Is_Host_Admin))
             {
                 limitedRightsMode = false;
@@ -598,7 +598,7 @@ namespace SobekCM.Library.AdminViewer
 
 	        Output.WriteLine("  <div id=\"sbkSeav_Explanation\">");
 	        Output.WriteLine("    <p>This form allows a user to view and edit all the main system-wide settings which allow the SobekCM web application and assorted related applications to function correctly within each custom architecture and each institution.</p>");
-            Output.WriteLine("    <p>For more information about these settings, <a href=\"" + UI_ApplicationCache_Gateway.Settings.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/settings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+            Output.WriteLine("    <p>For more information about these settings, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/settings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 	        Output.WriteLine("  </div>");
             Output.WriteLine();
 

@@ -222,7 +222,7 @@ namespace SobekCM.Engine_Library.Settings
 
             // Set some values that used to be constants in the original settings object.  
             // These are all canidates to be pushed into the database at some point
-            SettingsObject.Reserved_Keywords = new List<string> {
+            SettingsObject.Static.Reserved_Keywords = new List<string> {
                     "l", "my", "fragment", "json",
                     "dataset", "dataprovider", "xml", "textonly", "shibboleth", "internal",
                     "contact", "folder", "admin", "preferences", "stats", "statistics", "adminhelp",
@@ -230,12 +230,12 @@ namespace SobekCM.Engine_Library.Settings
                     "text", "results", "contains", "exact", "resultslike", "browseby", "info",  
                     "inprocess", "engine", "register", "xyzzyxyzzy", "aggrmanage", "aggrpermissions", "aggrhistory"  };
 
-            SettingsObject.Page_Image_Extensions = new List<string> { "JPG", "JP2", "JPX", "GIF", "PNG", "BMP", "JPEG" };
+            SettingsObject.System.Page_Image_Extensions = new List<string> { "JPG", "JP2", "JPX", "GIF", "PNG", "BMP", "JPEG" };
             SettingsObject.Resources.Backup_Files_Folder_Name = BACKUP_FILES_FOLDER_NAME;
-            SettingsObject.Current_Web_Version = CURRENT_WEB_VERSION;
-            SettingsObject.Current_Builder_Version = CURRENT_BUILDER_VERSION;
-            SettingsObject.Complete_Package_Required_Aging = COMPLETE_PACKAGE_REQUIRED_AGING;
-            SettingsObject.METS_Only_Package_Required_Aging = METS_ONLY_PACKAGE_REQUIRED_AGING;
+            SettingsObject.Static.Current_Web_Version = CURRENT_WEB_VERSION;
+            SettingsObject.Static.Current_Builder_Version = CURRENT_BUILDER_VERSION;
+            SettingsObject.Builder.Complete_Package_Required_Aging = COMPLETE_PACKAGE_REQUIRED_AGING;
+            SettingsObject.Builder.METS_Only_Package_Required_Aging = METS_ONLY_PACKAGE_REQUIRED_AGING;
             SettingsObject.Builder.VerifyCheckSum = VERIFY_CHECKSUM;
             SettingsObject.Search.Pull_Facets_On_Browse = true;
             SettingsObject.Search.Pull_Facets_On_Search = true;
@@ -279,8 +279,8 @@ namespace SobekCM.Engine_Library.Settings
                 Get_Boolean_Value(settingsDictionary, "Facets Collapsible", SettingsObject, X => X.Search.Facets_Collapsible, ref error, false);
                 Get_String_Value(settingsDictionary, "FDA Report DropBox", SettingsObject, X => X.Florida.FDA_Report_DropBox, ref error);
                 Get_String_Value(settingsDictionary, "Files To Exclude From Downloads", SettingsObject, X => X.Resources.Files_To_Exclude_From_Downloads, ref error);
-                Get_String_Value(settingsDictionary, "Help URL", SettingsObject, X => X.Help_URL_Base, "http://sobekrepository.org/");
-                Get_String_Value(settingsDictionary, "Help Metadata URL", SettingsObject, X => X.Metadata_Help_URL_Base, "http://sobekrepository.org/");
+                Get_String_Value(settingsDictionary, "Help URL", SettingsObject, X => X.System.Help_URL_Base, "http://sobekrepository.org/");
+                Get_String_Value(settingsDictionary, "Help Metadata URL", SettingsObject, X => X.System.Metadata_Help_URL_Base, "http://sobekrepository.org/");
                 Get_String_Value(settingsDictionary, "Image Server Network", SettingsObject, X => X.Servers.Image_Server_Network, ref error);
                 //add by Keven for FIU dPanther's separate image server
                 Get_String_Value(settingsDictionary, "Image Server Root", SettingsObject, X => X.Servers.Image_Server_Root, ref error);
@@ -292,13 +292,13 @@ namespace SobekCM.Engine_Library.Settings
                 Get_String_Value(settingsDictionary, "JPEG2000 Server", SettingsObject, X => X.Servers.JP2ServerUrl, ref error);
                 Get_String_Value(settingsDictionary, "JPEG2000 Server Type", SettingsObject, X => X.Servers.JP2ServerType, ref error);
                 //Get_String_Value(settingsDictionary, "Kakadu JPEG2000 Create Command", ref kakaduJp2CreateCommand, ref error);
-                Get_String_Value(settingsDictionary, "Log Files Directory", SettingsObject, X => X.Log_Files_Directory, ref error);
-                Get_String_Value(settingsDictionary, "Log Files URL", SettingsObject, X => X.Log_Files_URL, ref error);
-                Get_String_Value(settingsDictionary, "Main Builder Input Folder", SettingsObject, X => X.Main_Builder_Input_Folder, String.Empty);
+
+                
+                Get_String_Value(settingsDictionary, "Main Builder Input Folder", SettingsObject, X => X.Builder.Main_Builder_Input_Folder, String.Empty);
                 Get_String_Value(settingsDictionary, "Mango Union Search Base URL", SettingsObject, X => X.Florida.Mango_Union_Search_Base_URL, ref error);
                 Get_String_Value(settingsDictionary, "Mango Union Search Text", SettingsObject, X => X.Florida.Mango_Union_Search_Text, ref error);
-                Get_String_Value(settingsDictionary, "OCR Engine Command", SettingsObject, X => X.OCR_Command_Prompt, String.Empty);
-                Get_String_Value(settingsDictionary, "Package Archival Folder", SettingsObject, X => X.Package_Archival_Folder, String.Empty);
+                Get_String_Value(settingsDictionary, "OCR Engine Command", SettingsObject, X => X.Builder.OCR_Command_Prompt, String.Empty);
+                Get_String_Value(settingsDictionary, "Package Archival Folder", SettingsObject, X => X.Servers.Package_Archival_Folder, String.Empty);
                 Get_String_Value(settingsDictionary, "Page Solr Index URL", SettingsObject, X => X.Servers.Page_Solr_Index_URL, String.Empty);
                 Get_String_Value(settingsDictionary, "PostArchive Files To Delete", SettingsObject, X => X.Archive.PostArchive_Files_To_Delete, String.Empty);
                 Get_String_Value(settingsDictionary, "PreArchive Files To Delete", SettingsObject, X => X.Archive.PreArchive_Files_To_Delete, String.Empty);
@@ -599,7 +599,7 @@ namespace SobekCM.Engine_Library.Settings
                             if (xmlReader.MoveToAttribute("isHosted"))
                             {
                                 if (xmlReader.Value.ToLower() == "true")
-                                    SettingsObject.isHosted = true;
+                                    SettingsObject.Servers.isHosted = true;
                             }
                             if (xmlReader.MoveToAttribute("name"))
                                 newDb.Name = xmlReader.Value.Trim();
@@ -623,19 +623,19 @@ namespace SobekCM.Engine_Library.Settings
 
                         case "ghostscript_executable":
                             xmlReader.Read();
-                            SettingsObject.Ghostscript_Executable = xmlReader.Value;
+                            SettingsObject.Builder.Ghostscript_Executable = xmlReader.Value;
                             break;
 
                         case "imagemagick_executable":
                             xmlReader.Read();
-                            SettingsObject.ImageMagick_Executable = xmlReader.Value;
+                            SettingsObject.Builder.ImageMagick_Executable = xmlReader.Value;
                             break;
 
                         case "pause_between_polls":
                             xmlReader.Read();
                             int testValue;
                             if (Int32.TryParse(xmlReader.Value, out testValue))
-                                SettingsObject.Builder_Override_Seconds_Between_Polls = testValue;
+                                SettingsObject.Builder.Override_Seconds_Between_Polls = testValue;
                             break;
 
                     }
