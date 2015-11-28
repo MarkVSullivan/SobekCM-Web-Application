@@ -2,38 +2,116 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Xml;
+using System.Xml.Serialization;
+using ProtoBuf;
+using SobekCM.Core.Settings;
 
 #endregion
 
 namespace SobekCM.Core.Configuration
 {
     /// <summary> Instance-wide configuration information for the map editor </summary>
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("MapEditorConfig")]
     public class MapEditor_Configuration
     {
         //assign config file
         private string configFilePath = AppDomain.CurrentDomain.BaseDirectory + "/config/default/sobekcm_mapeditor.config";
 
+        /// <summary> Constructor for a new instance of the MapEditor_Configuration class  </summary>
+        public MapEditor_Configuration()
+        {
+            Collections = new List<MapEditor_Configuration_Collection>();
+            configFilePath = AppDomain.CurrentDomain.BaseDirectory + "/config/default/sobekcm_mapeditor.config";
+            Read_Settings(configFilePath);
+        }
+
+        /// <summary> List of map editor configuration collections </summary>
+        [DataMember(Name = "settingCollections", EmitDefaultValue = false)]
+        [XmlArray("settingCollections")]
+        [XmlArrayItem("collection", typeof(MapEditor_Configuration_Collection))]
+        [ProtoMember(1)]
+        public List<MapEditor_Configuration_Collection> Collections { get; set; }
+
+        /// <summary> Reads in all the setting collections and values </summary>
+        /// <param name="ConfigFile"></param>
+        /// <returns> TRUE if the settings are read successfully, otherwise FALSE </returns>
+        private bool Read_Settings(string ConfigFile)
+        {
+            try
+            {
+                //init LoadParams
+                List<string>[] settings = new List<string>[2];
+                settings[0] = new List<string>();
+                settings[1] = new List<string>();
+
+                //read through load default params
+                using (XmlReader reader = XmlReader.Create(configFilePath))
+                {
+                    while (reader.Read())
+                    {
+                        // Only detect start elements.
+                        if (reader.IsStartElement())
+                        {
+                            // Get element name and switch on it.
+                            switch (reader.Name)
+                            {
+                                case "collection":
+                                    string collectionName = reader["id"];
+                                    MapEditor_Configuration_Collection collection = new MapEditor_Configuration_Collection
+                                    {
+                                        Name = collectionName
+                                    };
+
+                                    while (reader.Read())
+                                    {
+                                        if (reader.NodeType == XmlNodeType.Whitespace) continue;
+
+                                        if (reader.Name == "collection")
+                                        {
+                                            if (reader.NodeType == XmlNodeType.EndElement)
+                                                break;
+                                        }
+
+                                        if (!reader.IsStartElement()) continue;
+
+                                        string key = reader.Name;
+                                        if (reader.Read())
+                                        {
+                                            string value = String.IsNullOrEmpty(reader.Value) ? "\"\"" : reader.Value;
+                                            collection.Settings.Add(new Simple_Setting(key, value, -1));
+                                        }
+                                    }
+                                    Collections.Add(collection);
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                return false;
+            }
+        }
+
         /// <summary> Gets all settings from config file </summary>
         /// <param name="IdsFromPage"> The IDs from the page </param>
         /// <returns> List of settings to use for that ID(?) </returns>
-        public List<string>[] GetSettings(List<string> IdsFromPage)
+        public List<Simple_Setting> GetSettings(List<string> IdsFromPage)
         {
             //get defaults as base
-            List<string>[] settings = GetDefaultSettings();
+            List<Simple_Setting> settings = GetDefaultSettings();
 
             //determine if custom has settings
             if (HasCustomSettings(IdsFromPage))
             {
-                List<string>[] newSettings =  GetCustomSettings(IdsFromPage);
-                foreach (string settingName in newSettings[0])
-                {
-                    settings[0].Add(settingName);
-                }
-                foreach (string settingValue in newSettings[1])
-                {
-                    settings[1].Add(settingValue);
-                }
+                List<Simple_Setting> newSettings =  GetCustomSettings(IdsFromPage);
+                settings.AddRange(newSettings);
             }
             
             return settings;
@@ -44,139 +122,81 @@ namespace SobekCM.Core.Configuration
         /// <returns></returns>
         private bool HasCustomSettings(List<string> IdsFromPage)
         {
-            bool hasCustomSettings = false;
-            foreach (string idFromPage in IdsFromPage)
+            foreach (MapEditor_Configuration_Collection collection in Collections)
             {
-                foreach (string idFromConfig in GetIdsFromConfig())
+                string[] tempIds = collection.Name.Split(',');
+                foreach (string idFromConfig in tempIds)
                 {
-                    if (idFromPage.Replace(" ", "") == idFromConfig.Replace(" ", ""))
-                        hasCustomSettings = true;
-                }
-            }
-            
-            return hasCustomSettings;
-        }
-
-        /// <summary> Get all the collection ids from the config file  </summary>
-        /// <returns> List of ids from the config file </returns>
-        private List<string> GetIdsFromConfig()
-        {
-            //init IdsFromConfig
-            List<string> idsFromConfig = new List<string>();
-
-            //read the Ids from config file
-            using (XmlReader reader = XmlReader.Create(configFilePath))
-            {
-                while (reader.Read())
-                {
-                    if (reader.IsStartElement())
+                    foreach (string thisIdFromPage in IdsFromPage)
                     {
-                        if (reader.Name == "collection")
-                        {
-                            //get all of the  ids
-                            string attribute = reader.GetAttribute("id");
-                            if (attribute != null)
-                            {
-                                string[] tempIds = attribute.Split(',');
-                                idsFromConfig.AddRange(tempIds);
-                            }
-                        }
+                        if (thisIdFromPage.Replace(" ", "") == idFromConfig.Replace(" ", ""))
+                            return true;
                     }
                 }
             }
-            return idsFromConfig;
+            
+            return false;
         }
 
         /// <summary> Gets the default settings </summary>
         /// <returns></returns>
-        private List<string>[] GetDefaultSettings()
+        private List<Simple_Setting> GetDefaultSettings()
         {
-            //init LoadParams
-            List<string>[] settings = new List<string>[2];
-            settings[0] = new List<string>();
-            settings[1] = new List<string>();
-
-            //read through load default params
-            using (XmlReader reader = XmlReader.Create(configFilePath))
+            foreach (MapEditor_Configuration_Collection thisCollection in Collections)
             {
-                while (reader.Read())
+                if (String.Equals(thisCollection.Name, "default", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Only detect start elements.
-                    if (reader.IsStartElement())
-                    {
-                        // Get element name and switch on it.
-                        switch (reader.Name)
-                        {
-                            case "collection":
-                                if ((reader["id"] == "default"))
-                                {
-                                    while (reader.Read())
-                                    {
-                                        if (!reader.IsStartElement()) continue;
-                                        if (reader.Name == "collection")
-                                            break;
-                                        settings[0].Add(reader.Name);
-                                        if (reader.Read())
-                                            settings[1].Add(string.IsNullOrEmpty(reader.Value) ? "\"\"" : reader.Value);
-                                    }
-                                }
-                                break;
-                        }
-                    }
+                    return thisCollection.Settings;
                 }
             }
-
+            
             //return settings
-            return settings;
+            return null;
         }
 
         /// <summary> Gets all the custom settigns as defined from page itself </summary>
         /// <param name="IdsFromPage"> The ids from page.</param>
         /// <returns></returns>
-        private List<string>[] GetCustomSettings(List<string> IdsFromPage)
+        private List<Simple_Setting> GetCustomSettings(List<string> IdsFromPage)
         {
-            //init LoadParams
-            List<string>[] settings = new List<string>[2];
-            settings[0] = new List<string>();
-            settings[1] = new List<string>();
-
-            //read through load default params
-            using (XmlReader reader = XmlReader.Create(configFilePath))
+            foreach (MapEditor_Configuration_Collection collection in Collections)
             {
-                while (reader.Read())
+                string[] tempIds = collection.Name.Split(',');
+                foreach (string idFromConfig in tempIds)
                 {
-                    // Only detect start elements.
-                    if (reader.IsStartElement())
+                    foreach (string thisIdFromPage in IdsFromPage)
                     {
-                        // Get element name and switch on it.
-                        switch (reader.Name)
-                        {
-                            case "collection":
-                                foreach (string id in IdsFromPage) 
-                                {
-                                    string s = reader["id"];
-                                    if (s != null && (s.Contains(id)))
-                                    {
-                                        while (reader.Read())
-                                        {
-                                            if (!reader.IsStartElement()) continue;
-                                            if (reader.Name == "collection")
-                                                break;
-                                            settings[0].Add(reader.Name);
-                                            if (reader.Read())
-                                                settings[1].Add(string.IsNullOrEmpty(reader.Value) ? "\"\"" : reader.Value);
-                                        }
-                                    }
-                                }
-                                break;
-                        }
+                        if (thisIdFromPage.Replace(" ", "") == idFromConfig.Replace(" ", ""))
+                            return collection.Settings;
                     }
                 }
             }
 
-            //return settings
-            return settings;
-        } 
+            return new List<Simple_Setting>();
+        }
+    }
 
+    /// <summary> Collection of map editor configuration key/values </summary>
+    [Serializable, DataContract, ProtoContract]
+    public class MapEditor_Configuration_Collection
+    {
+        /// <summary> Name of this collection (often a set of collection names) </summary>
+        [DataMember(Name = "name", EmitDefaultValue = false)]
+        [XmlAttribute("name")]
+        [ProtoMember(1)]
+        public string Name { get; set; }
+
+        /// <summary> List of settings for this collection </summary>
+        [DataMember(Name = "settings", EmitDefaultValue = false)]
+        [XmlArray("settings")]
+        [XmlArrayItem("setting", typeof(Simple_Setting))]
+        [ProtoMember(2)]
+        public List<Simple_Setting> Settings { get; set; }
+
+        /// <summary> Constructor for a new instance of the MapEditor_Configuration_Collection class </summary>
+        public MapEditor_Configuration_Collection()
+        {
+            Settings = new List<Simple_Setting>();
+        }
     }
 }

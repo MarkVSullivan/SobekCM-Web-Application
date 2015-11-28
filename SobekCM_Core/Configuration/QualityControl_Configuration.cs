@@ -5,8 +5,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
+using System.Xml.Serialization;
+using ProtoBuf;
 
 #endregion
 
@@ -14,44 +17,64 @@ namespace SobekCM.Core.Configuration
 {
     /// <summary> Class keeps all the system-wide quality control profiles which 
     /// can be used within the system  </summary>
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("QualityControlConfig")]
     public class QualityControl_Configuration
     {
         private static bool attemptedRead;
-        private static Dictionary<string, QualityControl_Profile> profiles;
-        private static QualityControl_Profile defaultProfile;
         private static string sobekcm_qc_configfilePath;
-
+        private static Dictionary<string, QualityControl_Profile> profilesDictionary;
         
         /// <summary> Static constructor for the QualityControl_Configuration class </summary>
         public QualityControl_Configuration()
         {
             // Declare all the new collections in this configuration 
-            profiles = new Dictionary<string, QualityControl_Profile>();
+            profilesDictionary = new Dictionary<string, QualityControl_Profile>();
+            Profiles = new List<QualityControl_Profile>();
 
             // Set some default values
             attemptedRead = false;
-            defaultProfile = null;
+            DefaultProfile = null;
 
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             sobekcm_qc_configfilePath=(baseDirectory + "config\\default\\sobekcm_qc.config");
 
             if (!Read_Metadata_Configuration(sobekcm_qc_configfilePath))
+            {
                 // Set default reader/writer values to have a baseline in case there is
                 // no file to be read 
                 Set_Default_Values();
+            }
         }
 
+
+        /// <summary> Name of the default quality control profile to use, if no specific profile is indicated </summary>
+        [DataMember(Name = "default", EmitDefaultValue = false)]
+        [XmlAttribute("default")]
+        [ProtoMember(1)]
+        public string DefaultProfile { get; set; }
+
+
+        /// <summary> List of all the quality control profiles </summary>
+        [DataMember(Name = "profiles")]
+        [XmlArray("profiles")]
+        [XmlArrayItem("profile", typeof(QualityControl_Profile))]
+        [ProtoMember(2)]
+        public List<QualityControl_Profile> Profiles { get; set; }
 
 
         private void Clear()
         {
-            profiles.Clear();
-            defaultProfile = null;
+            Profiles.Clear();
+            profilesDictionary.Clear();
+            DefaultProfile = null;
         }
 
         /// <summary> Flag indicates if the method to read the configuration file has been called </summary>
         /// <remarks> Even if the read is unsuccesful for any reason, this returns TRUE to prevent 
         /// the read method from being called over and over </remarks>
+        [XmlIgnore]
+        [IgnoreDataMember]
         public bool Attempted_To_Read_Config_File
         {
             get { return attemptedRead; }
@@ -64,24 +87,23 @@ namespace SobekCM.Core.Configuration
         public void Add_Profile(QualityControl_Profile New_Profile)
         {
             // Add to the dictionary of profiles
-            profiles[New_Profile.Profile_Name] = New_Profile;
+            Profiles.Add(New_Profile);
+            profilesDictionary[New_Profile.Profile_Name] = New_Profile;
 
             // Was this the default profile?
             if (New_Profile.Default_Profile)
-                defaultProfile = New_Profile;
+                DefaultProfile = New_Profile.Profile_Name;
         }
 
-        /// <summary> Default quality control profile </summary>
-        public QualityControl_Profile Default_Profile
+        /// <summary> Gets the default quality control profile </summary>
+        /// <returns> Quality Control profile </returns>
+        public QualityControl_Profile Get_Default_Profile()
         {
-            get
-            {
-                if (defaultProfile != null)
-                    return defaultProfile;
-                if (profiles.Count > 0)
-                    return profiles[profiles.Keys.FirstOrDefault()];
-                return null;
-            }
+            if ((!String.IsNullOrEmpty(DefaultProfile)) && (profilesDictionary.ContainsKey(DefaultProfile)))
+                return profilesDictionary[DefaultProfile];
+            if (profilesDictionary.Count > 0)
+                return profilesDictionary[profilesDictionary.Keys.FirstOrDefault()];
+            return null;
         }
 
         #region Set default values (used if no config file is present)
@@ -215,7 +237,7 @@ namespace SobekCM.Core.Configuration
                 writer.WriteLine("\t<QualityControl>");
                 writer.WriteLine("\t\t<Profiles>");
               
-                foreach (QualityControl_Profile profile in profiles.Values)
+                foreach (QualityControl_Profile profile in profilesDictionary.Values)
                 {
                     writer.Write("\t\t\t<Profile ");
                     if (profile.Default_Profile)
@@ -223,7 +245,7 @@ namespace SobekCM.Core.Configuration
                     writer.Write("name=\"" + Convert_String_To_XML_Safe(profile.Profile_Name) + "\" ");
                     writer.WriteLine("description=\"" + Convert_String_To_XML_Safe(profile.Profile_Description) + "\">");
 
-                    foreach (QualityControl_Division_Config thisConfig in profile.All_Division_Types)
+                    foreach (QualityControl_Division_Config thisConfig in profile.Division_Types)
                     {
                         writer.Write("\t\t\t\t<DivisionType DivisionID=\"" + thisConfig.ID + "\" type=\"" + Convert_String_To_XML_Safe(thisConfig.TypeName) + "\" ");
                         if ( !thisConfig.isActive ) writer.Write( "isActive=\"false\" ");
@@ -395,8 +417,6 @@ namespace SobekCM.Core.Configuration
                             while (child_readerXml.Read())
                             {
                                 if (child_readerXml.NodeType == XmlNodeType.Element && child_readerXml.Name.ToLower() == "divisiontype")
-
-                                    //  while (readerXml.ReadToNextSibling("DivisionType"))
                                 {
                                     if (child_readerXml.Name.ToLower() == "divisiontype")
                                     {
@@ -413,55 +433,8 @@ namespace SobekCM.Core.Configuration
                                 }
                             }
                             Add_Profile(profile);
-                   //         Add_METS_Writing_Profile(profile);
                             break;
 
-                        case "package_scope":
-                            break;
-
-                        case "division_scope":
-                            break;
-
-                        case "file_scope":
-                            break;
-
-                        case "dmdsec":
-                            break;
-
-                        case "amdsec":
-                            break;
-
-                        //case "readerwriterref":
-                        //    if (readerXml.MoveToAttribute("ID"))
-                        //    {
-                        //        string id = readerXml.Value.ToUpper();
-                        //        if ((readerWriters.ContainsKey(id)) && (profile != null))
-                        //        {
-                        //            METS_Section_ReaderWriter_Config readerWriter = readerWriters[id];
-                        //            if (inPackage)
-                        //            {
-                        //                if (inDmdSec)
-                        //                    profile.Add_Package_Level_DmdSec_Writer_Config(readerWriter);
-                        //                else
-                        //                    profile.Add_Package_Level_AmdSec_Writer_Config(readerWriter);
-                        //            }
-                        //            else if (inDivision)
-                        //            {
-                        //                if (inDmdSec)
-                        //                    profile.Add_Division_Level_DmdSec_Writer_Config(readerWriter);
-                        //                else
-                        //                    profile.Add_Division_Level_AmdSec_Writer_Config(readerWriter);
-                        //            }
-                        //            else if (inFile)
-                        //            {
-                        //                if (inDmdSec)
-                        //                    profile.Add_File_Level_DmdSec_Writer_Config(readerWriter);
-                        //                else
-                        //                    profile.Add_File_Level_AmdSec_Writer_Config(readerWriter);
-                        //            }
-                        //        }
-                        //    }
-                        //    break;
                     }
                 }
             }
@@ -474,25 +447,33 @@ namespace SobekCM.Core.Configuration
 
     /// <summary> Stores information about a single profile for performing quality 
     /// control online </summary>
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("QualityControlProfile")]
     public class QualityControl_Profile
     {
         /// <summary> Name associated with this profile </summary>
-        public string Profile_Name { get; internal set; }
+        [DataMember(Name = "name", EmitDefaultValue = false)]
+        [XmlAttribute("name")]
+        [ProtoMember(1)]
+        public string Profile_Name { get; set; }
 
         /// <summary> Description associated with this profile </summary>
-        public string Profile_Description { get; internal set; }
+        [DataMember(Name = "description", EmitDefaultValue = false)]
+        [XmlAttribute("description")]
+        [ProtoMember(2)]
+        public string Profile_Description { get; set; }
 
         /// <summary> Flag indicates if this is the default profile </summary>
+        [XmlIgnore]
+        [IgnoreDataMember]
         public bool Default_Profile { get; internal set; }
 
-        private readonly List<QualityControl_Division_Config> divisionTypes;
-
-        private readonly Dictionary<string, QualityControl_Division_Config> divisionTypeLookup;
+        private Dictionary<string, QualityControl_Division_Config> divisionTypeLookup;
 
         /// <summary> Constructor for a new instance of the QualityControl_Profile class </summary>
         public QualityControl_Profile()
         {
-            divisionTypes = new List<QualityControl_Division_Config>();
+            Division_Types = new List<QualityControl_Division_Config>();
             divisionTypeLookup = new Dictionary<string, QualityControl_Division_Config>();
 
             Default_Profile = false;
@@ -506,7 +487,7 @@ namespace SobekCM.Core.Configuration
         /// <param name="Default_Profile"> Flag indicates if this is the default profile </param>
         public QualityControl_Profile( string Profile_Name, string Profile_Description, bool Default_Profile )
         {
-            divisionTypes = new List<QualityControl_Division_Config>();
+            Division_Types = new List<QualityControl_Division_Config>();
             divisionTypeLookup = new Dictionary<string, QualityControl_Division_Config>();
 
             this.Default_Profile = Default_Profile;
@@ -515,16 +496,18 @@ namespace SobekCM.Core.Configuration
         }
 
         /// <summary> Return the list of all division types in this profile </summary>
-        public ReadOnlyCollection<QualityControl_Division_Config> All_Division_Types
-        {
-            get { return new ReadOnlyCollection<QualityControl_Division_Config>(divisionTypes); }
-        }
+        [DataMember(Name = "divisionTypes")]
+        [XmlArray("divisionTypes")]
+        [XmlArrayItem("type", typeof(QualityControl_Division_Config))]
+        [ProtoMember(3)]
+        public List<QualityControl_Division_Config> Division_Types { get; set;  }
+
 
         /// <summary> Add a new division type to this profile </summary>
         /// <param name="Division_Config"> New division type to add </param>
         public void Add_Division_Type(QualityControl_Division_Config Division_Config )
         {
-            divisionTypes.Add(Division_Config);
+            Division_Types.Add(Division_Config);
             divisionTypeLookup[Division_Config.TypeName] = Division_Config;
         }
 
@@ -532,7 +515,7 @@ namespace SobekCM.Core.Configuration
         /// <param name="Division_Config"> Division type to remove </param>
         public void Remove_Division_Type( QualityControl_Division_Config Division_Config )
         {
-            divisionTypes.Remove(Division_Config);
+            Division_Types.Remove(Division_Config);
             divisionTypeLookup.Remove(Division_Config.TypeName);
         }
 
@@ -540,9 +523,23 @@ namespace SobekCM.Core.Configuration
         /// from the type name </summary>
         /// <param name="TypeName"> Name of the division type to retrieve</param>
         /// <returns>Either NULL or the matching division config</returns>
-        public QualityControl_Division_Config  this[string TypeName]
+        [XmlIgnore]
+        [IgnoreDataMember]
+        public QualityControl_Division_Config this[string TypeName]
         {
-            get {
+            get 
+            {
+                // Ensure the dictionary exists and is current
+                if ((divisionTypeLookup == null) || (divisionTypeLookup.Count != Division_Types.Count))
+                {
+                    divisionTypeLookup = new Dictionary<string, QualityControl_Division_Config>();
+                    foreach (QualityControl_Division_Config thisConfig in Division_Types)
+                    {
+                        divisionTypeLookup[thisConfig.TypeName] = thisConfig;
+                    }
+                }
+
+                // Now, return the match
                 return divisionTypeLookup.ContainsKey(TypeName) ? divisionTypeLookup[TypeName] : null;
             }
         }
@@ -553,32 +550,56 @@ namespace SobekCM.Core.Configuration
     #region QualityControl_Division_Config class 
  
     /// <summary> Configuration information for a single possible division type </summary>
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("QualityControlDivisionConfig")]
     public class QualityControl_Division_Config  
     {
         /// <summary> Key for this division configuration information </summary>
         /// <remarks> This may be used for updating the data or something, not currently used?? </remarks>
+        [XmlIgnore]
+        [IgnoreDataMember]
         internal int ID { get; set;  }
 
         /// <summary> Name of this type, which the user selects.  This is also the default name, if
         /// a translation for this name is not provided in a requested language </summary>
-        public string TypeName { get; internal set;  }
+        [DataMember(Name = "name", EmitDefaultValue = false)]
+        [XmlAttribute("name")]
+        [ProtoMember(1)]
+        public string TypeName { get; set;  }
 
         /// <summary> Flag indicates if this division is currently active </summary>
-        public bool isActive { get; internal set; }
+        [DataMember(Name = "active", EmitDefaultValue = false)]
+        [XmlAttribute("active")]
+        [ProtoMember(2)]
+        public bool isActive { get; set; }
 
         /// <summary> Flag indicates if the user will be asked for a name when this division is chosen </summary>
-        public bool isNameable  {  get; internal set;  }
+        [DataMember(Name = "nameable", EmitDefaultValue = false)]
+        [XmlAttribute("nameable")]
+        [ProtoMember(3)]
+        public bool isNameable  {  get; set;  }
 
         /// <summary> If this is set, then the typename is actually used as the division label
         /// and this is used as the type within the METS structure map </summary>
-        public string BaseTypeName { get; internal set; }
+        [DataMember(Name = "baseType", EmitDefaultValue = false)]
+        [XmlAttribute("baseType")]
+        [ProtoMember(4)]
+        public string BaseTypeName { get; set; }
 
-        private Dictionary<Web_Language_Enum, string> typeTranslations;
+        /// <summary> List of all the translation values for this type, including the language and the term </summary>
+        [DataMember(Name = "translations")]
+        [XmlArray("translations")]
+        [XmlArrayItem("translation", typeof(Web_Language_Translation_Value))]
+        [ProtoMember(5)]
+        public List<Web_Language_Translation_Value> TypeTranslations;
+
+        private Dictionary<Web_Language_Enum, string> typeTranslationsDictionary;
 
         /// <summary> Constructor for a new instance of the QualityControl_Division_Config class </summary>
         public QualityControl_Division_Config()
         {
-            typeTranslations = new Dictionary<Web_Language_Enum, string>();
+            TypeTranslations = new List<Web_Language_Translation_Value>();
+            typeTranslationsDictionary = new Dictionary<Web_Language_Enum, string>();
             ID = -1;
             TypeName = String.Empty;
             isActive = true;
@@ -594,7 +615,8 @@ namespace SobekCM.Core.Configuration
         /// <param name="isNameable"> Flag indicates if the user will be asked for a name when this division is chosen </param>
         public QualityControl_Division_Config(int ID, string TypeName, bool isActive, bool isNameable)
         {
-            typeTranslations = new Dictionary<Web_Language_Enum, string>();
+            TypeTranslations = new List<Web_Language_Translation_Value>();
+            typeTranslationsDictionary = new Dictionary<Web_Language_Enum, string>();
             this.ID = ID;
             this.TypeName = TypeName;
             this.isActive = isActive;
@@ -612,7 +634,8 @@ namespace SobekCM.Core.Configuration
         /// and this is used as the type within the METS structure map </param>
         public QualityControl_Division_Config(int ID, string TypeName, bool isActive, bool isNameable, string BaseTypeName )
         {
-            typeTranslations = new Dictionary<Web_Language_Enum, string>();
+            TypeTranslations = new List<Web_Language_Translation_Value>();
+            typeTranslationsDictionary = new Dictionary<Web_Language_Enum, string>();
             this.ID = ID;
             this.TypeName = TypeName;
             this.isActive = isActive;
@@ -623,12 +646,12 @@ namespace SobekCM.Core.Configuration
         /// <summary> Flag indicates if this division config has translations </summary>
         internal bool hasTranslations
         {
-            get { return (typeTranslations.Count > 0); }
+            get { return (TypeTranslations.Count > 0); }
         }
 
         internal void Write_Translations(StreamWriter writer)
         {
-            foreach (KeyValuePair<Web_Language_Enum, string> translation in typeTranslations)
+            foreach (KeyValuePair<Web_Language_Enum, string> translation in typeTranslationsDictionary)
             {
                 writer.WriteLine("\t\t\t\t\t<Translation language=\"" + Web_Language_Enum_Converter.Enum_To_Code(translation.Key) + "\" text=\"" + Convert_String_To_XML_Safe(translation.Value) + "\" />");
             }
@@ -641,8 +664,8 @@ namespace SobekCM.Core.Configuration
         /// <returns> Transalted type, or an empty string </returns>
         public string Get_Translation( Web_Language_Enum Language, bool useDefaultIfNotPresent )
         {
-            if (typeTranslations.ContainsKey(Language))
-                return typeTranslations[Language];
+            if (typeTranslationsDictionary.ContainsKey(Language))
+                return typeTranslationsDictionary[Language];
 
             return useDefaultIfNotPresent ? TypeName : String.Empty;
         }
@@ -652,8 +675,27 @@ namespace SobekCM.Core.Configuration
         /// <param name="Translation"> Translation of the type of this division </param>
         public void Add_Translation( Web_Language_Enum Language, string Translation )
         {
-            typeTranslations[Language] = Translation;
+            TypeTranslations.Add(new Web_Language_Translation_Value(Language, Translation));
+            typeTranslationsDictionary[Language] = Translation;
         }
+
+        #region Methods that controls XML serialization
+
+        /// <summary> Method suppresses XML Serialization of the BaseTypeName property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeBaseTypeName()
+        {
+            return (!String.IsNullOrEmpty(BaseTypeName));
+        }
+
+        /// <summary> Method suppresses XML Serialization of the TypeTranslations collection if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeTypeTranslations()
+        {
+            return (TypeTranslations != null) && (TypeTranslations.Count > 0);
+        }
+
+        #endregion
 
 
         /// <summary> Converts a basic string into an XML-safe string </summary>

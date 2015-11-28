@@ -188,7 +188,7 @@ namespace SobekCM.Library.MySobekViewer
 				bool newspaper = Item.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
 
 				// Does a custom setting override the default behavior to add a date?
-				if ((newspaper) && (UI_ApplicationCache_Gateway.Settings.Additional_Settings.ContainsKey("Item Viewer.Include Date In Title")) && (UI_ApplicationCache_Gateway.Settings.Additional_Settings["Item Viewer.Include Date In Title"].ToUpper() == "NEVER"))
+                if ((newspaper) && (UI_ApplicationCache_Gateway.Settings.Contains_Additional_Setting("Item Viewer.Include Date In Title")) && (UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Item Viewer.Include Date In Title").ToUpper() == "NEVER"))
 					newspaper = false;
 
 				// Add the date if it should be added

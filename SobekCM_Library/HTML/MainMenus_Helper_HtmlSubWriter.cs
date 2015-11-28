@@ -102,10 +102,10 @@ namespace SobekCM.Library.HTML
             bool pre_menu_options_exist = false;
             string first_pre_menu_option = String.Empty;
             string second_pre_menu_option = String.Empty;
-            if (UI_ApplicationCache_Gateway.Settings.Additional_Settings.ContainsKey("Aggregation Viewer.Static First Menu Item"))
-                first_pre_menu_option = UI_ApplicationCache_Gateway.Settings.Additional_Settings["Aggregation Viewer.Static First Menu Item"];
-            if (UI_ApplicationCache_Gateway.Settings.Additional_Settings.ContainsKey("Aggregation Viewer.Static Second Menu Item"))
-                second_pre_menu_option = UI_ApplicationCache_Gateway.Settings.Additional_Settings["Aggregation Viewer.Static Second Menu Item"];
+            if (UI_ApplicationCache_Gateway.Settings.Contains_Additional_Setting("Aggregation Viewer.Static First Menu Item"))
+                first_pre_menu_option = UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Aggregation Viewer.Static First Menu Item");
+            if (UI_ApplicationCache_Gateway.Settings.Contains_Additional_Setting("Aggregation Viewer.Static Second Menu Item"))
+                second_pre_menu_option = UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Aggregation Viewer.Static Second Menu Item");
             if ((first_pre_menu_option.Length > 0) || (second_pre_menu_option.Length > 0))
             {
                 pre_menu_options_exist = true;
@@ -746,10 +746,10 @@ namespace SobekCM.Library.HTML
             bool pre_menu_options_exist = false;
             string first_pre_menu_option = String.Empty;
             string second_pre_menu_option = String.Empty;
-            if (UI_ApplicationCache_Gateway.Settings.Additional_Settings.ContainsKey("Aggregation Viewer.Static First Menu Item"))
-                first_pre_menu_option = UI_ApplicationCache_Gateway.Settings.Additional_Settings["Aggregation Viewer.Static First Menu Item"];
-            if (UI_ApplicationCache_Gateway.Settings.Additional_Settings.ContainsKey("Aggregation Viewer.Static Second Menu Item"))
-                second_pre_menu_option = UI_ApplicationCache_Gateway.Settings.Additional_Settings["Aggregation Viewer.Static Second Menu Item"];
+            if (UI_ApplicationCache_Gateway.Settings.Contains_Additional_Setting("Aggregation Viewer.Static First Menu Item"))
+                first_pre_menu_option = UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Aggregation Viewer.Static First Menu Item");
+            if (UI_ApplicationCache_Gateway.Settings.Contains_Additional_Setting("Aggregation Viewer.Static Second Menu Item"))
+                second_pre_menu_option = UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Aggregation Viewer.Static Second Menu Item");
             if ((first_pre_menu_option.Length > 0) || (second_pre_menu_option.Length > 0))
             {
                 pre_menu_options_exist = true;

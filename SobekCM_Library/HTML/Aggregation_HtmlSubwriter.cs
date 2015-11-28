@@ -1213,9 +1213,9 @@ namespace SobekCM.Library.HTML
                 {
 					// SHould this person be able to edit this page?
 	                bool isAdmin = (RequestSpecificValues.Current_User != null) && ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin));
-					if ((isAdmin) && (UI_ApplicationCache_Gateway.Settings.Additional_Settings.ContainsKey("Portal Admins Can Edit Home Page")))
+                    if ((isAdmin) && (UI_ApplicationCache_Gateway.Settings.Contains_Additional_Setting("Portal Admins Can Edit Home Page")))
 					{
-						if (UI_ApplicationCache_Gateway.Settings.Additional_Settings["Portal Admins Can Edit Home Page"].ToUpper().Trim() == "FALSE")
+                        if (UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Portal Admins Can Edit Home Page").ToUpper().Trim() == "FALSE")
 						{
 							isAdmin = RequestSpecificValues.Current_User.Is_System_Admin;
 						}

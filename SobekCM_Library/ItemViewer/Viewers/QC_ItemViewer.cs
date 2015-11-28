@@ -177,7 +177,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Get the default QC profile
-			qc_profile = UI_ApplicationCache_Gateway.Settings.QualityControlTool.Default_Profile;
+			qc_profile = UI_ApplicationCache_Gateway.Settings.QualityControlTool.Get_Default_Profile();
 
             // If this was a post-back keep the required height and width for the qc area
             allThumbnailsOuterDiv1Width = -1;
@@ -2029,7 +2029,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //Add the division types from the current QC Config profile to a local dictionary
             Dictionary<string, bool> qcDivisionList = new Dictionary<string, bool>();
-            foreach (QualityControl_Division_Config qcDivConfig in qc_profile.All_Division_Types)
+            foreach (QualityControl_Division_Config qcDivConfig in qc_profile.Division_Types)
             {
                 qcDivisionList.Add(qcDivConfig.TypeName, qcDivConfig.isNameable);
             }

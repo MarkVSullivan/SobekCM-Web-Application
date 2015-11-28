@@ -922,7 +922,9 @@
     <Content Include="mySobek\projects\ORAL.pmets" />
     <Content Include="mySobek\projects\UFIR.pmets" />
     <Content Include="mySobek\projects\VODOU2.pmets" />
-    <Content Include="config\default\sobekcm_mapeditor.config" />
+    <Content Include="config\default\sobekcm_mapeditor.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="config\default\sobekcm_metadata.config" />
     <Content Include="config\default\sobekcm_qc.config" />
     <Content Include="config\default\sobekcm_qc_errors.config" />

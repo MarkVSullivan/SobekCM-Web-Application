@@ -954,7 +954,7 @@ namespace SobekCM.Library.HTML
 	                    bool newspaper = RequestSpecificValues.Current_Item.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
 
 						// Does a custom setting override the default behavior to add a date?
-						if ((newspaper) && (UI_ApplicationCache_Gateway.Settings.Additional_Settings.ContainsKey("Item Viewer.Include Date In Title")) && (UI_ApplicationCache_Gateway.Settings.Additional_Settings["Item Viewer.Include Date In Title"].ToUpper() == "NEVER"))
+                        if ((newspaper) && (UI_ApplicationCache_Gateway.Settings.Contains_Additional_Setting("Item Viewer.Include Date In Title")) && (UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Item Viewer.Include Date In Title").ToUpper() == "NEVER"))
 			                newspaper = false;
 
 						// Add the date if it should be added
@@ -1137,12 +1137,12 @@ namespace SobekCM.Library.HTML
 				string first_pre_menu_option = String.Empty;
 				string second_pre_menu_option = String.Empty;
 				string third_pre_menu_option = String.Empty;
-				if (UI_ApplicationCache_Gateway.Settings.Additional_Settings.ContainsKey("Item Viewer.Static First Menu Item"))
-					first_pre_menu_option = UI_ApplicationCache_Gateway.Settings.Additional_Settings["Item Viewer.Static First Menu Item"];
-				if (UI_ApplicationCache_Gateway.Settings.Additional_Settings.ContainsKey("Item Viewer.Static Second Menu Item"))
-					second_pre_menu_option = UI_ApplicationCache_Gateway.Settings.Additional_Settings["Item Viewer.Static Second Menu Item"];
-				if (UI_ApplicationCache_Gateway.Settings.Additional_Settings.ContainsKey("Item Viewer.Static Third Menu Item"))
-					third_pre_menu_option = UI_ApplicationCache_Gateway.Settings.Additional_Settings["Item Viewer.Static Third Menu Item"];
+                if (UI_ApplicationCache_Gateway.Settings.Contains_Additional_Setting("Item Viewer.Static First Menu Item"))
+                    first_pre_menu_option = UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Item Viewer.Static First Menu Item");
+                if (UI_ApplicationCache_Gateway.Settings.Contains_Additional_Setting("Item Viewer.Static Second Menu Item"))
+                    second_pre_menu_option = UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Item Viewer.Static Second Menu Item");
+                if (UI_ApplicationCache_Gateway.Settings.Contains_Additional_Setting("Item Viewer.Static Third Menu Item"))
+                    third_pre_menu_option = UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Item Viewer.Static Third Menu Item");
 				if ((first_pre_menu_option.Length > 0) || (second_pre_menu_option.Length > 0) || ( third_pre_menu_option.Length > 0 ))
 				{
 					if (first_pre_menu_option.Length > 0)

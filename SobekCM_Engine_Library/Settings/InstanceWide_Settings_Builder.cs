@@ -348,7 +348,7 @@ namespace SobekCM.Engine_Library.Settings
                 SettingsObject.Additional_Settings.Clear();
                 foreach (KeyValuePair<string, string> thisSetting in settingsDictionary)
                 {
-                    SettingsObject.Additional_Settings[thisSetting.Key] = thisSetting.Value;
+                    SettingsObject.Add_Additional_Setting(thisSetting.Key, thisSetting.Value);
                 }
                 
                 // Save the metadata types

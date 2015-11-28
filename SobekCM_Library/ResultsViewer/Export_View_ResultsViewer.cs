@@ -100,11 +100,11 @@ namespace SobekCM.Library.ResultsViewer
 	           
 	            string from_db = String.Empty;
 	            string key = String.Empty;
-				if (UI_ApplicationCache_Gateway.Settings.Additional_Settings.ContainsKey("Spreadsheet Library License"))
+                if (UI_ApplicationCache_Gateway.Settings.Contains_Additional_Setting("Spreadsheet Library License"))
 				{
 					try
 					{
-						key = UI_ApplicationCache_Gateway.Settings.Additional_Settings["Spreadsheet Library License"];
+                        key = UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Spreadsheet Library License");
 
 						SecurityInfo thisDecryptor = new SecurityInfo();
 						string encryptedPassword = thisDecryptor.DecryptString(from_db, "*h3kj(83", "unsalted");

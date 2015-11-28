@@ -36,6 +36,7 @@ namespace SobekCM.Core.Settings
         private readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByFacetName;
         private readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByDisplayName;
         private readonly Dictionary<string, Metadata_Search_Field> metadataFieldsByName;
+        private Dictionary<string, string> additionalSettingsDictionary;
 
         /// <summary> constructor sets all the values to default empty strings </summary>
         public InstanceWide_Settings()
@@ -49,7 +50,8 @@ namespace SobekCM.Core.Settings
             metadataFieldsByFacetName = new Dictionary<string, Metadata_Search_Field>();
             metadataFieldsByDisplayName = new Dictionary<string, Metadata_Search_Field>();
             metadataFieldsByName = new Dictionary<string, Metadata_Search_Field>();
-            Additional_Settings = new Dictionary<string, string>();
+            additionalSettingsDictionary = new Dictionary<string, string>();
+            Additional_Settings = new List<Simple_Setting>();
             Workflow_Types = new List<Workflow_Type>();
             Disposition_Options = new List<Disposition_Option>();
 
@@ -67,6 +69,8 @@ namespace SobekCM.Core.Settings
 
             // Create some of the configuration stuff
             Authentication = new Authentication_Configuration();
+            QualityControlTool = new QualityControl_Configuration();
+            MapEditor = new MapEditor_Configuration();
         }
 
         /// <summary> Settings from the database for built-in archiving functionality </summary>
@@ -267,13 +271,6 @@ namespace SobekCM.Core.Settings
             return userInProcessDirectory;
         }
 
-
-        /// <summary> Additional custom settings associated with this SobekCM system at
-        /// the highest level </summary>
-        [XmlIgnore]
-        public Dictionary<string, string> Additional_Settings { get; set; }
-
-
         /// <summary> Configuration for authentication for this instance </summary>
         [DataMember(Name = "authentication", EmitDefaultValue = false)]
         [XmlElement("authentication")]
@@ -287,10 +284,9 @@ namespace SobekCM.Core.Settings
         public ContactForm_Configuration ContactForm { get; set; }
 
         /// <summary> Configuration information for the map editor function for this instance </summary>
-        //[DataMember(Name = "mapEditor", EmitDefaultValue = false)]
-        //[XmlElement("mapEditor")]
-        //[ProtoMember(17)]
-        [XmlIgnore]
+        [DataMember(Name = "mapEditor", EmitDefaultValue = false)]
+        [XmlElement("mapEditor")]
+        [ProtoMember(17)]
         public MapEditor_Configuration MapEditor { get; set; }
 
         /// <summary> Configuration for instance-wide OAI-PMH settings for this instance </summary>
@@ -300,11 +296,71 @@ namespace SobekCM.Core.Settings
         public OAI_PMH_Configuration OAI_PMH { get; set; }
 
         /// <summary> Configuration for the quality control tool for this instance </summary>
-        //[DataMember(Name = "qcConfig", EmitDefaultValue = false)]
-        //[XmlElement("qcConfig")]
-        //[ProtoMember(20)]
-        [XmlIgnore]
+        [DataMember(Name = "qcConfig", EmitDefaultValue = false)]
+        [XmlElement("qcConfig")]
+        [ProtoMember(20)]
         public QualityControl_Configuration QualityControlTool { get; set; }
+
+        /// <summary> Additional custom settings associated with this SobekCM system at
+        /// the highest level </summary>
+        [DataMember(Name = "additionalSettings", EmitDefaultValue = false)]
+        [XmlArray("additionalSettings")]
+        [XmlArrayItem("setting", typeof(Simple_Setting))]
+        [ProtoMember(21)]
+        public List<Simple_Setting> Additional_Settings { get; set; }
+
+        /// <summary> Add a remaining, unassigned, additional setting </summary>
+        /// <param name="Key"> Name / key for this database setting </param>
+        /// <param name="Value"> Current value for this setting  </param>
+        public void Add_Additional_Setting(string Key, string Value)
+        {
+            Additional_Settings.Add(new Simple_Setting(Key, Value, -1));
+            additionalSettingsDictionary[Key] = Value;
+        }
+
+        /// <summary> Get a flag indicating if a value is set for this key </summary>
+        /// <param name="Key"> Name / key for this database setting </param>
+        /// <returns> TRUE, if the setting exists, otherwise FALSE </returns>
+        public bool Contains_Additional_Setting(string Key)
+        {
+            // Ensure the dictionary is built
+            if ((additionalSettingsDictionary == null) || (additionalSettingsDictionary.Count != Additional_Settings.Count))
+            {
+                additionalSettingsDictionary = new Dictionary<string, string>();
+                foreach (Simple_Setting thisSetting in Additional_Settings)
+                {
+                    additionalSettingsDictionary[thisSetting.Key] = thisSetting.Value;
+                }
+            }
+
+            return ((additionalSettingsDictionary.ContainsKey(Key)) && (!String.IsNullOrEmpty(additionalSettingsDictionary[Key])));
+        }
+
+        /// <summary> Gets an additional setting value, by the key </summary>
+        /// <param name="Key"> Name / key for this database setting </param>
+        /// <returns> Value, or null </returns>
+        public string Get_Additional_Setting(string Key)
+        {
+            // Ensure the dictionary is built
+            if ((additionalSettingsDictionary == null) || (additionalSettingsDictionary.Count != Additional_Settings.Count))
+            {
+                additionalSettingsDictionary = new Dictionary<string, string>();
+                foreach (Simple_Setting thisSetting in Additional_Settings)
+                {
+                    additionalSettingsDictionary[thisSetting.Key] = thisSetting.Value;
+                }
+            }
+
+            if (additionalSettingsDictionary.ContainsKey(Key))
+            {
+                return additionalSettingsDictionary[Key];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
 
         #region Methods that controls XML serialization
 
@@ -373,6 +429,9 @@ namespace SobekCM.Core.Settings
             {
                 dispositionLookup[dispOption.Key] = dispOption;
             }
+
+            // Fill up the additional settings dictionary
+
         }
     }
 }

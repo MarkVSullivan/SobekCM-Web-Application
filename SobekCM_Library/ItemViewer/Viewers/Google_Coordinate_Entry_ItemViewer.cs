@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
@@ -662,14 +663,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					collectionIdsFromPage.Add(currentItem.BibID);
 
 					//get settings
-                    List<string>[] settings = UI_ApplicationCache_Gateway.Settings.MapEditor.GetSettings(collectionIdsFromPage);
+                    List<Simple_Setting> settings = UI_ApplicationCache_Gateway.Settings.MapEditor.GetSettings(collectionIdsFromPage);
 
 					//loop through settings
-					for (int i = 0; i < settings[0].Count; i++)
-					{
-						//write to page
-						Output.WriteLine("   MAPEDITOR.GLOBAL.DEFINES." + settings[0][i] + " = " + settings[1][i] + "; //adding " + settings[0][i]);
-					}
+				    foreach (Simple_Setting thisSetting in settings)
+				    {
+                        //write to page
+                        Output.WriteLine("   MAPEDITOR.GLOBAL.DEFINES." + thisSetting.Key + " = " + thisSetting.Value + "; //adding " + thisSetting.Key );
+				    }
 				}
 				catch (Exception)
 				{

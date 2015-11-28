@@ -17,6 +17,7 @@ namespace SobekCM.Core.Settings
         public Simple_Setting()
         {
             // Do nothing - this is here for serialization purposes
+            this.SettingID = -1;
         }
 
         /// <summary> Constructor for a new instance of the <see cref="Simple_Setting"/> class </summary>
@@ -38,7 +39,7 @@ namespace SobekCM.Core.Settings
 
         /// <summary> Current value for this setting </summary>
         [DataMember(Name = "value", EmitDefaultValue = false)]
-        [XmlElement("value")]
+        [XmlAttribute("value")]
         [ProtoMember(2)]
         public string Value;
 
@@ -47,5 +48,17 @@ namespace SobekCM.Core.Settings
         [XmlAttribute("id")]
         [ProtoMember(3)]
         public short SettingID;
+
+
+        #region Methods that controls XML serialization
+
+        /// <summary> Method suppresses XML Serialization of the SettingID property if it is empty (or -1) </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeSettingID()
+        {
+            return SettingID > 0;
+        }
+
+        #endregion
     }
 }
