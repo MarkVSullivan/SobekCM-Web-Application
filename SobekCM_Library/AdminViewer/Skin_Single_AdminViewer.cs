@@ -1459,5 +1459,17 @@ namespace SobekCM.Library.AdminViewer
         }
 
         #endregion
+
+        /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
+        /// for the current request, or if it can be hidden/omitted. </summary>
+        /// <value> This property returns TRUE, since skin design files can be uploaded here </value>
+        public override bool Upload_File_Possible
+        {
+            get { return true; }
+        }
+
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        /// <value> Returns 'sbkSsav_ContainerInner' </value>
+        public override string Container_CssClass { get { return "sbkSsav_ContainerInner"; } }
     }
 }

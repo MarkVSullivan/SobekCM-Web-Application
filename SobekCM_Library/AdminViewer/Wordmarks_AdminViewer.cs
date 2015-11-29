@@ -540,6 +540,18 @@ namespace SobekCM.Library.AdminViewer
 			LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
 			UploadFilesPlaceHolder.Controls.Add(literal1);
 		}
+
+        /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
+        /// for the current request, or if it can be hidden/omitted. </summary>
+        /// <value> This property returns TRUE, since wordmarks can be uploaded here </value>
+        public override bool Upload_File_Possible
+        {
+            get { return true; }
+        }
+
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        /// <value> Returns 'sbkWav_ContainerInner' </value>
+        public override string Container_CssClass { get { return "sbkWav_ContainerInner"; } }
     }
 }
 

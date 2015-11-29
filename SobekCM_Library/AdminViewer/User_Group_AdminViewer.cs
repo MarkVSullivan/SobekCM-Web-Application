@@ -1105,6 +1105,18 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<br />");
         }
 
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        public override string Container_CssClass
+        {
+            get
+            {
+                if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode))
+                    return "sbkUgav_ContainerInnerWide";
+
+                return null;
+            }
+        }
+
         #region Nested type: Users_Group_Admin_Mode_Enum
 
         private enum Users_Group_Admin_Mode_Enum : byte

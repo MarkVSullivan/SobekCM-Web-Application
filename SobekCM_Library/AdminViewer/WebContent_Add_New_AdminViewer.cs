@@ -531,5 +531,10 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<br />");
             Output.WriteLine("<br />");
         }
+
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        /// <value> Returns 'sbkWcav_ContainerInner' </value>
+        public override string Container_CssClass { get { return "sbkWcav_ContainerInner"; } }        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+
     }
 }

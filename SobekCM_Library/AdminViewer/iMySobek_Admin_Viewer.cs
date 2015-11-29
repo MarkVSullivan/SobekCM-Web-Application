@@ -44,11 +44,11 @@ namespace SobekCM.Library.AdminViewer
         ///  <remarks> No html is added here, although some children class override this virtual method to add pop-up form HTML </remarks>
         void Add_Popup_HTML(TextWriter Output, Custom_Tracer Tracer);
 
-		/// <summary> This is an opportunity to write HTML directly into the main form before any controls are placed in the main place holder </summary>
-		/// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <remarks> This text will appear within the ItemNavForm form tags </remarks>
-		void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer);
+        /// <summary> This is an opportunity to write HTML directly into the main form before any controls are placed in the main place holder </summary>
+        /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <remarks> This text will appear within the ItemNavForm form tags </remarks>
+        void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer);
 
         /// <summary> This is an opportunity to write HTML directly into the main form after any controls are placed </summary>
         /// <param name="Output"> Textwriter to write the pop-up form HTML for this viewer </param>
@@ -61,5 +61,19 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         ///  <remarks> No controls are added here, although some children class override this virtual method to add controls </remarks>
         void Add_Controls(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer);
+
+        /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
+        /// for the current request, or if it can be hidden/omitted. </summary>
+        bool Upload_File_Possible { get; }
+
+        /// <summary> Write any additional values within the HTML Head of the final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if this should completely override the default added by the admin or mySobek viewer </returns>
+        /// <remarks> By default this does nothing, but can be overwritten by all the individual html subwriters </remarks>
+        bool Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer);
+
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        string Container_CssClass { get; }
     }
 }

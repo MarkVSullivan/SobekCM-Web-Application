@@ -1242,5 +1242,9 @@ namespace SobekCM.Library.AdminViewer
             }
 
         }
+
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        /// <value> Returns 'sbkUpav_ContainerInner' </value>
+        public override string Container_CssClass { get { return "sbkUpav_ContainerInner"; } }
     }
 }

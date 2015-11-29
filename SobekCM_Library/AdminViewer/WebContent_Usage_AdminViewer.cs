@@ -623,5 +623,9 @@ namespace SobekCM.Library.AdminViewer
             }
             return monthString1;
         }
+
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        /// <value> Returns 'sbkWcav2_ContainerInner' </value>
+        public override string Container_CssClass { get { return "sbkWcav2_ContainerInner"; } }
     }
 }

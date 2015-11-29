@@ -225,5 +225,26 @@ namespace SobekCM.Library.MySobekViewer
 
 
 		}
+
+        /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
+        /// for the current request, or if it can be hidden/omitted. </summary>
+        /// <value> By default, this returns FALSE.</value>
+        /// <remarks> This can be overriden in base classes that extend this abstract class </remarks>
+        public virtual bool Upload_File_Possible { get { return false; } }
+
+        /// <summary> Write any additional values within the HTML Head of the final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if this should completely override the default added by the admin or mySobek viewer </returns>
+        /// <remarks> By default this does nothing, but can be overwritten by all the individual html subwriters </remarks>
+        public virtual bool Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            return false;
+        }
+
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        /// <value> By default, this returns NULL, which would use the base, or default container </value>
+        /// <remarks> This can be overriden in base classes that extend this abstract class </remarks>
+        public virtual string Container_CssClass { get { return null; } }
     }
 }
