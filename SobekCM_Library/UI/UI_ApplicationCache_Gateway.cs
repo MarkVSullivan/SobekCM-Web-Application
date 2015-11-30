@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Client;
+using SobekCM.Core.Configuration;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
@@ -145,6 +146,12 @@ namespace SobekCM.Library.UI
         public static InstanceWide_Settings Settings
         {
             get { return Engine_ApplicationCache_Gateway.Settings; }
+        }
+
+        /// <summary> Get the settings object (or build the object and return it) </summary>
+        public static InstanceWide_Configuration Configuration
+        {
+            get { return Engine_ApplicationCache_Gateway.Configuration; }
         }
 
         /// <summary> Get the item lookup object (or build the object and return it) </summary>

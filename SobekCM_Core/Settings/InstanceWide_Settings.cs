@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Search;
 using SobekCM.Core.Users;
 
@@ -25,7 +26,8 @@ namespace SobekCM.Core.Settings
 
 
 
-    /// <summary> Class provides context to constant settings based on the basic information about this instance of the application and server information </summary>
+    /// <summary> Class provides context to constant settings from the database,
+    /// based on the basic information about this instance of the application and server information </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("Settings")]
     public class InstanceWide_Settings : iSerializationEvents
@@ -67,10 +69,7 @@ namespace SobekCM.Core.Settings
             Static = new Static_Settings();
             System = new System_Settings();
 
-            // Create some of the configuration stuff
-            Authentication = new Authentication_Configuration();
-            QualityControlTool = new QualityControl_Configuration();
-            MapEditor = new MapEditor_Configuration();
+
         }
 
         /// <summary> Settings from the database for built-in archiving functionality </summary>
@@ -271,35 +270,6 @@ namespace SobekCM.Core.Settings
             return userInProcessDirectory;
         }
 
-        /// <summary> Configuration for authentication for this instance </summary>
-        [DataMember(Name = "authentication", EmitDefaultValue = false)]
-        [XmlElement("authentication")]
-        [ProtoMember(15)]
-        public Authentication_Configuration Authentication { get; set; }
-
-        /// <summary> Configuration for the default contact form for this instance </summary>
-        [DataMember(Name = "contactForm", EmitDefaultValue = false)]
-        [XmlElement("contactForm")]
-        [ProtoMember(16)]
-        public ContactForm_Configuration ContactForm { get; set; }
-
-        /// <summary> Configuration information for the map editor function for this instance </summary>
-        [DataMember(Name = "mapEditor", EmitDefaultValue = false)]
-        [XmlElement("mapEditor")]
-        [ProtoMember(17)]
-        public MapEditor_Configuration MapEditor { get; set; }
-
-        /// <summary> Configuration for instance-wide OAI-PMH settings for this instance </summary>
-        [DataMember(Name = "oai-pmh", EmitDefaultValue = false)]
-        [XmlElement("oai-pmh")]
-        [ProtoMember(18)]
-        public OAI_PMH_Configuration OAI_PMH { get; set; }
-
-        /// <summary> Configuration for the quality control tool for this instance </summary>
-        [DataMember(Name = "qcConfig", EmitDefaultValue = false)]
-        [XmlElement("qcConfig")]
-        [ProtoMember(20)]
-        public QualityControl_Configuration QualityControlTool { get; set; }
 
         /// <summary> Additional custom settings associated with this SobekCM system at
         /// the highest level </summary>

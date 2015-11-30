@@ -90,8 +90,10 @@
     <Compile Include="BriefItem\BriefItem_Namespace.cs" />
     <Compile Include="BriefItem\BriefItem_TocElement.cs" />
     <Compile Include="Configuration\Authentication_Configuration.cs" />
+    <Compile Include="Configuration\BriefItemMapping_Configuration.cs" />
     <Compile Include="Configuration\ContactForm_Configuration.cs" />
     <Compile Include="Configuration\Database_Instance_Configuration.cs" />
+    <Compile Include="Configuration\InstanceWide_Configuration.cs" />
     <Compile Include="Configuration\MapEditor_Configuration.cs" />
     <Compile Include="Configuration\OAI_PMH_Configuration.cs" />
     <Compile Include="Configuration\OAI_PMH_Metadata_Format.cs" />

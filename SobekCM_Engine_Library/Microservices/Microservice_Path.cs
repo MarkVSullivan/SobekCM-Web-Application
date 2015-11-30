@@ -1,15 +1,24 @@
 ﻿#region Using directives
 
+using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
+using ProtoBuf;
 
 #endregion
 
 namespace SobekCM.Engine_Library.Microservices
 {
     /// <summary> Class represents a single segment of a microservice endpoint's URI, including all child segments or endpoints  </summary>
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("MicroservicePath")]
     public class Microservice_Path
     {
         /// <summary> Single portion of a URI specifying a microservice endpoint </summary>
+        [DataMember(Name = "segment")]
+        [XmlAttribute("segment")]
+        [ProtoMember(1)]
         public string Segment { get; internal set; }
 
         /// <summary> Collection of child segments or endpoints, indexed by the next segment of the URI </summary>

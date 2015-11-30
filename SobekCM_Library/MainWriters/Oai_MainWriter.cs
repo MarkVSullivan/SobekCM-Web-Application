@@ -69,12 +69,12 @@ namespace SobekCM.Library.MainWriters
             HttpContext.Current.Response.ContentType = "text/xml";
 
             // Determine some global settings
-            if (UI_ApplicationCache_Gateway.Settings.OAI_PMH != null)
+            if (UI_ApplicationCache_Gateway.Configuration.OAI_PMH != null)
             {
-                config = UI_ApplicationCache_Gateway.Settings.OAI_PMH;
-                oai_resource_identifier_base = UI_ApplicationCache_Gateway.Settings.OAI_PMH.Identifier_Base;
-                oai_repository_name = UI_ApplicationCache_Gateway.Settings.OAI_PMH.Name;
-                oai_repository_identifier = UI_ApplicationCache_Gateway.Settings.OAI_PMH.Identifier;
+                config = UI_ApplicationCache_Gateway.Configuration.OAI_PMH;
+                oai_resource_identifier_base = UI_ApplicationCache_Gateway.Configuration.OAI_PMH.Identifier_Base;
+                oai_repository_name = UI_ApplicationCache_Gateway.Configuration.OAI_PMH.Name;
+                oai_repository_identifier = UI_ApplicationCache_Gateway.Configuration.OAI_PMH.Identifier;
             }
             else
             {

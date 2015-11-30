@@ -10,6 +10,7 @@ using SobekCM.Engine_Library.IpRangeUtilities;
 
 namespace SobekCM.Engine_Library.Microservices
 {
+    /// <summary> Individual mapping from a HTML verb to a component/method </summary>
     public class Microservice_VerbMapping
     {
         private MethodInfo methodInfo;

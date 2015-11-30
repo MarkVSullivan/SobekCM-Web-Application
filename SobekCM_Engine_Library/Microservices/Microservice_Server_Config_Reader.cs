@@ -497,15 +497,16 @@ namespace SobekCM.Engine_Library.Microservices
                     switch (ReaderXml.Name.ToLower())
                     {
                         case "component":
+                            string Namespace = String.Empty;
                             Microservice_Component component = new Microservice_Component();
                             if (ReaderXml.MoveToAttribute("ID"))
                                 component.ID = ReaderXml.Value.Trim();
                             if (ReaderXml.MoveToAttribute("Assembly"))
                                 component.Assembly = ReaderXml.Value.Trim();
                             if (ReaderXml.MoveToAttribute("Namespace"))
-                                component.Namespace = ReaderXml.Value.Trim();
+                                Namespace = ReaderXml.Value.Trim() + ".";
                             if (ReaderXml.MoveToAttribute("Class"))
-                                component.Class = ReaderXml.Value.Trim();
+                                component.Class = Namespace + ReaderXml.Value.Trim();
                             if ((!String.IsNullOrEmpty(component.ID)) && (!String.IsNullOrEmpty(component.Class)))
                             {
                                 // If the key already existed, remove the old one as it will be replaced

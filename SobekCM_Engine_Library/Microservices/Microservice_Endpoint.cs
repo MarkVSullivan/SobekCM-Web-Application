@@ -61,13 +61,17 @@ namespace SobekCM.Engine_Library.Microservices
     /// <summary> Class defines an microservice endpoint within a collection of path or URI segments </summary>
     public class Microservice_Endpoint : Microservice_Path
     {
-        public Microservice_VerbMapping GetMapping;
+        /// <summary> Mapping to an individual method and protocol for the GET HTTP verb </summary>
+        public Microservice_VerbMapping GetMapping { get; set; }
 
-        public Microservice_VerbMapping DeleteMapping;
+        /// <summary> Mapping to an individual method and protocol for the DELETE HTTP verb </summary>
+        public Microservice_VerbMapping DeleteMapping { get; set; }
 
-        public Microservice_VerbMapping PostMapping;
+        /// <summary> Mapping to an individual method and protocol for the POST HTTP verb </summary>
+        public Microservice_VerbMapping PostMapping { get; set; }
 
-        public Microservice_VerbMapping PutMapping;
+        /// <summary> Mapping to an individual method and protocol for the PUT HTTP verb </summary>
+        public Microservice_VerbMapping PutMapping { get; set; }
 
 
         /// <summary> Flag indicates if this path actually defines a single endpoint </summary>

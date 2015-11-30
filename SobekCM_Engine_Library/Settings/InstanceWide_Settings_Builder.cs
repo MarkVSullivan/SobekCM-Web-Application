@@ -81,72 +81,6 @@ namespace SobekCM.Engine_Library.Settings
             DataSet sobekCMSettings = Engine_Database.Get_Settings_Complete(false, null);
             Refresh(returnValue, sobekCMSettings);
 
-            // Try to read the SHIBBOLETH configuration file
-            if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config"))
-            {
-                returnValue.Authentication.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config");
-            }
-            else if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config"))
-            {
-                returnValue.Authentication.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config");
-            }
-
-            // Try to read the CONTACT FORM configuration file
-            if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_contactform.config"))
-            {
-                returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_contactform.config");
-            }
-            else if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_contactform.config"))
-            {
-                returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_contactform.config");
-            }
-
-            // Try to read the QUALITY CONTROL configuration file
-            //if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_qc.config"))
-            //{
-            //    QualityControl_Configuration.Read_Metadata_Configuration(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_qc.config");
-            //}
-            //else if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_qc.config"))
-            //{
-            //    QualityControl_Configuration.Read_Metadata_Configuration(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_qc.config");
-            //}
-
-            // Try to read the BRIEF ITEM MAPPING configuration file
-            if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_brief_item_mapping.config"))
-            {
-                BriefItem_Factory.Read_Config(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_brief_item_mapping.config");
-            }
-            else if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_brief_item_mapping.config"))
-            {
-                BriefItem_Factory.Read_Config(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_brief_item_mapping.config");
-            }
-
-            // Try to read the OAI-PMH configuration file
-            if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config"))
-            {
-                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config", returnValue.System.System_Name, returnValue.System.System_Abbreviation, returnValue.Email.System_Email);
-            }
-            else if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config"))
-            {
-                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config", returnValue.System.System_Name, returnValue.System.System_Abbreviation, returnValue.Email.System_Email);
-            }
-
-            // Load the OAI-PMH configuration file info into the OAI writer class ( in the resource object library )
-            if (returnValue.OAI_PMH == null)
-            {
-                returnValue.OAI_PMH = new OAI_PMH_Configuration();
-                returnValue.OAI_PMH.Set_Default();
-            }
-
-            OAI_PMH_Metadata_Writers.Clear();
-            foreach (OAI_PMH_Metadata_Format thisWriter in returnValue.OAI_PMH.Metadata_Prefixes)
-            {
-                if (thisWriter.Enabled)
-                {
-                    OAI_PMH_Metadata_Writers.Add_Writer(thisWriter.Prefix, thisWriter.Assembly, thisWriter.Namespace, thisWriter.Class);
-                }
-            }
-
             return returnValue;
         }
 
@@ -164,51 +98,6 @@ namespace SobekCM.Engine_Library.Settings
                 return null;
 
             Refresh(returnValue, sobekCMSettings);
-
-            // Try to read the SHIBBOLETH configuration file
-            if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config"))
-            {
-                returnValue.Authentication.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_shibboleth.config");
-            }
-            else if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config"))
-            {
-                returnValue.Authentication.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_shibboleth.config");
-            }
-
-            // Try to read the CONTACT FORM configuration file
-            if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_contactform.config"))
-            {
-                returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_contactform.config");
-            }
-            else if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_contactform.config"))
-            {
-                returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_contactform.config");
-            }
-
-            // Try to read the OAI-PMH configuration file
-            if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config"))
-            {
-                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_oaipmh.config", returnValue.System.System_Name, returnValue.System.System_Abbreviation, returnValue.Email.System_Email);
-            }
-            else if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config"))
-            {
-                returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_oaipmh.config", returnValue.System.System_Name, returnValue.System.System_Abbreviation, returnValue.Email.System_Email);
-            }
-
-            // Load the OAI-PMH configuration file info into the OAI writer class ( in the resource object library )
-            if (returnValue.OAI_PMH == null)
-                OAI_PMH_Metadata_Writers.Set_Default_Values();
-            else
-            {
-                OAI_PMH_Metadata_Writers.Clear();
-                foreach (OAI_PMH_Metadata_Format thisWriter in returnValue.OAI_PMH.Metadata_Prefixes)
-                {
-                    if (thisWriter.Enabled)
-                    {
-                        OAI_PMH_Metadata_Writers.Add_Writer(thisWriter.Prefix, thisWriter.Assembly, thisWriter.Namespace, thisWriter.Class);
-                    }
-                }
-            }
 
             return returnValue;
         }

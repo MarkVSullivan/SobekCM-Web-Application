@@ -10,6 +10,7 @@ using SobekCM.Core.Settings;
 using SobekCM.Core.Skins;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent.Hierarchy;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Settings;
 using SobekCM.Engine_Library.Skins;
@@ -462,6 +463,80 @@ namespace SobekCM.Engine_Library.ApplicationState
             set
             {
                 settings = value;
+            }
+        }
+
+        #endregion
+
+        #region Properties and methods for the instance-wide settings
+
+        private static InstanceWide_Configuration configuration;
+        private static readonly Object configurationLock = new Object();
+
+        /// <summary> Refresh the settings object by pulling the data back from the database </summary>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        public static bool RefreshConfiguration(Database_Instance_Configuration DbInstance)
+        {
+            try
+            {
+                lock (configurationLock)
+                {
+                    if (configuration == null)
+                        configuration = Configuration_Files_Reader.Build_Settings(null, null, Settings);
+                    else
+                    {
+                        InstanceWide_Configuration newConfig = Configuration_Files_Reader.Build_Settings(null, null, Settings);
+                        configuration = newConfig;
+                    }
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary> Refresh the settings object by pulling the data back from the database </summary>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        public static bool RefreshConfiguration()
+        {
+            try
+            {
+                lock (configurationLock)
+                {
+                    if (configuration == null)
+                        configuration = Configuration_Files_Reader.Build_Settings(null, null, Settings);
+                    else
+                    {
+                        InstanceWide_Configuration newConfig = Configuration_Files_Reader.Build_Settings(null, null, Settings);
+                        configuration = newConfig;
+                    }
+                }
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
+        /// <summary> Get the configuration object (or build the object and return it) </summary>
+        public static InstanceWide_Configuration Configuration
+        {
+            get
+            {
+                lock (configurationLock)
+                {
+                    return configuration ?? (configuration = Configuration_Files_Reader.Build_Settings(null, null, Settings));
+                }
+            }
+            set
+            {
+                configuration = value;
             }
         }
 

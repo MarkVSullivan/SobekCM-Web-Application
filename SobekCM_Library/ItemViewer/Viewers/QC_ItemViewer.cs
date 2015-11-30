@@ -177,7 +177,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Get the default QC profile
-			qc_profile = UI_ApplicationCache_Gateway.Settings.QualityControlTool.Get_Default_Profile();
+			qc_profile = UI_ApplicationCache_Gateway.Configuration.QualityControlTool.Get_Default_Profile();
 
             // If this was a post-back keep the required height and width for the qc area
             allThumbnailsOuterDiv1Width = -1;

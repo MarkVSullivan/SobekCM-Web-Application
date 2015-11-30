@@ -43,7 +43,7 @@ namespace SobekCM.Library.HTML
             errorMsg = String.Empty;
 
             // Determine the configuration to use for this contact us form
-            configuration = UI_ApplicationCache_Gateway.Settings.ContactForm;
+            configuration = UI_ApplicationCache_Gateway.Configuration.ContactForm;
             if ((RequestSpecificValues.Hierarchy_Object != null) && (RequestSpecificValues.Hierarchy_Object.ContactForm != null))
                 configuration = RequestSpecificValues.Hierarchy_Object.ContactForm;
 
