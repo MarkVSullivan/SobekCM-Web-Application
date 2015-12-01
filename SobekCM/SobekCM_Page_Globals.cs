@@ -12,6 +12,7 @@ using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.MicroservicesClient;

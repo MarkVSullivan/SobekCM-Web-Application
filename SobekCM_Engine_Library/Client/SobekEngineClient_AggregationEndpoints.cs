@@ -2,6 +2,7 @@
 
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Message;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.WebContent;

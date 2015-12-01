@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.OAIPMH;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.OAI;
 using SobekCM.Library.Database;

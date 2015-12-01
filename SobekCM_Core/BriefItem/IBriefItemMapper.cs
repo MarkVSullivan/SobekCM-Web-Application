@@ -5,11 +5,11 @@ using SobekCM.Resource_Object;
 
 #endregion
 
-namespace SobekCM.Engine_Library.Items.BriefItems
+namespace SobekCM.Core.BriefItem
 {
     /// <summary> Interface for the brief item mapper, which maps from the complete SobekCM item object
     /// to the BriefItemInfo object used by the front end </summary>
-    interface IBriefItemMapper
+    public interface IBriefItemMapper
     {
         /// <summary> Map one or more data elements from the original METS-based object to the
         /// BriefItem object </summary>

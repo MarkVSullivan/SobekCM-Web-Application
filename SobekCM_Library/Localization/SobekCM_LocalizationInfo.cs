@@ -3,6 +3,7 @@
 
 using System.IO;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Library.Localization.Classes;
 
 #endregion

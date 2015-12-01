@@ -7,7 +7,7 @@ using ProtoBuf;
 
 #endregion
 
-namespace SobekCM.Core.Configuration
+namespace SobekCM.Core.Configuration.Localization
 {
     /// <summary> A single translated value, or a pair of the web language and the string itself </summary>
     [Serializable, DataContract, ProtoContract]

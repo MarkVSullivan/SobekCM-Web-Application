@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Users;
 
-namespace SobekCM.Core.Configuration
+namespace SobekCM.Core.Configuration.Authentication
 {
     /// <summary> Stores the link between a mapping to a user object and a string value for 
     /// purposes of Shibboleth authentication </summary>

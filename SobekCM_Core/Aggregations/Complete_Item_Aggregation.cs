@@ -10,6 +10,7 @@ using System.Text;
 using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Skins;
 

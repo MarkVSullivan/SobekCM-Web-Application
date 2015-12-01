@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using ProtoBuf;
 
-namespace SobekCM.Core.Configuration
+namespace SobekCM.Core.Configuration.Authentication
 {
     /// <summary> Configuration information related to authentication and logging on 
     /// through the web application </summary>

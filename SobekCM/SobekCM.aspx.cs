@@ -5,6 +5,7 @@ using System.IO;
 using System.Web;
 using System.Web.UI;
 using SobekCM.Core.Client;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.Settings;
@@ -147,13 +148,13 @@ namespace SobekCM
             if ((pageGlobals.currentMode == null) || (pageGlobals.currentMode.Request_Completed))
                 return;
 
-	        if (pageGlobals.currentMode.Language == Core.Configuration.Web_Language_Enum.DEFAULT)
+	        if (pageGlobals.currentMode.Language == Web_Language_Enum.DEFAULT)
 	        {
-	            Response.Output.Write(Core.Configuration.Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language));
+	            Response.Output.Write(Web_Language_Enum_Converter.Enum_To_Code(UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language));
 	        }
 	        else
 	        {
-                Response.Output.Write(Core.Configuration.Web_Language_Enum_Converter.Enum_To_Code(pageGlobals.currentMode.Language));
+                Response.Output.Write(Web_Language_Enum_Converter.Enum_To_Code(pageGlobals.currentMode.Language));
 	        }
 	    }
 

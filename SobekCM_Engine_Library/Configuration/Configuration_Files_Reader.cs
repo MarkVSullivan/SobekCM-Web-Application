@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.OAIPMH;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.Database;

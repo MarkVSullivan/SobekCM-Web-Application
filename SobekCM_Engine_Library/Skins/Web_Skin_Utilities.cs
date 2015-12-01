@@ -5,6 +5,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Skins;
 using SobekCM.Engine_Library.ApplicationState;

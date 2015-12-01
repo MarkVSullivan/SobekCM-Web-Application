@@ -11,7 +11,7 @@ using SobekCM.Core.Users;
 
 #endregion
 
-namespace SobekCM.Core.Configuration
+namespace SobekCM.Core.Configuration.Authentication
 {
  
 	/// <summary> Static class contains all the Shibboleth configuration details from the configuration file

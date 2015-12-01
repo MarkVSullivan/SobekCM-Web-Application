@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Localization;
 
 #endregion
 

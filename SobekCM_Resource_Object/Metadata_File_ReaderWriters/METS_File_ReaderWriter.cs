@@ -103,7 +103,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             const bool MINIMIZE_FILE_SIZE = false;
 
             // Get the METS writing profile
-            METS_Writing_Profile profile = Metadata_Configuration.Default_METS_Writing_Profile;
+            METS_Writing_Profile profile = ResourceObjectSettings.MetadataConfig.Default_METS_Writing_Profile;
 
 
             // Set default error outpt message
@@ -1658,7 +1658,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                     abstract_TreeNode node = division_dmdids[thisDmdSecId];
 
                                     // Get an appropriate reader from the metadata configuration
-                                    iDivision_dmdSec_ReaderWriter rw = Metadata_Configuration.Get_Division_DmdSec_ReaderWriter(mdtype, othermdtype);
+                                    iDivision_dmdSec_ReaderWriter rw = ResourceObjectSettings.MetadataConfig.Get_Division_DmdSec_ReaderWriter(mdtype, othermdtype);
 
                                     // Is this dmdSec analyzable? (i.e., did we find an appropriate reader/writer?)
                                     if (rw == null)
@@ -1674,7 +1674,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                 {
                                     // Package-level dmdSec 
                                     // Get an appropriate reader from the metadata configuration
-                                    iPackage_dmdSec_ReaderWriter rw = Metadata_Configuration.Get_Package_DmdSec_ReaderWriter(mdtype, othermdtype);
+                                    iPackage_dmdSec_ReaderWriter rw = ResourceObjectSettings.MetadataConfig.Get_Package_DmdSec_ReaderWriter(mdtype, othermdtype);
 
                                     // Is this dmdSec analyzable? (i.e., did we find an appropriate reader/writer?)
                                     if (rw == null)
@@ -1719,7 +1719,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
 
                                 // Package-level amdSec 
                                 // Get an appropriate reader from the metadata configuration
-                                iPackage_amdSec_ReaderWriter rw = Metadata_Configuration.Get_Package_AmdSec_ReaderWriter(mdtype, othermdtype);
+                                iPackage_amdSec_ReaderWriter rw = ResourceObjectSettings.MetadataConfig.Get_Package_AmdSec_ReaderWriter(mdtype, othermdtype);
 
                                 // Is this amdSec analyzable? (i.e., did we find an appropriate reader/writer?)
                                 if (rw == null)

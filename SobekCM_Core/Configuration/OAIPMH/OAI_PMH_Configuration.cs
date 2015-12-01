@@ -10,7 +10,7 @@ using ProtoBuf;
 
 #endregion
 
-namespace SobekCM.Core.Configuration
+namespace SobekCM.Core.Configuration.OAIPMH
 {
     /// <summary> Configuration inforation for serving OAI-PMH from this instance </summary>
     [Serializable, DataContract, ProtoContract]

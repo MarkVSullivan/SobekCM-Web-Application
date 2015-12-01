@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Library.Settings;

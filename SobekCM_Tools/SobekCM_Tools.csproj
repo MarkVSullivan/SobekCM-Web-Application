@@ -116,6 +116,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="protobuf-net">
+      <HintPath>..\DLLs\Protobuf-net\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -126,6 +129,7 @@
       <Name>System.Data</Name>
     </Reference>
     <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
@@ -154,6 +158,7 @@
     </Compile>
     <Compile Include="SobekCM_File_Utilities.cs" />
     <Compile Include="SobekCM_Traced_Exception.cs" />
+    <Compile Include="StringKeyValuePair.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>

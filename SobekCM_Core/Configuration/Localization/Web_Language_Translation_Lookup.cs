@@ -9,7 +9,7 @@ using ProtoBuf;
 
 #endregion
 
-namespace SobekCM.Core.Configuration
+namespace SobekCM.Core.Configuration.Localization
 {
     /// <summary> Class encapsulates a simple dictionary with a default value for classes that
     /// contain a simple language lookup ( i.e., what is the query related to this object in XX language? ) </summary>

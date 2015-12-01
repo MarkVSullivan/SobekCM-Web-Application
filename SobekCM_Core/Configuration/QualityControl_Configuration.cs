@@ -10,6 +10,7 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using ProtoBuf;
+using SobekCM.Core.Configuration.Localization;
 
 #endregion
 

@@ -103,7 +103,6 @@
     <Compile Include="Items\BriefItems\Mappers\Genres_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\GeoSpatial_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Holding_Location_BriefItemMapper.cs" />
-    <Compile Include="Items\BriefItems\Mappers\IBriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Identifiers_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\InternalVarious_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Languages_BriefItemMapper.cs" />

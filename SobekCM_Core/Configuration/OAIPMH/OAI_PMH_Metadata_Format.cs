@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
 
-namespace SobekCM.Core.Configuration
+namespace SobekCM.Core.Configuration.OAIPMH
 {
     /// <summary> Class represents one possible metadata format that can be served
     /// via OAI-PMH, and indicates the class that should be used to create the metadata

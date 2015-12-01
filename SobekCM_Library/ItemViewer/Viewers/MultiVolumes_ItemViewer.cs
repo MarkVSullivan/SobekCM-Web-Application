@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Items;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.UI;

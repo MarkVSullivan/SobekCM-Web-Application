@@ -4,6 +4,7 @@ using System;
 using System.Text;
 using System.Web;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Localization;
 
 #endregion
 

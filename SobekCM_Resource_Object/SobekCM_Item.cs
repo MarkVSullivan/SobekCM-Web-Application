@@ -60,9 +60,9 @@ namespace SobekCM.Resource_Object
             
             // If there is a metadata configuration which calls for a metadata
             // extension module to always be used, add it now
-            if (Metadata_Configuration.Metadata_Modules_To_Include.Count > 0)
+            if (ResourceObjectSettings.MetadataConfig.Metadata_Modules_To_Include.Count > 0)
             {
-                foreach (Additional_Metadata_Module_Config thisConfig in Metadata_Configuration.Metadata_Modules_To_Include)
+                foreach (Additional_Metadata_Module_Config thisConfig in ResourceObjectSettings.MetadataConfig.Metadata_Modules_To_Include)
                 {
                     iMetadata_Module toInclude = thisConfig.Get_Module();
                     if (toInclude != null)
@@ -225,9 +225,9 @@ namespace SobekCM.Resource_Object
 
             // If there is a metadata configuration which calls for a metadata
             // extension module to always be used, add it now
-            if (Metadata_Configuration.Metadata_Modules_To_Include.Count > 0)
+            if (ResourceObjectSettings.MetadataConfig.Metadata_Modules_To_Include.Count > 0)
             {
-                foreach (Additional_Metadata_Module_Config thisConfig in Metadata_Configuration.Metadata_Modules_To_Include)
+                foreach (Additional_Metadata_Module_Config thisConfig in ResourceObjectSettings.MetadataConfig.Metadata_Modules_To_Include)
                 {
                     iMetadata_Module toInclude = thisConfig.Get_Module();
                     if (toInclude != null)

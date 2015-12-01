@@ -120,6 +120,9 @@
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\DLLs\SolrNet\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\DLLs\Protobuf-net\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="SolrNet">
       <HintPath>..\DLLs\SolrNet\SolrNet.dll</HintPath>
     </Reference>
@@ -152,13 +155,17 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Builder\Bib_Package_Builder.cs" />
-    <Compile Include="Configuration\Additional_Metadata_Module_Config.cs" />
-    <Compile Include="Configuration\METS_Writing_Profile.cs" />
+    <Compile Include="Configuration\ResourceObjectSettings.cs" />
     <Compile Include="Database\DataSets\SobekCM_All_Items.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Event_Delegates.cs" />
     <Compile Include="Generic_Reader.cs" />
+    <Compile Include="Configuration\Additional_Metadata_Module_Config.cs" />
+    <Compile Include="Configuration\Metadata_Configuration.cs" />
+    <Compile Include="Configuration\Metadata_File_ReaderWriter_Config.cs" />
+    <Compile Include="Configuration\METS_Section_ReaderWriter_Config.cs" />
+    <Compile Include="Configuration\METS_Writing_Profile.cs" />
     <Compile Include="Metadata_Modules\GeoSpatial\Coordinate_Circle.cs" />
     <Compile Include="METS_Sec_ReaderWriters\ETD_MS_DC_METS_dmdSec_ReaderWriter.cs" />
     <Compile Include="METS_Sec_ReaderWriters\ETD_SobekCM_METS_dmdSec_ReaderWriter.cs" />
@@ -266,9 +273,6 @@
     <Compile Include="Web_Info.cs" />
     <Compile Include="XML_Node_Base_Type.cs" />
     <Compile Include="Download_Info_DEPRECATED.cs" />
-    <Compile Include="Configuration\Metadata_Configuration.cs" />
-    <Compile Include="Configuration\Metadata_File_ReaderWriter_Config.cs" />
-    <Compile Include="Configuration\METS_Section_ReaderWriter_Config.cs" />
     <Compile Include="Solr\SolrDocument.cs" />
     <Compile Include="Solr\SolrPage.cs" />
     <Compile Include="Testing\Test_Bib_Package.cs" />
@@ -427,6 +431,10 @@
     <ProjectReference Include="..\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj">
       <Project>{b481ce6e-05fd-4336-9524-64d057aab107}</Project>
       <Name>EngineAgnosticLayerDbAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj">
+      <Project>{a511ce4c-7bd6-4446-bca8-ab71f7aa8078}</Project>
+      <Name>SobekCM_Tools</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Tools;
 

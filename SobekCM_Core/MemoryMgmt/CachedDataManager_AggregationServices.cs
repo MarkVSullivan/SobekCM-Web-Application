@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Caching;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.WebContent;
 using SobekCM.Tools;
 

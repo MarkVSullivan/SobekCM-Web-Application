@@ -8,6 +8,7 @@ using System.Text;
 using System.Web;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Users;
 using SobekCM.Library.UI;

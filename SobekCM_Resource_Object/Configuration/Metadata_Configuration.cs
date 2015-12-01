@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
+using SobekCM.Tools;
 
 #endregion
 
@@ -15,29 +16,29 @@ namespace SobekCM.Resource_Object.Configuration
 {
     /// <summary> Metadata configuration for all the classes used to read/write metadata files
     /// or sections within a METS file </summary>
-    public static class Metadata_Configuration
+    public  class Metadata_Configuration
     {
-        private static bool attemptedRead;
+        private bool attemptedRead;
 
-        private static readonly List<Metadata_File_ReaderWriter_Config> metadataFileReaderWriterConfigs;
-        private static readonly List<METS_Section_ReaderWriter_Config> metsSectionReaderWriterConfigs;
+        private readonly List<Metadata_File_ReaderWriter_Config> metadataFileReaderWriterConfigs;
+        private readonly List<METS_Section_ReaderWriter_Config> metsSectionReaderWriterConfigs;
 
-        private static readonly Dictionary<string, METS_Writing_Profile> metsWritingProfiles;
-        private static METS_Writing_Profile defaultWritingProfile;
+        private readonly Dictionary<string, METS_Writing_Profile> metsWritingProfiles;
+        private METS_Writing_Profile defaultWritingProfile;
 
-        private static readonly List<Additional_Metadata_Module_Config> metadataModules;
+        private readonly List<Additional_Metadata_Module_Config> metadataModules;
 
-        private static readonly Dictionary<Tuple<string, string>, iPackage_amdSec_ReaderWriter> packageAmdSecDictionary;
-        private static readonly Dictionary<Tuple<string, string>, iPackage_dmdSec_ReaderWriter> packageDmdSecDictionary;
-        private static readonly Dictionary<Tuple<string, string>, iDivision_dmdSec_ReaderWriter> divisionDmdSecDictionary;
-        private static readonly Dictionary<Tuple<string, string>, iDivision_amdSec_ReaderWriter> divisionAmdSecDictionary;
-        private static readonly Dictionary<Tuple<string, string>, iFile_dmdSec_ReaderWriter> fileDmdSecDictionary;
-        private static readonly Dictionary<Tuple<string, string>, iFile_amdSec_ReaderWriter> fileAmdSecDictionary;
+        private readonly Dictionary<Tuple<string, string>, iPackage_amdSec_ReaderWriter> packageAmdSecDictionary;
+        private readonly Dictionary<Tuple<string, string>, iPackage_dmdSec_ReaderWriter> packageDmdSecDictionary;
+        private readonly Dictionary<Tuple<string, string>, iDivision_dmdSec_ReaderWriter> divisionDmdSecDictionary;
+        private readonly Dictionary<Tuple<string, string>, iDivision_amdSec_ReaderWriter> divisionAmdSecDictionary;
+        private readonly Dictionary<Tuple<string, string>, iFile_dmdSec_ReaderWriter> fileDmdSecDictionary;
+        private readonly Dictionary<Tuple<string, string>, iFile_amdSec_ReaderWriter> fileAmdSecDictionary;
 
-        private static readonly List<string> errorsEncountered;
+        private readonly List<string> errorsEncountered;
 
-        /// <summary> Static constructor for the Metadata_Configuration class </summary>
-        static Metadata_Configuration()
+        /// <summary> constructor for the Metadata_Configuration class </summary>
+        public Metadata_Configuration()
         {
             // Declare all the new collections in this configuration 
             metadataFileReaderWriterConfigs = new List<Metadata_File_ReaderWriter_Config>();
@@ -61,7 +62,7 @@ namespace SobekCM.Resource_Object.Configuration
         }
 
         /// <summary> Clear all the current metadata configuration information </summary>
-        private static void Clear()
+        private void Clear()
         {
             metadataFileReaderWriterConfigs.Clear();
             metsSectionReaderWriterConfigs.Clear();
@@ -80,13 +81,13 @@ namespace SobekCM.Resource_Object.Configuration
         /// <summary> Flag indicates if the method to read the configuration file has been called </summary>
         /// <remarks> Even if the read is unsuccesful for any reason, this returns TRUE to prevent 
         /// the read method from being called over and over </remarks>
-        public static bool Attempted_To_Read_Config_File
+        public bool Attempted_To_Read_Config_File
         {
             get { return attemptedRead;  }
         }
 
         /// <summary> Default METS writing profile utilized by the METS writer </summary>
-        public static METS_Writing_Profile Default_METS_Writing_Profile
+        public METS_Writing_Profile Default_METS_Writing_Profile
         {
             get
             {
@@ -104,7 +105,7 @@ namespace SobekCM.Resource_Object.Configuration
 
         /// <summary> Adds a new METS writing profile to this metadata configuration </summary>
         /// <param name="NewProfile"> New metadata profile to add </param>
-        public static void Add_METS_Writing_Profile( METS_Writing_Profile NewProfile )
+        public void Add_METS_Writing_Profile( METS_Writing_Profile NewProfile )
         {
             metsWritingProfiles[NewProfile.Profile_Name] = NewProfile;
             if (NewProfile.Default_Profile)
@@ -112,7 +113,7 @@ namespace SobekCM.Resource_Object.Configuration
         }
 
         /// <summary> Clear all the METS writing profiles from this configuration </summary>
-        public static void Clear_METS_Writing_Profiles()
+        public void Clear_METS_Writing_Profiles()
         {
             metsWritingProfiles.Clear();
             defaultWritingProfile = null;
@@ -120,13 +121,13 @@ namespace SobekCM.Resource_Object.Configuration
 
         /// <summary> Add new metadata module configuration information for a module which should always be included </summary>
         /// <param name="MetadatModuleConfig"> New metadata module to include with all new items </param>
-        public static void Add_Metadata_Module_Config( Additional_Metadata_Module_Config MetadatModuleConfig )
+        public void Add_Metadata_Module_Config( Additional_Metadata_Module_Config MetadatModuleConfig )
         {
             metadataModules.Add( MetadatModuleConfig );
         }
 
         /// <summary> List of metadata modules to be included with all bibliographic items </summary>
-        public static ReadOnlyCollection<Additional_Metadata_Module_Config> Metadata_Modules_To_Include
+        public ReadOnlyCollection<Additional_Metadata_Module_Config> Metadata_Modules_To_Include
         {
             get
             {
@@ -135,20 +136,20 @@ namespace SobekCM.Resource_Object.Configuration
         }
 
         /// <summary> Collection of metadata file reader/writer configurations </summary>
-        public static ReadOnlyCollection<Metadata_File_ReaderWriter_Config> Metadata_File_ReaderWriter_Configs
+        public ReadOnlyCollection<Metadata_File_ReaderWriter_Config> Metadata_File_ReaderWriter_Configs
         {
             get { return new ReadOnlyCollection<Metadata_File_ReaderWriter_Config>(metadataFileReaderWriterConfigs); }
         }
 
         /// <summary> Add a new metadata file reader/writer configuration </summary>
         /// <param name="New_ReaderWriter"> New metadata file reader/writer configuration </param>
-        public static void Add_Metadata_File_ReaderWriter(Metadata_File_ReaderWriter_Config New_ReaderWriter)
+        public void Add_Metadata_File_ReaderWriter(Metadata_File_ReaderWriter_Config New_ReaderWriter)
         {
             metadataFileReaderWriterConfigs.Add(New_ReaderWriter);
         }
 
         /// <summary> Collection of all the METS section reader/writer configurations </summary>
-        public static ReadOnlyCollection<METS_Section_ReaderWriter_Config> METS_Section_File_ReaderWriter_Configs
+        public ReadOnlyCollection<METS_Section_ReaderWriter_Config> METS_Section_File_ReaderWriter_Configs
         {
             get { return new ReadOnlyCollection<METS_Section_ReaderWriter_Config>(metsSectionReaderWriterConfigs); }
         }
@@ -157,7 +158,7 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="New_ReaderWriter"> New METS section reader/writer</param>
         /// <remarks> This instantiates the actual reader/writer class to determine which interfaces
         /// are implemeneted. </remarks>
-        public static void Add_METS_Section_ReaderWriter(METS_Section_ReaderWriter_Config New_ReaderWriter)
+        public void Add_METS_Section_ReaderWriter(METS_Section_ReaderWriter_Config New_ReaderWriter)
         {
             // Add to list of all METS sections readers/writers
             metsSectionReaderWriterConfigs.Add(New_ReaderWriter);
@@ -210,7 +211,7 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="MdType"> MDTYPE attribute from the METS file section being read </param>
         /// <param name="OtherMdType"> OTHERMDTYPE attribute from the METS file section being read </param>
         /// <returns> Reader/writer class ready to read the METS section </returns>
-        public static iPackage_amdSec_ReaderWriter Get_Package_AmdSec_ReaderWriter( string MdType, string OtherMdType )
+        public iPackage_amdSec_ReaderWriter Get_Package_AmdSec_ReaderWriter( string MdType, string OtherMdType )
         {
             Tuple<string, string> thisMappingKey = new Tuple<string, string>(MdType.ToUpper(), OtherMdType.ToUpper());
             return packageAmdSecDictionary.ContainsKey(thisMappingKey) ? packageAmdSecDictionary[thisMappingKey] : null;
@@ -221,7 +222,7 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="MdType"> MDTYPE attribute from the METS file section being read </param>
         /// <param name="OtherMdType"> OTHERMDTYPE attribute from the METS file section being read </param>
         /// <returns> Reader/writer class ready to read the METS section </returns>
-        public static iPackage_dmdSec_ReaderWriter Get_Package_DmdSec_ReaderWriter(string MdType, string OtherMdType)
+        public iPackage_dmdSec_ReaderWriter Get_Package_DmdSec_ReaderWriter(string MdType, string OtherMdType)
         {
             Tuple<string, string> thisMappingKey = new Tuple<string, string>(MdType.ToUpper(), OtherMdType.ToUpper());
             return packageDmdSecDictionary.ContainsKey(thisMappingKey) ? packageDmdSecDictionary[thisMappingKey] : null;
@@ -232,7 +233,7 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="MdType"> MDTYPE attribute from the METS file section being read </param>
         /// <param name="OtherMdType"> OTHERMDTYPE attribute from the METS file section being read </param>
         /// <returns> Reader/writer class ready to read the METS section </returns>
-        public static iDivision_dmdSec_ReaderWriter Get_Division_DmdSec_ReaderWriter(string MdType, string OtherMdType)
+        public iDivision_dmdSec_ReaderWriter Get_Division_DmdSec_ReaderWriter(string MdType, string OtherMdType)
         {
             Tuple<string, string> thisMappingKey = new Tuple<string, string>(MdType.ToUpper(), OtherMdType.ToUpper());
             return divisionDmdSecDictionary.ContainsKey(thisMappingKey) ? divisionDmdSecDictionary[thisMappingKey] : null;
@@ -243,7 +244,7 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="MdType"> MDTYPE attribute from the METS file section being read </param>
         /// <param name="OtherMdType"> OTHERMDTYPE attribute from the METS file section being read </param>
         /// <returns> Reader/writer class ready to read the METS section </returns>
-        public static iDivision_amdSec_ReaderWriter Get_Division_AmdSec_ReaderWriter(string MdType, string OtherMdType)
+        public iDivision_amdSec_ReaderWriter Get_Division_AmdSec_ReaderWriter(string MdType, string OtherMdType)
         {
             Tuple<string, string> thisMappingKey = new Tuple<string, string>(MdType.ToUpper(), OtherMdType.ToUpper());
             return divisionAmdSecDictionary.ContainsKey(thisMappingKey) ? divisionAmdSecDictionary[thisMappingKey] : null;
@@ -254,7 +255,7 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="MdType"> MDTYPE attribute from the METS file section being read </param>
         /// <param name="OtherMdType"> OTHERMDTYPE attribute from the METS file section being read </param>
         /// <returns> Reader/writer class ready to read the METS section </returns>
-        public static iFile_amdSec_ReaderWriter Get_File_AmdSec_ReaderWriter(string MdType, string OtherMdType)
+        public iFile_amdSec_ReaderWriter Get_File_AmdSec_ReaderWriter(string MdType, string OtherMdType)
         {
             Tuple<string, string> thisMappingKey = new Tuple<string, string>(MdType.ToUpper(), OtherMdType.ToUpper());
             return fileAmdSecDictionary.ContainsKey(thisMappingKey) ? fileAmdSecDictionary[thisMappingKey] : null;
@@ -265,7 +266,7 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="MdType"> MDTYPE attribute from the METS file section being read </param>
         /// <param name="OtherMdType"> OTHERMDTYPE attribute from the METS file section being read </param>
         /// <returns> Reader/writer class ready to read the METS section </returns>
-        public static iFile_dmdSec_ReaderWriter Get_File_DmdSec_ReaderWriter(string MdType, string OtherMdType)
+        public iFile_dmdSec_ReaderWriter Get_File_DmdSec_ReaderWriter(string MdType, string OtherMdType)
         {
             Tuple<string, string> thisMappingKey = new Tuple<string, string>(MdType.ToUpper(), OtherMdType.ToUpper());
             return fileDmdSecDictionary.ContainsKey(thisMappingKey) ? fileDmdSecDictionary[thisMappingKey] : null;
@@ -275,7 +276,7 @@ namespace SobekCM.Resource_Object.Configuration
 
         /// <summary> Clears the current metadata configuration and restores all the values
         /// to the default reader/writers and profiles </summary>
-        public static void Set_Default_Values()
+        public void Set_Default_Values()
         {
             Clear();
 
@@ -437,7 +438,7 @@ namespace SobekCM.Resource_Object.Configuration
         /// <summary> Save this metadata configuration to a XML config file </summary>
         /// <param name="FilePath"> File/path for the resulting XML config file </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool Save_To_Config_File(string FilePath)
+        public bool Save_To_Config_File(string FilePath)
         {
             bool returnValue = true;
             StreamWriter writer = null;
@@ -567,9 +568,9 @@ namespace SobekCM.Resource_Object.Configuration
                     if (fileConfig.Options.Count > 0)
                     {
                         writer.WriteLine("\t\t\t\t<Options>");
-                        foreach (string thisKey in fileConfig.Options.Keys)
+                        foreach (StringKeyValuePair thisKey in fileConfig.Options)
                         {
-                            writer.WriteLine("\t\t\t\t\t<Option key=\"" + Convert_String_To_XML_Safe(thisKey) + "\" value=\"" + Convert_String_To_XML_Safe(fileConfig.Options[thisKey]) + "\" />");
+                            writer.WriteLine("\t\t\t\t\t<Option key=\"" + Convert_String_To_XML_Safe(thisKey.Key) + "\" value=\"" + Convert_String_To_XML_Safe(thisKey.Value) + "\" />");
                         }
                         writer.WriteLine("\t\t\t\t</Options>");
                     }
@@ -611,8 +612,8 @@ namespace SobekCM.Resource_Object.Configuration
                     writer.WriteLine("\t\t\t\t</Package_Scope>");
 
 
-                    ReadOnlyCollection<METS_Section_ReaderWriter_Config> divAmdSec = profile.Division_Level_AmdSec_Writer_Configs;
-                    ReadOnlyCollection<METS_Section_ReaderWriter_Config> divDmdSec = profile.Division_Level_DmdSec_Writer_Configs;
+                    List<METS_Section_ReaderWriter_Config> divAmdSec = profile.Division_Level_AmdSec_Writer_Configs;
+                    List<METS_Section_ReaderWriter_Config> divDmdSec = profile.Division_Level_DmdSec_Writer_Configs;
                     if ((divAmdSec.Count > 0) || (divDmdSec.Count > 0))
                     {
                         writer.WriteLine("\t\t\t\t<Division_Scope>");
@@ -638,8 +639,8 @@ namespace SobekCM.Resource_Object.Configuration
                         writer.WriteLine("\t\t\t\t</Division_Scope>");
                     }
 
-                    ReadOnlyCollection<METS_Section_ReaderWriter_Config> fileAmdSec = profile.File_Level_AmdSec_Writer_Configs;
-                    ReadOnlyCollection<METS_Section_ReaderWriter_Config> fileDmdSec = profile.File_Level_DmdSec_Writer_Configs;
+                    List<METS_Section_ReaderWriter_Config> fileAmdSec = profile.File_Level_AmdSec_Writer_Configs;
+                    List<METS_Section_ReaderWriter_Config> fileDmdSec = profile.File_Level_DmdSec_Writer_Configs;
                     if ((fileAmdSec.Count > 0) || (fileDmdSec.Count > 0))
                     {
                         writer.WriteLine("\t\t\t\t<File_Scope>");
@@ -711,7 +712,7 @@ namespace SobekCM.Resource_Object.Configuration
         /// <summary> Converts a basic string into an XML-safe string </summary>
         /// <param name="Element"> Element data to convert </param>
         /// <returns> Data converted into an XML-safe string</returns>
-        private static string Convert_String_To_XML_Safe(string Element)
+        private string Convert_String_To_XML_Safe(string Element)
         {
             if (Element == null)
                 return string.Empty;
@@ -738,7 +739,7 @@ namespace SobekCM.Resource_Object.Configuration
         /// <summary> Read the metadata configuration from a correctly-formatted metadata configuration XML file </summary>
         /// <param name="Configuration_XML_File"> File/path for the metadata configuration XML file to read </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool Read_Metadata_Configuration(string Configuration_XML_File)
+        public bool Read_Metadata_Configuration(string Configuration_XML_File)
         {
             attemptedRead = true;
 
@@ -812,7 +813,7 @@ namespace SobekCM.Resource_Object.Configuration
             return returnValue;
         }
 
-        private static void read_metadata_file_readerwriter_configs(XmlReader ReaderXml)
+        private void read_metadata_file_readerwriter_configs(XmlReader ReaderXml)
         {
             while (ReaderXml.Read())
             {
@@ -823,7 +824,7 @@ namespace SobekCM.Resource_Object.Configuration
             }
         }
 
-        private static void read_metadata_file_readerwriter_config(XmlReader ReaderXml)
+        private void read_metadata_file_readerwriter_config(XmlReader ReaderXml)
         {
             Metadata_File_ReaderWriter_Config returnValue = new Metadata_File_ReaderWriter_Config();
             ReaderXml.Read();
@@ -900,7 +901,7 @@ namespace SobekCM.Resource_Object.Configuration
             Add_Metadata_File_ReaderWriter(returnValue);
         }
 
-        private static void read_mets_readerwriter_configs(XmlReader ReaderXml, Dictionary<string, METS_Section_ReaderWriter_Config> ReaderWriters)
+        private void read_mets_readerwriter_configs(XmlReader ReaderXml, Dictionary<string, METS_Section_ReaderWriter_Config> ReaderWriters)
         {
             while (ReaderXml.Read())
             {
@@ -913,7 +914,7 @@ namespace SobekCM.Resource_Object.Configuration
             }
         }
 
-        private static METS_Section_ReaderWriter_Config read_mets_section_readerwriter_config(XmlReader ReaderXml)
+        private METS_Section_ReaderWriter_Config read_mets_section_readerwriter_config(XmlReader ReaderXml)
         {
             METS_Section_ReaderWriter_Config returnValue = new METS_Section_ReaderWriter_Config();
 
@@ -1006,7 +1007,7 @@ namespace SobekCM.Resource_Object.Configuration
             return returnValue;
         }
 
-        private static void read_metadata_modules_config(XmlReader ReaderXml)
+        private void read_metadata_modules_config(XmlReader ReaderXml)
         {
             while (ReaderXml.Read())
             {
@@ -1032,7 +1033,7 @@ namespace SobekCM.Resource_Object.Configuration
             }
         }
         
-        private static void read_mets_writing_config(XmlReader ReaderXml, Dictionary<string, METS_Section_ReaderWriter_Config> ReaderWriters)
+        private void read_mets_writing_config(XmlReader ReaderXml, Dictionary<string, METS_Section_ReaderWriter_Config> ReaderWriters)
         {
             bool inPackage = false;
             bool inDivision = false;

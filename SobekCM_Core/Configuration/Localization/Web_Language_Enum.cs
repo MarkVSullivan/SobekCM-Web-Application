@@ -4,7 +4,7 @@ using System;
 
 #endregion
 
-namespace SobekCM.Core.Configuration
+namespace SobekCM.Core.Configuration.Localization
 {
     /// <summary> Enumeration of all the most commonly supported languages by 
     /// major browsers  </summary>

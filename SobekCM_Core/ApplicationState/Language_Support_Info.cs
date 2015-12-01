@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Localization;
 
 #endregion
 

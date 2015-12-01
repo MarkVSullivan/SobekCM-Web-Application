@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://sobekrepository.org/schemas/sobekcm_config" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="SobekCM_Config">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="BriefItem_Mapping">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="MappingSet">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element maxOccurs="1" minOccurs="0" name="ClearAll" />
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="Mapper">
+                      <xs:complexType>
+                        <xs:attribute name="Assembly" type="xs:string" use="optional" />
+                        <xs:attribute name="Class" type="xs:string" use="required" />
+                        <xs:attribute name="Enabled" type="xs:boolean" use="optional" default="true" />
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="ID" type="xs:string" use="required" />
+                  <xs:attribute name="Default" type="xs:boolean" use="optional" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

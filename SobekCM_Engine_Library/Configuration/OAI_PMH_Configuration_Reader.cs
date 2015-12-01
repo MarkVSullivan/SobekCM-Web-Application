@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Xml;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.OAIPMH;
 
 #endregion
 
