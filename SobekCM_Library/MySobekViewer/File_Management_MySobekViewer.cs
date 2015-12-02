@@ -12,6 +12,7 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Email;
+using SobekCM.Library.AdminViewer;
 using SobekCM.Library.HTML;
 using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
@@ -359,18 +360,12 @@ namespace SobekCM.Library.MySobekViewer
 
         #endregion
 
-        /// <summary> Property indicates the standard navigation to be included at the top of the page by the
-        /// main MySobek html subwriter. </summary>
+
+        /// <summary> Navigation type to be displayed (mostly used by the mySobek viewers) </summary>
         /// <value> This returns none since this viewer writes all the necessary navigational elements </value>
         /// <remarks> This is set to NONE if the viewer will write its own navigation and ADMIN if the standard
         /// administrative tabs should be included as well.  </remarks>
-        public override MySobek_Included_Navigation_Enum Standard_Navigation_Type
-        {
-            get
-            {
-                return MySobek_Included_Navigation_Enum.NONE;
-            }
-        }
+        public override MySobek_Admin_Included_Navigation_Enum Standard_Navigation_Type { get { return MySobek_Admin_Included_Navigation_Enum.NONE; } }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <value> This returns the value 'File Management' </value>
@@ -692,6 +687,11 @@ namespace SobekCM.Library.MySobekViewer
 				};
 			}
 		}
+
+        /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
+        /// for the current request, or if it can be hidden/omitted. </summary>
+        /// <value> Returns TRUE since files can be be uploaded through this viewer </value>
+        public override bool Upload_File_Possible { get { return true; } }
     }
 }
   

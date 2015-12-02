@@ -19,7 +19,7 @@ namespace SobekCM.Library.AdminViewer
         public static iMySobek_Admin_Viewer Get_AdminViewer(RequestCache RequestSpecificValues)
         {
 
-            RequestSpecificValues.Tracer.Add_Trace("Admin_HtmlSubwriter.Get_AdminViewer", "Building the my sobek viewer object");
+            RequestSpecificValues.Tracer.Add_Trace("Admin_HtmlSubwriter.Get_AdminViewer", "Building the admin viewer object");
             switch (RequestSpecificValues.Current_Mode.Admin_Type)
             {
                 case Admin_Type_Enum.Add_Collection_Wizard:

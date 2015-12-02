@@ -16,21 +16,6 @@ using SobekCM.Tools;
 
 namespace SobekCM.Library.MySobekViewer
 {
-	/// <summary> Enumeration indicates which type of main menu navigation
-	/// to include </summary>
-    public enum MySobek_Included_Navigation_Enum : byte
-    {
-        /// <summary> Suppress the standard mySobek navigational elements.  This viewer will
-        /// utilize its own navigational elements at the top of the page </summary>
-        NONE = 1,
-
-        /// <summary> Standard mySobek navigation menu </summary>
-        Standard,
-
-		/// <summary> Special navigation menu for the logon screen </summary>
-		LogOn
-    }
-
     /// <summary> Abstract class which all mySobek viewer classes extend </summary>
     /// <remarks> MySobek Viewers are used for registration and authentication with mySobek, as well as performing any task which requires
     /// authentication, such as online submittal, metadata editing, and system administrative tasks.<br /><br />
@@ -65,19 +50,6 @@ namespace SobekCM.Library.MySobekViewer
         /// <summary> Gets the URL for the icon related to this mySobek task </summary>
         /// <remarks> Abstract property must be implemented by all extending classes </remarks>
         public virtual string Viewer_Icon { get { return String.Empty; }}
-
-        /// <summary> Property indicates the standard navigation to be included at the top of the page by the
-        /// main MySobek html subwriter. </summary>
-        /// <value> This defaults to STANDARD, but can be overwritte by any mySobek viewer </value>
-        /// <remarks> This is set to NONE if the viewer will write its own navigation and ADMIN if the standard
-        /// administrative tabs should be included as well.  </remarks>
-        public virtual MySobek_Included_Navigation_Enum Standard_Navigation_Type
-        {
-            get
-            {
-                return MySobek_Included_Navigation_Enum.Standard;
-            } 
-        }
     
         /// <summary> Property indicates if this mySobek viewer can contain pop-up forms</summary>
         /// <remarks> If the mySobek viewer contains pop-up forms the overall page renders differently, 
@@ -246,5 +218,9 @@ namespace SobekCM.Library.MySobekViewer
         /// <value> By default, this returns NULL, which would use the base, or default container </value>
         /// <remarks> This can be overriden in base classes that extend this abstract class </remarks>
         public virtual string Container_CssClass { get { return null; } }
+
+        /// <summary> Navigation type to be displayed (mostly used by the mySobek viewers) </summary>
+        /// <value> This returns STANDARD by default, but can be override by classes that extend this abstract class </value>
+        public virtual MySobek_Admin_Included_Navigation_Enum Standard_Navigation_Type { get { return MySobek_Admin_Included_Navigation_Enum.Standard; } }
     }
 }

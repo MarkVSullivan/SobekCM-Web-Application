@@ -4,12 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Database;
+using SobekCM.Library.AdminViewer;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MySobekViewer;
 using SobekCM.Library.Settings;
@@ -32,7 +34,7 @@ namespace SobekCM.Library.HTML
     /// </ul></remarks>
     public class MySobek_HtmlSubwriter : abstractHtmlSubwriter
     {
-        private readonly abstract_MySobekViewer mySobekViewer;
+        private readonly iMySobek_Admin_Viewer mySobekViewer;
  
         #region Constructor, which also creates the applicable MySobekViewer object
 
@@ -65,105 +67,9 @@ namespace SobekCM.Library.HTML
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Logon;
 
             RequestSpecificValues.Tracer.Add_Trace("MySobek_HtmlSubwriter.Constructor", "Building the my sobek viewer object");
-            switch (RequestSpecificValues.Current_Mode.My_Sobek_Type)
-            {
-                case My_Sobek_Type_Enum.Home:
-                    mySobekViewer = new Home_MySobekViewer(RequestSpecificValues);
-                    break;
 
-                case My_Sobek_Type_Enum.New_Item:
-                    mySobekViewer = new New_Group_And_Item_MySobekViewer(RequestSpecificValues);
-                    break;
-
-                case My_Sobek_Type_Enum.Folder_Management:
-                    mySobekViewer = new Folder_Mgmt_MySobekViewer(RequestSpecificValues);
-                    break;
-
-                case My_Sobek_Type_Enum.Saved_Searches:
-                    mySobekViewer = new Saved_Searches_MySobekViewer(RequestSpecificValues);
-                    break;
-
-                case My_Sobek_Type_Enum.Preferences:
-                    mySobekViewer = new Preferences_MySobekViewer(RequestSpecificValues);
-                    break;
-
-                case My_Sobek_Type_Enum.Logon:
-                    mySobekViewer = new Logon_MySobekViewer(RequestSpecificValues);
-                    break;
-
-                case My_Sobek_Type_Enum.New_Password:
-                    mySobekViewer = new NewPassword_MySobekViewer(RequestSpecificValues);
-                    break;
-
-                case My_Sobek_Type_Enum.Delete_Item:
-                    mySobekViewer = new Delete_Item_MySobekViewer(RequestSpecificValues);
-                    break;
-
-                case My_Sobek_Type_Enum.Edit_Item_Behaviors:
-                    mySobekViewer = new Edit_Item_Behaviors_MySobekViewer(RequestSpecificValues);
-                    break;
-
-                case My_Sobek_Type_Enum.Edit_Item_Metadata:
-                    mySobekViewer = new Edit_Item_Metadata_MySobekViewer( RequestSpecificValues.Current_Item, RequestSpecificValues);
-                    break;
-
-                case My_Sobek_Type_Enum.Edit_Item_Permissions:
-                    mySobekViewer = new Edit_Item_Permissions_MySobekViewer(RequestSpecificValues);
-                    break;
-
-                case My_Sobek_Type_Enum.File_Management:
-                    mySobekViewer = new File_Management_MySobekViewer(RequestSpecificValues);
-                    break;
-
-                case My_Sobek_Type_Enum.Edit_Group_Behaviors:
-                    mySobekViewer = new Edit_Group_Behaviors_MySobekViewer(RequestSpecificValues);
-                    break;
-
-
-
-                case My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy:
-                    mySobekViewer = new Edit_Serial_Hierarchy_MySobekViewer(RequestSpecificValues);
-                    break;
-
-                case My_Sobek_Type_Enum.Item_Tracking:
-                    mySobekViewer = new Track_Item_MySobekViewer(RequestSpecificValues);
-                    break;
-
-                case My_Sobek_Type_Enum.Group_Add_Volume:
-                    // Pull the list of items tied to this group
-                    SobekCM_Items_In_Title itemsInTitle = CachedDataManager.Retrieve_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
-                    if (itemsInTitle == null)
-                    {
-                        // Get list of information about this item group and save the item list
-                        DataSet itemDetails = Engine_Database.Get_Item_Group_Details(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
-                        itemsInTitle = new SobekCM_Items_In_Title(itemDetails.Tables[1]);
-
-                        // Store in cache if retrieved
-                        CachedDataManager.Store_Items_In_Title(RequestSpecificValues.Current_Item.BibID, itemsInTitle, RequestSpecificValues.Tracer);
-                    }
-                    mySobekViewer = new Group_Add_Volume_MySobekViewer(RequestSpecificValues, itemsInTitle );
-                    break;
-
-                case My_Sobek_Type_Enum.Group_AutoFill_Volumes:
-                    mySobekViewer = new Group_AutoFill_Volume_MySobekViewer(RequestSpecificValues);
-                    break;
-
-                case My_Sobek_Type_Enum.Group_Mass_Update_Items:
-                    mySobekViewer = new Mass_Update_Items_MySobekViewer(RequestSpecificValues);
-                    break;
-
-                case My_Sobek_Type_Enum.Page_Images_Management:
-                    mySobekViewer = new Page_Image_Upload_MySobekViewer(RequestSpecificValues);
-                    break;
-
-                case My_Sobek_Type_Enum.User_Tags:
-                    mySobekViewer = new User_Tags_MySobekViewer(RequestSpecificValues);
-                    break;
-
-                case My_Sobek_Type_Enum.User_Usage_Stats:
-                    mySobekViewer = new User_Usage_Stats_MySobekViewer(RequestSpecificValues);
-                    break;
-            }
+            // Get the appropriate mysobek viewer from the factory
+            mySobekViewer = MySobekViewer_Factory.Get_MySobekViewer(RequestSpecificValues);
         }
 
         #endregion
@@ -195,17 +101,16 @@ namespace SobekCM.Library.HTML
 		{
 			get
 			{
-				if (RequestSpecificValues.Current_User == null)
-					return false;
+                // If no user, always return false (should not really get here)
+                if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+                    return false;
 
-				if (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management)
-					return false;
+                // If no admin viewer was found, also return false
+                if (mySobekViewer == null)
+                    return false;
 
-				if (((RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0] == '8')) ||
-				    (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
-					return true;
-
-				return false;
+                // Return the value from the admin viewer
+                return mySobekViewer.Upload_File_Possible;
 			}
 		}
 
@@ -216,27 +121,56 @@ namespace SobekCM.Library.HTML
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
 		public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
 		{
-			Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
-			Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Metadata_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
-            Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Mysobek_Css + "\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+            // Admin viewers can override all of this
+            StringBuilder builder = new StringBuilder();
+            if (mySobekViewer != null)
+            {
+                using (StringWriter writer = new StringWriter(builder))
+                {
+                    bool overrideHead = mySobekViewer.Write_Within_HTML_Head(writer, Tracer);
+                    if (overrideHead)
+                    {
+                        Output.WriteLine(builder.ToString());
+                        return;
+                    }
+                }
+            }
 
 
+            Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
 
-			// If we are currently uploading files, add those specific upload styles 
-			if (((RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Length > 0) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0] == '8')) || (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management))
-			{
+            Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Admin_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
 
-                Output.WriteLine("  <script src=\"" + Static_Resources.Jquery_Uploadifive_Js + "\" type=\"text/javascript\"></script>");
-                Output.WriteLine("  <script src=\"" + Static_Resources.Jquery_Uploadify_Js + "\" type=\"text/javascript\"></script>");
+            // If there was a viewer, add based on behaviors and flags
+            if (mySobekViewer != null)
+            {
+                // Add the uploader libraries if editing an item
+                if (mySobekViewer.Upload_File_Possible)
+                {
+                    Output.WriteLine("  <script src=\"" + Static_Resources.Jquery_Uploadifive_Js + "\" type=\"text/javascript\"></script>");
+                    Output.WriteLine("  <script src=\"" + Static_Resources.Jquery_Uploadify_Js + "\" type=\"text/javascript\"></script>");
 
-				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Uploadifive_Css + "\">");
-				Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Uploadify_Css + "\">");
-			}
+                    Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Uploadifive_Css + "\">");
+                    Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Uploadify_Css + "\">");
+                }
 
-			if (( mySobekViewer != null ) && ( mySobekViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)))
-			{
-                Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
-			}
+                if (mySobekViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter))
+                {
+                    Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+                }
+
+                if ((mySobekViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables)))
+                {
+                    Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Datatables_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+                    Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Datatables_Js + "\" ></script>");
+                }
+
+                // Allow the admin viewer to also write into the header
+                if (builder.Length > 0)
+                {
+                    Output.WriteLine(builder.ToString());
+                }
+            }
 		}
 
 
@@ -253,7 +187,7 @@ namespace SobekCM.Library.HTML
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
             }
                 // A few cases skip the view selectors at the top entirely
-	        if (mySobekViewer.Standard_Navigation_Type == MySobek_Included_Navigation_Enum.Standard)
+	        if (mySobekViewer.Standard_Navigation_Type == MySobek_Admin_Included_Navigation_Enum.Standard)
 	        {
 		        // Add the user-specific main menu
 		        MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, RequestSpecificValues);
@@ -262,7 +196,7 @@ namespace SobekCM.Library.HTML
 		        Output.WriteLine("<div id=\"pagecontainer\">");
 		        Output.WriteLine("<br />");
 	        }
-			else if (mySobekViewer.Standard_Navigation_Type == MySobek_Included_Navigation_Enum.LogOn)
+            else if (mySobekViewer.Standard_Navigation_Type == MySobek_Admin_Included_Navigation_Enum.LogOn)
 			{
 				// Add the item views
 				Output.WriteLine("<!-- Add the main user-specific menu -->");
@@ -375,20 +309,17 @@ namespace SobekCM.Library.HTML
 		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
 		public override string Container_CssClass
 		{
-			get
-			{
-				if ((RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode)) && (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.IndexOf("0.2") == 0))
-					return "container-inner1000";
+            get
+            {
+                if (mySobekViewer != null)
+                {
+                    string cssStyle = mySobekViewer.Container_CssClass;
+                    if (!String.IsNullOrEmpty(cssStyle))
+                        return cssStyle;
+                }
 
-				if ((RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Behaviors) || (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Behaviors) ||
-				    (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) || (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Add_Volume) ||
-				    (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Mass_Update_Items) || (RequestSpecificValues.Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.New_Item))
-				{
-					return "container-inner1000";
-				}
-
-				return base.Container_CssClass;
-			}
+                return base.Container_CssClass;
+            }
 		}
     }
 }

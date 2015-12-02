@@ -6,6 +6,7 @@ using System.IO;
 using System.Web;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
@@ -112,20 +113,13 @@ namespace SobekCM.Library.MySobekViewer
 
        #endregion
 
-       /// <summary> Property indicates the standard navigation to be included at the top of the page by the
-       /// main MySobek html subwriter. </summary>
+       /// <summary> Navigation type to be displayed (mostly used by the mySobek viewers) </summary>
        /// <value> This returns none since this viewer writes all the necessary navigational elements </value>
        /// <remarks> This is set to NONE if the viewer will write its own navigation and ADMIN if the standard
        /// administrative tabs should be included as well.  </remarks>
-       public override MySobek_Included_Navigation_Enum Standard_Navigation_Type
-       {
-           get
-           {
-               return MySobek_Included_Navigation_Enum.NONE;
-           }
-       }
+       public override MySobek_Admin_Included_Navigation_Enum Standard_Navigation_Type { get { return MySobek_Admin_Included_Navigation_Enum.NONE; } }
 
-       /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
+        /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <value> This returns the value 'Edit Group Behaviors' </value>
         public override string Web_Title
         {
@@ -256,6 +250,19 @@ namespace SobekCM.Library.MySobekViewer
 				};
 			}
 		}
+
+        /// <summary> Write any additional values within the HTML Head of the final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if this should completely override the default added by the admin or mySobek viewer </returns>
+        public override bool Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Metadata_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            return false;
+        }
+
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        public override string Container_CssClass { get { return "container-inner1000"; } }
     }
 }
 

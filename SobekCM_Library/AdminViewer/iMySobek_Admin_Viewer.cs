@@ -10,6 +10,24 @@ using SobekCM.Tools;
 
 namespace SobekCM.Library.AdminViewer
 {
+    /// <summary> Enumeration indicates which type of main menu navigation
+    /// to include </summary>
+    public enum MySobek_Admin_Included_Navigation_Enum : byte
+    {
+        /// <summary> Suppress the standard mySobek navigational elements.  This viewer will
+        /// utilize its own navigational elements at the top of the page </summary>
+        NONE = 1,
+
+        /// <summary> Standard mySobek navigation menu </summary>
+        Standard,
+
+        /// <summary> Special navigation menu for the logon screen </summary>
+        LogOn,
+
+        /// <summary> Shows the administrative menu at the top </summary>
+        Admin
+    }
+
     /// <summary> Interface defines the required behavior for the mySobek and administrative viewers  </summary>
     public interface iMySobek_Admin_Viewer
     {
@@ -75,5 +93,8 @@ namespace SobekCM.Library.AdminViewer
 
         /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
         string Container_CssClass { get; }
+
+        /// <summary> Navigation type to be displayed (mostly used by the mySobek viewers) </summary>
+        MySobek_Admin_Included_Navigation_Enum Standard_Navigation_Type { get;  }
     }
 }

@@ -66,9 +66,8 @@ namespace SobekCM.Library.HTML
                 return;
             }
 
+            // Get the appropriate admin viewer from the factory
             adminViewer = AdminViewer_Factory.Get_AdminViewer(RequestSpecificValues);
-
-
         }
 
         #endregion
@@ -310,9 +309,10 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Admin_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
 
-			// Add the uploader libraries if editing an item
+            // If there was a viewer, add based on behaviors and flags
             if (adminViewer != null)
             {
+                // Add the uploader libraries if editing an item
                 if (adminViewer.Upload_File_Possible)
                 {
                     Output.WriteLine("  <script src=\"" + Static_Resources.Jquery_Uploadifive_Js + "\" type=\"text/javascript\"></script>");
@@ -333,7 +333,7 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Datatables_Js + "\" ></script>");
                 }
 
-                // Allow the admin viewer to also draw into the header
+                // Allow the admin viewer to also write into the header
                 if (builder.Length > 0)
                 {
                     Output.WriteLine(builder.ToString());

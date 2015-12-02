@@ -10,6 +10,7 @@ using System.Web;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Solr;
+using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -226,18 +227,13 @@ namespace SobekCM.Library.MySobekViewer
 		    }
 		}
 
-		/// <summary> Property indicates the standard navigation to be included at the top of the page by the
-		/// main MySobek html subwriter. </summary>
-		/// <value> This returns none since this viewer writes all the necessary navigational elements </value>
-		/// <remarks> This is set to NONE if the viewer will write its own navigation and ADMIN if the standard
-		/// administrative tabs should be included as well.  </remarks>
-		public override MySobek_Included_Navigation_Enum Standard_Navigation_Type
-		{
-			get
-			{
-				return MySobek_Included_Navigation_Enum.NONE;
-			}
-		}
+
+        /// <summary> Navigation type to be displayed (mostly used by the mySobek viewers) </summary>
+        /// <value> This returns none since this viewer writes all the necessary navigational elements </value>
+        /// <remarks> This is set to NONE if the viewer will write its own navigation and ADMIN if the standard
+        /// administrative tabs should be included as well.  </remarks>
+        public override MySobek_Admin_Included_Navigation_Enum Standard_Navigation_Type { get { return MySobek_Admin_Included_Navigation_Enum.NONE; } }
+
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <value> This always returns the value 'Delete Item' </value>

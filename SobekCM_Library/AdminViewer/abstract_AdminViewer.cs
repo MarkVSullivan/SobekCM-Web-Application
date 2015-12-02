@@ -144,5 +144,8 @@ namespace SobekCM.Library.AdminViewer
         /// <value> By default, this returns NULL, which would use the base, or default container </value>
         /// <remarks> This can be overriden in base classes that extend this abstract class </remarks>
         public virtual string Container_CssClass { get { return null; } }
+
+        /// <summary> Navigation type to be displayed (mostly used by the mySobek viewers) </summary>
+        public virtual MySobek_Admin_Included_Navigation_Enum Standard_Navigation_Type { get { return MySobek_Admin_Included_Navigation_Enum.Admin; } }
     }
 }

@@ -9,6 +9,7 @@ using System.Web;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Items;
+using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
@@ -655,16 +656,12 @@ namespace SobekCM.Library.MySobekViewer
 
         #endregion
 
-		/// <summary> Property indicates the standard navigation to be included at the top of the page by the
-		/// main MySobek html subwriter. </summary>
-		/// <value> This viewer always returns NONE </value>
-		public override MySobek_Included_Navigation_Enum Standard_Navigation_Type
-		{
-			get
-			{
-				return MySobek_Included_Navigation_Enum.NONE;
-			}
-		}
+
+        /// <summary> Navigation type to be displayed (mostly used by the mySobek viewers) </summary>
+        /// <value> This returns none since this viewer writes all the necessary navigational elements </value>
+        /// <remarks> This is set to NONE if the viewer will write its own navigation and ADMIN if the standard
+        /// administrative tabs should be included as well.  </remarks>
+        public override MySobek_Admin_Included_Navigation_Enum Standard_Navigation_Type { get { return MySobek_Admin_Included_Navigation_Enum.NONE; } }
 
 		/// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
 		/// requests from the main HTML subwriter. </summary>
@@ -692,6 +689,9 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
             return true;
         }
+
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        public override string Container_CssClass { get { return "container-inner1000"; } }
     }
 }
   

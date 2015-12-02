@@ -8,7 +8,9 @@ using System.Web;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items;
+using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
@@ -62,12 +64,21 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Constructor for a new instance of the Group_Add_Volume_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        /// <param name="Items_In_Title"> List of items within this title </param>
-        public Group_Add_Volume_MySobekViewer(RequestCache RequestSpecificValues, SobekCM_Items_In_Title Items_In_Title)  : base(RequestSpecificValues)
+        public Group_Add_Volume_MySobekViewer(RequestCache RequestSpecificValues)  : base(RequestSpecificValues)
         {
             RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", String.Empty);
 
-            itemsInTitle = Items_In_Title;
+            // Pull the list of items tied to this group
+            itemsInTitle = CachedDataManager.Retrieve_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
+            if (itemsInTitle == null)
+            {
+                // Get list of information about this item group and save the item list
+                DataSet itemDetails = Engine_Database.Get_Item_Group_Details(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
+                itemsInTitle = new SobekCM_Items_In_Title(itemDetails.Tables[1]);
+
+                // Store in cache if retrieved
+                CachedDataManager.Store_Items_In_Title(RequestSpecificValues.Current_Item.BibID, itemsInTitle, RequestSpecificValues.Tracer);
+            }
 
             // Set some defaults
             ipRestrict = -1;
@@ -443,18 +454,12 @@ namespace SobekCM.Library.MySobekViewer
 
         #endregion
 
-        /// <summary> Property indicates the standard navigation to be included at the top of the page by the
-        /// main MySobek html subwriter. </summary>
+
+        /// <summary> Navigation type to be displayed (mostly used by the mySobek viewers) </summary>
         /// <value> This returns none since this viewer writes all the necessary navigational elements </value>
         /// <remarks> This is set to NONE if the viewer will write its own navigation and ADMIN if the standard
         /// administrative tabs should be included as well.  </remarks>
-        public override MySobek_Included_Navigation_Enum Standard_Navigation_Type
-        {
-            get
-            {
-                return MySobek_Included_Navigation_Enum.NONE;
-            }
-        }
+        public override MySobek_Admin_Included_Navigation_Enum Standard_Navigation_Type { get { return MySobek_Admin_Included_Navigation_Enum.NONE; } }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <value> This returns the value 'Add New Volume' </value>
@@ -637,5 +642,8 @@ namespace SobekCM.Library.MySobekViewer
 				};
 			}
 		}
+
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        public override string Container_CssClass { get { return "container-inner1000"; } }
     }
 }
