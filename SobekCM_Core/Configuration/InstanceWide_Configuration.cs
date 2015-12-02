@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Configuration.Authentication;
+using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Configuration.OAIPMH;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Resource_Object.Configuration;
@@ -26,6 +27,7 @@ namespace SobekCM.Core.Configuration
             Authentication = new Authentication_Configuration();
             BriefItemMapping = new BriefItemMapping_Configuration();
             ContactForm = new ContactForm_Configuration();
+            Engine = new Engine_Server_Configuration();
             QualityControlTool = new QualityControl_Configuration();
             MapEditor = new MapEditor_Configuration();
             Metadata = new Metadata_Configuration();
@@ -52,27 +54,33 @@ namespace SobekCM.Core.Configuration
         [ProtoMember(4)]
         public ContactForm_Configuration ContactForm { get; set; }
 
+        /// <summary> Configuration for the engine endpoints exposed for this instance </summary>
+        [DataMember(Name = "engine", EmitDefaultValue = false)]
+        [XmlElement("engine")]
+        [ProtoMember(5)]
+        public Engine_Server_Configuration Engine { get; set; }
+
         /// <summary> Configuration information for the map editor function for this instance </summary>
         [DataMember(Name = "mapEditor", EmitDefaultValue = false)]
         [XmlElement("mapEditor")]
-        [ProtoMember(5)]
+        [ProtoMember(6)]
         public MapEditor_Configuration MapEditor { get; set; }
 
         [DataMember(Name = "metadata", EmitDefaultValue = false)]
         [XmlElement("metadata")]
-        [ProtoMember(6)]
+        [ProtoMember(7)]
         public Metadata_Configuration Metadata { get; set; }
 
         /// <summary> Configuration for instance-wide OAI-PMH settings for this instance </summary>
         [DataMember(Name = "oai-pmh", EmitDefaultValue = false)]
         [XmlElement("oai-pmh")]
-        [ProtoMember(7)]
+        [ProtoMember(8)]
         public OAI_PMH_Configuration OAI_PMH { get; set; }
 
         /// <summary> Configuration for the quality control tool for this instance </summary>
         [DataMember(Name = "qcConfig", EmitDefaultValue = false)]
         [XmlElement("qcConfig")]
-        [ProtoMember(8)]
+        [ProtoMember(9)]
         public QualityControl_Configuration QualityControlTool { get; set; }
 
 

@@ -27,7 +27,7 @@ namespace SobekCM.Builder
             string app_start_config = Application.StartupPath + "\\config";
             if ((Directory.Exists(app_start_config)) && (File.Exists(app_start_config + "\\sobekCM_metadata.config")))
             {
-                Metadata_Configuration.Read_Metadata_Configuration(app_start_config + "\\sobekCM_metadata.config");
+                ResourceObjectSettings.MetadataConfig.Read_Metadata_Configuration(app_start_config + "\\sobekCM_metadata.config");
             }
 
 

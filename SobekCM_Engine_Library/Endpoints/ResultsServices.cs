@@ -16,7 +16,7 @@ using SobekCM.Core.Search;
 using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Engine_Library.Microservices;
+using SobekCM.Core.Configuration.Engine;
 using SobekCM.Engine_Library.Solr;
 using SobekCM.Tools;
 

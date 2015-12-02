@@ -3,12 +3,12 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
 
-namespace SobekCM.Engine_Library.Microservices
+namespace SobekCM.Core.Configuration.Engine
 {
     /// <summary> Code component which provides methods to fulfill microservice endpoint requests </summary>
     [Serializable, DataContract, ProtoContract]
-    [XmlRoot("MicroserviceComponent")]
-    public class Microservice_Component
+    [XmlRoot("EngineComponent")]
+    public class Engine_Component
     {
         /// <summary> Identifier for this component, which is referenced within the configuration file to specify this component </summary>
         [DataMember(Name = "id")]

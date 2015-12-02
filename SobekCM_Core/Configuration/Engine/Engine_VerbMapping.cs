@@ -1,48 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
 using System.Web;
-using SobekCM.Engine_Library.IpRangeUtilities;
+using System.Xml.Serialization;
+using ProtoBuf;
+using SobekCM.Tools.IpRangeUtilities;
 
-namespace SobekCM.Engine_Library.Microservices
+namespace SobekCM.Core.Configuration.Engine
 {
     /// <summary> Individual mapping from a HTML verb to a component/method </summary>
-    public class Microservice_VerbMapping
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("EngineVerbMapping")]
+    public class Engine_VerbMapping
     {
         private MethodInfo methodInfo;
         private object restApiObject;
-
         private IpRangeSetV4 rangeTester;
 
         /// <summary> Protocol which this endpoint utilizes ( JSON or Protocol Buffer ) </summary>
+        [DataMember(Name = "protocol", EmitDefaultValue = false)]
+        [XmlAttribute("protocol")]
+        [ProtoMember(1)]
         public Microservice_Endpoint_Protocol_Enum Protocol { get; internal set; }
 
-        /// <summary> Component defines the class which is used to fulfil the request </summary>
-        public Microservice_Component Component { get; internal set; }
+        /// <summary> Request type expected for this endpoint ( either a GET or a POST ) </summary>
+        [DataMember(Name = "requestType", EmitDefaultValue = false)]
+        [XmlAttribute("requestType")]
+        [ProtoMember(2)]
+        public Microservice_Endpoint_RequestType_Enum RequestType { get; internal set; }
 
         /// <summary> Method within the class specified by the component that should be called to fulfil the request </summary>
+        [DataMember(Name = "method", EmitDefaultValue = false)]
+        [XmlAttribute("method")]
+        [ProtoMember(3)]
         public string Method { get; internal set; }
 
         /// <summary> Flag indicates if this endpoint is enabled or disabled </summary>
+        [DataMember(Name = "enabled", EmitDefaultValue = false)]
+        [XmlAttribute("enabled")]
+        [ProtoMember(4)]
         public bool Enabled { get; internal set; }
+
+        /// <summary> Component defines the class which is used to fulfil the request </summary>
+        [DataMember(Name = "component", EmitDefaultValue = false)]
+        [XmlElement("component")]
+        [ProtoMember(5)]
+        public Engine_Component Component { get; internal set; }
 
         /// <summary> If this endpoint is restricted to some IP ranges, this is the list of restriction ranges that
         /// can access this endpoint </summary>
-        public List<Microservice_RestrictionRange> RestrictionRanges { get; internal set; }
+        [XmlIgnore]
+        [IgnoreDataMember]
+        public List<Engine_RestrictionRange> RestrictionRanges { get; internal set; }
 
-        /// <summary> Request type expected for this endpoint ( either a GET or a POST ) </summary>
-        public Microservice_Endpoint_RequestType_Enum RequestType { get; internal set; }
+        /// <summary> Restriction IDs that point to any sets of IP addresses to restrict access
+        ///  to this endpoint </summary>
+        [DataMember(Name = "ipRestrictionRangeIds", EmitDefaultValue = false)]
+        [XmlArray("rangeId")]
+        [XmlArrayItem("rangeId", typeof(int))]
+        [ProtoMember(3)]
+        public List<int> RestrictionRangeSetId { get; set; }
 
-        /// <summary> Constructor for a new instance of the Microservice_VerbMapping class </summary>
+        /// <summary> Constructor for a new instance of the Engine_VerbMapping class </summary>
         /// <param name="Method"> Method within the class specified by the component that should be called to fulfil the request </param>
         /// <param name="Enabled"> Flag indicates if this endpoint is enabled or disabled </param>
         /// <param name="Protocol"> Protocol which this endpoint utilizes ( JSON or Protocol Buffer ) </param>
         /// <param name="RequestType"> Request type expected for this endpoint ( either a GET or a POST ) </param>
-        public Microservice_VerbMapping(string Method, bool Enabled, Microservice_Endpoint_Protocol_Enum Protocol, Microservice_Endpoint_RequestType_Enum RequestType)
+        public Engine_VerbMapping(string Method, bool Enabled, Microservice_Endpoint_Protocol_Enum Protocol, Microservice_Endpoint_RequestType_Enum RequestType)
         {
             this.Method = Method;
             this.Enabled = Enabled;
@@ -88,9 +114,9 @@ namespace SobekCM.Engine_Library.Microservices
             if (rangeTester == null)
             {
                 rangeTester = new IpRangeSetV4();
-                foreach (Microservice_RestrictionRange thisRangeSet in RestrictionRanges)
+                foreach (Engine_RestrictionRange thisRangeSet in RestrictionRanges)
                 {
-                    foreach (Microservice_IpRange thisRange in thisRangeSet.IpRanges)
+                    foreach (Engine_IpRange thisRange in thisRangeSet.IpRanges)
                     {
                         if (!String.IsNullOrEmpty(thisRange.EndIp))
                             rangeTester.AddIpRange(thisRange.StartIp, thisRange.EndIp);

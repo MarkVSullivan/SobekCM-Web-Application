@@ -3,23 +3,28 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.Serialization;
 using System.Text;
+using System.Xml.Serialization;
+using ProtoBuf;
 
 #endregion
 
-namespace SobekCM.Engine_Library.Microservices
+namespace SobekCM.Core.Configuration.Engine
 {
     /// <summary> Overall configuration for the microservices exposed by this data layer </summary>
-    public class Microservice_Server_Configuration
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("EngineConfig")]
+    public class Engine_Server_Configuration
     {
         /// <summary> Get the endpoint configuration, based on the requested path </summary>
         /// <param name="Paths"> Requested URL paths </param>
         /// <returns> Matched enpoint configuration, otherwise NULL </returns>
-        public Microservice_Endpoint Get_Endpoint(List<string> Paths)
+        public Engine_Endpoint Get_Endpoint(List<string> Paths)
         {
             if (RootPaths.ContainsKey(Paths[0]))
             {
-                Microservice_Path path = RootPaths[Paths[0]];
+                Engine_Path path = RootPaths[Paths[0]];
                 Paths.RemoveAt(0);
 
                 do
@@ -27,7 +32,7 @@ namespace SobekCM.Engine_Library.Microservices
                     // Did we find an endpoint?
                     if (path.IsEndpoint)
                     {
-                        return (Microservice_Endpoint) path;
+                        return (Engine_Endpoint) path;
                     }
 
                     // Look to the next part of the path
@@ -53,25 +58,37 @@ namespace SobekCM.Engine_Library.Microservices
         }
 
 
-        /// <summary> Constructor for a new instance of the Microservices_Config class </summary>
-        public Microservice_Server_Configuration()
+        /// <summary> Constructor for a new instance of the Engine_Server_Configuration class </summary>
+        public Engine_Server_Configuration()
         {
-            RootPaths = new Dictionary<string, Microservice_Path>();
-            Components = new List<Microservice_Component>();
-            RestrictionRanges = new List<Microservice_RestrictionRange>();
+            RootPaths = new Dictionary<string, Engine_Path>();
+            Components = new List<Engine_Component>();
+            RestrictionRanges = new List<Engine_RestrictionRange>();
         }
 
-        /// <summary> Collection of all the root paths/endpoints (defined hierarchically) </summary>
-        public Dictionary<string, Microservice_Path> RootPaths { get; private set; }
-
         /// <summary> List of all the components specified in the configuration file </summary>
-        public List<Microservice_Component> Components { get; private set; }
+        [DataMember(Name = "components", EmitDefaultValue = false)]
+        [XmlArray("component")]
+        [XmlArrayItem("component", typeof(Engine_Component))]
+        [ProtoMember(1)]
+        public List<Engine_Component> Components { get; private set; }
 
         /// <summary> List of all the possible restriction ranges ( each defined by multiple 
         /// possible IP address ranges ) in the configuration file </summary>
-        public List<Microservice_RestrictionRange> RestrictionRanges { get; private set; }
+        [DataMember(Name = "ipRestrictionRangeSets", EmitDefaultValue = false)]
+        [XmlArray("ipRestrictionRangeSets")]
+        [XmlArrayItem("restrictionRange", typeof(Engine_Component))]
+        [ProtoMember(2)]
+        public List<Engine_RestrictionRange> RestrictionRanges { get; private set; }
+
+        /// <summary> Collection of all the root paths/endpoints (defined hierarchically) </summary>
+        public Dictionary<string, Engine_Path> RootPaths { get; private set; }
+
+
 
         /// <summary> Any error associated with reading the configuration file into this object </summary>
+        [XmlIgnore]
+        [IgnoreDataMember]
         public string Error { get; internal set; }
 
         /// <summary> Clears all of the data loaded into this configuration </summary>

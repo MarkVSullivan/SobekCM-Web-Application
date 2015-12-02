@@ -4,12 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Reflection;
+using System.Runtime.Serialization;
 using System.Web;
-using SobekCM.Engine_Library.IpRangeUtilities;
+using System.Xml.Serialization;
+using ProtoBuf;
+using SobekCM.Tools.IpRangeUtilities;
 
 #endregion
 
-namespace SobekCM.Engine_Library.Microservices
+namespace SobekCM.Core.Configuration.Engine
 {
     /// <summary> Enumeration indicates the type of HTTP request expected for this microservice endpoint </summary>
     public enum Microservice_Endpoint_RequestType_Enum : byte
@@ -59,19 +62,33 @@ namespace SobekCM.Engine_Library.Microservices
     }
 
     /// <summary> Class defines an microservice endpoint within a collection of path or URI segments </summary>
-    public class Microservice_Endpoint : Microservice_Path
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("EngineEndpoint")]
+    public class Engine_Endpoint : Engine_Path
     {
         /// <summary> Mapping to an individual method and protocol for the GET HTTP verb </summary>
-        public Microservice_VerbMapping GetMapping { get; set; }
+        [DataMember(Name = "getMapping", EmitDefaultValue = false)]
+        [XmlElement("getMapping")]
+        [ProtoMember(10)]
+        public Engine_VerbMapping GetMapping { get; set; }
 
         /// <summary> Mapping to an individual method and protocol for the DELETE HTTP verb </summary>
-        public Microservice_VerbMapping DeleteMapping { get; set; }
+        [DataMember(Name = "deleteMapping", EmitDefaultValue = false)]
+        [XmlElement("deleteMapping")]
+        [ProtoMember(11)]
+        public Engine_VerbMapping DeleteMapping { get; set; }
 
         /// <summary> Mapping to an individual method and protocol for the POST HTTP verb </summary>
-        public Microservice_VerbMapping PostMapping { get; set; }
+        [DataMember(Name = "postMapping", EmitDefaultValue = false)]
+        [XmlElement("postMapping")]
+        [ProtoMember(12)]
+        public Engine_VerbMapping PostMapping { get; set; }
 
         /// <summary> Mapping to an individual method and protocol for the PUT HTTP verb </summary>
-        public Microservice_VerbMapping PutMapping { get; set; }
+        [DataMember(Name = "putMapping", EmitDefaultValue = false)]
+        [XmlElement("putMapping")]
+        [ProtoMember(13)]
+        public Engine_VerbMapping PutMapping { get; set; }
 
 
         /// <summary> Flag indicates if this path actually defines a single endpoint </summary>
@@ -110,6 +127,8 @@ namespace SobekCM.Engine_Library.Microservices
         }
 
         /// <summary> Gets a flag indicating if any verb mapping exists for this endpoint </summary>
+        [XmlIgnore]
+        [IgnoreDataMember]
         public bool HasVerbMapping
         {
             get { return ((GetMapping != null) || (PostMapping != null) || (PutMapping != null) || (DeleteMapping != null)); }
@@ -118,7 +137,9 @@ namespace SobekCM.Engine_Library.Microservices
         /// <summary> Get a single verb mapping, by HTTP verb/method  </summary>
         /// <param name="Method"> Method, as upper-case string (i.e., 'DELETE', 'GET', 'POST', 'PUT', etc..)</param>
         /// <returns> Matching verb mapping, or NULL </returns>
-        public Microservice_VerbMapping this[string Method]
+        [XmlIgnore]
+        [IgnoreDataMember]
+        public Engine_VerbMapping this[string Method]
         {
             get
             {
@@ -147,16 +168,18 @@ namespace SobekCM.Engine_Library.Microservices
         }
 
         /// <summary> Get the list of all verb mappings included in this endpoint </summary>
-        public List<Microservice_VerbMapping> AllVerbMappings
+        [XmlIgnore]
+        [IgnoreDataMember]
+        public List<Engine_VerbMapping> AllVerbMappings
         {
             get
             {
                 // Most common case
                 if ((GetMapping != null) && (PostMapping == null) && (PutMapping == null) && (DeleteMapping == null))
-                    return new List<Microservice_VerbMapping> {GetMapping};
+                    return new List<Engine_VerbMapping> {GetMapping};
 
                 // Build the list 
-                List<Microservice_VerbMapping> returnValue = new List<Microservice_VerbMapping>();
+                List<Engine_VerbMapping> returnValue = new List<Engine_VerbMapping>();
                 if (GetMapping != null) returnValue.Add(GetMapping);
                 if (PostMapping != null) returnValue.Add(PostMapping);
                 if (PutMapping != null) returnValue.Add(PutMapping);

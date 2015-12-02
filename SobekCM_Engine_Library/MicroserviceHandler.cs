@@ -8,7 +8,7 @@ using System.Text;
 using System.Web;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
-using SobekCM.Engine_Library.Microservices;
+using SobekCM.Core.Configuration.Engine;
 
 #endregion
 
@@ -17,7 +17,7 @@ namespace SobekCM.Engine_Library
     /// <summary> Handler is used to handle any incoming requests for a microservice exposed by the engine </summary>
     public class MicroserviceHandler : IHttpHandler
     {
-        private Microservice_Server_Configuration microserviceConfig;
+        private Engine_Server_Configuration microserviceConfig;
         
         /// <summary> Processes the request </summary>
         /// <param name="Context">The context for the current request </param>
@@ -37,12 +37,12 @@ namespace SobekCM.Engine_Library
                     if (File.Exists(user_path))
                     {
                         string[] config_paths = {default_path, user_path};
-                        microserviceConfig = Microservice_Server_Config_Reader.Read_Config(config_paths);
+                        microserviceConfig = Engine_Server_Config_Reader.Read_Config(config_paths);
                         
                     }
                     else
                     {
-                        microserviceConfig = Microservice_Server_Config_Reader.Read_Config(default_path);
+                        microserviceConfig = Engine_Server_Config_Reader.Read_Config(default_path);
                     }
                     
                 }
@@ -62,7 +62,7 @@ namespace SobekCM.Engine_Library
                 Context.Response.TrySkipIisCustomErrors = true;
 
                 // Get any matching endpoint configuration
-                Microservice_Endpoint endpoint = microserviceConfig.Get_Endpoint(paths);
+                Engine_Endpoint endpoint = microserviceConfig.Get_Endpoint(paths);
                 if (endpoint == null)
                 {
                     Context.Response.ContentType = "text/plain";
@@ -82,7 +82,7 @@ namespace SobekCM.Engine_Library
                     }
 
                     // Get the specific verb mapping
-                    Microservice_VerbMapping verbMapping = endpoint[method];
+                    Engine_VerbMapping verbMapping = endpoint[method];
 
                     // Ensure this is allowed in the range
                     string requestIp = Context.Request.UserHostAddress;

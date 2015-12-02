@@ -7,34 +7,34 @@ using System.Xml;
 
 #endregion
 
-namespace SobekCM.Engine_Library.Microservices
+namespace SobekCM.Core.Configuration.Engine
 {
     /// <summary> Static class is used to read the configuration file defining microservice endpoints </summary>
-    public static class Microservice_Server_Config_Reader
+    public static class Engine_Server_Config_Reader
     {
         /// <summary> Static class is used to read the configuration file defining microservice endpoints </summary>
         /// <param name="ConfigFile"> Path and name of the configuration XML file to read </param>
         /// <returns> Fully configured microservices configuration object </returns>
-        public static Microservice_Server_Configuration Read_Config(string ConfigFile)
+        public static Engine_Server_Configuration Read_Config(string ConfigFile)
         {
-            Microservice_Server_Configuration returnValue = new Microservice_Server_Configuration();
+            Engine_Server_Configuration returnValue = new Engine_Server_Configuration();
 
             // Collections used to hold the objects read from the XML before they are all connected (due to references 
             // within the XML file to other portions )
-            Dictionary<string, Microservice_Component> components = new Dictionary<string, Microservice_Component>();
-            Dictionary<string, Microservice_RestrictionRange> ranges = new Dictionary<string, Microservice_RestrictionRange>();
-            List<Microservice_Endpoint> allEndpoints = new List<Microservice_Endpoint>();
-            Dictionary<Microservice_VerbMapping, string> endpointToComponentDictionary = new Dictionary<Microservice_VerbMapping, string>();
-            Dictionary<Microservice_VerbMapping, string> endpointToRestrictionDictionary = new Dictionary<Microservice_VerbMapping, string>();
+            Dictionary<string, Engine_Component> components = new Dictionary<string, Engine_Component>();
+            Dictionary<string, Engine_RestrictionRange> ranges = new Dictionary<string, Engine_RestrictionRange>();
+            List<Engine_Endpoint> allEndpoints = new List<Engine_Endpoint>();
+            Dictionary<Engine_VerbMapping, string> endpointToComponentDictionary = new Dictionary<Engine_VerbMapping, string>();
+            Dictionary<Engine_VerbMapping, string> endpointToRestrictionDictionary = new Dictionary<Engine_VerbMapping, string>();
 
             // Read this file
             read_engine_file(ConfigFile, returnValue, allEndpoints, endpointToComponentDictionary, endpointToRestrictionDictionary, components, ranges);
 
             // Now that everything has been read here, connect the objects together
-            foreach (Microservice_Endpoint endpoint in allEndpoints)
+            foreach (Engine_Endpoint endpoint in allEndpoints)
             {
                 // Step through each applicable verb --> method mapping ( i.e., GET, POST, PUT, and DELETE )
-                foreach (Microservice_VerbMapping verbmapping in endpoint.AllVerbMappings)
+                foreach (Engine_VerbMapping verbmapping in endpoint.AllVerbMappings)
                 {
                     // Connect the component to the endpoint
                     string componentid = endpointToComponentDictionary[verbmapping];
@@ -52,9 +52,9 @@ namespace SobekCM.Engine_Library.Microservices
                         {
                             if (ranges.ContainsKey(thisRestriction))
                             {
-                                Microservice_RestrictionRange rangeObj = ranges[thisRestriction];
+                                Engine_RestrictionRange rangeObj = ranges[thisRestriction];
                                 if (verbmapping.RestrictionRanges == null)
-                                    verbmapping.RestrictionRanges = new List<Microservice_RestrictionRange>();
+                                    verbmapping.RestrictionRanges = new List<Engine_RestrictionRange>();
                                 verbmapping.RestrictionRanges.Add(rangeObj);
                             }
                         }
@@ -68,17 +68,17 @@ namespace SobekCM.Engine_Library.Microservices
         /// <summary> Static class is used to read the configuration file defining microservice endpoints </summary>
         /// <param name="ConfigFiles"> Path and name of the configuration XML file to read </param>
         /// <returns> Fully configured microservices configuration object </returns>
-        public static Microservice_Server_Configuration Read_Config(string[] ConfigFiles)
+        public static Engine_Server_Configuration Read_Config(string[] ConfigFiles)
         {
-            Microservice_Server_Configuration returnValue = new Microservice_Server_Configuration();
+            Engine_Server_Configuration returnValue = new Engine_Server_Configuration();
 
             // Collections used to hold the objects read from the XML before they are all connected (due to references 
             // within the XML file to other portions )
-            Dictionary<string, Microservice_Component> components = new Dictionary<string, Microservice_Component>();
-            Dictionary<string, Microservice_RestrictionRange> ranges = new Dictionary<string, Microservice_RestrictionRange>();
-            List<Microservice_Endpoint> allEndpoints = new List<Microservice_Endpoint>();
-            Dictionary<Microservice_VerbMapping, string> endpointToComponentDictionary = new Dictionary<Microservice_VerbMapping, string>();
-            Dictionary<Microservice_VerbMapping, string> endpointToRestrictionDictionary = new Dictionary<Microservice_VerbMapping, string>();
+            Dictionary<string, Engine_Component> components = new Dictionary<string, Engine_Component>();
+            Dictionary<string, Engine_RestrictionRange> ranges = new Dictionary<string, Engine_RestrictionRange>();
+            List<Engine_Endpoint> allEndpoints = new List<Engine_Endpoint>();
+            Dictionary<Engine_VerbMapping, string> endpointToComponentDictionary = new Dictionary<Engine_VerbMapping, string>();
+            Dictionary<Engine_VerbMapping, string> endpointToRestrictionDictionary = new Dictionary<Engine_VerbMapping, string>();
 
             // Read these files
             foreach (string configFile in ConfigFiles)
@@ -87,10 +87,10 @@ namespace SobekCM.Engine_Library.Microservices
             }
 
             // Now that everything has been read here, connect the objects together
-            foreach (Microservice_Endpoint endpoint in allEndpoints)
+            foreach (Engine_Endpoint endpoint in allEndpoints)
             {
                 // Step through each applicable verb --> method mapping ( i.e., GET, POST, PUT, and DELETE )
-                foreach (Microservice_VerbMapping verbmapping in endpoint.AllVerbMappings)
+                foreach (Engine_VerbMapping verbmapping in endpoint.AllVerbMappings)
                 {
                     // Connect the component to the endpoint
                     string componentid = endpointToComponentDictionary[verbmapping];
@@ -108,9 +108,9 @@ namespace SobekCM.Engine_Library.Microservices
                         {
                             if (ranges.ContainsKey(thisRestriction))
                             {
-                                Microservice_RestrictionRange rangeObj = ranges[thisRestriction];
+                                Engine_RestrictionRange rangeObj = ranges[thisRestriction];
                                 if (verbmapping.RestrictionRanges == null)
-                                    verbmapping.RestrictionRanges = new List<Microservice_RestrictionRange>();
+                                    verbmapping.RestrictionRanges = new List<Engine_RestrictionRange>();
                                 verbmapping.RestrictionRanges.Add(rangeObj);
                             }
                         }
@@ -121,7 +121,7 @@ namespace SobekCM.Engine_Library.Microservices
             return returnValue;
         }
 
-        private static void read_engine_file(string ConfigFile, Microservice_Server_Configuration Config, List<Microservice_Endpoint> AllEndpoints, Dictionary<Microservice_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Microservice_VerbMapping, string> EndpointToRestrictionDictionary, Dictionary<string, Microservice_Component> Components, Dictionary<string, Microservice_RestrictionRange> Ranges)
+        private static void read_engine_file(string ConfigFile, Engine_Server_Configuration Config, List<Engine_Endpoint> AllEndpoints, Dictionary<Engine_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Engine_VerbMapping, string> EndpointToRestrictionDictionary, Dictionary<string, Engine_Component> Components, Dictionary<string, Engine_RestrictionRange> Ranges)
         {
             // Streams used for reading
             Stream readerStream = null;
@@ -178,7 +178,7 @@ namespace SobekCM.Engine_Library.Microservices
             }
         }
 
-        private static void read_engine_details(XmlReader ReaderXml, Microservice_Server_Configuration Config, List<Microservice_Endpoint> AllEndpoints, Dictionary<Microservice_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Microservice_VerbMapping, string> EndpointToRestrictionDictionary, Dictionary<string, Microservice_Component> Components, Dictionary<string, Microservice_RestrictionRange> Ranges)
+        private static void read_engine_details(XmlReader ReaderXml, Engine_Server_Configuration Config, List<Engine_Endpoint> AllEndpoints, Dictionary<Engine_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Engine_VerbMapping, string> EndpointToRestrictionDictionary, Dictionary<string, Engine_Component> Components, Dictionary<string, Engine_RestrictionRange> Ranges)
         {
             // Just step through the subtree of this
             while (ReaderXml.Read())
@@ -203,7 +203,7 @@ namespace SobekCM.Engine_Library.Microservices
             }
         }
 
-        private static void read_microservices_details_mapping(XmlReader ReaderXml, Microservice_Server_Configuration Config, List<Microservice_Endpoint> AllEndpoints, Dictionary<Microservice_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Microservice_VerbMapping, string> EndpointToRestrictionDictionary, Microservice_Path ParentSegment)
+        private static void read_microservices_details_mapping(XmlReader ReaderXml, Engine_Server_Configuration Config, List<Engine_Endpoint> AllEndpoints, Dictionary<Engine_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Engine_VerbMapping, string> EndpointToRestrictionDictionary, Engine_Path ParentSegment)
         {
             while (ReaderXml.Read())
             {
@@ -226,7 +226,7 @@ namespace SobekCM.Engine_Library.Microservices
                         case "path":
                             if (ReaderXml.MoveToAttribute("Segment"))
                             {
-                                Microservice_Path path;
+                                Engine_Path path;
                                 string segment = ReaderXml.Value.Trim();
 
                                 if (ParentSegment == null)
@@ -235,14 +235,14 @@ namespace SobekCM.Engine_Library.Microservices
                                         path = Config.RootPaths[segment.ToLower()];
                                     else
                                     {
-                                        path = new Microservice_Path { Segment = segment };
+                                        path = new Engine_Path { Segment = segment };
                                         Config.RootPaths[segment.ToLower()] = path;
                                     }
                                 }
                                 else
                                 {
                                     if (ParentSegment.Children == null)
-                                        ParentSegment.Children = new Dictionary<string, Microservice_Path>(StringComparer.OrdinalIgnoreCase);
+                                        ParentSegment.Children = new Dictionary<string, Engine_Path>(StringComparer.OrdinalIgnoreCase);
 
                                     if (ParentSegment.Children.ContainsKey(segment.ToLower()))
                                     {
@@ -250,7 +250,7 @@ namespace SobekCM.Engine_Library.Microservices
                                     }
                                     else
                                     {
-                                        path = new Microservice_Path {Segment = segment};
+                                        path = new Engine_Path {Segment = segment};
                                         ParentSegment.Children[path.Segment] = path;
                                     }
                                     
@@ -269,7 +269,7 @@ namespace SobekCM.Engine_Library.Microservices
 
                             // Read the top-endpoint information, before getting to each verb mapping
                             bool disabled_at_top = false;
-                            Microservice_Endpoint endpoint = new Microservice_Endpoint();
+                            Engine_Endpoint endpoint = new Engine_Endpoint();
                             if (ReaderXml.MoveToAttribute("Segment"))
                                 endpoint.Segment = ReaderXml.Value.Trim();
                             if ((ReaderXml.MoveToAttribute("Enabled")) && (String.Compare(ReaderXml.Value.Trim(), "false", StringComparison.OrdinalIgnoreCase) == 0))
@@ -288,7 +288,7 @@ namespace SobekCM.Engine_Library.Microservices
                                 {
                                     // Add this endpoint
                                     if (ParentSegment.Children == null)
-                                        ParentSegment.Children = new Dictionary<string, Microservice_Path>();
+                                        ParentSegment.Children = new Dictionary<string, Engine_Path>();
                                     ParentSegment.Children[endpoint.Segment] = endpoint;
                                     AllEndpoints.Add(endpoint);
                                 }
@@ -303,7 +303,7 @@ namespace SobekCM.Engine_Library.Microservices
             }
         }
 
-        private static void read_microservices_complex_endpoint_details(XmlReader ReaderXml, Dictionary<Microservice_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Microservice_VerbMapping, string> EndpointToRestrictionDictionary, Microservice_Endpoint Endpoint, bool DisabledAtTop )
+        private static void read_microservices_complex_endpoint_details(XmlReader ReaderXml, Dictionary<Engine_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Engine_VerbMapping, string> EndpointToRestrictionDictionary, Engine_Endpoint Endpoint, bool DisabledAtTop )
         {
             while (ReaderXml.Read())
             {
@@ -338,7 +338,7 @@ namespace SobekCM.Engine_Library.Microservices
                             if (verb != Microservice_Endpoint_RequestType_Enum.ERROR)
                             {
                                 // Build the verb mapping
-                                Microservice_VerbMapping verbMapping = new Microservice_VerbMapping(null, !DisabledAtTop, Microservice_Endpoint_Protocol_Enum.JSON, verb);
+                                Engine_VerbMapping verbMapping = new Engine_VerbMapping(null, !DisabledAtTop, Microservice_Endpoint_Protocol_Enum.JSON, verb);
                                 if (ReaderXml.MoveToAttribute("Method"))
                                     verbMapping.Method = ReaderXml.Value.Trim();
                                 if ((!DisabledAtTop) && (ReaderXml.MoveToAttribute("Enabled")) && (String.Compare(ReaderXml.Value.Trim(), "false", StringComparison.OrdinalIgnoreCase) == 0))
@@ -416,9 +416,9 @@ namespace SobekCM.Engine_Library.Microservices
             }
         }
 
-        private static void read_microservices_simple_endpoint_details(XmlReader ReaderXml, List<Microservice_Endpoint> AllEndpoints, Dictionary<Microservice_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Microservice_VerbMapping, string> EndpointToRestrictionDictionary, Microservice_Path ParentSegment)
+        private static void read_microservices_simple_endpoint_details(XmlReader ReaderXml, List<Engine_Endpoint> AllEndpoints, Dictionary<Engine_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Engine_VerbMapping, string> EndpointToRestrictionDictionary, Engine_Path ParentSegment)
         {
-            Microservice_Endpoint endpoint = new Microservice_Endpoint();
+            Engine_Endpoint endpoint = new Engine_Endpoint();
             string componentid = String.Empty;
             string restrictionid = String.Empty;
             string method = String.Empty;
@@ -476,19 +476,19 @@ namespace SobekCM.Engine_Library.Microservices
                 {
                     // Add this endpoint
                     if (ParentSegment.Children == null)
-                        ParentSegment.Children = new Dictionary<string, Microservice_Path>();
+                        ParentSegment.Children = new Dictionary<string, Engine_Path>();
                     ParentSegment.Children[endpoint.Segment] = endpoint;
                     AllEndpoints.Add(endpoint);
 
                     // Add the verb mapping defaulted to GET
-                    endpoint.GetMapping = new Microservice_VerbMapping(method, enabled, protocol, Microservice_Endpoint_RequestType_Enum.GET);
+                    endpoint.GetMapping = new Engine_VerbMapping(method, enabled, protocol, Microservice_Endpoint_RequestType_Enum.GET);
                     EndpointToComponentDictionary[endpoint.GetMapping] = componentid;
                     EndpointToRestrictionDictionary[endpoint.GetMapping] = restrictionid;
                 }
             }
         }
 
-        private static void read_microservices_details_components(XmlReader ReaderXml, Microservice_Server_Configuration Config, Dictionary<string, Microservice_Component> Components)
+        private static void read_microservices_details_components(XmlReader ReaderXml, Engine_Server_Configuration Config, Dictionary<string, Engine_Component> Components)
         {
             while (ReaderXml.Read())
             {
@@ -498,7 +498,7 @@ namespace SobekCM.Engine_Library.Microservices
                     {
                         case "component":
                             string Namespace = String.Empty;
-                            Microservice_Component component = new Microservice_Component();
+                            Engine_Component component = new Engine_Component();
                             if (ReaderXml.MoveToAttribute("ID"))
                                 component.ID = ReaderXml.Value.Trim();
                             if (ReaderXml.MoveToAttribute("Assembly"))
@@ -527,9 +527,9 @@ namespace SobekCM.Engine_Library.Microservices
             }
         }
 
-        private static void read_microservices_details_restrictionranges(XmlReader ReaderXml, Microservice_Server_Configuration Config, Dictionary<string, Microservice_RestrictionRange> Ranges)
+        private static void read_microservices_details_restrictionranges(XmlReader ReaderXml, Engine_Server_Configuration Config, Dictionary<string, Engine_RestrictionRange> Ranges)
         {
-            Microservice_RestrictionRange currentRange = null;
+            Engine_RestrictionRange currentRange = null;
 
             while (ReaderXml.Read())
             {
@@ -548,7 +548,7 @@ namespace SobekCM.Engine_Library.Microservices
                                 currentRange = null;
 
                                 // Look for a matching range
-                                foreach (Microservice_RestrictionRange range in Config.RestrictionRanges)
+                                foreach (Engine_RestrictionRange range in Config.RestrictionRanges)
                                 {
                                     if (range.ID == rangeId)
                                     {
@@ -560,7 +560,7 @@ namespace SobekCM.Engine_Library.Microservices
                                 // If no range, create the new one
                                 if (currentRange == null)
                                 {
-                                    currentRange = new Microservice_RestrictionRange {ID = rangeId};
+                                    currentRange = new Engine_RestrictionRange {ID = rangeId};
                                 }
 
                                 if (ReaderXml.MoveToAttribute("Label"))
@@ -581,7 +581,7 @@ namespace SobekCM.Engine_Library.Microservices
                         case "iprange":
                             if (currentRange != null)
                             {
-                                Microservice_IpRange singleIpRange = new Microservice_IpRange();
+                                Engine_IpRange singleIpRange = new Engine_IpRange();
                                 if (ReaderXml.MoveToAttribute("Label"))
                                     singleIpRange.Label = ReaderXml.Value.Trim();
                                 if (ReaderXml.MoveToAttribute("Start"))

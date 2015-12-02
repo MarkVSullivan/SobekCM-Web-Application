@@ -141,14 +141,6 @@
     <Compile Include="JSON Client Helpers\UploadedFileFolderInfo.cs" />
     <Compile Include="MicroserviceHandler.cs" />
     <Compile Include="MicroserviceRewriter.cs" />
-    <Compile Include="Microservices\Microservice_Server_Configuration.cs" />
-    <Compile Include="Microservices\Microservice_Server_Config_Reader.cs" />
-    <Compile Include="Microservices\Microservice_Component.cs" />
-    <Compile Include="Microservices\Microservice_Endpoint.cs" />
-    <Compile Include="Microservices\Microservice_IpRange.cs" />
-    <Compile Include="Microservices\Microservice_Path.cs" />
-    <Compile Include="Microservices\Microservice_RestrictionRange.cs" />
-    <Compile Include="Microservices\Microservice_VerbMapping.cs" />
     <Compile Include="Navigation\QueryString_Analyzer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\Builder_Settings_Builder.cs" />

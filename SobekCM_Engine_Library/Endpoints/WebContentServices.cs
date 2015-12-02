@@ -22,7 +22,7 @@ using SobekCM.Core.WebContent.Single;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.JSON_Client_Helpers;
-using SobekCM.Engine_Library.Microservices;
+using SobekCM.Core.Configuration.Engine;
 using SobekCM.Tools;
 using SolrNet.DSL;
 
