@@ -23,7 +23,7 @@ namespace SobekCM.Core.Configuration.Engine
             // within the XML file to other portions )
             Dictionary<string, Engine_Component> components = new Dictionary<string, Engine_Component>();
             Dictionary<string, Engine_RestrictionRange> ranges = new Dictionary<string, Engine_RestrictionRange>();
-            List<Engine_Endpoint> allEndpoints = new List<Engine_Endpoint>();
+            List<Engine_Path_Endpoint> allEndpoints = new List<Engine_Path_Endpoint>();
             Dictionary<Engine_VerbMapping, string> endpointToComponentDictionary = new Dictionary<Engine_VerbMapping, string>();
             Dictionary<Engine_VerbMapping, string> endpointToRestrictionDictionary = new Dictionary<Engine_VerbMapping, string>();
 
@@ -31,7 +31,7 @@ namespace SobekCM.Core.Configuration.Engine
             read_engine_file(ConfigFile, returnValue, allEndpoints, endpointToComponentDictionary, endpointToRestrictionDictionary, components, ranges);
 
             // Now that everything has been read here, connect the objects together
-            foreach (Engine_Endpoint endpoint in allEndpoints)
+            foreach (Engine_Path_Endpoint endpoint in allEndpoints)
             {
                 // Step through each applicable verb --> method mapping ( i.e., GET, POST, PUT, and DELETE )
                 foreach (Engine_VerbMapping verbmapping in endpoint.AllVerbMappings)
@@ -76,7 +76,7 @@ namespace SobekCM.Core.Configuration.Engine
             // within the XML file to other portions )
             Dictionary<string, Engine_Component> components = new Dictionary<string, Engine_Component>();
             Dictionary<string, Engine_RestrictionRange> ranges = new Dictionary<string, Engine_RestrictionRange>();
-            List<Engine_Endpoint> allEndpoints = new List<Engine_Endpoint>();
+            List<Engine_Path_Endpoint> allEndpoints = new List<Engine_Path_Endpoint>();
             Dictionary<Engine_VerbMapping, string> endpointToComponentDictionary = new Dictionary<Engine_VerbMapping, string>();
             Dictionary<Engine_VerbMapping, string> endpointToRestrictionDictionary = new Dictionary<Engine_VerbMapping, string>();
 
@@ -87,7 +87,7 @@ namespace SobekCM.Core.Configuration.Engine
             }
 
             // Now that everything has been read here, connect the objects together
-            foreach (Engine_Endpoint endpoint in allEndpoints)
+            foreach (Engine_Path_Endpoint endpoint in allEndpoints)
             {
                 // Step through each applicable verb --> method mapping ( i.e., GET, POST, PUT, and DELETE )
                 foreach (Engine_VerbMapping verbmapping in endpoint.AllVerbMappings)
@@ -121,7 +121,7 @@ namespace SobekCM.Core.Configuration.Engine
             return returnValue;
         }
 
-        private static void read_engine_file(string ConfigFile, Engine_Server_Configuration Config, List<Engine_Endpoint> AllEndpoints, Dictionary<Engine_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Engine_VerbMapping, string> EndpointToRestrictionDictionary, Dictionary<string, Engine_Component> Components, Dictionary<string, Engine_RestrictionRange> Ranges)
+        private static void read_engine_file(string ConfigFile, Engine_Server_Configuration Config, List<Engine_Path_Endpoint> AllEndpoints, Dictionary<Engine_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Engine_VerbMapping, string> EndpointToRestrictionDictionary, Dictionary<string, Engine_Component> Components, Dictionary<string, Engine_RestrictionRange> Ranges)
         {
             // Streams used for reading
             Stream readerStream = null;
@@ -178,7 +178,7 @@ namespace SobekCM.Core.Configuration.Engine
             }
         }
 
-        private static void read_engine_details(XmlReader ReaderXml, Engine_Server_Configuration Config, List<Engine_Endpoint> AllEndpoints, Dictionary<Engine_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Engine_VerbMapping, string> EndpointToRestrictionDictionary, Dictionary<string, Engine_Component> Components, Dictionary<string, Engine_RestrictionRange> Ranges)
+        private static void read_engine_details(XmlReader ReaderXml, Engine_Server_Configuration Config, List<Engine_Path_Endpoint> AllEndpoints, Dictionary<Engine_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Engine_VerbMapping, string> EndpointToRestrictionDictionary, Dictionary<string, Engine_Component> Components, Dictionary<string, Engine_RestrictionRange> Ranges)
         {
             // Just step through the subtree of this
             while (ReaderXml.Read())
@@ -203,7 +203,7 @@ namespace SobekCM.Core.Configuration.Engine
             }
         }
 
-        private static void read_microservices_details_mapping(XmlReader ReaderXml, Engine_Server_Configuration Config, List<Engine_Endpoint> AllEndpoints, Dictionary<Engine_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Engine_VerbMapping, string> EndpointToRestrictionDictionary, Engine_Path ParentSegment)
+        private static void read_microservices_details_mapping(XmlReader ReaderXml, Engine_Server_Configuration Config, List<Engine_Path_Endpoint> AllEndpoints, Dictionary<Engine_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Engine_VerbMapping, string> EndpointToRestrictionDictionary, Engine_Path_Endpoint ParentSegment)
         {
             while (ReaderXml.Read())
             {
@@ -226,32 +226,32 @@ namespace SobekCM.Core.Configuration.Engine
                         case "path":
                             if (ReaderXml.MoveToAttribute("Segment"))
                             {
-                                Engine_Path path;
+                                Engine_Path_Endpoint path;
                                 string segment = ReaderXml.Value.Trim();
 
                                 if (ParentSegment == null)
                                 {
-                                    if (Config.RootPaths.ContainsKey(segment.ToLower()))
-                                        path = Config.RootPaths[segment.ToLower()];
+                                    if (Config.ContainsRootKey(segment.ToLower()))
+                                        path = Config.GetRoot(segment.ToLower());
                                     else
                                     {
-                                        path = new Engine_Path { Segment = segment };
-                                        Config.RootPaths[segment.ToLower()] = path;
+                                        path = new Engine_Path_Endpoint {Segment = segment};
+                                        Config.AddRoot(segment.ToLower(), path);
                                     }
                                 }
                                 else
                                 {
                                     if (ParentSegment.Children == null)
-                                        ParentSegment.Children = new Dictionary<string, Engine_Path>(StringComparer.OrdinalIgnoreCase);
+                                        ParentSegment.Children = new List<Engine_Path_Endpoint>();
 
-                                    if (ParentSegment.Children.ContainsKey(segment.ToLower()))
+                                    if (ParentSegment.ContainsChildKey(segment.ToLower()))
                                     {
-                                        path = ParentSegment.Children[segment.ToLower()];
+                                        path = ParentSegment.GetChild(segment.ToLower());
                                     }
                                     else
                                     {
-                                        path = new Engine_Path {Segment = segment};
-                                        ParentSegment.Children[path.Segment] = path;
+                                        path = new Engine_Path_Endpoint {Segment = segment};
+                                        ParentSegment.AddChild(path.Segment, path);
                                     }
                                     
                                 }
@@ -269,7 +269,7 @@ namespace SobekCM.Core.Configuration.Engine
 
                             // Read the top-endpoint information, before getting to each verb mapping
                             bool disabled_at_top = false;
-                            Engine_Endpoint endpoint = new Engine_Endpoint();
+                            Engine_Path_Endpoint endpoint = new Engine_Path_Endpoint();
                             if (ReaderXml.MoveToAttribute("Segment"))
                                 endpoint.Segment = ReaderXml.Value.Trim();
                             if ((ReaderXml.MoveToAttribute("Enabled")) && (String.Compare(ReaderXml.Value.Trim(), "false", StringComparison.OrdinalIgnoreCase) == 0))
@@ -287,9 +287,7 @@ namespace SobekCM.Core.Configuration.Engine
                                 if (ParentSegment != null)
                                 {
                                     // Add this endpoint
-                                    if (ParentSegment.Children == null)
-                                        ParentSegment.Children = new Dictionary<string, Engine_Path>();
-                                    ParentSegment.Children[endpoint.Segment] = endpoint;
+                                    ParentSegment.AddChild(endpoint.Segment, endpoint);
                                     AllEndpoints.Add(endpoint);
                                 }
                             }
@@ -303,7 +301,7 @@ namespace SobekCM.Core.Configuration.Engine
             }
         }
 
-        private static void read_microservices_complex_endpoint_details(XmlReader ReaderXml, Dictionary<Engine_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Engine_VerbMapping, string> EndpointToRestrictionDictionary, Engine_Endpoint Endpoint, bool DisabledAtTop )
+        private static void read_microservices_complex_endpoint_details(XmlReader ReaderXml, Dictionary<Engine_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Engine_VerbMapping, string> EndpointToRestrictionDictionary, Engine_Path_Endpoint Endpoint, bool DisabledAtTop)
         {
             while (ReaderXml.Read())
             {
@@ -416,9 +414,9 @@ namespace SobekCM.Core.Configuration.Engine
             }
         }
 
-        private static void read_microservices_simple_endpoint_details(XmlReader ReaderXml, List<Engine_Endpoint> AllEndpoints, Dictionary<Engine_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Engine_VerbMapping, string> EndpointToRestrictionDictionary, Engine_Path ParentSegment)
+        private static void read_microservices_simple_endpoint_details(XmlReader ReaderXml, List<Engine_Path_Endpoint> AllEndpoints, Dictionary<Engine_VerbMapping, string> EndpointToComponentDictionary, Dictionary<Engine_VerbMapping, string> EndpointToRestrictionDictionary, Engine_Path_Endpoint ParentSegment)
         {
-            Engine_Endpoint endpoint = new Engine_Endpoint();
+            Engine_Path_Endpoint endpoint = new Engine_Path_Endpoint();
             string componentid = String.Empty;
             string restrictionid = String.Empty;
             string method = String.Empty;
@@ -475,9 +473,7 @@ namespace SobekCM.Core.Configuration.Engine
                 if (ParentSegment != null)
                 {
                     // Add this endpoint
-                    if (ParentSegment.Children == null)
-                        ParentSegment.Children = new Dictionary<string, Engine_Path>();
-                    ParentSegment.Children[endpoint.Segment] = endpoint;
+                    ParentSegment.AddChild(endpoint.Segment, endpoint);
                     AllEndpoints.Add(endpoint);
 
                     // Add the verb mapping defaulted to GET

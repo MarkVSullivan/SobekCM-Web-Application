@@ -29,7 +29,7 @@ namespace SobekCM.Core.Configuration.Authentication
             AttributeMapping = new List<Shibboleth_Configuration_Mapping>();
 			attributeMappingDictionary = new Dictionary<string, User_Object_Attribute_Mapping_Enum>();
 			Constants = new List<Shibboleth_Configuration_Mapping>();
-			CanSubmitIndicators = new List<KeyValuePair<string, string>>();
+            CanSubmitIndicators = new List<StringKeyValuePair>();
 
 			UserIdentityAttribute = String.Empty;
 			ShibbolethURL = String.Empty;
@@ -90,16 +90,16 @@ namespace SobekCM.Core.Configuration.Authentication
 
         [DataMember(Name = "canSubmitIndicators", EmitDefaultValue = false)]
         [XmlArray("canSubmitIndicators")]
-        [XmlArrayItem("canSubmitIndicator", typeof(KeyValuePair<string, string>))]
+        [XmlArrayItem("canSubmitIndicator", typeof(StringKeyValuePair))]
         [ProtoMember(7)]
-        public List<KeyValuePair<string, string>> CanSubmitIndicators { get; private set; }
+        public List<StringKeyValuePair> CanSubmitIndicators { get; private set; }
 
         /// <summary> Add a new indicator that a new user established using this Shibboleth authenticaion system can submit items </summary>
         /// <param name="ServerVariable"> Server variable from the Shibboleth response </param>
         /// <param name="RequiredValue"> Value to match - if the value matches, then the new user should be granted submit rights </param>
         public void Add_CanSubmit_Indicator(string ServerVariable, string RequiredValue)
 	    {
-            CanSubmitIndicators.Add(new KeyValuePair<string, string>(ServerVariable, RequiredValue));
+            CanSubmitIndicators.Add(new StringKeyValuePair(ServerVariable, RequiredValue));
 	    }
 
         /// <summary> List of all the attribute mapping, where attributes returned in the Shibboleth
@@ -198,7 +198,7 @@ namespace SobekCM.Core.Configuration.Authentication
                 {
                     writer.WriteLine("\t\t\t<Logic>");
 
-                    foreach (KeyValuePair<string, string> canSubmitIndicator in CanSubmitIndicators)
+                    foreach (StringKeyValuePair canSubmitIndicator in CanSubmitIndicators)
                     {
                         writer.WriteLine("\t\t\t\t<CanSubmit ServerVariable=\"" + canSubmitIndicator.Key + "\" Value=\"" + canSubmitIndicator.Value + "\" />");
                     }

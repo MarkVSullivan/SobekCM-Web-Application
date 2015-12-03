@@ -62,7 +62,7 @@ namespace SobekCM.Engine_Library
                 Context.Response.TrySkipIisCustomErrors = true;
 
                 // Get any matching endpoint configuration
-                Engine_Endpoint endpoint = microserviceConfig.Get_Endpoint(paths);
+                Engine_Path_Endpoint endpoint = microserviceConfig.Get_Endpoint(paths);
                 if (endpoint == null)
                 {
                     Context.Response.ContentType = "text/plain";

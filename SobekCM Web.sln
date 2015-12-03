@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SobekCM_Engine_Library", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineAgnosticLayerDbAccess", "EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj", "{B481CE6E-05FD-4336-9524-64D057AAB107}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestReader", "TestReader\TestReader.csproj", "{D4FB9BAB-FA44-4330-9BEC-393E46B631CB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,12 @@ Global
 		{B481CE6E-05FD-4336-9524-64D057AAB107}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B481CE6E-05FD-4336-9524-64D057AAB107}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B481CE6E-05FD-4336-9524-64D057AAB107}.Release|x64.ActiveCfg = Release|Any CPU
+		{D4FB9BAB-FA44-4330-9BEC-393E46B631CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4FB9BAB-FA44-4330-9BEC-393E46B631CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4FB9BAB-FA44-4330-9BEC-393E46B631CB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D4FB9BAB-FA44-4330-9BEC-393E46B631CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4FB9BAB-FA44-4330-9BEC-393E46B631CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4FB9BAB-FA44-4330-9BEC-393E46B631CB}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

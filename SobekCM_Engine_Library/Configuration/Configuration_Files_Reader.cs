@@ -154,8 +154,8 @@ namespace SobekCM.Engine_Library.Configuration
                     {
                         switch (readerXml.Name.ToLower())
                         {
-                            case "shibboleth":
-                                read_shibb_details(readerXml.ReadSubtree(), ConfigObj);
+                            case "authentication":
+                                read_authentication_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
                             case "oai-pmh":
@@ -218,51 +218,71 @@ namespace SobekCM.Engine_Library.Configuration
 
         #region Section reads all the Shibboleth information
 
+        private static void read_authentication_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
+        {
+            // Ensure the config object exists
+            if (Config.MapEditor == null)
+                Config.MapEditor = new MapEditor_Configuration();
+
+
+            while (ReaderXml.Read())
+            {
+                // Only detect start elements.
+                if (ReaderXml.IsStartElement())
+                {
+                    // Get element name and switch on it.
+                    switch (ReaderXml.Name.ToLower())
+                    {
+                        case "shibboleth":
+                            // Ensure the object is there then
+                            if (Config.Authentication.Shibboleth == null)
+                                Config.Authentication.Shibboleth = new Shibboleth_Configuration();
+
+                            // Read the attributes
+                            if (ReaderXml.MoveToAttribute("UserIdentityAttribute"))
+                                Config.Authentication.Shibboleth.UserIdentityAttribute = ReaderXml.Value.Trim();
+
+                            if (ReaderXml.MoveToAttribute("URL"))
+                                Config.Authentication.Shibboleth.ShibbolethURL = ReaderXml.Value.Trim();
+
+                            if (ReaderXml.MoveToAttribute("Label"))
+                                Config.Authentication.Shibboleth.Label = ReaderXml.Value.Trim();
+
+                            if (ReaderXml.MoveToAttribute("Debug"))
+                            {
+                                if (String.Compare(ReaderXml.Value.Trim(), "true", StringComparison.OrdinalIgnoreCase) == 0)
+                                    Config.Authentication.Shibboleth.Debug = true;
+                            }
+
+                            if (ReaderXml.MoveToAttribute("Enabled"))
+                            {
+                                if (String.Compare(ReaderXml.Value.Trim(), "false", StringComparison.OrdinalIgnoreCase) == 0)
+                                    Config.Authentication.Shibboleth.Enabled = false;
+                            }
+                            ReaderXml.MoveToElement();
+                            read_shibb_details(ReaderXml.ReadSubtree(), Config);
+
+                            break;
+                    }
+                }
+            }
+        }
+
         private static void read_shibb_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
         {
-            // Ensure the object is there then
-            if (Config.Authentication.Shibboleth == null)
-                Config.Authentication.Shibboleth = new Shibboleth_Configuration();
-
-            // Read the attributes
-            if (ReaderXml.MoveToAttribute("UserIdentityAttribute"))
-                Config.Authentication.Shibboleth.UserIdentityAttribute = ReaderXml.Value.Trim();
-
-            if (ReaderXml.MoveToAttribute("URL"))
-                Config.Authentication.Shibboleth.ShibbolethURL = ReaderXml.Value.Trim();
-
-            if (ReaderXml.MoveToAttribute("Label"))
-                Config.Authentication.Shibboleth.Label = ReaderXml.Value.Trim();
-
-            if (ReaderXml.MoveToAttribute("Debug"))
+            while (ReaderXml.Read())
             {
-                if (String.Compare(ReaderXml.Value.Trim(), "true", StringComparison.OrdinalIgnoreCase) == 0)
-                    Config.Authentication.Shibboleth.Debug = true;
-            }
-
-            if (ReaderXml.MoveToAttribute("Enabled"))
-            {
-                if (String.Compare(ReaderXml.Value.Trim(), "false", StringComparison.OrdinalIgnoreCase) == 0)
-                    Config.Authentication.Shibboleth.Enabled = false;
-            }
-
-
-            // Just step through the subtree of this
-            ReaderXml.MoveToElement();
-            XmlReader subTreeReader = ReaderXml.ReadSubtree();
-            while (subTreeReader.Read())
-            {
-                if (subTreeReader.NodeType == XmlNodeType.Element)
+                if (ReaderXml.NodeType == XmlNodeType.Element)
                 {
-                    switch (subTreeReader.Name.ToLower())
+                    switch (ReaderXml.Name.ToLower())
                     {
                         case "mapping":
                             string serverVariable = null;
                             string userAttribute = null;
-                            if (subTreeReader.MoveToAttribute("ServerVariable"))
-                                serverVariable = subTreeReader.Value.Trim();
-                            if (subTreeReader.MoveToAttribute("UserAttribute"))
-                                userAttribute = subTreeReader.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("ServerVariable"))
+                                serverVariable = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("UserAttribute"))
+                                userAttribute = ReaderXml.Value.Trim();
                             if ((!String.IsNullOrEmpty(serverVariable)) && (!String.IsNullOrEmpty(userAttribute)))
                             {
                                 User_Object_Attribute_Mapping_Enum userAttrEnum = User_Object_Attribute_Mapping_Enum_Converter.ToEnum(userAttribute.ToUpper());
@@ -276,12 +296,12 @@ namespace SobekCM.Engine_Library.Configuration
                         case "constant":
                             string userAttribute2 = null;
                             string constantValue = null;
-                            if (subTreeReader.MoveToAttribute("UserAttribute"))
-                                userAttribute2 = subTreeReader.Value.Trim();
-                            if (!subTreeReader.IsEmptyElement)
+                            if (ReaderXml.MoveToAttribute("UserAttribute"))
+                                userAttribute2 = ReaderXml.Value.Trim();
+                            if (!ReaderXml.IsEmptyElement)
                             {
-                                subTreeReader.Read();
-                                constantValue = subTreeReader.Value.Trim();
+                                ReaderXml.Read();
+                                constantValue = ReaderXml.Value.Trim();
                             }
                             if ((!String.IsNullOrEmpty(userAttribute2)) && (!String.IsNullOrEmpty(constantValue)))
                             {
@@ -296,10 +316,10 @@ namespace SobekCM.Engine_Library.Configuration
                         case "cansubmit":
                             string serverVariable2 = null;
                             string requiredValue = null;
-                            if (subTreeReader.MoveToAttribute("ServerVariable"))
-                                serverVariable2 = subTreeReader.Value.Trim();
-                            if (subTreeReader.MoveToAttribute("Value"))
-                                requiredValue = subTreeReader.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("ServerVariable"))
+                                serverVariable2 = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("Value"))
+                                requiredValue = ReaderXml.Value.Trim();
                             if ((!String.IsNullOrEmpty(serverVariable2)) && (!String.IsNullOrEmpty(requiredValue)))
                             {
                                 Config.Authentication.Shibboleth.Add_CanSubmit_Indicator(serverVariable2, requiredValue);
@@ -1031,7 +1051,7 @@ namespace SobekCM.Engine_Library.Configuration
             }
         }
 
-        private static void read_microservices_details_mapping(XmlReader ReaderXml, Engine_Server_Configuration Config, Engine_Path ParentSegment )
+        private static void read_microservices_details_mapping(XmlReader ReaderXml, Engine_Server_Configuration Config, Engine_Path_Endpoint ParentSegment )
         {
             while (ReaderXml.Read())
             {
@@ -1054,32 +1074,29 @@ namespace SobekCM.Engine_Library.Configuration
                         case "path":
                             if (ReaderXml.MoveToAttribute("Segment"))
                             {
-                                Engine_Path path;
+                                Engine_Path_Endpoint path;
                                 string segment = ReaderXml.Value.Trim();
 
                                 if (ParentSegment == null)
                                 {
-                                    if (Config.RootPaths.ContainsKey(segment.ToLower()))
-                                        path = Config.RootPaths[segment.ToLower()];
+                                    if (Config.ContainsRootKey(segment.ToLower()))
+                                        path = Config.GetRoot(segment.ToLower());
                                     else
                                     {
-                                        path = new Engine_Path { Segment = segment };
-                                        Config.RootPaths[segment.ToLower()] = path;
+                                        path = new Engine_Path_Endpoint {Segment = segment};
+                                        Config.AddRoot(segment.ToLower(), path);
                                     }
                                 }
                                 else
                                 {
-                                    if (ParentSegment.Children == null)
-                                        ParentSegment.Children = new Dictionary<string, Engine_Path>(StringComparer.OrdinalIgnoreCase);
-
-                                    if (ParentSegment.Children.ContainsKey(segment.ToLower()))
+                                    if (ParentSegment.ContainsChildKey(segment.ToLower()))
                                     {
-                                        path = ParentSegment.Children[segment.ToLower()];
+                                        path = ParentSegment.GetChild(segment.ToLower());
                                     }
                                     else
                                     {
-                                        path = new Engine_Path { Segment = segment };
-                                        ParentSegment.Children[path.Segment] = path;
+                                        path = new Engine_Path_Endpoint { Segment = segment };
+                                        ParentSegment.AddChild(path.Segment, path );
                                     }
 
                                 }
@@ -1092,12 +1109,9 @@ namespace SobekCM.Engine_Library.Configuration
                             break;
 
                         case "complexendpoint":
-
-
-
                             // Read the top-endpoint information, before getting to each verb mapping
                             bool disabled_at_top = false;
-                            Engine_Endpoint endpoint = new Engine_Endpoint();
+                            Engine_Path_Endpoint endpoint = new Engine_Path_Endpoint();
                             if (ReaderXml.MoveToAttribute("Segment"))
                                 endpoint.Segment = ReaderXml.Value.Trim();
                             if ((ReaderXml.MoveToAttribute("Enabled")) && (String.Compare(ReaderXml.Value.Trim(), "false", StringComparison.OrdinalIgnoreCase) == 0))
@@ -1115,9 +1129,7 @@ namespace SobekCM.Engine_Library.Configuration
                                 if (ParentSegment != null)
                                 {
                                     // Add this endpoint
-                                    if (ParentSegment.Children == null)
-                                        ParentSegment.Children = new Dictionary<string, Engine_Path>();
-                                    ParentSegment.Children[endpoint.Segment] = endpoint;
+                                    ParentSegment.AddChild(endpoint.Segment, endpoint);
                                 }
                             }
                             break;
@@ -1130,7 +1142,7 @@ namespace SobekCM.Engine_Library.Configuration
             }
         }
 
-        private static void read_microservices_complex_endpoint_details(XmlReader ReaderXml, Engine_Endpoint Endpoint, bool DisabledAtTop)
+        private static void read_microservices_complex_endpoint_details(XmlReader ReaderXml, Engine_Path_Endpoint Endpoint, bool DisabledAtTop)
         {
             while (ReaderXml.Read())
             {
@@ -1201,8 +1213,6 @@ namespace SobekCM.Engine_Library.Configuration
                                 }
 
                                 // Get the mapping to componentid and restriction id
-                                string componentid = String.Empty;
-                                string restrictionid = String.Empty;
                                 if (ReaderXml.MoveToAttribute("ComponentID"))
                                     verbMapping.ComponentId = ReaderXml.Value.Trim();
                                 if (ReaderXml.MoveToAttribute("RestrictionRangeID"))
@@ -1212,7 +1222,7 @@ namespace SobekCM.Engine_Library.Configuration
 
 
                                 // If valid, add to this endpoint
-                                if ((componentid.Length > 0) && (!String.IsNullOrEmpty(verbMapping.Method)))
+                                if ((!String.IsNullOrEmpty(verbMapping.ComponentId)) && (!String.IsNullOrEmpty(verbMapping.Method)))
                                 {
                                     // Add the verb mapping to the right spot
                                     switch (verbMapping.RequestType)
@@ -1242,9 +1252,9 @@ namespace SobekCM.Engine_Library.Configuration
             }
         }
 
-        private static void read_microservices_simple_endpoint_details(XmlReader ReaderXml, Engine_Path ParentSegment)
+        private static void read_microservices_simple_endpoint_details(XmlReader ReaderXml, Engine_Path_Endpoint ParentSegment)
         {
-            Engine_Endpoint endpoint = new Engine_Endpoint();
+            Engine_Path_Endpoint endpoint = new Engine_Path_Endpoint();
             string componentid = String.Empty;
             string restrictionid = String.Empty;
             string method = String.Empty;
@@ -1301,9 +1311,7 @@ namespace SobekCM.Engine_Library.Configuration
                 if (ParentSegment != null)
                 {
                     // Add this endpoint
-                    if (ParentSegment.Children == null)
-                        ParentSegment.Children = new Dictionary<string, Engine_Path>();
-                    ParentSegment.Children[endpoint.Segment] = endpoint;
+                    ParentSegment.AddChild(endpoint.Segment, endpoint);
 
                     // Add the verb mapping defaulted to GET
                     endpoint.GetMapping = new Engine_VerbMapping(method, enabled, protocol, Microservice_Endpoint_RequestType_Enum.GET, componentid, restrictionid);

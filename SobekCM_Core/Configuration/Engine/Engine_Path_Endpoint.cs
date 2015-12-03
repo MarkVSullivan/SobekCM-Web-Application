@@ -2,13 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Reflection;
 using System.Runtime.Serialization;
-using System.Web;
+using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using ProtoBuf;
-using SobekCM.Tools.IpRangeUtilities;
 
 #endregion
 
@@ -61,41 +58,62 @@ namespace SobekCM.Core.Configuration.Engine
         XML
     }
 
-    /// <summary> Class defines an microservice endpoint within a collection of path or URI segments </summary>
+
+    /// <summary> Class represents a single segment of a microservice endpoint's URI, including all child segments or endpoints  </summary>
     [Serializable, DataContract, ProtoContract]
-    [XmlRoot("EngineEndpoint")]
-    public class Engine_Endpoint : Engine_Path
+    [XmlRoot("EnginePath")]
+    public class Engine_Path_Endpoint
     {
+        private Dictionary<string, Engine_Path_Endpoint> childDictionary;
+
+
+        /// <summary> Single portion of a URI specifying a microservice endpoint </summary>
+        [DataMember(Name = "segment")]
+        [XmlAttribute("segment")]
+        [ProtoMember(1)]
+        public string Segment { get; set; }
+
+        /// <summary> Flag indicates if this path actually defines a single endpoint </summary>
+        [DataMember(Name = "endpoint")]
+        [XmlAttribute("endpoint")]
+        [ProtoMember(2)]
+        public bool IsEndpoint { get; set; }
+
+        /// <summary> Collection of child segments or endpoints, indexed by the next segment of the URI </summary>
+        [DataMember(Name = "children", EmitDefaultValue = false)]
+        [XmlArray("endpoint")]
+        [XmlArrayItem("endpoint", typeof(Engine_Path_Endpoint))]
+        [ProtoMember(3)]
+        public List<Engine_Path_Endpoint> Children { get; set; }
+
         /// <summary> Mapping to an individual method and protocol for the GET HTTP verb </summary>
         [DataMember(Name = "getMapping", EmitDefaultValue = false)]
         [XmlElement("getMapping")]
-        [ProtoMember(10)]
+        [ProtoMember(4)]
         public Engine_VerbMapping GetMapping { get; set; }
 
         /// <summary> Mapping to an individual method and protocol for the DELETE HTTP verb </summary>
         [DataMember(Name = "deleteMapping", EmitDefaultValue = false)]
         [XmlElement("deleteMapping")]
-        [ProtoMember(11)]
+        [ProtoMember(5)]
         public Engine_VerbMapping DeleteMapping { get; set; }
 
         /// <summary> Mapping to an individual method and protocol for the POST HTTP verb </summary>
         [DataMember(Name = "postMapping", EmitDefaultValue = false)]
         [XmlElement("postMapping")]
-        [ProtoMember(12)]
+        [ProtoMember(6)]
         public Engine_VerbMapping PostMapping { get; set; }
 
         /// <summary> Mapping to an individual method and protocol for the PUT HTTP verb </summary>
         [DataMember(Name = "putMapping", EmitDefaultValue = false)]
         [XmlElement("putMapping")]
-        [ProtoMember(13)]
+        [ProtoMember(7)]
         public Engine_VerbMapping PutMapping { get; set; }
 
-
-        /// <summary> Flag indicates if this path actually defines a single endpoint </summary>
-        /// <remarks> This always returns 'TRUE' in this class </remarks>
-        public override bool IsEndpoint
+        /// <summary> Constructor for a new instance of the Engine_Path_Endpoint class </summary>
+        public Engine_Path_Endpoint()
         {
-            get { return true; }
+            childDictionary = new Dictionary<string, Engine_Path_Endpoint>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary> Returns flag if a C# method is mapped to the provided HTTP verb/method </summary>
@@ -176,7 +194,7 @@ namespace SobekCM.Core.Configuration.Engine
             {
                 // Most common case
                 if ((GetMapping != null) && (PostMapping == null) && (PutMapping == null) && (DeleteMapping == null))
-                    return new List<Engine_VerbMapping> {GetMapping};
+                    return new List<Engine_VerbMapping> { GetMapping };
 
                 // Build the list 
                 List<Engine_VerbMapping> returnValue = new List<Engine_VerbMapping>();
@@ -187,5 +205,52 @@ namespace SobekCM.Core.Configuration.Engine
                 return returnValue;
             }
         }
+
+        private void ensure_dictionary_built()
+        {
+            
+        }
+
+        public bool ContainsChildKey(string ChildSegment)
+        {
+            // Ensure the dictionary is built correctly
+            ensure_dictionary_built();
+
+            // check dictionary for key
+            return childDictionary.ContainsKey(ChildSegment);
+        }
+
+        public Engine_Path_Endpoint GetChild(string ChildSegment)
+        {
+            // Ensure the dictionary is built correctly
+            ensure_dictionary_built();
+
+            // If it exists, return it
+            if (childDictionary.ContainsKey(ChildSegment))
+                return childDictionary[ChildSegment];
+
+            return null;
+        }
+
+        public void AddChild(string ChildSegment, Engine_Path_Endpoint Child)
+        {
+            // Ensure the collection exists
+            if (Children == null)
+                Children = new List<Engine_Path_Endpoint>();
+
+            // Ensure the dictionary is built correctly
+            ensure_dictionary_built();
+
+            // Does an endpoint already exist here?
+            if (childDictionary.ContainsKey(ChildSegment))
+            {
+                Engine_Path_Endpoint matchingEndpoint = childDictionary[ChildSegment];
+                Children.Remove(matchingEndpoint);
+            }
+
+            childDictionary[ChildSegment] = Child;
+            Children.Add(Child);
+        }
+
     }
 }
