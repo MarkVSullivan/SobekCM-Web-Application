@@ -467,7 +467,7 @@ namespace SobekCM.Core.Configuration
         /// <summary> Flag indicates if this is the default profile </summary>
         [XmlIgnore]
         [IgnoreDataMember]
-        public bool Default_Profile { get; internal set; }
+        public bool Default_Profile { get; set; }
 
         private Dictionary<string, QualityControl_Division_Config> divisionTypeLookup;
 

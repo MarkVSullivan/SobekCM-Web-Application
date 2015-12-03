@@ -54,14 +54,14 @@ namespace SobekCM.Core.Configuration.OAIPMH
         [XmlArray("adminEmails")]
         [XmlArrayItem("email", typeof(string))]
         [ProtoMember(5)]
-        public List<string> Admin_Emails { get; private set; }
+        public List<string> Admin_Emails { get; set; }
 
         /// <summary> List of additional descriptions (fully encoded as XML) for display within the Identify response of the OAI-PMG protocol </summary>
         [DataMember(Name = "descriptions")]
         [XmlArray("descriptions")]
         [XmlArrayItem("description", typeof(string))]
         [ProtoMember(6)]
-        public List<string> Descriptions { get; private set;  }
+        public List<string> Descriptions { get; set;  }
 
         /// <summary> List of all the metadata formats available for this repository with pointers
         /// to the classes that create the OAI-PMH metadata for harvesting  </summary>
@@ -69,7 +69,7 @@ namespace SobekCM.Core.Configuration.OAIPMH
         [XmlArray("metadataFormats")]
         [XmlArrayItem("format", typeof(OAI_PMH_Metadata_Format))]
         [ProtoMember(7)]
-        public List<OAI_PMH_Metadata_Format> Metadata_Prefixes { get; private set; }
+        public List<OAI_PMH_Metadata_Format> Metadata_Prefixes { get; set; }
 
         /// <summary> Any error associated with reading the configuration file into this object </summary>
         [DataMember(Name = "error", EmitDefaultValue = false)]

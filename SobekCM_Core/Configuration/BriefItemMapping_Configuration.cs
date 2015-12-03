@@ -21,7 +21,7 @@ namespace SobekCM.Core.Configuration
         [DataMember(Name = "default")]
         [XmlAttribute("default")]
         [ProtoMember(1)]
-        public static string defaultSetName;
+        public string DefaultSetName;
 
         /// <summary> Collection of all the mapping sets </summary>
         [DataMember(Name = "mappingSets")]
@@ -50,7 +50,7 @@ namespace SobekCM.Core.Configuration
         [DataMember(Name = "setName")]
         [XmlAttribute("setName")]
         [ProtoMember(1)]
-        public static string SetName { get; set; }
+        public string SetName { get; set; }
 
         /// <summary> Collection of all the mappings to be used to convert from the SobekCM_Item
         /// object to a BriefItem object used by the item viewers </summary>

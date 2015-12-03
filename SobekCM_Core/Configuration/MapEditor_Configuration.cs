@@ -17,15 +17,10 @@ namespace SobekCM.Core.Configuration
     [XmlRoot("MapEditorConfig")]
     public class MapEditor_Configuration
     {
-        //assign config file
-        private string configFilePath = AppDomain.CurrentDomain.BaseDirectory + "/config/default/sobekcm_mapeditor.config";
-
         /// <summary> Constructor for a new instance of the MapEditor_Configuration class  </summary>
         public MapEditor_Configuration()
         {
             Collections = new List<MapEditor_Configuration_Collection>();
-            configFilePath = AppDomain.CurrentDomain.BaseDirectory + "/config/default/sobekcm_mapeditor.config";
-            Read_Settings(configFilePath);
         }
 
         /// <summary> List of map editor configuration collections </summary>
@@ -34,70 +29,6 @@ namespace SobekCM.Core.Configuration
         [XmlArrayItem("collection", typeof(MapEditor_Configuration_Collection))]
         [ProtoMember(1)]
         public List<MapEditor_Configuration_Collection> Collections { get; set; }
-
-        /// <summary> Reads in all the setting collections and values </summary>
-        /// <param name="ConfigFile"></param>
-        /// <returns> TRUE if the settings are read successfully, otherwise FALSE </returns>
-        private bool Read_Settings(string ConfigFile)
-        {
-            try
-            {
-                //init LoadParams
-                List<string>[] settings = new List<string>[2];
-                settings[0] = new List<string>();
-                settings[1] = new List<string>();
-
-                //read through load default params
-                using (XmlReader reader = XmlReader.Create(configFilePath))
-                {
-                    while (reader.Read())
-                    {
-                        // Only detect start elements.
-                        if (reader.IsStartElement())
-                        {
-                            // Get element name and switch on it.
-                            switch (reader.Name)
-                            {
-                                case "collection":
-                                    string collectionName = reader["id"];
-                                    MapEditor_Configuration_Collection collection = new MapEditor_Configuration_Collection
-                                    {
-                                        Name = collectionName
-                                    };
-
-                                    while (reader.Read())
-                                    {
-                                        if (reader.NodeType == XmlNodeType.Whitespace) continue;
-
-                                        if (reader.Name == "collection")
-                                        {
-                                            if (reader.NodeType == XmlNodeType.EndElement)
-                                                break;
-                                        }
-
-                                        if (!reader.IsStartElement()) continue;
-
-                                        string key = reader.Name;
-                                        if (reader.Read())
-                                        {
-                                            string value = String.IsNullOrEmpty(reader.Value) ? "\"\"" : reader.Value;
-                                            collection.Settings.Add(new Simple_Setting(key, value, -1));
-                                        }
-                                    }
-                                    Collections.Add(collection);
-                                    break;
-                            }
-                        }
-                    }
-                }
-
-                return true;
-            }
-            catch (Exception ee)
-            {
-                return false;
-            }
-        }
 
         /// <summary> Gets all settings from config file </summary>
         /// <param name="IdsFromPage"> The IDs from the page </param>

@@ -31,13 +31,13 @@ namespace SobekCM.Core.Configuration.Engine
         [DataMember(Name = "label", EmitDefaultValue = false)]
         [XmlAttribute("label")]
         [ProtoMember(2)]
-        public string Label { get; internal set; }
+        public string Label { get; set; }
 
         /// <summary> Collection of individual IP addresses or individual IP ranges </summary>
         [DataMember(Name = "ipRanges", EmitDefaultValue = false)]
         [XmlArray("ipRanges")]
         [XmlArrayItem("ipRange", typeof(Engine_IpRange))]
         [ProtoMember(3)]
-        public List<Engine_IpRange> IpRanges { get; private set; }
+        public List<Engine_IpRange> IpRanges { get; set; }
     }
 }

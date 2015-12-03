@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Configuration.OAIPMH;
-using SobekCM.Core.MicroservicesClient;
 using SobekCM.Resource_Object.Configuration;
 
 namespace SobekCM.Core.Configuration
@@ -66,9 +61,11 @@ namespace SobekCM.Core.Configuration
         [ProtoMember(6)]
         public MapEditor_Configuration MapEditor { get; set; }
 
-        [DataMember(Name = "metadata", EmitDefaultValue = false)]
-        [XmlElement("metadata")]
-        [ProtoMember(7)]
+        //[DataMember(Name = "metadata", EmitDefaultValue = false)]
+        //[XmlElement("metadata")]
+        //[ProtoMember(7)]
+        [XmlIgnore]
+        [IgnoreDataMember]
         public Metadata_Configuration Metadata { get; set; }
 
         /// <summary> Configuration for instance-wide OAI-PMH settings for this instance </summary>

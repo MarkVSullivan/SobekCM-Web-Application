@@ -19,13 +19,15 @@ namespace SobekCM.Core.Configuration.Engine
         [DataMember(Name = "segment")]
         [XmlAttribute("segment")]
         [ProtoMember(1)]
-        public string Segment { get; internal set; }
+        public string Segment { get; set; }
 
         /// <summary> Collection of child segments or endpoints, indexed by the next segment of the URI </summary>
-        public Dictionary<string, Engine_Path> Children { get; internal set; }
+        public Dictionary<string, Engine_Path> Children { get; set; }
 
         /// <summary> Flag indicates if this path actually defines a single endpoint </summary>
         /// <remarks> This always returns 'FALSE' in this class, although a child class may override this property </remarks>
+        [XmlIgnore]
+        [IgnoreDataMember]
         public virtual bool IsEndpoint { get { return false;  } }
     }
 }

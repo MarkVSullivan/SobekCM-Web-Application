@@ -71,18 +71,20 @@ namespace SobekCM.Core.Configuration.Engine
         [XmlArray("component")]
         [XmlArrayItem("component", typeof(Engine_Component))]
         [ProtoMember(1)]
-        public List<Engine_Component> Components { get; private set; }
+        public List<Engine_Component> Components { get; set; }
 
         /// <summary> List of all the possible restriction ranges ( each defined by multiple 
         /// possible IP address ranges ) in the configuration file </summary>
         [DataMember(Name = "ipRestrictionRangeSets", EmitDefaultValue = false)]
         [XmlArray("ipRestrictionRangeSets")]
-        [XmlArrayItem("restrictionRange", typeof(Engine_Component))]
+        [XmlArrayItem("restrictionRange", typeof(Engine_RestrictionRange))]
         [ProtoMember(2)]
-        public List<Engine_RestrictionRange> RestrictionRanges { get; private set; }
+        public List<Engine_RestrictionRange> RestrictionRanges { get; set; }
 
         /// <summary> Collection of all the root paths/endpoints (defined hierarchically) </summary>
-        public Dictionary<string, Engine_Path> RootPaths { get; private set; }
+        [XmlIgnore]
+        [IgnoreDataMember]
+        public Dictionary<string, Engine_Path> RootPaths { get; set; }
 
 
 

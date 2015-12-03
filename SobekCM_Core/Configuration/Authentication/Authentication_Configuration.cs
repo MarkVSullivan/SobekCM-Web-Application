@@ -18,7 +18,7 @@ namespace SobekCM.Core.Configuration.Authentication
         /// <summary> Constructor for a new instance of the Authentication_Configuration class </summary>
         public Authentication_Configuration()
         {
-            Shibboleth = new Shibboleth_Configuration();
+            //Shibboleth = new Shibboleth_Configuration();
         }
 
         /// <summary> Configuration information related to using Shibboleth configuration </summary>
