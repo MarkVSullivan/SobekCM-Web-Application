@@ -144,7 +144,7 @@ namespace SobekCM.Core.Configuration
 
         /// <summary> Name for this contact us form, used for copying the form, or referencing during administrative work </summary>
         [DataMember(Name = "name")]
-        [XmlElement("name")]
+        [XmlAttribute("name")]
         [ProtoMember(2)]
         public string Name { get; set; }
 

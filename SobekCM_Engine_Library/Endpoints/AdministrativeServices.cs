@@ -2,15 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Core.Configuration.Engine;
-using SobekCM.Engine_Library.Settings;
 using SobekCM.Tools;
 
 namespace SobekCM.Engine_Library.Endpoints

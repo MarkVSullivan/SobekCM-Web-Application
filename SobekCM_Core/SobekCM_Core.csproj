@@ -180,7 +180,6 @@
     <Compile Include="Skins\Complete_Web_Skin_Source_Files.cs" />
     <Compile Include="Skins\Web_Skin_Collection.cs" />
     <Compile Include="Skins\Web_Skin_Object.cs" />
-    <Compile Include="StringKeyValuePair.cs" />
     <Compile Include="Users\Public_User_Folder.cs" />
     <Compile Include="Users\User_Permissioned_Aggregation.cs" />
     <Compile Include="Users\User_Aggregation_Permissions.cs" />

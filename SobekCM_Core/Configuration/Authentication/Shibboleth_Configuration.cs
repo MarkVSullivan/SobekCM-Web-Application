@@ -8,6 +8,7 @@ using System.Text;
 using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Users;
+using SobekCM.Tools;
 
 #endregion
 

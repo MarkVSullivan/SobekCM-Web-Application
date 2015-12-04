@@ -68,7 +68,6 @@ namespace SobekCM.Resource_Object.Configuration
 
             // instantiate collections
             Mappings = new List<METS_Section_ReaderWriter_Mapping>();
-            Options = new List<StringKeyValuePair>();
             optionsDictionary = new Dictionary<string, string>();
         }
 
@@ -134,7 +133,7 @@ namespace SobekCM.Resource_Object.Configuration
         [DataMember(Name = "loadError")]
         [XmlElement("loadError")]
         [ProtoMember(9)]
-        public string ReaderWriterObject_Creation_Error { get; private set; }
+        public string ReaderWriterObject_Creation_Error { get; set; }
 
         /// <summary> Creates the reader/writer object, from the provided code assembly, namespace, and class </summary>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
@@ -220,6 +219,9 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="Value"> Value of this option </param>
         public void Add_Option(string Key, string Value)
         {
+            if (Options == null)
+                Options = new List<StringKeyValuePair>();
+            
             // Ensure the dictionary is built
             if ((optionsDictionary == null) || ((optionsDictionary.Count != Options.Count)))
             {
@@ -251,8 +253,35 @@ namespace SobekCM.Resource_Object.Configuration
 
             // Now, add this one
             optionsDictionary[Key] = Value;
+
             Options.Add(new StringKeyValuePair(Key, Value));
         }
+
+        #region Methods that controls XML serialization
+
+        /// <summary> Method suppresses XML Serialization of the Options collection if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeOptions()
+        {
+            return (Options != null) && (Options.Count > 0);
+        }
+
+        /// <summary> Method suppresses XML Serialization of the Code_Assembly property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeCode_Assembly()
+        {
+            return (!String.IsNullOrEmpty(Code_Assembly));
+        }
+
+
+        /// <summary> Method suppresses XML Serialization of the AmdSecType property if it is UNSPECIFIED </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeAmdSecType()
+        {
+            return (AmdSecType != METS_amdSec_Type_Enum.UNSPECIFIED);
+        }
+
+        #endregion
     }
 
     /// <summary> Information about how a METS Section reader/writer maps into a METS file </summary>
@@ -329,5 +358,17 @@ namespace SobekCM.Resource_Object.Configuration
         [XmlAttribute("default")]
         [ProtoMember(4)]
         public bool isDefault { get; set; }
+
+
+        #region Methods that controls XML serialization
+
+        /// <summary> Method suppresses XML Serialization of the Other_MD_Type property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeOther_MD_Type()
+        {
+            return (!String.IsNullOrEmpty(Other_MD_Type));
+        }
+
+        #endregion
     }
 }

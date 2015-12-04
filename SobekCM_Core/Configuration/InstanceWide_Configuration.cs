@@ -61,11 +61,10 @@ namespace SobekCM.Core.Configuration
         [ProtoMember(6)]
         public MapEditor_Configuration MapEditor { get; set; }
 
-        //[DataMember(Name = "metadata", EmitDefaultValue = false)]
-        //[XmlElement("metadata")]
-        //[ProtoMember(7)]
-        [XmlIgnore]
-        [IgnoreDataMember]
+        /// <summary> Configuration information regarding how to read and write metadata files in the system </summary>
+        [DataMember(Name = "metadata", EmitDefaultValue = false)]
+        [XmlElement("metadata")]
+        [ProtoMember(7)]
         public Metadata_Configuration Metadata { get; set; }
 
         /// <summary> Configuration for instance-wide OAI-PMH settings for this instance </summary>

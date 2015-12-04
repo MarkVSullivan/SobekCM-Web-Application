@@ -5,8 +5,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
+using System.Xml.Serialization;
+using ProtoBuf;
 using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 using SobekCM.Tools;
 
@@ -16,17 +19,15 @@ namespace SobekCM.Resource_Object.Configuration
 {
     /// <summary> Metadata configuration for all the classes used to read/write metadata files
     /// or sections within a METS file </summary>
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("MetadataConfig")]
     public  class Metadata_Configuration
     {
         private bool attemptedRead;
 
-        private readonly List<Metadata_File_ReaderWriter_Config> metadataFileReaderWriterConfigs;
-        private readonly List<METS_Section_ReaderWriter_Config> metsSectionReaderWriterConfigs;
-
-        private readonly Dictionary<string, METS_Writing_Profile> metsWritingProfiles;
+        private readonly Dictionary<string, METS_Writing_Profile> metsWritingProfilesDictionary;
         private METS_Writing_Profile defaultWritingProfile;
 
-        private readonly List<Additional_Metadata_Module_Config> metadataModules;
 
         private readonly Dictionary<Tuple<string, string>, iPackage_amdSec_ReaderWriter> packageAmdSecDictionary;
         private readonly Dictionary<Tuple<string, string>, iPackage_dmdSec_ReaderWriter> packageDmdSecDictionary;
@@ -40,11 +41,14 @@ namespace SobekCM.Resource_Object.Configuration
         /// <summary> constructor for the Metadata_Configuration class </summary>
         public Metadata_Configuration()
         {
+            METS_Section_File_ReaderWriter_Configs = new List<METS_Section_ReaderWriter_Config>();
+            Metadata_File_ReaderWriter_Configs = new List<Metadata_File_ReaderWriter_Config>();
+            Metadata_Modules_To_Include = new List<Additional_Metadata_Module_Config>();
+            MetsWritingProfiles = new List<METS_Writing_Profile>();
+
             // Declare all the new collections in this configuration 
-            metadataFileReaderWriterConfigs = new List<Metadata_File_ReaderWriter_Config>();
-            metsSectionReaderWriterConfigs = new List<METS_Section_ReaderWriter_Config>();
-            metsWritingProfiles = new Dictionary<string, METS_Writing_Profile>();
-            metadataModules = new List<Additional_Metadata_Module_Config>();
+            metsWritingProfilesDictionary = new Dictionary<string, METS_Writing_Profile>();
+
             packageAmdSecDictionary = new Dictionary<Tuple<string, string>, iPackage_amdSec_ReaderWriter>();
             packageDmdSecDictionary = new Dictionary<Tuple<string, string>, iPackage_dmdSec_ReaderWriter>();
             divisionDmdSecDictionary = new Dictionary<Tuple<string, string>, iDivision_dmdSec_ReaderWriter>();
@@ -62,42 +66,46 @@ namespace SobekCM.Resource_Object.Configuration
         }
 
         /// <summary> Clear all the current metadata configuration information </summary>
-        private void Clear()
+        public void Clear()
         {
-            metadataFileReaderWriterConfigs.Clear();
-            metsSectionReaderWriterConfigs.Clear();
+            Metadata_File_ReaderWriter_Configs.Clear();
+            METS_Section_File_ReaderWriter_Configs.Clear();
+            Metadata_Modules_To_Include.Clear();
+            MetsWritingProfiles.Clear();
+            defaultWritingProfile = null;
+            metsWritingProfilesDictionary.Clear();
+
             packageAmdSecDictionary.Clear();
             packageDmdSecDictionary.Clear();
             divisionDmdSecDictionary.Clear();
             divisionAmdSecDictionary.Clear();
             fileDmdSecDictionary.Clear();
             fileAmdSecDictionary.Clear();
-            defaultWritingProfile = null;
-            metsWritingProfiles.Clear();
-            metadataModules.Clear();
+
             errorsEncountered.Clear();
         }
 
-        /// <summary> Flag indicates if the method to read the configuration file has been called </summary>
-        /// <remarks> Even if the read is unsuccesful for any reason, this returns TRUE to prevent 
-        /// the read method from being called over and over </remarks>
-        public bool Attempted_To_Read_Config_File
-        {
-            get { return attemptedRead;  }
-        }
+        /// <summary> List of metadata modules to be included with all bibliographic items </summary>
+        [DataMember(Name = "MetsProfiles")]
+        [XmlArray("MetsProfiles")]
+        [XmlArrayItem("profile", typeof(METS_Writing_Profile))]
+        [ProtoMember(1)]
+        public List<METS_Writing_Profile> MetsWritingProfiles { get; set; }
 
         /// <summary> Default METS writing profile utilized by the METS writer </summary>
+        [XmlIgnore]
+        [IgnoreDataMember]
         public METS_Writing_Profile Default_METS_Writing_Profile
         {
             get
             {
                 if ( defaultWritingProfile != null )
                     return defaultWritingProfile;
-                if (metsWritingProfiles.Count > 0)
+                if (metsWritingProfilesDictionary.Count > 0)
                 {
-                    string first = metsWritingProfiles.Keys.FirstOrDefault();
+                    string first = metsWritingProfilesDictionary.Keys.FirstOrDefault();
                     if ( first != null )
-                        return metsWritingProfiles[first];
+                        return metsWritingProfilesDictionary[first];
                 }
                 return null;
             }
@@ -107,7 +115,8 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="NewProfile"> New metadata profile to add </param>
         public void Add_METS_Writing_Profile( METS_Writing_Profile NewProfile )
         {
-            metsWritingProfiles[NewProfile.Profile_Name] = NewProfile;
+            MetsWritingProfiles.Add(NewProfile);
+            metsWritingProfilesDictionary[NewProfile.Profile_Name] = NewProfile;
             if (NewProfile.Default_Profile)
                 defaultWritingProfile = NewProfile;
         }
@@ -115,7 +124,8 @@ namespace SobekCM.Resource_Object.Configuration
         /// <summary> Clear all the METS writing profiles from this configuration </summary>
         public void Clear_METS_Writing_Profiles()
         {
-            metsWritingProfiles.Clear();
+            MetsWritingProfiles.Clear();
+            metsWritingProfilesDictionary.Clear();
             defaultWritingProfile = null;
         }
 
@@ -123,36 +133,36 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="MetadatModuleConfig"> New metadata module to include with all new items </param>
         public void Add_Metadata_Module_Config( Additional_Metadata_Module_Config MetadatModuleConfig )
         {
-            metadataModules.Add( MetadatModuleConfig );
+            Metadata_Modules_To_Include.Add( MetadatModuleConfig );
         }
 
         /// <summary> List of metadata modules to be included with all bibliographic items </summary>
-        public ReadOnlyCollection<Additional_Metadata_Module_Config> Metadata_Modules_To_Include
-        {
-            get
-            {
-                return new ReadOnlyCollection<Additional_Metadata_Module_Config>(metadataModules);
-            }
-        }
+        [DataMember(Name = "metadataModules")]
+        [XmlArray("metadataModules")]
+        [XmlArrayItem("metadataModule", typeof(Additional_Metadata_Module_Config))]
+        [ProtoMember(2)]
+        public List<Additional_Metadata_Module_Config> Metadata_Modules_To_Include { get; set; }
 
         /// <summary> Collection of metadata file reader/writer configurations </summary>
-        public ReadOnlyCollection<Metadata_File_ReaderWriter_Config> Metadata_File_ReaderWriter_Configs
-        {
-            get { return new ReadOnlyCollection<Metadata_File_ReaderWriter_Config>(metadataFileReaderWriterConfigs); }
-        }
+        [DataMember(Name = "metadataFileReaderWriters")]
+        [XmlArray("metadataFileReaderWriters")]
+        [XmlArrayItem("metadataFileReaderWriter", typeof(Metadata_File_ReaderWriter_Config))]
+        [ProtoMember(3)]
+        public List<Metadata_File_ReaderWriter_Config> Metadata_File_ReaderWriter_Configs { get; set; }
 
         /// <summary> Add a new metadata file reader/writer configuration </summary>
         /// <param name="New_ReaderWriter"> New metadata file reader/writer configuration </param>
         public void Add_Metadata_File_ReaderWriter(Metadata_File_ReaderWriter_Config New_ReaderWriter)
         {
-            metadataFileReaderWriterConfigs.Add(New_ReaderWriter);
+            Metadata_File_ReaderWriter_Configs.Add(New_ReaderWriter);
         }
 
         /// <summary> Collection of all the METS section reader/writer configurations </summary>
-        public ReadOnlyCollection<METS_Section_ReaderWriter_Config> METS_Section_File_ReaderWriter_Configs
-        {
-            get { return new ReadOnlyCollection<METS_Section_ReaderWriter_Config>(metsSectionReaderWriterConfigs); }
-        }
+        [DataMember(Name = "metsSectionReaderWriters")]
+        [XmlArray("metsSectionReaderWriters")]
+        [XmlArrayItem("metsSectionReaderWriter", typeof(METS_Section_ReaderWriter_Config))]
+        [ProtoMember(4)]
+        public List<METS_Section_ReaderWriter_Config> METS_Section_File_ReaderWriter_Configs { get; set; }
 
         /// <summary> Adds a new METS section reader/writer configuration </summary>
         /// <param name="New_ReaderWriter"> New METS section reader/writer</param>
@@ -161,7 +171,7 @@ namespace SobekCM.Resource_Object.Configuration
         public void Add_METS_Section_ReaderWriter(METS_Section_ReaderWriter_Config New_ReaderWriter)
         {
             // Add to list of all METS sections readers/writers
-            metsSectionReaderWriterConfigs.Add(New_ReaderWriter);
+            METS_Section_File_ReaderWriter_Configs.Add(New_ReaderWriter);
 
             // Create an instance of this reader/writer from the config
             if (!New_ReaderWriter.Create_ReaderWriterObject())
@@ -452,7 +462,7 @@ namespace SobekCM.Resource_Object.Configuration
                 writer.WriteLine("\t\thttp://digital.uflib.ufl.edu/metadata/sobekcm_config/sobekcm_config.xsd\">");
                 writer.WriteLine("\t<Metadata>");
                 writer.WriteLine("\t\t<Metadata_File_ReaderWriters>");
-                foreach (Metadata_File_ReaderWriter_Config fileConfig in metadataFileReaderWriterConfigs)
+                foreach (Metadata_File_ReaderWriter_Config fileConfig in Metadata_File_ReaderWriter_Configs)
                 {
                     writer.Write("\t\t\t<ReaderWriter ");
                     switch (fileConfig.MD_Type)
@@ -496,9 +506,9 @@ namespace SobekCM.Resource_Object.Configuration
                     {
                         writer.WriteLine(">");
                         writer.WriteLine("\t\t\t\t<Options>");
-                        foreach (string thisKey in fileConfig.Options.Keys)
+                        foreach (StringKeyValuePair thisKey in fileConfig.Options)
                         {
-                            writer.WriteLine("\t\t\t\t\t<Option key=\"" + Convert_String_To_XML_Safe(thisKey) + "\" value=\"" + Convert_String_To_XML_Safe(fileConfig.Options[thisKey]) + "\" />");
+                            writer.WriteLine("\t\t\t\t\t<Option key=\"" + Convert_String_To_XML_Safe(thisKey.Key) + "\" value=\"" + Convert_String_To_XML_Safe(thisKey.Value) + "\" />");
                         }
                         writer.WriteLine("\t\t\t\t</Options>");
                         writer.WriteLine("\t\t\t</ReaderWriter>");
@@ -511,7 +521,7 @@ namespace SobekCM.Resource_Object.Configuration
                 writer.WriteLine("\t\t</Metadata_File_ReaderWriters>");
 
                 writer.WriteLine("\t\t<METS_Sec_ReaderWriters>");
-                foreach (METS_Section_ReaderWriter_Config fileConfig in metsSectionReaderWriterConfigs)
+                foreach (METS_Section_ReaderWriter_Config fileConfig in METS_Section_File_ReaderWriter_Configs)
                 {
                     writer.Write("\t\t\t<ReaderWriter ID=\"" + Convert_String_To_XML_Safe(fileConfig.ID) + "\" label=\"" + Convert_String_To_XML_Safe(fileConfig.Label) + "\" namespace=\"" + Convert_String_To_XML_Safe(fileConfig.Code_Namespace) + "\" class=\"" + Convert_String_To_XML_Safe(fileConfig.Code_Class) + "\" ");
 
@@ -581,7 +591,7 @@ namespace SobekCM.Resource_Object.Configuration
                 writer.WriteLine("\t\t<METS_Writing>");
 
 
-                foreach (METS_Writing_Profile profile in metsWritingProfiles.Values)
+                foreach (METS_Writing_Profile profile in MetsWritingProfiles)
                 {
                     writer.Write("\t\t\t<Profile ");
                     if (profile.Default_Profile)
@@ -672,11 +682,11 @@ namespace SobekCM.Resource_Object.Configuration
                 writer.WriteLine("\t\t</METS_Writing>");
 
                 // Any additional metadata module info to include?
-                if (metadataModules.Count > 0)
+                if (Metadata_Modules_To_Include.Count > 0)
                 {
                     writer.WriteLine("\t\t<Additional_Metadata_Modules>");
 
-                    foreach (Additional_Metadata_Module_Config config in metadataModules)
+                    foreach (Additional_Metadata_Module_Config config in Metadata_Modules_To_Include)
                     {
                         writer.Write("\t\t\t<MetadataModule key=\"" + Convert_String_To_XML_Safe(config.Key) + "\" ");
                         if (config.Code_Assembly.Length > 0)
