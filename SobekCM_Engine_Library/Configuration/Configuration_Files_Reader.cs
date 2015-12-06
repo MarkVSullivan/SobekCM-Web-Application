@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Xml;
@@ -21,8 +22,50 @@ namespace SobekCM.Engine_Library.Configuration
 
         /// <summary> Refreshes the values from the database settings </summary>
         /// <returns> A fully builder instance-wide setting object </returns>
-        public static InstanceWide_Configuration Read_Config_Files( List<string> ConfigurationDirectories , InstanceWide_Settings Settings)
+        public static InstanceWide_Configuration Read_Config_Files( InstanceWide_Settings Settings)
         {
+            // Get the directories to read
+            List<string> configurationDirectories = new List<string>();
+
+            // Add the default configuration directory first
+            configurationDirectories.Add(Path.Combine(Settings.Servers.Application_Server_Network, "config", "default"));
+
+            // Add all of the plug-in foldersm but ensure they are sorted
+            string plug_in_folder = Path.Combine(Settings.Servers.Application_Server_Network, "plugins");
+            if (Directory.Exists(plug_in_folder))
+            {
+                // Get the list of subdirectories 
+                string[] subdirs = Directory.GetDirectories(plug_in_folder);
+
+                // Ensure it is sorted alphabetically
+                SortedList<string, string> subdirs_sorted = new SortedList<string, string>();
+                foreach (string thisSubDir in subdirs)
+                {
+                    // Get the directory name and add to the sorted list
+                    string dirName = (new DirectoryInfo(thisSubDir)).Name;
+                    subdirs_sorted.Add(dirName, thisSubDir);
+                }
+
+                // Now, add each folder correctly sorted
+                foreach (string thisSubDir in subdirs_sorted.Values)
+                {
+                    configurationDirectories.Add(thisSubDir);
+                    if (Directory.Exists(Path.Combine(thisSubDir, "config")))
+                        configurationDirectories.Add(Path.Combine(thisSubDir, "config"));
+                }
+            }
+
+            // Add the final user configuration directory last
+            configurationDirectories.Add(Path.Combine(Settings.Servers.Application_Server_Network, "config", "user"));
+
+            return Read_Config_Files(configurationDirectories, Settings);
+        }
+
+        /// <summary> Refreshes the values from the database settings </summary>
+        /// <returns> A fully builder instance-wide setting object </returns>
+        public static InstanceWide_Configuration Read_Config_Files(List<string> ConfigurationDirectories, InstanceWide_Settings Settings)
+        {
+            // Start to build the instance wide configuration
             InstanceWide_Configuration returnValue = new InstanceWide_Configuration();
 
             // Step through and get the configuration files to be read (in folder and alphabetical order)
@@ -56,8 +99,14 @@ namespace SobekCM.Engine_Library.Configuration
             // With all the files to read collected and sorted, read each one
             foreach (string thisConfigFile in configFiles)
             {
-                read_config_file(thisConfigFile, returnValue, Settings);
+                if (read_config_file(thisConfigFile, returnValue, Settings))
+                    returnValue.HasData = true;
             }
+
+
+            // Now, perform some final clean-up functions here now that all the files have been read
+            engine_config_finalize(returnValue);
+
 
             return returnValue;
 
@@ -1113,7 +1162,7 @@ namespace SobekCM.Engine_Library.Configuration
                         case "complexendpoint":
                             // Read the top-endpoint information, before getting to each verb mapping
                             bool disabled_at_top = false;
-                            Engine_Path_Endpoint endpoint = new Engine_Path_Endpoint();
+                            Engine_Path_Endpoint endpoint = new Engine_Path_Endpoint { IsEndpoint = true };
                             if (ReaderXml.MoveToAttribute("Segment"))
                                 endpoint.Segment = ReaderXml.Value.Trim();
                             if ((ReaderXml.MoveToAttribute("Enabled")) && (String.Compare(ReaderXml.Value.Trim(), "false", StringComparison.OrdinalIgnoreCase) == 0))
@@ -1256,7 +1305,8 @@ namespace SobekCM.Engine_Library.Configuration
 
         private static void read_microservices_simple_endpoint_details(XmlReader ReaderXml, Engine_Path_Endpoint ParentSegment)
         {
-            Engine_Path_Endpoint endpoint = new Engine_Path_Endpoint();
+            Engine_Path_Endpoint endpoint = new Engine_Path_Endpoint {IsEndpoint = true};
+
             string componentid = String.Empty;
             string restrictionid = String.Empty;
             string method = String.Empty;
@@ -1432,6 +1482,94 @@ namespace SobekCM.Engine_Library.Configuration
                         currentRange = null;
                     }
                 }
+            }
+        }
+
+        #endregion
+
+        #region Section finalizes the engine endpoint information
+
+        private static void engine_config_finalize(InstanceWide_Configuration Configuration)
+        {
+            // If there was an error or nothing was read, do nothing
+            if ((Configuration.Engine == null) || (Configuration.Engine.RootPaths == null) || (Configuration.Engine.RootPaths.Count == 0))
+                return;
+
+            // Build the dictionaries for all the components
+            Dictionary<string, Engine_Component> components = new Dictionary<string, Engine_Component>(StringComparer.OrdinalIgnoreCase);
+            foreach (Engine_Component thisComponent in Configuration.Engine.Components)
+            {
+                components[thisComponent.ID] = thisComponent;
+            }
+
+            // Build the dictionaries for all the restriction ranges
+            Dictionary<string, Engine_RestrictionRange> restrictionRanges = new Dictionary<string, Engine_RestrictionRange>(StringComparer.OrdinalIgnoreCase);
+            foreach (Engine_RestrictionRange thisRange in Configuration.Engine.RestrictionRanges)
+            {
+                restrictionRanges[thisRange.ID] = thisRange;
+            }
+
+            // Now, iterate through the tree of child pages
+            foreach (Engine_Path_Endpoint pathEndpoint in Configuration.Engine.RootPaths)
+            {
+                engine_config_finalize_recurse_through_endpoints(pathEndpoint, components, restrictionRanges);
+            }
+        }
+
+        private static void engine_config_finalize_recurse_through_endpoints(Engine_Path_Endpoint pathEndpoint, Dictionary<string, Engine_Component> components, Dictionary<string, Engine_RestrictionRange> restrictionRanges)
+        {
+            // Handle this one first
+            if (pathEndpoint.HasVerbMapping)
+            {
+                // Do the individual mappings
+                engine_config_finalize_handle_single_mapping(pathEndpoint.GetMapping, components, restrictionRanges);
+                engine_config_finalize_handle_single_mapping(pathEndpoint.PostMapping, components, restrictionRanges);
+                engine_config_finalize_handle_single_mapping(pathEndpoint.PutMapping, components, restrictionRanges);
+                engine_config_finalize_handle_single_mapping(pathEndpoint.DeleteMapping, components, restrictionRanges);
+            }
+            
+            // Now, step through any children as well
+            if ((pathEndpoint.Children != null) && (pathEndpoint.Children.Count > 0))
+            {
+                foreach (Engine_Path_Endpoint childNode in pathEndpoint.Children)
+                {
+                    engine_config_finalize_recurse_through_endpoints(childNode, components, restrictionRanges);
+                }
+            }
+
+        }
+
+        private static void engine_config_finalize_handle_single_mapping(Engine_VerbMapping mapping, Dictionary<string, Engine_Component> components, Dictionary<string, Engine_RestrictionRange> restrictionRanges)
+        {
+            // If the mapping didn't exist, do nothing
+            if (mapping == null)
+                return;
+
+            // Map the component
+            if ((!String.IsNullOrEmpty(mapping.ComponentId)) && (components.ContainsKey(mapping.ComponentId)))
+            {
+                mapping.Component = components[mapping.ComponentId];
+            }
+            else
+            {
+                mapping.Component = null;
+            }
+
+            // Map any restriction range
+            if (!String.IsNullOrEmpty(mapping.RestrictionRangeSetId)) 
+            {
+                string[] restrictions = mapping.RestrictionRangeSetId.Split(" |,".ToCharArray());
+                foreach (string thisRestriction in restrictions)
+                {
+                    if (restrictionRanges.ContainsKey(thisRestriction.Trim()))
+                    {
+                        mapping.Add_RestrictionRange(restrictionRanges[thisRestriction.Trim()]);
+                    }
+                }
+            }
+            else
+            {
+                mapping.RestrictionRanges = null;
             }
         }
 

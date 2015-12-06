@@ -22,16 +22,18 @@ namespace SobekCM.Core.Configuration.Engine
 
         /// <summary> Get the endpoint configuration, based on the requested path </summary>
         /// <param name="Paths"> Requested URL paths </param>
-        /// <returns> Matched enpoint configuration, otherwise NULL </returns>
+        /// <returns> Matched endpoint configuration, otherwise NULL </returns>
         public Engine_Path_Endpoint Get_Endpoint(List<string> Paths)
         {
             // Ensure the dictionary is built
             ensure_dictionary_built();
 
-            if (rootPathsDictionary.ContainsKey(Paths[0]))
+            // Find a match by path
+            int currentIndex = 0;
+            if (rootPathsDictionary.ContainsKey(Paths[currentIndex]))
             {
-                Engine_Path_Endpoint path = rootPathsDictionary[Paths[0]];
-                Paths.RemoveAt(0);
+                Engine_Path_Endpoint path = rootPathsDictionary[Paths[currentIndex]];
+                currentIndex++;
 
                 do
                 {
@@ -42,15 +44,15 @@ namespace SobekCM.Core.Configuration.Engine
                     }
 
                     // Look to the next part of the path
-                    if (Paths.Count > 0)
+                    if (Paths.Count > currentIndex)
                     {
-                        if (!path.ContainsChildKey(Paths[0]))
+                        if (!path.ContainsChildKey(Paths[currentIndex]))
                         {
                             return null;
                         }
-                        
-                        path = path.GetChild(Paths[0]);
-                        Paths.RemoveAt(0);
+
+                        path = path.GetChild(Paths[currentIndex]);
+                        currentIndex++;
                     }
                     else
                     {

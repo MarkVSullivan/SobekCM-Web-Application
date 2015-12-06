@@ -482,10 +482,10 @@ namespace SobekCM.Engine_Library.ApplicationState
                 lock (configurationLock)
                 {
                     if (configuration == null)
-                        configuration = Configuration_Files_Reader.Read_Config_Files(null, Settings);
+                        configuration = Configuration_Files_Reader.Read_Config_Files( Settings);
                     else
                     {
-                        InstanceWide_Configuration newConfig = Configuration_Files_Reader.Read_Config_Files(null, Settings);
+                        InstanceWide_Configuration newConfig = Configuration_Files_Reader.Read_Config_Files( Settings);
                         configuration = newConfig;
                     }
                 }
@@ -507,10 +507,10 @@ namespace SobekCM.Engine_Library.ApplicationState
                 lock (configurationLock)
                 {
                     if (configuration == null)
-                        configuration = Configuration_Files_Reader.Read_Config_Files(null, Settings);
+                        configuration = Configuration_Files_Reader.Read_Config_Files( Settings);
                     else
                     {
-                        InstanceWide_Configuration newConfig = Configuration_Files_Reader.Read_Config_Files(null, Settings);
+                        InstanceWide_Configuration newConfig = Configuration_Files_Reader.Read_Config_Files( Settings);
                         configuration = newConfig;
                     }
                 }
@@ -531,7 +531,7 @@ namespace SobekCM.Engine_Library.ApplicationState
             {
                 lock (configurationLock)
                 {
-                    return configuration ?? (configuration = Configuration_Files_Reader.Read_Config_Files(null, Settings));
+                    return configuration ?? (configuration = Configuration_Files_Reader.Read_Config_Files( Settings));
                 }
             }
             set

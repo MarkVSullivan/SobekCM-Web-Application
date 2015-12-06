@@ -15,8 +15,6 @@ namespace SobekCM.Core.Configuration.Engine
     [XmlRoot("EngineVerbMapping")]
     public class Engine_VerbMapping
     {
-        private MethodInfo methodInfo;
-        private object restApiObject;
         private IpRangeSetV4 rangeTester;
 
         /// <summary> Protocol which this endpoint utilizes ( JSON or Protocol Buffer ) </summary>
@@ -103,32 +101,6 @@ namespace SobekCM.Core.Configuration.Engine
 
         }
 
-        /// <summary> Invoke the method in the class specified for this endpoint, from the configuration XML file </summary>
-        /// <param name="Response"></param>
-        /// <param name="UrlSegments"></param>
-        /// <param name="QueryString"></param>
-        /// <param name="RequestForm"></param>
-        /// <param name="IsDebug"></param>
-        public void Invoke(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, NameValueCollection RequestForm, bool IsDebug)
-        {
-            if ((methodInfo == null) || (restApiObject == null))
-            {
-                Assembly dllAssembly = Assembly.GetExecutingAssembly();
-               // Type restApiClassType = dllAssembly.GetType(Component.Namespace + "." + Component.Class);
-
-                Type restApiClassType = dllAssembly.GetType("SobekCM.Engine_Library.Endpoints." + Component.Class);
-                restApiObject = Activator.CreateInstance(restApiClassType);
-
-                methodInfo = restApiClassType.GetMethod(Method);
-            }
-
-            // Invokation is different, dependingon whether this is a PUT or POST
-            if (RequestType == Microservice_Endpoint_RequestType_Enum.GET)
-                methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, QueryString, Protocol, IsDebug });
-            else
-                methodInfo.Invoke(restApiObject, new object[] { Response, UrlSegments, Protocol, RequestForm, IsDebug });
-        }
-
         /// <summary> Check to see if this endpoint can be invoked from this IP address </summary>
         /// <returns> TRUE if permitted, otherwise FALSE </returns>
         public bool AccessPermitted(string IpAddress)
@@ -159,6 +131,16 @@ namespace SobekCM.Core.Configuration.Engine
 
             // Now, test the IP against the tester
             return rangeTester.Contains(new ComparableIpAddress(IpAddress));
+        }
+
+        /// <summary> Adds a restriction range to this verb mapping </summary>
+        /// <param name="RestrictionRange"> Range to add </param>
+        public void Add_RestrictionRange(Engine_RestrictionRange RestrictionRange)
+        {
+            if (RestrictionRanges == null)
+                RestrictionRanges = new List<Engine_RestrictionRange>();
+
+            RestrictionRanges.Add(RestrictionRange);
         }
     }
 }

@@ -27,8 +27,14 @@ namespace SobekCM.Core.Configuration
             MapEditor = new MapEditor_Configuration();
             Metadata = new Metadata_Configuration();
             OAI_PMH = new OAI_PMH_Configuration();
+
+            HasData = false;
         }
 
+        /// <summary> Flag indicates if the data has been pulled into this </summary>
+        [XmlIgnore]
+        [IgnoreDataMember]
+        public bool HasData { get; set; }
 
         /// <summary> Configuration for authentication for this instance </summary>
         [DataMember(Name = "authentication", EmitDefaultValue = false)]
