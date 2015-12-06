@@ -139,7 +139,7 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
 
-            Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Admin_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Mysobek_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
 
             // If there was a viewer, add based on behaviors and flags
             if (mySobekViewer != null)

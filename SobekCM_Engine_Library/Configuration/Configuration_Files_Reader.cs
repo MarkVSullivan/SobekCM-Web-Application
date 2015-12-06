@@ -107,6 +107,9 @@ namespace SobekCM.Engine_Library.Configuration
             // Now, perform some final clean-up functions here now that all the files have been read
             engine_config_finalize(returnValue);
 
+            // Save the metadata configuration to the resource object library
+            ResourceObjectSettings.MetadataConfig = returnValue.Metadata;
+
 
             return returnValue;
 

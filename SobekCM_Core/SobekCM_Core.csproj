@@ -101,7 +101,6 @@
     <Compile Include="Configuration\Engine\Engine_Path_Endpoint.cs" />
     <Compile Include="Configuration\Engine\Engine_RestrictionRange.cs" />
     <Compile Include="Configuration\Engine\Engine_Server_Configuration.cs" />
-    <Compile Include="Configuration\Engine\Engine_Server_Config_Reader.cs" />
     <Compile Include="Configuration\Engine\Engine_VerbMapping.cs" />
     <Compile Include="Configuration\OAIPMH\OAI_PMH_Configuration.cs" />
     <Compile Include="Configuration\OAIPMH\OAI_PMH_Metadata_Format.cs" />

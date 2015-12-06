@@ -390,8 +390,10 @@ namespace SobekCM.Engine_Library.Items
 
 				return thisPackage;
 			}
-			catch
+			catch ( Exception ee )
 			{
+			    if (ee.Message.Length > 0)
+			        return new SobekCM_Item();
 				return null;
 			}
 		}
