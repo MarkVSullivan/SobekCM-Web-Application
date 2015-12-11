@@ -173,6 +173,11 @@
     <Compile Include="Citation\Elements\implemented elements\VRA_Technique_Element.cs" />
     <Compile Include="Citation\Elements\nonstandard elements\Serial_Hierarchy_Panel_Element.cs" />
     <Compile Include="Citation\Elements\nonstandard elements\Zoological_Taxonomy_Form_Element.cs" />
+    <Compile Include="Citation\SectionWriter\Coordinates_SectionWriter.cs" />
+    <Compile Include="Citation\SectionWriter\iCitationSectionWriter.cs" />
+    <Compile Include="Citation\SectionWriter\Rights_SectionWriter.cs" />
+    <Compile Include="Citation\SectionWriter\SpatialCoverage_SectionWriter.cs" />
+    <Compile Include="Citation\SectionWriter\UserTags_SectionWriter.cs" />
     <Compile Include="Citation\Template_MemoryMgmt_Utility.cs" />
     <Compile Include="CKEditor\CKEditor.cs" />
     <Compile Include="CKEditor\CKEditor_Security_Token.cs" />
@@ -349,7 +354,6 @@
     <Compile Include="MySobekViewer\MySobekViewer_Factory.cs" />
     <Compile Include="RequestCache.cs" />
     <Compile Include="ResultsViewer\Google_Map_ResultsViewer_Beta.cs" />
-    <Compile Include="Settings\Static_Resources.cs" />
     <Compile Include="UI\UI_ApplicationCache_Gateway.cs" />
     <Compile Include="UploadiFive\UploadiFive_Settings.cs" />
     <Compile Include="MySobekViewer\Page_Image_Upload_MySobekViewer.cs" />

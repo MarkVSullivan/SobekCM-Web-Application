@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<SobekCM_Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://sobekrepository.org/schemas/sobekcm_config"
+	xsi:schemaLocation="http://sobekrepository.org/schemas/sobekcm_config
+		http://sobekrepository.org/schemas/sobekcm_config.xsd">
+  
+  <!-- This code describes the actual extension and sets some top level inforation -->
+  <Extension code="POSTCARD" name="Postcard Metadata Extensions" version="1.0" >
+
+    <!-- Reference one of more assemblies (referenced relative to the plugin folder) -->
+    <Assembly name="PostcardCore.dll" />
+
+    <!-- Add CSS, conditions are [always|admin|item|metadata|mysobek] and that determines at -->
+    <!-- what points the CSS file is included by the base SobekCM code                       -->
+    <Css url="http://test.domain.edu/plugin/postcards/css/postcarditem.css" condition="always" />
+    <Css url="http://test.domain.edu/plugin/postcards/css/postcarditem.css" condition="item" />
+
+    <!-- When this plug-in is enabled, this will add a new database setting into the database.       -->
+    <!-- These setting will appear in a tab page called EXTENSIONS under the heading Postcard module -->
+    <!-- Adding them here makes them available in code in the InstanceWide_Settings object and th e  -->
+    <!-- online management screens. -->
+    <Install>
+      <AddSetting key="PostCard.Random Color Setting" value="Default Value" tabpage="Extensions" heading="Postcard Module"  />
+      <AddSetting key="PostCard.Other Random Setting" value="Default Value" tabpage="Extensions" heading="Postcard Module"  />
+    </Install>
+    
+    <!-- This removes the custom settings when the database during uninstall -->
+    <Uninstall>
+      <RemoveSetting key="PostCard.Random Color Setting" />
+      <RemoveSetting key="PostCard.Other Random Setting" />
+    </Uninstall>
+
+    <!-- You can include one more extra configuration information sections here.  This one just  -->
+    <!-- reserves the complete XML to be parsed by any code you might have.  It will be found in -->
+    <!-- the InstanceWide_Configuration object and can be looked up by the configuration name.   -->
+    <!-- This type will require XML parsing in YOUR code to use it of course.                    -->
+    <Configuration name="PostcardCore_Complex">
+      <ReserveXML>
+        <Postcard>
+          <RandomStuff type="something" name="Mark" value="whiskey" />
+        </Postcard>
+      </ReserveXML>
+    </Configuration>
+
+    <!-- This second configuration section will be parsed into a list/dictionary of key value  -->
+    <!-- pairs, so you don't need to actually parse XML in your code.  It will again be        -->
+    <!-- available in the new InstanceWide_Configuration object.                               -->
+    <Configuration name="PostcardCore_Values">
+      <KeyValuePairs>
+        <KeyValuePair key="color" value="blue" />
+        <KeyValuePair key="text" value="Postcard stuff" />
+      </KeyValuePairs>
+    </Configuration>
+  </Extension>
+
+  <!-- This adds an endpoint to the SObekCM engine which just returns the postcard information in XML format -->
+  <!-- This will be at: [url]/engine/plugin/postcard                                                         -->
+  <!-- This will look to run a method called GetPostcardInfo in a class PostcardServices in your assembly    -->
+  <!-- This also restricts access to that endpoint using a standard restriction range of R1                  -->
+  <!-- This is, of course, just completely optional.. just wanted to show how this would work                -->
+  <Engine ClearAll="false">
+    <Mapping>
+      <Path Segment="plugin">
+        <Endpoint Segment="postcard" ComponentID="POSTCARD_COMP" Method="GetPostcardInfo" RestrictionRangeID="R1" Protocol="XML" />
+      </Path>
+    </Mapping>
+    <Components>
+      <Component ID="POSTCARD_COMP" Class="PostcardServices" Assembly="PostcardCore" />
+    </Components>
+  </Engine>
+
+  <!-- This updates the metadata reading and writing to use your new code which addes the custom metadata -->
+  <!-- module.  This adds a new dmdSec in the METS for the postcard-specific metadat                      -->
+  <Metadata ClearAll="false">
+    <METS_Sec_ReaderWriters>
+      <ReaderWriter ID="POSTCARDCORE" label="PostcardCore" namespace="PostcardCore" Code_Assembly="PostcardCore" class="PostcardCore_METS_dmdSec_ReaderWriter" isActive="true" section="dmdSec">
+        <Mappings>
+          <Mapping mdtype="OTHER" othermdtype="POSTCARDCORE" label="PostcardCore" isDefault="true" />
+        </Mappings>
+      </ReaderWriter>
+    </METS_Sec_ReaderWriters>
+    <METS_Writing>
+      <Profile isDefault="true" name="Complete MODS Writer" description="This profile includes almost all of the possible sub-writers but the main bibliographic data is stored in MODS">
+        <Package_Scope>
+          <dmdSec>
+            <ReaderWriterRef ID="POSTCARDCORE" />
+          </dmdSec>
+        </Package_Scope>
+      </Profile>
+    </METS_Writing>
+  </Metadata>
+  
+  <!-- This adds a brief mapping from the metadata module to the BriefItem object that will be used -->
+  <!-- for citation and (eventually) all public access to the digital resource.                     -->
+  <BriefItem_Mapping ClearAll="false">
+    <MappingSet ID="Standard" Default="true">
+      <Mapper Assembly="PostcardCore" Class="PostcardCore.PostcardCore_BriefItemMapper" Enabled="true" />
+    </MappingSet>
+    <MappingSet ID="Citation">
+      <Mapper Assembly="PostcardCore" Class="PostcardCore.PostcardCore_BriefItemMapper" Enabled="true" />
+    </MappingSet>
+  </BriefItem_Mapping>
+
+  <!-- This adds a new section to the end of the online citation/description when viewing an item -->
+  <!-- online.  This maps from the fields in the BriefItem object to display the new values.      -->
+  <Citation ClearAll="false">
+    <CitationSet Name="DEFAULT" Default="true">
+      <FieldSet ID="POSTCARD" Heading="Postcard Information" Order="append" >
+        <Elements>
+          <Append MetadataTerm="Image Caption" DisplayTerm="Image Caption" />
+          <Append MetadataTerm="Format" DisplayTerm="Format" />
+          <Append MetadataTerm="Production Date" DisplayTerm="Production Date"  />
+          <Append MetadataTerm="Era" DisplayTerm="Era"  />
+          <Append MetadataTerm="Production Number" DisplayTerm="Production Number" />
+          <Append MetadataTerm="Postmark Sent" DisplayTerm="Postmark Sent" />
+          <Append MetadataTerm="Postmark Received" DisplayTerm="Postmark Received" />
+        </Elements>
+      </FieldSet>
+    </CitationSet>
+  </Citation>
+  
+  <!-- This makes new element objects available when editing metadata online through the SobekCM templates -->
+  <TemplateConfig ClearAll="false">
+    <TemplateElement type="Image Caption" class="PostcardCore.Image_Caption_Element" assembly="PostcardCore" />
+    <TemplateElement type="Format" subtype="postcard" class="PostcardCore.Format_Element" assembly="PostcardCore" />
+    <TemplateElement type="Production Date" class="PostcardCore.Production_Date_Element" assembly="PostcardCore"  />
+    <TemplateElement type="Era" class="PostcardCore.Era_Element" assembly="PostcardCore.dll"  />
+    <TemplateElement type="Production Number" class="PostcardCore.Production_Number_Element" assembly="PostcardCore" />
+    <TemplateElement type="Postmark Sent" class="PostcardCore.Postmark_Sent_Element" assembly="PostcardCore" />
+    <TemplateElement type="Postmark Received" class="PostcardCore.Postmark_Received_Element" assembly="PostcardCore" />
+  </TemplateConfig>
+  
+</SobekCM_Config>

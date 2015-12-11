@@ -5,9 +5,9 @@ using System.Data;
 using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Library.AggregationViewer.Viewers;
 using SobekCM.Library.Database;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 #endregion

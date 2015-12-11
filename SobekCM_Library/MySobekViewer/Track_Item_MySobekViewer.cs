@@ -10,9 +10,9 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
 using SobekCM.Library.Database;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 #endregion

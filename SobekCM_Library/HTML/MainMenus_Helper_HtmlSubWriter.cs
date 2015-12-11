@@ -11,8 +11,8 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Search;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Library.AggregationViewer;
-using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 
 #endregion

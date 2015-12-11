@@ -6,11 +6,11 @@ using System;
 using System.IO;
 using System.Web;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
@@ -274,6 +274,14 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("  <br />");
             Output.WriteLine("</div>");
             Output.WriteLine();
+        }
+
+        /// <summary> Flag indicates if a user must be logged in to access this 
+        /// admin or mySobek view.  </summary>
+        /// <value> Returns FALSE since this page allows users to logon </value>
+        public override bool Requires_Logged_In_User
+        {
+            get { return false; }
         }
     }
 }

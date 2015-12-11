@@ -3,8 +3,8 @@
 using System;
 using System.IO;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
-using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
 

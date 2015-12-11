@@ -4,7 +4,7 @@ using System.Web;
 using SobekCM.Core.Client;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
-using SobekCM.Library.Settings;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.WebContentViewer.Viewers

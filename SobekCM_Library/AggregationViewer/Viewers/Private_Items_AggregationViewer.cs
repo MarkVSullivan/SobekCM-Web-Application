@@ -8,12 +8,12 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 

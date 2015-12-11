@@ -10,9 +10,9 @@ using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
 using SobekCM.Library.Citation.Elements;
-using SobekCM.Library.Settings;
 using SobekCM.Resource_Object;
 
 #endregion

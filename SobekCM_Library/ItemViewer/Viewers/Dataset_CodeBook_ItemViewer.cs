@@ -7,7 +7,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Caching;
 using SobekCM.Core.Navigation;
-using SobekCM.Library.Settings;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Tools;
 
 #endregion

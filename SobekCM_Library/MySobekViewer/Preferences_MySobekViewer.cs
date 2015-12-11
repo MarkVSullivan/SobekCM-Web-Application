@@ -11,13 +11,13 @@ using System.Web;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
@@ -762,6 +762,14 @@ namespace SobekCM.Library.MySobekViewer
 				 : "</td></tr></table></blockquote></div>\n\n<!-- Focus on the first preferences text box -->\n<script type=\"text/javascript\">focus_element('prefGivenName');</script>");
 
 
+        }
+
+        /// <summary> Flag indicates if a user must be logged in to access this 
+        /// admin or mySobek view.  </summary>
+        /// <value> Returns FALSE since this page allows users to register </value>
+        public override bool Requires_Logged_In_User
+        {
+            get { return false; }
         }
     }
 }

@@ -9,10 +9,10 @@ using System.IO;
 using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Library.HTML;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 #endregion

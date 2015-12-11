@@ -10,11 +10,11 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.MySobekViewer;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 #endregion

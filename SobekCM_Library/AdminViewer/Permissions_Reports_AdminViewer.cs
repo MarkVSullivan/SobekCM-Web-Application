@@ -7,9 +7,9 @@ using System.IO;
 using System.Web;
 using System.Web.Caching;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
-using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 

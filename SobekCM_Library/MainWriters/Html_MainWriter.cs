@@ -8,10 +8,10 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.HTML;
-using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 

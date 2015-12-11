@@ -3515,7 +3515,7 @@ namespace SobekCM.Resource_Object.Database
             try
             {
                 // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[5];
+                EalDbParameter[] param_list = new EalDbParameter[3];
                 param_list[0] = new EalDbParameter("@ItemID", ItemID);
                 param_list[1] = new EalDbParameter("@Last_Milestone", Last_Milestone);
                 param_list[2] = new EalDbParameter("@Milestone_Date", Milestone_Date);

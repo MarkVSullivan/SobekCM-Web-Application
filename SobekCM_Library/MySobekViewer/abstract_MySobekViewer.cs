@@ -222,5 +222,10 @@ namespace SobekCM.Library.MySobekViewer
         /// <summary> Navigation type to be displayed (mostly used by the mySobek viewers) </summary>
         /// <value> This returns STANDARD by default, but can be override by classes that extend this abstract class </value>
         public virtual MySobek_Admin_Included_Navigation_Enum Standard_Navigation_Type { get { return MySobek_Admin_Included_Navigation_Enum.Standard; } }
+
+        /// <summary> Flag indicates if a user must be logged in to access this 
+        /// admin or mySobek view.  </summary>
+        /// <value> This returns TRUE by default, but can be overriden by classes that extend this abstract class </value>
+        public virtual bool Requires_Logged_In_User { get { return true; } }
     }
 }

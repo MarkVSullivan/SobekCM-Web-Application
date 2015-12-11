@@ -16,12 +16,12 @@ using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
 using SobekCM.Library.AggregationViewer;
 using SobekCM.Library.AggregationViewer.Viewers;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
-using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using SobekCM.Core.Navigation;
-using SobekCM.Library.Settings;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;

@@ -11,10 +11,10 @@ using System.Web;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Settings;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 

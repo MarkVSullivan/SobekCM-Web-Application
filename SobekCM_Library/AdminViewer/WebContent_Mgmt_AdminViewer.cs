@@ -4,8 +4,8 @@ using System.IO;
 using System.Web;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Library.HTML;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.AdminViewer

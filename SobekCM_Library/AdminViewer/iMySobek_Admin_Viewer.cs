@@ -96,5 +96,9 @@ namespace SobekCM.Library.AdminViewer
 
         /// <summary> Navigation type to be displayed (mostly used by the mySobek viewers) </summary>
         MySobek_Admin_Included_Navigation_Enum Standard_Navigation_Type { get;  }
+
+        /// <summary> Flag indicates if a user must be logged in to access this 
+        /// admin or mySobek view.  </summary>
+        bool Requires_Logged_In_User { get;  }
     }
 }

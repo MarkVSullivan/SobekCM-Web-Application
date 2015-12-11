@@ -8,7 +8,7 @@ using System.Web;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
-using SobekCM.Library.Settings;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
 

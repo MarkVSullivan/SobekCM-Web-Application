@@ -179,6 +179,13 @@
     <Compile Include="Skins\Complete_Web_Skin_Source_Files.cs" />
     <Compile Include="Skins\Web_Skin_Collection.cs" />
     <Compile Include="Skins\Web_Skin_Object.cs" />
+    <Compile Include="UI_Configuration\Citation\CitationConfig.cs" />
+    <Compile Include="UI_Configuration\Citation\CitationElement.cs" />
+    <Compile Include="UI_Configuration\Citation\CitationSet.cs" />
+    <Compile Include="UI_Configuration\Citation\SectionWriter.cs" />
+    <Compile Include="UI_Configuration\Static_Resources.cs" />
+    <Compile Include="UI_Configuration\TemplateElements\TemplateElement.cs" />
+    <Compile Include="UI_Configuration\TemplateElements\TemplateElementsConfig.cs" />
     <Compile Include="Users\Public_User_Folder.cs" />
     <Compile Include="Users\User_Permissioned_Aggregation.cs" />
     <Compile Include="Users\User_Aggregation_Permissions.cs" />
@@ -214,7 +221,9 @@
       <Name>SobekCM_Tools</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="UI_Configuration\ItemViewers\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

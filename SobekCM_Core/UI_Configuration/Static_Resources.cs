@@ -6,7 +6,7 @@ using System.Xml;
 
 #endregion
 
-namespace SobekCM.Library.Settings
+namespace SobekCM.Core.UI_Configuration
 {
     /// <summary> Gateway to all of the static resources (images, javascript, stylesheets, and included libraries ) 
     /// used by the standard SobekCM web user interface </summary>

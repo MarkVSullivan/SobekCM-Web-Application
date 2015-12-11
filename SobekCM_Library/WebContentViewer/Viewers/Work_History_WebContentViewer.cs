@@ -3,8 +3,8 @@ using System.IO;
 using SobekCM.Core;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.WebContent.Single;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.WebContentViewer.Viewers

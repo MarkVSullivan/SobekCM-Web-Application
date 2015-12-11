@@ -3,8 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Library.HTML;
-using SobekCM.Library.Settings;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
 

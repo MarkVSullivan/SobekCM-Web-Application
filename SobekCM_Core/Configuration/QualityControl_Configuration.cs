@@ -36,16 +36,6 @@ namespace SobekCM.Core.Configuration
             // Set some default values
             attemptedRead = false;
             DefaultProfile = null;
-
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            sobekcm_qc_configfilePath=(baseDirectory + "config\\default\\sobekcm_qc.config");
-
-            if (!Read_Metadata_Configuration(sobekcm_qc_configfilePath))
-            {
-                // Set default reader/writer values to have a baseline in case there is
-                // no file to be read 
-                Set_Default_Values();
-            }
         }
 
 

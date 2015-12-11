@@ -9,8 +9,8 @@ using System.Web;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Engine_Library.Solr;
-using SobekCM.Library.Settings;
 using SobekCM.Tools;
 
 #endregion

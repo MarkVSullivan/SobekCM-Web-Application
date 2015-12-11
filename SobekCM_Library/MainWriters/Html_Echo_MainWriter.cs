@@ -2,7 +2,7 @@
 
 using System.IO;
 using SobekCM.Core.Navigation;
-using SobekCM.Library.Settings;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Tools;
 
 #endregion

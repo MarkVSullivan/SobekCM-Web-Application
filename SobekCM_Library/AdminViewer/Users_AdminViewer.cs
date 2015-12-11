@@ -11,13 +11,13 @@ using System.Text;
 using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
-using SobekCM.Library.Settings;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 

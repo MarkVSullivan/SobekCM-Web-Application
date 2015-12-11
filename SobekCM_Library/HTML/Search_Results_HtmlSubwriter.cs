@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
-using SobekCM.Library.Settings;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Tools;
 
 #endregion

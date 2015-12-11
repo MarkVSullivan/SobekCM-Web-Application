@@ -6,7 +6,7 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
-using SobekCM.Library.Settings;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
