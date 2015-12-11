@@ -1156,7 +1156,7 @@ namespace SobekCM.Engine_Library.Database
 		{
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Engine_Database.Perform_Metadata_Search_Paged", "Performing search in database");
+                Tracer.Add_Trace("Engine_Database.Perform_Metadata_Search_Paged", "Performing search in database ( stored procedure SobekCM_Metadata_Search_Paged )");
 			}
 
 			// Build the parameter list
@@ -1314,7 +1314,7 @@ namespace SobekCM.Engine_Library.Database
 		{
 			if (Tracer != null)
 			{
-				Tracer.Add_Trace("Engine_Database.Perform_Basic_Search_Paged", "Performing basic search in database");
+                Tracer.Add_Trace("Engine_Database.Perform_Basic_Search_Paged", "Performing basic search in database  ( stored procedure SobekCM_Metadata_Basic_Search_Paged2 )");
 			}
 
             if (AggregationCode.ToUpper() == "ALL")
