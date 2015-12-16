@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Tools;
 
 namespace SobekCM.Core.UI_Configuration.Citation
@@ -26,6 +27,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
     public class CitationElement
     {
         /// <summary> Metadata term this citation element displays (or a unique value) </summary>
+        /// <remarks> This field also uniquely defines this citation element </remarks>
         [DataMember(Name = "term")]
         [XmlAttribute("term")]
         [ProtoMember(1)]
@@ -65,9 +67,18 @@ namespace SobekCM.Core.UI_Configuration.Citation
         public SectionWriter SectionWriter { get; set; }
 
         /// <summary> Any additional options for the citation section writer </summary>
-        public List<StringKeyValuePair> Options { get; set; } 
+        [DataMember(Name = "options", EmitDefaultValue = false)]
+        [XmlArray("options")]
+        [XmlArrayItem("option", typeof(StringKeyValuePair))]
+        [ProtoMember(7)]
+        public List<StringKeyValuePair> Options { get; set; }
 
-        // Translations of display term also acceptable
+        /// <summary> Provided translations for the display term </summary>
+        [DataMember(Name = "translations", EmitDefaultValue = false)]
+        [XmlArray("translations")]
+        [XmlArrayItem("translation", typeof(Web_Language_Translation_Value))]
+        [ProtoMember(8)]
+        public List<Web_Language_Translation_Value> Translations { get; set; }
 
         /// <summary> Constructor for the <see cref="CitationElement"/> class. </summary>
         public CitationElement()
@@ -98,6 +109,42 @@ namespace SobekCM.Core.UI_Configuration.Citation
             return (!String.IsNullOrEmpty(ItemProp));
         }
 
+        /// <summary> Method suppresses XML Serialization of the Options property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeOptions()
+        {
+            return ((Options != null) && (Options.Count > 0));
+        }
+
+        /// <summary> Method suppresses XML Serialization of the Translations property if it is empty </summary>
+        /// <returns> TRUE if the property should be serialized, otherwise FALSE </returns>
+        public bool ShouldSerializeTranslations()
+        {
+            return ((Translations != null) && (Translations.Count > 0));
+        }
+
         #endregion
+
+        /// <summary> Add a new option to this citation element configuration </summary>
+        /// <param name="Key"> Key for this key/value pair </param>
+        /// <param name="Value"> Value for this key/value pair </param>
+        public void Add_Option(string Key, string Value)
+        {
+            if (Options == null)
+                Options = new List<StringKeyValuePair>();
+
+            Options.Add(new StringKeyValuePair(Key, Value));
+        }
+
+        /// <summary> Add a new translation for the display term </summary>
+        /// <param name="Language"> Language in which this value is represented </param>
+        /// <param name="Value"> Value in provided language </param>
+        public void Add_Translation(Web_Language_Enum Language, string Value)
+        {
+            if (Translations == null)
+                Translations = new List<Web_Language_Translation_Value>();
+
+            Translations.Add(new Web_Language_Translation_Value(Language, Value));
+        }
     }
 }

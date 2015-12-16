@@ -583,6 +583,10 @@ namespace EngineAgnosticLayerDbAccess
                 // Step through each parameter
                 foreach (EalDbParameter thisParam in DbParameters)
                 {
+                    // If this parameter is null, just go to the next
+                    if (thisParam == null)
+                        continue;
+
                     // Determine the appropriate SQL TYPE
                     SqlDbType sqlType = SqlDbType.NVarChar;
                     switch (thisParam.DbType)
@@ -638,6 +642,10 @@ namespace EngineAgnosticLayerDbAccess
                 // Step through each parameter
                 foreach (EalDbParameter thisParam in DbParameters)
                 {
+                    // If this parameter is null, just go to the next
+                    if (thisParam == null)
+                        continue;
+
                     // Determine the appropriate SQL TYPE
                     SqlDbType sqlType = SqlDbType.NVarChar;
                     switch (thisParam.DbType)
@@ -696,6 +704,10 @@ namespace EngineAgnosticLayerDbAccess
             int i = 0;
             foreach (EalDbParameter thisParameter in EalParams)
             {
+                // If this parameter is null, just go to the next
+                if (thisParameter == null)
+                    continue;
+
                 if ((thisParameter.Direction == ParameterDirection.Output) || (thisParameter.Direction == ParameterDirection.InputOutput))
                 {
                     thisParameter.Value = SqlParams[i].Value;
@@ -711,6 +723,10 @@ namespace EngineAgnosticLayerDbAccess
             int i = 0;
             foreach (EalDbParameter thisParameter in EalParams)
             {
+                // If this parameter is null, just go to the next
+                if (thisParameter == null)
+                    continue;
+
                 if ((thisParameter.Direction == ParameterDirection.Output) || (thisParameter.Direction == ParameterDirection.InputOutput))
                 {
                     thisParameter.Value = SqlParams[i].Value;
@@ -726,6 +742,10 @@ namespace EngineAgnosticLayerDbAccess
             int i = 0;
             foreach (EalDbParameter thisParameter in EalParams)
             {
+                // If this parameter is null, just go to the next
+                if (thisParameter == null)
+                    continue;
+
                 if ((thisParameter.Direction == ParameterDirection.Output) || (thisParameter.Direction == ParameterDirection.InputOutput))
                 {
                     Wrapper.Add_Parameter_Copy_Pair(thisParameter, SqlParams[i]);
@@ -741,6 +761,10 @@ namespace EngineAgnosticLayerDbAccess
             int i = 0;
             foreach (EalDbParameter thisParameter in EalParams)
             {
+                // If this parameter is null, just go to the next
+                if (thisParameter == null)
+                    continue;
+
                 if ((thisParameter.Direction == ParameterDirection.Output) || (thisParameter.Direction == ParameterDirection.InputOutput))
                 {
                     Wrapper.Add_Parameter_Copy_Pair(thisParameter, SqlParams[i]);

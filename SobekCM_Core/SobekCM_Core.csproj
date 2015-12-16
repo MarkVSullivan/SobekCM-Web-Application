@@ -181,6 +181,7 @@
     <Compile Include="Skins\Web_Skin_Object.cs" />
     <Compile Include="UI_Configuration\Citation\CitationConfig.cs" />
     <Compile Include="UI_Configuration\Citation\CitationElement.cs" />
+    <Compile Include="UI_Configuration\Citation\CitationFieldSet.cs" />
     <Compile Include="UI_Configuration\Citation\CitationSet.cs" />
     <Compile Include="UI_Configuration\Citation\SectionWriter.cs" />
     <Compile Include="UI_Configuration\Static_Resources.cs" />
