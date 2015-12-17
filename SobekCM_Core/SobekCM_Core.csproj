@@ -94,6 +94,9 @@
     <Compile Include="Configuration\BriefItemMapping_Configuration.cs" />
     <Compile Include="Configuration\ContactForm_Configuration.cs" />
     <Compile Include="Configuration\Database_Instance_Configuration.cs" />
+    <Compile Include="Configuration\Extensions\ExtensionCssInfo.cs" />
+    <Compile Include="Configuration\Extensions\ExtensionInfo.cs" />
+    <Compile Include="Configuration\Extensions\Extension_Configuration.cs" />
     <Compile Include="Configuration\InstanceWide_Configuration.cs" />
     <Compile Include="Configuration\MapEditor_Configuration.cs" />
     <Compile Include="Configuration\Engine\Engine_Component.cs" />
@@ -184,6 +187,8 @@
     <Compile Include="UI_Configuration\Citation\CitationFieldSet.cs" />
     <Compile Include="UI_Configuration\Citation\CitationSet.cs" />
     <Compile Include="UI_Configuration\Citation\SectionWriter.cs" />
+    <Compile Include="UI_Configuration\Viewers\ViewerConfig.cs" />
+    <Compile Include="UI_Configuration\Viewers\SingleSubViewer.cs" />
     <Compile Include="UI_Configuration\Static_Resources.cs" />
     <Compile Include="UI_Configuration\TemplateElements\TemplateElement.cs" />
     <Compile Include="UI_Configuration\TemplateElements\TemplateElementsConfig.cs" />

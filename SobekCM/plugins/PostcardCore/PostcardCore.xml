@@ -10,7 +10,7 @@
     <!-- Reference one of more assemblies (referenced relative to the plugin folder) -->
     <Assembly name="PostcardCore.dll" />
 
-    <!-- Add CSS, conditions are [always|admin|item|metadata|mysobek] and that determines at -->
+    <!-- Add CSS, conditions are [always|admin|item|metadata|mysobek|aggregation|results] and that determines at -->
     <!-- what points the CSS file is included by the base SobekCM code                       -->
     <Css url="http://test.domain.edu/plugin/postcards/css/postcarditem.css" condition="always" />
     <Css url="http://test.domain.edu/plugin/postcards/css/postcarditem.css" condition="item" />
