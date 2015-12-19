@@ -30,10 +30,10 @@ namespace SobekCM.Core.Configuration.Engine
 
             // Find a match by path
             int currentIndex = 0;
-            if (rootPathsDictionary.ContainsKey(Paths[currentIndex]))
+            if (rootPathsDictionary.ContainsKey(Paths[0]))
             {
-                Engine_Path_Endpoint path = rootPathsDictionary[Paths[currentIndex]];
-                currentIndex++;
+                Engine_Path_Endpoint path = rootPathsDictionary[Paths[0]];
+                Paths.RemoveAt(0);
 
                 do
                 {
@@ -44,15 +44,15 @@ namespace SobekCM.Core.Configuration.Engine
                     }
 
                     // Look to the next part of the path
-                    if (Paths.Count > currentIndex)
+                    if (Paths.Count > 0)
                     {
-                        if (!path.ContainsChildKey(Paths[currentIndex]))
+                        if (!path.ContainsChildKey(Paths[0]))
                         {
                             return null;
                         }
 
-                        path = path.GetChild(Paths[currentIndex]);
-                        currentIndex++;
+                        path = path.GetChild(Paths[0]);
+                        Paths.RemoveAt(0);
                     }
                     else
                     {

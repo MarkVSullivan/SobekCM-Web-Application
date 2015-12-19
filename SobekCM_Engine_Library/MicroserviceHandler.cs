@@ -212,7 +212,7 @@ namespace SobekCM.Engine_Library
                         if (verbMapping.RequestType == Microservice_Endpoint_RequestType_Enum.GET)
                             methodInfo.Invoke(restApiObject, new object[] { Context.Response, paths, Context.Request.QueryString, verbMapping.Protocol, debug });
                         else
-                            methodInfo.Invoke(restApiObject, new object[] { Context.Response, paths, Context.Request.QueryString, Context.Request.Form, debug });
+                            methodInfo.Invoke(restApiObject, new object[] { Context.Response, paths, Context.Request.QueryString, verbMapping.Protocol, Context.Request.Form, debug });
                     }
                     catch (Exception ee)
                     {
