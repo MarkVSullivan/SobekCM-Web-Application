@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
+using ProtoBuf;
 
 namespace SobekCM.Core.Configuration.Extensions
 {
+    /// <summary> Collection of all the extension information </summary>
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("ExtensionConfig")]
     public class Extension_Configuration
     {
-        /// <summary>
-        /// Gets or sets the extensions.
-        /// </summary>
-        /// <value>
-        /// The extensions.
-        /// </value>
+        /// <summary> Collection of information about each extension </summary>
+        [DataMember(Name = "extensions", EmitDefaultValue = false)]
+        [XmlArray("extensions")]
+        [XmlArrayItem("extension", typeof(ExtensionInfo))]
+        [ProtoMember(1)]
         public List<ExtensionInfo> Extensions { get; set; } 
     }
 }

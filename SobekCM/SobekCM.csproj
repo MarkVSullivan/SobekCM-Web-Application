@@ -841,7 +841,9 @@
     <Content Include="mySobek\templates\vodou.xml" />
     <Content Include="mySobek\templates\vodou2.xml" />
     <Content Include="oai2.xsl" />
-    <Content Include="plugins\PostcardCore\PostcardCore.xml" />
+    <Content Include="plugins\PostcardCore\PostcardCore.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="SobekCM.aspx" />
     <Content Include="SobekCM_Data.aspx" />
     <Content Include="SobekCM_OAI.aspx" />
