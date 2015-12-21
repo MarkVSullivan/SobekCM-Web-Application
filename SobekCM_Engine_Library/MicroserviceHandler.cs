@@ -127,6 +127,10 @@ namespace SobekCM.Engine_Library
                         case Microservice_Endpoint_Protocol_Enum.BINARY:
                             Context.Response.ContentType = "application/octet-stream";
                             break;
+
+                        case Microservice_Endpoint_Protocol_Enum.TEXT:
+                            Context.Response.ContentType = "text/plain";
+                            break;
                     }
 
                     // Determine if this is currently in a valid DEBUG mode

@@ -54,6 +54,9 @@ namespace SobekCM.Core.Configuration.Engine
         /// <summary> Serve the object, via SOAP </summary>
         SOAP,
 
+        /// <summary> Return the information as text-only </summary>
+        TEXT,
+
         /// <summary> Output in XML format </summary>
         XML
     }

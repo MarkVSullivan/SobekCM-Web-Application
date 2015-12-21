@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Xml;
@@ -17,6 +16,8 @@ using SobekCM.Resource_Object.Configuration;
 
 namespace SobekCM.Engine_Library.Configuration
 {
+    /// <summary> Reads all of the configuration files into the 
+    /// configuration objects </summary>
     public class Configuration_Files_Reader
     {
 
@@ -96,6 +97,13 @@ namespace SobekCM.Engine_Library.Configuration
                 }
             }
 
+            // Log this
+            returnValue.Add_Log("Found the following config files to attempt to read (" + DateTime.Now.ToShortDateString() + " ) :");
+            foreach (string configFile in configFiles)
+            {
+                returnValue.Add_Log("     " + configFile );
+            }
+
             // With all the files to read collected and sorted, read each one
             foreach (string thisConfigFile in configFiles)
             {
@@ -110,6 +118,7 @@ namespace SobekCM.Engine_Library.Configuration
             // Save the metadata configuration to the resource object library
             ResourceObjectSettings.MetadataConfig = returnValue.Metadata;
 
+            returnValue.HasData = true;
 
             return returnValue;
 
@@ -184,7 +193,30 @@ namespace SobekCM.Engine_Library.Configuration
 
         private static bool read_config_file(string ConfigFile, InstanceWide_Configuration ConfigObj, InstanceWide_Settings Settings)
         {
-            Console.WriteLine(ConfigFile);
+            // If the file doesn't exist, that is strange.. but not an error per se
+            if (!File.Exists(ConfigFile))
+            {
+                return true;    
+            }
+
+            // Add to the log
+            ConfigObj.Add_Log();
+            try
+            {
+                string file = Path.GetFileName(ConfigFile);
+                DirectoryInfo dirInfo = new DirectoryInfo(Path.GetDirectoryName(ConfigFile));
+                string directory = dirInfo.Name;
+                string directory2 = dirInfo.Parent.Name;
+
+                ConfigObj.Add_Log("Reading " + directory2 + "\\" + directory + "\\" + file);
+            }
+            catch
+            {
+                ConfigObj.Add_Log("Reading " + ConfigFile + " (Error parsing for logging)");
+            }
+
+            
+            
 
             // Streams used for reading
             Stream readerStream = null;
@@ -253,6 +285,10 @@ namespace SobekCM.Engine_Library.Configuration
             }
             catch (Exception ee)
             {
+                ConfigObj.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_config_files");
+                ConfigObj.Add_Log(ee.Message);
+                ConfigObj.Add_Log(ee.StackTrace);
+
                 //returnValue.Error = ee.Message;
             }
             finally
@@ -1256,6 +1292,10 @@ namespace SobekCM.Engine_Library.Configuration
                                             verbMapping.Protocol = Microservice_Endpoint_Protocol_Enum.SOAP;
                                             break;
 
+                                        case "TEXT":
+                                            verbMapping.Protocol = Microservice_Endpoint_Protocol_Enum.TEXT;
+                                            break;
+
                                         case "XML":
                                             verbMapping.Protocol = Microservice_Endpoint_Protocol_Enum.XML;
                                             break;
@@ -1351,6 +1391,10 @@ namespace SobekCM.Engine_Library.Configuration
 
                     case "XML":
                         protocol = Microservice_Endpoint_Protocol_Enum.XML;
+                        break;
+
+                    case "TEXT":
+                        protocol = Microservice_Endpoint_Protocol_Enum.TEXT;
                         break;
 
                     default:

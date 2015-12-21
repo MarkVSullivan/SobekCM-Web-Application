@@ -221,6 +221,7 @@ namespace SobekCM.Engine_Library.Endpoints
             Serialize(Engine_ApplicationCache_Gateway.Settings, Response, Protocol, json_callback);
         }
 
+
         /// <summary> Gets the complete configuration object </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
@@ -238,6 +239,33 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Use the base class to serialize the object according to request protocol
             Serialize(Engine_ApplicationCache_Gateway.Configuration, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Gets the complete configuration object </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetConfigurationLog(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            if (Protocol == Microservice_Endpoint_Protocol_Enum.TEXT)
+            {
+                Response.ContentType = "text/plain";
+                foreach (string thisLine in Engine_ApplicationCache_Gateway.Configuration.ReadingLog)
+                    Response.Output.WriteLine(thisLine);
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseConfigLog";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(Engine_ApplicationCache_Gateway.Configuration.ReadingLog, Response, Protocol, json_callback);
         }
 
     }

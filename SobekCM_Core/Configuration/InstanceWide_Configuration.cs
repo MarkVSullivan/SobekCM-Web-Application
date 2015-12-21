@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
@@ -29,12 +30,36 @@ namespace SobekCM.Core.Configuration
             OAI_PMH = new OAI_PMH_Configuration();
 
             HasData = false;
+            ReadingLog = new List<string>();
         }
 
         /// <summary> Flag indicates if the data has been pulled into this </summary>
         [XmlIgnore]
         [IgnoreDataMember]
         public bool HasData { get; set; }
+
+        /// <summary> Log file keeps the log of the attempt to read all of the
+        /// configuration files, just in case there is an error, or the log is requested </summary>
+        [XmlIgnore]
+        [IgnoreDataMember]
+        public List<string>  ReadingLog { get; set; }
+
+        /// <summary> Add an empty line to the reading log  </summary>
+        public void Add_Log()
+        {
+            if (ReadingLog == null) ReadingLog = new List<string>();
+
+            ReadingLog.Add(String.Empty);
+        }
+
+        /// <summary> Add a reading log line to the log  </summary>
+        /// <param name="LogLine"> Information to add to the log </param>
+        public void Add_Log(string LogLine)
+        {
+            if (ReadingLog == null) ReadingLog = new List<string>();
+
+            ReadingLog.Add( DateTime.Now.Hour.ToString().PadLeft(2,'0') + ":" + DateTime.Now.Minute.ToString().PadLeft(2,'0') + ":" + DateTime.Now.Second.ToString().PadLeft(2,'0') + "." + DateTime.Now.Millisecond.ToString().PadLeft(3,'0') + " - " + LogLine);
+        }
 
         /// <summary> Configuration for authentication for this instance </summary>
         [DataMember(Name = "authentication", EmitDefaultValue = false)]
