@@ -241,6 +241,25 @@ namespace SobekCM.Engine_Library.Endpoints
             Serialize(Engine_ApplicationCache_Gateway.Configuration, Response, Protocol, json_callback);
         }
 
+        /// <summary> Gets the authentication configuration object </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetConfigurationAuthentication(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Get the JSON-P callback function
+            string json_callback = "parseAuthentication";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(Engine_ApplicationCache_Gateway.Configuration.Authentication, Response, Protocol, json_callback);
+        }
+
         /// <summary> Gets the complete configuration object </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>

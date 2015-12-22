@@ -121,74 +121,6 @@ namespace SobekCM.Engine_Library.Configuration
             returnValue.HasData = true;
 
             return returnValue;
-
-            //// Try to read the SHIBBOLETH configuration file
-            //if (File.Exists(Base_Directory + "\\config\\user\\sobekcm_shibboleth.config"))
-            //{
-            //    returnValue.Authentication.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(Base_Directory + "\\config\\user\\sobekcm_shibboleth.config");
-            //}
-            //else if (File.Exists(Base_Directory + "\\config\\default\\sobekcm_shibboleth.config"))
-            //{
-            //    returnValue.Authentication.Shibboleth = Shibboleth_Configuration_Reader.Read_Config(Base_Directory + "\\config\\default\\sobekcm_shibboleth.config");
-            //}
-
-            //// Try to read the CONTACT FORM configuration file
-            //if (File.Exists(Base_Directory + "\\config\\user\\sobekcm_contactform.config"))
-            //{
-            //    returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(Base_Directory + "\\config\\user\\sobekcm_contactform.config");
-            //}
-            //else if (File.Exists(Base_Directory + "\\config\\default\\sobekcm_contactform.config"))
-            //{
-            //    returnValue.ContactForm = ContactForm_Configuration_Reader.Read_Config(Base_Directory + "\\config\\default\\sobekcm_contactform.config");
-            //}
-
-            //// Try to read the QUALITY CONTROL configuration file
-            ////if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_qc.config"))
-            ////{
-            ////    QualityControl_Configuration.Read_Metadata_Configuration(returnValue.Servers.Base_Directory + "\\config\\user\\sobekcm_qc.config");
-            ////}
-            ////else if (File.Exists(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_qc.config"))
-            ////{
-            ////    QualityControl_Configuration.Read_Metadata_Configuration(returnValue.Servers.Base_Directory + "\\config\\default\\sobekcm_qc.config");
-            ////}
-
-            //// Try to read the BRIEF ITEM MAPPING configuration file
-            //if (File.Exists(Base_Directory + "\\config\\user\\sobekcm_brief_item_mapping.config"))
-            //{
-            //    BriefItem_Factory.Read_Config(Base_Directory + "\\config\\user\\sobekcm_brief_item_mapping.config");
-            //}
-            //else if (File.Exists(Base_Directory + "\\config\\default\\sobekcm_brief_item_mapping.config"))
-            //{
-            //    BriefItem_Factory.Read_Config(Base_Directory + "\\config\\default\\sobekcm_brief_item_mapping.config");
-            //}
-
-            //// Try to read the OAI-PMH configuration file
-            //if (File.Exists(Base_Directory + "\\config\\user\\sobekcm_oaipmh.config"))
-            //{
-            //    returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(Base_Directory + "\\config\\user\\sobekcm_oaipmh.config", Settings.System.System_Name, Settings.System.System_Abbreviation, Settings.Email.System_Email);
-            //}
-            //else if (File.Exists(Base_Directory + "\\config\\default\\sobekcm_oaipmh.config"))
-            //{
-            //    returnValue.OAI_PMH = OAI_PMH_Configuration_Reader.Read_Config(Base_Directory + "\\config\\default\\sobekcm_oaipmh.config", Settings.System.System_Name, Settings.System.System_Abbreviation, Settings.Email.System_Email);
-            //}
-
-            //// Load the OAI-PMH configuration file info into the OAI writer class ( in the resource object library )
-            //if (returnValue.OAI_PMH == null)
-            //{
-            //    returnValue.OAI_PMH = new OAI_PMH_Configuration();
-            //    returnValue.OAI_PMH.Set_Default();
-            //}
-
-            //OAI_PMH_Metadata_Writers.Clear();
-            //foreach (OAI_PMH_Metadata_Format thisWriter in returnValue.OAI_PMH.Metadata_Prefixes)
-            //{
-            //    if (thisWriter.Enabled)
-            //    {
-            //        OAI_PMH_Metadata_Writers.Add_Writer(thisWriter.Prefix, thisWriter.Assembly, thisWriter.Namespace, thisWriter.Class);
-            //    }
-            //}
-
-            return returnValue;
         }
 
         private static bool read_config_file(string ConfigFile, InstanceWide_Configuration ConfigObj, InstanceWide_Settings Settings)
@@ -215,17 +147,17 @@ namespace SobekCM.Engine_Library.Configuration
                 ConfigObj.Add_Log("Reading " + ConfigFile + " (Error parsing for logging)");
             }
 
-            
-            
-
             // Streams used for reading
             Stream readerStream = null;
             XmlTextReader readerXml = null;
-
-
-
+            
             try
             {
+                // Check the file for the last modified date
+                DateTime lastModifiedDate = (new FileInfo(ConfigFile)).LastWriteTime;
+                if (DateTime.Compare(ConfigObj.LatestDateTimeStamp, lastModifiedDate) < 0)
+                    ConfigObj.LatestDateTimeStamp = lastModifiedDate;
+
                 // Open a link to the file
                 readerStream = new FileStream(ConfigFile, FileMode.Open, FileAccess.Read);
 
@@ -240,26 +172,32 @@ namespace SobekCM.Engine_Library.Configuration
                         switch (readerXml.Name.ToLower())
                         {
                             case "authentication":
+                                ConfigObj.Add_Log("        Parsing AUTHENTICATION subtree");
                                 read_authentication_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
                             case "oai-pmh":
+                                ConfigObj.Add_Log("        Parsing OAI-PMH subtree");
                                 read_oai_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
                             case "contactform":
+                                ConfigObj.Add_Log("        Parsing CONTACTFORM subtree");
                                 read_contactform_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
                             case "briefitem_mapping":
+                                ConfigObj.Add_Log("        Parsing BRIEFITEM_MAPPING subtree");
                                 read_briefitem_mapping_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
                             case "mapeditor":
+                                ConfigObj.Add_Log("        Parsing MAPEDITOR subtree");
                                 read_mapeditor_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
                             case "engine":
+                                ConfigObj.Add_Log("        Parsing ENGINE subtree");
                                 if (readerXml.MoveToAttribute("ClearAll"))
                                 {
                                     if ((readerXml.Value.Trim().ToLower() == "true") && ( ConfigObj.Engine != null ))
@@ -272,10 +210,12 @@ namespace SobekCM.Engine_Library.Configuration
                                 break;
 
                             case "qualitycontrol":
+                                ConfigObj.Add_Log("        Parsing QUALITYCONTROL subtree");
                                 read_quality_control_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
                             case "metadata":
+                                ConfigObj.Add_Log("        Parsing METADATA subtree");
                                 read_metadata_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
@@ -289,7 +229,7 @@ namespace SobekCM.Engine_Library.Configuration
                 ConfigObj.Add_Log(ee.Message);
                 ConfigObj.Add_Log(ee.StackTrace);
 
-                //returnValue.Error = ee.Message;
+                ConfigObj.ErrorEncountered = true;
             }
             finally
             {
@@ -774,7 +714,11 @@ namespace SobekCM.Engine_Library.Configuration
             }
             catch (Exception ee)
             {
-                //Read_Config_Error = ee.Message;
+                Config.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_briefitem_mapping_details");
+                Config.Add_Log(ee.Message);
+                Config.Add_Log(ee.StackTrace);
+
+                Config.ErrorEncountered = true;
                 return false;
             }
 
@@ -1730,7 +1674,7 @@ namespace SobekCM.Engine_Library.Configuration
         private static bool read_metadata_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
         {
             bool errorEncountered = false;
-
+                
             // Ensure the config object exists
             if (Config.Metadata == null)
                 Config.Metadata = new Metadata_Configuration();
@@ -1768,8 +1712,13 @@ namespace SobekCM.Engine_Library.Configuration
                     }
                 }
             }
-            catch
+            catch ( Exception ee )
             {
+                Config.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_metadata_details");
+                Config.Add_Log(ee.Message);
+                Config.Add_Log(ee.StackTrace);
+
+                Config.ErrorEncountered = true;
                 errorEncountered = true;
             }
 

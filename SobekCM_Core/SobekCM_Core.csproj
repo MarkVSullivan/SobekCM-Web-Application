@@ -189,6 +189,7 @@
     <Compile Include="UI_Configuration\Citation\CitationFieldSet.cs" />
     <Compile Include="UI_Configuration\Citation\CitationSet.cs" />
     <Compile Include="UI_Configuration\Citation\SectionWriter.cs" />
+    <Compile Include="UI_Configuration\InstanceWide_UI_Configuration.cs" />
     <Compile Include="UI_Configuration\Viewers\ViewerConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\SingleSubViewer.cs" />
     <Compile Include="UI_Configuration\Static_Resources.cs" />

@@ -5,6 +5,7 @@ using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.Configuration.Engine;
+using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.Configuration.OAIPMH;
 using SobekCM.Resource_Object.Configuration;
 
@@ -29,8 +30,11 @@ namespace SobekCM.Core.Configuration
             Metadata = new Metadata_Configuration();
             OAI_PMH = new OAI_PMH_Configuration();
 
+            // Set some defaults
             HasData = false;
             ReadingLog = new List<string>();
+            ErrorEncountered = false;
+            LatestDateTimeStamp = new DateTime(2000,1,1);
         }
 
         /// <summary> Flag indicates if the data has been pulled into this </summary>
@@ -43,6 +47,13 @@ namespace SobekCM.Core.Configuration
         [XmlIgnore]
         [IgnoreDataMember]
         public List<string>  ReadingLog { get; set; }
+
+        /// <summary> Flag indicates if an error was encountered while reading the configuration
+        /// files. </summary>
+        /// <remarks> The actual error (and other entries) will appear in the ReadingLog property </remarks>
+        [XmlIgnore]
+        [IgnoreDataMember]
+        public bool ErrorEncountered { get; set; }
 
         /// <summary> Add an empty line to the reading log  </summary>
         public void Add_Log()
@@ -60,6 +71,12 @@ namespace SobekCM.Core.Configuration
 
             ReadingLog.Add( DateTime.Now.Hour.ToString().PadLeft(2,'0') + ":" + DateTime.Now.Minute.ToString().PadLeft(2,'0') + ":" + DateTime.Now.Second.ToString().PadLeft(2,'0') + "." + DateTime.Now.Millisecond.ToString().PadLeft(3,'0') + " - " + LogLine);
         }
+
+        /// <summary> Most recent timestamp on any of the configuration files </summary>
+        [DataMember(Name = "timestamp", EmitDefaultValue = false)]
+        [XmlAttribute("timestamp")]
+        [ProtoMember(1)]
+        public DateTime LatestDateTimeStamp { get; set; }
 
         /// <summary> Configuration for authentication for this instance </summary>
         [DataMember(Name = "authentication", EmitDefaultValue = false)]
@@ -86,28 +103,34 @@ namespace SobekCM.Core.Configuration
         [ProtoMember(5)]
         public Engine_Server_Configuration Engine { get; set; }
 
+        /// <summary> Configuration for the engine endpoints exposed for this instance </summary>
+        [DataMember(Name = "extensions", EmitDefaultValue = false)]
+        [XmlElement("extensions")]
+        [ProtoMember(6)]
+        public Extension_Configuration Extensions { get; set; }
+
         /// <summary> Configuration information for the map editor function for this instance </summary>
         [DataMember(Name = "mapEditor", EmitDefaultValue = false)]
         [XmlElement("mapEditor")]
-        [ProtoMember(6)]
+        [ProtoMember(7)]
         public MapEditor_Configuration MapEditor { get; set; }
 
         /// <summary> Configuration information regarding how to read and write metadata files in the system </summary>
         [DataMember(Name = "metadata", EmitDefaultValue = false)]
         [XmlElement("metadata")]
-        [ProtoMember(7)]
+        [ProtoMember(8)]
         public Metadata_Configuration Metadata { get; set; }
 
         /// <summary> Configuration for instance-wide OAI-PMH settings for this instance </summary>
         [DataMember(Name = "oai-pmh", EmitDefaultValue = false)]
         [XmlElement("oai-pmh")]
-        [ProtoMember(8)]
+        [ProtoMember(9)]
         public OAI_PMH_Configuration OAI_PMH { get; set; }
 
         /// <summary> Configuration for the quality control tool for this instance </summary>
         [DataMember(Name = "qcConfig", EmitDefaultValue = false)]
         [XmlElement("qcConfig")]
-        [ProtoMember(9)]
+        [ProtoMember(10)]
         public QualityControl_Configuration QualityControlTool { get; set; }
 
 
