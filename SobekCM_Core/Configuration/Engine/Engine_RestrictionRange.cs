@@ -39,5 +39,14 @@ namespace SobekCM.Core.Configuration.Engine
         [XmlArrayItem("ipRange", typeof(Engine_IpRange))]
         [ProtoMember(3)]
         public List<Engine_IpRange> IpRanges { get; set; }
+
+        /// <summary> Add a new (single IP) ip value to this range </summary>
+        /// <param name="Label"> Descriptive label for this particular IP address(es) </param>
+        /// <param name="IpAddress"> IP address, or the beginning of a range of IP addresses </param>
+        public void Add_IP_Range(string Label, string IpAddress )
+        {
+            Engine_IpRange singleIpRange = new Engine_IpRange {Label = Label, StartIp = IpAddress};
+            IpRanges.Add(singleIpRange);
+        }
     }
 }

@@ -47,12 +47,16 @@ namespace SobekCM.Engine_Library
                 Context.Response.TrySkipIisCustomErrors = true;
 
                 // Make sure the microservices configuration has been read
-                if (!Engine_ApplicationCache_Gateway.Configuration.HasData)
+                if (Engine_ApplicationCache_Gateway.Configuration.ErrorEncountered)
                 {
                     // If we got to here, it means it attempted to read it and failed somehow
                     Context.Response.ContentType = "text/plain";
                     Context.Response.StatusCode = 500;
-                    Context.Response.Write("Error reading the configuration files!");
+                    Context.Response.Output.WriteLine("Error reading the configuration files!");
+                    Context.Response.Output.WriteLine();
+
+                    foreach (string thisLine in Engine_ApplicationCache_Gateway.Configuration.ReadingLog)
+                        Context.Response.Output.WriteLine(thisLine);
                     return;
                 }
 
@@ -74,8 +78,11 @@ namespace SobekCM.Engine_Library
                 {
                     Context.Response.ContentType = "text/plain";
                     Context.Response.StatusCode = 501;
-                    Context.Response.Write("No endpoint found");
-                    
+                    Context.Response.Output.WriteLine("No endpoint found");
+                    Context.Response.Output.WriteLine();
+
+                    foreach (string thisLine in Engine_ApplicationCache_Gateway.Configuration.ReadingLog)
+                        Context.Response.Output.WriteLine(thisLine);
                 }
                 else
                 {
@@ -97,7 +104,7 @@ namespace SobekCM.Engine_Library
                     {
                         Context.Response.ContentType = "text/plain";
                         Context.Response.StatusCode = 403;
-                        Context.Response.Write("You are forbidden from accessing this endpoint");
+                        Context.Response.Write("You are forbidden from accessing this endpoint ( " + requestIp + " )");
                         return;
                     }
 

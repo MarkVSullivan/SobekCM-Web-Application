@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Xml;
 using SobekCM.Core.BriefItem;
@@ -68,6 +71,17 @@ namespace SobekCM.Engine_Library.Configuration
         {
             // Start to build the instance wide configuration
             InstanceWide_Configuration returnValue = new InstanceWide_Configuration();
+            
+            // Add an initial log, with the data
+            returnValue.Add_Log("Beginning to read configuration files (" + DateTime.Now.ToShortDateString() + ")");
+
+            // Log the directories to look within
+            returnValue.Add_Log();
+            returnValue.Add_Log("Looking in the following directories for config/xml files");
+            foreach (string configDir in ConfigurationDirectories)
+            {
+                returnValue.Add_Log("     " + configDir);
+            }
 
             // Step through and get the configuration files to be read (in folder and alphabetical order)
             List<string> configFiles = new List<string>();
@@ -98,7 +112,8 @@ namespace SobekCM.Engine_Library.Configuration
             }
 
             // Log this
-            returnValue.Add_Log("Found the following config files to attempt to read (" + DateTime.Now.ToShortDateString() + " ) :");
+            returnValue.Add_Log();
+            returnValue.Add_Log("Found the following config files to attempt to read:");
             foreach (string configFile in configFiles)
             {
                 returnValue.Add_Log("     " + configFile );
@@ -1078,7 +1093,7 @@ namespace SobekCM.Engine_Library.Configuration
                             break;
 
                         case "restrictionranges":
-                            read_microservices_details_restrictionranges(ReaderXml.ReadSubtree(), Config.Engine );
+                            read_engine_details_restrictionranges(ReaderXml.ReadSubtree(), Config.Engine );
                             break;
                     }
                 }
@@ -1393,7 +1408,7 @@ namespace SobekCM.Engine_Library.Configuration
             }
         }
 
-        private static void read_microservices_details_restrictionranges(XmlReader ReaderXml, Engine_Server_Configuration Config )
+        private static void read_engine_details_restrictionranges(XmlReader ReaderXml, Engine_Server_Configuration Config )
         {
             Engine_RestrictionRange currentRange = null;
 
@@ -1493,6 +1508,18 @@ namespace SobekCM.Engine_Library.Configuration
                 components[thisComponent.ID] = thisComponent;
             }
 
+            // Ensure the current IP address for this server is added to any
+            // restriction range.. should always be able to get to the range from the
+            // local machine
+            List<string> local_ips = get_local_ip_addresses();
+            foreach (string localIp in local_ips)
+            {
+                foreach (Engine_RestrictionRange thisRange in Configuration.Engine.RestrictionRanges)
+                {
+                    thisRange.Add_IP_Range("Web server IP (added automatically)", localIp);
+                }
+            }
+
             // Build the dictionaries for all the restriction ranges
             Dictionary<string, Engine_RestrictionRange> restrictionRanges = new Dictionary<string, Engine_RestrictionRange>(StringComparer.OrdinalIgnoreCase);
             foreach (Engine_RestrictionRange thisRange in Configuration.Engine.RestrictionRanges)
@@ -1505,6 +1532,31 @@ namespace SobekCM.Engine_Library.Configuration
             {
                 engine_config_finalize_recurse_through_endpoints(pathEndpoint, components, restrictionRanges);
             }
+        }
+
+        private static List<string> get_local_ip_addresses()
+        {
+            List<string> returnValue = new List<string>();
+
+            try
+            {
+                foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
+                {
+                    foreach (var uipi in ni.GetIPProperties().UnicastAddresses)
+                    {
+                        if (uipi.Address.AddressFamily != AddressFamily.InterNetwork) continue;
+
+                        if ((uipi.IPv4Mask == null) || (uipi.Address.ToString() == "127.0.0.1")) continue; //ignore 127.0.0.1
+                        returnValue.Add(uipi.Address.ToString());
+                    }
+                }
+            }
+            catch 
+            {
+                
+            }
+
+            return returnValue;
         }
 
         private static void engine_config_finalize_recurse_through_endpoints(Engine_Path_Endpoint pathEndpoint, Dictionary<string, Engine_Component> components, Dictionary<string, Engine_RestrictionRange> restrictionRanges)

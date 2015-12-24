@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -36,6 +37,7 @@ namespace SobekCM.Tools.IpRangeUtilities
         {
             SingleIpRangeV4 range = new SingleIpRangeV4(SingleIpAddress);
             AddIpRange(range);
+            prefixDictionary = null;
         }
 
         /// <summary> Add a single IP restriction range to this set </summary>
@@ -45,6 +47,7 @@ namespace SobekCM.Tools.IpRangeUtilities
         {
             SingleIpRangeV4 range = new SingleIpRangeV4(StartIpAddress, EndIpAddress);
             AddIpRange(range);
+            prefixDictionary = null;
         }
 
         /// <summary> Add a single IP restriction range to this set </summary>
@@ -53,6 +56,7 @@ namespace SobekCM.Tools.IpRangeUtilities
         {
             SingleIpRangeV4 range = new SingleIpRangeV4(SingleIpAddress);
             AddIpRange(range);
+            prefixDictionary = null;
         }
 
         /// <summary> Add a single IP restriction range to this set </summary>
@@ -62,6 +66,7 @@ namespace SobekCM.Tools.IpRangeUtilities
         {
             SingleIpRangeV4 range = new SingleIpRangeV4(StartIpAddress, EndIpAddress);
             AddIpRange(range);
+            prefixDictionary = null;
         }
 
         /// <summary> Readies this set for comparisons, by building some internal data structures </summary>
@@ -72,7 +77,33 @@ namespace SobekCM.Tools.IpRangeUtilities
             {
                 if (tempDictionary.ContainsKey(ipRange.Prefix))
                 {
-                    tempDictionary[ipRange.Prefix].Add(ipRange.StartIpAddress, ipRange);
+                    SortedList<ulong, SingleIpRangeV4> individualPrefixDictionary = tempDictionary[ipRange.Prefix];
+                    if (individualPrefixDictionary.ContainsKey(ipRange.StartIpAddress))
+                    {
+                        // Sorted list requires unique keys, and another ip range 
+                        // apparently starts with the same IP number!  Compare the two
+                        SingleIpRangeV4 currentRange = individualPrefixDictionary[ipRange.StartIpAddress];
+
+                        // Is the current range a RANGE< or just a single IP?
+                        if (!currentRange.EndIpAddress.HasValue)
+                        {
+                            // Not a range, so just use the current one (which may be a range)
+                            individualPrefixDictionary[ipRange.StartIpAddress] = ipRange;
+                        }
+                        else
+                        {
+                            // Since the current is a range, compare to new if that is also a range
+                            if (ipRange.EndIpAddress.HasValue)
+                            {
+                                individualPrefixDictionary[ipRange.StartIpAddress].EndIpAddress = Math.Max(currentRange.EndIpAddress.Value, ipRange.EndIpAddress.Value);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        individualPrefixDictionary.Add(ipRange.StartIpAddress, ipRange);
+                    }
+                    
                 }
                 else
                 {

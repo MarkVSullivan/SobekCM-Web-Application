@@ -62,13 +62,13 @@ namespace SobekCM.Tools.IpRangeUtilities
         }
 
         /// <summary> First IP address in the range (as an unsigned long) </summary>
-        public ulong StartIpAddress { get; private set; }
+        public ulong StartIpAddress { get; set; }
 
         /// <summary> Last IP address in the range (as an unsigned long) </summary>
-        public ulong? EndIpAddress { get; private set; }
+        public ulong? EndIpAddress { get; set; }
 
         /// <summary> First byte of the IP address, for quick comparisons </summary>
-        public byte Prefix { get; private set; }
+        public byte Prefix { get; set; }
 
         /// <summary> Compares a provided IP address against this range of IPs </summary>
         /// <param name="IpAddress"> IP address to compare to this range </param>
