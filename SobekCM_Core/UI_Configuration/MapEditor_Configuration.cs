@@ -3,14 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Xml;
 using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Settings;
 
 #endregion
 
-namespace SobekCM.Core.Configuration
+namespace SobekCM.Core.UI_Configuration
 {
     /// <summary> Instance-wide configuration information for the map editor </summary>
     [Serializable, DataContract, ProtoContract]

@@ -8,6 +8,7 @@ using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Settings;
 using SobekCM.Core.Skins;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent.Hierarchy;
 using SobekCM.Engine_Library.Configuration;
@@ -468,7 +469,7 @@ namespace SobekCM.Engine_Library.ApplicationState
 
         #endregion
 
-        #region Properties and methods for the instance-wide settings
+        #region Properties and methods for the instance-wide configuration
 
         private static InstanceWide_Configuration configuration;
         private static readonly Object configurationLock = new Object();

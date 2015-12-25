@@ -84,7 +84,7 @@ namespace SobekCM.Core.Configuration.Engine
 
         /// <summary> Collection of child segments or endpoints, indexed by the next segment of the URI </summary>
         [DataMember(Name = "children", EmitDefaultValue = false)]
-        [XmlArray("endpoint")]
+        [XmlArray("children")]
         [XmlArrayItem("endpoint", typeof(Engine_Path_Endpoint))]
         [ProtoMember(3)]
         public List<Engine_Path_Endpoint> Children { get; set; }

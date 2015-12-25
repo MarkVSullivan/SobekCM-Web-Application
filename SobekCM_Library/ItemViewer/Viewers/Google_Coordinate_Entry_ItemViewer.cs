@@ -663,7 +663,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					collectionIdsFromPage.Add(currentItem.BibID);
 
 					//get settings
-                    List<Simple_Setting> settings = UI_ApplicationCache_Gateway.Configuration.MapEditor.GetSettings(collectionIdsFromPage);
+                    List<Simple_Setting> settings = UI_ApplicationCache_Gateway.Configuration.UI.MapEditor.GetSettings(collectionIdsFromPage);
 
 					//loop through settings
 				    foreach (Simple_Setting thisSetting in settings)

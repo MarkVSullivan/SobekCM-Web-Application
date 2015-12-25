@@ -100,7 +100,7 @@
     <Compile Include="Configuration\Extensions\ExtensionXmlConfiguration.cs" />
     <Compile Include="Configuration\Extensions\Extension_Configuration.cs" />
     <Compile Include="Configuration\InstanceWide_Configuration.cs" />
-    <Compile Include="Configuration\MapEditor_Configuration.cs" />
+    <Compile Include="UI_Configuration\MapEditor_Configuration.cs" />
     <Compile Include="Configuration\Engine\Engine_Component.cs" />
     <Compile Include="Configuration\Engine\Engine_IpRange.cs" />
     <Compile Include="Configuration\Engine\Engine_Path_Endpoint.cs" />

@@ -77,7 +77,7 @@ namespace SobekCM.Core.Configuration.Engine
 
         /// <summary> List of all the components specified in the configuration file </summary>
         [DataMember(Name = "components", EmitDefaultValue = false)]
-        [XmlArray("component")]
+        [XmlArray("components")]
         [XmlArrayItem("component", typeof(Engine_Component))]
         [ProtoMember(1)]
         public List<Engine_Component> Components { get; set; }
@@ -91,9 +91,9 @@ namespace SobekCM.Core.Configuration.Engine
         public List<Engine_RestrictionRange> RestrictionRanges { get; set; }
 
         /// <summary> Collection of all the root paths/endpoints (defined hierarchically) </summary>
-        [DataMember(Name = "children", EmitDefaultValue = false)]
-        [XmlArray("endpoints")]
-        [XmlArrayItem("endpoints", typeof(Engine_Path_Endpoint))]
+        [DataMember(Name = "roots", EmitDefaultValue = false)]
+        [XmlArray("roots")]
+        [XmlArrayItem("endpoint", typeof(Engine_Path_Endpoint))]
         [ProtoMember(3)]
         public List<Engine_Path_Endpoint> RootPaths { get; set; }
 

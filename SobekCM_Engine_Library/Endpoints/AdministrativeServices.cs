@@ -15,6 +15,9 @@ namespace SobekCM.Engine_Library.Endpoints
     /// and not already provided via a more specialized service-related endpoint </summary>
     public class AdministrativeServices : EndpointBase
     {
+
+        #region Setting-related endpoints
+
         /// <summary> Gets the administrative setting values, which includes display information
         /// along with the current value and key </summary>
         /// <param name="Response"></param>
@@ -221,6 +224,9 @@ namespace SobekCM.Engine_Library.Endpoints
             Serialize(Engine_ApplicationCache_Gateway.Settings, Response, Protocol, json_callback);
         }
 
+        #endregion
+
+        #region Configuration-related endpoints
 
         /// <summary> Gets the complete configuration object </summary>
         /// <param name="Response"></param>
@@ -250,7 +256,7 @@ namespace SobekCM.Engine_Library.Endpoints
         public void GetConfigurationAuthentication(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             // Get the JSON-P callback function
-            string json_callback = "parseAuthentication";
+            string json_callback = "parseAuthenticationConfig";
             if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
             {
                 json_callback = QueryString["callback"];
@@ -260,7 +266,235 @@ namespace SobekCM.Engine_Library.Endpoints
             Serialize(Engine_ApplicationCache_Gateway.Configuration.Authentication, Response, Protocol, json_callback);
         }
 
-        /// <summary> Gets the complete configuration object </summary>
+        /// <summary> Gets the brief item mapping configuration object </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetConfigurationBriefItemMapping(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Get the JSON-P callback function
+            string json_callback = "parseBriefItemMappingConfig";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(Engine_ApplicationCache_Gateway.Configuration.BriefItemMapping, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Gets the contact form configuration object </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetConfigurationContactForm(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Get the JSON-P callback function
+            string json_callback = "parseContactFormConfig";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(Engine_ApplicationCache_Gateway.Configuration.ContactForm, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Gets the engine endpoints configuration object </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetConfigurationEngine(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Get the JSON-P callback function
+            string json_callback = "parseEngineConfig";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(Engine_ApplicationCache_Gateway.Configuration.Engine, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Gets the extensions configuration object </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetConfigurationExtensions(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Get the JSON-P callback function
+            string json_callback = "parseExtensions";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(Engine_ApplicationCache_Gateway.Configuration.Extensions, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Gets the map editor (UI) configuration object </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetConfigurationMapEditor(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Get the JSON-P callback function
+            string json_callback = "parseMapEditorConfig";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(Engine_ApplicationCache_Gateway.Configuration.UI.MapEditor, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Gets the metadata configuration object </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetConfigurationMetadata(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Get the JSON-P callback function
+            string json_callback = "parseMetadataConfig";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(Engine_ApplicationCache_Gateway.Configuration.Metadata, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Gets the OAI-PMH configuration object </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetConfigurationOaiPmh(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Get the JSON-P callback function
+            string json_callback = "parseOaiPmhConfig";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(Engine_ApplicationCache_Gateway.Configuration.OAI_PMH, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Gets the quality control tool configuration object </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetConfigurationQualityControl(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Get the JSON-P callback function
+            string json_callback = "parseQcToolConfig";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(Engine_ApplicationCache_Gateway.Configuration.QualityControlTool, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Gets the citation dispay (UI) configuration object </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetConfigurationUserInterface(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Get the JSON-P callback function
+            string json_callback = "parseUiConfig";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(Engine_ApplicationCache_Gateway.Configuration.UI, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Gets the citation dispay (UI) configuration object </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetConfigurationCitation(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Get the JSON-P callback function
+            string json_callback = "parseCitationConfig";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(Engine_ApplicationCache_Gateway.Configuration.UI.CitationViewer, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Gets the template elements (UI) configuration object </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetConfigurationTemplateElements(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Get the JSON-P callback function
+            string json_callback = "parseTemplateElementsConfig";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(Engine_ApplicationCache_Gateway.Configuration.UI.TemplateElements, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Gets the viewers (ui) configuration object </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetConfigurationViewers(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Get the JSON-P callback function
+            string json_callback = "parseViewerConfig";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(Engine_ApplicationCache_Gateway.Configuration.UI.Viewers, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Gets the log from reading all of the configuration files </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
@@ -287,5 +521,6 @@ namespace SobekCM.Engine_Library.Endpoints
             Serialize(Engine_ApplicationCache_Gateway.Configuration.ReadingLog, Response, Protocol, json_callback);
         }
 
+        #endregion
     }
 }

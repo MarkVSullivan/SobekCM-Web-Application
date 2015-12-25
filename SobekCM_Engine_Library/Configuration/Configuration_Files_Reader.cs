@@ -13,6 +13,7 @@ using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Configuration.OAIPMH;
 using SobekCM.Core.Settings;
+using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Items.BriefItems.Mappers;
 using SobekCM.Resource_Object.Configuration;
@@ -266,8 +267,8 @@ namespace SobekCM.Engine_Library.Configuration
         private static void read_authentication_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
         {
             // Ensure the config object exists
-            if (Config.MapEditor == null)
-                Config.MapEditor = new MapEditor_Configuration();
+            if (Config.UI.MapEditor == null)
+                Config.UI.MapEditor = new MapEditor_Configuration();
 
 
             while (ReaderXml.Read())
@@ -1022,8 +1023,8 @@ namespace SobekCM.Engine_Library.Configuration
         private static void read_mapeditor_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
         {
             // Ensure the config object exists
-            if ( Config.MapEditor == null )
-                Config.MapEditor = new MapEditor_Configuration();
+            if ( Config.UI.MapEditor == null )
+                Config.UI.MapEditor = new MapEditor_Configuration();
             
 
             while (ReaderXml.Read())
@@ -1060,7 +1061,7 @@ namespace SobekCM.Engine_Library.Configuration
                                     collection.Settings.Add(new Simple_Setting(key, value, -1));
                                 }
                             }
-                            Config.MapEditor.Collections.Add(collection);
+                            Config.UI.MapEditor.Collections.Add(collection);
                             break;
                     }
                 }

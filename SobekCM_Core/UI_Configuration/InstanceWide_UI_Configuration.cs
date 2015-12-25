@@ -14,6 +14,8 @@ namespace SobekCM.Core.UI_Configuration
     [XmlRoot("UiConfig")]
     public class InstanceWide_UI_Configuration
     {
+
+
        // [DataMember(Name = "staticResources", EmitDefaultValue = false)]
        // [XmlElement("staticResources")]
        // [ProtoMember(1)]
@@ -40,5 +42,21 @@ namespace SobekCM.Core.UI_Configuration
         [XmlElement("viewers")]
         [ProtoMember(4)]
         public ViewerConfig Viewers { get; set; }
+
+        /// <summary> Configuration information for the map editor function for this instance </summary>
+        [DataMember(Name = "mapEditor", EmitDefaultValue = false)]
+        [XmlElement("mapEditor")]
+        [ProtoMember(5)]
+        public MapEditor_Configuration MapEditor { get; set; }
+
+
+        /// <summary> Constructor for a new instance of the <see cref="InstanceWide_UI_Configuration"/> class </summary>
+        public InstanceWide_UI_Configuration()
+        {
+            CitationViewer = new CitationConfig();
+            TemplateElements = new TemplateElementsConfig();
+            Viewers = new ViewerConfig();
+            MapEditor = new MapEditor_Configuration();
+        }
     }
 }
