@@ -3042,6 +3042,9 @@ namespace SobekCM.Core.UI_Configuration
                 if (readerStream != null) readerStream.Close();
             }
 
+            // Some values for testing
+            Sobekcm_Admin_Css = "http://localhost:52468/default/css/sobekcm-admin/4.10.0/sobekcm_admin.css";
+
             return returnValue;
         }
     }

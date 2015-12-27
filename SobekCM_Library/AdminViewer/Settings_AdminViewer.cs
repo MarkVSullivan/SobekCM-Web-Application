@@ -372,7 +372,84 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 			Output.WriteLine();
 
-			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
+            Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
+            Output.WriteLine("  <div id=\"sbkSeav_Explanation\">");
+            Output.WriteLine("    <p>This form allows a user to view and edit all the main system-wide settings which allow the SobekCM web application and assorted related applications to function correctly within each custom architecture and each institution.</p>");
+            Output.WriteLine("    <p>For more information about these settings, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/settings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+
+            // Add portal admin message
+            if (!RequestSpecificValues.Current_User.Is_System_Admin)
+			{
+				Output.WriteLine("    <p>Portal Admins have rights to see these settings. System Admins can change these settings.</p>");
+			}
+
+            Output.WriteLine("  </div>");
+            Output.WriteLine("</div>");
+            Output.WriteLine();
+
+            Output.WriteLine("<table id=\"sbkSeav_MainTable\">");
+            Output.WriteLine("  <tr>");
+            Output.WriteLine("    <td id=\"sbkSeav_TocArea\">");
+
+            Output.WriteLine("      <h2>Settings</h2>");
+            Output.WriteLine("      <ul>");
+
+            // Add all the tab pages
+            int tab_count = 1;
+            foreach (string tabPageName in tabPageNames.Values)
+            {
+                Output.WriteLine("        <li id=\"tabHeader_" + tab_count + "\">" + tabPageName.Trim() + "</li>");
+                //add_tab_page_info(Output, tabPageName, settingsByPage[tabPageName]);
+                tab_count++;
+            }
+            Output.WriteLine("      </ul>");
+
+            
+            Output.WriteLine("      <h2>Builder</h2>");
+            Output.WriteLine("      <ul>");
+            Output.WriteLine("        <li>Builder Settings</li>");
+            Output.WriteLine("        <li>Incoming Folders</li>");
+            Output.WriteLine("        <li>Builder Modules</li>");
+            Output.WriteLine("      </ul>");
+
+            Output.WriteLine("      <h2>Engine Configuration</h2>");
+            Output.WriteLine("      <ul>");
+            Output.WriteLine("        <li>Authentication</li>");
+            Output.WriteLine("        <li>Brief Item Mapping</li>");
+            Output.WriteLine("        <li>Contact Form</li>");          /** UI? **/
+            Output.WriteLine("        <li>Engine Server Endpoints</li>");
+            Output.WriteLine("        <li>Metadata Readers/Writers</li>");
+            Output.WriteLine("        <li>OAI-PMH Protocol</li>");
+            Output.WriteLine("        <li>Quality Control Tool</li>");  /** UI? **/
+            Output.WriteLine("      </ul>");
+
+            Output.WriteLine("      <h2>UI Configuration</h2>");
+            Output.WriteLine("      <ul>");
+            Output.WriteLine("        <li>Citation Viewer</li>");
+            Output.WriteLine("        <li>Map Editor</li>");
+            Output.WriteLine("        <li>Microservice Client Endpoints</li>");
+            Output.WriteLine("        <li>Template Elements</li>");
+            Output.WriteLine("        <li>HTML Viewers/Subviewers</li>");
+            Output.WriteLine("      </ul>");
+
+            Output.WriteLine("      <h2>HTML Snippets</h2>");
+            Output.WriteLine("      <ul>");
+            Output.WriteLine("        <li>Missing page</li>");
+            Output.WriteLine("        <li>No results</li>");
+            Output.WriteLine("      </ul>");
+
+            Output.WriteLine("      <h2>Extensions</h2>");
+            Output.WriteLine("      <ul>");
+            Output.WriteLine("        <li>All (enable/disable)</li>");
+            Output.WriteLine("        <li>Extension #1</li>");
+            Output.WriteLine("        <li>Extension #2</li>");
+            Output.WriteLine("      </ul>");
+
+
+            Output.WriteLine("    </td>");
+            Output.WriteLine("    <td id=\"sbkSeav_MainArea\">");
+
+            Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
 			if (actionMessage.Length > 0)
 			{
@@ -381,11 +458,6 @@ namespace SobekCM.Library.AdminViewer
 			}
 
 
-            Output.WriteLine("  <div id=\"sbkSeav_Explanation\">");
-	        Output.WriteLine("    <p>This form allows a user to view and edit all the main system-wide settings which allow the SobekCM web application and assorted related applications to function correctly within each custom architecture and each institution.</p>");
-            Output.WriteLine("    <p>For more information about these settings, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/settings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
-	        Output.WriteLine("  </div>");
-            Output.WriteLine();
 
 			Output.WriteLine("  <div class=\"sbkSeav_ButtonsDiv\">");
 	        if (RequestSpecificValues.Current_User.Is_System_Admin)
@@ -401,51 +473,15 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  </div>");
 			Output.WriteLine();
 
-
-			// Add portal admin message
-            if (!RequestSpecificValues.Current_User.Is_System_Admin)
-			{
-				Output.WriteLine("<p>Portal Admins have rights to see these settings. System Admins can change these settings.</p>");
-			}
-
-	        Output.WriteLine("  <h2>Current System-Wide Settings</h2>");
-			Output.WriteLine();
-
-
-			Output.WriteLine("  <div id=\"tabContainer\" class=\"sbkSeav_TabContainer\">");
-			Output.WriteLine("    <div class=\"tabs\">");
-			Output.WriteLine("      <ul>");
-
-            // Add all the tab pages names on the tabs
-            int tab_count = 1;
-            foreach (string tabPageName in tabPageNames.Values)
-            {
-                Output.WriteLine("        <li id=\"tabHeader_" + tab_count + "\">" + tabPageName.Trim() + "</li>");
-                tab_count++;
-            }
-
-            Output.WriteLine("      </ul>");
-			Output.WriteLine("    </div>");
-			Output.WriteLine("    <div class=\"tabscontent\">");
-
             // Add all the tab pages
             tab_count = 1;
             foreach (string tabPageName in tabPageNames.Values)
             {
-                Output.WriteLine("    	<div class=\"tabpage\" id=\"tabpage_" + tab_count + "\">");
-                Output.WriteLine("        <h3>" + tabPageName + "</h3>");
-
-
+                Output.WriteLine("  <h2>" + tabPageName.Trim() + "</h2>");
+                Output.WriteLine();
                 add_tab_page_info(Output, tabPageName, settingsByPage[tabPageName]);
-
-                Output.WriteLine("      </div>");
-
-                tab_count++;
+                break;
             }
-
-
-            Output.WriteLine("   </div>");
-			Output.WriteLine("  </div>");
 
 			Output.WriteLine("<br />");
 
@@ -476,6 +512,12 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <br />");
             Output.WriteLine("</div>");
+
+
+            Output.WriteLine("    </td>");
+            Output.WriteLine("  </tr>");
+            Output.WriteLine("</table>");
+
             Output.WriteLine();
         }
 
@@ -910,6 +952,10 @@ namespace SobekCM.Library.AdminViewer
         }
 
         #endregion
+
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        /// <value> Returns 'sbkAsav_ContainerInner' </value>
+        public override string Container_CssClass { get { return "sbkSeav_ContainerInner"; } }
 
     }
 }
