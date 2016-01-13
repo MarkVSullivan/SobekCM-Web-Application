@@ -585,6 +585,13 @@ namespace SobekCM.Core.Navigation
         [ProtoMember(62)]
         public Writer_Type_Enum Writer_Type { get; set; }
 
+
+        /// <summary> Remaining, unaccounted for, URL segments </summary>
+        [DataMember(EmitDefaultValue = false, Name = "urlSegments")]
+        [XmlElement("urlSegments")]
+        [ProtoMember(63)]
+        public string[] Remaining_Url_Segments { get; set; }
+
 		#endregion
 
         #region Methods for XML serialization

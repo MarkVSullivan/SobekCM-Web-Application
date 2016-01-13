@@ -359,8 +359,15 @@ input.sbkSeav_CustomValue_Input { width: 300px; }
 #sbkSeav_TocArea { border-right: 1px solid gray; width: 240px;padding-left: 10px; }
 #sbkSeav_TocArea h2 { font-size: 1.1em; }
 #sbkSeav_TocArea h2:hover { background-color: #dddddd;cursor: pointer;cursor: hand;}
+#sbkSeav_TocArea h2 a { color: #333333 !important;}
 #sbkSeav_TocArea ul { margin-top: 0px;padding-top: 0px;padding-bottom: 20px;padding-left: 25px; list-style: none;line-height: 150%; }
+#sbkSeav_TocArea ul li a { color: #333333 !important;}
 #sbkSeav_TocArea ul li:hover { background-color: #dddddd;cursor: pointer;cursor: hand;}
+
+#sbkSeav_TocArea_SelectedH2  { font-weight: bold; color: black; }
+#sbkSeav_TocArea_SelectedH2:hover { background-color: white !important;cursor: default;}
+#sbkSeav_TocArea_SelectedLI  { font-weight: bold; color: black; }
+#sbkSeav_TocArea_SelectedLI:hover { background-color: white !important;cursor: default;}
 
 /** Skins_AdminViewer **/
 .sbkSav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small;padding-left: 22px;} 

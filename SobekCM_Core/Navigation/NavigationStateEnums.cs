@@ -394,6 +394,9 @@
         /// <summary> Provides list of all aggregation aliases and allows admin to perform some very basic tasks </summary>
         Aliases,
 
+        /// <summary> Allows a single builder folder to be either added or edited online </summary>
+        Builder_Folder_Mgmt,
+
         /// <summary> Gives the current SobekCM status and allows an authenticated system admin to temporarily halt the builder remotely via a database flag </summary>
         Builder_Status,
 

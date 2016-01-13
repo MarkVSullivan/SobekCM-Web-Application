@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Web;
 using SobekCM.Core.ApplicationState;
@@ -634,7 +635,6 @@ namespace SobekCM.Engine_Library.Navigation
                                             if (url_relative_list.Count > 2)
                                                 Navigator.My_Sobek_SubMode = url_relative_list[2];
                                             break;
-                                            break;
 
                                         case "addcoll":
                                             Navigator.Admin_Type = Admin_Type_Enum.Add_Collection_Wizard;
@@ -760,8 +760,12 @@ namespace SobekCM.Engine_Library.Navigation
 
                                         case "settings":
                                             Navigator.Admin_Type = Admin_Type_Enum.Settings;
-                                            if (url_relative_list.Count > 2)
-                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            Navigator.Remaining_Url_Segments = copy_remaining_segments_as_array(url_relative_list, 2);
+                                            break;
+
+                                        case "builderfolder":
+                                            Navigator.Admin_Type = Admin_Type_Enum.Settings;
+                                            Navigator.Remaining_Url_Segments = copy_remaining_segments_as_array(url_relative_list, 2);
                                             break;
                                     }
                                 }
@@ -1250,6 +1254,33 @@ namespace SobekCM.Engine_Library.Navigation
 		}
 
 		#endregion
+
+	    private static string[] copy_remaining_segments_as_array(List<string> url_relative_list, int start_index)
+	    {
+	        if (url_relative_list.Count <= start_index)
+	            return null;
+	        if (url_relative_list.Count == start_index + 1)
+	            return new string[] {url_relative_list[start_index]};
+            if (url_relative_list.Count == start_index + 2)
+                return new string[] { url_relative_list[start_index], url_relative_list[start_index+1] };
+            if (url_relative_list.Count == start_index + 3)
+                return new string[] { url_relative_list[start_index], url_relative_list[start_index + 1], url_relative_list[start_index + 2] };
+            if (url_relative_list.Count == start_index + 4)
+                return new string[] { url_relative_list[start_index], url_relative_list[start_index + 1], url_relative_list[start_index + 2], url_relative_list[start_index + 3] };
+            if (url_relative_list.Count == start_index + 5)
+                return new string[] { url_relative_list[start_index], url_relative_list[start_index + 1], url_relative_list[start_index + 2], url_relative_list[start_index + 3], url_relative_list[start_index + 4] };
+            if (url_relative_list.Count == start_index + 6)
+                return new string[] { url_relative_list[start_index], url_relative_list[start_index + 1], url_relative_list[start_index + 2], url_relative_list[start_index + 3], url_relative_list[start_index + 4], url_relative_list[start_index + 5] };
+            if (url_relative_list.Count == start_index + 7)
+                return new string[] { url_relative_list[start_index], url_relative_list[start_index + 1], url_relative_list[start_index + 2], url_relative_list[start_index + 3], url_relative_list[start_index + 4], url_relative_list[start_index + 5], url_relative_list[start_index + 6] };
+            if (url_relative_list.Count == start_index + 8)
+                return new string[] { url_relative_list[start_index], url_relative_list[start_index + 1], url_relative_list[start_index + 2], url_relative_list[start_index + 3], url_relative_list[start_index + 4], url_relative_list[start_index + 5], url_relative_list[start_index + 6], url_relative_list[start_index + 7] };
+
+            List<string> allRemaining = new List<string>();
+            for( int i = start_index ; i < url_relative_list.Count ; i++ )
+                allRemaining.Add(url_relative_list[i]);
+	        return allRemaining.ToArray();
+	    }
 
 		private static void aggregation_querystring_analyze(Navigation_Object Navigator, NameValueCollection QueryString, string Aggregation, List<string> RemainingURLRedirectList)
 		{

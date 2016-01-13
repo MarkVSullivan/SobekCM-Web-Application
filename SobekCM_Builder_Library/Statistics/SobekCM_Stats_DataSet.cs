@@ -772,7 +772,7 @@ namespace SobekCM.Builder_Library.Statistics
                 foreach (DataRow thisRow in webcontent_stats.Rows)
                 {
                     // Calculate the complete hits
-                    StringBuilder sql_builder = new StringBuilder("Level1=\"" + thisRow[2].ToString().Replace("\"","").Replace("'","") + "\"");
+                    StringBuilder sql_builder = new StringBuilder("Level1=\"" + thisRow[2].ToString().Replace("\"", "").Replace("'", "") + "\"");
                     if (thisRow[3].ToString().Length > 0)
                     {
                         sql_builder.Append(" and Level2=\"" + thisRow[3].ToString().Replace("\"", "").Replace("'", "") + "\"");
@@ -801,7 +801,7 @@ namespace SobekCM.Builder_Library.Statistics
                             }
                         }
                     }
-                    DataRow[] matches = webcontent_stats.Select(sql_builder.ToString().Replace("\"", "'"));
+                    DataRow[] matches = webcontent_stats.Select(sql_builder.ToString());
                     int hits_complete = matches.Sum(childRow => Convert.ToInt32(childRow[1]));
 
                     Engine_Database.Save_WebContent_Statistics(year, month, Convert.ToInt32(thisRow[1]), hits_complete, thisRow[2].ToString(),

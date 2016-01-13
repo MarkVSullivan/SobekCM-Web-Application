@@ -484,11 +484,6 @@ namespace SobekCM.Core.Navigation
                                 return this_base_url + "admin/headings/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
                             return this_base_url + "admin/headings" + urlOptions1;
 
-                        case Admin_Type_Enum.Settings:
-                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
-                                return this_base_url + "admin/settings/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
-                            return this_base_url + "admin/settings" + urlOptions1;
-
                         case Admin_Type_Enum.Skins_Mgmt:
                             return this_base_url + "admin/webskins" + urlOptions1;
 
@@ -497,7 +492,11 @@ namespace SobekCM.Core.Navigation
                                 return this_base_url + "admin/editskin/" + Current_Mode.My_Sobek_SubMode.Replace("|", "/") + urlOptions1;
                             return this_base_url + "admin/webskins" + urlOptions1;
 
+                        case Admin_Type_Enum.Settings:
+                            return create_basic_url(this_base_url, "admin/settings", Current_Mode.Remaining_Url_Segments, urlOptions1);
 
+                        case Admin_Type_Enum.Builder_Folder_Mgmt:
+                            return create_basic_url(this_base_url, "admin/builderfolder", Current_Mode.Remaining_Url_Segments, urlOptions1);
 
                         default:
                             return this_base_url + "admin" + urlOptions1;
@@ -1145,6 +1144,35 @@ namespace SobekCM.Core.Navigation
 
             return this_base_url + "unknown";
         }
+
+        private static string create_basic_url(string this_base_url, string main_codes, string[] Remaining_Url_Segments, string urlOptions1)
+        {
+            if ((Remaining_Url_Segments == null) || (Remaining_Url_Segments.Length == 0))
+            {
+                return this_base_url + main_codes + urlOptions1;
+            }
+            if (Remaining_Url_Segments.Length == 1)
+                return this_base_url + main_codes + "/" + Remaining_Url_Segments[0] + urlOptions1;
+            if (Remaining_Url_Segments.Length == 2)
+                return this_base_url + main_codes + "/" + Remaining_Url_Segments[0] + "/" + Remaining_Url_Segments[1] + urlOptions1;
+            if (Remaining_Url_Segments.Length == 3)
+                return this_base_url + main_codes + "/" + Remaining_Url_Segments[0] + "/" + Remaining_Url_Segments[1] + "/" + Remaining_Url_Segments[2] + urlOptions1;
+            if (Remaining_Url_Segments.Length == 4)
+                return this_base_url + main_codes + "/" + Remaining_Url_Segments[0] + "/" + Remaining_Url_Segments[1] + "/" + Remaining_Url_Segments[2] + "/" + Remaining_Url_Segments[3] + urlOptions1;
+            if (Remaining_Url_Segments.Length == 5)
+                return this_base_url + main_codes + "/" + Remaining_Url_Segments[0] + "/" + Remaining_Url_Segments[1] + "/" + Remaining_Url_Segments[2] + "/" + Remaining_Url_Segments[3] + "/" + Remaining_Url_Segments[4] + urlOptions1;
+            if (Remaining_Url_Segments.Length == 6)
+                return this_base_url + main_codes + "/" + Remaining_Url_Segments[0] + "/" + Remaining_Url_Segments[1] + "/" + Remaining_Url_Segments[2] + "/" + Remaining_Url_Segments[3] + "/" + Remaining_Url_Segments[4] + "/" + Remaining_Url_Segments[5] + urlOptions1;
+            if (Remaining_Url_Segments.Length == 7)
+                return this_base_url + main_codes + "/" + Remaining_Url_Segments[0] + "/" + Remaining_Url_Segments[1] + "/" + Remaining_Url_Segments[2] + "/" + Remaining_Url_Segments[3] + "/" + Remaining_Url_Segments[4] + "/" + Remaining_Url_Segments[5] + "/" + Remaining_Url_Segments[6] + urlOptions1;
+
+            StringBuilder returnUrl = new StringBuilder(this_base_url + main_codes + "/" + Remaining_Url_Segments[0] + "/" + Remaining_Url_Segments[1] + "/" + Remaining_Url_Segments[2] + "/" + Remaining_Url_Segments[3] + "/" + Remaining_Url_Segments[4] + "/" + Remaining_Url_Segments[5] + "/" + Remaining_Url_Segments[6]);
+            for (int i = 7; i < Remaining_Url_Segments.Length; i++)
+                returnUrl.Append("/" + Remaining_Url_Segments[i]);
+            returnUrl.Append(urlOptions1);
+            return returnUrl.ToString();
+        }
+
 
         /// <summary> Returns the URL options the user has currently set </summary>
         /// <returns>URL options</returns>
