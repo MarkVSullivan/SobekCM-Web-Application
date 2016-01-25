@@ -253,6 +253,9 @@ namespace SobekCM.Engine_Library.Settings
                 if ((!String.IsNullOrEmpty(SettingsObject.Servers.Application_Server_Network)) && (SettingsObject.Servers.Application_Server_Network[SettingsObject.Servers.Application_Server_Network.Length - 1] != '\\'))
                     SettingsObject.Servers.Application_Server_Network = SettingsObject.Servers.Application_Server_Network + "\\";
 
+                // Also, load all the buidler information
+                if (SettingsObject.Builder == null) SettingsObject.Builder = new Builder_Settings();
+                Builder_Settings_Builder.Refresh(SettingsObject.Builder, SobekCM_Settings, true, 4);
                 return true;
             }
             catch ( Exception ee )

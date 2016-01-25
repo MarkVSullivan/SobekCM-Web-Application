@@ -20,6 +20,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Acquisitions note </summary>
         Acquisition = 1,
 
+        Action,
+
         /// <summary> Additional physical form note </summary>
         AdditionalPhysicalForm,
 
@@ -352,6 +354,12 @@ namespace SobekCM.Resource_Object.Bib_Info
                         returnValue.Control_Field_Value = returnValue.Control_Field_Value + " |3 " + displayLabel;
                     break;
 
+                case Note_Type_Enum.Action:
+                    returnValue.Tag = 583;
+                    if (!String.IsNullOrEmpty(displayLabel))
+                        returnValue.Control_Field_Value = "|a " + displayLabel + " |l " + note;
+                    break;
+
                 case Note_Type_Enum.Exhibitions:
                     returnValue.Tag = 585;
                     if (!String.IsNullOrEmpty(displayLabel))
@@ -578,6 +586,9 @@ namespace SobekCM.Resource_Object.Bib_Info
 					case Note_Type_Enum.Supplements:
 						return "Supplements";
 
+                    case Note_Type_Enum.Action:
+                        return "Action";
+
                     default:
                         return String.Empty;
                 }
@@ -692,6 +703,9 @@ namespace SobekCM.Resource_Object.Bib_Info
 
 					case Note_Type_Enum.Supplements:
 		                return "supplements";
+
+                    case Note_Type_Enum.Action:
+                        return "action";
 
                     default:
                         return String.Empty;
@@ -838,6 +852,10 @@ namespace SobekCM.Resource_Object.Bib_Info
 					case "supplements":
 						Note_Type = Note_Type_Enum.Supplements;
 		                break;
+
+                    case "action":
+                        Note_Type = Note_Type_Enum.Action;
+                        break;
 
                     default:
                         Note_Type = Note_Type_Enum.NONE;

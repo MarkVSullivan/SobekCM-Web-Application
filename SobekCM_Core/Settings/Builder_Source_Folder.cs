@@ -32,6 +32,7 @@ namespace SobekCM.Core.Settings
             Allow_Metadata_Updates = false;
 	        //Can_Move_To_Content_Folder = true;
 	        BibID_Roots_Restrictions = String.Empty;
+            IncomingFolderID = -1;
         }
 
         /// <summary> Human readable label for this folder </summary>
@@ -114,12 +115,16 @@ namespace SobekCM.Core.Settings
         [ProtoMember(11)]
         public List<Builder_Module_Setting> Builder_Module_Settings { get; set;  }
 
-        /// <summary> Primary key for the folder builer modules for this inbound folder </summary>
+        /// <summary> Primary key for the folder builder modules for this inbound folder </summary>
         [DataMember(Name = "modulesSetId", EmitDefaultValue = false)]
         [XmlAttribute("modulesSetId")]
         [ProtoMember(12)]
         public int Builder_Module_SetID { get; set; }
 
- 
+        /// <summary> Primary key for this incoming folder in the database </summary>
+        [DataMember(Name = "id", EmitDefaultValue = false)]
+        [XmlAttribute("id")]
+        [ProtoMember(13)]
+        public int IncomingFolderID { get; set; }
     }
 }

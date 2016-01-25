@@ -16,8 +16,9 @@ namespace SobekCM.Engine_Library.Settings
         /// <param name="SettingsObject"> Current builer settings object to refresh </param>
         /// <param name="SobekCM_Settings"> Dataset of all the builder settings, from the instance database </param>
         /// <param name="IncludeModuleDescriptions"> Flag indicates if the module descriptions should be included for human readability </param>
+        /// <param name="DataTableOffset"> If some previous tables exist, and should be skipped, set this to a non-zero value</param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool Refresh(Builder_Settings SettingsObject, DataSet SobekCM_Settings, bool IncludeModuleDescriptions )
+        public static bool Refresh(Builder_Settings SettingsObject, DataSet SobekCM_Settings, bool IncludeModuleDescriptions, int DataTableOffset )
         {
             SettingsObject.Clear();
             try
@@ -25,9 +26,9 @@ namespace SobekCM.Engine_Library.Settings
                 Dictionary<int, List<Builder_Source_Folder>> folder_to_set_dictionary = new Dictionary<int, List<Builder_Source_Folder>>();
                 Dictionary<int, List<Builder_Module_Setting>> setid_to_modules = new Dictionary<int, List<Builder_Module_Setting>>();
 
-                Set_Builder_Folders(SettingsObject, SobekCM_Settings.Tables[0], folder_to_set_dictionary);
+                Set_Builder_Folders(SettingsObject, SobekCM_Settings.Tables[DataTableOffset], folder_to_set_dictionary);
 
-                Set_NonScheduled_Modules(SettingsObject, SobekCM_Settings.Tables[1], setid_to_modules, IncludeModuleDescriptions);
+                Set_NonScheduled_Modules(SettingsObject, SobekCM_Settings.Tables[1 + DataTableOffset], setid_to_modules, IncludeModuleDescriptions);
 
                 // Link the folders to the builder module sets
                 foreach (KeyValuePair<int, List<Builder_Module_Setting>> module in setid_to_modules)
@@ -44,8 +45,9 @@ namespace SobekCM.Engine_Library.Settings
 
                 return true;
             }
-            catch
+            catch (Exception ee)
             {
+                return ee.Message.Length > 0;
                 return false;
             }
         }
@@ -144,6 +146,7 @@ namespace SobekCM.Engine_Library.Settings
             {
                 Builder_Source_Folder newFolder = new Builder_Source_Folder
                 {
+                    IncomingFolderID = Convert.ToInt32(thisRow["IncomingFolderId"]),
                     Folder_Name = thisRow["FolderName"].ToString(),
                     Inbound_Folder = thisRow["NetworkFolder"].ToString(),
                     Failures_Folder = thisRow["ErrorFolder"].ToString(),
