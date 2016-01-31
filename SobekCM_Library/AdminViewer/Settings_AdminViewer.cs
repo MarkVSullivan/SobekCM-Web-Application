@@ -14,9 +14,11 @@ using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Settings;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.WebContent;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
+using SobekCM.Library.ResultsViewer;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
@@ -49,7 +51,14 @@ namespace SobekCM.Library.AdminViewer
 		private readonly Admin_Setting_Collection currSettings;
 		private SortedList<string, string> tabPageNames;
 		private Dictionary<string, List<Admin_Setting_Value>> settingsByPage;
-	    private List<Admin_Setting_Value> builderSettings; 
+	    private List<Admin_Setting_Value> builderSettings;
+
+        private readonly Settings_Mode_Enum mainMode = Settings_Mode_Enum.NONE;
+        private readonly Settings_Builder_SubMode_Enum builderSubEnum = Settings_Builder_SubMode_Enum.NONE;
+        private readonly Settings_Engine_SubMode_Enum engineSubEnum = Settings_Engine_SubMode_Enum.NONE;
+        private readonly Settings_UI_SubMode_Enum uiSubEnum = Settings_UI_SubMode_Enum.NONE;
+        private readonly Settings_HTML_SubMode_Enum htmlSubEnum = Settings_HTML_SubMode_Enum.NONE;
+	    private readonly int extensionSubMode = -1;
 
 		#region Enumeration of the main modes of the settings, as well as submodes
 
@@ -80,6 +89,49 @@ namespace SobekCM.Library.AdminViewer
 
             Builder_Modules
 	    }
+
+        private enum Settings_Engine_SubMode_Enum : byte
+        {
+            NONE,
+
+            Authentication,
+
+            Brief_Item_Mapping,
+
+            Contact_Form,
+
+            Engine_Server_Endpoints,
+
+            Metadata_Reader_Writers,
+
+            OAI_PMH,
+
+            QcTool
+        }
+
+        private enum Settings_UI_SubMode_Enum : byte
+        {
+            NONE,
+
+            Citation_Viewer,
+
+            Map_Editor,
+
+            Microservice_Client_Endpoints,
+
+            Template_Elements,
+
+            HTML_Viewer_Subviewers
+        }
+
+        private enum Settings_HTML_SubMode_Enum : byte
+        {
+            NONE,
+
+            Missing_Page,
+
+            No_Results
+        }
 
 		#endregion
 
@@ -126,9 +178,144 @@ namespace SobekCM.Library.AdminViewer
 				{
 					actionMessage = "Error pulling the settings from the engine";
 				}
-			}
+            }
 
-			// Establish some default, starting values
+            #region Determine the mode and submode
+
+            // Determine the current mode and submode
+            if ((RequestSpecificValues.Current_Mode.Remaining_Url_Segments != null) && (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 0))
+            {
+                switch (RequestSpecificValues.Current_Mode.Remaining_Url_Segments[0].ToLower())
+                {
+                    case "settings":
+                        mainMode = Settings_Mode_Enum.Settings;
+                        break;
+
+                    case "builder":
+                        mainMode = Settings_Mode_Enum.Builder;
+                        if (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 1)
+                        {
+                            switch (RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1].ToLower())
+                            {
+                                case "settings":
+                                    builderSubEnum = Settings_Builder_SubMode_Enum.Builder_Settings;
+                                    break;
+
+                                case "folders":
+                                    builderSubEnum = Settings_Builder_SubMode_Enum.Builder_Folders;
+                                    break;
+
+                                case "modules":
+                                    builderSubEnum = Settings_Builder_SubMode_Enum.Builder_Modules;
+                                    break;
+                            }
+                        }
+                        break;
+
+                    case "engine":
+                        mainMode = Settings_Mode_Enum.Engine;
+                        if (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 1)
+                        {
+                            switch (RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1].ToLower())
+                            {
+                                case "authentication":
+                                    engineSubEnum = Settings_Engine_SubMode_Enum.Authentication;
+                                    break;
+
+                                case "briefitem":
+                                    engineSubEnum = Settings_Engine_SubMode_Enum.Brief_Item_Mapping;
+                                    break;
+
+                                case "contact":
+                                    engineSubEnum = Settings_Engine_SubMode_Enum.Contact_Form;
+                                    break;
+
+                                case "endpoints":
+                                    engineSubEnum = Settings_Engine_SubMode_Enum.Engine_Server_Endpoints;
+                                    break;
+
+                                case "metadata":
+                                    engineSubEnum = Settings_Engine_SubMode_Enum.Metadata_Reader_Writers;
+                                    break;
+
+                                case "oaipmh":
+                                    engineSubEnum = Settings_Engine_SubMode_Enum.OAI_PMH;
+                                    break;
+
+                                case "qctool":
+                                    engineSubEnum = Settings_Engine_SubMode_Enum.QcTool;
+                                    break;
+                            }
+                        }
+                        break;
+
+                    case "ui":
+                        mainMode = Settings_Mode_Enum.UI;
+                        if (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 1)
+                        {
+                            switch (RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1].ToLower())
+                            {
+                                case "citation":
+                                    uiSubEnum = Settings_UI_SubMode_Enum.Citation_Viewer;
+                                    break;
+
+                                case "mapeditor":
+                                    uiSubEnum = Settings_UI_SubMode_Enum.Map_Editor;
+                                    break;
+
+                                case "microservices":
+                                    uiSubEnum = Settings_UI_SubMode_Enum.Microservice_Client_Endpoints;
+                                    break;
+
+                                case "template":
+                                    uiSubEnum = Settings_UI_SubMode_Enum.Template_Elements;
+                                    break;
+
+                                case "viewers":
+                                    uiSubEnum = Settings_UI_SubMode_Enum.HTML_Viewer_Subviewers;
+                                    break;
+                            }
+                        }
+                        break;
+
+                    case "html":
+                        mainMode = Settings_Mode_Enum.HTML;
+                        if (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 1)
+                        {
+                            switch (RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1].ToLower())
+                            {
+                                case "missing":
+                                    htmlSubEnum = Settings_HTML_SubMode_Enum.Missing_Page;
+                                    break;
+
+                                case "noresults":
+                                    htmlSubEnum = Settings_HTML_SubMode_Enum.No_Results;
+                                    break;
+                            }
+                        }
+                        break;
+
+                    case "extensions":
+                        mainMode = Settings_Mode_Enum.Extensions;
+                        int extensionsCount = 0;
+                        if (UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions != null)
+                            extensionsCount = UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions.Count;
+                        if ((extensionsCount > 0 ) && ( RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 1))
+                        {
+                            int tryExtensionNum;
+                            if (Int32.TryParse(RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1], out tryExtensionNum))
+                            {
+                                if ((tryExtensionNum > 0) && (tryExtensionNum <= extensionsCount))
+                                    extensionSubMode = tryExtensionNum;
+                            }
+                        }
+                        break;
+                }
+            }
+
+            #endregion
+            
+            // Establish some default, starting values
 			actionMessage = String.Empty;
 			category_view = Convert.ToBoolean(RequestSpecificValues.Current_User.Get_Setting("Settings_AdminViewer:Category_View", "false"));
 
@@ -382,38 +569,6 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("        </ul>");
 			}
 			Output.WriteLine("    </td>");
-
-			// Determine the main mode for this
-			Settings_Mode_Enum mainMode = Settings_Mode_Enum.NONE;
-			if ((RequestSpecificValues.Current_Mode.Remaining_Url_Segments != null) && (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 0))
-			{
-				switch (RequestSpecificValues.Current_Mode.Remaining_Url_Segments[0].ToLower())
-				{
-					case "settings":
-						mainMode = Settings_Mode_Enum.Settings;
-						break;
-
-					case "builder":
-						mainMode = Settings_Mode_Enum.Builder;
-						break;
-
-					case "engine":
-						mainMode = Settings_Mode_Enum.Engine;
-						break;
-
-					case "ui":
-						mainMode = Settings_Mode_Enum.UI;
-						break;
-
-					case "html":
-						mainMode = Settings_Mode_Enum.HTML;
-						break;
-
-					case "extensions":
-						mainMode = Settings_Mode_Enum.Extensions;
-						break;
-				}
-			}
 
 			// Start the main area
 			Output.WriteLine("    <td id=\"sbkSeav_MainArea\">");
@@ -1143,26 +1298,6 @@ namespace SobekCM.Library.AdminViewer
 
 		private void add_builder_info(TextWriter Output)
 		{
-            // Determine the submode
-		    Settings_Builder_SubMode_Enum builderSubEnum = Settings_Builder_SubMode_Enum.NONE;
-		    if (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 1)
-		    {
-		        switch (RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1].ToLower())
-		        {
-		            case "settings":
-                        builderSubEnum = Settings_Builder_SubMode_Enum.Builder_Settings;
-		                break;
-
-                    case "folders":
-                        builderSubEnum = Settings_Builder_SubMode_Enum.Builder_Folders;
-		                break;
-
-                    case "modules":
-                        builderSubEnum = Settings_Builder_SubMode_Enum.Builder_Modules;
-		                break;
-		        }
-		    }
-
             // If a submode existed, call that method
 		    switch (builderSubEnum)
 		    {
@@ -1296,62 +1431,360 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <h2>Builder Modules</h2>");
 
             // Add all the PRE PROCESS MODULE settings
-            Output.WriteLine("  <h3>Pre-Process Modules</h3>");
             if ((UI_ApplicationCache_Gateway.Settings.Builder.PreProcessModulesSettings != null) && (UI_ApplicationCache_Gateway.Settings.Builder.PreProcessModulesSettings.Count > 0))
             {
+                Output.WriteLine("  <h3>Pre-Process Modules</h3>");
+                Output.WriteLine("  <table class=\"sbkSeav_BuilderModulesTable\">");
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_ClassCol\">Class</th>");
+                Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_DescCol\">Description</th>");
+                Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_ArgsCol\">Arguments</th>");
+                Output.WriteLine("    </tr>");
                 foreach (Builder_Module_Setting thisModule in UI_ApplicationCache_Gateway.Settings.Builder.PreProcessModulesSettings)
                 {
-                    thisModule.ToString()
+                    Output.WriteLine("    <tr>");
+                    if ( !String.IsNullOrEmpty(thisModule.Assembly))
+                        Output.WriteLine("      <td>" +  thisModule.Class + " ( " + thisModule.Assembly + " )</td>");
+                    else
+                        Output.WriteLine("      <td>" + thisModule.Class.Replace("SobekCM.Builder_Library.Modules.PreProcess.", "") + "</td>");
+                    Output.WriteLine("      <td>" +  thisModule.Description + "</td>");
 
-                    // Order
-                    // Class (enabled/disabled)
-                    // Assembly 
-                    // Description
-                    // Arguments (1-3)
-
-
-                   
+                    if ((!String.IsNullOrEmpty(thisModule.Argument1)) || (!String.IsNullOrEmpty(thisModule.Argument2)) || (!String.IsNullOrEmpty(thisModule.Argument3)))
+                    {
+                        Output.WriteLine("      <td>");
+                        if (!String.IsNullOrEmpty(thisModule.Argument1))
+                        {
+                            Output.WriteLine("        (1) " + thisModule.Argument1);
+                            Output.WriteLine();
+                        }
+                        if (!String.IsNullOrEmpty(thisModule.Argument2))
+                        {
+                            Output.WriteLine("        (2) " + thisModule.Argument2);
+                            Output.WriteLine();
+                        }
+                        if (!String.IsNullOrEmpty(thisModule.Argument3))
+                        {
+                            Output.WriteLine("        (3) " + thisModule.Argument3);
+                            Output.WriteLine();
+                        }
+                        Output.WriteLine("      </td>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("      <td></td>");
+                    }
+                    Output.WriteLine("    </tr>");
                 }
+                Output.WriteLine("  </table>");
+            }
 
+            // Add all the ITEM PROCESS MODULE settings
+            if ((UI_ApplicationCache_Gateway.Settings.Builder.ItemProcessModulesSettings != null) && (UI_ApplicationCache_Gateway.Settings.Builder.ItemProcessModulesSettings.Count > 0))
+            {
+                Output.WriteLine("  <h3>Item Processing Modules</h3>");
+                Output.WriteLine("  <table class=\"sbkSeav_BuilderModulesTable\">");
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_ClassCol\">Class</th>");
+                Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_DescCol\">Description</th>");
+                Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_ArgsCol\">Arguments</th>");
+                Output.WriteLine("    </tr>");
+                foreach (Builder_Module_Setting thisModule in UI_ApplicationCache_Gateway.Settings.Builder.ItemProcessModulesSettings)
+                {
+                    Output.WriteLine("    <tr>");
+                    if (!String.IsNullOrEmpty(thisModule.Assembly))
+                        Output.WriteLine("      <td>" + thisModule.Class + " ( " + thisModule.Assembly + " )</td>");
+                    else
+                        Output.WriteLine("      <td>" + thisModule.Class.Replace("SobekCM.Builder_Library.Modules.Items.", "") + "</td>");
+                    Output.WriteLine("      <td>" + thisModule.Description + "</td>");
+
+                    if ((!String.IsNullOrEmpty(thisModule.Argument1)) || (!String.IsNullOrEmpty(thisModule.Argument2)) || (!String.IsNullOrEmpty(thisModule.Argument3)))
+                    {
+                        Output.WriteLine("      <td>");
+                        if (!String.IsNullOrEmpty(thisModule.Argument1))
+                        {
+                            Output.WriteLine("        (1) " + thisModule.Argument1);
+                            Output.WriteLine();
+                        }
+                        if (!String.IsNullOrEmpty(thisModule.Argument2))
+                        {
+                            Output.WriteLine("        (2) " + thisModule.Argument2);
+                            Output.WriteLine();
+                        }
+                        if (!String.IsNullOrEmpty(thisModule.Argument3))
+                        {
+                            Output.WriteLine("        (3) " + thisModule.Argument3);
+                            Output.WriteLine();
+                        }
+                        Output.WriteLine("      </td>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("      <td></td>");
+                    }
+                    Output.WriteLine("    </tr>");
+                }
+                Output.WriteLine("  </table>");
             }
             else
             {
-                Output.WriteLine("  <strong>NO PRE-PROCESS MODULES SET!<strong>");
-                Output.WriteLine("  <br /><br />");                
+                Output.WriteLine("  <h3>ERROR: NO ITEM PROCESSING MODULES SET!</h3>");
+                Output.WriteLine("  <p>Any request for the processor to process items, either from an incoming folder or submitted online will fail.  This should be corrected immediately!</p>");
+                Output.WriteLine("  <br /><br />");
+            }
+
+            // Add all the ITEM DELETE MODULE settings
+            if ((UI_ApplicationCache_Gateway.Settings.Builder.ItemDeleteModulesSettings != null) && (UI_ApplicationCache_Gateway.Settings.Builder.ItemDeleteModulesSettings.Count > 0))
+            {
+                Output.WriteLine("  <h3>Item Deletion Modules</h3>");
+                Output.WriteLine("  <table class=\"sbkSeav_BuilderModulesTable\">");
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_ClassCol\">Class</th>");
+                Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_DescCol\">Description</th>");
+                Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_ArgsCol\">Arguments</th>");
+                Output.WriteLine("    </tr>");
+                foreach (Builder_Module_Setting thisModule in UI_ApplicationCache_Gateway.Settings.Builder.ItemDeleteModulesSettings)
+                {
+                    Output.WriteLine("    <tr>");
+                    if (!String.IsNullOrEmpty(thisModule.Assembly))
+                        Output.WriteLine("      <td>" + thisModule.Class + " ( " + thisModule.Assembly + " )</td>");
+                    else
+                        Output.WriteLine("      <td>" + thisModule.Class.Replace("SobekCM.Builder_Library.Modules.Items.","") + "</td>");
+                    Output.WriteLine("      <td>" + thisModule.Description + "</td>");
+
+                    if ((!String.IsNullOrEmpty(thisModule.Argument1)) || (!String.IsNullOrEmpty(thisModule.Argument2)) || (!String.IsNullOrEmpty(thisModule.Argument3)))
+                    {
+                        Output.WriteLine("      <td>");
+                        if (!String.IsNullOrEmpty(thisModule.Argument1))
+                        {
+                            Output.WriteLine("        (1) " + thisModule.Argument1);
+                            Output.WriteLine();
+                        }
+                        if (!String.IsNullOrEmpty(thisModule.Argument2))
+                        {
+                            Output.WriteLine("        (2) " + thisModule.Argument2);
+                            Output.WriteLine();
+                        }
+                        if (!String.IsNullOrEmpty(thisModule.Argument3))
+                        {
+                            Output.WriteLine("        (3) " + thisModule.Argument3);
+                            Output.WriteLine();
+                        }
+                        Output.WriteLine("      </td>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("      <td></td>");
+                    }
+                    Output.WriteLine("    </tr>");
+                }
+                Output.WriteLine("  </table>");
+            }
+            else
+            {
+                Output.WriteLine("  <h3>ERROR: NO ITEM DELETE MODULES SET!</h3>");
+                Output.WriteLine("  <p>Any deletion requests coming through an incoming builder folder will fail as a result.</p>");
+                Output.WriteLine("  <br /><br />");
             }
 
 
-            UI_ApplicationCache_Gateway.Settings.Builder.ItemDeleteModulesSettings;
+            // Add all the PRE PROCESS MODULE settings
+            if ((UI_ApplicationCache_Gateway.Settings.Builder.PostProcessModulesSettings != null) && (UI_ApplicationCache_Gateway.Settings.Builder.PostProcessModulesSettings.Count > 0))
+            {
+                Output.WriteLine("  <h3>Pre-Process Modules</h3>");
+                Output.WriteLine("  <table class=\"sbkSeav_BuilderModulesTable\">");
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_ClassCol\">Class</th>");
+                Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_DescCol\">Description</th>");
+                Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_ArgsCol\">Arguments</th>");
+                Output.WriteLine("    </tr>");
+                foreach (Builder_Module_Setting thisModule in UI_ApplicationCache_Gateway.Settings.Builder.PostProcessModulesSettings)
+                {
+                    Output.WriteLine("    <tr>");
+                    if (!String.IsNullOrEmpty(thisModule.Assembly))
+                        Output.WriteLine("      <td>" + thisModule.Class + " ( " + thisModule.Assembly + " )</td>");
+                    else
+                        Output.WriteLine("      <td>" + thisModule.Class.Replace("SobekCM.Builder_Library.Modules.PostProcess.", "") + "</td>");
+                    Output.WriteLine("      <td>" + thisModule.Description + "</td>");
 
-            UI_ApplicationCache_Gateway.Settings.Builder.ItemProcessModulesSettings;
-
-
-            UI_ApplicationCache_Gateway.Settings.Builder.PostProcessModulesSettings;
-
-
-
-            // if ( UI_ApplicationCache_Gateway.Settings.Builder.)
+                    if ((!String.IsNullOrEmpty(thisModule.Argument1)) || (!String.IsNullOrEmpty(thisModule.Argument2)) || (!String.IsNullOrEmpty(thisModule.Argument3)))
+                    {
+                        Output.WriteLine("      <td>");
+                        if (!String.IsNullOrEmpty(thisModule.Argument1))
+                        {
+                            Output.WriteLine("        (1) " + thisModule.Argument1);
+                            Output.WriteLine();
+                        }
+                        if (!String.IsNullOrEmpty(thisModule.Argument2))
+                        {
+                            Output.WriteLine("        (2) " + thisModule.Argument2);
+                            Output.WriteLine();
+                        }
+                        if (!String.IsNullOrEmpty(thisModule.Argument3))
+                        {
+                            Output.WriteLine("        (3) " + thisModule.Argument3);
+                            Output.WriteLine();
+                        }
+                        Output.WriteLine("      </td>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("      <td></td>");
+                    }
+                    Output.WriteLine("    </tr>");
+                }
+                Output.WriteLine("  </table>");
+            }
         }
 
 	    #endregion
-
 
 		#region HTML helper methods for the engine main page and subpages
 
 		private void add_engine_info(TextWriter Output)
 		{
-			Output.WriteLine("ENGINE INFO HERE");
+            // If a submode existed, call that method
+            switch (engineSubEnum)
+            {
+                case Settings_Engine_SubMode_Enum.Authentication:
+                    add_engine_authentication_info(Output);
+                    break;
+
+                case Settings_Engine_SubMode_Enum.Brief_Item_Mapping:
+                    add_engine_brief_item_mapping_info(Output);
+                    break;
+
+                case Settings_Engine_SubMode_Enum.Contact_Form:
+                    add_engine_contact_info(Output);
+                    break;
+
+                case Settings_Engine_SubMode_Enum.Engine_Server_Endpoints:
+                    add_engine_server_endpoints_info(Output);
+                    break;
+
+                case Settings_Engine_SubMode_Enum.Metadata_Reader_Writers:
+                    add_engine_metadata_reader_writers_info(Output);
+                    break;
+
+                case Settings_Engine_SubMode_Enum.OAI_PMH:
+                    add_engine_oai_pmh_info(Output);
+                    break;
+
+                case Settings_Engine_SubMode_Enum.QcTool:
+                    add_engine_qc_tool_info(Output);
+                    break;
+
+                default:
+                    add_engine_toplevel_info(Output);
+                    break;
+            }
 		}
 
-		#endregion
 
+	    private void add_engine_authentication_info(TextWriter Output)
+	    {
+	        Output.WriteLine("ENGINE AUTHENTICATION INFO HERE");
+	    }
+
+        private void add_engine_brief_item_mapping_info(TextWriter Output)
+	    {
+	        Output.WriteLine("ENGINE BRIEF ITEM MAPPING INFO HERE");
+	    }
+
+        private void add_engine_contact_info(TextWriter Output)
+	    {
+	        Output.WriteLine("ENGINE CONTACT FORM INFO HERE");
+	    }
+
+        private void add_engine_server_endpoints_info(TextWriter Output)
+	    {
+	        Output.WriteLine("ENGINE SERVER ENDPOINTS INFO HERE");
+	    }
+
+        private void add_engine_metadata_reader_writers_info(TextWriter Output)
+	    {
+	        Output.WriteLine("ENGINE METADATA READER WRITER INFO HERE");
+	    }
+
+        private void add_engine_oai_pmh_info(TextWriter Output)
+	    {
+	        Output.WriteLine("ENGINE OAI-PMH INFO HERE");
+	    }
+
+        private void add_engine_qc_tool_info(TextWriter Output)
+	    {
+	        Output.WriteLine("ENGINE QC TOOL INFO HERE");
+	    }
+
+        private void add_engine_toplevel_info(TextWriter Output)
+        {
+            Output.WriteLine("ENGINE TOP-LEVEL INFO HERE");
+        }
+
+		#endregion
 
 		#region HTML helper methods for the UI main page and subpages
 
 		private void add_ui_info(TextWriter Output)
 		{
-			Output.WriteLine("UI INFO HERE");
-		}
+            // If a submode existed, call that method
+            switch (uiSubEnum)
+            {
+                case Settings_UI_SubMode_Enum.Citation_Viewer:
+                    add_ui_citation_info(Output);
+                    break;
+
+                case Settings_UI_SubMode_Enum.Map_Editor:
+                    add_ui_map_editor_info(Output);
+                    break;
+
+                case Settings_UI_SubMode_Enum.Microservice_Client_Endpoints:
+                    add_ui_client_endpoints_info(Output);
+                    break;
+
+                case Settings_UI_SubMode_Enum.Template_Elements:
+                    add_ui_template_elements_info(Output);
+                    break;
+
+                case Settings_UI_SubMode_Enum.HTML_Viewer_Subviewers:
+                    add_ui_viewers_info(Output);
+                    break;
+
+                default:
+                    add_ui_toplevel_info(Output);
+                    break;
+            }
+        }
+
+
+        private void add_ui_citation_info(TextWriter Output)
+        {
+            Output.WriteLine("UI CITATION INFO HERE");
+        }
+
+        private void add_ui_map_editor_info(TextWriter Output)
+        {
+            Output.WriteLine("UI MAP EDITOR INFO HERE");
+        }
+
+        private void add_ui_client_endpoints_info(TextWriter Output)
+        {
+            Output.WriteLine("UI MICROSERVICE CLIENT ENDPOINTS INFO HERE");
+        }
+
+        private void add_ui_template_elements_info(TextWriter Output)
+        {
+            Output.WriteLine("UI TEMPLATE ELEMENTS INFO HERE");
+        }
+
+        private void add_ui_viewers_info(TextWriter Output)
+        {
+            Output.WriteLine("UI VIEWER INFO HERE");
+        }
+
+        private void add_ui_toplevel_info(TextWriter Output)
+        {
+            Output.WriteLine("UI TOP-LEVEL INFO HERE");
+        }
 
 		#endregion
 
@@ -1360,8 +1793,79 @@ namespace SobekCM.Library.AdminViewer
 
 		private void add_html_info(TextWriter Output)
 		{
-			Output.WriteLine("HTML INFO HERE");
-		}
+            // If a submode existed, call that method
+            switch (htmlSubEnum)
+            {
+                case Settings_HTML_SubMode_Enum.Missing_Page:
+                    add_html_missing_page_info(Output);
+                    break;
+
+                case Settings_HTML_SubMode_Enum.No_Results:
+                    add_html_no_results_info(Output);
+                    break;
+
+                default:
+                    add_html_toplevel_info(Output);
+                    break;
+            }
+        }
+
+
+        private void add_html_missing_page_info(TextWriter Output)
+        {
+            Output.WriteLine("  <h2>No Results HTML Snippet</h2>");
+
+            // Add the buttons
+            add_buttons(Output);
+
+            Output.WriteLine();
+
+            HTML_Based_Content missingContent = SobekEngineClient.WebContent.Get_Special_Missing_Page(RequestSpecificValues.Tracer);
+            if ((missingContent == null) || ( String.IsNullOrEmpty(missingContent.Content)))
+            {
+                Output.WriteLine("<h3>ERROR!  Missing web content object was returned from client as NULL or without content</h3>");
+            }
+            else
+            {
+                string snippet = missingContent.Content;
+                Output.WriteLine("  <textarea id=\"sbkSeav_HtmlEdit\" name=\"sbkSeav_NoResultsHtmlEdit\" style=\"width:800px; height:400px\" >");
+                Output.WriteLine(snippet.Replace("<%", "[%").Replace("%>", "%]"));
+                Output.WriteLine("  </textarea>");
+            }
+
+
+            Output.WriteLine("<br />");
+            Output.WriteLine();
+
+            // Add final buttons
+            add_buttons(Output);
+        }
+
+        private void add_html_no_results_info(TextWriter Output)
+        {
+            Output.WriteLine("  <h2>No Results HTML Snippet</h2>");
+
+            // Add the buttons
+            add_buttons(Output);
+
+            Output.WriteLine();
+
+            string noResultsSnippet = No_Results_ResultsViewer.Get_NoResults_Text();
+            Output.WriteLine("  <textarea id=\"sbkSeav_HtmlEdit\" name=\"sbkSeav_NoResultsHtmlEdit\" style=\"width:800px; height:400px\" >");
+            Output.WriteLine(noResultsSnippet.Replace("<%", "[%").Replace("%>", "%]"));
+            Output.WriteLine("  </textarea>");
+
+            Output.WriteLine("<br />");
+            Output.WriteLine();
+
+            // Add final buttons
+            add_buttons(Output);
+        }
+
+        private void add_html_toplevel_info(TextWriter Output)
+        {
+            Output.WriteLine("HTML TOP-LEVEL INFO HERE");
+        }
 
 		#endregion
 

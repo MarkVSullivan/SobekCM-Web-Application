@@ -39,59 +39,10 @@ namespace SobekCM.Library.ResultsViewer
                 Tracer.Add_Trace("No_Results_ResultsWriter.Add_HTML", "Adding no result text");
             }
 
-            // Look in the cache for this 
-            string noResultsText = HttpContext.Current.Application["NORESULTS"] as string;
-            if (String.IsNullOrEmpty(noResultsText))
-            {
-                try
-                {
-                    string file = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "webcontent", "noresults.html");
-                    if (File.Exists(file))
-                    {
-                        noResultsText = File.ReadAllText(file);
-                        HttpContext.Current.Application["NORESULTS"] = noResultsText;
-                    }
-                    else
-                    {
-                        noResultsText = "NOTPRESENT";
-                        HttpContext.Current.Application["NORESULTS"] = "NOTPRESENT";
-                    }
-                }
-                catch
-                {
-                    noResultsText = "NOTPRESENT";
-                    HttpContext.Current.Application["NORESULTS"] = "NOTPRESENT";
-                }
-            }
-
-            // Now, if still NULL, build it the way we used to
-            if ((String.IsNullOrEmpty(noResultsText)) || (noResultsText == "NOTPRESENT"))
-            {
-                StringBuilder sampleFileContent = new StringBuilder();
-
-
-                sampleFileContent.AppendLine("<span class=\"SobekNoResultsText\"><br />Your search returned no results.<br /><br /></span>");
-                sampleFileContent.AppendLine("<div style=\"display:[%MatchesFoundDivDisplay%]\">");
-                sampleFileContent.AppendLine("    The following matches were found:<br /><br />");
-                sampleFileContent.AppendLine("      <span style=\"display:[%WithinInstanceSpanDisplay%]\"><a href=\"[%WithinInstanceUrl%]\">[%WithinInstanceCount%] found in [%BaseName%]</a><br /><br /></span>");
-                sampleFileContent.AppendLine("      <span style=\"display:[%SusMangoSpanDisplay%]\"><a href=\"http://uf.catalog.fcla.edu/uf.jsp[%SusMangoSearchEnding%]\" target=\"_BLANK\">[%SusMangoCount%] found in the University of Florida Library Catalog</a><br /><br /></span>");
-                sampleFileContent.AppendLine("</div>");
-
-                sampleFileContent.AppendLine("Consider searching one of the following:<br /><br />");
-
-                sampleFileContent.AppendLine("Online Resource: <a href=\"http://scholar.google.com\" target=\"_BLANK\">Google Scholar</a> or <a href=\"http://books.google.com\" target=\"_BLANK\">Google Books</a><br />");
-                sampleFileContent.AppendLine("Physical Holdings: the <a href=\"http://uf.catalog.fcla.edu/uf.jsp[%SusMangoSearchEnding%]\" target=\"_BLANK\">Library Catalog</a> or <a href=\"http://www.worldcat.org\" target=\"_BLANK\">Worldcat</a><br />");
-                sampleFileContent.AppendLine("  <br /><br /><br /><br />");
-
-                string sampleBuild = sampleFileContent.ToString();
-                HttpContext.Current.Application["NORESULTS"] = sampleBuild;
-
-                noResultsText = sampleBuild;
-            }
+            // Get the no results text
+            string noResultsText = Get_NoResults_Text();
 
             Literal thisLiteral = new Literal();
-
-
 
             // Get the list of search terms
             string terms = RequestSpecificValues.Current_Mode.Search_String.Replace(",", " ").Trim();
@@ -183,6 +134,60 @@ namespace SobekCM.Library.ResultsViewer
 
             thisLiteral.Text = noResultsTextBuilder.ToString();
             MainPlaceHolder.Controls.Add(thisLiteral);
+        }
+
+        public static string Get_NoResults_Text()
+        {
+            string noResultsText = HttpContext.Current.Application["NORESULTS"] as string;
+            if (String.IsNullOrEmpty(noResultsText))
+            {
+                try
+                {
+                    string file = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "webcontent", "noresults.html");
+                    if (File.Exists(file))
+                    {
+                        noResultsText = File.ReadAllText(file);
+                        HttpContext.Current.Application["NORESULTS"] = noResultsText;
+                    }
+                    else
+                    {
+                        noResultsText = "NOTPRESENT";
+                        HttpContext.Current.Application["NORESULTS"] = "NOTPRESENT";
+                    }
+                }
+                catch
+                {
+                    noResultsText = "NOTPRESENT";
+                    HttpContext.Current.Application["NORESULTS"] = "NOTPRESENT";
+                }
+            }
+
+            // Now, if still NULL, build it the way we used to
+            if ((String.IsNullOrEmpty(noResultsText)) || (noResultsText == "NOTPRESENT"))
+            {
+                StringBuilder sampleFileContent = new StringBuilder();
+
+
+                sampleFileContent.AppendLine("<span class=\"SobekNoResultsText\"><br />Your search returned no results.<br /><br /></span>");
+                sampleFileContent.AppendLine("<div style=\"display:[%MatchesFoundDivDisplay%]\">");
+                sampleFileContent.AppendLine("    The following matches were found:<br /><br />");
+                sampleFileContent.AppendLine("      <span style=\"display:[%WithinInstanceSpanDisplay%]\"><a href=\"[%WithinInstanceUrl%]\">[%WithinInstanceCount%] found in [%BaseName%]</a><br /><br /></span>");
+                sampleFileContent.AppendLine("      <span style=\"display:[%SusMangoSpanDisplay%]\"><a href=\"http://uf.catalog.fcla.edu/uf.jsp[%SusMangoSearchEnding%]\" target=\"_BLANK\">[%SusMangoCount%] found in the University of Florida Library Catalog</a><br /><br /></span>");
+                sampleFileContent.AppendLine("</div>");
+
+                sampleFileContent.AppendLine("Consider searching one of the following:<br /><br />");
+
+                sampleFileContent.AppendLine("Online Resource: <a href=\"http://scholar.google.com\" target=\"_BLANK\">Google Scholar</a> or <a href=\"http://books.google.com\" target=\"_BLANK\">Google Books</a><br />");
+                sampleFileContent.AppendLine("Physical Holdings: the <a href=\"http://uf.catalog.fcla.edu/uf.jsp[%SusMangoSearchEnding%]\" target=\"_BLANK\">Library Catalog</a> or <a href=\"http://www.worldcat.org\" target=\"_BLANK\">Worldcat</a><br />");
+                sampleFileContent.AppendLine("  <br /><br /><br /><br />");
+
+                string sampleBuild = sampleFileContent.ToString();
+                HttpContext.Current.Application["NORESULTS"] = sampleBuild;
+
+                noResultsText = sampleBuild;
+            }
+
+            return noResultsText;
         }
 
         private static string number_to_string(int Number)
