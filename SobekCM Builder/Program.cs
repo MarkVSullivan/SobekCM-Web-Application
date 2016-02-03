@@ -262,7 +262,8 @@ namespace SobekCM.Builder
 
 
             // Verify connectivity and rights on the logs subfolder
-            string logFileDirectory = Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().CodeBase, "logs");
+            string uri = System.Reflection.Assembly.GetExecutingAssembly().CodeBase.Replace("file:///","");
+            string logFileDirectory = Path.Combine(new FileInfo(uri).Directory.FullName, "logs");
             if (!Directory.Exists(logFileDirectory))
             {
                 try

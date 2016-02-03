@@ -387,7 +387,7 @@ namespace SobekCM.Builder_Library
                 Add_Error_To_Log("Unable to pull the newest BUILDER settings from the database", String.Empty, String.Empty, -1);
                 return false;
 		    }
-		    if (!Builder_Settings_Builder.Refresh(BuilderSettings, builderSettingsTbl, false))
+		    if (!Builder_Settings_Builder.Refresh(BuilderSettings, builderSettingsTbl, false, 0))
 		    {
                 Add_Error_To_Log("Error building the builder settings from the dataset", String.Empty, String.Empty, -1);
                 return false; 

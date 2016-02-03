@@ -801,12 +801,20 @@ namespace SobekCM.Builder_Library.Statistics
                             }
                         }
                     }
-                    DataRow[] matches = webcontent_stats.Select(sql_builder.ToString());
-                    int hits_complete = matches.Sum(childRow => Convert.ToInt32(childRow[1]));
 
-                    Engine_Database.Save_WebContent_Statistics(year, month, Convert.ToInt32(thisRow[1]), hits_complete, thisRow[2].ToString(),
-                        thisRow[3].ToString(), thisRow[4].ToString(), thisRow[5].ToString(), thisRow[6].ToString(), thisRow[7].ToString(), thisRow[8].ToString(),
-                        thisRow[9].ToString(), null);
+                    try
+                    {
+                        DataRow[] matches = webcontent_stats.Select(sql_builder.ToString().Replace("\"","'"));
+                        int hits_complete = matches.Sum(childRow => Convert.ToInt32(childRow[1]));
+
+                        Engine_Database.Save_WebContent_Statistics(year, month, Convert.ToInt32(thisRow[1]), hits_complete, thisRow[2].ToString(),
+                            thisRow[3].ToString(), thisRow[4].ToString(), thisRow[5].ToString(), thisRow[6].ToString(), thisRow[7].ToString(), thisRow[8].ToString(),
+                            thisRow[9].ToString(), null);
+                    }
+                    catch (Exception ee)
+                    {
+                        throw ee;
+                    }
                 }
             }
 
