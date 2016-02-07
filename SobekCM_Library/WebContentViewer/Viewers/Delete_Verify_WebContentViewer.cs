@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.Remoting.Contexts;
 using System.Web;
+using System.Web.Configuration;
 using SobekCM.Core.Client;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
@@ -44,29 +46,37 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 ErrorMessage = "ERROR: You do not have permission to delete this page";
                 canDelete = false;
             }
-            else
+            else if ( HttpContext.Current.Request.RequestType == "POST" )
             {
                 string save_value = HttpContext.Current.Request.Form["admin_delete_item"];
 
                 // Better say "DELETE", or just send back to the item
-                if ((save_value == null) || (save_value.ToUpper() != "DELETE"))
+                if (( save_value != null ) && ( String.Compare(save_value,"DELETE", StringComparison.OrdinalIgnoreCase) == 0))
                 {
-                    ErrorMessage = "ERROR: To verify this deletion, type DELETE into the text box and press CONFIRM";
-                }
-                else
-                {
-                    RestResponseMessage message = SobekEngineClient.WebContent.Delete_HTML_Based_Content(RequestSpecificValues.Static_Web_Content.WebContentID.Value, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Tracer);
-
-                    ErrorMessage = message.Message;
-                    if ((message.ErrorTypeEnum != ErrorRestTypeEnum.Successful) && (String.IsNullOrEmpty(ErrorMessage)))
+                    string entered_value = HttpContext.Current.Request.Form["admin_delete_confirm"];
+                    if ((entered_value == null) || (entered_value.ToUpper() != "DELETE"))
                     {
-                        ErrorMessage = "Error encountered on SobekCM engine.";
+                        ErrorMessage = "ERROR: To verify this deletion, type DELETE into the text box and press CONFIRM";
                     }
                     else
                     {
-                        ErrorMessage = "Success deleting this web content page.";
+                        string deleteReason = "Requested via web application";
+
+
+                        RestResponseMessage message = SobekEngineClient.WebContent.Delete_HTML_Based_Content(RequestSpecificValues.Static_Web_Content.WebContentID.Value, RequestSpecificValues.Current_User.Full_Name, deleteReason, RequestSpecificValues.Tracer);
+
+                        ErrorMessage = message.Message;
+                        if ((message.ErrorTypeEnum != ErrorRestTypeEnum.Successful) && (String.IsNullOrEmpty(ErrorMessage)))
+                        {
+                            ErrorMessage = "Error encountered on SobekCM engine.";
+                        }
+                        else
+                        {
+                            ErrorMessage = "Success deleted this web content page.";
+                        }
                     }
                 }
+
             }
         }
 
@@ -96,6 +106,9 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 Tracer.Add_Trace("Delete_Verify_WebContentViewer.Add_HTML", "No html added");
             }
 
+            // Start the form
+            string return_url = (RequestSpecificValues.Current_Mode.Base_URL + HttpContext.Current.Request.RawUrl).Replace("//", "/").Replace("http:/", "http://");
+            Output.WriteLine("<form name=\"itemNavForm\" method=\"post\" action=\"" + return_url + "\" id=\"itemNavForm\">");
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_delete_item\" name=\"admin_delete_item\" value=\"\" />");
@@ -103,7 +116,8 @@ namespace SobekCM.Library.WebContentViewer.Viewers
 
             if (!String.IsNullOrEmpty(ErrorMessage))
             {
-                Output.WriteLine("<h1>Msg: " + ErrorMessage + "</h1>");
+                Output.WriteLine("  <br />");
+                Output.WriteLine("  <div id=\"sbkWchs_ActionMessageError\">" + ErrorMessage + "</div>");
             }
 
             Output.WriteLine("<div class=\"Wchs_Text\">");
@@ -130,6 +144,9 @@ namespace SobekCM.Library.WebContentViewer.Viewers
             Output.WriteLine();
             Output.WriteLine("<!-- Focus on confirm box -->");
             Output.WriteLine("<script type=\"text/javascript\">focus_element('admin_delete_confirm');</script>");
+            Output.WriteLine();
+
+            Output.WriteLine("</form>");
             Output.WriteLine();
         }
     }

@@ -79,7 +79,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Read this CompleteTemplate
                 Template_XML_Reader reader = new Template_XML_Reader();
                 completeTemplate = new CompleteTemplate();
-                reader.Read_XML(UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "templates\\defaults\\" + TEMPLATE_CODE + ".xml", completeTemplate, true);
+                reader.Read_XML(UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "templates\\default\\standard\\" + TEMPLATE_CODE + ".xml", completeTemplate, true);
 
                 // Add the current codes to this CompleteTemplate
                 completeTemplate.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);

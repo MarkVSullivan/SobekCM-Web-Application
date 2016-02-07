@@ -55,10 +55,16 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             arg2 = String.Empty;
             RequestSpecificValues.Current_Mode.Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
             arg1 = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-			RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
-            RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
-            browse_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+            // Get the browse all url, if enabled
+            browse_url = String.Empty;
+            if (RequestSpecificValues.Hierarchy_Object.Can_Browse_Items)
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
+                browse_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            }
 
 
 

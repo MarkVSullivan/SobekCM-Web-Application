@@ -61,8 +61,10 @@ namespace SobekCM.Core.Client
                 }
             }
 
+
             // Get the endpoint
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_HTML_Based_Content_By_ID", Tracer);
+
 
             // Format the URL
             string url = String.Format(endpoint.URL, WebContentID);
@@ -105,7 +107,7 @@ namespace SobekCM.Core.Client
         /// <param name="User"> Name of the user that performed the work </param>
         /// <param name="Tracer"></param>
         /// <returns> Message </returns>
-        public RestResponseMessage Delete_HTML_Based_Content(int WebContentID, string User, Custom_Tracer Tracer)
+        public RestResponseMessage Delete_HTML_Based_Content(int WebContentID, string User, string Reason, Custom_Tracer Tracer)
         {
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_WebContentServices.Delete_HTML_Based_Content", "Delete a web content page or redirect");
@@ -116,8 +118,15 @@ namespace SobekCM.Core.Client
             // Format the URL
             string url = String.Format(endpoint.URL, WebContentID);
 
+            // Create the post data
+            List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>("User", User), 
+                new KeyValuePair<string, string>("Reason", Reason)
+            };
+
             // Call out to the endpoint and return the deserialized object
-            return Deserialize<RestResponseMessage>(url, endpoint.Protocol, null, "DELETE", Tracer);
+            return Deserialize<RestResponseMessage>(url, endpoint.Protocol, postData, "DELETE", Tracer);
         }
 
         /// <summary> Add a new web content page or redirect </summary>

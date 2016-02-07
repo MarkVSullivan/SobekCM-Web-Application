@@ -3043,6 +3043,7 @@ namespace SobekCM.Core.UI_Configuration
             }
 
             // Some values for testing
+            Sobekcm_Css = "http://localhost:52468/default/css/sobekcm/4.10.0/sobekcm.css";
             Sobekcm_Admin_Css = "http://localhost:52468/default/css/sobekcm-admin/4.10.0/sobekcm_admin.css";
 
             return returnValue;

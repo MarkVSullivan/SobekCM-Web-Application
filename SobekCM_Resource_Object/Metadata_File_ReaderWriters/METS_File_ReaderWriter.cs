@@ -178,108 +178,118 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     // Get this page node
                     Page_TreeNode pageNode = (Page_TreeNode) thisNode;
 
-                    // Set the page ID here
-                    pageNode.ID = "PAGE" + page_and_group_number;
-
-                    // Step through any files under this page
-                    foreach (SobekCM_File_Info thisFile in pageNode.Files)
+                    // Only do anything if there are actually any files here
+                    if ((pageNode.Files != null) && (pageNode.Files.Count > 0))
                     {
-                        // Set the ADMID and DMDID to empty in preparation for METS writing
-                        thisFile.ADMID = String.Empty;
-                        thisFile.DMDID = String.Empty;
 
-                        // If no file name, skip this
-                        if (String.IsNullOrEmpty(thisFile.System_Name))
-                            continue;
+                        // Set the page ID here
+                        pageNode.ID = "PAGE" + page_and_group_number;
 
-                        // Get this file extension and MIME type
-                        string fileExtension = thisFile.File_Extension;
-                        string mimetype = thisFile.MIME_Type(thisFile.File_Extension);
-
-                        // If this is going to be excluded from appearing in the METS file, just skip 
-                        // it here as well.
-                        if (!mimes_to_exclude.Contains(mimetype))
+                        // Step through any files under this page
+                        foreach (SobekCM_File_Info thisFile in pageNode.Files)
                         {
-                            // Set the group number on this file
-                            thisFile.Group_Number = "G" + page_and_group_number;
+                            // Set the ADMID and DMDID to empty in preparation for METS writing
+                            thisFile.ADMID = String.Empty;
+                            thisFile.DMDID = String.Empty;
 
-                            // Set the ID for this file as well
-                            switch (mimetype)
+                            // If no file name, skip this
+                            if (String.IsNullOrEmpty(thisFile.System_Name))
+                                continue;
+
+                            // Get this file extension and MIME type
+                            string fileExtension = thisFile.File_Extension;
+                            string mimetype = thisFile.MIME_Type(thisFile.File_Extension);
+
+                            // If this is going to be excluded from appearing in the METS file, just skip 
+                            // it here as well.
+                            if (!mimes_to_exclude.Contains(mimetype))
                             {
-                                case "image/tiff":
-                                    thisFile.ID = "TIF" + page_and_group_number;
-                                    break;
-                                case "text/plain":
-                                    thisFile.ID = "TXT" + page_and_group_number;
-                                    break;
-                                case "image/jpeg":
-                                    if (thisFile.System_Name.ToLower().IndexOf("thm.jp") > 0)
-                                    {
-                                        thisFile.ID = "THUMB" + page_and_group_number;
-                                        mimetype = mimetype + "-thumbnails";
-                                    }
-                                    else
-                                        thisFile.ID = "JPEG" + page_and_group_number;
-                                    break;
-                                case "image/gif":
-                                    if (thisFile.System_Name.ToLower().IndexOf("thm.gif") > 0)
-                                    {
-                                        thisFile.ID = "THUMB" + page_and_group_number;
-                                        mimetype = mimetype + "-thumbnails";
-                                    }
-                                    else
-                                        thisFile.ID = "GIF" + page_and_group_number;
-                                    break;
-                                case "image/jp2":
-                                    thisFile.ID = "JP2" + page_and_group_number;
-                                    break;
-                                default:
-                                    if (fileExtension.Length > 0)
-                                    {
-                                        thisFile.ID = fileExtension + page_and_group_number;
-                                    }
-                                    else
-                                    {
-                                        thisFile.ID = "NOEXT" + page_and_group_number;
-                                    }
-                                    break;
-                            }
+                                // Set the group number on this file
+                                thisFile.Group_Number = "G" + page_and_group_number;
 
-                            // Ensure this fileid is really unique.  It may not be if there are multiple
-                            // files of the same mime-type in the same page.  (such as 0001.jpg and 0001.qc.jpg)
-                            if (fileids_used.Contains(thisFile.ID))
-                            {
-                                int count = 2;
-                                while (fileids_used.Contains(thisFile.ID + "." + count))
-                                    count++;
-                                thisFile.ID = thisFile.ID + "." + count;
-                            }
+                                // Set the ID for this file as well
+                                switch (mimetype)
+                                {
+                                    case "image/tiff":
+                                        thisFile.ID = "TIF" + page_and_group_number;
+                                        break;
+                                    case "text/plain":
+                                        thisFile.ID = "TXT" + page_and_group_number;
+                                        break;
+                                    case "image/jpeg":
+                                        if (thisFile.System_Name.ToLower().IndexOf("thm.jp") > 0)
+                                        {
+                                            thisFile.ID = "THUMB" + page_and_group_number;
+                                            mimetype = mimetype + "-thumbnails";
+                                        }
+                                        else
+                                            thisFile.ID = "JPEG" + page_and_group_number;
+                                        break;
+                                    case "image/gif":
+                                        if (thisFile.System_Name.ToLower().IndexOf("thm.gif") > 0)
+                                        {
+                                            thisFile.ID = "THUMB" + page_and_group_number;
+                                            mimetype = mimetype + "-thumbnails";
+                                        }
+                                        else
+                                            thisFile.ID = "GIF" + page_and_group_number;
+                                        break;
+                                    case "image/jp2":
+                                        thisFile.ID = "JP2" + page_and_group_number;
+                                        break;
+                                    default:
+                                        if (fileExtension.Length > 0)
+                                        {
+                                            thisFile.ID = fileExtension + page_and_group_number;
+                                        }
+                                        else
+                                        {
+                                            thisFile.ID = "NOEXT" + page_and_group_number;
+                                        }
+                                        break;
+                                }
 
-                            // Save this file id
-                            fileids_used.Add(thisFile.ID);
+                                // Ensure this fileid is really unique.  It may not be if there are multiple
+                                // files of the same mime-type in the same page.  (such as 0001.jpg and 0001.qc.jpg)
+                                if (fileids_used.Contains(thisFile.ID))
+                                {
+                                    int count = 2;
+                                    while (fileids_used.Contains(thisFile.ID + "." + count))
+                                        count++;
+                                    thisFile.ID = thisFile.ID + "." + count;
+                                }
 
-                            // Also add to the list of files
-                            allFiles.Add(thisFile);
+                                // Save this file id
+                                fileids_used.Add(thisFile.ID);
 
-                            // Also ensure we know there are page image files
-                            hasPageFiles = true;
+                                // Also add to the list of files
+                                allFiles.Add(thisFile);
+
+                                // Also ensure we know there are page image files
+                                hasPageFiles = true;
 
 
-                            // If this is a new MIME type, add it, else just save this file in the MIME hash
-                            if (!mimeHash.ContainsKey(mimetype))
-                            {
-                                List<SobekCM_File_Info> newList = new List<SobekCM_File_Info> {thisFile};
-                                mimeHash[mimetype] = newList;
-                            }
-                            else
-                            {
-                                mimeHash[mimetype].Add(thisFile);
+                                // If this is a new MIME type, add it, else just save this file in the MIME hash
+                                if (!mimeHash.ContainsKey(mimetype))
+                                {
+                                    List<SobekCM_File_Info> newList = new List<SobekCM_File_Info> {thisFile};
+                                    mimeHash[mimetype] = newList;
+                                }
+                                else
+                                {
+                                    mimeHash[mimetype].Add(thisFile);
+                                }
                             }
                         }
-                    }
 
-                    // Prepare for the next page
-                    page_and_group_number++;
+                        // Prepare for the next page
+                        page_and_group_number++;
+                    }
+                    else
+                    {
+                        // Page has no files, so it should be skipped when written
+                        pageNode.ID = "SKIP";
+                    }
                 }
                 else
                 {
@@ -319,108 +329,118 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     // Get this page node
                     Page_TreeNode pageNode = (Page_TreeNode) thisNode;
 
-                    // Set the page ID here
-                    pageNode.ID = "FILES" + page_and_group_number;
-
-                    // Step through any files under this page
-                    foreach (SobekCM_File_Info thisFile in pageNode.Files)
+                    // Only do anything if there are actually any files here
+                    if ((pageNode.Files != null) && (pageNode.Files.Count > 0))
                     {
-                        // Set the ADMID and DMDID to empty in preparation for METS writing
-                        thisFile.ADMID = String.Empty;
-                        thisFile.DMDID = String.Empty;
 
-                        // If no file name, skip this
-                        if (String.IsNullOrEmpty(thisFile.System_Name))
-                            continue;
+                        // Set the page ID here
+                        pageNode.ID = "FILES" + page_and_group_number;
 
-                        // Get this file extension and MIME type
-                        string fileExtension = thisFile.File_Extension;
-                        string mimetype = thisFile.MIME_Type(thisFile.File_Extension);
-
-                        // If this is going to be excluded from appearing in the METS file, just skip 
-                        // it here as well.
-                        if (!mimes_to_exclude.Contains(mimetype))
+                        // Step through any files under this page
+                        foreach (SobekCM_File_Info thisFile in pageNode.Files)
                         {
-                            // Set the group number on this file
-                            thisFile.Group_Number = "G" + page_and_group_number;
+                            // Set the ADMID and DMDID to empty in preparation for METS writing
+                            thisFile.ADMID = String.Empty;
+                            thisFile.DMDID = String.Empty;
 
-                            // Set the ID for this file as well
-                            switch (mimetype)
+                            // If no file name, skip this
+                            if (String.IsNullOrEmpty(thisFile.System_Name))
+                                continue;
+
+                            // Get this file extension and MIME type
+                            string fileExtension = thisFile.File_Extension;
+                            string mimetype = thisFile.MIME_Type(thisFile.File_Extension);
+
+                            // If this is going to be excluded from appearing in the METS file, just skip 
+                            // it here as well.
+                            if (!mimes_to_exclude.Contains(mimetype))
                             {
-                                case "image/tiff":
-                                    thisFile.ID = "TIF" + page_and_group_number;
-                                    break;
-                                case "text/plain":
-                                    thisFile.ID = "TXT" + page_and_group_number;
-                                    break;
-                                case "image/jpeg":
-                                    if (thisFile.System_Name.ToLower().IndexOf("thm.jp") > 0)
-                                    {
-                                        thisFile.ID = "THUMB" + page_and_group_number;
-                                        mimetype = mimetype + "-thumbnails";
-                                    }
-                                    else
-                                        thisFile.ID = "JPEG" + page_and_group_number;
-                                    break;
-                                case "image/gif":
-                                    if (thisFile.System_Name.ToLower().IndexOf("thm.gif") > 0)
-                                    {
-                                        thisFile.ID = "THUMB" + page_and_group_number;
-                                        mimetype = mimetype + "-thumbnails";
-                                    }
-                                    else
-                                        thisFile.ID = "GIF" + page_and_group_number;
-                                    break;
-                                case "image/jp2":
-                                    thisFile.ID = "JP2" + page_and_group_number;
-                                    break;
-                                default:
-                                    if (fileExtension.Length > 0)
-                                    {
-                                        thisFile.ID = fileExtension + page_and_group_number;
-                                    }
-                                    else
-                                    {
-                                        thisFile.ID = "NOEXT" + page_and_group_number;
-                                    }
-                                    break;
-                            }
+                                // Set the group number on this file
+                                thisFile.Group_Number = "G" + page_and_group_number;
 
-                            // Ensure this fileid is really unique.  It may not be if there are multiple
-                            // files of the same mime-type in the same page.  (such as 0001.jpg and 0001.qc.jpg)
-                            if (fileids_used.Contains(thisFile.ID))
-                            {
-                                int count = 2;
-                                while (fileids_used.Contains(thisFile.ID + "." + count))
-                                    count++;
-                                thisFile.ID = thisFile.ID + "." + count;
-                            }
+                                // Set the ID for this file as well
+                                switch (mimetype)
+                                {
+                                    case "image/tiff":
+                                        thisFile.ID = "TIF" + page_and_group_number;
+                                        break;
+                                    case "text/plain":
+                                        thisFile.ID = "TXT" + page_and_group_number;
+                                        break;
+                                    case "image/jpeg":
+                                        if (thisFile.System_Name.ToLower().IndexOf("thm.jp") > 0)
+                                        {
+                                            thisFile.ID = "THUMB" + page_and_group_number;
+                                            mimetype = mimetype + "-thumbnails";
+                                        }
+                                        else
+                                            thisFile.ID = "JPEG" + page_and_group_number;
+                                        break;
+                                    case "image/gif":
+                                        if (thisFile.System_Name.ToLower().IndexOf("thm.gif") > 0)
+                                        {
+                                            thisFile.ID = "THUMB" + page_and_group_number;
+                                            mimetype = mimetype + "-thumbnails";
+                                        }
+                                        else
+                                            thisFile.ID = "GIF" + page_and_group_number;
+                                        break;
+                                    case "image/jp2":
+                                        thisFile.ID = "JP2" + page_and_group_number;
+                                        break;
+                                    default:
+                                        if (fileExtension.Length > 0)
+                                        {
+                                            thisFile.ID = fileExtension + page_and_group_number;
+                                        }
+                                        else
+                                        {
+                                            thisFile.ID = "NOEXT" + page_and_group_number;
+                                        }
+                                        break;
+                                }
 
-                            // Save this file id
-                            fileids_used.Add(thisFile.ID);
+                                // Ensure this fileid is really unique.  It may not be if there are multiple
+                                // files of the same mime-type in the same page.  (such as 0001.jpg and 0001.qc.jpg)
+                                if (fileids_used.Contains(thisFile.ID))
+                                {
+                                    int count = 2;
+                                    while (fileids_used.Contains(thisFile.ID + "." + count))
+                                        count++;
+                                    thisFile.ID = thisFile.ID + "." + count;
+                                }
 
-                            // Also add to the list of files
-                            allFiles.Add(thisFile);
+                                // Save this file id
+                                fileids_used.Add(thisFile.ID);
 
-                            // Also ensure we know there are page image files
-                            hasDownloadFiles = true;
+                                // Also add to the list of files
+                                allFiles.Add(thisFile);
+
+                                // Also ensure we know there are page image files
+                                hasDownloadFiles = true;
 
 
-                            // If this is a new MIME type, add it, else just save this file in the MIME hash
-                            if (!mimeHash.ContainsKey(mimetype))
-                            {
-                                List<SobekCM_File_Info> newList = new List<SobekCM_File_Info> {thisFile};
-                                mimeHash[mimetype] = newList;
-                            }
-                            else
-                            {
-                                mimeHash[mimetype].Add(thisFile);
+                                // If this is a new MIME type, add it, else just save this file in the MIME hash
+                                if (!mimeHash.ContainsKey(mimetype))
+                                {
+                                    List<SobekCM_File_Info> newList = new List<SobekCM_File_Info> {thisFile};
+                                    mimeHash[mimetype] = newList;
+                                }
+                                else
+                                {
+                                    mimeHash[mimetype].Add(thisFile);
+                                }
                             }
                         }
-                    }
 
-                    // Prepare for the next page
-                    page_and_group_number++;
+                        // Prepare for the next page
+                        page_and_group_number++;
+                    }
+                    else
+                    {
+                        // Page has no files, so it should be skipped when written
+                        pageNode.ID = "SKIP";
+                    }
                 }
                 else
                 {
@@ -1359,6 +1379,10 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
             // Add the div information for this node first
             if (ThisNode.Page)
             {
+                // If the ID of this page is SKIP, then just return and do nothing here
+                if (ThisNode.ID == "SKIP")
+                    return;
+
                 if (PagesToAppearances.ContainsKey(ThisNode))
                 {
                     PagesToAppearances[ThisNode] = PagesToAppearances[ThisNode] + 1;

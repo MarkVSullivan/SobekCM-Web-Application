@@ -722,6 +722,8 @@ namespace SobekCM.Library.HTML
 
             if (hierarchy != null)
             {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+
                 // Add the text
                 Output.WriteLine("<div class=\"sbkIhsw_HomeText\">");
                 Output.WriteLine("<p>Below is the complete master tree of all aggregations within this library.  This includes all active aggregations, as well as all hidden or inactive collections.</p>");
@@ -798,10 +800,11 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("   $('#aggregationTree').jstree().bind(\"select_node.jstree\", function (e, data) { var href = data.node.a_attr.href; document.location.href = href; });");
                 Output.WriteLine("</script>");
                 Output.WriteLine();
+
+                // Restore the mode
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Internal;
+                RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
             }
-
-            RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
-
         }
 
 

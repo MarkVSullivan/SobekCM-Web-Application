@@ -300,6 +300,12 @@ namespace SobekCM.Core.WebContent
             }
         }
 
+        /// <summary> Any build error that occurred during processing </summary>
+        [DataMember(EmitDefaultValue = false, Name = "buildException")]
+        [XmlElement("buildException")]
+        [ProtoMember(28)]
+        public string Build_Exception { get; set; }
+
         /// <summary> Gets the URL segments for this web content page </summary>
         /// <returns> Web content page URL segments </returns>
         [IgnoreDataMember]

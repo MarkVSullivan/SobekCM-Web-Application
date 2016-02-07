@@ -1605,9 +1605,12 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("   $('#aggregationTree').jstree().bind(\"select_node.jstree\", function (e, data) { var href = data.node.a_attr.href; document.location.href = href; });");
                 Output.WriteLine("</script>");
                 Output.WriteLine();
+
+                // Restore the mode (simple since this only appears on the very top level aggregation)
+                RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
             }
 
-            RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
+            
 
         }
 

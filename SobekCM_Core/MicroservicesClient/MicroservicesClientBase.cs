@@ -215,7 +215,7 @@ namespace SobekCM.Core.MicroservicesClient
             try
             {
                 // Add a trace
-                Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Microservice endpoint call: [POST] " + MicroserviceUri);
+                Tracer.Add_Trace("MicroservicesClientBase.Deserialize", "Microservice endpoint call: [" + VerbMethod + "] " + MicroserviceUri);
 
                 // Create the request for the remote microservice, by URI
                 WebRequest request = WebRequest.Create(MicroserviceUri);

@@ -469,7 +469,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         /// <param name="RequestForm"></param>
         /// <param name="IsDebug"></param>
-        public void Delete_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
+        public void Delete_HTML_Based_Content(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -511,6 +511,8 @@ namespace SobekCM.Engine_Library.Endpoints
             // Ensure the web page does not already exist
             if (Engine_Database.WebContent_Delete_Page(webcontentId, reason, user, tracer))
             {
+                CachedDataManager.WebContent.Clear_All_Web_Content_Lists();
+                CachedDataManager.WebContent.Clear_All_Web_Content_Pages();
                 Serialize(new RestResponseMessage(ErrorRestTypeEnum.Successful, null), Response, Protocol, null);
                 Response.StatusCode = 200;
             }
@@ -5172,6 +5174,9 @@ namespace SobekCM.Engine_Library.Endpoints
                 source = source.Substring(0, source.Length - filename.Length);
             }
 
+            // Start to build the return value
+            HTML_Based_Content simpleWebContent = null;
+
             // If the designated source exists, look for the files 
             if (Directory.Exists(source))
             {
@@ -5185,135 +5190,150 @@ namespace SobekCM.Engine_Library.Endpoints
                 // If this was found, build it and return it
                 if (!String.IsNullOrEmpty(found_source))
                 {
-                    HTML_Based_Content simpleWebContent = HTML_Based_Content_Reader.Read_HTML_File(found_source, true, Tracer);
-                    
-                    if ((simpleWebContent == null) || (simpleWebContent.Content.Length == 0))
-                    {
-                        ErrorType = WebContentEndpointErrorEnum.Error_Reading_File;
-                        Tracer.Add_Trace("WebContentServices.get_html_content", "Error reading source file");
-                        return null;
-                    }
-
-                    // Copy over the primary key and URL segments for this web content
-                    simpleWebContent.WebContentID = BasicInfo.WebContentID;
-                    simpleWebContent.Level1 = BasicInfo.Level1;
-                    simpleWebContent.Level2 = BasicInfo.Level2;
-                    simpleWebContent.Level3 = BasicInfo.Level3;
-                    simpleWebContent.Level4 = BasicInfo.Level4;
-                    simpleWebContent.Level5 = BasicInfo.Level5;
-                    simpleWebContent.Level6 = BasicInfo.Level6;
-                    simpleWebContent.Level7 = BasicInfo.Level7;
-                    simpleWebContent.Level8 = BasicInfo.Level8;
-                    if ((BasicInfo.Locked.HasValue) && (BasicInfo.Locked.Value)) simpleWebContent.Locked = true;
-
-                    // Now, check for any "server-side include" directorives in the source text
-                    int include_index = simpleWebContent.Content.IndexOf("<%INCLUDE");
-                    while ((include_index > 0) && (simpleWebContent.Content.IndexOf("%>", include_index, StringComparison.Ordinal) > 0))
-                    {
-                        int include_finish_index = simpleWebContent.Content.IndexOf("%>", include_index, StringComparison.Ordinal) + 2;
-                        string include_statement = simpleWebContent.Content.Substring(include_index, include_finish_index - include_index);
-                        string include_statement_upper = include_statement.ToUpper();
-                        int file_index = include_statement_upper.IndexOf("FILE");
-                        string filename_to_include = String.Empty;
-                        if (file_index > 0)
-                        {
-                            // Pull out the possible file name
-                            string possible_file_name = include_statement.Substring(file_index + 4);
-                            int file_start = -1;
-                            int file_end = -1;
-                            int char_index = 0;
-
-                            // Find the start of the file information
-                            while ((file_start < 0) && (char_index < possible_file_name.Length))
-                            {
-                                if ((possible_file_name[char_index] != '"') && (possible_file_name[char_index] != '=') && (possible_file_name[char_index] != ' '))
-                                {
-                                    file_start = char_index;
-                                }
-                                else
-                                {
-                                    char_index++;
-                                }
-                            }
-
-                            // Find the end of the file information
-                            if (file_start >= 0)
-                            {
-                                char_index++;
-                                while ((file_end < 0) && (char_index < possible_file_name.Length))
-                                {
-                                    if ((possible_file_name[char_index] == '"') || (possible_file_name[char_index] == ' ') || (possible_file_name[char_index] == '%'))
-                                    {
-                                        file_end = char_index;
-                                    }
-                                    else
-                                    {
-                                        char_index++;
-                                    }
-                                }
-                            }
-
-                            // Get the filename
-                            if ((file_start > 0) && (file_end > 0))
-                            {
-                                filename_to_include = possible_file_name.Substring(file_start, file_end - file_start);
-                            }
-                        }
-
-                        // Remove the include and either place in the text from the indicated file, 
-                        // or just remove
-                        if ((filename_to_include.Length > 0) && (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + filename_to_include)))
-                        {
-                            // Define the value for the include text
-                            string include_text;
-
-                            // Look in the cache for this
-                            object returnValue = HttpContext.Current.Cache.Get("INCLUDE_" + filename_to_include);
-                            if (returnValue != null)
-                            {
-                                include_text = returnValue.ToString();
-                            }
-                            else
-                            {
-                                try
-                                {
-                                    // Pull from the file
-                                    StreamReader reader = new StreamReader(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + filename_to_include);
-                                    include_text = reader.ReadToEnd();
-                                    reader.Close();
-
-                                    // Store on the cache for two minutes, if no indication not to
-                                    if (include_statement_upper.IndexOf("NOCACHE") < 0)
-                                        HttpContext.Current.Cache.Insert("INCLUDE_" + filename_to_include, include_text, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));
-                                }
-                                catch (Exception)
-                                {
-                                    include_text = "Unable to read the soruce file ( " + filename_to_include + " )";
-                                }
-                            }
-
-                            // Replace the text with the include file
-                            simpleWebContent.Content = simpleWebContent.Content.Replace(include_statement, include_text);
-                            include_index = simpleWebContent.Content.IndexOf("<%INCLUDE", include_index + include_text.Length - 1, StringComparison.Ordinal);
-                        }
-                        else
-                        {
-                            // No suitable name was found, or it doesn't exist so just remove the INCLUDE completely
-                            simpleWebContent.Content = simpleWebContent.Content.Replace(include_statement, "");
-                            include_index = simpleWebContent.Content.IndexOf("<%INCLUDE", include_index, StringComparison.Ordinal);
-                        }
-                    }
-
-                    // Now, return the web content object, with the text
-                    return simpleWebContent;
+                    simpleWebContent = HTML_Based_Content_Reader.Read_HTML_File(found_source, true, Tracer);
                 }
             }
 
-            // Was never found
-            Tracer.Add_Trace("WebContentServices.get_html_content", "No source file found");
-            ErrorType = WebContentEndpointErrorEnum.No_File_Found;
-            return null;
+            // If NULL then this valid web content page has no source!
+            if (simpleWebContent == null)
+            {
+                simpleWebContent = new HTML_Based_Content();
+                if (!String.IsNullOrEmpty(found_source))
+                {
+                    Tracer.Add_Trace("WebContentServices.get_html_content", "Error reading source file");
+                    Tracer.Add_Trace("WebContentServices.get_html_content", found_source);
+                    simpleWebContent.Title = "EXCEPTION ENCOUNTERED";
+                    simpleWebContent.Build_Exception = "Found web content file, but it was apparently corrupted.  Error reading file " + found_source;
+                    ErrorType = WebContentEndpointErrorEnum.Error_Reading_File;
+                    simpleWebContent.Content = "<strong>Error reading the existing source file.  It may be corrupt.</strong>";
+                    simpleWebContent.ContentSource = simpleWebContent.Source;
+                }
+                else
+                {
+                    Tracer.Add_Trace("WebContentServices.get_html_content", "No valid source file found!");
+                    Tracer.Add_Trace("WebContentServices.get_html_content", found_source);
+                    simpleWebContent.Title = "EXCEPTION ENCOUNTERED";
+                    simpleWebContent.Build_Exception = "No valid source file found!";
+                    simpleWebContent.Content = "<strong>No valid source file found, despite the fact this is a valid web content page in the database!</strong>";
+                    simpleWebContent.ContentSource = simpleWebContent.Source;
+                    ErrorType = WebContentEndpointErrorEnum.No_File_Found;
+                }
+            }
+
+            // Copy over the primary key and URL segments for this web content
+            simpleWebContent.WebContentID = BasicInfo.WebContentID;
+            simpleWebContent.Level1 = BasicInfo.Level1;
+            simpleWebContent.Level2 = BasicInfo.Level2;
+            simpleWebContent.Level3 = BasicInfo.Level3;
+            simpleWebContent.Level4 = BasicInfo.Level4;
+            simpleWebContent.Level5 = BasicInfo.Level5;
+            simpleWebContent.Level6 = BasicInfo.Level6;
+            simpleWebContent.Level7 = BasicInfo.Level7;
+            simpleWebContent.Level8 = BasicInfo.Level8;
+            if ((BasicInfo.Locked.HasValue) && (BasicInfo.Locked.Value)) simpleWebContent.Locked = true;
+
+            // Now, check for any "server-side include" directorives in the source text
+            int include_index = simpleWebContent.Content.IndexOf("<%INCLUDE");
+            while ((include_index > 0) && (simpleWebContent.Content.IndexOf("%>", include_index, StringComparison.Ordinal) > 0))
+            {
+                int include_finish_index = simpleWebContent.Content.IndexOf("%>", include_index, StringComparison.Ordinal) + 2;
+                string include_statement = simpleWebContent.Content.Substring(include_index, include_finish_index - include_index);
+                string include_statement_upper = include_statement.ToUpper();
+                int file_index = include_statement_upper.IndexOf("FILE");
+                string filename_to_include = String.Empty;
+                if (file_index > 0)
+                {
+                    // Pull out the possible file name
+                    string possible_file_name = include_statement.Substring(file_index + 4);
+                    int file_start = -1;
+                    int file_end = -1;
+                    int char_index = 0;
+
+                    // Find the start of the file information
+                    while ((file_start < 0) && (char_index < possible_file_name.Length))
+                    {
+                        if ((possible_file_name[char_index] != '"') && (possible_file_name[char_index] != '=') && (possible_file_name[char_index] != ' '))
+                        {
+                            file_start = char_index;
+                        }
+                        else
+                        {
+                            char_index++;
+                        }
+                    }
+
+                    // Find the end of the file information
+                    if (file_start >= 0)
+                    {
+                        char_index++;
+                        while ((file_end < 0) && (char_index < possible_file_name.Length))
+                        {
+                            if ((possible_file_name[char_index] == '"') || (possible_file_name[char_index] == ' ') || (possible_file_name[char_index] == '%'))
+                            {
+                                file_end = char_index;
+                            }
+                            else
+                            {
+                                char_index++;
+                            }
+                        }
+                    }
+
+                    // Get the filename
+                    if ((file_start > 0) && (file_end > 0))
+                    {
+                        filename_to_include = possible_file_name.Substring(file_start, file_end - file_start);
+                    }
+                }
+
+                // Remove the include and either place in the text from the indicated file, 
+                // or just remove
+                if ((filename_to_include.Length > 0) && (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + filename_to_include)))
+                {
+                    // Define the value for the include text
+                    string include_text;
+
+                    // Look in the cache for this
+                    object returnValue = HttpContext.Current.Cache.Get("INCLUDE_" + filename_to_include);
+                    if (returnValue != null)
+                    {
+                        include_text = returnValue.ToString();
+                    }
+                    else
+                    {
+                        try
+                        {
+                            // Pull from the file
+                            StreamReader reader = new StreamReader(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "design\\webcontent\\" + filename_to_include);
+                            include_text = reader.ReadToEnd();
+                            reader.Close();
+
+                            // Store on the cache for two minutes, if no indication not to
+                            if (include_statement_upper.IndexOf("NOCACHE") < 0)
+                                HttpContext.Current.Cache.Insert("INCLUDE_" + filename_to_include, include_text, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));
+                        }
+                        catch (Exception)
+                        {
+                            include_text = "Unable to read the soruce file ( " + filename_to_include + " )";
+                        }
+                    }
+
+                    // Replace the text with the include file
+                    simpleWebContent.Content = simpleWebContent.Content.Replace(include_statement, include_text);
+                    include_index = simpleWebContent.Content.IndexOf("<%INCLUDE", include_index + include_text.Length - 1, StringComparison.Ordinal);
+                }
+                else
+                {
+                    // No suitable name was found, or it doesn't exist so just remove the INCLUDE completely
+                    simpleWebContent.Content = simpleWebContent.Content.Replace(include_statement, "");
+                    include_index = simpleWebContent.Content.IndexOf("<%INCLUDE", include_index, StringComparison.Ordinal);
+                }
+            }
+
+            // Now, return the web content object, with the text
+            return simpleWebContent;
         }
+
 
         #endregion
 

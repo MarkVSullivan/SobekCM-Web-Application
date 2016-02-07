@@ -169,9 +169,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 				// If the navigator will be  shown, we need a left nav bar, so return different behaviors
 	            if (!suppressNavigator)
 	            {
-		            return new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Suppress_Footer, HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Bottom_Pagination, HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Requires_Left_Navigation_Bar};
+		            return new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Bottom_Pagination, HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Requires_Left_Navigation_Bar};
 	            }
-				return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Footer, HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Bottom_Pagination };
+				return new List<HtmlSubwriter_Behaviors_Enum> {HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Bottom_Pagination };
 
             }
         }

@@ -125,7 +125,7 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("          </td>");
                 Output.WriteLine("          <td style=\"vertical-align:bottom\" >");
 
-                if (view_choices_string.Length > 0)
+                if (!String.IsNullOrEmpty(view_choices_string))
                 {
                     Output.WriteLine("            " + view_choices_string.Replace("<%WEBSKIN%>", Skin_Code).Replace("<%?URLOPTS%>", "") + "&nbsp; ");
                 }
@@ -195,7 +195,7 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("          </td>");
                 Output.WriteLine("          <td valign=\"bottom\" >");
 
-                if (view_choices_string.Length > 0)
+                if (!String.IsNullOrEmpty(view_choices_string))
                 {
                     Output.WriteLine("            " + view_choices_string.Replace("<%WEBSKIN%>", Skin_Code).Replace("<%?URLOPTS%>", "") + "&nbsp; ");
                 }

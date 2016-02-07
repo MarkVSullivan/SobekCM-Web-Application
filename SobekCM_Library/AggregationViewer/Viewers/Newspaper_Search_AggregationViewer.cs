@@ -55,10 +55,17 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
             RequestSpecificValues.Current_Mode.Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
             string redirect_stem = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&m=hhh", "").Replace("m=hht", "").Replace("&m=lhh", "").Replace("m=lht", "");
-			RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-            RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
-            RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
-            browse_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+
+            // Get the browse all url, if enabled
+            browse_url = String.Empty;
+            if (RequestSpecificValues.Hierarchy_Object.Can_Browse_Items)
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
+                browse_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            }
+
             RequestSpecificValues.Current_Mode.Search_String = search_string;
             RequestSpecificValues.Current_Mode.Search_Fields = fields;
 	        RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;

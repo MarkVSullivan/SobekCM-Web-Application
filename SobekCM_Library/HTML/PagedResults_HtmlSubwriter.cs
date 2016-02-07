@@ -1562,7 +1562,8 @@ namespace SobekCM.Library.HTML
                     RequestSpecificValues.Current_Mode.Search_String = "<%VALUE%>";
                     ushort? page = RequestSpecificValues.Current_Mode.Page;
                     RequestSpecificValues.Current_Mode.Page = 1;
-                    url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
+                    url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"").Replace("/exact/", "/results/");
+
                     RequestSpecificValues.Current_Mode.Mode = displayMode;
                     RequestSpecificValues.Current_Mode.Page = page;
                     RequestSpecificValues.Current_Mode.Search_Fields = String.Empty;
@@ -1592,7 +1593,7 @@ namespace SobekCM.Library.HTML
                         RequestSpecificValues.Current_Mode.Search_String = RequestSpecificValues.Current_Mode.Search_String + ",<%VALUE%>";
                         ushort? page = RequestSpecificValues.Current_Mode.Page;
                         RequestSpecificValues.Current_Mode.Page = 1;
-                        url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"");
+                        url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "\"<%VALUE%>\"").Replace("/exact/", "/results/");
                         RequestSpecificValues.Current_Mode.Page = page;
                         RequestSpecificValues.Current_Mode.Search_Fields = orig_field;
                         RequestSpecificValues.Current_Mode.Search_String = orig_terms;

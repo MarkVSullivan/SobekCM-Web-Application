@@ -1505,6 +1505,11 @@ namespace SobekCM.Library.HTML
 
             if (ShouldLeftNavigationBarBeShown)
             {
+                // Show the entire item viewer in a presentation table.  Tried using divs, but continued to have problems
+                // especially with smaller screens
+                Output.WriteLine("<!-- Presentation table to enforce layout -->");
+                Output.WriteLine("<table role=\"presentation\"><tr style=\"vertical-align:top\"><td>");
+
                 // Start the item viewer
                 Output.WriteLine("<!-- Begin the left navigational bar -->");
 
@@ -1661,6 +1666,9 @@ namespace SobekCM.Library.HTML
 
                 Output.WriteLine("</nav>");
                 Output.WriteLine();
+
+                Output.WriteLine("<!-- Presentation table first cell ends and next will begin-->");
+                Output.WriteLine("</td><td>");
             }
 
 
@@ -2047,6 +2055,8 @@ namespace SobekCM.Library.HTML
 			Output.WriteLine("</section>");
 			Output.WriteLine();
 
+            Output.WriteLine("<!-- Close the presentation table -->");
+            Output.WriteLine("</td></tr></table>");
 
             // None of the sharing options are available if the user is restricted from this item
             // or if we are generating this as a static page source for robots

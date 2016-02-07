@@ -1413,7 +1413,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			// Collect and display all the measurements information
 			if (( vraInfo != null ) && ( vraInfo.Measurement_Count > 0))
 			{
-				List<string> measurements = (from measurement in vraInfo.Measurements where measurement.Measurements.Length > 0 select measurement.Measurements).ToList();
+			    List<string> measurements = new List<string>();
+			    foreach (VRACore_Measurement_Info measurement in vraInfo.Measurements)
+			    {
+			        if ( !String.IsNullOrEmpty(measurement.Measurements))
+			        {
+			            if (!string.IsNullOrEmpty(measurement.Units))
+			            {
+			                measurements.Add(measurement.Measurements + " ( " + measurement.Units + " )");
+			            }
+			            else
+			            {
+                            measurements.Add(measurement.Measurements);
+			            }
+			        }
+			    }
 			    Add_Citation_HTML_Rows("Measurements", measurements, INDENT, result);
 			}
 
@@ -1736,7 +1750,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             break;
                     }
 
-                    result.Append(Single_Citation_HTML_Row("Interactivity Level", lom_temp, INDENT));
+                    result.Append(Single_Citation_HTML_Row("Difficulty Level", lom_temp, INDENT));
                 }
 
                 

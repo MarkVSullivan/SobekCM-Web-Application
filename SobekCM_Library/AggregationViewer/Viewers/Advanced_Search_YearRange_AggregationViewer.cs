@@ -51,10 +51,15 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             RequestSpecificValues.Current_Mode.Search_Precision = Search_Precision_Type_Enum.Inflectional_Form;
             string redirectStem = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
-            RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
-            RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
-            RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
-            string browse_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            // Get the browse all url, if enabled
+            string browse_url = String.Empty;
+            if (RequestSpecificValues.Hierarchy_Object.Can_Browse_Items)
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = "all";
+                browse_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            }
 
             RequestSpecificValues.Current_Mode.Search_String = searchString;
             RequestSpecificValues.Current_Mode.Search_Fields = fields;
@@ -62,7 +67,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             RequestSpecificValues.Current_Mode.Mode = lastMode;
 	        RequestSpecificValues.Current_Mode.Aggregation_Type = aggrType;
 
-            Search_Script_Action = "Javascript:advanced_search_years_sobekcm('" + redirectStem + "','" + browse_url + "')";
+            Search_Script_Action = "advanced_search_years_sobekcm('" + redirectStem + "','" + browse_url + "')";
         }
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
