@@ -463,6 +463,10 @@ namespace SobekCM.Engine_Library.Configuration
                 {
                     switch (readerXml.Name.ToLower())
                     {
+                        case "clear":
+                            config.Clear_Metadata_Prefixes();
+                            break;
+
                         case "metadataformat":
                             OAI_PMH_Metadata_Format component = new OAI_PMH_Metadata_Format();
                             if (readerXml.MoveToAttribute("Prefix"))
@@ -481,7 +485,7 @@ namespace SobekCM.Engine_Library.Configuration
                                 component.Enabled = false;
                             if ((!String.IsNullOrEmpty(component.Prefix)) && (!String.IsNullOrEmpty(component.Schema)) && (!String.IsNullOrEmpty(component.MetadataNamespace)) && (!String.IsNullOrEmpty(component.Class)))
                             {
-                                config.Metadata_Prefixes.Add(component);
+                                config.Add_Metadata_Prefix(component);
                             }
                             break;
                     }
@@ -1733,21 +1737,26 @@ namespace SobekCM.Engine_Library.Configuration
                 Config.Metadata = new Metadata_Configuration();
 
             // Clear al the current (probably default) settings
-            Config.Metadata.Clear();
+            if ( Config.Metadata.isDefault )
+                Config.Metadata.Clear();
 
             // Some collections to read into
             Dictionary<string, METS_Section_ReaderWriter_Config> readerWriters = new Dictionary<string, METS_Section_ReaderWriter_Config>();
 
             try
             {
-            while (ReaderXml.Read())
-            {
-                if (ReaderXml.NodeType == XmlNodeType.Element)
+                while (ReaderXml.Read())
                 {
-                    switch (ReaderXml.Name.ToLower())
+                    if (ReaderXml.NodeType == XmlNodeType.Element)
                     {
+                        switch (ReaderXml.Name.ToLower())
+                        {
+                            case "clearall":
+                                Config.Metadata.Clear();
+                                break;
+
                             case "metadata_file_readerwriters":
-                            read_metadata_file_readerwriter_configs(ReaderXml.ReadSubtree(), Config.Metadata);
+                                read_metadata_file_readerwriter_configs(ReaderXml.ReadSubtree(), Config.Metadata);
                                 break;
 
                             case "mets_sec_readerwriters":
@@ -1765,7 +1774,7 @@ namespace SobekCM.Engine_Library.Configuration
                     }
                 }
             }
-            catch ( Exception ee )
+            catch (Exception ee)
             {
                 Config.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_metadata_details");
                 Config.Add_Log(ee.Message);
@@ -1789,9 +1798,13 @@ namespace SobekCM.Engine_Library.Configuration
         {
             while (ReaderXml.Read())
             {
-                if ((ReaderXml.NodeType == XmlNodeType.Element) && (ReaderXml.Name.ToLower() == "readerwriter"))
+                if (ReaderXml.NodeType == XmlNodeType.Element)
                 {
-                    read_metadata_file_readerwriter_config(ReaderXml.ReadSubtree(), Config );
+                    if (ReaderXml.Name.ToLower() == "clear")
+                        Config.Clear_Metadata_File_ReaderWriter_Config();
+                    
+                    if (ReaderXml.Name.ToLower() == "readerwriter")
+                        read_metadata_file_readerwriter_config(ReaderXml.ReadSubtree(), Config );
                 }
             }
         }
@@ -1877,11 +1890,14 @@ namespace SobekCM.Engine_Library.Configuration
         {
             while (ReaderXml.Read())
             {
-                if ((ReaderXml.NodeType == XmlNodeType.Element) && (ReaderXml.Name.ToLower() == "readerwriter"))
+                if (ReaderXml.NodeType == XmlNodeType.Element)
                 {
-                    METS_Section_ReaderWriter_Config singleReaderWriter = read_mets_section_readerwriter_config(ReaderXml.ReadSubtree());
-                    ReaderWriters.Add(singleReaderWriter.ID.ToUpper(), singleReaderWriter);
-                    Config.Add_METS_Section_ReaderWriter(singleReaderWriter);
+                    if (ReaderXml.Name.ToLower() == "readerwriter")
+                    {
+                        METS_Section_ReaderWriter_Config singleReaderWriter = read_mets_section_readerwriter_config(ReaderXml.ReadSubtree());
+                        ReaderWriters.Add(singleReaderWriter.ID.ToUpper(), singleReaderWriter);
+                        Config.Add_METS_Section_ReaderWriter(singleReaderWriter);
+                    }
                 }
             }
         }

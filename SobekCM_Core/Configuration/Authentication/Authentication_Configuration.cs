@@ -26,5 +26,7 @@ namespace SobekCM.Core.Configuration.Authentication
         [XmlElement("shibboleth")]
         [ProtoMember(1)]
         public Shibboleth_Configuration Shibboleth { get; set; }
+
+
     }
 }

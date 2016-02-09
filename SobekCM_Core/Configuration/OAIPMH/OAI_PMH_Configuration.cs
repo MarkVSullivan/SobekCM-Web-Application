@@ -106,6 +106,32 @@ namespace SobekCM.Core.Configuration.OAIPMH
                 Descriptions.Add(NewDescription);
         }
 
+        /// <summary> Clears all the metadata prefixes </summary>
+        public void Clear_Metadata_Prefixes()
+        {
+            Metadata_Prefixes.Clear();
+        }
+
+        /// <summary> Add a new metadata prefix </summary>
+        /// <param name="NewPrefix"> New OAI-PMH metadata prefix and reader/writer </param>
+        public void Add_Metadata_Prefix(OAI_PMH_Metadata_Format NewPrefix)
+        {
+            // If there is an existing bit of information for the same prefix, remove it first
+            OAI_PMH_Metadata_Format existing = null;
+            foreach (OAI_PMH_Metadata_Format existingFormat in Metadata_Prefixes)
+            {
+                if (String.Compare(NewPrefix.Prefix, existingFormat.Prefix, StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    existing = existingFormat;
+                }
+            }
+            if (existing != null)
+                Metadata_Prefixes.Remove(existing);
+
+            // Add the new one
+            Metadata_Prefixes.Add(NewPrefix);
+        }
+
         #region Code to save this oai-pmh configuration to a XML file
 
         /// <summary> Save this OAI-PMH configuration to a XML config file </summary>

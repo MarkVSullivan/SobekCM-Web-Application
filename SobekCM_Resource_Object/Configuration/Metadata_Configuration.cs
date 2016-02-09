@@ -83,6 +83,8 @@ namespace SobekCM.Resource_Object.Configuration
             fileAmdSecDictionary.Clear();
 
             errorsEncountered.Clear();
+
+            isDefault = false;
         }
 
         /// <summary> List of metadata modules to be included with all bibliographic items </summary>
@@ -136,6 +138,12 @@ namespace SobekCM.Resource_Object.Configuration
             Metadata_Modules_To_Include.Add( MetadatModuleConfig );
         }
 
+        /// <summary> Clears all the existing metadata modules to include </summary>
+        public void Clear_Metadata_Modules_To_Include()
+        {
+            Metadata_Modules_To_Include.Clear();
+        }
+
         /// <summary> List of metadata modules to be included with all bibliographic items </summary>
         [DataMember(Name = "metadataModules")]
         [XmlArray("metadataModules")]
@@ -154,7 +162,38 @@ namespace SobekCM.Resource_Object.Configuration
         /// <param name="New_ReaderWriter"> New metadata file reader/writer configuration </param>
         public void Add_Metadata_File_ReaderWriter(Metadata_File_ReaderWriter_Config New_ReaderWriter)
         {
+            // If this type already exists, remove it
+            Metadata_File_ReaderWriter_Config existing = null;
+            foreach (Metadata_File_ReaderWriter_Config existingConfig in Metadata_File_ReaderWriter_Configs)
+            {
+                if (New_ReaderWriter.MD_Type == existingConfig.MD_Type)
+                {
+                    if (New_ReaderWriter.MD_Type == Metadata_File_Type_Enum.OTHER)
+                    {
+                        if (String.Compare(New_ReaderWriter.Other_MD_Type, existingConfig.Other_MD_Type, StringComparison.OrdinalIgnoreCase) == 0)
+                        {
+                            existing = existingConfig;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        existing = existingConfig;
+                        break;
+                    }
+                }
+            }
+            if (existing != null)
+                Metadata_File_ReaderWriter_Configs.Remove(existing);
+
+            // Now, add the new config
             Metadata_File_ReaderWriter_Configs.Add(New_ReaderWriter);
+        }
+
+        /// <summary> Clears all the existing metadata file reader write configuration information </summary>
+        public void Clear_Metadata_File_ReaderWriter_Config()
+        {
+            Metadata_File_ReaderWriter_Configs.Clear();
         }
 
         /// <summary> Collection of all the METS section reader/writer configurations </summary>
@@ -163,6 +202,11 @@ namespace SobekCM.Resource_Object.Configuration
         [XmlArrayItem("metsSectionReaderWriter", typeof(METS_Section_ReaderWriter_Config))]
         [ProtoMember(4)]
         public List<METS_Section_ReaderWriter_Config> METS_Section_File_ReaderWriter_Configs { get; set; }
+
+        /// <summary> Flag indicates if this is just the standard default metadata loaded before a config is read </summary>
+        [IgnoreDataMember]
+        [XmlIgnore]
+        public bool isDefault { get; set; }
 
         /// <summary> Adds a new METS section reader/writer configuration </summary>
         /// <param name="New_ReaderWriter"> New METS section reader/writer</param>
@@ -289,6 +333,7 @@ namespace SobekCM.Resource_Object.Configuration
         public void Set_Default_Values()
         {
             Clear();
+            isDefault = true;
 
             // Add the dublin core file reader/writer
             Metadata_File_ReaderWriter_Config dcFile = new Metadata_File_ReaderWriter_Config {MD_Type = Metadata_File_Type_Enum.DC, Label = "Dublin Core File", canRead = true, canWrite = true, Code_Assembly = String.Empty, Code_Namespace = "SobekCM.Resource_Object.Metadata_File_ReaderWriters", Code_Class = "DC_File_ReaderWriter"};
@@ -744,406 +789,7 @@ namespace SobekCM.Resource_Object.Configuration
 
         #endregion
 
-        #region Code for reading the configuration from a XML file
-        
-        /// <summary> Read the metadata configuration from a correctly-formatted metadata configuration XML file </summary>
-        /// <param name="Configuration_XML_File"> File/path for the metadata configuration XML file to read </param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public bool Read_Metadata_Configuration(string Configuration_XML_File)
-        {
-            attemptedRead = true;
 
-            // Clear all the values first
-            Clear();
-
-            bool returnValue = true;
-            // Streams used for reading
-            Stream readerStream = null;
-            XmlTextReader readerXml = null;
-
-            try
-            {
-                // Some collections to read into
-                Dictionary<string, METS_Section_ReaderWriter_Config> readerWriters = new Dictionary<string, METS_Section_ReaderWriter_Config>();
-
-                // Open a link to the file
-                readerStream = new FileStream(Configuration_XML_File, FileMode.Open, FileAccess.Read);
-
-                // Open a XML reader connected to the file
-                readerXml = new XmlTextReader(readerStream);
-
-                while (readerXml.Read())
-                {
-                    if (readerXml.NodeType == XmlNodeType.Element)
-                    {
-                        switch (readerXml.Name.ToLower())
-                        {
-                            case "metadata_file_readerwriters":
-                                read_metadata_file_readerwriter_configs(readerXml.ReadSubtree());
-                                break;
-
-                            case "mets_sec_readerwriters":
-                                read_mets_readerwriter_configs(readerXml.ReadSubtree(), readerWriters);
-                                break;
-
-                            case "mets_writing":
-                                read_mets_writing_config(readerXml.ReadSubtree(), readerWriters);
-                                break;
-
-                            case "additional_metadata_modules":
-                                read_metadata_modules_config(readerXml.ReadSubtree());
-                                break;
-                        }
-                    }
-                }
-            }
-            catch 
-            {
-                returnValue = false;
-            }
-            finally
-            {
-                if (readerXml != null)
-                {
-                    readerXml.Close();
-                }
-                if (readerStream != null)
-                {
-                    readerStream.Close();
-                }
-            }
-
-            // If there was an error while reading, use the system defaults
-            if (!returnValue)
-            {
-                Clear();
-                Set_Default_Values();
-            }
-
-            return returnValue;
-        }
-
-        private void read_metadata_file_readerwriter_configs(XmlReader ReaderXml)
-        {
-            while (ReaderXml.Read())
-            {
-                if ((ReaderXml.NodeType == XmlNodeType.Element) && (ReaderXml.Name.ToLower() == "readerwriter"))
-                {
-                    read_metadata_file_readerwriter_config(ReaderXml.ReadSubtree());
-                }
-            }
-        }
-
-        private void read_metadata_file_readerwriter_config(XmlReader ReaderXml)
-        {
-            Metadata_File_ReaderWriter_Config returnValue = new Metadata_File_ReaderWriter_Config();
-            ReaderXml.Read();
-
-            // Move to and save the basic attributes
-            if (ReaderXml.MoveToAttribute("mdtype"))
-            {
-                switch (ReaderXml.Value.ToUpper())
-                {
-                    case "EAD":
-                        returnValue.MD_Type = Metadata_File_Type_Enum.EAD;
-                        break;
-
-                    case "DC":
-                        returnValue.MD_Type = Metadata_File_Type_Enum.DC;
-                        break;
-
-                    case "MARC21":
-                        returnValue.MD_Type = Metadata_File_Type_Enum.MARC21;
-                        break;
-
-                    case "MARCXML":
-                        returnValue.MD_Type = Metadata_File_Type_Enum.MARCXML;
-                        break;
-
-                    case "METS":
-                        returnValue.MD_Type = Metadata_File_Type_Enum.METS;
-                        break;
-
-                    case "MODS":
-                        returnValue.MD_Type = Metadata_File_Type_Enum.MODS;
-                        break;
-
-                    case "OTHER":
-                        returnValue.MD_Type = Metadata_File_Type_Enum.OTHER;
-                        if (ReaderXml.MoveToAttribute("othermdtype"))
-                            returnValue.Other_MD_Type = ReaderXml.Value;
-                        break;
-                }
-            }
-
-            if (ReaderXml.MoveToAttribute("label"))
-                returnValue.Label = ReaderXml.Value;
-            if (ReaderXml.MoveToAttribute("namespace"))
-                returnValue.Code_Namespace = ReaderXml.Value;
-            if (ReaderXml.MoveToAttribute("class"))
-                returnValue.Code_Class = ReaderXml.Value;
-            if (ReaderXml.MoveToAttribute("assembly"))
-                returnValue.Code_Assembly = ReaderXml.Value;
-            if ((ReaderXml.MoveToAttribute("canRead")) && (ReaderXml.Value.ToLower() == "false"))
-            {
-                returnValue.canRead = false;
-            }
-            if ((ReaderXml.MoveToAttribute("canWrite")) && (ReaderXml.Value.ToLower() == "false"))
-            {
-                returnValue.canWrite = false;
-            }
-
-            while (ReaderXml.Read())
-            {
-                if ((ReaderXml.NodeType == XmlNodeType.Element) && (ReaderXml.Name.ToLower() == "option"))
-                {
-                    string key = String.Empty;
-                    string value = String.Empty;
-                    if (ReaderXml.MoveToAttribute("key"))
-                        key = ReaderXml.Value;
-                    if (ReaderXml.MoveToAttribute("value"))
-                        value = ReaderXml.Value;
-                    if ((key.Length > 0) && (value.Length > 0))
-                        returnValue.Add_Option(key, value);
-                }
-            }
-
-            Add_Metadata_File_ReaderWriter(returnValue);
-        }
-
-        private void read_mets_readerwriter_configs(XmlReader ReaderXml, Dictionary<string, METS_Section_ReaderWriter_Config> ReaderWriters)
-        {
-            while (ReaderXml.Read())
-            {
-                if ((ReaderXml.NodeType == XmlNodeType.Element) && (ReaderXml.Name.ToLower() == "readerwriter"))
-                {
-                    METS_Section_ReaderWriter_Config singleReaderWriter = read_mets_section_readerwriter_config(ReaderXml.ReadSubtree());
-                    ReaderWriters.Add(singleReaderWriter.ID.ToUpper(), singleReaderWriter);
-                    Add_METS_Section_ReaderWriter(singleReaderWriter);
-                }
-            }
-        }
-
-        private METS_Section_ReaderWriter_Config read_mets_section_readerwriter_config(XmlReader ReaderXml)
-        {
-            METS_Section_ReaderWriter_Config returnValue = new METS_Section_ReaderWriter_Config();
-
-            ReaderXml.Read();
-
-            // Move to and save the basic attributes
-            if (ReaderXml.MoveToAttribute("ID"))
-                returnValue.ID = ReaderXml.Value;
-            if (ReaderXml.MoveToAttribute("label"))
-                returnValue.Label = ReaderXml.Value;
-            if (ReaderXml.MoveToAttribute("namespace"))
-                returnValue.Code_Namespace = ReaderXml.Value;
-            if (ReaderXml.MoveToAttribute("class"))
-                returnValue.Code_Class = ReaderXml.Value;
-            if (ReaderXml.MoveToAttribute("assembly"))
-                returnValue.Code_Assembly = ReaderXml.Value;
-            if ((ReaderXml.MoveToAttribute("isActive")) && (ReaderXml.Value.ToLower() == "false"))
-            {
-                returnValue.isActive = false;
-            }
-            if (ReaderXml.MoveToAttribute("section"))
-            {
-                switch (ReaderXml.Value.ToLower())
-                {
-                    case "amdsec":
-                        returnValue.METS_Section = METS_Section_Type_Enum.AmdSec;
-                        if (ReaderXml.MoveToAttribute("amdSecType"))
-                        {
-                            switch( ReaderXml.Value.ToLower())
-                            {
-                                case "techmd":
-                                    returnValue.AmdSecType = METS_amdSec_Type_Enum.TechMD;
-                                    break;
-
-                                case "rightsmd":
-                                    returnValue.AmdSecType = METS_amdSec_Type_Enum.RightsMD;
-                                    break;
-
-                                case "digiprovmd":
-                                    returnValue.AmdSecType = METS_amdSec_Type_Enum.DigiProvMD;
-                                    break;
-
-                                case "sourcemd":
-                                    returnValue.AmdSecType = METS_amdSec_Type_Enum.SourceMD;
-                                    break;
-
-                            }
-                        }
-                        break;
-
-                    case "dmdsec":
-                        returnValue.METS_Section = METS_Section_Type_Enum.DmdSec;
-                        break;
-                }
-            }
-
-            while (ReaderXml.Read())
-            {
-                if (ReaderXml.NodeType == XmlNodeType.Element)
-                {
-                    switch (ReaderXml.Name.ToLower())
-                    {
-                        case "mapping":
-                            METS_Section_ReaderWriter_Mapping newMapping = new METS_Section_ReaderWriter_Mapping();
-                            if (ReaderXml.MoveToAttribute("mdtype"))
-                                newMapping.MD_Type = ReaderXml.Value;
-                            if (ReaderXml.MoveToAttribute("othermdtype"))
-                                newMapping.Other_MD_Type = ReaderXml.Value;
-                            if (ReaderXml.MoveToAttribute("label"))
-                                newMapping.Label = ReaderXml.Value;
-                            if ((ReaderXml.MoveToAttribute("isDefault")) && (ReaderXml.Value.ToLower() == "true"))
-                                newMapping.isDefault = true;
-                            returnValue.Add_Mapping(newMapping);
-                            break;
-
-                        case "option":
-                            string key = String.Empty;
-                            string value = String.Empty;
-                            if (ReaderXml.MoveToAttribute("key"))
-                                key = ReaderXml.Value;
-                            if (ReaderXml.MoveToAttribute("value"))
-                                value = ReaderXml.Value;
-                            if ((key.Length > 0) && (value.Length > 0))
-                                returnValue.Add_Option(key, value);
-                            break;
-                    }
-                }
-            }
-
-            return returnValue;
-        }
-
-        private void read_metadata_modules_config(XmlReader ReaderXml)
-        {
-            while (ReaderXml.Read())
-            {
-                if (( ReaderXml.NodeType == XmlNodeType.Element) && ( ReaderXml.Name.ToLower() == "metadatamodule"))
-                {
-                    // read all the values
-                    Additional_Metadata_Module_Config module = new Additional_Metadata_Module_Config();
-                    if (ReaderXml.MoveToAttribute("key"))
-                        module.Key = ReaderXml.Value.Trim();
-                    if (ReaderXml.MoveToAttribute("assembly"))
-                        module.Code_Assembly = ReaderXml.Value;
-                    if (ReaderXml.MoveToAttribute("namespace"))
-                        module.Code_Namespace = ReaderXml.Value;
-                    if (ReaderXml.MoveToAttribute("class"))
-                        module.Code_Class = ReaderXml.Value;
-                    
-                    // Only add if valid
-                    if ((module.Key.Length > 0) && (module.Code_Class.Length > 0) && (module.Code_Namespace.Length > 0))
-                    {
-                        Add_Metadata_Module_Config(module);
-                    }
-                }
-            }
-        }
-        
-        private void read_mets_writing_config(XmlReader ReaderXml, Dictionary<string, METS_Section_ReaderWriter_Config> ReaderWriters)
-        {
-            bool inPackage = false;
-            bool inDivision = false;
-            bool inFile = false;
-            bool inDmdSec = true;
-            METS_Writing_Profile profile = null;
-            int unnamed_profile_counter = 1;
-
-            while (ReaderXml.Read())
-            {
-                if (ReaderXml.NodeType == XmlNodeType.Element)
-                {
-                    switch (ReaderXml.Name.ToLower())
-                    {
-                        case "profile":
-                            profile = new METS_Writing_Profile();
-                            if (ReaderXml.MoveToAttribute("name"))
-                                profile.Profile_Name = ReaderXml.Value.Trim();
-                            if (ReaderXml.MoveToAttribute("description"))
-                                profile.Profile_Description = ReaderXml.Value;
-                            if (ReaderXml.MoveToAttribute("isDefault"))
-                            {
-                                bool tempValue;
-                                if (bool.TryParse(ReaderXml.Value, out tempValue))
-                                {
-                                    profile.Default_Profile = tempValue;
-                                }
-                            }
-                            // Enforce a name for this profile (should have one according to XSD)
-                            if (profile.Profile_Name.Length == 0)
-                            {
-                                profile.Profile_Name = "Unnamed" + unnamed_profile_counter;
-                                unnamed_profile_counter++;
-                            }
-                            Add_METS_Writing_Profile(profile);
-                            break;
-
-                        case "package_scope":
-                            inPackage = true;
-                            inDivision = false;
-                            inFile = false;
-                            break;
-
-                        case "division_scope":
-                            inPackage = false;
-                            inDivision = true;
-                            inFile = false;
-                            break;
-
-                        case "file_scope":
-                            inPackage = false;
-                            inDivision = false;
-                            inFile = true;
-                            break;
-
-                        case "dmdsec":
-                            inDmdSec = true;
-                            break;
-
-                        case "amdsec":
-                            inDmdSec = false;
-                            break;
-
-                        case "readerwriterref":
-                            if (ReaderXml.MoveToAttribute("ID"))
-                            {
-                                string id = ReaderXml.Value.ToUpper();
-                                if (( ReaderWriters.ContainsKey(id)) && ( profile != null ))
-                                {
-                                    METS_Section_ReaderWriter_Config readerWriter = ReaderWriters[id];
-                                    if (inPackage)
-                                    {
-                                        if (inDmdSec)
-                                            profile.Add_Package_Level_DmdSec_Writer_Config(readerWriter);
-                                        else
-                                            profile.Add_Package_Level_AmdSec_Writer_Config(readerWriter);
-                                    }
-                                    else if ( inDivision )
-                                    {
-                                        if (inDmdSec)
-                                            profile.Add_Division_Level_DmdSec_Writer_Config(readerWriter);
-                                        else
-                                            profile.Add_Division_Level_AmdSec_Writer_Config(readerWriter);
-                                    }
-                                    else if (inFile)
-                                    {
-                                        if (inDmdSec)
-                                            profile.Add_File_Level_DmdSec_Writer_Config(readerWriter);
-                                        else
-                                            profile.Add_File_Level_AmdSec_Writer_Config(readerWriter);
-                                    }
-                                }
-                            }
-                            break;
-                    }
-                }
-            }
-        }
-
-        #endregion
 
     }
 }

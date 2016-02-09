@@ -50,6 +50,48 @@ namespace SobekCM.Core.Configuration
         TextBox
     }
 
+    /// <summary> Class used to convert the ContactForm_Configuration_Element_Type_Enum to a string and back </summary>
+    public static class ContactForm_Configuration_Element_Type_Enum_Converter
+    {
+        /// <summary> Returns a string from a provided enumeration value </summary>
+        /// <returns> A string from a provided enumeration value </returns>
+        public static string ToString(ContactForm_Configuration_Element_Type_Enum Enum)
+        {
+            switch (Enum)
+            {
+                case ContactForm_Configuration_Element_Type_Enum.CheckBoxSet:
+                    return "CheckBox Set";
+
+                case ContactForm_Configuration_Element_Type_Enum.Email:
+                    return "Email";
+
+                case ContactForm_Configuration_Element_Type_Enum.ExplanationText:
+                    return "Explanation Text";
+
+                case ContactForm_Configuration_Element_Type_Enum.HiddenValue:
+                    return "Hidden Value";
+
+                case ContactForm_Configuration_Element_Type_Enum.RadioSet:
+                    return "RadioSet";
+
+                case ContactForm_Configuration_Element_Type_Enum.SelectBox:
+                    return "Select Box";
+
+                case ContactForm_Configuration_Element_Type_Enum.Subject:
+                    return "Subject";
+
+                case ContactForm_Configuration_Element_Type_Enum.TextArea:
+                    return "Text Area";
+
+                case ContactForm_Configuration_Element_Type_Enum.TextBox:
+                    return "Text Box";
+
+                default:
+                    return "Unrecognized";
+            }
+        }
+    }
+
     /// <summary> Single element to appear within the Contact Us form's main section </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("ContactFormConfigElement")]

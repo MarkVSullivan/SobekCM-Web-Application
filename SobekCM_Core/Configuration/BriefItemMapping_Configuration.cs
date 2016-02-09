@@ -30,6 +30,32 @@ namespace SobekCM.Core.Configuration
         [ProtoMember(2)]
         public List<BriefItemMapping_Set> MappingSets { get; set; }
 
+        /// <summary> Get a brief item mapping set, by set name  </summary>
+        /// <param name="SetName"> Name of the set.</param>
+        /// <returns> Either the matching brief item mapping set, or NULL </returns>
+        public BriefItemMapping_Set GetMappingSet(string SetName)
+        {
+            // Ensure the dictionary is current
+            if ((mappingSetsDictionary == null) || (mappingSetsDictionary.Count != MappingSets.Count))
+            {
+                if (mappingSetsDictionary == null)
+                    mappingSetsDictionary = new Dictionary<string, BriefItemMapping_Set>(StringComparer.OrdinalIgnoreCase);
+                else
+                    mappingSetsDictionary.Clear();
+
+                foreach (BriefItemMapping_Set thisSet in MappingSets)
+                {
+                    mappingSetsDictionary[thisSet.SetName] = thisSet;
+                }
+            }
+
+            // Return the value
+            if (mappingSetsDictionary.ContainsKey(SetName))
+                return mappingSetsDictionary[SetName];
+
+            return null;
+        }
+
         /// <summary> Constructor for a new instance of the <see cref="BriefItemMapping_Configuration"/> class </summary>
         public BriefItemMapping_Configuration()
         {

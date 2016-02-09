@@ -89,13 +89,15 @@ namespace SobekCM.Core.Configuration.Authentication
 	        Constants.Add(new Shibboleth_Configuration_Mapping(UserAttribute, ConstantValue ));
 	    }
 
+        /// <summary> Gets the list of possible indicators from the Shibboleth auth tokens that indicate this
+        /// user should be given the ability to submit items via the online interface </summary>
         [DataMember(Name = "canSubmitIndicators", EmitDefaultValue = false)]
         [XmlArray("canSubmitIndicators")]
         [XmlArrayItem("canSubmitIndicator", typeof(StringKeyValuePair))]
         [ProtoMember(7)]
         public List<StringKeyValuePair> CanSubmitIndicators { get; private set; }
 
-        /// <summary> Add a new indicator that a new user established using this Shibboleth authenticaion system can submit items </summary>
+        /// <summary> Add a new indicator that a new user established using this Shibboleth authentication system can submit items </summary>
         /// <param name="ServerVariable"> Server variable from the Shibboleth response </param>
         /// <param name="RequiredValue"> Value to match - if the value matches, then the new user should be granted submit rights </param>
         public void Add_CanSubmit_Indicator(string ServerVariable, string RequiredValue)
