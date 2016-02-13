@@ -702,9 +702,9 @@ namespace SobekCM.Library
 
                 // Try to get this from the cache
                 if ((Current_Mode.Mode == Display_Mode_Enum.My_Sobek) && ( Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata ) && (Current_User != null))
-                    Current_Item = CachedDataManager.Retrieve_Digital_Resource_Object(Current_User.UserID, Current_Mode.BibID, Current_Mode.VID, Tracer);
+                    Current_Item = CachedDataManager.Items.Retrieve_Digital_Resource_Object(Current_User.UserID, Current_Mode.BibID, Current_Mode.VID, Tracer);
                 else
-                    Current_Item = CachedDataManager.Retrieve_Digital_Resource_Object( Current_Mode.BibID, Current_Mode.VID, Tracer);
+                    Current_Item = CachedDataManager.Items.Retrieve_Digital_Resource_Object( Current_Mode.BibID, Current_Mode.VID, Tracer);
 
                 // If not pulled from the cache, then we will have to build the item
                 if (Current_Item == null)
@@ -721,10 +721,10 @@ namespace SobekCM.Library
                         {
                             string note_to_add = "Online edit by " + Current_User.Full_Name + " ( " + DateTime.Now.ToShortDateString() + " )";
                             Current_Item.METS_Header.Add_Creator_Individual_Notes( note_to_add );
-                            CachedDataManager.Store_Digital_Resource_Object(Current_User.UserID, Current_Mode.BibID, Current_Mode.VID, Current_Item, Tracer);
+                            CachedDataManager.Items.Store_Digital_Resource_Object(Current_User.UserID, Current_Mode.BibID, Current_Mode.VID, Current_Item, Tracer);
                         }
                         else
-                            CachedDataManager.Store_Digital_Resource_Object(Current_Mode.BibID, Current_Mode.VID, Current_Item, Tracer);
+                            CachedDataManager.Items.Store_Digital_Resource_Object(Current_Mode.BibID, Current_Mode.VID, Current_Item, Tracer);
                     }
                 }
                 else
@@ -763,7 +763,7 @@ namespace SobekCM.Library
             else
             {
 	            // Try to get this from the cache
-	            Current_Item = CachedDataManager.Retrieve_Digital_Resource_Object(Current_Mode.BibID, Tracer);
+	            Current_Item = CachedDataManager.Items.Retrieve_Digital_Resource_Object(Current_Mode.BibID, Tracer);
 
 	            // Have to build this item group information then
 	            if (Current_Item == null)
@@ -789,8 +789,8 @@ namespace SobekCM.Library
 
 		            // Put this back on the cache
 		            Current_Item.METS_Header.RecordStatus_Enum = METS_Record_Status.BIB_LEVEL;
-		            CachedDataManager.Store_Digital_Resource_Object(bibID, Current_Item, Tracer);
-		            CachedDataManager.Store_Items_In_Title(bibID, Items_In_Title, Tracer);
+		            CachedDataManager.Items.Store_Digital_Resource_Object(bibID, Current_Item, Tracer);
+		            CachedDataManager.Items.Store_Items_In_Title(bibID, Items_In_Title, Tracer);
 	            }
             }
 

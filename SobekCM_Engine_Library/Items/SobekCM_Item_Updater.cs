@@ -192,9 +192,9 @@ namespace SobekCM.Engine_Library.Items
             }
 
             // Clear the User-specific and global cache of this Item 
-            CachedDataManager.Remove_Digital_Resource_Object(User.UserID, Item.BibID, Item.VID, null);
-            CachedDataManager.Remove_Digital_Resource_Object(Item.BibID, Item.VID, null);
-            CachedDataManager.Remove_Items_In_Title(Item.BibID, null);
+            CachedDataManager.Items.Remove_Digital_Resource_Object(User.UserID, Item.BibID, Item.VID, null);
+            CachedDataManager.Items.Remove_Digital_Resource_Object(Item.BibID, Item.VID, null);
+            CachedDataManager.Items.Remove_Items_In_Title(Item.BibID, null);
 
             // Also clear any searches or browses ( in the future could refine this to only remove those
             // that are impacted by this save... but this is good enough for now )

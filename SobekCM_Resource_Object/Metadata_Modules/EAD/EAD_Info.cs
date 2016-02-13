@@ -11,44 +11,28 @@ namespace SobekCM.Resource_Object.Metadata_Modules.EAD
     [Serializable]
     public class EAD_Info : iMetadata_Module
     {
-        private readonly Description_of_Subordinate_Components containerHierachy;
-        private string findingGuideDescription;
-        private readonly List<EAD_TOC_Included_Section> toc_included_sections;
-
         /// <summary> Constructor for a new instance of the EAD_Info class </summary>
         public EAD_Info()
         {
-            containerHierachy = new Description_of_Subordinate_Components();
-            toc_included_sections = new List<EAD_TOC_Included_Section>();
+            Container_Hierarchy = new Description_of_Subordinate_Components();
+            TOC_Included_Sections = new List<EAD_TOC_Included_Section>();
         }
 
         /// <summary> Gets any container hierarchy for this Encoded Archival Description </summary>
-        public Description_of_Subordinate_Components Container_Hierarchy
-        {
-            get { return containerHierachy; }
-        }
+        public Description_of_Subordinate_Components Container_Hierarchy { get; set; }
 
         /// <summary> Gets the list of included sections in this EAD-type object to be included in 
         /// the table of contents </summary>
-        public List<EAD_TOC_Included_Section> TOC_Included_Sections
-        {
-            get { return toc_included_sections; }
-        }
+        public List<EAD_TOC_Included_Section> TOC_Included_Sections { get; set; }
 
         /// <summary> Gets and sets the Archival description chunk of HTML or XML for this EAD-type object </summary>
-        public string Full_Description
-        {
-            get { return findingGuideDescription ?? String.Empty; }
-            set { findingGuideDescription = value; }
-        }
+        /// <summary> Gets any container hierarchy for this Encoded Archival Description </summary>
+        public string Full_Description { get; set; }
 
         /// <summary> Flag indicates if this EAD metadata module has data </summary>
         public bool hasData
         {
-            get
-            {
-                return (Container_Hierarchy.Containers.Count > 0) || (Full_Description.Length > 0);
-            }
+            get { return ((Container_Hierarchy.Containers.Count > 0) || (!String.IsNullOrEmpty(Full_Description))); }
         }
 
         #region Methods/Properties to implement the iMetadata_Module interface
@@ -108,7 +92,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.EAD
         /// <param name="Section_Title"> Title of this EAD Finding Guide section to be displayed in the table of contents </param>
         public void Add_TOC_Included_Section(string Internal_Link_Name, string Section_Title)
         {
-            toc_included_sections.Add(new EAD_TOC_Included_Section(Internal_Link_Name, Section_Title));
+            TOC_Included_Sections.Add(new EAD_TOC_Included_Section(Internal_Link_Name, Section_Title));
         }
     }
 }

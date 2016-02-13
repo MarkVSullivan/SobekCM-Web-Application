@@ -2042,7 +2042,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 							}
 							else
 							{
-								result.Append(Single_Citation_HTML_Row("General Note", "<span itemprop=\"notes\">" + Convert_String_To_XML_Safe(thisNote.Note) + "</span>", INDENT));
+							    string note_title = !String.IsNullOrEmpty(thisNote.Display_Label) ? thisNote.Display_Label : "General Note";
+                                result.Append(Single_Citation_HTML_Row(note_title, "<span itemprop=\"notes\">" + Convert_String_To_XML_Safe(thisNote.Note) + "</span>", INDENT));
 							}
 						}
 					}

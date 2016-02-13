@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Caching;
-using SobekCM.Core.Items;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.SiteMap;
@@ -35,15 +34,20 @@ namespace SobekCM.Core.MemoryMgmt
         /// <summary> Top-level static web content specific cached data manager services  </summary>
         public static CachedDataManager_WebContentServices WebContent { get; private set; }
 
+        /// <summary> Top-level digital resource (item) specific cached data manager services  </summary>
+        public static CachedDataManager_ItemServices Items { get; private set; }
+
 
         /// <summary> Static constructor initializes several variables </summary>
         static CachedDataManager()
         {
             Settings = new CachedDataManager_Settings();
+            Settings.Disabled = false;
+
             Aggregations = new CachedDataManager_AggregationServices(Settings);
             WebSkins = new CachedDataManager_WebSkinServices(Settings);
             WebContent = new CachedDataManager_WebContentServices(Settings);
-            Settings.Disabled = false;
+            Items = new CachedDataManager_ItemServices(Settings);
         }
 
         /// <summary> Read-only list of basic information about all the objects stored in the local cache </summary>
@@ -607,311 +611,7 @@ namespace SobekCM.Core.MemoryMgmt
 
         #endregion
 
-        #region Static methods relating to storing and retrieving digital resource objects
 
-        /// <summary> Removes all digital resource objects from the cache , for a given BibID </summary>
-        /// <param name="BibID"> Bibliographic Identifier for the digital resources to remove </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public static void Remove_Digital_Resource_Objects(string BibID, Custom_Tracer Tracer)
-        {
-            // If the cache is disabled, just return before even tracing
-            if (Settings.Disabled)
-                return;
-
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Remove_Digital_Resource_Objects", "");
-            }
-
-            string key_start = "ITEM_" + BibID + "_";
-
-            // Get the list of objects locally cached
-            ReadOnlyCollection<Cached_Object_Info> locally_cached_objects = Locally_Cached_Objects;
-            List<string> keys_to_expire = (from cachedObject in locally_cached_objects where cachedObject.Object_Key.IndexOf(key_start) == 0 select cachedObject.Object_Key).ToList();
-
-            // Clear these from the local cache
-            foreach (string expireKey in keys_to_expire)
-            {
-                HttpContext.Current.Cache.Remove(expireKey);
-            }
-
-            // Now, remove the actual item group
-            string key = "ITEM_GROUP_" + BibID;
-
-            // Clear the item group from the local cache
-            HttpContext.Current.Cache.Remove(key);
-        }
-
-        /// <summary> Removes a global digital resource object from the cache , it it exists </summary>
-        /// <param name="BibID"> Bibliographic Identifier for the digital resource to remove </param>
-        /// <param name="VID"> Volume Identifier for the digital resource to remove </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public static void Remove_Digital_Resource_Object(string BibID, string VID, Custom_Tracer Tracer)
-        {
-            Remove_Digital_Resource_Object(-1, BibID, VID, Tracer);
-        }
-
-        /// <summary> Removes a user-specific digital resource object from the cache , it it exists </summary>
-        /// <param name="UserID"> Primary key of the user, if this should be removed from the user-specific cache</param>
-        /// <param name="BibID"> Bibliographic Identifier for the digital resource to remove </param>
-        /// <param name="VID"> Volume Identifier for the digital resource to remove </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public static void Remove_Digital_Resource_Object(int UserID, string BibID, string VID, Custom_Tracer Tracer)
-        {
-            // If the cache is disabled, just return before even tracing
-            if (Settings.Disabled)
-                return;
-
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Remove_Digital_Resource_Object", "");
-            }
-
-            // Determine the key
-            string key = "ITEM_" + BibID + "_" + VID;
-            if (UserID > 0)
-            {
-                key = "USERITEM" + UserID + "_" + key;
-            }
-
-            // Clear this from the local cache
-            HttpContext.Current.Cache.Remove(key);
-        }
-
-
-        /// <summary> Retrieves a user-specific digital resource object from the cache  </summary>
-        /// <param name="UserID"> Primary key of the user, if this should be pulled from the user-specific cache </param>
-        /// <param name="BibID"> Bibliographic Identifier for the digital resource to retrieve </param>
-        /// <param name="VID"> Volume Identifier for the digital resource to retrieve </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> Either NULL or the digital resource object from the cache  </returns>
-        public static SobekCM_Item Retrieve_Digital_Resource_Object(int UserID, string BibID, string VID, Custom_Tracer Tracer)
-        {
-            // If the cache is disabled, just return before even tracing
-            if (Settings.Disabled)
-                return null;
-
-            // Determine the key
-            string key = "ITEM_" + BibID + "_" + VID;
-            if (UserID > 0)
-            {
-                key = "USERITEM" + UserID + "_" + key;
-            }
-
-            // See if this is in the local cache first
-            object returnValue = HttpContext.Current.Cache.Get(key);
-            if (returnValue != null)
-            {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("CachedDataManager.Retrieve_Digital_Resource_Object", "Found item on local cache");
-                }
-
-                return (SobekCM_Item) returnValue;
-            }
-
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Retrieve_Digital_Resource_Object", "Item not found in either the local cache ");
-            }
-
-            // Since everything failed, just return null
-            return null;
-        }
-
-        /// <summary> Retrieves a global digital resource object from the cache  </summary>
-        /// <param name="BibID"> Bibliographic Identifier for the digital resource to retrieve </param>
-        /// <param name="VID"> Volume Identifier for the digital resource to retrieve </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <returns> Either NULL or the digital resource object from the cache  </returns>
-        public static SobekCM_Item Retrieve_Digital_Resource_Object(string BibID, string VID, Custom_Tracer Tracer)
-        {
-            return Retrieve_Digital_Resource_Object(-1, BibID, VID, Tracer);
-        }
-
-
-        /// <summary> Store a user-specific digital resource object on the cache   </summary>
-        /// <param name="UserID"> Primary key of the user, if this should be stored in a user-specific cache </param>
-        /// <param name="BibID"> Bibliographic Identifier for the digital resource to store </param>
-        /// <param name="VID"> Volume Identifier for the digital resource to store </param>
-        /// <param name="StoreObject"> Digital Resource object to store for later retrieval </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public static void Store_Digital_Resource_Object(int UserID, string BibID, string VID, SobekCM_Item StoreObject, Custom_Tracer Tracer)
-        {
-            // If the cache is disabled, just return before even tracing
-            if (Settings.Disabled)
-                return;
-
-            // Determine the key
-            string key = "ITEM_" + BibID + "_" + VID;
-            if (UserID > 0)
-            {
-                key = "USERITEM" + UserID + "_" + key;
-            }
-
-            int length_of_time = 1;
-            if (UserID > 0)
-                length_of_time = 15;
-
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Store_Digital_Resource_Object", "Adding object '" + key + "' to the local cache with expiration of " + length_of_time + " minute");
-            }
-
-            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(length_of_time));
-        }
-    
-
-        /// <summary> Store a global digital resource object on the cache   </summary>
-		/// <param name="BibID"> Bibliographic Identifier for the digital resource to store </param>
-		/// <param name="VID"> Volume Identifier for the digital resource to store </param>
-		/// <param name="StoreObject"> Digital Resource object to store for later retrieval </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public static void Store_Digital_Resource_Object(string BibID, string VID, SobekCM_Item StoreObject, Custom_Tracer Tracer)
-		{
-			Store_Digital_Resource_Object(-1, BibID, VID, StoreObject, Tracer);
-		}
-
-		/// <summary> Retrieves the title-level object from the cache  </summary>
-		/// <param name="BibID"> Bibliographic Identifier for the digital resource to retrieve </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Either NULL or the digital resource object from the cache  </returns>
-		public static SobekCM_Item Retrieve_Digital_Resource_Object( string BibID, Custom_Tracer Tracer)
-		{
-			// If the cache is disabled, just return before even tracing
-			if ( Settings.Disabled )
-				return null;
-
-			// Determine the key
-			string key = "ITEM_GROUP_" + BibID;
-
-			// See if this is in the local cache first
-			object returnValue = HttpContext.Current.Cache.Get(key);
-			if (returnValue != null)
-			{
-				if (Tracer != null)
-				{
-					Tracer.Add_Trace("CachedDataManager.Retrieve_Digital_Resource_Object", "Found item on local cache");
-				}
-
-				return (SobekCM_Item)returnValue;
-			}
-
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("CachedDataManager.Retrieve_Digital_Resource_Object", "Item not found in either the local cache ");
-			}
-
-			// Since everything failed, just return null
-			return null;
-
-		}
-
-        /// <summary> Stores the title-level digital resource object on the cache   </summary>
-        /// <param name="BibID"> Bibliographic Identifier for the digital resource to store </param>
-        /// <param name="StoreObject"> Digital Resource object to store for later retrieval </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public static void Store_Digital_Resource_Object(string BibID, SobekCM_Item StoreObject, Custom_Tracer Tracer)
-        {
-            // If the cache is disabled, just return before even tracing
-            if (Settings.Disabled)
-                return;
-
-            // Determine the key
-            string key = "ITEM_GROUP_" + BibID;
-
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("CachedDataManager.Store_Digital_Resource_Object", "Adding object '" + key + "' to the local cache with expiration of 1 minute");
-            }
-
-            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
-        }
-
-        #endregion
-
-		#region Static methods relating to storing and retrieving lists of digital volumes within one title
-
-		/// <summary> Retrieves the list of items for a single bibid from the cache  </summary>
-		/// <param name="BibID"> Bibliographic identifier for the list of items </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Either NULL or the list of items within a single title </returns>
-		public static SobekCM_Items_In_Title Retrieve_Items_In_Title( string BibID, Custom_Tracer Tracer)
-		{
-			// If the cache is disabled, just return before even tracing
-			if ( Settings.Disabled )
-				return null;
-
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("CachedDataManager.Retrieve_Items_In_Title", "");
-			}
-
-			// Try to get this from the local cache next
-			object returnValue = HttpContext.Current.Cache.Get("ITEMLIST_" + BibID );
-			if (returnValue != null)
-			{
-				if (Tracer != null)
-				{
-					Tracer.Add_Trace("CachedDataManager.Retrieve_Items_In_Title", "List of items in title pulled from local cache");
-				}
-
-				return (SobekCM_Items_In_Title)returnValue;
-			}
-			
-			return null;
-		}
-
-		/// <summary> Stores the list of items for a single bibid to the cache  </summary>
-		/// <param name="BibID"> Bibliographic identifier for the list of items </param>
-		/// <param name="StoreObject"> List of items within the single title </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public static void Store_Items_In_Title( string BibID , SobekCM_Items_In_Title StoreObject, Custom_Tracer Tracer)
-		{
-			// If the cache is disabled, just return before even tracing
-			if ( Settings.Disabled )
-				return;
-
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("CachedDataManager.Store_Items_In_Title", "");
-			}
-
-			// Store this on the local cache, if not there and storing on the cache server failed
-			string key = "ITEMLIST_" + BibID;
-			if (HttpContext.Current.Cache[key] == null)
-			{
-				if (Tracer != null)
-				{
-					Tracer.Add_Trace("CachedDataManager.Store_Items_In_Title", "Adding object '" + key + "' to the local cache with expiration of 1 minutes");
-				}
-
-				HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(1));
-			}
-		}
-
-		/// <summary> Removes the  list of items for a single bibid to the cache  </summary>
-		/// <param name="BibID"> Bibliographic identifier for the list of items </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public static void Remove_Items_In_Title(string BibID, Custom_Tracer Tracer)
-		{
-			// If the cache is disabled, just return before even tracing
-			if ( Settings.Disabled )
-				return;
-
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("CachedDataManager.Remove_Items_In_Title", "");
-			}
-
-			// Store this on the local cache, if not there and storing on the cache server failed
-			string key = "ITEMLIST_" + BibID;
-
-			// Clear this from the local cache
-			HttpContext.Current.Cache.Remove(key);
-		}
-
-		#endregion
 
 		#region Static methods relating to storing and retrieving information about the entire set of results (not just paged results)
 

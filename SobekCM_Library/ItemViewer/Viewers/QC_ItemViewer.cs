@@ -1419,7 +1419,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             HttpContext.Current.Session["main_thumbnail_" + qc_item.BibID + "_" + qc_item.VID] = null;
 
 	        // Clear the cache for this item completely, so the system will recreate the object from the new METS
-            CachedDataManager.Remove_Digital_Resource_Object(qc_item.BibID, qc_item.VID, null);
+            CachedDataManager.Items.Remove_Digital_Resource_Object(qc_item.BibID, qc_item.VID, null);
 	    }
 
         #endregion

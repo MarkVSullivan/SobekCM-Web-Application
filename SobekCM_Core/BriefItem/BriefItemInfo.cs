@@ -81,14 +81,31 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(9)]
         public List<BriefItem_TocElement> Downloads_TOC { get; set; }
 
+        /// <summary> Basic resource type, which helps to dictate some default behaviors </summary>
+        [DataMember(Name = "type")]
+        [XmlElement("type")]
+        [ProtoMember(10)]
+        public string Type { get; set; }
 
-        // behaviors
+        /// <summary> Behavior information, on how this item behaves in the SobekCM system </summary>
+        [DataMember(Name = "behaviors")]
+        [XmlElement("behaviors")]
+        [ProtoMember(11)]
+        public BriefItem_Behaviors Behaviors { get; set; }
+
+        /// <summary> Behavior information, on how this item behaves in the SobekCM system </summary>
+        [DataMember(EmitDefaultValue = false, Name = "extensions")]
+        [XmlArray("extensions")]
+        [XmlArrayItem("extension", typeof(BriefItem_TocElement))]
+        [ProtoMember(12)]
+        public List<BriefItem_ExtensionData> Extensions { get; set; }
 
         /// <summary> Constructor for a new instance of the BriefItemInfo class </summary>
         public BriefItemInfo()
         {
             descriptionTermLookup = new Dictionary<string, BriefItem_DescriptiveTerm>(StringComparer.OrdinalIgnoreCase);
             Description = new List<BriefItem_DescriptiveTerm>();
+            Behaviors = new BriefItem_Behaviors();
         }
 
         /// <summary> Add a new namespace definition to this object </summary>

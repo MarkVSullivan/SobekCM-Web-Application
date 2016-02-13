@@ -222,7 +222,7 @@ namespace SobekCM.Library.MySobekViewer
 		            UI_ApplicationCache_Gateway.Items.Remove_Item(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID);
 
 		            // Also remove from the cache
-		            CachedDataManager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, RequestSpecificValues.Tracer);
+		            CachedDataManager.Items.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, RequestSpecificValues.Tracer);
 		        }
 		    }
 		}

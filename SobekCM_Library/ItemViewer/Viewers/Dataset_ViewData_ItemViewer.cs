@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Caching;
+using SobekCM.Core.BriefItem;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Library.HTML;
@@ -43,26 +45,39 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			{
 				// Find the dataset from the METS strucutre map.  Currently this looks
 				// only for XML with attached XSD
-				string xml_file = (from thisFile in CurrentItem.Divisions.Download_Other_Files where thisFile.System_Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) > 0 select thisFile.System_Name).FirstOrDefault();
+			    string xml_file = null;
+			    foreach (BriefItem_FileGrouping briefGroup in BriefItem.Downloads)
+			    {
+			        foreach (BriefItem_File thisFile in briefGroup.Files)
+			        {
+			            if (thisFile.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) > 0)
+			            {
+			                xml_file = thisFile.Name;
+			                break;
+			            }
+
+                    }
+			    }
 
 				// If one was found, read it in!
-				if (!String.IsNullOrEmpty(xml_file))
+				if (!String.IsNullOrEmpty( xml_file))
 				{
 					itemDataset = new DataSet();
 					try
 					{
 						// Read the XML file
-						itemDataset.ReadXml(CurrentItem.Source_Directory + "\\" + xml_file);
-
-						// Add this to the cache
-						HttpContext.Current.Cache.Insert(key, itemDataset, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
+						itemDataset.ReadXml( new StringReader(SobekFileSystem.ReadToEnd( BriefItem, xml_file)));
 					}
 					catch (Exception)
 					{
 						itemDataset = null;
 						error_message = "Error while reading XML file " + xml_file;
 					}
-				}
+
+
+                    // Add this to the cache
+                    HttpContext.Current.Cache.Insert(key, itemDataset, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
+                }
 			}
 
 
@@ -109,9 +124,32 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 		}
 
-		/// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
-		/// <value> This returns -1, which allows this to use all the screen </value>
-		public override int Viewer_Width
+        /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
+        /// <value> This always returns the value 'sbkDvdiv_Viewer' or 'sbkDvdiv_ViewerFull' </value>
+        public override string Viewer_CSS
+        {
+            get
+            {
+                // If this is to display a row, restrict width
+                if (row > 0)
+                    return "sbkDvdiv_Viewer";
+
+                // We can show the left navigation bar if we aren't showing all the
+                // data within a table so center the result
+                if ((itemDataset == null) || (error_message.Length > 0) ||
+                    ((itemDataset.Tables.Count > 1) && ((CurrentMode.SubPage < 2) || (CurrentMode.SubPage - 1 > itemDataset.Tables.Count))))
+                {
+                    return "sbkDvdiv_Viewer";
+                }
+
+                // Otherwise, suppress the left nav bar and go full screen
+                return "sbkDvdiv_ViewerFull";
+            }
+        }
+
+        /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
+        /// <value> This returns -1, which allows this to use all the screen </value>
+        public override int Viewer_Width
 		{
 			get
 			{

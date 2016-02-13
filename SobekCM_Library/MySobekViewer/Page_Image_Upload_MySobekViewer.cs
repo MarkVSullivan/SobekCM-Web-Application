@@ -259,7 +259,7 @@ namespace SobekCM.Library.MySobekViewer
                             if (!complete_item_submission(RequestSpecificValues.Current_Item, null))
                             {
                                 // Also clear the RequestSpecificValues.Current_Item from the cache
-                                CachedDataManager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, null);
+                                CachedDataManager.Items.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, null);
 
                                 // Redirect to the RequestSpecificValues.Current_Item
                                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;

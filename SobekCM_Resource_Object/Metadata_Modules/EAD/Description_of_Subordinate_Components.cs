@@ -13,22 +13,13 @@ namespace SobekCM.Resource_Object.Metadata_Modules.EAD
     [Serializable]
     public class Description_of_Subordinate_Components
     {
-        #region Private variable definitions
-
-        private readonly List<Container_Info> containers;
-        private Descriptive_Identification did;
-        private string head;
-        private string type;
-
-        #endregion
-
         #region Constructor(s)
 
         /// <summary> Constructor for a new instance of the Description_of_Subordinate_Components class </summary>
         public Description_of_Subordinate_Components()
         {
-            containers = new List<Container_Info>();
-            did = new Descriptive_Identification();
+            Containers = new List<Container_Info>();
+            Did = new Descriptive_Identification();
         }
 
         #endregion
@@ -36,68 +27,61 @@ namespace SobekCM.Resource_Object.Metadata_Modules.EAD
         #region Public Properties
 
         /// <summary> Gets the type value</summary>
-        public string Type
-        {
-            get { return type ?? String.Empty; }
-            set { type = value; }
-        }
+        public string Type { get; set; }
 
         /// <summary> Gets the list of container objects </summary>
-        public List<Container_Info> Containers
-        {
-            get { return containers; }
-        }
+        public List<Container_Info> Containers { get; private set; }
 
         /// <summary> Gets the did information object </summary>
-        public Descriptive_Identification Did_Info
-        {
-            get { return did; }
-        }
+        public Descriptive_Identification Did { get; private set; }
+
+        /// <summary> Holds basic head information about the containers, from the EAD </summary>
+        public string Head { get; set; }
 
         #endregion
 
         /// <summary> Clear the contents of child componets and the descriptive identification </summary>
         public void Clear()
         {
-            did.Clear();
-            containers.Clear();
+            Did.Clear();
+            Containers.Clear();
         }
 
         /// <summary> Reads the information about this container in the container list from the EAD XML Reader</summary>
-        /// <param name="reader"> EAD XML Text Reader </param>
-        public void Read(XmlTextReader reader)
+        /// <param name="Reader"> EAD XML Text Reader </param>
+        public void Read(XmlTextReader Reader)
         {
-            String tagname = reader.Name;
-            for (int i = 0; i < reader.AttributeCount; i++)
+            String tagname = Reader.Name;
+            for (int i = 0; i < Reader.AttributeCount; i++)
             {
-                reader.MoveToAttribute(i);
-                if (reader.Name.Equals("type"))
-                    type = reader.Value;
+                Reader.MoveToAttribute(i);
+                if (Reader.Name.Equals("type"))
+                    Type = Reader.Value;
             }
-            while (reader.Read())
+            while (Reader.Read())
             {
-                if (reader.NodeType == XmlNodeType.Element)
+                if (Reader.NodeType == XmlNodeType.Element)
                 {
-                    if (reader.Name == "head")
+                    if (Reader.Name == "head")
                     {
-                        reader.Read();
-                        head = reader.Value;
+                        Reader.Read();
+                        Head = Reader.Value;
                     }
-                    else if (reader.Name == "did")
+                    else if (Reader.Name == "did")
                     {
-                        did = new Descriptive_Identification();
-                        did.Read(reader);
+                        Did = new Descriptive_Identification();
+                        Did.Read(Reader);
                     }
-                    else if (reader.Name == "c01")
+                    else if (Reader.Name == "c01")
                     {
                         Container_Info c_tag = new Container_Info();
-                        c_tag.Read(reader);
-                        containers.Add(c_tag);
+                        c_tag.Read(Reader);
+                        Containers.Add(c_tag);
                     }
                 }
-                else if (reader.NodeType == XmlNodeType.EndElement)
+                else if (Reader.NodeType == XmlNodeType.EndElement)
                 {
-                    if (reader.Name.Equals(tagname))
+                    if (Reader.Name.Equals(tagname))
                         break;
                 }
             }
@@ -108,7 +92,7 @@ namespace SobekCM.Resource_Object.Metadata_Modules.EAD
         public override string ToString()
         {
             StringBuilder builder = new StringBuilder();
-            foreach (Container_Info component in containers)
+            foreach (Container_Info component in Containers)
             {
                 component.recursively_add_container_information(builder);
             }

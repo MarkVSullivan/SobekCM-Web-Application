@@ -6,6 +6,7 @@ using System.IO;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.HTML;
@@ -58,6 +59,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 	    /// <summary> Sets the current item for this viewer to display </summary>
 	    public SobekCM_Item CurrentItem { protected get; set; }
+
+        /// <summary> Sets the current brief item for this viewer to display </summary>
+        public BriefItemInfo BriefItem { protected get; set; }
 
         /// <summary> Sets the current user, in case there are any user options to include </summary>
         public User_Object CurrentUser { protected get; set; }
@@ -234,6 +238,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		}
 
         #endregion
+
+        /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
+        /// <value> This value is override by many of the children classes, but by default this returns the empty string </value>
+        public virtual string Viewer_CSS
+        {
+            get { return String.Empty; }
+        }
 
         /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
         /// <value> This value is override by many of the children classes, but by default this returns the value -1 </value>

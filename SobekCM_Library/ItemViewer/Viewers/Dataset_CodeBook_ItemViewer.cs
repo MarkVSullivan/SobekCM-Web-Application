@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Caching;
+using SobekCM.Core.BriefItem;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Tools;
@@ -34,13 +36,25 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		/// <remarks> This ensures the dataset has been read into memory/cache for rendering </remarks>
 		public override void Perform_PreDisplay_Work(Custom_Tracer Tracer)
 		{
-			string key = CurrentItem.BibID + "_" + CurrentItem.VID + "_Dataset";
+			string key = BriefItem.BibID + "_" + BriefItem.VID + "_Dataset";
 			itemDataset = HttpContext.Current.Cache[key] as DataSet;
 			if (itemDataset == null)
 			{
 				// Find the dataset from the METS strucutre map.  Currently this looks
 				// only for XML with attached XSD
-				string xml_file = (from thisFile in CurrentItem.Divisions.Download_Other_Files where thisFile.System_Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) > 0 select thisFile.System_Name).FirstOrDefault();
+			    string xml_file = null;
+			    foreach (BriefItem_FileGrouping briefGroup in BriefItem.Downloads)
+			    {
+			        foreach (BriefItem_File thisFile in briefGroup.Files)
+			        {
+			            if (thisFile.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) > 0)
+			            {
+			                xml_file = thisFile.Name;
+			                break;
+			            }
+
+                    }
+			    }
 
 				// If one was found, read it in!
 				if (!String.IsNullOrEmpty( xml_file))
@@ -49,17 +63,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
 					try
 					{
 						// Read the XML file
-						itemDataset.ReadXml(CurrentItem.Source_Directory + "\\" + xml_file);
-
-						// Add this to the cache
-						HttpContext.Current.Cache.Insert(key, itemDataset, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
+						itemDataset.ReadXml( new StringReader(SobekFileSystem.ReadToEnd( BriefItem, xml_file)));
 					}
 					catch (Exception)
 					{
 						itemDataset = null;
 						error_message = "Error while reading XML file " + xml_file;
 					}
-				}
+
+
+                    // Add this to the cache
+                    HttpContext.Current.Cache.Insert(key, itemDataset, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
+                }
 			}
 		}
 
@@ -80,15 +95,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 		}
 
-		/// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
-		/// <value> This returns -1, which allows this to use all the screen </value>
-		public override int Viewer_Width
-		{
-			get
-			{
-				return 800;
-			}
-		}
+        /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
+        /// <value> This always returns the value 'sbkDcbiv_Viewer' </value>
+        public override string Viewer_CSS
+        {
+            get { return "sbkDcbiv_Viewer"; }
+        }
 
 		/// <summary> Gets the number of pages for this viewer </summary>
 		/// <value> This is a single page viewer, so this property always returns the value 1</value>

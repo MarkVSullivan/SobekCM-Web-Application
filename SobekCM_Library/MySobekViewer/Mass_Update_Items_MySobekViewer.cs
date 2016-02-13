@@ -106,7 +106,7 @@ namespace SobekCM.Library.MySobekViewer
                 SobekCM_Database.Save_Behaviors(item, false, true, false );
 
                 // Store on the caches (to replace the other)
-                CachedDataManager.Remove_Digital_Resource_Objects(item.BibID, RequestSpecificValues.Tracer);
+                CachedDataManager.Items.Remove_Digital_Resource_Objects(item.BibID, RequestSpecificValues.Tracer);
 
                 // Forward
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;

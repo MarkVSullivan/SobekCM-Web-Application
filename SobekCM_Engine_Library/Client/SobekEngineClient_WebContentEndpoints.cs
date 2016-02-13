@@ -60,11 +60,8 @@ namespace SobekCM.Core.Client
                     return fromCache;
                 }
             }
-
-
             // Get the endpoint
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Get_HTML_Based_Content_By_ID", Tracer);
-
 
             // Format the URL
             string url = String.Format(endpoint.URL, WebContentID);

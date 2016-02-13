@@ -193,7 +193,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Gets the names to show in the Go To combo box </summary>
 		string[] Go_To_Names { get; }
 
-        /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
+        /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
+        string Viewer_CSS { get; }
+
+	    /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
 		int Viewer_Width { get; }
 
         /// <summary> Height for the main viewer section to adjusted to accomodate this viewer</summary>

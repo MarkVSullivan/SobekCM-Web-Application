@@ -9,6 +9,7 @@ using System.Web;
 using Jil;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.EAD;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
@@ -17,6 +18,8 @@ using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
+using SobekCM.Resource_Object.Metadata_Modules;
+using SobekCM.Resource_Object.Metadata_Modules.EAD;
 using SobekCM.Tools;
 
 #endregion
@@ -446,7 +449,7 @@ namespace SobekCM.Engine_Library.Endpoints
             if (selected_item != null)
             {
                 // Try to get this from the cache
-                SobekCM_Item currentItem = CachedDataManager.Retrieve_Digital_Resource_Object(BibID, VID, Tracer);
+                SobekCM_Item currentItem = CachedDataManager.Items.Retrieve_Digital_Resource_Object(BibID, VID, Tracer);
 
                 // If not pulled from the cache, then we will have to build the item
                 if (currentItem == null)
@@ -456,7 +459,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     if (currentItem != null)
                     {
                         Tracer.Add_Trace("ItemServices.getSobekItem", "Store the digital resource object to the cache");
-                        CachedDataManager.Store_Digital_Resource_Object(BibID, VID, currentItem, Tracer);
+                        CachedDataManager.Items.Store_Digital_Resource_Object(BibID, VID, currentItem, Tracer);
                     }
                     else
                     {
@@ -648,6 +651,229 @@ namespace SobekCM.Engine_Library.Endpoints
                     }
                 }
             }
+        }
+
+        /// <summary> Gets any EAD information related to an item </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetItemEAD(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Must at least have one URL segment for the BibID
+            if (UrlSegments.Count > 0)
+            {
+                Custom_Tracer tracer = new Custom_Tracer();
+
+                try
+                {
+                    // Get the BibID and VID
+                    string bibid = UrlSegments[0];
+                    string vid = (UrlSegments.Count > 1) ? UrlSegments[1] : "00001";
+
+                    tracer.Add_Trace("ItemServices.GetItemEAD", "Requested ead info for " + bibid + ":" + vid);
+
+                    // Is it a valid BibID/VID, at least in appearance?
+                    if ((vid.Length > 0) && (vid != "00000"))
+                    {
+                        // Get the JSON-P callback function
+                        string json_callback = "parseItemEAD";
+                        if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                        {
+                            json_callback = QueryString["callback"];
+                        }
+
+                        // Just look in the cache for the EAD information
+                        EAD_Transfer_Object eadTransferInfo = CachedDataManager.Items.Retrieve_EAD_Info(bibid, vid, tracer);
+                        if (eadTransferInfo != null)
+                        {
+                            tracer.Add_Trace("ItemServices.GetItemEAD", "Found pre-built EAD transfer object in the cache");
+
+                            // If this was debug mode, then just write the tracer
+                            if (IsDebug)
+                            {
+                                Response.ContentType = "text/plain";
+                                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                                Response.Output.WriteLine();
+                                Response.Output.WriteLine(tracer.Text_Trace);
+
+                                return;
+                            }
+
+                            // Use the base class to serialize the object according to request protocol
+                            Serialize(eadTransferInfo, Response, Protocol, json_callback);
+                        }
+
+                        // Get the full SOobekCM_Item object for the provided BibID / VID
+                        tracer.Add_Trace("ItemServices.GetItemEAD", "Get the full SobekCM_Item object for this BibID / VID");
+                        SobekCM_Item currentItem = getSobekItem(bibid, vid, tracer);
+                        if (currentItem == null)
+                        {
+                            // If this was debug mode, then just write the tracer
+                            if (IsDebug)
+                            {
+                                tracer.Add_Trace("ItemServices.GetItemEAD", "Could not retrieve the full SobekCM_Item object");
+
+                                Response.ContentType = "text/plain";
+                                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                                Response.Output.WriteLine();
+                                Response.Output.WriteLine(tracer.Text_Trace);
+                            }
+                            return;
+                        }
+
+                        // Create the wrapper to return only basic citation-type information
+                        tracer.Add_Trace("ItemServices.GetItemEAD", "Create wrapper class to return only the ead info");
+                        EAD_Transfer_Object responder = new EAD_Transfer_Object();
+
+                        // Transfer all the data over to the EAD transfer object
+                        EAD_Info eadInfo = currentItem.Get_Metadata_Module(GlobalVar.PALMM_RIGHTSMD_METADATA_MODULE_KEY) as EAD_Info;
+                        if (eadInfo != null)
+                        {
+                            tracer.Add_Trace("ItemServices.GetItemEAD", "Copy all the source EAD information into the transfer EAD object");
+
+                            // Copy over the full description
+                            responder.Full_Description = eadInfo.Full_Description;
+
+                            // Add all the ead TOC sections
+                            if (eadInfo.TOC_Included_Sections != null)
+                            {
+                                foreach (EAD_TOC_Included_Section tocSection in eadInfo.TOC_Included_Sections)
+                                {
+                                    responder.Add_TOC_Included_Section(tocSection.Internal_Link_Name, tocSection.Section_Title);
+                                }
+                            }
+
+                            // Copy over all the container portions as well
+                            if (eadInfo.Container_Hierarchy != null)
+                            {
+                                responder.Container_Hierarchy.Type = eadInfo.Container_Hierarchy.Type;
+                                responder.Container_Hierarchy.Head = eadInfo.Container_Hierarchy.Head;
+                                responder.Container_Hierarchy.Did = ead_copy_did_to_transfer(eadInfo.Container_Hierarchy.Did);
+
+                                if (eadInfo.Container_Hierarchy.Containers != null)
+                                {
+                                    foreach (Container_Info containerInfo in eadInfo.Container_Hierarchy.Containers)
+                                    {
+                                        responder.Container_Hierarchy.Containers.Add(ead_copy_container_to_transfer(containerInfo));
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            tracer.Add_Trace("ItemServices.GetItemEAD", "This existing digital resource has no special EAD information");
+                        }
+
+                        // If this was debug mode, then just write the tracer
+                        if (IsDebug)
+                        {
+                            Response.ContentType = "text/plain";
+                            Response.Output.WriteLine("DEBUG MODE DETECTED");
+                            Response.Output.WriteLine();
+                            Response.Output.WriteLine(tracer.Text_Trace);
+
+                            return;
+                        }
+
+                        // Cache this as well, since it appears to be valid
+                        CachedDataManager.Items.Store_EAD_Info(bibid, vid, responder, tracer);
+
+                        // Use the base class to serialize the object according to request protocol
+                        Serialize(responder, Response, Protocol, json_callback);
+                    }
+                    else
+                    {
+                        tracer.Add_Trace("ItemServices.GetItemEAD", "Requested VID 0000 - Invalid");
+
+                        // If this was debug mode, then just write the tracer
+                        if (IsDebug)
+                        {
+                            Response.ContentType = "text/plain";
+                            Response.Output.WriteLine("DEBUG MODE DETECTED");
+                            Response.Output.WriteLine();
+                            Response.Output.WriteLine(tracer.Text_Trace);
+                        }
+                    }
+                }
+                catch (Exception ee)
+                {
+                    if (IsDebug)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("EXCEPTION CAUGHT!");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.Message);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.StackTrace);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                        return;
+                    }
+
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Error completing request");
+                    Response.StatusCode = 500;
+                }
+            }
+        }
+
+        private EAD_Transfer_Descriptive_Identification ead_copy_did_to_transfer(Descriptive_Identification Source)
+        {
+            // If null, just return null
+            if (Source == null)
+                return null;
+
+            // Create the main object, and copy over the simple string values
+            EAD_Transfer_Descriptive_Identification returnObj = new EAD_Transfer_Descriptive_Identification
+            {
+                DAO = Source.DAO, 
+                DAO_Link = Source.DAO_Link, 
+                DAO_Title = Source.DAO_Title, 
+                Extent = Source.Extent, 
+                Unit_Date = Source.Unit_Date, 
+                Unit_Title = Source.Unit_Title
+            };
+
+            // Copy any information about parent containers
+            if (Source.Container_Count > 0)
+            {
+                foreach (Parent_Container_Info parentInfo in Source.Containers)
+                {
+                    returnObj.Add_Container(parentInfo.Container_Type, parentInfo.Container_Title );
+                }
+            }
+
+            return returnObj;
+        }
+
+        private EAD_Transfer_Container_Info ead_copy_container_to_transfer(Container_Info Source)
+        {
+            // If null, just return null
+            if (Source == null)
+                return null;
+
+            // Start to build the return container and copy over basic information
+            EAD_Transfer_Container_Info returnObj = new EAD_Transfer_Container_Info
+            {
+                Did = ead_copy_did_to_transfer(Source.Did), 
+                Level = Source.Level, 
+                Has_Complex_Children = Source.Has_Complex_Children, 
+                Biographical_History = Source.Biographical_History, 
+                Scope_And_Content = Source.Scope_And_Content
+            };
+
+            // Now, need to recursively copy the child containers
+            if (Source.Children_Count > 0)
+            {
+                foreach (Container_Info thisInfo in Source.Children)
+                {
+                    returnObj.Children.Add( ead_copy_container_to_transfer(thisInfo));
+                }
+            }
+
+            return returnObj;
         }
     }
 }

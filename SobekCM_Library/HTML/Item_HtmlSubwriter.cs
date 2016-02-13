@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
@@ -311,8 +310,8 @@ namespace SobekCM.Library.HTML
                             if (Resource_Object.Database.SobekCM_Database.Set_IP_Restriction_Mask(RequestSpecificValues.Current_Item.Web.ItemID, RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership, RequestSpecificValues.Current_User.UserName, String.Empty))
                             {
 								// Update the cached item
-                                CachedDataManager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Tracer);
-                                CachedDataManager.Store_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Current_Item, RequestSpecificValues.Tracer);
+                                CachedDataManager.Items.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Tracer);
+                                CachedDataManager.Items.Store_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Current_Item, RequestSpecificValues.Tracer);
 
 								// Update the web.config
 	                            Resource_Web_Config_Writer.Update_Web_Config(RequestSpecificValues.Current_Item.Source_Directory, RequestSpecificValues.Current_Item.Behaviors.Dark_Flag, (short) current_mask, RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail);
@@ -392,7 +391,7 @@ namespace SobekCM.Library.HTML
                     if (RequestSpecificValues.Items_In_Title == null)
                     {
                         // Look in the cache first
-                        RequestSpecificValues.Items_In_Title = CachedDataManager.Retrieve_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
+                        RequestSpecificValues.Items_In_Title = CachedDataManager.Items.Retrieve_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
 
                         // If still null, try to pull from the database
                         if (RequestSpecificValues.Items_In_Title == null)
@@ -417,7 +416,7 @@ namespace SobekCM.Library.HTML
                             // Store in cache if retrieved
                             if (RequestSpecificValues.Items_In_Title != null)
                             {
-                                CachedDataManager.Store_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Items_In_Title, RequestSpecificValues.Tracer);
+                                CachedDataManager.Items.Store_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Items_In_Title, RequestSpecificValues.Tracer);
                             }
                         }
                     }

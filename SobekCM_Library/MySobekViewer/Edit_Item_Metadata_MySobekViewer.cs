@@ -185,7 +185,7 @@ namespace SobekCM.Library.MySobekViewer
 			        }
 			        else
 			        {
-				        CachedDataManager.Remove_Digital_Resource_Object(RequestSpecificValues.Current_User.UserID, item.BibID, item.VID, null);
+				        CachedDataManager.Items.Remove_Digital_Resource_Object(RequestSpecificValues.Current_User.UserID, item.BibID, item.VID, null);
 
 				        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
 				        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);

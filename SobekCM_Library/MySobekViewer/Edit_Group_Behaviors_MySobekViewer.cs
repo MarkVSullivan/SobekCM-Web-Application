@@ -103,7 +103,7 @@ namespace SobekCM.Library.MySobekViewer
                SobekCM_Database.Save_Item_Group_Web_Skins(RequestSpecificValues.Current_Item.Web.GroupID, RequestSpecificValues.Current_Item );
 
                // Store on the caches (to replace the other)
-               CachedDataManager.Remove_Digital_Resource_Objects(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
+               CachedDataManager.Items.Remove_Digital_Resource_Objects(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
 
                // Forward
                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;

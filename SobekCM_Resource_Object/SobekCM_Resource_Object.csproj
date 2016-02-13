@@ -166,6 +166,11 @@
     <Compile Include="Configuration\Metadata_File_ReaderWriter_Config.cs" />
     <Compile Include="Configuration\METS_Section_ReaderWriter_Config.cs" />
     <Compile Include="Configuration\METS_Writing_Profile.cs" />
+    <Compile Include="Metadata_Modules\EAD\Container_Info.cs" />
+    <Compile Include="Metadata_Modules\EAD\Description_of_Subordinate_Components.cs" />
+    <Compile Include="Metadata_Modules\EAD\Descriptive_Identification.cs" />
+    <Compile Include="Metadata_Modules\EAD\EAD_TOC_Included_Section.cs" />
+    <Compile Include="Metadata_Modules\EAD\Parent_Container_Info.cs" />
     <Compile Include="Metadata_Modules\GeoSpatial\Coordinate_Circle.cs" />
     <Compile Include="METS_Sec_ReaderWriters\ETD_MS_DC_METS_dmdSec_ReaderWriter.cs" />
     <Compile Include="METS_Sec_ReaderWriters\ETD_SobekCM_METS_dmdSec_ReaderWriter.cs" />
@@ -238,12 +243,7 @@
     <Compile Include="Bib_Info\Publisher_Info.cs" />
     <Compile Include="Divisions\FileSHA1.cs" />
     <Compile Include="Divisions\Outer_Division_Info.cs" />
-    <Compile Include="Metadata_Modules\EAD\Container_Info.cs" />
-    <Compile Include="Metadata_Modules\EAD\Descriptive_Identification.cs" />
-    <Compile Include="Metadata_Modules\EAD\Description_of_Subordinate_Components.cs" />
     <Compile Include="Metadata_Modules\EAD\EAD_Info.cs" />
-    <Compile Include="Metadata_Modules\EAD\EAD_TOC_Included_Section.cs" />
-    <Compile Include="Metadata_Modules\EAD\Parent_Container_Info.cs" />
     <Compile Include="Metadata_Modules\iMetadata_Module.cs" />
     <Compile Include="Bib_Info\MODS_Info\Classification_Info.cs" />
     <Compile Include="Bib_Info\MODS_Info\Genre_Info.cs" />

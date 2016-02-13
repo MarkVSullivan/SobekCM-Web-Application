@@ -69,7 +69,7 @@ namespace SobekCM.Library.MySobekViewer
             RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", String.Empty);
 
             // Pull the list of items tied to this group
-            itemsInTitle = CachedDataManager.Retrieve_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
+            itemsInTitle = CachedDataManager.Items.Retrieve_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
             if (itemsInTitle == null)
             {
                 // Get list of information about this item group and save the item list
@@ -77,7 +77,7 @@ namespace SobekCM.Library.MySobekViewer
                 itemsInTitle = new SobekCM_Items_In_Title(itemDetails.Tables[1]);
 
                 // Store in cache if retrieved
-                CachedDataManager.Store_Items_In_Title(RequestSpecificValues.Current_Item.BibID, itemsInTitle, RequestSpecificValues.Tracer);
+                CachedDataManager.Items.Store_Items_In_Title(RequestSpecificValues.Current_Item.BibID, itemsInTitle, RequestSpecificValues.Tracer);
             }
 
             // Set some defaults
@@ -190,7 +190,7 @@ namespace SobekCM.Library.MySobekViewer
                         complete_item_submission(saveItem, RequestSpecificValues.Tracer);
 
                         // Clear the volume list
-                        CachedDataManager.Remove_Items_In_Title(saveItem.BibID, RequestSpecificValues.Tracer);
+                        CachedDataManager.Items.Remove_Items_In_Title(saveItem.BibID, RequestSpecificValues.Tracer);
 
                         // Also clear any searches or browses ( in the future could refine this to only remove those
                         // that are impacted by this save... but this is good enough for now )

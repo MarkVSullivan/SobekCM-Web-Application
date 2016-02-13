@@ -13,11 +13,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// <see cref="iItemViewer" /> interface. </remarks>
     public class Checked_Out_ItemViewer : abstractItemViewer
     {
-        /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
-        /// <value> This always returns the value 600 </value>
-        public override int Viewer_Width
+        /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
+        /// <value> This always returns the value 'sbkCoiv_Viewer' </value>
+        public override string Viewer_CSS
         {
-            get { return 600; }
+            get { return "sbkCoiv_Viewer"; }
         }
 
         /// <summary> Gets the type of item viewer this object represents </summary>

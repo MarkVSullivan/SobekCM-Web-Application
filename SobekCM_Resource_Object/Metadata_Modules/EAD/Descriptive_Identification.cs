@@ -12,17 +12,6 @@ namespace SobekCM.Resource_Object.Metadata_Modules.EAD
     [Serializable]
     public class Descriptive_Identification
     {
-        #region Private variable definitions
-
-        private List<Parent_Container_Info> containers;
-        private string dao;
-        private string daoHref;
-        private string daoTitle;
-        private string extent;
-        private string unitdate;
-        private string unittitle;
-
-        #endregion
 
         #region Constructor(s)
 
@@ -39,103 +28,22 @@ namespace SobekCM.Resource_Object.Metadata_Modules.EAD
         /// <param name="Container_Title"> Title or label for this container</param>
         public void Add_Container(string Container_Type, string Container_Title)
         {
-            if (containers == null)
-                containers = new List<Parent_Container_Info>();
+            if (Containers == null)
+                Containers = new List<Parent_Container_Info>();
 
-            containers.Add(new Parent_Container_Info(Container_Type, Container_Title));
+            Containers.Add(new Parent_Container_Info(Container_Type, Container_Title));
         }
 
         /// <summary> Clears all the information in this descriptive identification object </summary>
         public void Clear()
         {
-            unittitle = null;
-            unitdate = null;
-            daoHref = null;
-            daoTitle = null;
-            dao = null;
-            extent = null;
-            containers.Clear();
-        }
-
-
-        /// <summary> Reads the information about this container in the container list from the EAD XML Reader</summary>
-        /// <param name="reader"> EAD XML Text Reader </param>
-        public void Read(XmlTextReader reader)
-        {
-            String tagname = reader.Name;
-            while (reader.Read())
-                if (reader.NodeType == XmlNodeType.Element)
-                {
-                    switch (reader.Name)
-                    {
-                        case "container":
-                            string type = "";
-                            if (reader.MoveToAttribute("type"))
-                                type = reader.Value;
-                            reader.Read();
-                            if (reader.NodeType != XmlNodeType.EndElement)
-                            {
-                                Add_Container(type, reader.Value);
-                            }
-                            break;
-
-                        case "unittitle":
-                            while (reader.Read())
-                            {
-                                if (reader.NodeType == XmlNodeType.Text)
-                                    unittitle = reader.Value;
-                                else if (reader.NodeType == XmlNodeType.EndElement && reader.Name.Equals("unittitle"))
-                                    break;
-                            }
-                            break;
-
-                        case "unitdate":
-                            while (reader.Read())
-                            {
-                                if (reader.NodeType == XmlNodeType.Text)
-                                    unitdate = reader.Value;
-                                else if (reader.NodeType == XmlNodeType.EndElement && reader.Name.Equals("unitdate"))
-                                    break;
-                            }
-                            break;
-
-                        case "physdesc":
-                        case "extent":
-                            while (reader.Read())
-                            {
-                                if (reader.NodeType == XmlNodeType.Text)
-                                {
-                                    extent = reader.Value;
-                                }
-                                else if (reader.NodeType == XmlNodeType.EndElement)
-                                {
-                                    if ((reader.Name.Equals("extent")) || (reader.Name.Equals("physdesc")))
-                                        break;
-                                }
-                            }
-                            break;
-
-                        case "dao":
-                            for (int i = 0; i < reader.AttributeCount; i++)
-                            {
-                                reader.MoveToAttribute(i);
-                                if (reader.Name.Equals("href"))
-                                    daoHref = reader.Value;
-                                else if (reader.Name.Equals("title"))
-                                    daoTitle = reader.Value;
-                            }
-                            while (reader.Read())
-                            {
-                                if (reader.NodeType == XmlNodeType.Text)
-                                    dao = reader.Value;
-                                else if (reader.NodeType == XmlNodeType.EndElement && reader.Name.Equals("dao"))
-                                    break;
-                            }
-                            break;
-                    }
-                }
-                else if (reader.NodeType == XmlNodeType.EndElement && reader.Name.Equals(tagname))
-                    break;
+            Unit_Title = null;
+            Unit_Date = null;
+            DAO_Link = null;
+            DAO_Title = null;
+            DAO = null;
+            Extent = null;
+            Containers.Clear();
         }
 
         #region Public Properties
@@ -143,64 +51,117 @@ namespace SobekCM.Resource_Object.Metadata_Modules.EAD
         /// <summary> Gets the number of container information objects associated with this descriptive identification information </summary>
         public int Container_Count
         {
-            get
-            {
-                if (containers == null)
-                    return 0;
-                else
-                    return containers.Count;
-            }
+            get { return Containers == null ? 0 : Containers.Count; }
         }
 
         /// <summary> Gets the collection of container information objects associated with this descriptive 
         /// identifiation object </summary>
-        public List<Parent_Container_Info> Containers
-        {
-            get { return containers; }
-        }
+        public List<Parent_Container_Info> Containers { get; private set; }
 
         /// <summary> Gets the unit title value associated with this  </summary>
-        public string Unit_Title
-        {
-            get { return unittitle ?? String.Empty; }
-            set { unittitle = value; }
-        }
+        public string Unit_Title { get; set; }
 
         /// <summary> Gets the unit date value associated with this  </summary>
-        public string Unit_Date
-        {
-            get { return unitdate ?? String.Empty; }
-            set { unitdate = value; }
-        }
+        public string Unit_Date { get; set; }
 
         /// <summary> Gets the link to the digital object  </summary>
-        public string DAO_Link
-        {
-            get { return daoHref ?? String.Empty; }
-            set { daoHref = value; }
-        }
+        public string DAO_Link { get; set; }
 
         /// <summary> Gets the title of the digital object  </summary>
-        public string DAO_Title
-        {
-            get { return daoTitle ?? String.Empty; }
-            set { daoTitle = value; }
-        }
+        public string DAO_Title { get; set; }
 
         /// <summary> Gets the dao information of the digital object  </summary>
-        public string DAO
-        {
-            get { return dao ?? String.Empty; }
-            set { dao = value; }
-        }
+        public string DAO { get; set; }
 
         /// <summary> Gets the extent information </summary>
-        public string Extent
+        public string Extent { get; set; }
+
+        #endregion
+
+        #region Method to read from the EAD XML file 
+
+        /// <summary> Reads the information about this container in the container list from the EAD XML Reader</summary>
+        /// <param name="Reader"> EAD XML Text Reader </param>
+        public void Read(XmlTextReader Reader)
         {
-            get { return extent ?? String.Empty; }
-            set { extent = value; }
+            String tagname = Reader.Name;
+            while (Reader.Read())
+                if (Reader.NodeType == XmlNodeType.Element)
+                {
+                    switch (Reader.Name)
+                    {
+                        case "container":
+                            string type = "";
+                            if (Reader.MoveToAttribute("type"))
+                                type = Reader.Value;
+                            Reader.Read();
+                            if (Reader.NodeType != XmlNodeType.EndElement)
+                            {
+                                Add_Container(type, Reader.Value);
+                            }
+                            break;
+
+                        case "unittitle":
+                            while (Reader.Read())
+                            {
+                                if (Reader.NodeType == XmlNodeType.Text)
+                                    Unit_Title = Reader.Value;
+                                else if (Reader.NodeType == XmlNodeType.EndElement && Reader.Name.Equals("unittitle"))
+                                    break;
+                            }
+                            break;
+
+                        case "unitdate":
+                            while (Reader.Read())
+                            {
+                                if (Reader.NodeType == XmlNodeType.Text)
+                                    Unit_Date = Reader.Value;
+                                else if (Reader.NodeType == XmlNodeType.EndElement && Reader.Name.Equals("unitdate"))
+                                    break;
+                            }
+                            break;
+
+                        case "physdesc":
+                        case "extent":
+                            while (Reader.Read())
+                            {
+                                if (Reader.NodeType == XmlNodeType.Text)
+                                {
+                                    Extent = Reader.Value;
+                                }
+                                else if (Reader.NodeType == XmlNodeType.EndElement)
+                                {
+                                    if ((Reader.Name.Equals("extent")) || (Reader.Name.Equals("physdesc")))
+                                        break;
+                                }
+                            }
+                            break;
+
+                        case "dao":
+                            for (int i = 0; i < Reader.AttributeCount; i++)
+                            {
+                                Reader.MoveToAttribute(i);
+                                if (Reader.Name.Equals("href"))
+                                    DAO_Link = Reader.Value;
+                                else if (Reader.Name.Equals("title"))
+                                    DAO_Title = Reader.Value;
+                            }
+                            while (Reader.Read())
+                            {
+                                if (Reader.NodeType == XmlNodeType.Text)
+                                    DAO = Reader.Value;
+                                else if (Reader.NodeType == XmlNodeType.EndElement && Reader.Name.Equals("dao"))
+                                    break;
+                            }
+                            break;
+                    }
+                }
+                else if (Reader.NodeType == XmlNodeType.EndElement && Reader.Name.Equals(tagname))
+                    break;
         }
 
         #endregion
+
+
     }
 }
