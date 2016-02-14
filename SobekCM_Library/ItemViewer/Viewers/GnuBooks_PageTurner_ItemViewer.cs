@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using SobekCM.Core.BriefItem;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Resource_Object.Divisions;
@@ -47,17 +48,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-
-        /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
-        /// <value> This always returns the value -1, since this is not valid for this viewer </value>
-        public override int Viewer_Width
+        /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
+        /// <value> This always returns the value 'sbkGbiv_Viewer' </value>
+        public override string Viewer_CSS
         {
-            get
-            {
-                return -1;
-            }
+            get { return "sbkGbiv_Viewer"; }
         }
-
 
         /// <summary> Stream to which to write the HTML for this subwriter  </summary>
         /// <param name="Output"> Response stream for the item viewer to write directly to </param>
@@ -84,20 +80,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
             List<int> height = new List<int>();
             List<string> files = new List<string>();
             List<string> pagename = new List<string>();
-            List<abstract_TreeNode> allpages = CurrentItem.Divisions.Physical_Tree.Pages_PreOrder;
-            foreach (Page_TreeNode thisPage in allpages)
+            foreach (BriefItem_FileGrouping thisPage in BriefItem.Images)
             {
                 // Step through each page looking for the jpeg
-                foreach (SobekCM_File_Info thisFile in thisPage.Files)
+                foreach (BriefItem_File thisFile in thisPage.Files)
                 {
-                    if ((thisFile.MIME_Type(thisFile.File_Extension) == "image/jpeg") && (thisFile.System_Name.ToUpper().IndexOf("THM.JPG") < 0))
+                    if ((thisFile.MIME_Type == "image/jpeg") && (thisFile.Name.ToUpper().IndexOf("THM.JPG") < 0))
                     {
-                        if (!files.Contains(thisFile.System_Name))
+                        if (!files.Contains(thisFile.Name))
                         {
                             pagename.Add(thisPage.Label);
-                            files.Add(thisFile.System_Name);
-                            width.Add(thisFile.Width);
-                            height.Add(thisFile.Height);
+                            files.Add(thisFile.Name);
+                            width.Add( thisFile.Width.HasValue ? thisFile.Width.Value : 800);
+                            height.Add(thisFile.Height.HasValue ? thisFile.Height.Value : 1000);
                         }
 
 
@@ -152,7 +147,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("        if (index == " + (i + 2) + ") imgStr = '" + files[i] + "';");
             }
             Output.WriteLine("        if (index > " + (files.Count + 1) + ") return '" + CurrentMode.Base_URL + "default/images/bookturner/emptypage.jpg';");
-            string source_url = CurrentItem.Web.Source_URL.Replace("\\", "/");
+            string source_url = BriefItem.Web.Source_URL.Replace("\\", "/");
             if (source_url[source_url.Length - 1] != '/')
                 source_url = source_url + "/";
             Output.WriteLine("        return '" + source_url + "' + imgStr;");
@@ -228,7 +223,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("    gb.numLeafs = " + (files.Count + 4) + ";");
             Output.WriteLine();
             Output.WriteLine("    // Book title and the URL used for the book title link");
-            Output.WriteLine("    gb.bookTitle= '" + CurrentItem.Bib_Info.Main_Title.ToString().Replace("'", "") + "';");
+            Output.WriteLine("    gb.bookTitle= '" + BriefItem.Title.Replace("'", "") + "';");
             Output.WriteLine("    gb.bookUrl = '" + CurrentMode.Base_URL + CurrentMode.BibID + "/" + CurrentMode.VID + "';");
             Output.WriteLine();
             Output.WriteLine("    // Let's go!");

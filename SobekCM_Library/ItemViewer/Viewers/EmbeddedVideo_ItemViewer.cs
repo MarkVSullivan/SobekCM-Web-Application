@@ -49,14 +49,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
-        /// <value> This always returns the value 650 </value>
-        public override int Viewer_Width
+        /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
+        /// <value> This always returns the value 'sbkEviv_Viewer' </value>
+        public override string Viewer_CSS
         {
-            get
-            {
-                return 650;
-            }
+            get { return "sbkEviv_Viewer"; }
         }
 
         /// <summary> Stream to which to write the HTML for this subwriter  </summary>
@@ -76,7 +73,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("        <tr>");
             Output.WriteLine("          <td id=\"sbkEmv_MainArea\">");
 
-            Output.WriteLine(CurrentItem.Behaviors.Embedded_Video);
+            Output.WriteLine(BriefItem.Behaviors.Embedded_Video);
 
             Output.WriteLine("          </td>");
         }

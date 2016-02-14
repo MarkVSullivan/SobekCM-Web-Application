@@ -21,15 +21,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             get { return ItemViewer_Type_Enum.Features; }
         }
 
-        /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
-        /// <value> This always returns the value 700 </value>
-		public override int Viewer_Width
-		{
-			get
-			{
-				return 700;
-			}
-		}
+        /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
+        /// <value> This always returns the value 'sbkFeiv_Viewer' </value>
+        public override string Viewer_CSS
+        {
+            get { return "sbkFeiv_Viewer"; }
+        }
 
         /// <summary> Gets the number of pages for this viewer </summary>
         /// <value> This is a single page viewer, so this property always returns the value 1</value>

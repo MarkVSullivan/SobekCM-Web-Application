@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
 
@@ -65,14 +66,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
-        /// <value> This always returns the value 650 </value>
-        public override int Viewer_Width
+        /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
+        /// <value> This always returns the value 'sbkFliv_Viewer' </value>
+        public override string Viewer_CSS
         {
-            get
-            {
-                return 650;
-            }
+            get { return "sbkFliv_Viewer"; }
         }
 
         /// <summary> Stream to which to write the HTML for this subwriter  </summary>
@@ -88,24 +86,26 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Determine the name of the FLASH file
             string flash_file = String.Empty;
             int current_flash_index = 0;
-            List<abstract_TreeNode> downloadPages = CurrentItem.Divisions.Download_Tree.Pages_PreOrder;
-            foreach (Page_TreeNode thisPage in downloadPages)
+            foreach (BriefItem_FileGrouping thisPage in BriefItem.Downloads)
             {
                 // Look for a flash file on each page
-                foreach (SobekCM_File_Info thisFile in thisPage.Files.Where(thisFile => thisFile.File_Extension == "SWF"))
+                foreach (BriefItem_File thisFile in thisPage.Files)
                 {
-                    if (current_flash_index == flashIndex)
+                    if ( String.Compare(thisFile.File_Extension, ".SWF", StringComparison.OrdinalIgnoreCase) == 0 )
                     {
-                        flash_file = thisFile.System_Name;
-                        break;
+                        if (current_flash_index == flashIndex)
+                        {
+                            flash_file = thisFile.Name;
+                            break;
+                        }
+                        current_flash_index++;
                     }
-                    current_flash_index++;
                 }
             }
 
             if (flash_file.IndexOf("http:") < 0)
             {
-                flash_file = CurrentItem.Web.Source_URL + "/" + flash_file;
+                flash_file = BriefItem.Web.Source_URL + "/" + flash_file;
             }
 
             // Add the HTML for the image

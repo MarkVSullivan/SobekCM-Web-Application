@@ -100,6 +100,18 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(12)]
         public List<BriefItem_ExtensionData> Extensions { get; set; }
 
+        /// <summary> Additional information for the item on the web, such as the URL </summary>
+        [DataMember(Name = "web")]
+        [XmlElement("web")]
+        [ProtoMember(13)]
+        public BriefItem_Web Web { get; set; }
+
+        /// <summary> Geospatial information tied to this digital resource </summary>
+        [DataMember(Name = "geospatial")]
+        [XmlElement("geospatial")]
+        [ProtoMember(14)]
+        public BriefItem_GeoSpatial GeoSpatial { get; set; }
+
         /// <summary> Constructor for a new instance of the BriefItemInfo class </summary>
         public BriefItemInfo()
         {

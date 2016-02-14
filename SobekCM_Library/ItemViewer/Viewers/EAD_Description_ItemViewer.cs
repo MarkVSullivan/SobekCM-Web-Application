@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.Metadata_Modules.EAD;
+using SobekCM.Core.Client;
+using SobekCM.Core.EAD;
 using SobekCM.Tools;
 
 #endregion
@@ -44,14 +44,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
-        /// <value> This always returns the value 650 </value>
-        public override int Viewer_Width
+        /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
+        /// <value> This always returns the value 'sbkEdiv_Viewer' </value>
+        public override string Viewer_CSS
         {
-            get
-            {
-                return 750;
-            }
+            get { return "sbkEdiv_Viewer"; }
         }
 
         /// <summary> Stream to which to write the HTML for this subwriter  </summary>
@@ -64,8 +61,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("EAD_Description_ItemViewer.Write_Main_Viewer_Section", "");
             }
 
-            // Get the metadata module for EADs
-            EAD_Info eadInfo = (EAD_Info)CurrentItem.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY);
+            // Try to get the ead information
+            EAD_Transfer_Object eadInfo = SobekEngineClient.Items.Get_Item_EAD(BriefItem.BibID, BriefItem.VID, true, Tracer);
 
             // Build the value
             Output.WriteLine("          <td>");

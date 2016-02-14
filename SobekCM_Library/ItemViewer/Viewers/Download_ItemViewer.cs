@@ -89,7 +89,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     break;
 
                 default:
-                    if (CurrentItem.Web.Static_PageCount == 0)
+                    if ((BriefItem.Images == null ) || ( BriefItem.Images.Count == 0 ))
                         explanation_text = "This item is only available as the following downloads:";
                     break;
             }

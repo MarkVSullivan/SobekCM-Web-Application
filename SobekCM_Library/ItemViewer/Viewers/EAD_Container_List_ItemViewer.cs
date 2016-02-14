@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
-using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.Metadata_Modules.EAD;
+using SobekCM.Core.Client;
+using SobekCM.Core.EAD;
 using SobekCM.Tools;
 
 #endregion
@@ -45,14 +45,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
-        /// <value> This always returns the value 650 </value>
-        public override int Viewer_Width
+        /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
+        /// <value> This always returns the value 'sbkEcliv_Viewer' </value>
+        public override string Viewer_CSS
         {
-            get
-            {
-                return 750;
-            }
+            get { return "sbkEcliv_Viewer"; }
         }
 
         /// <summary> Adds the main view section to the page turner </summary>
@@ -65,8 +62,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("EAD_Container_List_ItemViewer.Add_Main_Viewer_Section", "");
             }
 
-            // Get the metadata module for EADs
-            EAD_Info eadInfo = (EAD_Info) CurrentItem.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY);
+            // Try to get the ead information
+            EAD_Transfer_Object eadInfo = SobekEngineClient.Items.Get_Item_EAD(BriefItem.BibID, BriefItem.VID, true, Tracer);
 
             // Build any search terms
             List<string> terms = new List<string>();
@@ -89,7 +86,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
             // Step through the top level first
-            foreach (Container_Info container in eadInfo.Container_Hierarchy.Containers)
+            foreach (EAD_Transfer_Container_Info container in eadInfo.Container_Hierarchy.Containers)
             {
                 // Add this container title and date information first
                 builder.Append("<h2>" + container.Unit_Title);
@@ -128,7 +125,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     treeView1.TreeNodePopulate += treeView1_TreeNodePopulate;
 
                     // Add each child tree node
-                    foreach (Container_Info child in container.Children)
+                    foreach (EAD_Transfer_Container_Info child in container.Children)
                     {
                         // Add this node
                         TreeNode childNode = new TreeNode(child.Unit_Title) {SelectAction = TreeNodeSelectAction.None};
@@ -157,7 +154,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         // Add the grand children
                         if (child.Children_Count > 0)
                         {
-                            foreach (Container_Info grandChild in child.Children)
+                            foreach (EAD_Transfer_Container_Info grandChild in child.Children)
                             {
                                 // Add this node
                                 TreeNode grandChildNode = new TreeNode(grandChild.Unit_Title)
