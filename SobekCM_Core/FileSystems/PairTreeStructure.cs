@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Net;
+using System.Web.Hosting;
 using SobekCM.Core.BriefItem;
 
 namespace SobekCM.Core.FileSystems
@@ -31,14 +33,45 @@ namespace SobekCM.Core.FileSystems
         /// <returns> Full contexts of the text-based file </returns>
         public string ReadToEnd(BriefItemInfo DigitalResource, string FileName)
         {
-            string fullFilePath = Path.Combine(resource_network_uri(DigitalResource.BibID, DigitalResource.VID), FileName);
+            // Read the HTML file
+            if ((FileName.IndexOf("http:") == 0) || (FileName.IndexOf("https:") == 0))
+            {
+                // the html retrieved from the page
+                String strResult;
+                WebRequest objRequest = WebRequest.Create(FileName);
+                WebResponse objResponse = objRequest.GetResponse();
+
+                // the using keyword will automatically dispose the object // once complete
+                using (StreamReader sr = new StreamReader(objResponse.GetResponseStream()))
+                {
+                    strResult = sr.ReadToEnd();
+                    // Close and clean up the StreamReader
+                    sr.Close();
+                }
+                return strResult;
+            }
+
+            // Just read the network
+            string fullFilePath = Path.Combine(Resource_Network_Uri(DigitalResource.BibID, DigitalResource.VID), FileName);
             return File.ReadAllText(fullFilePath);
         }
 
 
-        private string resource_network_uri(string BibID, string VID)
+        private string Resource_Network_Uri(string BibID, string VID)
         {
             return Path.Combine(rootNetworkUri, BibID.Substring(0, 2) + pathSeperator + BibID.Substring(2, 2) + pathSeperator + BibID.Substring(4, 2) + pathSeperator + BibID.Substring(6, 2) + pathSeperator + BibID.Substring(8, 2), VID);
         }
+
+        /// <summary> Return the WEB uri for a digital resource </summary>
+        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <returns> URI for the web resource </returns>
+        public string Resource_Web_Uri(BriefItemInfo DigitalResource)
+        {
+            if ( rootWebUri[rootWebUri.Length - 1 ] == '/' )
+                return rootWebUri + DigitalResource.BibID.Substring(0, 2) + "/" + DigitalResource.BibID.Substring(2, 2) + "/" + DigitalResource.BibID.Substring(4, 2) + "/" + DigitalResource.BibID.Substring(6, 2) + "/" + DigitalResource.BibID.Substring(8, 2) + "/" + DigitalResource.VID + "/";
+
+            return rootWebUri + "/" + DigitalResource.BibID.Substring(0, 2) + "/" + DigitalResource.BibID.Substring(2, 2) + "/" + DigitalResource.BibID.Substring(4, 2) + "/" + DigitalResource.BibID.Substring(6, 2) + "/" + DigitalResource.BibID.Substring(8, 2) + "/" + DigitalResource.VID + "/";
+        }
+
     }
 }

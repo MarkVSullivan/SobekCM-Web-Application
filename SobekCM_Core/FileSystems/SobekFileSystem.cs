@@ -31,6 +31,14 @@ namespace SobekCM.Core.FileSystems
             return fileSystem.ReadToEnd(DigitalResource, FileName);
         }
 
+        /// <summary> Return the WEB uri for a digital resource </summary>
+        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <returns> URI for the web resource </returns>
+        public static string Resource_Web_Uri(BriefItemInfo DigitalResource)
+        {
+            return fileSystem.Resource_Web_Uri(DigitalResource);
+        }
+
 
     }
 }

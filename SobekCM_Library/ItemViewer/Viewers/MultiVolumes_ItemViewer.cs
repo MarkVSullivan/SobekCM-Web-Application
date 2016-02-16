@@ -69,15 +69,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             issues_type = volumes_text;
-            if (CurrentItem.Behaviors.GroupType.ToUpper().IndexOf("NEWSPAPER") >= 0)
+            if (BriefItem.Behaviors.GroupType.ToUpper().IndexOf("NEWSPAPER") >= 0)
             {
                 issues_type = issues_text;
             }
-            else if (CurrentItem.Behaviors.GroupType.ToUpper().IndexOf("MAP") >= 0)
+            else if (BriefItem.Behaviors.GroupType.ToUpper().IndexOf("MAP") >= 0)
             {
                 issues_type = map_text;
             }
-            else if (CurrentItem.Behaviors.GroupType.ToUpper().IndexOf("AERIAL") >= 0)
+            else if (BriefItem.Behaviors.GroupType.ToUpper().IndexOf("AERIAL") >= 0)
             {
                 issues_type = AERIAL_TEXT;
             }

@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Web;
+using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Divisions;
@@ -104,39 +105,50 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Determine if there is a zoomable version of this page
 	        bool isZoomable = false;
-	        if (CurrentItem.Web.Pages_By_Sequence.Count > CurrentMode.Page - 1)
+	        if (( BriefItem.Images != null ) && ( BriefItem.Images.Count > CurrentMode.Page - 1))
 	        {
 		        int currentPageIndex = CurrentMode.Page.HasValue ? CurrentMode.Page.Value : 1;
-	            foreach (SobekCM_File_Info thisFile in CurrentItem.Web.Pages_By_Sequence[currentPageIndex - 1].Files)
+	            foreach (BriefItem_File thisFile in BriefItem.Images[currentPageIndex - 1].Files)
 	            {
-	                View_Object fileObject = thisFile.Get_Viewer();
-	                if ((fileObject != null) && (fileObject.View_Type == View_Enum.JPEG2000))
+	                if (String.Compare(thisFile.File_Extension, ".jp2", StringComparison.OrdinalIgnoreCase) == 0)
 	                {
-	                    isZoomable = true;
-	                    break;
+                        isZoomable = true;
+                        break;
 	                }
 	            }
 	        }
 
-	        string displayFileName = CurrentItem.Web.Source_URL + "/" + FileName;
-            // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
-            if (( CurrentItem.Behaviors.Dark_Flag ) || ( CurrentItem.Behaviors.IP_Restriction_Membership > 0 ))
-                displayFileName = CurrentMode.Base_URL + "files/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + FileName;
-
-
-            string name_for_image = HttpUtility.HtmlEncode(CurrentItem.Bib_Info.Main_Title.ToString());
-            
-
-            if (( CurrentItem.Web.Pages_By_Sequence.Count > 1) && ( Current_Page -1 < CurrentItem.Web.Pages_By_Sequence.Count  ))
+            // Now, check to see if the JPEG2000 viewer is included here
+            bool zoomableViewerIncluded = false;
+            foreach (BriefItem_BehaviorViewer viewer in BriefItem.Behaviors.Viewers)
             {
-                string name_of_page = CurrentItem.Web.Pages_By_Sequence[Current_Page - 1].Label;
+                if (String.Compare(viewer.ViewerType, "JPEG2000", StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    zoomableViewerIncluded = true;
+                    break;
+                }
+            }
+
+	        string displayFileName = CurrentItem.Web.Source_URL + "/" + FileName;
+
+            // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
+            if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0))
+                displayFileName = CurrentMode.Base_URL + "files/" + BriefItem.BibID + "/" + BriefItem.VID + "/" + FileName;
+
+
+            string name_for_image = HttpUtility.HtmlEncode(BriefItem.Title);
+
+
+            if ((BriefItem.Images != null) && (BriefItem.Images.Count > 1) && (Current_Page - 1 < BriefItem.Images.Count))
+            {
+                string name_of_page = BriefItem.Images[Current_Page - 1].Label;
                 name_for_image = name_for_image + " - " + HttpUtility.HtmlEncode(name_of_page);
             }
 
 
 
             // Add the HTML for the image
-	        if (isZoomable)
+	        if ((isZoomable) && ( zoomableViewerIncluded ))
 	        {
 		        string currViewer = CurrentMode.ViewerCode;
 		        CurrentMode.ViewerCode = CurrentMode.ViewerCode.ToLower().Replace("j", "") + "x";

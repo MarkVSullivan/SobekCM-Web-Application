@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Text;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -46,16 +47,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
-        /// <value> This always returns the value 600 </value>
-        public override int Viewer_Width
-        {
-            get
-            {
-                return 600;
-            }
-        }
-
         /// <summary> Gets the number of pages for this viewer </summary>
         /// <value> This is a single page viewer, so this property always returns the value 1</value>
         public override int PageCount
@@ -94,18 +85,40 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("\t\t<td style=\"align:left;\">");
 
             // Determine some replacement strings here
-            string itemURL = UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + CurrentItem.Web.File_Root + "/";
-            string itemLink = CurrentMode.Base_URL + "/" + CurrentItem.BibID + "/" + CurrentItem.VID;
+            string itemURL = SobekFileSystem.Resource_Web_Uri(BriefItem);
+            string itemLink = CurrentMode.Base_URL + "/" + BriefItem.BibID + "/" + BriefItem.VID;
 
             // Determine the source string
-            string sourceString = CurrentItem.Web.Source_URL + "/" + htmlFile;
+            string sourceString = SobekFileSystem.Resource_Web_Uri(BriefItem) + htmlFile;
             if ((htmlFile.IndexOf("http://") == 0) || (htmlFile.IndexOf("https://") == 0) || (htmlFile.IndexOf("[%BASEURL%]") == 0) || (htmlFile.IndexOf("<%BASEURL%>") == 0))
             {
                 sourceString = htmlFile.Replace("[%BASEURL%]", CurrentMode.Base_URL).Replace("<%BASEURL%>", CurrentMode.Base_URL);
             }
 
 			// Try to get the HTML for this
-            string map = Get_Html_Page(sourceString, Tracer);
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("HTML_ItemViewer.Write_Main_Viewer_Section", "Reading html for this view from static page");
+            }
+            string map;
+            try
+            {
+                map = SobekFileSystem.ReadToEnd(BriefItem, sourceString);
+            }
+            catch
+            {
+                StringBuilder builder = new StringBuilder();
+                builder.AppendLine("<div style=\"background-color: White; color: black;text-align:center; width:630px;\">");
+                builder.AppendLine("  <br /><br />");
+                builder.AppendLine("  <span style=\"font-weight:bold;font-size:1.4em\">Unable to pull html view for item ( <a href=\"" + sourceString + "\">source</a> )</span><br /><br />");
+                builder.AppendLine("  <span style=\"font-size:1.2em\">We apologize for the inconvenience.</span><br /><br />");
+
+                string returnurl = CurrentMode.Base_URL + "/contact";
+                builder.AppendLine("  <span style=\"font-size:1.2em\">Click <a href=\"" + returnurl + "\">here</a> to report the problem.</span>");
+                builder.AppendLine("  <br /><br />");
+                builder.AppendLine("</div>");
+                map = builder.ToString();
+            }
 
             // Write the HTML 
             string url_options = UrlWriterHelper.URL_Options(CurrentMode);
@@ -124,46 +137,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 			// Restore the mode
 			CurrentMode.ViewerCode = current_view_code;
-		}
-		
-		private String Get_Html_Page(string strURL, Custom_Tracer Tracer )
-		{
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("HTML_ItemViewer.Get_Html_Page", "Reading html for this view from static page");
-            }
-
-            try
-            {
-                // the html retrieved from the page
-                String strResult;
-                WebRequest objRequest = WebRequest.Create(strURL);
-                WebResponse objResponse = objRequest.GetResponse();
-
-                // the using keyword will automatically dispose the object // once complete
-                using (StreamReader sr = new StreamReader(objResponse.GetResponseStream()))
-                {
-                    strResult = sr.ReadToEnd();
-                    // Close and clean up the StreamReader
-                    sr.Close();
-                }
-                return strResult;
-            }
-            catch 
-            {
-                StringBuilder builder = new StringBuilder();
-                builder.AppendLine("<div style=\"background-color: White; color: black;text-align:center; width:630px;\">");
-                builder.AppendLine("  <br /><br />");
-                builder.AppendLine("  <span style=\"font-weight:bold;font-size:1.4em\">Unable to pull html view for item ( <a href=\"" + strURL + "\">source</a> )</span><br /><br />");
-                builder.AppendLine("  <span style=\"font-size:1.2em\">We apologize for the inconvenience.</span><br /><br />");
-                //string error_message = "Unable to pull html view for item " + CurrentItem.Web.ItemID;
-    
-                string returnurl = CurrentMode.Base_URL + "/contact";
-                builder.AppendLine("  <span style=\"font-size:1.2em\">Click <a href=\"" + returnurl + "\">here</a> to report the problem.</span>");
-                builder.AppendLine("  <br /><br />");
-                builder.AppendLine("</div>");
-                return builder.ToString();
-            }
 		}
 	}
 }

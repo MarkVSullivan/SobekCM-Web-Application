@@ -62,10 +62,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 		///<remarks>Edit: The default number of items per page is 50. If a diferent number is selected by the user, this is fetched from the query string</remarks>
 		public override int PageCount
 		{
-			get
-			{
-				return ((CurrentItem.Web.Static_PageCount - 1) / thumbnailsPerPage) + 1;
-			}
+			get { return BriefItem.Images != null ? ((BriefItem.Images.Count - 1)/thumbnailsPerPage) + 1 : 1; }
 		}
 
 		/// <summary> Gets the url to go to the first page of thumbnails </summary>

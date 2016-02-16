@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Resource_Object.Bib_Info;
@@ -32,9 +33,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private double providedMinLong;
         private bool validCoordinateSearchFound;
 
-        List<Coordinate_Polygon> allPolygons;
-        List<Coordinate_Point> allPoints;
-        List<Coordinate_Line> allLines;
+        List<BriefItem_Coordinate_Polygon> allPolygons;
+        List<BriefItem_Coordinate_Point> allPoints;
+        List<BriefItem_Coordinate_Line> allLines;
 
         /// <summary> Constructor for a new instance of the Google_Map_ItemViewer class </summary>
         public Google_Map_ItemViewer()
@@ -69,11 +70,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
-        /// <value> This always returns the value 800 </value>
-        public override int Viewer_Width
+        /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
+        /// <value> This always returns the value 'sbkGmiv_Viewer' </value>
+        public override string Viewer_CSS
         {
-            get { return 800; }
+            get { return "sbkGmiv_Viewer"; }
         }
 
         /// <summary> Perform necessary pre-display work.  In this case, any coordinate search is applied against 
@@ -122,7 +123,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             bool areas_shown = false;
             bool points_shown = false;
             string areas_name = "Sheet";
-            if (CurrentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Aerial)
+            if ( BriefItem.Type.IndexOf("aerial",StringComparison.OrdinalIgnoreCase) >= 0 )
                 areas_name = "Tile";
 
             // Load the map
@@ -137,11 +138,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             matchingTilesList = new List<string>();
 
             // Add the points
-            if (CurrentItem != null)
+            if (BriefItem != null)
             {
-                allPolygons = new List<Coordinate_Polygon>();
-                allPoints = new List<Coordinate_Point>();
-                allLines = new List<Coordinate_Line>();
+                allPolygons = new List<BriefItem_Coordinate_Polygon>();
+                allPoints = new List<BriefItem_Coordinate_Point>();
+                allLines = new List<BriefItem_Coordinate_Line>();
 
                 // Add the search rectangle first
                 if ((validCoordinateSearchFound) && (!googleItemSearch))
@@ -161,57 +162,25 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 StringBuilder matchingPolygonsBuilder = new StringBuilder();
 
                 // Collect all the polygons, points, and lines
-                GeoSpatial_Information geoInfo = CurrentItem.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                BriefItem_GeoSpatial geoInfo = BriefItem.GeoSpatial;
                 if ((geoInfo != null) && (geoInfo.hasData))
                 {
                     if (geoInfo.Polygon_Count > 0)
                     {
-                        foreach (Coordinate_Polygon thisPolygon in geoInfo.Polygons)
+                        foreach (BriefItem_Coordinate_Polygon thisPolygon in geoInfo.Polygons)
                             allPolygons.Add(thisPolygon);
                     }
                     if (geoInfo.Line_Count > 0)
                     {
-                        foreach (Coordinate_Line thisLine in geoInfo.Lines)
+                        foreach (BriefItem_Coordinate_Line thisLine in geoInfo.Lines)
                             allLines.Add(thisLine);
                     }
                     if (geoInfo.Point_Count > 0)
                     {
-                        foreach (Coordinate_Point thisPoint in geoInfo.Points)
+                        foreach (BriefItem_Coordinate_Point thisPoint in geoInfo.Points)
                             allPoints.Add(thisPoint);
                     }
                 }
-                List<abstract_TreeNode> pages = CurrentItem.Divisions.Physical_Tree.Pages_PreOrder;
-                for (int i = 0; i < pages.Count; i++)
-                {
-                    abstract_TreeNode pageNode = pages[i];
-                    GeoSpatial_Information geoInfo2 = pageNode.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
-                    if ((geoInfo2 != null) && (geoInfo2.hasData))
-                    {
-                        if (geoInfo2.Polygon_Count > 0)
-                        {
-                            foreach (Coordinate_Polygon thisPolygon in geoInfo2.Polygons)
-                            {
-                                thisPolygon.Page_Sequence = (ushort) (i + 1);
-                                allPolygons.Add(thisPolygon);
-                            }
-                        }
-                        if (geoInfo2.Line_Count > 0)
-                        {
-                            foreach (Coordinate_Line thisLine in geoInfo2.Lines)
-                            {
-                                allLines.Add(thisLine);
-                            }
-                        }
-                        if (geoInfo2.Point_Count > 0)
-                        {
-                            foreach (Coordinate_Point thisPoint in geoInfo2.Points)
-                            {
-                                allPoints.Add(thisPoint);
-                            }
-                        }
-                    }
-                }
-
 
                 // Add all the polygons now
                 if ((allPolygons.Count > 0) && (allPolygons[0].Edge_Points_Count > 1))
@@ -225,7 +194,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     CurrentMode.ViewerCode = currentViewerCode;
 
                     // Add each polygon 
-                    foreach (Coordinate_Polygon itemPolygon in allPolygons)
+                    foreach (BriefItem_Coordinate_Polygon itemPolygon in allPolygons)
                     {
                         // Determine if this polygon is within the search
                         bool in_coordinates_search = false;
@@ -266,7 +235,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         {
                             // Start to call the add polygon method
                             matchingPolygonsBuilder.AppendLine("    add_polygon([");
-                            foreach (Coordinate_Point thisPoint in itemPolygon.Edge_Points)
+                            foreach (BriefItem_Coordinate_Point thisPoint in itemPolygon.Edge_Points)
                             {
                                 matchingPolygonsBuilder.AppendLine("      new google.maps.LatLng(" + thisPoint.Latitude + ", " + thisPoint.Longitude + "),");
                             }
@@ -280,7 +249,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         {
                             // Start to call the add polygon method
                             mapBuilder.AppendLine("    add_polygon([");
-                            foreach (Coordinate_Point thisPoint in itemPolygon.Edge_Points)
+                            foreach (BriefItem_Coordinate_Point thisPoint in itemPolygon.Edge_Points)
                             {
                                 mapBuilder.AppendLine("      new google.maps.LatLng(" + thisPoint.Latitude + ", " + thisPoint.Longitude + "),");
                             }
@@ -464,7 +433,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             string modify_item_search = "Modify item search";
                             const string ZOOM_EXTENT = "Zoom to extent";
                             const string ZOOM_MATCHES = "Zoom to matches";
-                            if (CurrentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Aerial)
+                            if (BriefItem.Type.IndexOf("aerial", StringComparison.OrdinalIgnoreCase) >= 0)
                                 modify_item_search = "Modify search within flight";
 
                             Output.WriteLine("          <td style=\"vertical-align: left\">");

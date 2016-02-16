@@ -17,5 +17,11 @@ namespace SobekCM.Core.FileSystems
         /// <param name="FileName"> Name of the file to open, and read </param>
         /// <returns> Full contexts of the text-based file </returns>
         string ReadToEnd(BriefItemInfo DigitalResource, string FileName);
+
+
+        /// <summary> Return the WEB uri for a digital resource </summary>
+        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <returns> URI for the web resource </returns>
+        string Resource_Web_Uri(BriefItemInfo DigitalResource);
     }
 }

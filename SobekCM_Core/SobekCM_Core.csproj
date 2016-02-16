@@ -83,6 +83,7 @@
     <Compile Include="ApplicationState\Wordmark_Icon.cs" />
     <Compile Include="BriefItem\BriefItemInfo.cs" />
     <Compile Include="BriefItem\BriefItem_Behaviors.cs" />
+    <Compile Include="BriefItem\BriefItem_BehaviorViewer.cs" />
     <Compile Include="BriefItem\BriefItem_CitationResponse.cs" />
     <Compile Include="BriefItem\BriefItem_Coordinate_Circle.cs" />
     <Compile Include="BriefItem\BriefItem_Coordinate_Line.cs" />

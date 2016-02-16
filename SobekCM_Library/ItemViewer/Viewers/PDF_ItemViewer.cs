@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Library.HTML;
@@ -96,7 +97,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			string displayFileName = FileName;
 			if (displayFileName.IndexOf("http") < 0)
 			{
-				displayFileName = CurrentItem.Web.Source_URL + "/" + displayFileName;
+				displayFileName = SobekFileSystem.Resource_Web_Uri(BriefItem) + displayFileName;
 			}
 			displayFileName = displayFileName.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://");
 
@@ -108,8 +109,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
-            if ((CurrentItem.Behaviors.Dark_Flag) || (CurrentItem.Behaviors.IP_Restriction_Membership > 0))
-                displayFileName = CurrentMode.Base_URL + "files/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + FileName;
+            if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0))
+                displayFileName = CurrentMode.Base_URL + "files/" + BriefItem.BibID + "/" + BriefItem.VID + "/" + FileName;
 
 
 			// Start the citation table

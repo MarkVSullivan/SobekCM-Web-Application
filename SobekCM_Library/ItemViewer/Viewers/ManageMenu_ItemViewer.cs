@@ -38,7 +38,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 			}
 			else
 			{
-				bool userCanEditItem = CurrentUser.Can_Edit_This_Item( CurrentItem.BibID, CurrentItem.Bib_Info.SobekCM_Type_String, CurrentItem.Bib_Info.Source.Code, CurrentItem.Bib_Info.HoldingCode, CurrentItem.Behaviors.Aggregation_Code_List );
+                bool userCanEditItem = CurrentUser.Can_Edit_This_Item(BriefItem.BibID, BriefItem.Type, CurrentItem.Bib_Info.Source.Code, CurrentItem.Bib_Info.HoldingCode, BriefItem.Behaviors.Aggregation_Code_List);
 				if (!userCanEditItem)
 				{
 					Current_Mode.ViewerCode = String.Empty;

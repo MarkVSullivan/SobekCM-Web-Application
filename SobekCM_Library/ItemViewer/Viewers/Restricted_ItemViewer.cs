@@ -23,14 +23,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             restrictedMessage = Restricted_Message;
         }
 
-        /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
-        /// <value> This always returns the value 630 </value>
-        public override int Viewer_Width
+        /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
+        /// <value> This always returns the value 'sbkRiv_Viewer' </value>
+        public override string Viewer_CSS
         {
-            get
-            {
-                return 630;
-            }
+            get { return "sbkRiv_Viewer"; }
         }
 
         /// <summary> Gets the type of item viewer this object represents </summary>
