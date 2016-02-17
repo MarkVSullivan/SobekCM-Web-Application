@@ -19,9 +19,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 {
     /// <summary> Item viewer displays the search options and any search results for full-text
     /// searching within a single document </summary>
-    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
+    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer_OLD"/> and implements the 
     /// <see cref="iItemViewer" /> interface. </remarks>
-    public class Text_Search_ItemViewer : abstractItemViewer
+    public class Text_Search_ItemViewer : abstractItemViewer_OLD
     {
         private Solr_Page_Results results;
 

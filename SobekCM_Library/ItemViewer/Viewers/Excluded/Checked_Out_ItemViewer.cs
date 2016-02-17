@@ -9,9 +9,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 {
     /// <summary> Item viewer is substituted for the regular image/download viewers if an item is 
     /// restricted to single fair use and someone else is currently viewing the item.</summary>
-    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
+    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer_OLD"/> and implements the 
     /// <see cref="iItemViewer" /> interface. </remarks>
-    public class Checked_Out_ItemViewer : abstractItemViewer
+    public class Checked_Out_ItemViewer : abstractItemViewer_OLD
     {
         /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
         /// <value> This always returns the value 'sbkCoiv_Viewer' </value>

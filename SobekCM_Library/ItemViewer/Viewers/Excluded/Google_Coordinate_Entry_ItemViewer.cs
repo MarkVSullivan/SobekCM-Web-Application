@@ -27,9 +27,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 	/// <summary> Class to allow a user to add coordinate information to 
 	/// a digital resource ( map coverage, points of interest, etc.. ) </summary>
-	/// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
+	/// <remarks> This class extends the abstract class <see cref="abstractItemViewer_OLD"/> and implements the 
 	/// <see cref="iItemViewer" /> interface. </remarks>
-	public class Google_Coordinate_Entry_ItemViewer : abstractItemViewer
+	public class Google_Coordinate_Entry_ItemViewer : abstractItemViewer_OLD
 	{
 		private static User_Object currentUser;
 		private static SobekCM_Item currentItem;

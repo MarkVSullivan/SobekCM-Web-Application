@@ -10,7 +10,7 @@ namespace SobekCM.Library.ItemViewer.Fragments
     /// <summary> Base class is used for all fragment item viewers, which just write a single fragment 
     /// to the stream, such as the print or send/email forms.  THis is used to allow the page to dynamically
     /// load these forms as needed. </summary>
-    public abstract class baseFragment_ItemViewer : abstractItemViewer
+    public abstract class baseFragment_ItemViewer : abstractItemViewer_OLD
     {
         /// <summary> Gets the number of pages for this viewer </summary>
         /// <value> This always returns 1, to suppress any pagination from occurring </value>

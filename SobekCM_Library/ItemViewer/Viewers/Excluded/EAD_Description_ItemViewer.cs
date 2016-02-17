@@ -13,9 +13,9 @@ using SobekCM.Tools;
 namespace SobekCM.Library.ItemViewer.Viewers
 {
     /// <summary> Item viewer displays the description associated with an archival EAD/Finding guide item. </summary>
-    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
+    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer_OLD"/> and implements the 
     /// <see cref="iItemViewer" /> interface. </remarks>
-    public class EAD_Description_ItemViewer : abstractItemViewer
+    public class EAD_Description_ItemViewer : abstractItemViewer_OLD
     {
         /// <summary> Gets the type of item viewer this object represents </summary>
         /// <value> This property always returns the enumerational value <see cref="ItemViewer_Type_Enum.EAD_Description"/>. </value>

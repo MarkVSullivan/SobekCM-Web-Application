@@ -17,12 +17,12 @@ namespace SobekCM.Library.ItemViewer.Fragments
     public class PrintForm_Fragment_ItemViewer : baseFragment_ItemViewer
     {
         private Page_TreeNode currentPage;
-        private abstractItemViewer pageViewer;
+        private abstractItemViewer_OLD pageViewer;
 
         /// <summary> Constructor for a new instance of the <see cref="PrintForm_Fragment_ItemViewer"/> class </summary>
         /// <param name="Current_Page"> Current page object </param>
         /// <param name="PageViewer"> Current page/item viewer </param>
-        public PrintForm_Fragment_ItemViewer( Page_TreeNode Current_Page, abstractItemViewer PageViewer )
+        public PrintForm_Fragment_ItemViewer( Page_TreeNode Current_Page, abstractItemViewer_OLD PageViewer )
         {
             currentPage = Current_Page;
             pageViewer = PageViewer;

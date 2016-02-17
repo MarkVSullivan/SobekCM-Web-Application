@@ -11,7 +11,7 @@ using SobekCM.Tools;
 namespace SobekCM.Library.ItemViewer.Viewers
 {
     /// <summary> Very simple test item viewer, to use as a sample for customizations </summary>
-    public class Test_ItemViewer : abstractItemViewer
+    public class Test_ItemViewer : abstractItemViewer_OLD
     {
         /// <summary> Type of item viewer </summary>
         public override ItemViewer_Type_Enum ItemViewer_Type

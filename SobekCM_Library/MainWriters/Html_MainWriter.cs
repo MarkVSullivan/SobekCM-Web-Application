@@ -16,7 +16,7 @@ using SobekCM.Library.UI;
 using SobekCM.Tools;
 
 #endregion
-
+Viewer
 namespace SobekCM.Library.MainWriters
 {
     /// <summary> Main writer writes the HTML response to a user's request </summary>

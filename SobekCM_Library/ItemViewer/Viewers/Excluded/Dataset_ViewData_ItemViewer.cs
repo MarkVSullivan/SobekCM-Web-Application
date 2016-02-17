@@ -19,9 +19,9 @@ using SobekCM.Tools;
 namespace SobekCM.Library.ItemViewer.Viewers
 {
 	/// <summary> Dataset viewer shows the paged data from the dataset and allows simple searching/filtering </summary>
-	/// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
+	/// <remarks> This class extends the abstract class <see cref="abstractItemViewer_OLD"/> and implements the 
 	/// <see cref="iItemViewer" /> interface. </remarks>
-	public class Dataset_ViewData_ItemViewer : abstractItemViewer
+	public class Dataset_ViewData_ItemViewer : abstractItemViewer_OLD
 	{
 		private DataSet itemDataset;
 		private string error_message;

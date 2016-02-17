@@ -19,7 +19,7 @@ using Zen.Barcode;
 namespace SobekCM.Library.ItemViewer.Viewers
 {
     /// <summary> Item viewer displays the tracking sheet for an individual item, including bar code </summary>
-    public class TrackingSheet_ItemViewer : abstractItemViewer
+    public class TrackingSheet_ItemViewer : abstractItemViewer_OLD
     {
         private readonly SobekCM_Item track_item;
         private readonly int itemID;

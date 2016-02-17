@@ -21,9 +21,9 @@ using SobekCM.Tools;
 namespace SobekCM.Library.ItemViewer.Viewers
 {
     /// <summary> Item viewer displays the tracking information for a single digital resource</summary>
-    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
+    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer_OLD"/> and implements the 
     /// <see cref="iItemViewer" /> interface. </remarks>
-    public class Tracking_ItemViewer : abstractItemViewer
+    public class Tracking_ItemViewer : abstractItemViewer_OLD
     {
         private bool userCanEditItem;
 

@@ -15,9 +15,9 @@ using SobekCM.Tools;
 namespace SobekCM.Library.ItemViewer.Viewers
 {
 	/// <summary> Dataset viewer is used to view saved reports or create new custom reports </summary>
-	/// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
+	/// <remarks> This class extends the abstract class <see cref="abstractItemViewer_OLD"/> and implements the 
 	/// <see cref="iItemViewer" /> interface. </remarks>
-	public class Dataset_Reports_ItemViewer : abstractItemViewer
+	public class Dataset_Reports_ItemViewer : abstractItemViewer_OLD
 	{
 		private DataSet itemDataset;
         private string error_message;

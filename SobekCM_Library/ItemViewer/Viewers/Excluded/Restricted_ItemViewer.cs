@@ -10,9 +10,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 {
     /// <summary> Item viewer is substituted for the regular image/download viewers if an item is 
     /// restricted by IP address range and is not accessible to the the current user </summary>
-    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
+    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer_OLD"/> and implements the 
     /// <see cref="iItemViewer" /> interface. </remarks>
-    public class Restricted_ItemViewer : abstractItemViewer
+    public class Restricted_ItemViewer : abstractItemViewer_OLD
     {
         private readonly string restrictedMessage;
 

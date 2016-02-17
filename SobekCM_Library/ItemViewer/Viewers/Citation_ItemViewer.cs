@@ -34,9 +34,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 {
 	/// <summary> Item viewer displays the citation information including the basic metadata in standard and MARC format, as well as
 	/// links to the metadata </summary>
-	/// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
+	/// <remarks> This class extends the abstract class <see cref="abstractItemViewer_OLD"/> and implements the 
 	/// <see cref="iItemViewer" /> interface. </remarks>
-	public class Citation_ItemViewer : abstractItemViewer
+	public class Citation_ItemViewer : abstractItemViewer_OLD
 	{
 		private Citation_Type citationType;
 	  //  private User_Object currentUser;

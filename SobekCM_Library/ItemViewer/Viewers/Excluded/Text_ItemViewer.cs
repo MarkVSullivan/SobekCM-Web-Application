@@ -12,9 +12,9 @@ using SobekCM.Tools;
 namespace SobekCM.Library.ItemViewer.Viewers
 {
     /// <summary> Item viewer shows plain text view of any text file associated with this digital resource, including OCR'd texte </summary>
-    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
+    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer_OLD"/> and implements the 
     /// <see cref="iItemViewer" /> interface. </remarks>
-    public class Text_ItemViewer : abstractItemViewer
+    public class Text_ItemViewer : abstractItemViewer_OLD
     {
         private string text_from_file;
         private bool file_does_not_exist;

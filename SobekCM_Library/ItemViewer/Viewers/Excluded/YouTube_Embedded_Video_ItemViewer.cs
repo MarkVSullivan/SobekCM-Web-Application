@@ -9,9 +9,9 @@ using SobekCM.Tools;
 namespace SobekCM.Library.ItemViewer.Viewers
 {
     /// <summary> Item viewer displays a you tube video embedded in within the SobekCM window. </summary>
-    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
+    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer_OLD"/> and implements the 
     /// <see cref="iItemViewer" /> interface. </remarks>
-    public class YouTube_Embedded_Video_ItemViewer : abstractItemViewer
+    public class YouTube_Embedded_Video_ItemViewer : abstractItemViewer_OLD
     {
         /// <summary> Gets the type of item viewer this object represents </summary>
         /// <value> This property always returns the enumerational value <see cref="ItemViewer_Type_Enum.YouTube_Video"/>. </value>

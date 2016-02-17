@@ -16,9 +16,9 @@ using SobekCM.Tools;
 namespace SobekCM.Library.ItemViewer.Viewers
 {
     /// <summary> Item viewer displays the spatial coordinates or coverage for a digital resource on a Google map. </summary>
-    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
+    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer_OLD"/> and implements the 
     /// <see cref="iItemViewer" /> interface. </remarks>
-    class Google_Map_ItemViewer_Beta : abstractItemViewer
+    class Google_Map_ItemViewer_Beta : abstractItemViewer_OLD
     {
         private bool googleItemSearch;
         private StringBuilder mapBuilder;

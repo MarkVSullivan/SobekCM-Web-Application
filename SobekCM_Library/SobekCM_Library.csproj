@@ -203,46 +203,25 @@
     <Compile Include="ItemViewer\Fragments\Share_Fragment_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="ItemViewer\Viewers\Dataset_CodeBook_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\Dataset_Reports_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\Dataset_ViewData_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\EmbeddedVideo_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\Google_Coordinate_Entry_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\Google_Map_ItemViewer_Beta.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\JPEG2000_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\JPEG_Text_Two_Up_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\ManageMenu_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\Test_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\QC_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="ItemViewer\Item_MenuItem.cs" />
+    <Compile Include="ItemViewer\Viewers\abstractNoPaginationItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\abstractPageFilesItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\Citation_MARC_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\Citation_Standard_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\Downloads_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\EmbeddedVideo_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\Flash_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\HTML_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\iItemViewerPrototyper.cs" />
+    <Compile Include="ItemViewer\Viewers\JPEG2000_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\JPEG_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\ManageMenu_ItemViewer.cs" />
     <Compile Include="AdminViewer\Aggregation_Single_AdminViewer.cs" />
-    <Compile Include="ItemViewer\Viewers\TrackingSheet_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\Video_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="ItemViewer\Viewers\Metadata_Links_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\MultiVolumes_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\PDF_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\Usage_Stats_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\Video_ItemViewer.cs" />
     <Compile Include="Localization\baseLocalizationInfo.cs" />
     <Compile Include="Localization\Classes\abstractHtmlSubwriter_LocalizationInfo.cs" />
     <Compile Include="Localization\Classes\abstractItemViewer_LocalizationInfo.cs" />
@@ -374,30 +353,6 @@
     <Compile Include="AdminViewer\Thematic_Headings_AdminViewer.cs" />
     <Compile Include="MySobekViewer\User_Usage_Stats_MySobekViewer.cs" />
     <Compile Include="HTML\LegacyUrl_HtmlSubwriter.cs" />
-    <Compile Include="ItemViewer\Viewers\Checked_Out_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\EAD_Container_List_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\EAD_Description_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\GnuBooks_PageTurner_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\Restricted_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\Text_Search_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\Tracking_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\YouTube_Embedded_Video_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="MainWriters\Html_Echo_MainWriter.cs" />
     <Compile Include="MARC_Record_Z3950_Retriever.cs" />
     <Compile Include="Citation\Elements\implemented elements\Acquisition_Note_Element.cs" />
@@ -518,9 +473,6 @@
     <Compile Include="MainWriters\Html_MainWriter.cs" />
     <Compile Include="HTML\abstractHtmlSubwriter.cs" />
     <Compile Include="HTML\Internal_HtmlSubwriter.cs" />
-    <Compile Include="ItemViewer\Viewers\PDF_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="MainWriters\Json_MainWriter.cs" />
     <Compile Include="MySobekViewer\abstract_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\Edit_Item_Metadata_MySobekViewer.cs" />
@@ -540,44 +492,15 @@
     <Compile Include="HTML\Statistics_HtmlSubwriter.cs" />
     <Compile Include="ItemViewer\ItemViewer_Factory.cs" />
     <Compile Include="ItemViewer\Item_Nav_Bar_HTML_Factory.cs" />
-    <Compile Include="ItemViewer\Viewers\abstractItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\Citation_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\Download_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\Feature_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\Flash_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="ItemViewer\Viewers\Citation_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Google_Map_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="ItemViewer\Viewers\HTML_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="ItemViewer\Viewers\iItemViewer.cs" />
-    <Compile Include="ItemViewer\Viewers\JPEG_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\MultiVolumes_ItemViewer.cs">
+    <Compile Include="ItemViewer\Viewers\MultiVolumes_ItemViewer_OLD.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ItemViewer\Viewers\Related_Images_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\Street_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\Text_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\TOC_ItemViewer.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="MainWriters\Dataset_MainWriter.cs" />

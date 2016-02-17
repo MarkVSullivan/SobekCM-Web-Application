@@ -17,9 +17,9 @@ using SobekCM.Tools;
 namespace SobekCM.Library.ItemViewer.Viewers
 {
 	/// <summary> Item viewer displays thumbnails of all the page images related to this digital resource. </summary>
-	/// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
+	/// <remarks> This class extends the abstract class <see cref="abstractItemViewer_OLD"/> and implements the 
 	/// <see cref="iItemViewer" /> interface. </remarks>
-	public class Related_Images_ItemViewer : abstractItemViewer
+	public class Related_Images_ItemViewer : abstractItemViewer_OLD
 	{
 		private int thumbnailsPerPage;
 		private int thumbnailSize;

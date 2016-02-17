@@ -13,9 +13,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 {
 	/// <summary> Item viewer displays a JPEG file with the related full text and possibility to edit
 	/// the full text to correct transcribe the image </summary>
-	/// <remarks> This class extends the abstract class <see cref="abstractItemViewer"/> and implements the 
+	/// <remarks> This class extends the abstract class <see cref="abstractItemViewer_OLD"/> and implements the 
 	/// <see cref="iItemViewer" /> interface. </remarks>
-	public class JPEG_Text_Two_Up_ItemViewer : abstractItemViewer
+	public class JPEG_Text_Two_Up_ItemViewer : abstractItemViewer_OLD
 	{
 		private int width;
 		private int height;

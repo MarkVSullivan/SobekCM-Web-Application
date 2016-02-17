@@ -385,7 +385,7 @@ namespace SobekCM.Library.HTML
                 }
 
                 // Special code if this is the multi-volumes viewer
-                var itemViewer = PageViewer as MultiVolumes_ItemViewer;
+                var itemViewer = PageViewer as MultiVolumes_ItemViewer_OLD;
                 if (itemViewer != null)
                 {
                     if (RequestSpecificValues.Items_In_Title == null)
@@ -492,7 +492,7 @@ namespace SobekCM.Library.HTML
         }
 
         /// <summary> Gets and sets the page viewer used to display the current item </summary>
-        public abstractItemViewer PageViewer { get; set; }
+        public abstractItemViewer_OLD PageViewer { get; set; }
 
         /// <summary> Flag indicates this item is currently checked out by another user </summary>
         public bool Item_Checked_Out_By_Other_User 

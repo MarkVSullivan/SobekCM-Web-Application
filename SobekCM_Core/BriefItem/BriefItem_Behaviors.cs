@@ -47,13 +47,26 @@ namespace SobekCM.Core.BriefItem
         [XmlArray("aggregations")]
         [XmlArrayItem("aggregation", typeof(string))]
         [ProtoMember(6)]
-        public List<string> Aggregation_Code_List { get; set; } 
+        public List<string> Aggregation_Code_List { get; set; }
+
+        /// <summary> Code for the source institution aggregation </summary>
+        [DataMember(EmitDefaultValue = false, Name = "sourceAggregation")]
+        [XmlElement("sourceAggregation")]
+        [ProtoMember(7)]
+        public string Source_Institution_Aggregation { get; set; }
+
+        /// <summary> Code for the holding location aggregation </summary>
+        [DataMember(EmitDefaultValue = false, Name = "holdingAggregation")]
+        [XmlElement("holdingAggregation")]
+        [ProtoMember(8)]
+        public string Holding_Location_Aggregation { get; set; }
 
         /// <summary> Type for the overall item group (title) </summary>
         [DataMember(EmitDefaultValue = false, Name = "groupType")]
         [XmlAttribute("groupType")]
-        [ProtoMember(7)] 
+        [ProtoMember(9)] 
         public string GroupType { get; set; }
+
 
         /// <summary> Constructor for a new instance of the BriefItem_Behaviors class </summary>
         public BriefItem_Behaviors()
