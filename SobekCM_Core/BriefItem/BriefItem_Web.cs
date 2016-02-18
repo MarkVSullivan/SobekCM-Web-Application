@@ -33,6 +33,18 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(3)]
         public int? Siblings { get; set; }
 
+        /// <summary> Primary key (ItemID) for this individual item/volume from the SobekCM Web database </summary>
+        [DataMember(Name = "itemid")]
+        [XmlAttribute("itemid")]
+        [ProtoMember(4)]
+        public int ItemID { get; set; }
+
+        /// <summary> Primary key (GroupID) for the BibiD / title from the SobekCM Web database </summary>
+        [DataMember(Name = "groupid")]
+        [XmlAttribute("groupid")]
+        [ProtoMember(5)]
+        public int GroupID { get; set; }
+
         /// <summary> Checks to see if a file extension exists in the file extensions lists </summary>
         /// <param name="Extension"> File extension to check </param>
         /// <returns> TRUE if the file extension exists, otherwise FALSE </returns>

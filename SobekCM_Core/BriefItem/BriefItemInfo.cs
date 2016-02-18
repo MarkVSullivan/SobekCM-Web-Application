@@ -118,6 +118,8 @@ namespace SobekCM.Core.BriefItem
             descriptionTermLookup = new Dictionary<string, BriefItem_DescriptiveTerm>(StringComparer.OrdinalIgnoreCase);
             Description = new List<BriefItem_DescriptiveTerm>();
             Behaviors = new BriefItem_Behaviors();
+
+            Type = "UNKNOWN";
         }
 
         /// <summary> Add a new namespace definition to this object </summary>

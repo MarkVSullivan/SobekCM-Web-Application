@@ -118,6 +118,9 @@
     <Compile Include="FileSystems\iFileSystem.cs" />
     <Compile Include="FileSystems\PairTreeStructure.cs" />
     <Compile Include="FileSystems\SobekFileSystem.cs" />
+    <Compile Include="MARC\MARC_Transfer_Field.cs" />
+    <Compile Include="MARC\MARC_Transfer_Record.cs" />
+    <Compile Include="MARC\MARC_Transfer_Subfield.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_ItemServices.cs" />
     <Compile Include="UI_Configuration\MapEditor_Configuration.cs" />
     <Compile Include="Configuration\Engine\Engine_Component.cs" />

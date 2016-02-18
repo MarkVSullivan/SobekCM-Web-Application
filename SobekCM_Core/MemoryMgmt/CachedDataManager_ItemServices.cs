@@ -7,6 +7,7 @@ using System.Web.Caching;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.EAD;
 using SobekCM.Core.Items;
+using SobekCM.Core.MARC;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
 
@@ -87,7 +88,21 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_ItemServices.Remove_Digital_Resource_Object", "");
             }
 
-            // Determine the key
+            string key_start = "ITEM_" + BibID + "_" + VID + "_";
+
+            // Build the sorted list of locally cached stuff
+            List<Cached_Object_Info> locallyCached = (from DictionaryEntry thisItem in HttpContext.Current.Cache select new Cached_Object_Info(thisItem.Key.ToString(), thisItem.Value.GetType())).ToList();
+
+            // Determine which keys to expire
+            List<string> keys_to_expire = (from cachedObject in locallyCached where cachedObject.Object_Key.IndexOf(key_start) == 0 select cachedObject.Object_Key).ToList();
+
+            // Clear these from the local cache
+            foreach (string expireKey in keys_to_expire)
+            {
+                HttpContext.Current.Cache.Remove(expireKey);
+            }
+
+            // Now, remove the actual item
             string key = "ITEM_" + BibID + "_" + VID;
             if (UserID > 0)
             {
@@ -395,7 +410,8 @@ namespace SobekCM.Core.MemoryMgmt
 
         #endregion
 
-
+        #region Methods related to storing and retrieving EAD information for a single digital resource
+        
         /// <summary> Retrieves the EAD information related to a digital resource  </summary>
         /// <param name="BibID"> Bibliographic Identifier for the digital resource to retrieve </param>
         /// <param name="VID"> Volume Identifier for the digital resource to retrieve </param>
@@ -453,5 +469,69 @@ namespace SobekCM.Core.MemoryMgmt
 
             HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LENGTH_OF_TIME));
         }
+
+        #endregion
+
+        #region Methods related to storing and retrieving the MARC record object for a single digital resource
+
+        /// <summary> Retrieves the MARC record object related to a digital resource  </summary>
+        /// <param name="BibID"> Bibliographic Identifier for the digital resource to retrieve </param>
+        /// <param name="VID"> Volume Identifier for the digital resource to retrieve </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Either NULL or the MARC record from the cache  </returns>
+        public MARC_Transfer_Record Retrieve_MARC_Record(string BibID, string VID, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+                return null;
+
+            // Determine the key
+            string key = "ITEM_" + BibID + "_" + VID + "_MarcRecord";
+
+            // See if this is in the local cache first
+            object returnValue = HttpContext.Current.Cache.Get(key);
+            if (returnValue != null)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager_ItemServices.Retrieve_MARC_Record", "Found MARC record on local cache");
+                }
+
+                return (MARC_Transfer_Record)returnValue;
+            }
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_ItemServices.Retrieve_MARC_Record", "MARC record not found in either the local cache ");
+            }
+
+            // Since everything failed, just return null
+            return null;
+        }
+
+        /// <summary> Store the MARC record object related to a digital resource on the cache   </summary>
+        /// <param name="BibID"> Bibliographic Identifier for the digital resource to store </param>
+        /// <param name="VID"> Volume Identifier for the digital resource to store </param>
+        /// <param name="StoreObject"> EAD information for a digital Resource object to store for later retrieval </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Store_MARC_Record(string BibID, string VID, MARC_Transfer_Record StoreObject, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+                return;
+
+            // Determine the key
+            string key = "ITEM_" + BibID + "_" + VID + "_MarcRecord";
+            const int LENGTH_OF_TIME = 3;
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_ItemServices.Store_MARC_Record", "Adding object '" + key + "' to the local cache with expiration of " + LENGTH_OF_TIME + " minute");
+            }
+
+            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LENGTH_OF_TIME));
+        }
+
+        #endregion
     }
 }

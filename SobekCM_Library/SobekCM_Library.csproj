@@ -185,24 +185,12 @@
     <Compile Include="HTML\HeaderFooter_Helper_HtmlSubWriter.cs" />
     <Compile Include="HTML\HtmlSubwriter_Behaviors_Enum.cs" />
     <Compile Include="HTML\MainMenus_Helper_HtmlSubWriter.cs" />
-    <Compile Include="ItemViewer\Fragments\AddRemove_Fragment_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Fragments\baseFragment_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Fragments\Describe_Fragment_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Fragments\PrintForm_Fragment_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Fragments\Send_Fragment_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Fragments\Share_Fragment_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="ItemViewer\Fragments\AddRemove_Fragment_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Fragments\baseFragment_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Fragments\Describe_Fragment_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Fragments\PrintForm_Fragment_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Fragments\Send_Fragment_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Fragments\Share_Fragment_ItemViewer.cs" />
     <Compile Include="ItemViewer\Item_MenuItem.cs" />
     <Compile Include="ItemViewer\Viewers\abstractNoPaginationItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\abstractPageFilesItemViewer.cs" />
@@ -492,17 +480,10 @@
     <Compile Include="HTML\Statistics_HtmlSubwriter.cs" />
     <Compile Include="ItemViewer\ItemViewer_Factory.cs" />
     <Compile Include="ItemViewer\Item_Nav_Bar_HTML_Factory.cs" />
-    <Compile Include="ItemViewer\Viewers\Citation_ItemViewer.cs" />
-    <Compile Include="ItemViewer\Viewers\Google_Map_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="ItemViewer\Viewers\Google_Map_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\iItemViewer.cs" />
-    <Compile Include="ItemViewer\Viewers\MultiVolumes_ItemViewer_OLD.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="ItemViewer\Viewers\Related_Images_ItemViewer.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="ItemViewer\Viewers\MultiVolumes_ItemViewer_OLD.cs" />
+    <Compile Include="ItemViewer\Viewers\Related_Images_ItemViewer.cs" />
     <Compile Include="MainWriters\Dataset_MainWriter.cs" />
     <Compile Include="MainWriters\abstractMainWriter.cs" />
     <Compile Include="MainWriters\Oai_MainWriter.cs" />

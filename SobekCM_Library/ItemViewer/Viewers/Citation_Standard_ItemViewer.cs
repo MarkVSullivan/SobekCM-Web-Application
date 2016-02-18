@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Core.Users;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -93,6 +98,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// <see cref="iItemViewer" /> interface. </remarks>
     public class Citation_Standard_ItemViewer : abstractNoPaginationItemViewer
     {
+        private readonly int width = 180;
+
         /// <summary> Constructor for a new instance of the Citation_Standard_ItemViewer class, used to display the 
         /// descriptive citation in standard, human-readable format for the digital resource </summary>
         /// <param name="BriefItem"> Digital resource object </param>
@@ -107,6 +114,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Set the behavior properties to the empy behaviors ( in the base class )
             Behaviors = EmptyBehaviors;
+
+            // Set the width
+            if ((CurrentRequest.Language == Web_Language_Enum.French) || (CurrentRequest.Language == Web_Language_Enum.Spanish))
+                width = 230;
         }
 
         /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
@@ -121,8 +132,424 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            throw new NotImplementedException();
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Citation_Standard_ItemViewer.Write_Main_Viewer_Section", "Write the citation information directly to the output stream");
+            }
+
+            // Determine if user can edit
+            bool userCanEditItem = false;
+            if (CurrentUser != null)
+            {
+                userCanEditItem = CurrentUser.Can_Edit_This_Item(BriefItem.BibID, BriefItem.Type, BriefItem.Behaviors.Source_Institution_Aggregation, BriefItem.Behaviors.Holding_Location_Aggregation, BriefItem.Behaviors.Aggregation_Code_List);
+            }
+
+            // Add the HTML for the citation
+            Output.WriteLine("        <!-- CITATION ITEM VIEWER OUTPUT -->");
+            Output.WriteLine("        <td>");
+
+            // If this is DARK and the user cannot edit and the flag is not set to show citation, show nothing here
+            if ((BriefItem.Behaviors.Dark_Flag) && (!userCanEditItem) && (!UI_ApplicationCache_Gateway.Settings.Resources.Show_Citation_For_Dark_Items))
+            {
+                Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\">This item is DARK and cannot be viewed at this time</div>" + Environment.NewLine + "</td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
+                return;
+            }
+
+            string viewer_code = CurrentRequest.ViewerCode;
+
+            // Get any search terms
+            List<string> terms = new List<string>();
+            if (!String.IsNullOrWhiteSpace(CurrentRequest.Text_Search))
+            {
+                string[] splitter = CurrentRequest.Text_Search.Replace("\"", "").Split(" ".ToCharArray());
+                terms.AddRange(from thisSplit in splitter where thisSplit.Trim().Length > 0 select thisSplit.Trim());
+            }
+
+            // Add the main wrapper division
+            // Determine the material type
+            string microdata_type = "CreativeWork";
+            switch (BriefItem.Type)
+            {
+                case "BOOK":
+                case "SERIAL":
+                case "NEWSPAPER":
+                    microdata_type = "Book";
+                    break;
+
+                case "MAP":
+                    microdata_type = "Map";
+                    break;
+
+                case "PHOTOGRAPH":
+                case "AERIAL":
+                    microdata_type = "Photograph";
+                    break;
+            }
+
+            // Add the main wrapper division, with microdata information
+            Output.WriteLine("<div id=\"sbkCiv_Citation\" itemprop=\"about\" itemscope itemtype=\"http://schema.org/" + microdata_type + "\">");
+
+            if (!CurrentRequest.Is_Robot)
+                Add_Citation_View_Tabs(Output, BriefItem, CurrentRequest, "CITATION");
+
+            // Now, add the text
+            Output.WriteLine();
+
+            if (terms.Count > 0)
+            {
+                Output.WriteLine(Text_Search_Term_Highlighter.Hightlight_Term_In_HTML(Standard_Citation_String(!isRobot, Tracer), terms, "<span class=\"sbkCiv_TextHighlight\">", "</span>") + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
+            }
+            else
+            {
+                Output.WriteLine(Standard_Citation_String(!isRobot, Tracer) + Environment.NewLine + "  </td>" + Environment.NewLine + "  <div id=\"sbkCiv_EmptyRobotDiv\" />" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
+            }
+
+            CurrentRequest.ViewerCode = viewer_code;
         }
+
+        #region Code to create the regular citation string
+
+        /// <summary> Returns the basic information about this digital resource in standard format </summary>
+        /// <param name="Include_Links"> Flag tells whether to include the search links from this citation view </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> HTML string with the basic information about this digital resource for display </returns>
+        public string Standard_Citation_String(bool Include_Links, Custom_Tracer Tracer)
+        {
+            bool internalUser = ((CurrentUser != null) && (CurrentUser.LoggedOn) && (CurrentUser.Is_Internal_User));
+
+
+
+            // Compute the URL to use for all searches from the citation
+            Display_Mode_Enum lastMode = CurrentRequest.Mode;
+            CurrentRequest.Mode = Display_Mode_Enum.Results;
+            CurrentRequest.Search_Type = Search_Type_Enum.Advanced;
+            CurrentRequest.Search_String = "<%VALUE%>";
+            CurrentRequest.Search_Fields = "<%CODE%>";
+            string search_link = "<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest).Replace("&", "&amp;").Replace("%3c%25", "<%").Replace("%25%3e", "%>").Replace("<%VALUE%>", "&quot;<%VALUE%>&quot;") + "\" target=\"_BLANK\">";
+            string search_link_end = "</a>";
+            CurrentRequest.Aggregation = String.Empty;
+            CurrentRequest.Search_String = String.Empty;
+            CurrentRequest.Search_Fields = String.Empty;
+            CurrentRequest.Mode = lastMode;
+            string url_options = UrlWriterHelper.URL_Options(CurrentRequest);
+            if (url_options.Length > 0)
+            {
+                url_options = "?" + url_options;
+            }
+
+            // If no search links should should be included, clear the search strings
+            if (!Include_Links)
+            {
+                search_link = String.Empty;
+                search_link_end = String.Empty;
+            }
+
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Citation_Standard_ItemViewer.Standard_Citation_String", "Configuring brief item data into standard citation format");
+            }
+
+            // Use string builder to build this
+            const string INDENT = "    ";
+            StringBuilder result = new StringBuilder();
+
+            // Now, try to add the thumbnail from any page images here
+            if (BriefItem.Behaviors.Dark_Flag != true)
+            {
+                string name_for_image = HttpUtility.HtmlEncode(BriefItem.Title);
+
+                if (!String.IsNullOrEmpty(BriefItem.Behaviors.Main_Thumbnail))
+                {
+                    
+                    result.AppendLine();
+                    result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "\" ><img src=\"" + BriefItem.Web.Source_URL + "/" + BriefItem.Behaviors.Main_Thumbnail + "\" alt=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
+                    result.AppendLine();
+                }
+                else if ((BriefItem.Images != null ) && ( BriefItem.Images.Count > 0 ))
+                {
+                    if (BriefItem.Images[0].Files.Count > 0)
+                    {
+                        string jpeg = String.Empty;
+                        foreach (BriefItem_File thisFileInfo in BriefItem.Images[0].Files)
+                        {
+                            if (thisFileInfo.Name.ToLower().IndexOf(".jpg") > 0)
+                            {
+                                if (jpeg.Length == 0)
+                                    jpeg = thisFileInfo.Name;
+                                else if (thisFileInfo.Name.ToLower().IndexOf("thm.jpg") < 0)
+                                    jpeg = thisFileInfo.Name;
+                            }
+                        }
+
+                        string name_of_page = BriefItem.Images[0].Label;
+                        name_for_image = name_for_image + " - " + HttpUtility.HtmlEncode(name_of_page);
+
+
+                        // If a jpeg was found, show it
+                        if (jpeg.Length > 0)
+                        {
+                            result.AppendLine();
+                            result.AppendLine(INDENT + "<div id=\"Sbk_CivThumbnailDiv\"><a href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "\" ><img src=\"" + BriefItem.Web.Source_URL + "/" + jpeg + "\" alt=\"" + name_for_image + "\" id=\"Sbk_CivThumbnailImg\" itemprop=\"primaryImageOfPage\" /></a></div>");
+                            result.AppendLine();
+                        }
+                    }
+                }
+            }
+
+            // Step through the citation configuration here
+            CitationSet citationSet = UI_ApplicationCache_Gateway.Configuration.UI.CitationViewer.Get_CitationSet();
+            foreach (CitationFieldSet fieldsSet in citationSet.FieldSets)
+            {
+                // Start this section
+                result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_" + fieldsSet.ID.Replace(" ","_") + "Section\" >");
+                if (!String.IsNullOrEmpty(fieldsSet.Heading))
+                {
+                    result.AppendLine(INDENT + "<h2>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(fieldsSet.Heading, CurrentRequest.Language) + "</h2>");
+                }
+                result.AppendLine(INDENT + "  <dl>");
+
+                // Step through all the fields in this field set
+                foreach (CitationElement thisField in fieldsSet.Elements)
+                {
+                    
+                }
+
+                // End this division
+                result.AppendLine(INDENT + "  </dl>");
+                result.AppendLine(INDENT + "</div>");
+
+            }
+
+
+
+            List<string> tempList = new List<string>();
+
+            // Build the value
+
+
+      
+
+            // Add the thesis/dissertation data if it exists
+            if ((thesisInfo != null) && (thesisInfo.hasData))
+            {
+                result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_ThesisSection\">");
+                result.AppendLine(INDENT + "<h2>" + thesis_title + "</h2>");
+                result.AppendLine(INDENT + "  <dl>");
+
+                if (thesisInfo.Degree.Length > 0)
+                {
+                    if (thesisInfo.Degree_Level != Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Unknown)
+                    {
+                        switch (thesisInfo.Degree_Level)
+                        {
+                            case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Bachelors:
+                                result.Append(Single_Citation_HTML_Row("Degree", "Bachelor's ( " + thesisInfo.Degree + ")", INDENT));
+                                break;
+
+                            case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Masters:
+                                result.Append(Single_Citation_HTML_Row("Degree", "Master's ( " + thesisInfo.Degree + ")", INDENT));
+                                break;
+
+                            case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Doctorate:
+                                result.Append(Single_Citation_HTML_Row("Degree", "Doctorate ( " + thesisInfo.Degree + ")", INDENT));
+                                break;
+
+                            case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.PostDoctorate:
+                                result.Append(Single_Citation_HTML_Row("Degree", "Post-Doctorate ( " + thesisInfo.Degree + ")", INDENT));
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        result.Append(Single_Citation_HTML_Row("Degree", thesisInfo.Degree, INDENT));
+                    }
+                }
+                else if (thesisInfo.Degree_Level != Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Unknown)
+                {
+                    switch (thesisInfo.Degree_Level)
+                    {
+                        case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Bachelors:
+                            result.Append(Single_Citation_HTML_Row("Degree", "Bachelor's", INDENT));
+                            break;
+
+                        case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Masters:
+                            result.Append(Single_Citation_HTML_Row("Degree", "Master's", INDENT));
+                            break;
+
+                        case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Doctorate:
+                            result.Append(Single_Citation_HTML_Row("Degree", "Doctorate", INDENT));
+                            break;
+
+                        case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.PostDoctorate:
+                            result.Append(Single_Citation_HTML_Row("Degree", "Post-Doctorate", INDENT));
+                            break;
+                    }
+                }
+
+
+                result.Append(Single_Citation_HTML_Row("Degree Grantor", thesisInfo.Degree_Grantor, INDENT));
+
+                if (thesisInfo.Degree_Divisions_Count > 0)
+                {
+                    StringBuilder divisionBuilder = new StringBuilder();
+                    foreach (string thisDivision in thesisInfo.Degree_Divisions)
+                    {
+                        if (divisionBuilder.Length > 0)
+                            divisionBuilder.Append(", ");
+                        divisionBuilder.Append(search_link.Replace("<%VALUE%>", HttpUtility.UrlEncode(Convert_String_To_XML_Safe(thisDivision)).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "EJ") + Convert_String_To_XML_Safe(thisDivision) + search_link_end);
+                    }
+
+                    result.Append(Single_Citation_HTML_Row("Degree Divisions", divisionBuilder.ToString(), INDENT));
+                }
+
+                if (thesisInfo.Degree_Disciplines_Count > 0)
+                {
+                    StringBuilder disciplinesBuilder = new StringBuilder();
+                    foreach (string thisDiscipline in thesisInfo.Degree_Disciplines)
+                    {
+                        if (disciplinesBuilder.Length > 0)
+                            disciplinesBuilder.Append(", ");
+                        disciplinesBuilder.Append(search_link.Replace("<%VALUE%>", HttpUtility.UrlEncode(Convert_String_To_XML_Safe(thisDiscipline)).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "EI") + Convert_String_To_XML_Safe(thisDiscipline) + search_link_end);
+                    }
+                    string text_disciplines = "Degree Disciplines";
+                    if (CurrentMode.Skin.ToLower() == "ncf")
+                        text_disciplines = "Area of Concentration";
+                    result.Append(Single_Citation_HTML_Row(text_disciplines, disciplinesBuilder.ToString(), INDENT));
+                }
+
+                if (thesisInfo.Committee_Chair.Length > 0)
+                    result.Append(Single_Citation_HTML_Row("Committee Chair", search_link.Replace("<%VALUE%>", HttpUtility.UrlEncode(Convert_String_To_XML_Safe(thesisInfo.Committee_Chair)).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "EC") + Convert_String_To_XML_Safe(thesisInfo.Committee_Chair) + search_link_end, INDENT));
+                if (thesisInfo.Committee_Co_Chair.Length > 0)
+                    result.Append(Single_Citation_HTML_Row("Committee Co-Chair", search_link.Replace("<%VALUE%>", HttpUtility.UrlEncode(Convert_String_To_XML_Safe(thesisInfo.Committee_Co_Chair)).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "EC") + Convert_String_To_XML_Safe(thesisInfo.Committee_Co_Chair) + search_link_end, INDENT));
+
+                if (thesisInfo.Committee_Members_Count > 0)
+                {
+                    tempList.Clear();
+                    foreach (string thisMember in thesisInfo.Committee_Members)
+                    {
+                        tempList.Add(search_link.Replace("<%VALUE%>", HttpUtility.UrlEncode(Convert_String_To_XML_Safe(thisMember)).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "EC") + Convert_String_To_XML_Safe(thisMember) + search_link_end);
+                    }
+                    string text = "Committee Members";
+                    if (CurrentMode.Skin.ToLower() == "ncf")
+                        text = "Faculty Sponsor";
+                    Add_Citation_HTML_Rows(text, tempList, INDENT, result);
+                }
+
+                result.AppendLine(INDENT + "  </dl>");
+                result.AppendLine(INDENT + "</div>");
+            }
+
+            if (internalUser)
+            {
+
+                result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_MetsSection\" >");
+                result.AppendLine(INDENT + "<h2>" + mets_info + "</h2>");
+                result.AppendLine(INDENT + "  <dl>");
+                result.Append(Single_Citation_HTML_Row("Format", CurrentItem.Bib_Info.SobekCM_Type_String, INDENT));
+                result.Append(Single_Citation_HTML_Row("Creation Date", CurrentItem.METS_Header.Create_Date.ToShortDateString(), INDENT));
+                result.Append(Single_Citation_HTML_Row("Last Modified", CurrentItem.METS_Header.Modify_Date.ToShortDateString(), INDENT));
+                result.Append(Single_Citation_HTML_Row("Last Type", CurrentItem.METS_Header.RecordStatus, INDENT));
+                result.Append(Single_Citation_HTML_Row("Last User", CurrentItem.METS_Header.Creator_Individual, INDENT));
+                result.Append(Single_Citation_HTML_Row("System Folder", CurrentItem.Web.AssocFilePath.Replace("/", "\\"), INDENT));
+
+                result.AppendLine(INDENT + "  </dl>");
+                result.AppendLine(INDENT + "</div>");
+                result.AppendLine();
+            }
+
+            if ((CurrentUser != null) && (CurrentUser.Is_System_Admin))
+            {
+                result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_AdminSection\" >");
+                result.AppendLine(INDENT + "<h2>System Administration Information</h2>");
+                result.AppendLine(INDENT + "  <dl>");
+                result.Append(Single_Citation_HTML_Row("Item Primary Key", BriefItem.Web.ItemID.ToString(), INDENT));
+                result.Append(Single_Citation_HTML_Row("Group Primary Key", BriefItem.Web.GroupID.ToString(), INDENT));
+                result.AppendLine(INDENT + "  </dl>");
+                result.AppendLine(INDENT + "</div>");
+                result.AppendLine();
+            }
+
+            result.AppendLine(INDENT + "<br />");
+            result.AppendLine("</div>");
+
+            // Return the built string
+            return result.ToString();
+        }
+
+
+
+        private void Add_Citation_HTML_Rows(string Row_Name, ReadOnlyCollection<string> Values, string Indent, StringBuilder Results)
+        {
+            // Only add if there is a value
+            if (Values.Count <= 0) return;
+
+            Results.Append(Indent + "    <dt class=\"sbk_Civ" + Row_Name.ToUpper().Replace(" ", "_") + "_Element\" style=\"width:" + width + "px;\" >");
+
+            // Add with proper language
+            Results.Append(UI_ApplicationCache_Gateway.Translation.Get_Translation(Row_Name, CurrentRequest.Language));
+
+            Results.Append(": </dt>");
+            Results.Append(Indent + "    <dd class=\"sbk_Civ" + Row_Name.ToUpper().Replace(" ", "_") + "_Element\" style=\"margin-left:" + width + "px;\">");
+            bool first = true;
+            foreach (string thisValue in Values.Where(ThisValue => ThisValue.Length > 0))
+            {
+                if (first)
+                {
+                    Results.Append(thisValue);
+                    first = false;
+                }
+                else
+                {
+                    Results.Append("<br />" + thisValue);
+                }
+            }
+            Results.AppendLine("</dd>");
+            Results.AppendLine();
+        }
+
+
+
+        private void Add_Citation_HTML_Rows(string Row_Name, List<string> Values, string Indent, StringBuilder Results)
+        {
+            // Only add if there is a value
+            if (Values.Count <= 0) return;
+
+            Results.Append(Indent + "    <dt class=\"sbk_Civ" + Row_Name.ToUpper().Replace(" ", "_") + "_Element\" style=\"width:" + width + "px;\" >");
+
+            // Add with proper language
+            Results.Append(UI_ApplicationCache_Gateway.Translation.Get_Translation(Row_Name, CurrentRequest.Language));
+
+            Results.AppendLine(": </dt>");
+            Results.Append(Indent + "    <dd class=\"sbk_Civ" + Row_Name.ToUpper().Replace(" ", "_") + "_Element\" style=\"margin-left:" + width + "px;\">");
+            bool first = true;
+            foreach (string thisValue in Values.Where(ThisValue => ThisValue.Length > 0))
+            {
+                if (first)
+                {
+                    Results.Append(thisValue);
+                    first = false;
+                }
+                else
+                {
+                    Results.Append("<br />" + thisValue);
+                }
+            }
+            Results.AppendLine("</dd>");
+            Results.AppendLine();
+        }
+
+        private string Single_Citation_HTML_Row(string Row_Name, string Value, string Indent)
+        {
+            // Only add if there is a value
+            if (Value.Length > 0)
+            {
+                return Indent + "    <dt class=\"sbk_Civ" + Row_Name.ToUpper().Replace(" ", "_") + "_Element\" style=\"width:" + width + "px;\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(Row_Name, CurrentRequest.Language) + ": </dt>" + Environment.NewLine + Indent + "    <dd class=\"sbk_Civ" + Row_Name.ToUpper().Replace(" ", "_") + "_Element\" style=\"margin-left:" + width + "px;\">" + Value + "</dd>" + Environment.NewLine + Environment.NewLine;
+            }
+            return String.Empty;
+        }
+
+        #endregion
 
 
         /// <summary> Allows controls to be added directory to a place holder, rather than just writing to the output HTML stream </summary>
@@ -132,6 +559,92 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             // Do nothing
+        }
+
+        /// <summary> Write the citation view tabs to the stream </summary>
+        /// <param name="Output"> Response stream for the item viewer to write directly to </param>
+        /// <param name="BriefItem"> Digital resource object </param>
+        /// <param name="CurrentRequest"> Information about the current request </param>
+        /// <param name="CurrentType"> Type of the current view, so one tab can be marked as current </param>
+        /// <remarks> This static method is called from the other viewers that were split off from the old citation viewer 
+        /// ( Citation_MARC_ItemViewer, Metadata_Links_ItemViewer, and Usage_Stats_ItemViewer ) </remarks>
+        public static void Add_Citation_View_Tabs(TextWriter Output, BriefItemInfo BriefItem, Navigation_Object CurrentRequest, string CurrentType )
+        {
+            // Set the text
+            const string STANDARD_VIEW = "STANDARD VIEW";
+            const string MARC_VIEW = "MARC VIEW";
+            const string METADATA_VIEW = "METADATA";
+            const string STATISTICS_VIEW = "USAGE STATISTICS";
+
+            // Get  the robot flag (if this is rendering for robots, the other citation views are not available)
+            bool isRobot = CurrentRequest.Is_Robot;
+
+            // Add the tabs for the different citation information
+            string orig_viewer_code = CurrentRequest.ViewerCode;
+            Output.WriteLine("  <div id=\"sbkCiv_ViewSelectRow\">");
+            Output.WriteLine("    <ul class=\"sbk_FauxDownwardTabsList\">");
+
+            // Add the standard tab
+            if (CurrentType == "CITATION")
+            {
+                Output.WriteLine("      <li class=\"current\">" + STANDARD_VIEW + "</li>");
+            }
+            else
+            {
+                // Ensure the CITATION is included in the system and in the item (should be though)
+                string viewer_code = ItemViewer_Factory.ViewCode_From_ViewType("CITATION");
+                if (( BriefItem.Behaviors.Get_Viewer("CITATION") != null ) && ( !String.IsNullOrEmpty(viewer_code)))
+                    Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest, "citation") + "\">" + STANDARD_VIEW + "</a></li>");
+            }
+
+            // Add the MARC tab
+            if (CurrentType == "MARC")
+            {
+                Output.WriteLine("      <li class=\"current\">" + MARC_VIEW + "</li>");
+            }
+            else
+            {
+                // Ensure the MARC is included in the system and in the item 
+                string viewer_code = ItemViewer_Factory.ViewCode_From_ViewType("MARC");
+                if ((BriefItem.Behaviors.Get_Viewer("MARC") != null) && (!String.IsNullOrEmpty(viewer_code)))
+                    Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest, "marc") + "\">" + MARC_VIEW + "</a></li>");
+            }
+
+            // If this item is an external link item (i.e. has related URL, but no pages or downloads) skip the next parts
+            if (BriefItem.Type != "BIBLEVEL") 
+            {
+                // Add the METADATA links tab
+                if (CurrentType == "METADATA")
+                {
+                    Output.WriteLine("      <li class=\"current\">" + METADATA_VIEW + "</li>");
+                }
+                else
+                {
+                    // Ensure the MARC is included in the system and in the item 
+                    string viewer_code = ItemViewer_Factory.ViewCode_From_ViewType("METADATA");
+                    if ((BriefItem.Behaviors.Get_Viewer("METADATA") != null) && (!String.IsNullOrEmpty(viewer_code)))
+                        Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest, "metadata") + "\">" + METADATA_VIEW + "</a></li>");
+                }
+
+                // Add the USAGE STATISTICS links tab
+                if (CurrentType == "USAGE")
+                {
+                    Output.WriteLine("      <li class=\"current\">" + STATISTICS_VIEW + "</li>");
+                }
+                else
+                {
+                    // Ensure the MARC is included in the system and in the item 
+                    string viewer_code = ItemViewer_Factory.ViewCode_From_ViewType("USAGE");
+                    if ((BriefItem.Behaviors.Get_Viewer("USAGE") != null) && (!String.IsNullOrEmpty(viewer_code)))
+                        Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest, "usage") + "\">" + STATISTICS_VIEW + "</a></li>");
+                }
+            }
+
+            Output.WriteLine("    </ul>");
+            Output.WriteLine("  </div>");
+
+            // Restore the current viewer code
+            CurrentRequest.ViewerCode = orig_viewer_code;
         }
     }
 }

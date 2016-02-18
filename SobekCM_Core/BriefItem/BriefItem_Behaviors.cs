@@ -11,6 +11,9 @@ namespace SobekCM.Core.BriefItem
     [XmlRoot("behaviors")]
     public class BriefItem_Behaviors
     {
+        private Dictionary<string, BriefItem_BehaviorViewer> viewerTypeToConfig;
+
+
         /// <summary> List of page file extenions that should be listed in the downloads tab </summary>
         [DataMember(EmitDefaultValue = false, Name = "pageFileExtensionsForDownload")]
         [XmlElement("pageFileExtensionsForDownload")]
@@ -67,11 +70,53 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(9)] 
         public string GroupType { get; set; }
 
+        /// <summary> Gets and sets the name of the main thumbnail file </summary>
+        [DataMember(EmitDefaultValue = false, Name = "thumbnail")]
+        [XmlAttribute("thumbnail")]
+        [ProtoMember(10)] 
+        public string Main_Thumbnail { get; set; }
 
         /// <summary> Constructor for a new instance of the BriefItem_Behaviors class </summary>
         public BriefItem_Behaviors()
         {
             Viewers = new List<BriefItem_BehaviorViewer>();
+            viewerTypeToConfig = new Dictionary<string, BriefItem_BehaviorViewer>();
+        }
+
+        /// <summary> Gets information about a single viewer for this digital resource </summary>
+        /// <param name="ViewerType"> Standard type of the viewer to check </param>
+        /// <returns> Information about that viewer, or NULL if it does not exist </returns>
+        public BriefItem_BehaviorViewer Get_Viewer(string ViewerType)
+        {
+            int viewers_count = Viewers != null ? Viewers.Count : 0;
+
+            // Was the dictionary configured?
+            if ((viewerTypeToConfig == null) || (viewerTypeToConfig.Count != viewers_count))
+            {
+                // Ensure the dictionary is defined
+                if (viewerTypeToConfig == null)
+                    viewerTypeToConfig = new Dictionary<string, BriefItem_BehaviorViewer>( StringComparer.OrdinalIgnoreCase);
+
+                // If there are no viewers, just clear the current config
+                if ((Viewers == null) || (Viewers.Count == 0))
+                {
+                    viewerTypeToConfig.Clear();
+                    return null;
+                }
+
+                // Add each viewer
+                foreach (BriefItem_BehaviorViewer thisViewer in Viewers)
+                {
+                    viewerTypeToConfig[thisViewer.ViewerType] = thisViewer;
+                }
+            }
+
+            // Check for non-existence
+            if (!viewerTypeToConfig.ContainsKey(ViewerType))
+                return null;
+
+            // Return the match
+            return viewerTypeToConfig[ViewerType];
         }
     }
 }

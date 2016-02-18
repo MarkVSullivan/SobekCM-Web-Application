@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.Client;
+using SobekCM.Core.MARC;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -93,6 +95,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// <see cref="iItemViewer" /> interface. </remarks>
     public class Citation_MARC_ItemViewer : abstractNoPaginationItemViewer
     {
+        private readonly bool userCanEdit;
+
         /// <summary> Constructor for a new instance of the Citation_MARC_ItemViewer class, used to display the 
         /// descriptive citation in MARC21 format</summary>
         /// <param name="BriefItem"> Digital resource object </param>
@@ -107,6 +111,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Set the behavior properties to the empy behaviors ( in the base class )
             Behaviors = EmptyBehaviors;
+
+            // Check to see if the user can edit this
+            userCanEdit = CurrentUser.Can_Edit_This_Item(BriefItem.BibID, BriefItem.Type, BriefItem.Behaviors.Source_Institution_Aggregation, BriefItem.Behaviors.Holding_Location_Aggregation, BriefItem.Behaviors.Aggregation_Code_List);
         }
 
         /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
@@ -121,8 +128,115 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            throw new NotImplementedException();
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Citation_Standard_ItemViewer.Write_Main_Viewer_Section", "Write the citation information directly to the output stream");
+            }
+
+            // Determine if user can edit
+            bool userCanEditItem = false;
+            if (CurrentUser != null)
+            {
+                userCanEditItem = CurrentUser.Can_Edit_This_Item(BriefItem.BibID, BriefItem.Type, BriefItem.Behaviors.Source_Institution_Aggregation, BriefItem.Behaviors.Holding_Location_Aggregation, BriefItem.Behaviors.Aggregation_Code_List);
+            }
+
+            // Add the HTML for the citation
+            Output.WriteLine("        <!-- CITATION ITEM VIEWER OUTPUT -->");
+            Output.WriteLine("        <td>");
+
+            // If this is DARK and the user cannot edit and the flag is not set to show citation, show nothing here
+            if ((BriefItem.Behaviors.Dark_Flag) && (!userCanEditItem) && (!UI_ApplicationCache_Gateway.Settings.Resources.Show_Citation_For_Dark_Items))
+            {
+                Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\">This item is DARK and cannot be viewed at this time</div>" + Environment.NewLine + "</td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
+                return;
+            }
+
+            string viewer_code = CurrentRequest.ViewerCode;
+
+            // Get any search terms
+            List<string> terms = new List<string>();
+            if (!String.IsNullOrWhiteSpace(CurrentRequest.Text_Search))
+            {
+                string[] splitter = CurrentRequest.Text_Search.Replace("\"", "").Split(" ".ToCharArray());
+                terms.AddRange(from thisSplit in splitter where thisSplit.Trim().Length > 0 select thisSplit.Trim());
+            }
+
+            // Add the main wrapper division
+            Output.WriteLine("<div id=\"sbkCiv_Citation\">");
+
+            if (!CurrentRequest.Is_Robot)
+                Citation_Standard_ItemViewer.Add_Citation_View_Tabs(Output, BriefItem, CurrentRequest, "MARC");
+
+            // Now, add the text
+            Output.WriteLine();
+            if (terms.Count > 0)
+            {
+                Output.WriteLine(Text_Search_Term_Highlighter.Hightlight_Term_In_HTML(MARC_String(Tracer), terms, "<span class=\"sbkCiv_TextHighlight\">", "</span>") + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
+            }
+            else
+            {
+                Output.WriteLine(MARC_String(Tracer) + Environment.NewLine + "  </td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
+            }
+
+            CurrentRequest.ViewerCode = viewer_code;
         }
+
+        #region Code to generate the MARC record in HTML
+
+        /// <summary> Returns the basic information about this digital resource in MARC HTML format </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> HTML string with the MARC information for this digital resource </returns>
+        /// <remarks> The width statement for this rendering defaults to 95% of width</remarks>
+        public string MARC_String(Custom_Tracer Tracer)
+        {
+            return MARC_String("95%", Tracer);
+        }
+
+        /// <summary> Returns the basic information about this digital resource in MARC HTML format </summary>
+        /// <param name="Width"> Width statement to be included in the MARC21 table </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> HTML string with the MARC information for this digital resource </returns>
+        public string MARC_String(string Width, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Citation_ItemViewer.MARC_String", "Configuring METS data into MARC format");
+            }
+
+            //// Build the value
+            StringBuilder builder = new StringBuilder();
+
+            // Add the edit item button, if the user can edit it
+            if ((userCanEdit) && (BriefItem.Type != "BIBLEVEL"))
+            {
+                CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
+                CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
+                CurrentRequest.My_Sobek_SubMode = "1";
+                builder.AppendLine("<blockquote><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "\"><img src=\"" + CurrentRequest.Base_URL + "design/skins/" + CurrentRequest.Base_Skin_Or_Skin + "/buttons/edit_item_button.gif\" border=\"0px\" alt=\"Edit this item\" /></a></blockquote>");
+                CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
+            }
+            else
+            {
+                builder.AppendLine("<br />");
+            }
+
+            // Get the MARC record
+            MARC_Transfer_Record record = SobekEngineClient.Items.Get_Item_MARC_Record(BriefItem.BibID, BriefItem.VID, true, Tracer);
+
+            builder.AppendLine(record.ToHTML( Width));
+
+            builder.AppendLine("<br />");
+            builder.AppendLine("<br />");
+            builder.AppendLine("<div id=\"sbkCiv_MarcAutoGenerated\">The record above was auto-generated from the METS file.</div>");
+            builder.AppendLine();
+            builder.AppendLine("<br />");
+            builder.AppendLine("<br />");
+            builder.AppendLine("</div>");
+
+            return builder.ToString();
+        }
+
+        #endregion
 
 
         /// <summary> Allows controls to be added directory to a place holder, rather than just writing to the output HTML stream </summary>

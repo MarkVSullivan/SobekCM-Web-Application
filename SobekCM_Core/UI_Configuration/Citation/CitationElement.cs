@@ -80,10 +80,42 @@ namespace SobekCM.Core.UI_Configuration.Citation
         [ProtoMember(8)]
         public List<Web_Language_Translation_Value> Translations { get; set; }
 
-        /// <summary> Constructor for the <see cref="CitationElement"/> class. </summary>
+        /// <summary> Constructor for a new instance of the <see cref="CitationElement"/> class </summary>
         public CitationElement()
         {
             OverrideDisplayTerm = CitationElement_OverrideDispayTerm_Enum.NONE;
+        }
+
+        /// <summary> Constructor for a new instance of the <see cref="CitationElement"/> class </summary>
+        /// <param name="MetadataTerm"> Metadata term this citation element displays (or a unique value) </param>
+        /// <param name="DisplayTerm"> Default display term for this citation element </param>
+        /// <param name="SearchCode"> SobekCM search code, if this element should be clickable
+        /// to initiate a search within SobekCM </param>
+        /// <param name="ItemProp"> Schema.org microdata tag to include for this element </param>
+        public CitationElement(string MetadataTerm, string DisplayTerm, string SearchCode, string ItemProp)
+        {
+            this.MetadataTerm = MetadataTerm;
+            this.DisplayTerm = DisplayTerm;
+            this.SearchCode = SearchCode;
+            this.ItemProp = ItemProp;
+            OverrideDisplayTerm = CitationElement_OverrideDispayTerm_Enum.NONE;
+        }
+
+        /// <summary> Constructor for a new instance of the <see cref="CitationElement"/> class </summary>
+        /// <param name="MetadataTerm"> Metadata term this citation element displays (or a unique value) </param>
+        /// <param name="DisplayTerm"> Default display term for this citation element </param>
+        /// <param name="SearchCode"> SobekCM search code, if this element should be clickable
+        /// to initiate a search within SobekCM </param>
+        /// <param name="ItemProp"> Schema.org microdata tag to include for this element </param>
+        /// <param name="OverrideDisplayTerm"> Flag indicatse if the basic citation  section writer should override 
+        /// the display term and use some other value from within the individual item metadata </param>
+        public CitationElement(string MetadataTerm, string DisplayTerm, string SearchCode, string ItemProp, CitationElement_OverrideDispayTerm_Enum OverrideDisplayTerm )
+        {
+            this.MetadataTerm = MetadataTerm;
+            this.DisplayTerm = DisplayTerm;
+            this.SearchCode = SearchCode;
+            this.ItemProp = ItemProp;
+            this.OverrideDisplayTerm = OverrideDisplayTerm;
         }
 
         #region Methods that controls XML serialization

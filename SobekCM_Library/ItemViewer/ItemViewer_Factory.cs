@@ -1,5 +1,7 @@
 ﻿#region Using directives
 
+using System;
+using System.Collections.Generic;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Viewers;
@@ -12,9 +14,74 @@ using SobekCM.Resource_Object.Behaviors;
 namespace SobekCM.Library.ItemViewer
 {
     /// <summary> Static class is a factory that generates and returns the requested item viewer object 
-    /// which extends the <see cref="SobekCM.Library.ItemViewer.Viewers.abstractItemViewer_OLD"/> class.</summary>
-    public class ItemViewer_Factory
+    /// which implements the <see cref="SobekCM.Library.ItemViewer.Viewers.iItemViewer"/> interface.</summary>
+    public static class ItemViewer_Factory
     {
+        private static Dictionary<string, iItemViewerPrototyper> viewerCodeToItemViewerPrototyper;
+        private static Dictionary<string, iItemViewerPrototyper> viewTypeToItemViewerPrototyper;
+
+
+        public static void Configure_ItemViewers()
+        {
+            // First, built the list of all prototypers
+            List<iItemViewerPrototyper> allPrototypers = new List<iItemViewerPrototyper>();
+            allPrototypers.Add(new Citation_MARC_ItemViewer_Prototyper());
+            allPrototypers.Add(new Citation_Standard_ItemViewer_Prototyper());
+            allPrototypers.Add(new Downloads_ItemViewer_Prototyper());
+            allPrototypers.Add(new EmbeddedVideo_ItemViewer_Prototyper());
+            allPrototypers.Add(new Flash_ItemViewer_Prototyper());
+            allPrototypers.Add(new Google_Map_ItemViewer_Prototyper());
+            allPrototypers.Add(new HTML_ItemViewer_Prototyper());
+            allPrototypers.Add(new JPEG_ItemViewer_Prototyper());
+            allPrototypers.Add(new JPEG2000_ItemViewer_Prototyper());
+            allPrototypers.Add(new ManageMenu_ItemViewer_Prototyper());
+            allPrototypers.Add(new Metadata_Links_ItemViewer_Prototyper());
+            allPrototypers.Add(new MultiVolumes_ItemViewer_Prototyper());
+            allPrototypers.Add(new PDF_ItemViewer_Prototyper());
+            allPrototypers.Add(new Related_Images_ItemViewer_Prototyper());
+            allPrototypers.Add(new Usage_Stats_ItemViewer_Prototyper());
+            allPrototypers.Add(new Video_ItemViewer_Prototyper());
+
+            // Define the two dictionaries
+            viewerCodeToItemViewerPrototyper = new Dictionary<string, iItemViewerPrototyper>( StringComparer.OrdinalIgnoreCase );
+            viewTypeToItemViewerPrototyper = new Dictionary<string, iItemViewerPrototyper>( StringComparer.OrdinalIgnoreCase );
+
+            // Copy from the list to the two dictionaries
+            foreach (iItemViewerPrototyper thisPrototyper in allPrototypers)
+            {
+                viewerCodeToItemViewerPrototyper[thisPrototyper.ViewerCode] = thisPrototyper;
+                viewTypeToItemViewerPrototyper[thisPrototyper.ViewerType] = thisPrototyper;
+            }
+        }
+
+        /// <summary> Gets the viewer code (used in URLs and such) for a specific view type,
+        /// or NULL if the current instance doesn't support that viewer type </summary>
+        /// <param name="ViewType"> Standard type of the viewer to find </param>
+        /// <returns> Viewer code (used in URLs and such) for a specific view type,
+        /// or NULL if the current instance doesn't support that viewer type </returns>
+        public static string ViewCode_From_ViewType(string ViewType)
+        {
+            if (!viewTypeToItemViewerPrototyper.ContainsKey(ViewType))
+                return null;
+
+            return viewTypeToItemViewerPrototyper[ViewType].ViewerCode;
+        }
+
+        /// <summary> Gets the standard viewer type from a viewer code,
+        /// or NULL if the current instance doesn't support that viewer code </summary>
+        /// <param name="ViewCode"> Viewer code to look for viewer </param>
+        /// <returns> Viewer type from a viewer code,
+        /// or NULL if the current instance doesn't support that viewer code </returns>
+        public static string ViewType_From_ViewCode(string ViewCode)
+        {
+            if (!viewerCodeToItemViewerPrototyper.ContainsKey(ViewCode))
+                return null;
+
+            return viewerCodeToItemViewerPrototyper[ViewCode].ViewerType;
+        }
+
+
+
         /// <summary> Accepts a simple <see cref="View_Object"/> from the digital resource object and returns
         /// the appropriate item viewer object which extends the <see cref="SobekCM.Library.ItemViewer.Viewers.abstractItemViewer_OLD"/>
         /// class for rendering the item to the web via HTML.</summary>

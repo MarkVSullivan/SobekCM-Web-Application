@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,7 @@ using Jil;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.EAD;
+using SobekCM.Core.MARC;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
@@ -17,6 +19,7 @@ using SobekCM.Engine_Library.Items;
 using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.MARC;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.EAD;
@@ -474,10 +477,8 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 return currentItem;
             }
-            else
-            {
-                Tracer.Add_Trace("ItemServices.getSobekItem", "Could not locate the object from the Item_Lookup_Object.. may not be a valid bibid/vid combination");
-            }
+            
+            Tracer.Add_Trace("ItemServices.getSobekItem", "Could not locate the object from the Item_Lookup_Object.. may not be a valid bibid/vid combination");
 
             return null;
         }
@@ -579,7 +580,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
         }
 
-        /// <summary> Gets the complete (language agnostic) web skin, by web skin code </summary>
+        /// <summary> Get the item in a standard XML format, such as dublin core, marcxml, etc.. </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
@@ -652,6 +653,8 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
             }
         }
+
+        #region Methods to return the EAD information about an item
 
         /// <summary> Gets any EAD information related to an item </summary>
         /// <param name="Response"></param>
@@ -874,6 +877,151 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             return returnObj;
+        }
+
+        #endregion
+
+        /// <summary> Gets the item's marc record in object format for serialization/deserialization </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetItemMarcRecord(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            if (UrlSegments.Count > 0)
+            {
+                Custom_Tracer tracer = new Custom_Tracer();
+
+
+
+                string bibid = UrlSegments[0];
+                string vid = "00001";
+
+                if (UrlSegments.Count > 1)
+                    vid = UrlSegments[1];
+
+                tracer.Add_Trace("ItemServices.GetItemMarcRecord", "Requested MARC record for " + bibid + ":" + vid);
+
+                // Get the current item first
+                SobekCM_Item sobekItem = getSobekItem(bibid, vid, tracer);
+
+                // If null, return
+                if (sobekItem == null)
+                {
+                    tracer.Add_Trace("ItemServices.GetItemMarcRecord", "Unable to retrieve the indicated digital resource ( " + bibid + ":" + vid + " )" );
+
+                    Response.ContentType = "text/plain";
+                    Response.StatusCode = 500;
+                    Response.Output.WriteLine("Unable to retrieve the indicated digital resource ( " + bibid + ":" + vid + " )");
+                    Response.Output.WriteLine();
+
+                    // If this was debug mode, then just write the tracer
+                    if (IsDebug)
+                    {
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                    }
+                    return;
+                }
+
+                // Create the options dictionary used when saving information to the database, or writing MarcXML
+                string cataloging_source_code = String.Empty;
+                string location_code = String.Empty;
+                string reproduction_agency = String.Empty;
+                string reproduction_place = String.Empty;
+                string system_name = String.Empty;
+                string system_abbreviation = String.Empty;
+
+                // Pull any settings that exist
+                if (Engine_ApplicationCache_Gateway.Settings.MarcGeneration != null)
+                {
+                    if (!String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code))
+                        cataloging_source_code = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Cataloging_Source_Code;
+                    if (!String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Location_Code))
+                        location_code = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Location_Code;
+                    if (!String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Agency))
+                        reproduction_agency = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Agency;
+                    if (!String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place))
+                        reproduction_place = Engine_ApplicationCache_Gateway.Settings.MarcGeneration.Reproduction_Place;
+                }
+
+                if (!String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.System.System_Name))
+                    system_name = Engine_ApplicationCache_Gateway.Settings.System.System_Name;
+                if (!String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation))
+                    system_abbreviation = Engine_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
+
+                // Get the base URL for the thumbnails
+                string thumbnail_base = Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL;
+
+                // Get all the standard tags
+                tracer.Add_Trace("ItemServices.GetItemMarcRecord", "Creating marc record from valid sobekcm item");
+                MARC_Record tags = sobekItem.To_MARC_Record(cataloging_source_code, location_code, reproduction_agency, reproduction_place, system_name, system_abbreviation, thumbnail_base);
+
+                // Now, convert the MARC record from the resource library over to the transfer objects
+                MARC_Transfer_Record transferRecord = new MARC_Transfer_Record();
+                if (tags != null)
+                {
+                    tracer.Add_Trace("ItemServices.GetItemMarcRecord", "Mapping from marc record to transfer marc record");
+
+                    // Copy over the basic stuff
+                    transferRecord.Control_Number = tags.Control_Number;
+                    transferRecord.Leader = tags.Leader;
+
+                    // Copy over the fields
+                    List<MARC_Field> fields = tags.Sorted_MARC_Tag_List;
+                    foreach (MARC_Field thisField in fields)
+                    {
+                        MARC_Transfer_Field transferField = new MARC_Transfer_Field
+                        {
+                            Tag = thisField.Tag,
+                            Indicator1 = thisField.Indicator1,
+                            Indicator2 = thisField.Indicator2
+                        };
+
+                        if (!String.IsNullOrEmpty(thisField.Control_Field_Value))
+                            transferField.Control_Field_Value = thisField.Control_Field_Value;
+
+                        if (thisField.Subfield_Count > 0)
+                        {
+                            ReadOnlyCollection<MARC_Subfield> subfields = thisField.Subfields;
+                            foreach (MARC_Subfield thisSubfield in subfields)
+                            {
+                                transferField.Add_Subfield(thisSubfield.Subfield_Code, thisSubfield.Data);
+                            }
+                        }
+
+                        // Add this transfer field to the transfer record
+                        transferRecord.Add_Field(transferField);
+                    }
+                }
+                else
+                {
+                    tracer.Add_Trace("ItemServices.GetItemMarcRecord", "MARC record returned was NULL");
+                }
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+
+                    return;
+                }
+
+                // Get the JSON-P callback function
+                string json_callback = "parseMarcRecord";
+                if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                {
+                    json_callback = QueryString["callback"];
+                }
+
+                // Use the base class to serialize the object according to request protocol
+                Serialize(transferRecord, Response, Protocol, json_callback);
+            }
         }
     }
 }
