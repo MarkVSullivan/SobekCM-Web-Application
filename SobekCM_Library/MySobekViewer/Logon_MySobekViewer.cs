@@ -8,6 +8,7 @@ using System.Web;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -86,7 +87,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 if ((!String.IsNullOrEmpty(possible_password)) && (!String.IsNullOrEmpty(possible_username)))
                 {
-                    User_Object user = SobekCM_Database.Get_User(possible_username, possible_password, RequestSpecificValues.Tracer);
+                    User_Object user = Engine_Database.Get_User(possible_username, possible_password, RequestSpecificValues.Tracer);
                     if (user != null)
                     {
                         // If disabled for general logon,cancel

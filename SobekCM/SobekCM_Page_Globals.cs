@@ -24,6 +24,7 @@ using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library;
@@ -261,7 +262,7 @@ namespace SobekCM
 						try
 						{
 							int userid = Convert.ToInt32(request.QueryString["userid"]);
-							User_Object mirroredUser = SobekCM_Database.Get_User(userid, tracer);
+							User_Object mirroredUser = Engine_Database.Get_User(userid, tracer);
 							if (mirroredUser != null)
 							{
 								// Replace the user information in the session state
@@ -669,7 +670,7 @@ namespace SobekCM
 			            {
 			                tracer.Add_Trace("SobekCM_Page_Globals.Constructor", "Pulling from database by shibboleth id");
 
-			                User_Object possible_user_by_shibboleth_id = SobekCM_Database.Get_User(shibboleth_id, tracer);
+			                User_Object possible_user_by_shibboleth_id = Engine_Database.Get_User(shibboleth_id, tracer);
 
 			                // Check to see if we got a valid user back
 			                if (possible_user_by_shibboleth_id != null)
@@ -790,7 +791,7 @@ namespace SobekCM
 			                    SobekCM_Database.Save_User(newUser, password, newUser.Authentication_Type, tracer);
 
 			                    // Now, pull back out of the database
-			                    User_Object possible_user_by_shib2 = SobekCM_Database.Get_User(shibboleth_id, tracer);
+			                    User_Object possible_user_by_shib2 = Engine_Database.Get_User(shibboleth_id, tracer);
 			                    possible_user_by_shib2.Is_Just_Registered = true;
 			                    possible_user_by_shib2.Authentication_Type = User_Authentication_Type_Enum.Shibboleth;
 			                    HttpContext.Current.Session["user"] = possible_user_by_shib2;
@@ -829,7 +830,7 @@ namespace SobekCM
 
 					if (userid > 0)
 					{
-						User_Object possible_user = SobekCM_Database.Get_User(userid, tracer);
+						User_Object possible_user = Engine_Database.Get_User(userid, tracer);
 						if (possible_user != null)
 						{
 							string cookie_security_hash = HttpContext.Current.Request.Cookies["SobekUser"]["security_hash"];

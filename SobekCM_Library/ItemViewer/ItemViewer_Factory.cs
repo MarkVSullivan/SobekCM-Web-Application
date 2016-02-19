@@ -133,7 +133,7 @@ namespace SobekCM.Library.ItemViewer
                     return new Google_Coordinate_Entry_ItemViewer(Current_User, Current_Object, Current_Mode);
 
                 case View_Enum.GOOGLE_MAP:
-                    return new Google_Map_ItemViewer();
+                    return new Google_Map_ItemViewer_OLD();
 
                 case View_Enum.GOOGLE_MAP_BETA:
                     return new Google_Map_ItemViewer_Beta();
@@ -173,7 +173,7 @@ namespace SobekCM.Library.ItemViewer
 						return new QC_ItemViewer(Current_Object, Current_User, Current_Mode);
 
                 case View_Enum.RELATED_IMAGES:
-                    return new Related_Images_ItemViewer();
+                    return new Related_Images_ItemViewer_OLD();
 
                 case View_Enum.SEARCH:
                     return new Text_Search_ItemViewer();

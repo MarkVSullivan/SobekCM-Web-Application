@@ -45,7 +45,7 @@ namespace SobekCM.Core.FileSystems
         /// <returns> URI for the web resource </returns>
         public static bool FileExists(BriefItemInfo DigitalResource, string FileName)
         {
-            return fileSystem.Resource_Web_Uri(DigitalResource);
+            return fileSystem.FileExists(DigitalResource, FileName);
         }
 
     }

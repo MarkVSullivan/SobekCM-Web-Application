@@ -18,7 +18,6 @@ using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
 using SobekCM.Library.ItemViewer;
-using SobekCM.Library.ItemViewer.Fragments;
 using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
@@ -1587,7 +1586,7 @@ namespace SobekCM.Library.HTML
             // Add google map stuff if that is selected
             if ((PageViewer != null) && (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.Google_Map))
             {
-                ((Google_Map_ItemViewer)PageViewer).Add_Google_Map_Scripts(Output, Tracer);
+                ((Google_Map_ItemViewer_OLD)PageViewer).Add_Google_Map_Scripts(Output, Tracer);
             }
 
             //// Add google map beta stuff if that is selected

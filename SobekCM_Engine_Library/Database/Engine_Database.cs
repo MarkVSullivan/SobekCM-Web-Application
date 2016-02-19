@@ -4843,7 +4843,265 @@ namespace SobekCM.Engine_Library.Database
             }
         }
 
-		#endregion
+        #endregion
 
-	}
+        #region Methods to retrieve a user object
+
+        /// <summary> Gets basic user information by UserID </summary>
+        /// <param name="UserID"> Primary key for this user in the database </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Fully built <see cref="SobekCM.Core.Users.User_Object"/> object </returns>
+        /// <remarks> This calls the 'mySobek_Get_User_By_UserID' stored procedure<br /><br />
+        /// This is called when a user's cookie exists in a web request</remarks> 
+        public static User_Object Get_User(int UserID, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Get_User", String.Empty);
+            }
+
+            try
+            {
+                // Execute this non-query stored procedure
+                EalDbParameter[] paramList = new EalDbParameter[1];
+                paramList[0] = new EalDbParameter("@userid", UserID);
+
+                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Get_User_By_UserID", paramList);
+
+                if ((resultSet.Tables.Count > 0) && (resultSet.Tables[0].Rows.Count > 0))
+                {
+                    return build_user_object_from_dataset(resultSet);
+                }
+
+                // Return the browse id
+                return null;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Get_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_User", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+        /// <summary> Gets basic user information by the Shibboleth-provided user identifier </summary>
+        /// <param name="ShibbolethID"> Shibboleth ID (UFID) for the user </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Fully built <see cref="SobekCM.Core.Users.User_Object"/> object </returns>
+        /// <remarks> This calls the 'mySobek_Get_User_By_UFID' stored procedure<br /><br />
+        /// This method is called when user's logon through the Gatorlink Shibboleth service</remarks> 
+        public static User_Object Get_User(string ShibbolethID, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Get_User", String.Empty);
+            }
+
+            try
+            {
+
+                // Execute this non-query stored procedure
+                EalDbParameter[] paramList = new EalDbParameter[1];
+                paramList[0] = new EalDbParameter("@shibbid", ShibbolethID);
+
+                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Get_User_By_ShibbID", paramList);
+
+                if ((resultSet.Tables.Count > 0) && (resultSet.Tables[0].Rows.Count > 0))
+                {
+                    return build_user_object_from_dataset(resultSet);
+                }
+
+                // Return the browse id
+                return null;
+
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Get_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_User", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+        /// <summary> Gets basic user information by Username (or email) and Password </summary>
+        /// <param name="UserName"> UserName (or email address) for the user </param>
+        /// <param name="Password"> Plain-text password, which is then encrypted prior to sending to database</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Fully built <see cref="SobekCM.Core.Users.User_Object"/> object </returns>
+        /// <remarks> This calls the 'mySobek_Get_User_By_UserName_Password' stored procedure<br /><br />
+        /// This is used when a user logs on through the mySobek authentication</remarks> 
+        public static User_Object Get_User(string UserName, string Password, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Get_User", String.Empty);
+            }
+
+            try
+            {
+                const string SALT = "This is my salt to add to the password";
+                string encryptedPassword = SecurityInfo.SHA1_EncryptString(Password + SALT);
+
+
+                // Execute this non-query stored procedure
+                EalDbParameter[] paramList = new EalDbParameter[2];
+                paramList[0] = new EalDbParameter("@username", UserName);
+                paramList[1] = new EalDbParameter("@password", encryptedPassword);
+
+                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "mySobek_Get_User_By_UserName_Password", paramList);
+
+                if ((resultSet.Tables.Count > 0) && (resultSet.Tables[0].Rows.Count > 0))
+                {
+                    return build_user_object_from_dataset(resultSet);
+                }
+
+                // Return the browse id
+                return null;
+
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Get_User", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_User", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_User", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+        private static User_Object build_user_object_from_dataset(DataSet ResultSet)
+        {
+            User_Object user = new User_Object();
+
+            DataRow userRow = ResultSet.Tables[0].Rows[0];
+            user.ShibbID = userRow["ShibbID"].ToString();
+            user.UserID = Convert.ToInt32(userRow["UserID"]);
+            user.UserName = userRow["username"].ToString();
+            user.Email = userRow["EmailAddress"].ToString();
+            user.Given_Name = userRow["FirstName"].ToString();
+            user.Family_Name = userRow["LastName"].ToString();
+            user.Send_Email_On_Submission = Convert.ToBoolean(userRow["SendEmailOnSubmission"]);
+            user.Can_Submit = Convert.ToBoolean(userRow["Can_Submit_Items"]);
+            user.Is_Temporary_Password = Convert.ToBoolean(userRow["isTemporary_Password"]);
+            user.Nickname = userRow["Nickname"].ToString();
+            user.Organization = userRow["Organization"].ToString();
+            user.Organization_Code = userRow["OrganizationCode"].ToString();
+            user.Department = userRow["Department"].ToString();
+            user.College = userRow["College"].ToString();
+            user.Unit = userRow["Unit"].ToString();
+            user.Default_Rights = userRow["Rights"].ToString();
+            user.Preferred_Language = userRow["Language"].ToString();
+            user.Is_Internal_User = Convert.ToBoolean(userRow["Internal_User"]);
+            user.Edit_Template_Code_Simple = userRow["EditTemplate"].ToString();
+            user.Edit_Template_Code_Complex = userRow["EditTemplateMarc"].ToString();
+            user.Can_Delete_All = Convert.ToBoolean(userRow["Can_Delete_All_Items"]);
+            user.Is_System_Admin = Convert.ToBoolean(userRow["IsSystemAdmin"]);
+            user.Is_Portal_Admin = Convert.ToBoolean(userRow["IsPortalAdmin"]);
+            user.Is_Host_Admin = Convert.ToBoolean(userRow["IsHostAdmin"]);
+            user.Include_Tracking_In_Standard_Forms = Convert.ToBoolean(userRow["Include_Tracking_Standard_Forms"]);
+            user.Receive_Stats_Emails = Convert.ToBoolean(userRow["Receive_Stats_Emails"]);
+            user.Has_Item_Stats = Convert.ToBoolean(userRow["Has_Item_Stats"]);
+            user.LoggedOn = true;
+            user.Internal_Notes = userRow["InternalNotes"].ToString();
+            user.Processing_Technician = Convert.ToBoolean(userRow["ProcessingTechnician"]);
+            user.Scanning_Technician = Convert.ToBoolean(userRow["ScanningTechnician"]);
+
+            if (Convert.ToInt32(userRow["descriptions"]) > 0)
+                user.Has_Descriptive_Tags = true;
+
+            foreach (DataRow thisRow in ResultSet.Tables[1].Rows)
+            {
+                user.Add_Template(thisRow["TemplateCode"].ToString(), Convert.ToBoolean(thisRow["GroupDefined"].ToString()));
+            }
+
+            foreach (DataRow thisRow in ResultSet.Tables[2].Rows)
+            {
+                user.Add_Default_Metadata_Set(thisRow["MetadataCode"].ToString(), Convert.ToBoolean(thisRow["GroupDefined"].ToString()));
+            }
+
+            user.Items_Submitted_Count = ResultSet.Tables[3].Rows.Count;
+            foreach (DataRow thisRow in ResultSet.Tables[3].Rows)
+            {
+                if (!user.BibIDs.Contains(thisRow["BibID"].ToString().ToUpper()))
+                    user.Add_BibID(thisRow["BibID"].ToString().ToUpper());
+            }
+
+            // Add links to regular expressions
+            foreach (DataRow thisRow in ResultSet.Tables[4].Rows)
+            {
+                user.Add_Editable_Regular_Expression(thisRow["EditableRegex"].ToString());
+            }
+
+            // Add links to aggregationPermissions
+            foreach (DataRow thisRow in ResultSet.Tables[5].Rows)
+            {
+
+                user.Add_Aggregation(thisRow["Code"].ToString(), thisRow["Name"].ToString(), Convert.ToBoolean(thisRow["CanSelect"]), Convert.ToBoolean(thisRow["CanEditMetadata"]), Convert.ToBoolean(thisRow["CanEditBehaviors"]), Convert.ToBoolean(thisRow["CanPerformQc"]), Convert.ToBoolean(thisRow["CanUploadFiles"]), Convert.ToBoolean(thisRow["CanChangeVisibility"]), Convert.ToBoolean(thisRow["CanDelete"]), Convert.ToBoolean(thisRow["IsCollectionManager"]), Convert.ToBoolean(thisRow["OnHomePage"]), Convert.ToBoolean(thisRow["IsAggregationAdmin"]), Convert.ToBoolean(thisRow["GroupDefined"]));
+
+            }
+
+            // Add the current folder names
+            Dictionary<int, User_Folder> folderNodes = new Dictionary<int, User_Folder>();
+            List<User_Folder> parentNodes = new List<User_Folder>();
+            foreach (DataRow folderRow in ResultSet.Tables[6].Rows)
+            {
+                string folderName = folderRow["FolderName"].ToString();
+                int folderid = Convert.ToInt32(folderRow["UserFolderID"]);
+                int parentid = Convert.ToInt32(folderRow["ParentFolderID"]);
+                bool isPublic = Convert.ToBoolean(folderRow["isPublic"]);
+
+                User_Folder newFolderNode = new User_Folder(folderName, folderid) { IsPublic = isPublic };
+                if (parentid == -1)
+                    parentNodes.Add(newFolderNode);
+                folderNodes.Add(folderid, newFolderNode);
+            }
+            foreach (DataRow folderRow in ResultSet.Tables[6].Rows)
+            {
+                int folderid = Convert.ToInt32(folderRow["UserFolderID"]);
+                int parentid = Convert.ToInt32(folderRow["ParentFolderID"]);
+                if (parentid > 0)
+                {
+                    folderNodes[parentid].Add_Child_Folder(folderNodes[folderid]);
+                }
+            }
+            foreach (User_Folder rootFolder in parentNodes)
+                user.Add_Folder(rootFolder);
+
+            // Get the list of BibID/VID associated with this
+            foreach (DataRow itemRow in ResultSet.Tables[7].Rows)
+            {
+                user.Add_Bookshelf_Item(itemRow["BibID"].ToString(), itemRow["VID"].ToString());
+            }
+
+            // Add the user groups to which this user is a member
+            foreach (DataRow groupRow in ResultSet.Tables[8].Rows)
+            {
+                user.Add_User_Group(groupRow[0].ToString());
+            }
+
+            // Get all the user settings
+            foreach (DataRow settingRow in ResultSet.Tables[9].Rows)
+            {
+                user.Add_Setting(settingRow["Setting_Key"].ToString(), settingRow["Setting_Value"].ToString(), false);
+            }
+
+            return user;
+        }
+
+        #endregion
+
+    }
 }

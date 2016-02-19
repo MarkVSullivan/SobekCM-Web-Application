@@ -15,6 +15,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
 using SobekCM.Library.HTML;
@@ -66,7 +67,7 @@ namespace SobekCM.Library.MySobekViewer
                 if (userFolder == null)
                 {
                     // Get the RequestSpecificValues.Current_User from the database again
-                    User_Object checkFolderUser = SobekCM_Database.Get_User(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
+                    User_Object checkFolderUser = Engine_Database.Get_User(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
 
                     // Look for this folder in the new RequestSpecificValues.Current_User object
                     userFolder = checkFolderUser.Get_Folder(RequestSpecificValues.Current_Mode.My_Sobek_SubMode);

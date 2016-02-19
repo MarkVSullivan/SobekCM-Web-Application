@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using Jil;
 using SobekCM.Core.ApplicationState;
@@ -18,6 +19,8 @@ using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items;
 using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Core.Configuration.Engine;
+using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.MARC;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
@@ -38,7 +41,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetItemCitation(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetItemCitation(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             // Must at least have one URL segment for the BibID
             if (UrlSegments.Count > 0)
@@ -63,7 +66,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         if (returnValue == null)
                         {
                             // If this was debug mode, then just write the tracer
-                            if ( IsDebug )
+                            if (IsDebug)
                             {
                                 tracer.Add_Trace("ItemServices.GetItemCitation", "NULL value returned from getBriefItem method");
 
@@ -80,7 +83,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         BriefItem_CitationResponse responder = new BriefItem_CitationResponse(returnValue);
 
                         // If this was debug mode, then just write the tracer
-                        if ( IsDebug )
+                        if (IsDebug)
                         {
                             Response.ContentType = "text/plain";
                             Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -105,7 +108,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         tracer.Add_Trace("ItemServices.GetItemCitation", "Requested VID 0000 - Currently invalid");
 
                         // If this was debug mode, then just write the tracer
-                        if ( IsDebug )
+                        if (IsDebug)
                         {
                             Response.ContentType = "text/plain";
                             Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -116,7 +119,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
                 catch (Exception ee)
                 {
-                    if ( IsDebug )
+                    if (IsDebug)
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -143,7 +146,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetItemBrief(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetItemBrief(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             // Must at least have one URL segment for the BibID
             if (UrlSegments.Count > 0)
@@ -167,7 +170,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         if (returnValue == null)
                         {
                             // If this was debug mode, then just write the tracer
-                            if ( IsDebug )
+                            if (IsDebug)
                             {
                                 tracer.Add_Trace("ItemServices.GetItemBrief", "NULL value returned from getBriefItem method");
 
@@ -180,7 +183,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         }
 
                         // If this was debug mode, then just write the tracer
-                        if ( IsDebug )
+                        if (IsDebug)
                         {
                             Response.ContentType = "text/plain";
                             Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -205,7 +208,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         tracer.Add_Trace("ItemServices.GetItemBrief", "Requested VID 0000 - Currently invalid");
 
                         // If this was debug mode, then just write the tracer
-                        if ( IsDebug )
+                        if (IsDebug)
                         {
                             Response.ContentType = "text/plain";
                             Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -216,7 +219,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
                 catch (Exception ee)
                 {
-                    if ( IsDebug )
+                    if (IsDebug)
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -244,7 +247,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void Get_Item_Info_Legacy(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void Get_Item_Info_Legacy(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             // Must at least have one URL segment for the BibID
             if (UrlSegments.Count > 0)
@@ -276,7 +279,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         if (returnValue == null)
                         {
                             // If this was debug mode, then just write the tracer
-                            if ( IsDebug )
+                            if (IsDebug)
                             {
                                 tracer.Add_Trace("ItemServices.Get_Item_Info_Legacy", "NULL value returned from getBriefItem method");
 
@@ -289,7 +292,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         }
 
                         // If this was debug mode, then just write the tracer
-                        if ( IsDebug )
+                        if (IsDebug)
                         {
                             Response.ContentType = "text/plain";
                             Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -301,7 +304,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                         if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
                         {
-                            legacy_json_display_item_info(Response.Output, returnValue, page, viewer );
+                            legacy_json_display_item_info(Response.Output, returnValue, page, viewer);
                         }
                     }
                     else
@@ -309,7 +312,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         tracer.Add_Trace("ItemServices.Get_Item_Info_Legacy", "Requested VID 0000 - Invalid");
 
                         // If this was debug mode, then just write the tracer
-                        if ( IsDebug )
+                        if (IsDebug)
                         {
                             Response.ContentType = "text/plain";
                             Response.Output.WriteLine("DEBUG MODE DETECTED");
@@ -320,7 +323,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 }
                 catch (Exception ee)
                 {
-                    if ( IsDebug )
+                    if (IsDebug)
                     {
                         Response.ContentType = "text/plain";
                         Response.Output.WriteLine("EXCEPTION CAUGHT!");
@@ -345,7 +348,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="BriefItem"></param>
         /// <param name="Page"></param>
         /// <param name="Viewer"></param>
-        protected internal void legacy_json_display_item_info(TextWriter Output, BriefItemInfo BriefItem, int Page, string Viewer )
+        protected internal void legacy_json_display_item_info(TextWriter Output, BriefItemInfo BriefItem, int Page, string Viewer)
         {
             // Get the URL and network roots
             string network = Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network;
@@ -364,8 +367,8 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 if (Viewer != "text")
                 {
-                    int first_page_to_show = (Page - 1) * 20;
-                    int last_page_to_show = (Page * 20) - 1;
+                    int first_page_to_show = (Page - 1)*20;
+                    int last_page_to_show = (Page*20) - 1;
                     if (first_page_to_show < BriefItem.Images.Count)
                     {
                         int page = first_page_to_show;
@@ -404,7 +407,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                     int page = 0;
                     string jpeg_to_view = String.Empty;
-                    while (page < BriefItem.Images.Count )
+                    while (page < BriefItem.Images.Count)
                     {
                         string text_to_read = String.Empty;
                         BriefItem_FileGrouping thisPage = BriefItem.Images[page];
@@ -477,7 +480,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                 return currentItem;
             }
-            
+
             Tracer.Add_Trace("ItemServices.getSobekItem", "Could not locate the object from the Item_Lookup_Object.. may not be a valid bibid/vid combination");
 
             return null;
@@ -515,16 +518,16 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetRandomItem(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetRandomItem(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
-            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON) || ( Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P ))
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON) || (Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P))
             {
                 Tuple<string, string> result = Engine_Database.Get_Random_Item(null);
 
                 if (result != null)
                 {
-                    if ( Protocol == Microservice_Endpoint_Protocol_Enum.JSON )
-                        JSON.Serialize(new { bibid = result.Item1, vid = result.Item2 }, Response.Output, Options.ISO8601ExcludeNulls);
+                    if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON)
+                        JSON.Serialize(new {bibid = result.Item1, vid = result.Item2}, Response.Output, Options.ISO8601ExcludeNulls);
                     if (Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P)
                     {
                         // Get the JSON-P callback function
@@ -534,7 +537,7 @@ namespace SobekCM.Engine_Library.Endpoints
                             json_callback = QueryString["callback"];
                         }
 
-                        Response.Output.Write( json_callback + "(");
+                        Response.Output.Write(json_callback + "(");
                         JSON.Serialize(new {bibid = result.Item1, vid = result.Item2}, Response.Output, Options.ISO8601ExcludeNullsJSONP);
                         Response.Output.Write(");");
                     }
@@ -548,7 +551,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetItemRdf(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetItemRdf(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             if (Protocol == Microservice_Endpoint_Protocol_Enum.XML)
             {
@@ -586,7 +589,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetItemXml(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug )
+        public void GetItemXml(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             if (Protocol == Microservice_Endpoint_Protocol_Enum.XML)
             {
@@ -831,11 +834,11 @@ namespace SobekCM.Engine_Library.Endpoints
             // Create the main object, and copy over the simple string values
             EAD_Transfer_Descriptive_Identification returnObj = new EAD_Transfer_Descriptive_Identification
             {
-                DAO = Source.DAO, 
-                DAO_Link = Source.DAO_Link, 
-                DAO_Title = Source.DAO_Title, 
-                Extent = Source.Extent, 
-                Unit_Date = Source.Unit_Date, 
+                DAO = Source.DAO,
+                DAO_Link = Source.DAO_Link,
+                DAO_Title = Source.DAO_Title,
+                Extent = Source.Extent,
+                Unit_Date = Source.Unit_Date,
                 Unit_Title = Source.Unit_Title
             };
 
@@ -844,7 +847,7 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 foreach (Parent_Container_Info parentInfo in Source.Containers)
                 {
-                    returnObj.Add_Container(parentInfo.Container_Type, parentInfo.Container_Title );
+                    returnObj.Add_Container(parentInfo.Container_Type, parentInfo.Container_Title);
                 }
             }
 
@@ -860,10 +863,10 @@ namespace SobekCM.Engine_Library.Endpoints
             // Start to build the return container and copy over basic information
             EAD_Transfer_Container_Info returnObj = new EAD_Transfer_Container_Info
             {
-                Did = ead_copy_did_to_transfer(Source.Did), 
-                Level = Source.Level, 
-                Has_Complex_Children = Source.Has_Complex_Children, 
-                Biographical_History = Source.Biographical_History, 
+                Did = ead_copy_did_to_transfer(Source.Did),
+                Level = Source.Level,
+                Has_Complex_Children = Source.Has_Complex_Children,
+                Biographical_History = Source.Biographical_History,
                 Scope_And_Content = Source.Scope_And_Content
             };
 
@@ -872,7 +875,7 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 foreach (Container_Info thisInfo in Source.Children)
                 {
-                    returnObj.Children.Add( ead_copy_container_to_transfer(thisInfo));
+                    returnObj.Children.Add(ead_copy_container_to_transfer(thisInfo));
                 }
             }
 
@@ -880,6 +883,8 @@ namespace SobekCM.Engine_Library.Endpoints
         }
 
         #endregion
+
+        #region Method to get the MARC record for an item 
 
         /// <summary> Gets the item's marc record in object format for serialization/deserialization </summary>
         /// <param name="Response"></param>
@@ -909,7 +914,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 // If null, return
                 if (sobekItem == null)
                 {
-                    tracer.Add_Trace("ItemServices.GetItemMarcRecord", "Unable to retrieve the indicated digital resource ( " + bibid + ":" + vid + " )" );
+                    tracer.Add_Trace("ItemServices.GetItemMarcRecord", "Unable to retrieve the indicated digital resource ( " + bibid + ":" + vid + " )");
 
                     Response.ContentType = "text/plain";
                     Response.StatusCode = 500;
@@ -1023,5 +1028,590 @@ namespace SobekCM.Engine_Library.Endpoints
                 Serialize(transferRecord, Response, Protocol, json_callback);
             }
         }
+
+        #endregion
+
+
+        #region Methods to serve small snippets of HTML to the users, on demand
+
+        /// <summary> Gets the item's marc record in object format for serialization/deserialization </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Send_Email_HTML_Snippet(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+            tracer.Add_Trace("ItemServices.Send_Email_HTML_Snippet", "Serve the small EMAIL html for adding tags to an item");
+
+            // Determine the number of columns for text areas, depending on browser
+            int actual_cols = 50;
+            //if ((!String.IsNullOrEmpty(CurrentMode.Browser_Type)) && (CurrentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0))
+            //    actual_cols = 45;
+
+            // Build the response
+            StringBuilder responseBuilder = new StringBuilder();
+            responseBuilder.AppendLine("<!-- Email form -->");
+            responseBuilder.AppendLine("<div id=\"emailform_content\" class=\"sbk_PopupForm\" style=\"width: 537px;\">");
+            responseBuilder.AppendLine("  <div class=\"sbk_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left;\">Send this Item to a Friend</td><td style=\"text-align:right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"email_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+            responseBuilder.AppendLine("  <br />");
+            responseBuilder.AppendLine("  <fieldset><legend>Enter the email information below &nbsp; </legend>");
+            responseBuilder.AppendLine("    <br />");
+            responseBuilder.AppendLine("    <table class=\"sbk_PopupTable\">");
+
+
+            // Add email address line
+            responseBuilder.Append("      <tr><td style=\"width:80px\"><label for=\"email_address\">To:</label></td>");
+            responseBuilder.AppendLine("<td><input class=\"email_input sbk_Focusable\" name=\"email_address\" id=\"email_address\" type=\"text\" value=\"\" /></td></tr>");
+
+            // Add comments area
+            responseBuilder.Append("      <tr style=\"vertical-align:top\"><td><br /><label for=\"email_comments\">Comments:</label></td>");
+            responseBuilder.AppendLine("<td><textarea rows=\"6\" cols=\"" + actual_cols + "\" name=\"email_comments\" id=\"email_comments\" class=\"email_textarea sbk_Focusable\" ></textarea></td></tr>");
+
+            // Add format area
+            responseBuilder.Append("      <tr style=\"vertical-align:top\"><td>Format:</td>");
+            responseBuilder.Append("<td><input type=\"radio\" name=\"email_format\" id=\"email_format_html\" value=\"html\" checked=\"checked\" /> <label for=\"email_format_html\">HTML</label> &nbsp; &nbsp; ");
+            responseBuilder.AppendLine("<input type=\"radio\" name=\"email_format\" id=\"email_format_text\" value=\"text\" /> <label for=\"email_format_text\">Plain Text</label></td></tr>");
+
+            responseBuilder.AppendLine("    </table>");
+            responseBuilder.AppendLine("    <br />");
+            responseBuilder.AppendLine("  </fieldset><br />");
+            responseBuilder.AppendLine("  <div style=\"text-align:center; font-size:1.3em;\">");
+            responseBuilder.AppendLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return email_form_close();\"> CANCEL </button> &nbsp; &nbsp; ");
+            responseBuilder.AppendLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> SEND </button>");
+            responseBuilder.AppendLine("  </div><br />");
+            responseBuilder.AppendLine("</div>");
+            responseBuilder.AppendLine();
+
+            // Get the return string them
+            string returnValue = responseBuilder.ToString();
+
+            // If this was debug mode, then just write the tracer
+            if (IsDebug)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseEmailHtmlSnippet";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Gets the item's marc record in object format for serialization/deserialization </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Print_HTML_Snippet(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            if (UrlSegments.Count > 1)
+            {
+                Custom_Tracer tracer = new Custom_Tracer();
+
+                // Get the BibID and VID
+                string bibid = UrlSegments[0];
+                string vid = (UrlSegments.Count > 1) ? UrlSegments[1] : "00001";
+                string pageviewer = (UrlSegments.Count > 2) ? UrlSegments[2] : "CITATION";
+                int current_page = -1;
+                if (UrlSegments.Count > 3)
+                {
+                    if (!Int32.TryParse(UrlSegments[3], out current_page))
+                        current_page = -1;
+                }
+
+                tracer.Add_Trace("ItemServices.Print_HTML_Snippet", "Get the brief digital resource object for " + bibid + ":" + vid);
+                BriefItemInfo sobekItem = GetBriefItem(bibid, vid, null, tracer);
+
+                // If this item was NULL, there was an error
+                if (sobekItem == null)
+                {
+                    tracer.Add_Trace("ItemServices.Print_HTML_Snippet", "Unable to retrieve the indicated digital resource ( " + bibid + ":" + vid + " )");
+
+                    Response.ContentType = "text/plain";
+                    Response.StatusCode = 500;
+                    Response.Output.WriteLine("Unable to retrieve the indicated digital resource ( " + bibid + ":" + vid + " )");
+                    Response.Output.WriteLine();
+
+                    // If this was debug mode, then just write the tracer
+                    if (IsDebug)
+                    {
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                    }
+                    return;
+                }
+
+                tracer.Add_Trace("ItemServices.Print_HTML_Snippet", "Building the HTML response");
+
+                // Build the response
+                StringBuilder responseBuilder = new StringBuilder();
+
+                string print_options = String.Empty;
+                string url_redirect = Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL + bibid + "/" + vid + "/print";
+
+
+                responseBuilder.AppendLine("<!-- Print item form -->");
+                responseBuilder.AppendLine("<div id=\"printform_content\" class=\"sbk_PopupForm\">");
+                responseBuilder.AppendLine("  <div class=\"sbk_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left;\">Print Options</td><td style=\"text-align:right\"> <a href=\"#template\" title=\"CLOSE\" onclick=\"print_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+                responseBuilder.AppendLine("  <br />");
+                responseBuilder.AppendLine("  <fieldset><legend>Select the options below to print this item &nbsp; </legend>");
+                responseBuilder.AppendLine("    <blockquote>");
+                responseBuilder.AppendLine("    <input type=\"checkbox\" id=\"print_citation\" name=\"print_citation\" checked=\"checked\" /> <label for=\"print_citation\">Include brief citation?</label><br /><br />");
+                if ((sobekItem.Images == null )  || ( sobekItem.Images.Count == 0 ))
+                {
+                    responseBuilder.AppendLine("    <input type=\"radio\" name=\"print_pages\" value=\"citation_only\" id=\"citation_only\" checked=\"checked\" /> <label for=\"current_page\">Full Citation</label><br />");
+                }
+                else
+                {
+
+                    bool something_selected = false;
+                    if ( String.Compare(pageviewer, "CITATION", StringComparison.OrdinalIgnoreCase ) == 0 )
+                    {
+                        responseBuilder.AppendLine("    <input type=\"radio\" name=\"print_pages\" value=\"citation_only\" id=\"citation_only\" class=\"print_radiobutton\" checked=\"checked\" /> <label for=\"citation_only\">Full Citation</label><br />");
+                        something_selected = true;
+                    }
+                    else
+                    {
+                        responseBuilder.AppendLine("    <input type=\"radio\" name=\"print_pages\" value=\"citation_only\" id=\"citation_only\" class=\"print_radiobutton\" /> <label for=\"citation_only\">Citation only</label><br />");
+                    }
+
+                    if (String.Compare(pageviewer, "THUMBNAILS", StringComparison.OrdinalIgnoreCase) == 0)
+                    {
+                        responseBuilder.AppendLine("    <input type=\"radio\" name=\"print_pages\" value=\"contact_sheet\" id=\"contact_sheet\" class=\"print_radiobutton\" checked=\"checked\" /> <label for=\"contact_sheet\">Print thumbnails</label><br />");
+                        something_selected = true;
+                    }
+                    else
+                    {
+
+                        if (sobekItem.Behaviors.Get_Viewer("THUMBNAILS") != null )
+                        {
+                            responseBuilder.AppendLine("    <input type=\"radio\" name=\"print_pages\" value=\"contact_sheet\" id=\"contact_sheet\" class=\"print_radiobutton\" /> <label for=\"contact_sheet\">Print thumbnails</label><br />");
+                        }
+                    }
+
+                    if (String.Compare(pageviewer, "JPEG", StringComparison.OrdinalIgnoreCase) == 0)
+                    {
+                        responseBuilder.AppendLine("    <input type=\"radio\" name=\"print_pages\" value=\"current_page\" id=\"current_page\" checked=\"checked\" class=\"print_radiobutton\" /> <label for=\"current_page\">Print current page</label><br />");
+                        something_selected = true;
+                    }
+
+                    if ((sobekItem.Images != null ) && ( sobekItem.Images.Count > 1 ))
+                    {
+                        // Add the all pages option
+                        responseBuilder.AppendLine(!something_selected
+                                             ? "    <input type=\"radio\" name=\"print_pages\" value=\"all_pages\" id=\"all_pages\" class=\"print_radiobutton\" checked=\"checked\" /> <label for=\"all_pages\">Print all pages</label><br />"
+                                             : "    <input type=\"radio\" name=\"print_pages\" value=\"all_pages\" id=\"all_pages\" class=\"print_radiobutton\" /> <label for=\"all_pages\">Print all pages</label><br />");
+
+                        // Build the options for selecting a page
+                        StringBuilder optionBuilder = new StringBuilder();
+                        int sequence = 1;
+                        foreach (BriefItem_FileGrouping thisPage in sobekItem.Images)
+                        {
+                            if (thisPage.Label.Length > 25)
+                            {
+                                if (current_page == sequence )
+                                {
+                                    optionBuilder.Append("<option value=\"" + sequence + "\" selected=\"selected\">" + thisPage.Label.Substring(0, 20) + "...</option> ");
+                                }
+                                else
+                                {
+                                    optionBuilder.Append("<option value=\"" + sequence + "\">" + thisPage.Label.Substring(0, 20) + "...</option> ");
+                                }
+                            }
+                            else
+                            {
+                                if (current_page == sequence)
+                                {
+                                    optionBuilder.Append("<option value=\"" + sequence + "\" selected=\"selected\">" + thisPage.Label + "</option> ");
+                                }
+                                else
+                                {
+                                    optionBuilder.Append("<option value=\"" + sequence + "\">" + thisPage.Label + "</option> ");
+                                }
+                            }
+
+                            sequence++;
+                        }
+
+                        responseBuilder.AppendLine("    <input type=\"radio\" name=\"print_pages\" value=\"range_page\" id=\"range_page\" class=\"print_radiobutton\" /> <label for=\"range_page\">Print a range of pages</label> <label for=\"print_from\">from</label> <select id=\"print_from\" name=\"print_from\">" + optionBuilder + "</select> <label for=\"print_to\">to</label> <select id=\"print_to\" name=\"print_to\">" + optionBuilder + "</select>");
+                    }
+
+                    //if ((currentUser != null) && (currentUser.Is_Internal_User))
+                    //{
+                    //    responseBuilder.AppendLine("    <br /><br /><input type=\"radio\" name=\"print_pages\" value=\"tracking_sheet\" id=\"tracking_sheet\" class=\"print_radiobutton\"  > <label for=\"tracking_sheet\">Print tracking sheet (internal users)</label><br />");
+                    //}
+                }
+                responseBuilder.AppendLine("    </blockquote>");
+                responseBuilder.AppendLine("  </fieldset><br />");
+                responseBuilder.AppendLine("  <div style=\"text-align:center; font-size:1.3em;\">");
+                responseBuilder.AppendLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return print_form_close();return false;\"> CANCEL </button> &nbsp; &nbsp; ");
+                responseBuilder.AppendLine("    <button title=\"Send\" class=\"roundbutton\" onclick=\"return print_item('" + current_page + "','" + url_redirect + "','" + print_options + "');return false;\"> PRINT </button>");
+                responseBuilder.AppendLine("  </div><br />");
+                responseBuilder.AppendLine("</div>");
+                responseBuilder.AppendLine();
+
+
+                // Get the return string them
+                string returnValue = responseBuilder.ToString();
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+
+                    return;
+                }
+
+                // Get the JSON-P callback function
+                string json_callback = "parsePrintHtmlSnippet";
+                if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                {
+                    json_callback = QueryString["callback"];
+                }
+
+                // Use the base class to serialize the object according to request protocol
+                Serialize(returnValue, Response, Protocol, json_callback);
+                return;
+            }
+
+            // Add the error
+            Response.ContentType = "text/plain";
+            Response.StatusCode = 400;
+            Response.Output.WriteLine("BibID and VID are required parameters");
+            Response.Output.WriteLine();
+        }
+
+        /// <summary> Gets the item's marc record in object format for serialization/deserialization </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Describe_HTML_Snippet(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+            tracer.Add_Trace("ItemServices.Describe_HTML_Snippet", "Serve the small DESCRIBE html for adding tags to an item");
+
+            // Determine the number of columns for text areas, depending on browser
+            int actual_cols = 50;
+            //if ((!String.IsNullOrEmpty(CurrentMode.Browser_Type)) && (CurrentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0))
+            //    actual_cols = 45;
+
+            // Build the response
+            StringBuilder responseBuilder = new StringBuilder();
+            responseBuilder.AppendLine("<!-- Add descriptive tage form  -->");
+            responseBuilder.AppendLine("<div class=\"describe_popup_div\" id=\"describe_item_form\" style=\"display:none;\">");
+            responseBuilder.AppendLine("  <div class=\"popup_title\"><table width=\"100%\"><tr><td align=\"left\">A<span class=\"smaller\">DD </span> I<span class=\"smaller\">TEM </span> D<span class=\"smaller\">ESCRIPTION</span></td><td align=\"right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"describe_item_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+            responseBuilder.AppendLine("  <br />");
+            responseBuilder.AppendLine("  <fieldset><legend>Enter a description or notes to add to this item &nbsp; </legend>");
+            responseBuilder.AppendLine("    <br />");
+            responseBuilder.AppendLine("    <table class=\"popup_table\">");
+
+            // Add comments area
+            responseBuilder.Append("      <tr align=\"left\" valign=\"top\"><td><br /><label for=\"add_notes\">Notes:</label></td>");
+            responseBuilder.AppendLine("<td><textarea rows=\"10\" cols=\"" + actual_cols + "\" name=\"add_tag\" id=\"add_tag\" class=\"add_notes_textarea\" onfocus=\"javascript:textbox_enter('add_tag','add_notes_textarea_focused')\" onblur=\"javascript:textbox_leave('add_tag','add_notes_textarea')\"></textarea></td></tr>");
+            responseBuilder.AppendLine("    </table>");
+            responseBuilder.AppendLine("    <br />");
+            responseBuilder.AppendLine("  </fieldset><br />");
+            responseBuilder.AppendLine("  <div style=\"text-align:center; font-size:1.3em;\">");
+            responseBuilder.AppendLine("    <button title=\"Cancel\" class=\"roundbutton\" onclick=\"return describe_item_form_close();\"> CANCEL </button> &nbsp; &nbsp; ");
+            responseBuilder.AppendLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> SAVE </button>");
+            responseBuilder.AppendLine("  </div><br />");
+            responseBuilder.AppendLine("</div>");
+            responseBuilder.AppendLine();
+
+            // Get the return string them
+            string returnValue = responseBuilder.ToString();
+
+            // If this was debug mode, then just write the tracer
+            if (IsDebug)
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                Response.Output.WriteLine();
+                Response.Output.WriteLine(tracer.Text_Trace);
+
+                return;
+            }
+
+            // Get the JSON-P callback function
+            string json_callback = "parseDescribeHtmlSnippet";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(returnValue, Response, Protocol, json_callback);
+        }
+
+        /// <summary> Gets the item's marc record in object format for serialization/deserialization </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Share_HTTP_Snippet(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            if (UrlSegments.Count > 1)
+            {
+                Custom_Tracer tracer = new Custom_Tracer();
+
+                // Get the BibID and VID
+                string bibid = UrlSegments[0];
+                string vid = (UrlSegments.Count > 1) ? UrlSegments[1] : "00001";
+
+                tracer.Add_Trace("ItemServices.Share_HTTP_Snippet", "Get the full SobekCM_Item object for " + bibid + ":" + vid );
+                SobekCM_Item sobekItem = getSobekItem(bibid, vid, tracer);
+
+                // If this item was NULL, there was an error
+                if (sobekItem == null)
+                {
+                    tracer.Add_Trace("ItemServices.Share_HTTP_Snippet", "Unable to retrieve the indicated digital resource ( " + bibid + ":" + vid + " )");
+
+                    Response.ContentType = "text/plain";
+                    Response.StatusCode = 500;
+                    Response.Output.WriteLine("Unable to retrieve the indicated digital resource ( " + bibid + ":" + vid + " )");
+                    Response.Output.WriteLine();
+
+                    // If this was debug mode, then just write the tracer
+                    if (IsDebug)
+                    {
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                    }
+                    return;
+                }
+                
+                tracer.Add_Trace("ItemServices.Share_HTTP_Snippet", "Building the HTML response");
+
+                // Build the response
+                StringBuilder responseBuilder = new StringBuilder();
+
+                // Calculate the title and url
+                string title = HttpUtility.HtmlEncode(sobekItem.Bib_Info.Main_Title.Title);
+                string share_url = Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL + "/" + bibid + "/" + vid;
+
+                responseBuilder.AppendLine("<!-- Share form -->");
+                responseBuilder.AppendLine("<div id=\"shareform_content\">");
+
+                responseBuilder.AppendLine("<a href=\"http://www.facebook.com/share.php?u=" + share_url + "&amp;t=" + title + "\" target=\"FACEBOOK_WINDOW\" onmouseover=\"facebook_share.src='" + Static_Resources.Facebook_Share_H_Gif + "'\" onfocus=\"facebook_share.src='" + Static_Resources.Facebook_Share_H_Gif + "'\" onmouseout=\"facebook_share.src='" + Static_Resources.Facebook_Share_Gif + "'\" onblur=\"facebook_share.src='" + Static_Resources.Facebook_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"facebook_share\" name=\"facebook_share\" src=\"" + Static_Resources.Facebook_Share_Gif + "\" alt=\"FACEBOOK\" /></a>");
+                responseBuilder.AppendLine("<a href=\"http://buzz.yahoo.com/buzz?targetUrl=" + share_url + "&amp;headline=" + title + "\" target=\"YAHOOBUZZ_WINDOW\" onmouseover=\"yahoobuzz_share.src='" + Static_Resources.Yahoobuzz_Share_H_Gif + "'\" onfocus=\"yahoobuzz_share.src='" + Static_Resources.Yahoobuzz_Share_H_Gif + "'\" onmouseout=\"yahoobuzz_share.src='" + Static_Resources.Yahoobuzz_Share_Gif + "'\" onblur=\"yahoobuzz_share.src='" + Static_Resources.Yahoobuzz_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoobuzz_share\" name=\"yahoobuzz_share\" src=\"" + Static_Resources.Yahoobuzz_Share_Gif + "\" alt=\"YAHOO BUZZ\" /></a>");
+                responseBuilder.AppendLine("<br />");
+
+                responseBuilder.AppendLine("<a href=\"http://twitter.com/home?status=Currently reading " + share_url + "\" target=\"TWITTER_WINDOW\" onmouseover=\"twitter_share.src='" + Static_Resources.Twitter_Share_H_Gif + "'\" onfocus=\"twitter_share.src='" + Static_Resources.Twitter_Share_H_Gif + "'\" onmouseout=\"twitter_share.src='" + Static_Resources.Twitter_Share_Gif + "'\" onblur=\"twitter_share.src='" + Static_Resources.Twitter_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"twitter_share\" name=\"twitter_share\" src=\"" + Static_Resources.Twitter_Share_Gif + "\" alt=\"TWITTER\" /></a>");
+                responseBuilder.AppendLine("<a href=\"http://www.google.com/bookmarks/mark?op=add&amp;bkmk=" + share_url + "&amp;title=" + title + "\" target=\"GOOGLE_WINDOW\" onmouseover=\"google_share.src='" + Static_Resources.Google_Share_H_Gif + "'\" onfocus=\"google_share.src='" + Static_Resources.Google_Share_H_Gif + "'\" onmouseout=\"google_share.src='" + Static_Resources.Google_Share_Gif + "'\" onblur=\"google_share.src='" + Static_Resources.Google_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"google_share\" name=\"google_share\" src=\"" + Static_Resources.Google_Share_Gif + "\" alt=\"GOOGLE SHARE\" /></a>");
+                responseBuilder.AppendLine("<br />");
+
+                responseBuilder.AppendLine("<a href=\"http://www.stumbleupon.com/submit?url=" + share_url + "&amp;title=" + title + "\" target=\"STUMBLEUPON_WINDOW\" onmouseover=\"stumbleupon_share.src='" + Static_Resources.Stumbleupon_Share_H_Gif + "'\" onfocus=\"stumbleupon_share.src='" + Static_Resources.Stumbleupon_Share_H_Gif + "'\" onmouseout=\"stumbleupon_share.src='" + Static_Resources.Stumbleupon_Share_Gif + "'\" onblur=\"stumbleupon_share.src='" + Static_Resources.Stumbleupon_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"stumbleupon_share\" name=\"stumbleupon_share\" src=\"" + Static_Resources.Stumbleupon_Share_Gif + "\" alt=\"STUMBLEUPON\" /></a>");
+                responseBuilder.AppendLine("<a href=\"http://myweb.yahoo.com/myresults/bookmarklet?t=" + title + "&amp;u=" + share_url + "\" target=\"YAHOO_WINDOW\" onmouseover=\"yahoo_share.src='" + Static_Resources.Yahoo_Share_H_Gif + "'\" onfocus=\"yahoo_share.src='" + Static_Resources.Yahoo_Share_H_Gif + "'\" onmouseout=\"yahoo_share.src='" + Static_Resources.Yahoo_Share_Gif + "'\" onblur=\"yahoo_share.src='" + Static_Resources.Yahoo_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoo_share\" name=\"yahoo_share\" src=\"" + Static_Resources.Yahoo_Share_Gif + "\" alt=\"YAHOO SHARE\" /></a>");
+                responseBuilder.AppendLine("<br />");
+
+                responseBuilder.AppendLine("<a href=\"http://digg.com/submit?phase=2&amp;url=" + share_url + "&amp;title=" + title + "\" target=\"DIGG_WINDOW\" onmouseover=\"digg_share.src='" + Static_Resources.Digg_Share_H_Gif + "'\" onfocus=\"digg_share.src='" + Static_Resources.Digg_Share_H_Gif + "'\" onmouseout=\"digg_share.src='" + Static_Resources.Digg_Share_Gif + "'\" onblur=\"digg_share.src='" + Static_Resources.Digg_Share_Gif + "'\"  nclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"digg_share\" name=\"digg_share\" src=\"" + Static_Resources.Digg_Share_Gif + "\" alt=\"DIGG\" /></a>");
+                responseBuilder.AppendLine("<a onmouseover=\"favorites_share.src='" + Static_Resources.Facebook_Share_H_Gif + "'\" onfocus=\"favorites_share.src='" + Static_Resources.Facebook_Share_H_Gif + "'\" onmouseout=\"favorites_share.src='" + Static_Resources.Facebook_Share_Gif + "'\" onblur=\"favorites_share.src='" + Static_Resources.Facebook_Share_Gif + "'\" onclick=\"javascript:add_to_favorites();\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"favorites_share\" name=\"favorites_share\" src=\"" + Static_Resources.Facebook_Share_Gif + "\" alt=\"MY FAVORITES\" /></a>");
+                responseBuilder.AppendLine("<br />");
+
+                responseBuilder.AppendLine("</div>");
+                responseBuilder.AppendLine();
+
+                // Get the return string them
+                string returnValue = responseBuilder.ToString();
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+
+                    return;
+                }
+
+                // Get the JSON-P callback function
+                string json_callback = "parseShareHtmlSnippet";
+                if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                {
+                    json_callback = QueryString["callback"];
+                }
+
+                // Use the base class to serialize the object according to request protocol
+                Serialize(returnValue, Response, Protocol, json_callback);
+                return;
+            }
+
+            // Add the error
+            Response.ContentType = "text/plain";
+            Response.StatusCode = 400;
+            Response.Output.WriteLine("BibID and VID are required parameters");
+            Response.Output.WriteLine();
+        }
+
+        /// <summary> Gets the item's marc record in object format for serialization/deserialization </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void Bookshelf_HTTP_Snippet(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            if (UrlSegments.Count > 0)
+            {
+                Custom_Tracer tracer = new Custom_Tracer();
+
+                // Try to get the user id
+                int userid;
+                if (!Int32.TryParse(UrlSegments[0], out userid))
+                {
+                    tracer.Add_Trace("ItemServices.Bookshelf_HTTP_Snippet", "UserID is not a valid integer");
+
+                    Response.ContentType = "text/plain";
+                    Response.StatusCode = 400;
+                    Response.Output.WriteLine("UserID is not a valid integer");
+                    Response.Output.WriteLine();
+
+                    // If this was debug mode, then just write the tracer
+                    if (IsDebug)
+                    {
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                    }
+                    return;
+                }
+
+                // Try to get the user information
+                tracer.Add_Trace("ItemServices.Bookshelf_HTTP_Snippet", "Requested bookshelf HTML snippet for userid " + userid );
+                User_Object thisUser = Engine_Database.Get_User(userid, tracer);
+
+                // If null, respond
+                if (thisUser == null)
+                {
+                    tracer.Add_Trace("ItemServices.Bookshelf_HTTP_Snippet", "User object returned was NULL.. Invalid UserID");
+
+                    Response.ContentType = "text/plain";
+                    Response.StatusCode = 400;
+                    Response.Output.WriteLine("User object returned was NULL.. Invalid UserID");
+                    Response.Output.WriteLine();
+
+                    // If this was debug mode, then just write the tracer
+                    if (IsDebug)
+                    {
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                    }
+                    return;
+                }
+
+                tracer.Add_Trace("ItemServices.Bookshelf_HTTP_Snippet", "Building the HTML response");
+
+                // Build the response
+                StringBuilder responseBuilder = new StringBuilder();
+
+                // Determine the number of columns for text areas, depending on browser
+                int actual_cols = 50;
+                //if ((!String.IsNullOrEmpty(CurrentMode.Browser_Type)) && (CurrentMode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0))
+                //    actual_cols = 45;
+
+                responseBuilder.AppendLine("<!-- Add to bookshelf form -->");
+                responseBuilder.AppendLine("<div id=\"addform_content\" class=\"sbk_PopupForm\" style=\"width:530px;\">");
+                responseBuilder.AppendLine("  <div class=\"sbk_PopupTitle\"><table style=\"width:100%\"><tr><td style=\"text-align:left;\">Add this item to your Bookshelf</td><td style=\"text-align:right\"> <a href=\"#template\" alt=\"CLOSE\" onclick=\"add_item_form_close()\">X</a> &nbsp; </td></tr></table></div>");
+                responseBuilder.AppendLine("  <br />");
+                responseBuilder.AppendLine("  <fieldset><legend>Enter notes for this item in your bookshelf &nbsp; </legend>");
+                responseBuilder.AppendLine("    <br />");
+                responseBuilder.AppendLine("    <table class=\"sbk_PopupTable\">");
+
+
+                // Add bookshelf choices
+                responseBuilder.Append("      <tr><td style=\"width:80px\"><label for=\"add_bookshelf\">Bookshelf:</label></td>");
+                responseBuilder.Append("<td><select class=\"email_bookshelf_input\" name=\"add_bookshelf\" id=\"add_bookshelf\">");
+
+                foreach (User_Folder folder in thisUser.All_Folders)
+                {
+                    if (folder.Folder_Name.Length > 80)
+                    {
+                        responseBuilder.Append("<option value=\"" + HttpUtility.HtmlEncode(folder.Folder_Name) + "\">" + HttpUtility.HtmlEncode(folder.Folder_Name.Substring(0, 75)) + "...</option>");
+                    }
+                    else
+                    {
+                        if (folder.Folder_Name != "Submitted Items")
+                        {
+                            if (folder.Folder_Name == "My Bookshelf")
+                                responseBuilder.Append("<option value=\"" + HttpUtility.HtmlEncode(folder.Folder_Name) + "\" selected=\"selected\" >" + HttpUtility.HtmlEncode(folder.Folder_Name) + "</option>");
+                            else
+                                responseBuilder.Append("<option value=\"" + HttpUtility.HtmlEncode(folder.Folder_Name) + "\">" + HttpUtility.HtmlEncode(folder.Folder_Name) + "</option>");
+                        }
+                    }
+                }
+                responseBuilder.AppendLine("</select></td></tr>");
+
+                // Add comments area
+                responseBuilder.Append("      <tr style=\"vertical-align:top\"><td><br /><label for=\"add_notes\">Notes:</label></td>");
+                responseBuilder.AppendLine("<td><textarea rows=\"6\" cols=\"" + actual_cols + "\" name=\"add_notes\" id=\"add_notes\" class=\"add_notes_textarea\" onfocus=\"javascript:textbox_enter('add_notes','add_notes_textarea_focused')\" onblur=\"javascript:textbox_leave('add_notes','add_notes_textarea')\"></textarea></td></tr>");
+                responseBuilder.AppendLine("      <tr style=\"vertical-align:top\"><td>&nbsp;</td><td><input type=\"checkbox\" id=\"open_bookshelf\" name=\"open_bookshelf\" value=\"open\" /> <label for=\"open_bookshelf\">Open bookshelf in new window</label></td></tr>");
+                responseBuilder.AppendLine("    </table>");
+                responseBuilder.AppendLine("    <br />");
+                responseBuilder.AppendLine("  </fieldset><br />");
+                responseBuilder.AppendLine("  <div style=\"text-align:center; font-size:1.3em;\">");
+                responseBuilder.AppendLine("    <button title=\"Cancel\" class=\"roundbutton\" onclick=\"return add_item_form_close();\"> CANCEL </button> &nbsp; &nbsp; ");
+                responseBuilder.AppendLine("    <button title=\"Send\" class=\"roundbutton\" type=\"submit\"> SAVE </button>");
+                responseBuilder.AppendLine("  </div><br />");
+                responseBuilder.AppendLine("</div>");
+                responseBuilder.AppendLine();
+
+                // Get the return string them
+                string returnValue = responseBuilder.ToString();
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+
+                    return;
+                }
+
+                // Get the JSON-P callback function
+                string json_callback = "parseBookshelfHtmlSnippet";
+                if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                {
+                    json_callback = QueryString["callback"];
+                }
+
+                // Use the base class to serialize the object according to request protocol
+                Serialize(returnValue, Response, Protocol, json_callback);
+                return;
+            }
+
+            // Add the error
+            Response.ContentType = "text/plain";
+            Response.StatusCode = 400;
+            Response.Output.WriteLine("UserID is a required parameter");
+            Response.Output.WriteLine();
+        }
+
+        #endregion
+
     }
 }

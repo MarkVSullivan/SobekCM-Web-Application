@@ -79,7 +79,7 @@ namespace SobekCM.Library.AdminViewer
 						editUser = (User_Object)sessionEditUser;
 					else
 					{
-                        editUser = SobekCM_Database.Get_User(edit_userid, RequestSpecificValues.Tracer);
+                        editUser = Engine_Database.Get_User(edit_userid, RequestSpecificValues.Tracer);
 						editUser.Should_Be_Able_To_Edit_All_Items = false;
 						if (editUser.Editable_Regular_Expressions.Any(ThisRegularExpression => ThisRegularExpression == "[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}"))
 						{
@@ -115,7 +115,7 @@ namespace SobekCM.Library.AdminViewer
 						if (reset_value.Length > 0)
 						{
 							int userid = Convert.ToInt32(reset_value);
-                            User_Object reset_user = SobekCM_Database.Get_User(userid, RequestSpecificValues.Tracer);
+                            User_Object reset_user = Engine_Database.Get_User(userid, RequestSpecificValues.Tracer);
 
 							// Create the random password
 							StringBuilder passwordBuilder = new StringBuilder();

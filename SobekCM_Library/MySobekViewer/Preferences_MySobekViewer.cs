@@ -446,7 +446,7 @@ namespace SobekCM.Library.MySobekViewer
                         SobekCM_Database.Save_User(user, password, user.Authentication_Type, RequestSpecificValues.Tracer);
 
 						// Retrieve the user from the database
-                        user = SobekCM_Database.Get_User(username, password, RequestSpecificValues.Tracer);
+                        user = Engine_Database.Get_User(username, password, RequestSpecificValues.Tracer);
 
 						// Special code in case this is the very first user
 						if (user.UserID == 1)
@@ -463,7 +463,7 @@ namespace SobekCM.Library.MySobekViewer
                             SobekCM_Database.Update_SobekCM_User_Templates(user.UserID, new ReadOnlyCollection<string>(templates), RequestSpecificValues.Tracer);
 
 							// Retrieve the user information again
-                            user = SobekCM_Database.Get_User(username, password, RequestSpecificValues.Tracer);
+                            user = Engine_Database.Get_User(username, password, RequestSpecificValues.Tracer);
 
                             // Also, use the current email address for some system emails
 						    if (user.Email.Length > 0)
