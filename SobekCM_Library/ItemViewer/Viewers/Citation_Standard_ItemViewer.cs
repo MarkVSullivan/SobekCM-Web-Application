@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,7 +11,6 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Core.Users;
 using SobekCM.Library.UI;
-using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -72,8 +70,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentItem"> Digital resource object, which can be used to ensure if and how this viewer should appear 
         /// in the main item (digital resource) menu </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
+        /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
-        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, List<Item_MenuItem> MenuItems)
+        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
         {
             Item_MenuItem menuItem = new Item_MenuItem("Description", null, null, CurrentItem.Web.Source_URL + ViewerCode);
             MenuItems.Add(menuItem);
@@ -99,6 +98,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
     public class Citation_Standard_ItemViewer : abstractNoPaginationItemViewer
     {
         private readonly int width = 180;
+        private readonly bool isRobot;
 
         /// <summary> Constructor for a new instance of the Citation_Standard_ItemViewer class, used to display the 
         /// descriptive citation in standard, human-readable format for the digital resource </summary>
@@ -118,6 +118,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Set the width
             if ((CurrentRequest.Language == Web_Language_Enum.French) || (CurrentRequest.Language == Web_Language_Enum.Spanish))
                 width = 230;
+
+            // Get  the robot flag (if this is rendering for robots, the other citation views are not available)
+            isRobot = CurrentRequest.Is_Robot;
         }
 
         /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
@@ -215,9 +218,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> HTML string with the basic information about this digital resource for display </returns>
         public string Standard_Citation_String(bool Include_Links, Custom_Tracer Tracer)
         {
-            bool internalUser = ((CurrentUser != null) && (CurrentUser.LoggedOn) && (CurrentUser.Is_Internal_User));
-
-
 
             // Compute the URL to use for all searches from the citation
             Display_Mode_Enum lastMode = CurrentRequest.Mode;
@@ -231,11 +231,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.Search_String = String.Empty;
             CurrentRequest.Search_Fields = String.Empty;
             CurrentRequest.Mode = lastMode;
-            string url_options = UrlWriterHelper.URL_Options(CurrentRequest);
-            if (url_options.Length > 0)
-            {
-                url_options = "?" + url_options;
-            }
 
             // If no search links should should be included, clear the search strings
             if (!Include_Links)
@@ -301,6 +296,25 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CitationSet citationSet = UI_ApplicationCache_Gateway.Configuration.UI.CitationViewer.Get_CitationSet();
             foreach (CitationFieldSet fieldsSet in citationSet.FieldSets)
             {
+                // Check to see if any of the values indicated in this field set exist
+                bool foundExistingData = false;
+                foreach (CitationElement thisField in fieldsSet.Elements)
+                {
+                    // Look for a match in the item description
+                    BriefItem_DescriptiveTerm briefTerm = BriefItem.Get_Description(thisField.MetadataTerm);
+
+                    // If no match, just continue
+                    if ((briefTerm != null) && (briefTerm.Values.Count > 0))
+                    {
+                        foundExistingData = true;
+                        break;
+                    }
+                }
+
+                // If no data was found to put in this field set, skip it
+                if (!foundExistingData)
+                    continue;
+
                 // Start this section
                 result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_" + fieldsSet.ID.Replace(" ","_") + "Section\" >");
                 if (!String.IsNullOrEmpty(fieldsSet.Heading))
@@ -309,154 +323,280 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
                 result.AppendLine(INDENT + "  <dl>");
 
-                // Step through all the fields in this field set
+                // Step through all the fields in this field set and write them
                 foreach (CitationElement thisField in fieldsSet.Elements)
                 {
-                    
+                    // Look for a match in the item description
+                    BriefItem_DescriptiveTerm briefTerm = BriefItem.Get_Description(thisField.MetadataTerm);
+
+                    // If no match, just continue
+                    if ((briefTerm == null) || ( briefTerm.Values.Count == 0 ))
+                        continue;
+
+                    // If they can all be listed one after the other do so now
+                    if (!thisField.IndividualFields)
+                    {
+                        List<string> valueArray = new List<string>();
+                        foreach (BriefItem_DescTermValue thisValue in briefTerm.Values)
+                        {
+                            if (!String.IsNullOrEmpty(thisField.SearchCode))
+                            {
+                                if ( String.IsNullOrEmpty(thisField.ItemProp ))
+                                {
+                                    if (String.IsNullOrEmpty(thisValue.Authority))
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        {
+                                            valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end);
+                                        }
+                                        else
+                                        {
+                                            valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        {
+                                            valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )");
+                                        }
+                                        else
+                                        {
+                                            valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
+                                        }
+                                    }
+                                    
+                                }
+                                else
+                                {
+                                    if (String.IsNullOrEmpty(thisValue.Authority))
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        {
+                                            valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + "</span>");
+                                        }
+                                        else
+                                        {
+                                            valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )" + "</span>");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        {
+                                            valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )" + "</span>");
+                                        }
+                                        else
+                                        {
+                                            valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>");
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if ( String.IsNullOrEmpty(thisField.ItemProp ))
+                                {
+                                    if (String.IsNullOrEmpty(thisValue.Authority))
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        {
+                                            valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value));
+                                        }
+                                        else
+                                        {
+                                            valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        {
+                                            valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )");
+                                        }
+                                        else
+                                        {
+                                            valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
+                                        }
+                                    }
+                                    
+                                }
+                                else
+                                {
+                                    if (String.IsNullOrEmpty(thisValue.Authority))
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        {
+                                            valueArray.Add( "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + "</span>");
+                                        }
+                                        else
+                                        {
+                                            valueArray.Add( "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )" + "</span>");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        {
+                                            valueArray.Add( "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )" + "</span>");
+                                        }
+                                        else
+                                        {
+                                            valueArray.Add( "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        // Now, add this to the citation HTML
+                        Add_Citation_HTML_Rows(thisField.DisplayTerm, valueArray, INDENT, result);
+                    }
+                    else
+                    {
+                        // In this case, each individual value gets its own citation html row
+                        foreach (BriefItem_DescTermValue thisValue in briefTerm.Values)
+                        {
+                            // Determine the label
+                            string label = thisField.DisplayTerm;
+                            if (thisField.OverrideDisplayTerm == CitationElement_OverrideDispayTerm_Enum.subterm)
+                            {
+                                if (!String.IsNullOrEmpty(thisValue.SubTerm))
+                                    label = thisValue.SubTerm;
+                            }
+
+                            if (!String.IsNullOrEmpty(thisField.SearchCode))
+                            {
+                                if (String.IsNullOrEmpty(thisField.ItemProp))
+                                {
+                                    if (String.IsNullOrEmpty(thisValue.Authority))
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        {
+                                            result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end, INDENT));
+                                        }
+                                        else
+                                        {
+                                            result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )", INDENT));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        {
+                                            result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )", INDENT));
+                                        }
+                                        else
+                                        {
+                                            result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )", INDENT));
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (String.IsNullOrEmpty(thisValue.Authority))
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        {
+                                            result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + "</span>", INDENT));
+                                        }
+                                        else
+                                        {
+                                            result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )" + "</span>", INDENT));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        {
+                                            result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )" + "</span>", INDENT));
+                                        }
+                                        else
+                                        {
+                                            result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>", INDENT));
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (String.IsNullOrEmpty(thisField.ItemProp))
+                                {
+                                    if (String.IsNullOrEmpty(thisValue.Authority))
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        {
+                                            result.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value), INDENT));
+                                        }
+                                        else
+                                        {
+                                            result.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )", INDENT));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        {
+                                            result.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )", INDENT));
+                                        }
+                                        else
+                                        {
+                                            result.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )", INDENT));
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (String.IsNullOrEmpty(thisValue.Authority))
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        {
+                                            result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + "</span>", INDENT));
+                                        }
+                                        else
+                                        {
+                                            result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )" + "</span>", INDENT));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        {
+                                            result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )" + "</span>", INDENT));
+                                        }
+                                        else
+                                        {
+                                            result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>", INDENT));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
                 // End this division
                 result.AppendLine(INDENT + "  </dl>");
                 result.AppendLine(INDENT + "</div>");
-
             }
 
+            //bool internalUser = ((CurrentUser != null) && (CurrentUser.LoggedOn) && (CurrentUser.Is_Internal_User));
+            //if (internalUser)
+            //{
+            //    result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_MetsSection\" >");
+            //    result.AppendLine(INDENT + "<h2>METS Information</h2>");
+            //    result.AppendLine(INDENT + "  <dl>");
+            //    result.Append(Single_Citation_HTML_Row("Format", BriefItem.Type, INDENT));
+            //    result.Append(Single_Citation_HTML_Row("Creation Date", CurrentItem.METS_Header.Create_Date.ToShortDateString(), INDENT));
+            //    result.Append(Single_Citation_HTML_Row("Last Modified", CurrentItem.METS_Header.Modify_Date.ToShortDateString(), INDENT));
+            //    result.Append(Single_Citation_HTML_Row("Last Type", CurrentItem.METS_Header.RecordStatus, INDENT));
+            //    result.Append(Single_Citation_HTML_Row("Last User", CurrentItem.METS_Header.Creator_Individual, INDENT));
+            //    result.Append(Single_Citation_HTML_Row("System Folder", CurrentItem.Web.AssocFilePath.Replace("/", "\\"), INDENT));
 
-
-            List<string> tempList = new List<string>();
-
-            // Build the value
-
-
-      
-
-            // Add the thesis/dissertation data if it exists
-            if ((thesisInfo != null) && (thesisInfo.hasData))
-            {
-                result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_ThesisSection\">");
-                result.AppendLine(INDENT + "<h2>" + thesis_title + "</h2>");
-                result.AppendLine(INDENT + "  <dl>");
-
-                if (thesisInfo.Degree.Length > 0)
-                {
-                    if (thesisInfo.Degree_Level != Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Unknown)
-                    {
-                        switch (thesisInfo.Degree_Level)
-                        {
-                            case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Bachelors:
-                                result.Append(Single_Citation_HTML_Row("Degree", "Bachelor's ( " + thesisInfo.Degree + ")", INDENT));
-                                break;
-
-                            case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Masters:
-                                result.Append(Single_Citation_HTML_Row("Degree", "Master's ( " + thesisInfo.Degree + ")", INDENT));
-                                break;
-
-                            case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Doctorate:
-                                result.Append(Single_Citation_HTML_Row("Degree", "Doctorate ( " + thesisInfo.Degree + ")", INDENT));
-                                break;
-
-                            case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.PostDoctorate:
-                                result.Append(Single_Citation_HTML_Row("Degree", "Post-Doctorate ( " + thesisInfo.Degree + ")", INDENT));
-                                break;
-                        }
-                    }
-                    else
-                    {
-                        result.Append(Single_Citation_HTML_Row("Degree", thesisInfo.Degree, INDENT));
-                    }
-                }
-                else if (thesisInfo.Degree_Level != Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Unknown)
-                {
-                    switch (thesisInfo.Degree_Level)
-                    {
-                        case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Bachelors:
-                            result.Append(Single_Citation_HTML_Row("Degree", "Bachelor's", INDENT));
-                            break;
-
-                        case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Masters:
-                            result.Append(Single_Citation_HTML_Row("Degree", "Master's", INDENT));
-                            break;
-
-                        case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.Doctorate:
-                            result.Append(Single_Citation_HTML_Row("Degree", "Doctorate", INDENT));
-                            break;
-
-                        case Thesis_Dissertation_Info.Thesis_Degree_Level_Enum.PostDoctorate:
-                            result.Append(Single_Citation_HTML_Row("Degree", "Post-Doctorate", INDENT));
-                            break;
-                    }
-                }
-
-
-                result.Append(Single_Citation_HTML_Row("Degree Grantor", thesisInfo.Degree_Grantor, INDENT));
-
-                if (thesisInfo.Degree_Divisions_Count > 0)
-                {
-                    StringBuilder divisionBuilder = new StringBuilder();
-                    foreach (string thisDivision in thesisInfo.Degree_Divisions)
-                    {
-                        if (divisionBuilder.Length > 0)
-                            divisionBuilder.Append(", ");
-                        divisionBuilder.Append(search_link.Replace("<%VALUE%>", HttpUtility.UrlEncode(Convert_String_To_XML_Safe(thisDivision)).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "EJ") + Convert_String_To_XML_Safe(thisDivision) + search_link_end);
-                    }
-
-                    result.Append(Single_Citation_HTML_Row("Degree Divisions", divisionBuilder.ToString(), INDENT));
-                }
-
-                if (thesisInfo.Degree_Disciplines_Count > 0)
-                {
-                    StringBuilder disciplinesBuilder = new StringBuilder();
-                    foreach (string thisDiscipline in thesisInfo.Degree_Disciplines)
-                    {
-                        if (disciplinesBuilder.Length > 0)
-                            disciplinesBuilder.Append(", ");
-                        disciplinesBuilder.Append(search_link.Replace("<%VALUE%>", HttpUtility.UrlEncode(Convert_String_To_XML_Safe(thisDiscipline)).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "EI") + Convert_String_To_XML_Safe(thisDiscipline) + search_link_end);
-                    }
-                    string text_disciplines = "Degree Disciplines";
-                    if (CurrentMode.Skin.ToLower() == "ncf")
-                        text_disciplines = "Area of Concentration";
-                    result.Append(Single_Citation_HTML_Row(text_disciplines, disciplinesBuilder.ToString(), INDENT));
-                }
-
-                if (thesisInfo.Committee_Chair.Length > 0)
-                    result.Append(Single_Citation_HTML_Row("Committee Chair", search_link.Replace("<%VALUE%>", HttpUtility.UrlEncode(Convert_String_To_XML_Safe(thesisInfo.Committee_Chair)).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "EC") + Convert_String_To_XML_Safe(thesisInfo.Committee_Chair) + search_link_end, INDENT));
-                if (thesisInfo.Committee_Co_Chair.Length > 0)
-                    result.Append(Single_Citation_HTML_Row("Committee Co-Chair", search_link.Replace("<%VALUE%>", HttpUtility.UrlEncode(Convert_String_To_XML_Safe(thesisInfo.Committee_Co_Chair)).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "EC") + Convert_String_To_XML_Safe(thesisInfo.Committee_Co_Chair) + search_link_end, INDENT));
-
-                if (thesisInfo.Committee_Members_Count > 0)
-                {
-                    tempList.Clear();
-                    foreach (string thisMember in thesisInfo.Committee_Members)
-                    {
-                        tempList.Add(search_link.Replace("<%VALUE%>", HttpUtility.UrlEncode(Convert_String_To_XML_Safe(thisMember)).Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+")).Replace("<%CODE%>", "EC") + Convert_String_To_XML_Safe(thisMember) + search_link_end);
-                    }
-                    string text = "Committee Members";
-                    if (CurrentMode.Skin.ToLower() == "ncf")
-                        text = "Faculty Sponsor";
-                    Add_Citation_HTML_Rows(text, tempList, INDENT, result);
-                }
-
-                result.AppendLine(INDENT + "  </dl>");
-                result.AppendLine(INDENT + "</div>");
-            }
-
-            if (internalUser)
-            {
-
-                result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_MetsSection\" >");
-                result.AppendLine(INDENT + "<h2>" + mets_info + "</h2>");
-                result.AppendLine(INDENT + "  <dl>");
-                result.Append(Single_Citation_HTML_Row("Format", CurrentItem.Bib_Info.SobekCM_Type_String, INDENT));
-                result.Append(Single_Citation_HTML_Row("Creation Date", CurrentItem.METS_Header.Create_Date.ToShortDateString(), INDENT));
-                result.Append(Single_Citation_HTML_Row("Last Modified", CurrentItem.METS_Header.Modify_Date.ToShortDateString(), INDENT));
-                result.Append(Single_Citation_HTML_Row("Last Type", CurrentItem.METS_Header.RecordStatus, INDENT));
-                result.Append(Single_Citation_HTML_Row("Last User", CurrentItem.METS_Header.Creator_Individual, INDENT));
-                result.Append(Single_Citation_HTML_Row("System Folder", CurrentItem.Web.AssocFilePath.Replace("/", "\\"), INDENT));
-
-                result.AppendLine(INDENT + "  </dl>");
-                result.AppendLine(INDENT + "</div>");
-                result.AppendLine();
-            }
+            //    result.AppendLine(INDENT + "  </dl>");
+            //    result.AppendLine(INDENT + "</div>");
+            //    result.AppendLine();
+            //}
 
             if ((CurrentUser != null) && (CurrentUser.Is_System_Admin))
             {
@@ -477,38 +617,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             return result.ToString();
         }
 
-
-
-        private void Add_Citation_HTML_Rows(string Row_Name, ReadOnlyCollection<string> Values, string Indent, StringBuilder Results)
+        private static string search_link_from_value(string Value)
         {
-            // Only add if there is a value
-            if (Values.Count <= 0) return;
-
-            Results.Append(Indent + "    <dt class=\"sbk_Civ" + Row_Name.ToUpper().Replace(" ", "_") + "_Element\" style=\"width:" + width + "px;\" >");
-
-            // Add with proper language
-            Results.Append(UI_ApplicationCache_Gateway.Translation.Get_Translation(Row_Name, CurrentRequest.Language));
-
-            Results.Append(": </dt>");
-            Results.Append(Indent + "    <dd class=\"sbk_Civ" + Row_Name.ToUpper().Replace(" ", "_") + "_Element\" style=\"margin-left:" + width + "px;\">");
-            bool first = true;
-            foreach (string thisValue in Values.Where(ThisValue => ThisValue.Length > 0))
-            {
-                if (first)
-                {
-                    Results.Append(thisValue);
-                    first = false;
-                }
-                else
-                {
-                    Results.Append("<br />" + thisValue);
-                }
-            }
-            Results.AppendLine("</dd>");
-            Results.AppendLine();
+            string replacedValue = Value.Replace("&amp;", "&").Replace("&", "").Replace("  ", " ");
+            string urlEncode = HttpUtility.UrlEncode(replacedValue);
+            return urlEncode != null ? urlEncode.Replace(",", "").Replace("&amp;", "&").Replace("&", "").Replace(" ", "+") : String.Empty;
         }
-
-
 
         private void Add_Citation_HTML_Rows(string Row_Name, List<string> Values, string Indent, StringBuilder Results)
         {
@@ -575,9 +689,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             const string MARC_VIEW = "MARC VIEW";
             const string METADATA_VIEW = "METADATA";
             const string STATISTICS_VIEW = "USAGE STATISTICS";
-
-            // Get  the robot flag (if this is rendering for robots, the other citation views are not available)
-            bool isRobot = CurrentRequest.Is_Robot;
 
             // Add the tabs for the different citation information
             string orig_viewer_code = CurrentRequest.ViewerCode;

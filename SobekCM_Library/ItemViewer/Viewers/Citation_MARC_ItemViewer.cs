@@ -57,6 +57,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Flag indicates if the current user has access to this viewer for the item </summary>
         /// <param name="CurrentItem"> Digital resource to see if the current user has correct permissions to use this viewer </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
+        /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="IpRestricted"> Flag indicates if this item is IP restricted AND if the current user is outside the ranges </param>
         /// <returns> TRUE if the user has access to use this viewer, otherwise FALSE </returns>
         public bool Has_Access(BriefItemInfo CurrentItem, User_Object CurrentUser, bool IpRestricted)
@@ -70,7 +71,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// in the main item (digital resource) menu </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
-        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, List<Item_MenuItem> MenuItems)
+        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
         {
             Item_MenuItem menuItem = new Item_MenuItem("Description", "MARC View", null, CurrentItem.Web.Source_URL + ViewerCode);
             MenuItems.Add(menuItem);

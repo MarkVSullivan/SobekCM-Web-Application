@@ -92,7 +92,7 @@ namespace SobekCM.Library.ItemViewer
         /// <param name="Current_Mode"> Navigation object with all the information about the current request </param>
         /// <returns> Genereated item viewer class for rendering the particular view of a digital resource
         /// via HTML. </returns>
-        public static abstractItemViewer_OLD Get_Viewer(View_Object ViewObject, string Resource_Type, SobekCM_Item Current_Object, User_Object Current_User, Navigation_Object Current_Mode )
+        public static iItemViewerPrototyper Get_Viewer(View_Object ViewObject, string Resource_Type, SobekCM_Item Current_Object, User_Object Current_User, Navigation_Object Current_Mode )
         {
             switch (ViewObject.View_Type)
             {

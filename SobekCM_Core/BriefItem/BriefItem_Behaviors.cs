@@ -70,10 +70,16 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(9)] 
         public string GroupType { get; set; }
 
+        /// <summary> Title associated with the overall item group </summary>
+        [DataMember(EmitDefaultValue = false, Name = "groupTitle")]
+        [XmlAttribute("groupTitle")]
+        [ProtoMember(10)]
+        public string GroupTitle { get; set; }
+
         /// <summary> Gets and sets the name of the main thumbnail file </summary>
         [DataMember(EmitDefaultValue = false, Name = "thumbnail")]
         [XmlAttribute("thumbnail")]
-        [ProtoMember(10)] 
+        [ProtoMember(11)] 
         public string Main_Thumbnail { get; set; }
 
         /// <summary> Constructor for a new instance of the BriefItem_Behaviors class </summary>

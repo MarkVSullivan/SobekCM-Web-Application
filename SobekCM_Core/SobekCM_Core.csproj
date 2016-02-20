@@ -96,6 +96,7 @@
     <Compile Include="BriefItem\BriefItem_FileGrouping.cs" />
     <Compile Include="BriefItem\BriefItem_GeoSpatial.cs" />
     <Compile Include="BriefItem\BriefItem_Namespace.cs" />
+    <Compile Include="BriefItem\BriefItem_Related_Titles.cs" />
     <Compile Include="BriefItem\BriefItem_TocElement.cs" />
     <Compile Include="BriefItem\BriefItem_Web.cs" />
     <Compile Include="BriefItem\IBriefItemMapper.cs" />

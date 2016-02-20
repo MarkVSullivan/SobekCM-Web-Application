@@ -166,8 +166,7 @@ namespace SobekCM.Engine_Library.Items
 					string relationship = thisRow["Relationship"].ToString();
 					string title = thisRow["GroupTitle"].ToString();
 					string bibid = thisRow["BibID"].ToString();
-					string link_and_title = "<a href=\"<%BASEURL%>" + bibid + "<%URL_OPTS%>\">" + title + "</a>";
-					Item_Group_Object.Web.All_Related_Titles.Add(new Related_Titles(relationship, link_and_title));
+					Item_Group_Object.Web.All_Related_Titles.Add(new Related_Titles(relationship, title, "<%BASEURL%>" + bibid + "<%URL_OPTS%>\">"));
 				}
 			}
 		}

@@ -45,6 +45,27 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(5)]
         public int GroupID { get; set; }
 
+        /// <summary> List of all the file extensions included in this item </summary>
+        [DataMember(EmitDefaultValue = false, Name = "relatedTitles")]
+        [XmlArray("relatedTitles")]
+        [XmlArrayItem("relatedTitle", typeof(BriefItem_Related_Titles))]
+        [ProtoMember(6)]
+        public List<BriefItem_Related_Titles> Related_Titles { get; set; }
+
+        /// <summary> Add a related title to this web information </summary>
+        /// <param name="Relationship"> Relationship between the main title and the related title</param>
+        /// <param name="Title"> Title of the related title within this SobekCM library</param>
+        /// <param name="Link"> Link for the related title within this SobekCM library</param>
+        public void Add_Related_Title(string Relationship, string Title, string Link)
+        {
+            // Make sure not null
+            if (Related_Titles == null)
+                Related_Titles = new List<BriefItem_Related_Titles>();
+
+            // Add this
+            Related_Titles.Add(new BriefItem_Related_Titles(Relationship, Title, Link));
+        }
+
         /// <summary> Checks to see if a file extension exists in the file extensions lists </summary>
         /// <param name="Extension"> File extension to check </param>
         /// <returns> TRUE if the file extension exists, otherwise FALSE </returns>

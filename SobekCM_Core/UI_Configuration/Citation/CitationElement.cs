@@ -80,10 +80,18 @@ namespace SobekCM.Core.UI_Configuration.Citation
         [ProtoMember(8)]
         public List<Web_Language_Translation_Value> Translations { get; set; }
 
+        /// <summary> Flag indicates if each field should be individually labeled, or if they 
+        /// can all be run together in one large block </summary>
+        [DataMember(Name = "individualFields")]
+        [XmlAttribute("individualFields")]
+        [ProtoMember(9)]
+        public bool IndividualFields { get; set; }
+
         /// <summary> Constructor for a new instance of the <see cref="CitationElement"/> class </summary>
         public CitationElement()
         {
             OverrideDisplayTerm = CitationElement_OverrideDispayTerm_Enum.NONE;
+            IndividualFields = false;
         }
 
         /// <summary> Constructor for a new instance of the <see cref="CitationElement"/> class </summary>
@@ -99,6 +107,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
             this.SearchCode = SearchCode;
             this.ItemProp = ItemProp;
             OverrideDisplayTerm = CitationElement_OverrideDispayTerm_Enum.NONE;
+            IndividualFields = false;
         }
 
         /// <summary> Constructor for a new instance of the <see cref="CitationElement"/> class </summary>
@@ -116,6 +125,8 @@ namespace SobekCM.Core.UI_Configuration.Citation
             this.SearchCode = SearchCode;
             this.ItemProp = ItemProp;
             this.OverrideDisplayTerm = OverrideDisplayTerm;
+
+            IndividualFields = (OverrideDisplayTerm == CitationElement_OverrideDispayTerm_Enum.subterm);
         }
 
         #region Methods that controls XML serialization

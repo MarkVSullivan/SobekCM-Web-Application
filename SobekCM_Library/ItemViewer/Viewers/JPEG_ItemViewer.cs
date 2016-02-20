@@ -73,8 +73,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentItem"> Digital resource object, which can be used to ensure if and how this viewer should appear 
         /// in the main item (digital resource) menu </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
+        /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
-        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, List<Item_MenuItem> MenuItems)
+        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
         {
             Item_MenuItem menuItem = new Item_MenuItem("Page Images", "Standard", null, CurrentItem.Web.Source_URL + ViewerCode);
             MenuItems.Add(menuItem);

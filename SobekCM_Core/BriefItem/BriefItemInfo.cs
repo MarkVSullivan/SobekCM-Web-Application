@@ -17,7 +17,7 @@ namespace SobekCM.Core.BriefItem
     [XmlRoot("item")]
     public class BriefItemInfo
     {
-        private readonly Dictionary<string, BriefItem_DescriptiveTerm> descriptionTermLookup;
+        private Dictionary<string, BriefItem_DescriptiveTerm> descriptionTermLookup;
 
         /// <summary> Bibliographic identifier for this item </summary>
         [DataMember(EmitDefaultValue = false, Name = "bibid")]
@@ -182,6 +182,29 @@ namespace SobekCM.Core.BriefItem
                 Description.Add(newElement);
                 descriptionTermLookup.Add(Term, newElement);
             }
+        }
+
+        /// <summary> Checks the description and returns any descriptions linked to the provided term </summary>
+        /// <param name="Term"> Key for this term </param>
+        /// <returns> Either the information about values matching that term, or NULL </returns>
+        public BriefItem_DescriptiveTerm Get_Description(string Term)
+        {
+            // Ensure the dictionary is built first
+            if (descriptionTermLookup == null)
+                descriptionTermLookup = new Dictionary<string, BriefItem_DescriptiveTerm>( StringComparer.OrdinalIgnoreCase);
+
+            // Ensure the dictionary count matches the description count
+            if (descriptionTermLookup.Count != Description.Count)
+            {
+                descriptionTermLookup.Clear();
+                foreach (BriefItem_DescriptiveTerm thisTerm in Description)
+                {
+                    descriptionTermLookup[thisTerm.Term] = thisTerm;
+                }
+            }
+
+            // Now, look to see if it exists
+            return descriptionTermLookup.ContainsKey(Term) ? descriptionTermLookup[Term] : null;
         }
     }
 }

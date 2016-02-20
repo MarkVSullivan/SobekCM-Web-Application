@@ -69,9 +69,31 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// in the main item (digital resource) menu </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
-        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, List<Item_MenuItem> MenuItems)
+        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
         {
-            Item_MenuItem menuItem = new Item_MenuItem("MAP IT!", null, null, CurrentItem.Web.Source_URL + ViewerCode);
+            // Determine the label to show on the menu
+            string label = "Map It!";
+            if (!String.IsNullOrEmpty(CurrentRequest.Coordinates))
+            {
+                if (CurrentRequest.ViewerCode == "mapsearch")
+                {
+                    label = "Map Search";
+                }
+                else
+                {
+                    if (((CurrentItem.Images != null ) && ( CurrentItem.Images.Count > 1)) || ( String.Compare(CurrentItem.Type, "map", StringComparison.OrdinalIgnoreCase) != 0 ))
+                    {
+                        label = "Search Results";
+                    }
+                    else
+                    {
+                        label = "Map Coverage";
+                    }
+                }
+            }
+
+            // Add to the main menu
+            Item_MenuItem menuItem = new Item_MenuItem(label, null, null, CurrentItem.Web.Source_URL + ViewerCode);
             MenuItems.Add(menuItem);
         }
 
