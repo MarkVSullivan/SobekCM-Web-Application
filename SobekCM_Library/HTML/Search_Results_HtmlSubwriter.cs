@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Tools;
@@ -17,13 +18,116 @@ namespace SobekCM.Library.HTML
     public class Search_Results_HtmlSubwriter : abstractHtmlSubwriter
     {
         private PagedResults_HtmlSubwriter writeResult;
+        private readonly Item_Aggregation hierarchyObject;
 
         /// <summary> Constructor for a new instance of the Search_Results_HtmlSubwriter class </summary>
-        /// <param name="RequestSpecificValues"> All the neFcessary, non-global data specific to the current request </param>
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Search_Results_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
         {
-            // Do nothing
-         }
+            // Use the method in the base class to actually pull the entire hierarchy
+            if (!Get_Collection(RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer, out hierarchyObject))
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+            }
+        }
+
+
+        /// <summary> Write any additional values within the HTML Head of the
+        /// final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
+
+            // If this is the thumbnails results, add the QTIP script and css
+            if ((RequestSpecificValues.Results_Statistics != null) &&
+                (RequestSpecificValues.Results_Statistics.Total_Items > 0) &&
+                (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Thumbnails))
+            {
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Qtip_Js + "\"></script>");
+                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Jquery_Qtip_Css + "\" /> ");
+            }
+        }
+
+        /// <summary> Chance for a final, final CSS which can override anything else, including the web skin </summary>
+        public override string Final_CSS
+        {
+            get
+            {
+                // Finally add the aggregation-level CSS if it exists
+                if ((hierarchyObject != null) && (!String.IsNullOrEmpty(hierarchyObject.CSS_File)))
+                {
+                    return "  <link href=\"" + RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + hierarchyObject.Code + "/" + hierarchyObject.CSS_File + "\" rel=\"stylesheet\" type=\"text/css\" />";
+                }
+                return String.Empty;
+            }
+        }
+
+        /// <summary> Gets the collection of body attributes to be included 
+        /// within the HTML body tag (usually to add events to the body) </summary>
+        public override List<Tuple<string, string>> Body_Attributes
+        {
+            get
+            {
+                if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map)
+                {
+                    List<Tuple<string, string>> returnValue = new List<Tuple<string, string>> { new Tuple<string, string>("onload", "load();") };
+
+                    return returnValue;
+                }
+                if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta)
+                {
+                    List<Tuple<string, string>> returnValue = new List<Tuple<string, string>> { new Tuple<string, string>("onload", "load();") };
+
+                    return returnValue;
+                }
+                return null;
+            }
+        }
+
+        /// <summary> Title for this web page </summary>
+        public override string WebPage_Title
+        {
+            get
+            {
+                if (hierarchyObject != null)
+                {
+                    return "{0} Search Results - " + hierarchyObject.Name;
+                }
+                return "{0} Search Results";
+            }
+        }
+
+        /// <summary> Add the header to the output </summary>
+        /// <param name="Output"> Stream to which to write the HTML for this header </param>
+        public override void Add_Header(TextWriter Output)
+        {
+            HeaderFooter_Helper_HtmlSubWriter.Add_Header(Output, RequestSpecificValues, Container_CssClass, WebPage_Title, Subwriter_Behaviors, hierarchyObject, null);
+        }
+
+        /// <summary> Flag indicates if the internal header should included </summary>
+        /// <remarks> By default this return TRUE if the user is internal, or a portal/system admin, but can be 
+        /// overwritten by all the individual html subwriters </remarks>
+        public override bool Include_Internal_Header
+        {
+            get
+            {
+                // If no user, do not show
+                if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+                    return false;
+
+                // Always show for admins
+                if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
+                    return true;
+
+                if ((RequestSpecificValues.Current_User.Is_Aggregation_Curator(RequestSpecificValues.Current_Mode.Aggregation)) || (RequestSpecificValues.Current_User.Can_Edit_All_Items(RequestSpecificValues.Current_Mode.Aggregation)))
+                    return true;
+
+                // Otherwise, do not show
+                return false;
+            }
+        }
 
         /// <summary> Adds controls to the main navigational page </summary>
         /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
@@ -77,7 +181,7 @@ namespace SobekCM.Library.HTML
             else
             {
 				// Add the main aggrgeation menu here
-				MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, RequestSpecificValues, false);
+				MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Search_Results_Menu(Output, RequestSpecificValues, hierarchyObject, false);
             }
            
             if ( RequestSpecificValues.Results_Statistics != null )
@@ -93,40 +197,14 @@ namespace SobekCM.Library.HTML
             return true;
         }
 
-        /// <summary> Gets the collection of body attributes to be included 
-        /// within the HTML body tag (usually to add events to the body) </summary>
-        public override List<Tuple<string, string>> Body_Attributes
+        /// <summary> Add the footer to the output </summary>
+        /// <param name="Output"> Stream to which to write the HTML for this footer </param>
+        public override void Add_Footer(TextWriter Output)
         {
-            get
-            {
-                if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map)
-                {
-                    List<Tuple<string, string>> returnValue = new List<Tuple<string, string>> {new Tuple<string, string>("onload", "load();")};
-
-                    return returnValue;
-                }
-                if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta)
-                {
-                    List<Tuple<string, string>> returnValue = new List<Tuple<string, string>> {new Tuple<string, string>("onload", "load();")};
-
-                    return returnValue;
-                }
-                return null;
-            }
+            HeaderFooter_Helper_HtmlSubWriter.Add_Footer(Output, RequestSpecificValues, Subwriter_Behaviors, hierarchyObject, null);
         }
 
-        /// <summary> Title for this web page </summary>
-        public override string WebPage_Title
-        {
-            get
-            {
-                if (RequestSpecificValues.Hierarchy_Object != null)
-                {
-                    return "{0} Search Results - " + RequestSpecificValues.Hierarchy_Object.Name;
-                }
-                return "{0} Search Results";
-            }
-        }
+ 
 
         /// <summary> Gets the collection of special behaviors which this subwriter
         /// requests from the main HTML subwriter. </summary>
@@ -139,23 +217,8 @@ namespace SobekCM.Library.HTML
             }
         }
 
-        /// <summary> Write any additional values within the HTML Head of the
-        /// final served page </summary>
-        /// <param name="Output"> Output stream currently within the HTML head tags </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
-        {
-            Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
 
-            // If this is the thumbnails results, add the QTIP script and css
-            if ((RequestSpecificValues.Results_Statistics != null) &&
-                (RequestSpecificValues.Results_Statistics.Total_Items > 0) &&
-                (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Thumbnails))
-            {
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Qtip_Js + "\"></script>");
-                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Jquery_Qtip_Css + "\" /> ");
-            }
-        }
+
 
 		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
 		public override string Container_CssClass

@@ -2,6 +2,7 @@
 using System.IO;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.WebContent;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.WebContentViewer.Viewers
@@ -12,7 +13,8 @@ namespace SobekCM.Library.WebContentViewer.Viewers
     {
         /// <summary> Constructor for a new instance of the Manage_Menu_WebContentViewer class </summary>
         /// <param name="RequestSpecificValues">  All the necessary, non-global data specific to the current request  </param>
-        public Manage_Menu_WebContentViewer(RequestCache RequestSpecificValues) : base ( RequestSpecificValues )
+        /// <param name="StaticPage"> Static page info for this request </param>
+        public Manage_Menu_WebContentViewer(RequestCache RequestSpecificValues, HTML_Based_Content StaticPage ) : base ( RequestSpecificValues, StaticPage )
         {
 
         }
@@ -49,7 +51,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
 
             string type1 = "web content page";
             string type2 = "Web Content Page";
-            if (!String.IsNullOrEmpty(RequestSpecificValues.Static_Web_Content.Redirect))
+            if (!String.IsNullOrEmpty(StaticPage.Redirect))
             {
                 type1 = "global redirect";
                 type2 = "Global Redirect";

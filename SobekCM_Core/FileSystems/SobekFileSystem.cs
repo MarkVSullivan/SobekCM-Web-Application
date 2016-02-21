@@ -57,5 +57,14 @@ namespace SobekCM.Core.FileSystems
             return fileSystem.FileExists(DigitalResource, FileName);
         }
 
+        /// <summary> [TEMPORARY] Get the associated file path (which is essentially the part of the 
+        /// path that appears UNDER the root imaging spot </summary>
+        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <returns> Part of the file path, derived from the BibID and VID </returns>
+        public static string AssociFilePath(BriefItemInfo DigitalResource)
+        {
+            return fileSystem.AssociFilePath(DigitalResource);
+        }
+
     }
 }

@@ -109,6 +109,36 @@ namespace SobekCM.Library.HTML
 			// Do nothing by default
 		}
 
+        /// <summary> Chance for a final, final CSS which can override anything else, including the web skin </summary>
+	    public virtual string Final_CSS
+	    {
+	        get { return String.Empty;  }
+	    }
+
+        /// <summary> Add the header to the output </summary>
+        /// <param name="Output"> Stream to which to write the HTML for this header </param>
+	    public virtual void Add_Header(TextWriter Output)
+	    {
+            HeaderFooter_Helper_HtmlSubWriter.Add_Header(Output, RequestSpecificValues, Container_CssClass, WebPage_Title, Subwriter_Behaviors, null, null);
+	    }
+
+
+
+        /// <summary> Flag indicates if the internal header should included </summary>
+        /// <remarks> By default this return TRUE if the user is internal, or a portal/system admin, but can be 
+        /// overwritten by all the individual html subwriters </remarks>
+	    public virtual bool Include_Internal_Header
+	    {
+            get
+            {
+                // If no user, do not show
+                if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+                    return false;
+
+                return ((RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin));
+            }
+	    }
+
 		/// <summary> Adds the internal header HTML for this specific HTML writer </summary>
 		/// <param name="Output"> Stream to which to write the HTML for the internal header information </param>
 		/// <param name="Current_User"> Currently logged on user, to determine specific rights </param>
@@ -213,6 +243,13 @@ namespace SobekCM.Library.HTML
 			// Do nothing by default
 		}
 
+        /// <summary> Add the footer to the output </summary>
+        /// <param name="Output"> Stream to which to write the HTML for this footer </param>
+        public virtual void Add_Footer(TextWriter Output)
+        {
+            HeaderFooter_Helper_HtmlSubWriter.Add_Footer(Output, RequestSpecificValues, Subwriter_Behaviors, null, null);
+        }
+
 		/// <summary> Gets the collection of special behaviors which this subwriter
 		/// requests from the main HTML writer. </summary>
 		/// <remarks> By default, this returns an empty list </remarks>
@@ -241,6 +278,8 @@ namespace SobekCM.Library.HTML
 		{
 			get { return "container-inner"; }
 		}
+
+        #region Helper methods for getting collections and itemss
 
         /// <summary> Gets the item aggregation and search fields for the current item aggregation </summary>
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
@@ -471,5 +510,8 @@ namespace SobekCM.Library.HTML
             }
             return true;
         }
-	}
+
+        #endregion
+
+    }
 }

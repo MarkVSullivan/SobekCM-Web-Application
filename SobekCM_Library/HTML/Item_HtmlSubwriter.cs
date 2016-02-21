@@ -16,6 +16,7 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
@@ -51,6 +52,7 @@ namespace SobekCM.Library.HTML
         private readonly List<HtmlSubwriter_Behaviors_Enum> behaviors;
         private string buttonsHtml;
         private string pageLinksHtml;
+        private readonly string restriction_message;
 
         private BriefItemInfo currentItem;
         private SobekCM_Items_In_Title itemsInTitle;
@@ -60,23 +62,59 @@ namespace SobekCM.Library.HTML
         #region Constructor(s)
 
         /// <summary> Constructor for a new instance of the Item_HtmlSubwriter class </summary>
-        /// <param name="ShowToc"> Flag indicates whether to show the table of contents open for this item </param>
-        /// <param name="Show_Zoomable"> Flag indicates if the zoomable server is available </param>
-        /// <param name="Item_Restricted_Message"> Message to be shown because this item is restriced from the current user by IP address </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Item_HtmlSubwriter(bool ShowToc, bool Show_Zoomable,
-            string Item_Restricted_Message,
-            RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Item_HtmlSubwriter( RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-            showToc = ShowToc;
-            showZoomable = Show_Zoomable;
-            itemCheckedOutByOtherUser = false;
+            showZoomable = (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.JP2ServerUrl));
             userCanEditItem = false;
             searchResultsCount = 0;
 
+            // Determine if the TOC should be shown
+            showToc = false;
+            if (HttpContext.Current.Session["Show TOC"] != null)
+            {
+                Boolean.TryParse(HttpContext.Current.Session["Show TOC"].ToString(), out showToc);
+            }
+
             // Try to get the current item
             currentItem = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer);
-        }
+
+            // Check that this item is not checked out by another user
+            itemCheckedOutByOtherUser = false;
+            if (currentItem.Behaviors.Single_Use)
+            {
+                if (!Engine_ApplicationCache_Gateway.Checked_List.Check_Out(currentItem.Web.ItemID, HttpContext.Current.Request.UserHostAddress))
+                {
+                    itemCheckedOutByOtherUser = true;
+                }
+            }
+
+            // Check to see if this is IP restricted
+            restriction_message = String.Empty;
+            if (currentItem.Behaviors.IP_Restriction_Membership > 0)
+            {
+                if (HttpContext.Current != null)
+                {
+                    int user_mask = (int)HttpContext.Current.Session["IP_Range_Membership"];
+                    int comparison = currentItem.Behaviors.IP_Restriction_Membership & user_mask;
+                    if (comparison == 0)
+                    {
+                        int restriction = currentItem.Behaviors.IP_Restriction_Membership;
+                        int restriction_counter = 1;
+                        while (restriction % 2 != 1)
+                        {
+                            restriction = restriction >> 1;
+                            restriction_counter++;
+                        }
+                        if (Engine_ApplicationCache_Gateway.IP_Restrictions[restriction_counter] != null)
+                            restriction_message = Engine_ApplicationCache_Gateway.IP_Restrictions[restriction_counter].Item_Restricted_Statement;
+                        else
+                            restriction_message = "Restricted Item";
+                    }
+                }
+            }
+
+         }
 
         #endregion
 
@@ -108,6 +146,27 @@ namespace SobekCM.Library.HTML
             get
             {
                 return behaviors;
+            }
+        }
+
+        /// <summary> Flag indicates if the internal header should included </summary>
+        public override bool Include_Internal_Header
+        {
+            get
+            {
+                // If no user, do not show
+                if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+                    return false;
+
+                // Always show for admins
+                if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
+                    return true;
+
+                if (RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Type, currentItem.Behaviors.Source_Institution_Aggregation, currentItem.Behaviors.Holding_Location_Aggregation, currentItem.Behaviors.Aggregation_Code_List))
+                    return true;
+
+                // Otherwise, do not show
+                return false;
             }
         }
 
@@ -194,6 +253,14 @@ namespace SobekCM.Library.HTML
         /// <returns> Value indicating if html writer should finish the page immediately after this, or if there are other controls or routines which need to be called first </returns>
         /// <remarks> This continues writing this item from finishing the left navigation bar to the popup forms to the page navigation controls at the top of the item viewer's main area</remarks>
         public override void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
+        {
+
+        }
+
+        /// <summary> Adds the table of contents as a control in the left navigation bar </summary>
+        /// <param name="TocPlaceHolder"> TOC place holder ( &quot;tocPlaceHolder&quot; ) in the itemNavForm form, widely used throughout the application</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public void Add_Standard_TOC(PlaceHolder TocPlaceHolder, Custom_Tracer Tracer)
         {
 
         }

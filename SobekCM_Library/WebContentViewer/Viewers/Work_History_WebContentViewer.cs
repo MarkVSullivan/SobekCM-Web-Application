@@ -4,6 +4,7 @@ using SobekCM.Core;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.WebContent;
 using SobekCM.Core.WebContent.Single;
 using SobekCM.Tools;
 
@@ -15,7 +16,9 @@ namespace SobekCM.Library.WebContentViewer.Viewers
     {
         /// <summary>  Constructor for a new instance of the Work_History_WebContentViewer class  </summary>
         /// <param name="RequestSpecificValues">  All the necessary, non-global data specific to the current request  </param>
-        public Work_History_WebContentViewer(RequestCache RequestSpecificValues) : base ( RequestSpecificValues )
+        /// <param name="StaticPage"> Static page info for this request </param>
+        public Work_History_WebContentViewer(RequestCache RequestSpecificValues, HTML_Based_Content StaticPage)
+            : base(RequestSpecificValues, StaticPage )
         {
             
         }

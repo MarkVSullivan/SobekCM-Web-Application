@@ -128,7 +128,7 @@ namespace SobekCM.Library.HTML
             // Build the viewer, if there should be one
             if ((RequestSpecificValues.Current_Mode.WebContent_Type != WebContent_Type_Enum.Edit) && (RequestSpecificValues.Current_Mode.WebContent_Type != WebContent_Type_Enum.Display))
             {
-                viewer = WebContentViewer_Factory.Get_Viewer(RequestSpecificValues.Current_Mode.WebContent_Type, RequestSpecificValues);
+                viewer = WebContentViewer_Factory.Get_Viewer(RequestSpecificValues.Current_Mode.WebContent_Type, RequestSpecificValues, staticWebContent);
                 if (viewer != null)
                     excludeSiteMap = true;
             }

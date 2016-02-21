@@ -96,7 +96,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 StringBuilder headerBuilder = new StringBuilder();
                 StringWriter headerWriter = new StringWriter(headerBuilder);
-                HeaderFooter_Helper_HtmlSubWriter.Add_Header(headerWriter, RequestSpecificValues, "container-inner-custom", ViewBag.Hierarchy_Object.ShortName, null);
+                HeaderFooter_Helper_HtmlSubWriter.Add_Header(headerWriter, RequestSpecificValues, "container-inner-custom", ViewBag.Hierarchy_Object.ShortName, null, ViewBag.Hierarchy_Object, null);
                 string header = headerBuilder.ToString();
                 textToDisplay = textToDisplay.Replace("<%HEADER%>", header).Replace("[%HEADER%]", header);
             }
@@ -106,7 +106,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 StringBuilder footerBuilder = new StringBuilder();
                 StringWriter footerWriter = new StringWriter(footerBuilder);
-                HeaderFooter_Helper_HtmlSubWriter.Add_Footer(footerWriter, RequestSpecificValues, null);
+                HeaderFooter_Helper_HtmlSubWriter.Add_Footer(footerWriter, RequestSpecificValues, null, ViewBag.Hierarchy_Object, null);
                 string footer = footerBuilder.ToString();
                 textToDisplay = textToDisplay.Replace("<%FOOTER%>", footer).Replace("[%FOOTER%]", footer);
             }

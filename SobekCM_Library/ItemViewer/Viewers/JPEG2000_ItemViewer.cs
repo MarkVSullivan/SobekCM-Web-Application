@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.HTML;
@@ -103,6 +104,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
     public class JPEG2000_ItemViewer : abstractPageFilesItemViewer
     {
         private readonly bool suppressNavigator;
+        private readonly string FileName;
 
         /// <summary> Constructor for a new instance of the JPEG2000_ItemViewer class, used to display JPEG2000s linked to
         /// pages in a digital resource </summary>
@@ -232,9 +234,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //add by Keven for FIU dPanther's separate image server
             if (UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Root != null)
-                Output.WriteLine("   viewer.open(\"" + CurrentRequest.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Root.Replace("\\", "/") + CurrentItem.Web.AssocFilePath.Replace("\\", "/") + FileName + ".dzi\");");
+                Output.WriteLine("   viewer.open(\"" + CurrentRequest.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Root.Replace("\\", "/") + SobekFileSystem.AssociFilePath(BriefItem).Replace("\\", "/") + FileName + ".dzi\");");
             else
-                Output.WriteLine("   viewer.open(\"" + CurrentRequest.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network.Replace("\\", "/") + CurrentItem.Web.AssocFilePath.Replace("\\", "/") + FileName + ".dzi\");");
+                Output.WriteLine("   viewer.open(\"" + CurrentRequest.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network.Replace("\\", "/") + SobekFileSystem.AssociFilePath(BriefItem).Replace("\\", "/") + FileName + ".dzi\");");
 
             Output.WriteLine("</script>");
             Output.WriteLine("</td>");

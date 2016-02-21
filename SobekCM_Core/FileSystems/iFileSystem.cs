@@ -36,5 +36,11 @@ namespace SobekCM.Core.FileSystems
         /// <remarks> This makes some presumptions on the type of system in the background </remarks>
         string Resource_Network_Uri(BriefItemInfo DigitalResource);
 
+        /// <summary> [TEMPORARY] Get the associated file path (which is essentially the part of the 
+        /// path that appears UNDER the root imaging spot </summary>
+        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <returns> Part of the file path, derived from the BibID and VID </returns>
+        string AssociFilePath(BriefItemInfo DigitalResource);
+
     }
 }

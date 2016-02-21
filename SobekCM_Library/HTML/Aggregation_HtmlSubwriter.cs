@@ -599,6 +599,21 @@ namespace SobekCM.Library.HTML
         }
 
 
+        /// <summary> Chance for a final, final CSS which can override anything else, including the web skin </summary>
+        public override string Final_CSS
+        {
+            get
+            {
+                // Finally add the aggregation-level CSS if it exists
+                if ((hierarchyObject != null) && (!String.IsNullOrEmpty(hierarchyObject.CSS_File)))
+                {
+                    return "  <link href=\"" + RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + hierarchyObject.Code + "/" + hierarchyObject.CSS_File + "\" rel=\"stylesheet\" type=\"text/css\" />";
+                }
+                return String.Empty;
+            }
+        }
+
+
         /// <summary> Title for this web page </summary>
         public override string WebPage_Title
         {
@@ -695,7 +710,35 @@ namespace SobekCM.Library.HTML
             }
         }
 
+        /// <summary> Add the header to the output </summary>
+        /// <param name="Output"> Stream to which to write the HTML for this header </param>
+        public override void Add_Header(TextWriter Output)
+        {
+            HeaderFooter_Helper_HtmlSubWriter.Add_Header(Output, RequestSpecificValues, Container_CssClass, WebPage_Title, Subwriter_Behaviors, hierarchyObject, null);
+        }
+
         #region Public method to write the internal header
+
+        /// <summary> Flag indicates if the internal header should included </summary>
+        public override bool Include_Internal_Header
+        {
+            get
+            {
+                // If no user, do not show
+                if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+                    return false;
+
+                // Always show for admins
+                if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin))
+                    return true;
+
+                if ((RequestSpecificValues.Current_User.Is_Aggregation_Curator(RequestSpecificValues.Current_Mode.Aggregation)) || (RequestSpecificValues.Current_User.Can_Edit_All_Items(RequestSpecificValues.Current_Mode.Aggregation)))
+                    return true;
+
+                // Otherwise, do not show
+                return false;
+            }
+        }
 
         /// <summary> Adds the internal header HTML for this specific HTML writer </summary>
         /// <param name="Output"> Stream to which to write the HTML for the internal header information </param>
@@ -2408,6 +2451,13 @@ namespace SobekCM.Library.HTML
 
             return highlightBldr.ToString();
 
+        }
+
+        /// <summary> Add the footer to the output </summary>
+        /// <param name="Output"> Stream to which to write the HTML for this footer </param>
+        public override void Add_Footer(TextWriter Output)
+        {
+            HeaderFooter_Helper_HtmlSubWriter.Add_Footer(Output, RequestSpecificValues, Subwriter_Behaviors, hierarchyObject, null);
         }
 
     }

@@ -93,5 +93,14 @@ namespace SobekCM.Core.FileSystems
             return Resource_Network_Uri(DigitalResource.BibID, DigitalResource.VID);
         }
 
+        /// <summary> [TEMPORARY] Get the associated file path (which is essentially the part of the 
+        /// path that appears UNDER the root imaging spot </summary>
+        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <returns> Part of the file path, derived from the BibID and VID </returns>
+        public string AssociFilePath(BriefItemInfo DigitalResource)
+        {
+            return DigitalResource.BibID.Substring(0, 2) + "/" + DigitalResource.BibID.Substring(2, 2) + "/" + DigitalResource.BibID.Substring(4, 2) + "/" + DigitalResource.BibID.Substring(6, 2) + "/" + DigitalResource.BibID.Substring(8, 2) + "/" + DigitalResource.VID + "/";
+        }
+
     }
 }

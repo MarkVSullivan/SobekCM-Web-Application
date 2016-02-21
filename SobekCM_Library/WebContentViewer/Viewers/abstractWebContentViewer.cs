@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.WebContent;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.WebContentViewer.Viewers
@@ -11,14 +12,19 @@ namespace SobekCM.Library.WebContentViewer.Viewers
         /// <summary> Protected field contains the information specific to the current request </summary>
         protected RequestCache RequestSpecificValues;
 
+        /// <summary> Protcted field contains the static web page information for the current request </summary>
+        protected HTML_Based_Content StaticPage;
+
         /// <summary> Gets the type of specialized web content viewer </summary>
         public abstract WebContent_Type_Enum Type { get; }
 
         /// <summary> Constructor for objects which implement this abstract class  </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        protected abstractWebContentViewer(RequestCache RequestSpecificValues)
+        /// <param name="StaticPage"> Static page info for this request </param>
+        protected abstractWebContentViewer(RequestCache RequestSpecificValues, HTML_Based_Content StaticPage )
         {
             this.RequestSpecificValues = RequestSpecificValues;
+            this.StaticPage = StaticPage;
         }
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>

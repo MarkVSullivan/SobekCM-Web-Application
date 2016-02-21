@@ -82,6 +82,12 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(11)] 
         public string Main_Thumbnail { get; set; }
 
+        /// <summary> Flag indicates if checkout is required for this item, in which case this is a single use digital item </summary>
+        [DataMember(EmitDefaultValue = false, Name = "singleUse")]
+        [XmlAttribute("singleUse")]
+        [ProtoMember(12)] 
+        public bool Single_Use { get; set; }
+
         /// <summary> Constructor for a new instance of the BriefItem_Behaviors class </summary>
         public BriefItem_Behaviors()
         {

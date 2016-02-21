@@ -198,52 +198,10 @@ namespace SobekCM.Library.MainWriters
                         break;
 
                     case Display_Mode_Enum.Item_Display:
-                        if ((!RequestSpecificValues.Current_Mode.Invalid_Item.HasValue || !RequestSpecificValues.Current_Mode.Invalid_Item.Value ) && (RequestSpecificValues.Current_Item != null))
+                        if ((!RequestSpecificValues.Current_Mode.Invalid_Item.HasValue || !RequestSpecificValues.Current_Mode.Invalid_Item.Value ))
                         {
-                            bool show_toc = false;
-                            if (HttpContext.Current.Session["Show TOC"] != null)
-                            {
-                                Boolean.TryParse(HttpContext.Current.Session["Show TOC"].ToString(), out show_toc);
-                            }
-
-                            // Check that this item is not checked out by another user
-                            bool itemCheckedOutByOtherUser = false;
-                            if (RequestSpecificValues.Current_Item.Behaviors.CheckOut_Required)
-                            {
-                                if (!Engine_ApplicationCache_Gateway.Checked_List.Check_Out(RequestSpecificValues.Current_Item.Web.ItemID, HttpContext.Current.Request.UserHostAddress))
-                                {
-                                    itemCheckedOutByOtherUser = true;
-                                }
-                            }
-
-                            // Check to see if this is IP restricted
-                            string restriction_message = String.Empty;
-                            if (RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership > 0)
-                            {
-                                if (HttpContext.Current != null)
-                                {
-                                    int user_mask = (int)HttpContext.Current.Session["IP_Range_Membership"];
-                                    int comparison = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership & user_mask;
-                                    if (comparison == 0)
-                                    {
-                                        int restriction = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership;
-                                        int restriction_counter = 1;
-                                        while (restriction % 2 != 1)
-                                        {
-                                            restriction = restriction >> 1;
-                                            restriction_counter++;
-                                        }
-                                        if (Engine_ApplicationCache_Gateway.IP_Restrictions[restriction_counter] != null )
-                                            restriction_message = Engine_ApplicationCache_Gateway.IP_Restrictions[restriction_counter].Item_Restricted_Statement;
-                                        else
-                                            restriction_message = "Restricted Item";
-                                    }
-                                }
-                            }
-
                             // Create the item viewer writer
-                            subwriter = new Item_HtmlSubwriter( show_toc, (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.JP2ServerUrl)), restriction_message, RequestSpecificValues );
-                            ((Item_HtmlSubwriter)subwriter).Item_Checked_Out_By_Other_User = itemCheckedOutByOtherUser;
+                            subwriter = new Item_HtmlSubwriter( RequestSpecificValues );
                         }
                         else
                         {
@@ -333,7 +291,7 @@ namespace SobekCM.Library.MainWriters
                         return false;
 
                     case Display_Mode_Enum.Simple_HTML_CMS:
-                        return RequestSpecificValues.Site_Map != null;
+                        return true; //RequestSpecificValues.Site_Map != null;
 
                     case Display_Mode_Enum.Aggregation:
 		                if ((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home) || (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Home_Edit))
@@ -406,11 +364,7 @@ namespace SobekCM.Library.MainWriters
 
                 case Display_Mode_Enum.Simple_HTML_CMS:
                     // Add any necessary controls
-                    if (RequestSpecificValues.Site_Map != null)
-                    {
-                        ((Web_Content_HtmlSubwriter)subwriter).Add_Controls(Main_Place_Holder, Tracer);
-                    }
-
+                    ((Web_Content_HtmlSubwriter)subwriter).Add_Controls(Main_Place_Holder, Tracer);
                     break;
 
                 #endregion
@@ -610,11 +564,13 @@ namespace SobekCM.Library.MainWriters
                 Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.HTML_Skin.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
             }
 
-			// Finally add the aggregation-level CSS if it exists
-            if (((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Search) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Results)) && (RequestSpecificValues.Hierarchy_Object != null) && ( !String.IsNullOrEmpty(RequestSpecificValues.Hierarchy_Object.CSS_File)))
-			{
-                Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_Design_URL + "aggregations/" + RequestSpecificValues.Hierarchy_Object.Code + "/" + RequestSpecificValues.Hierarchy_Object.CSS_File + "\" rel=\"stylesheet\" type=\"text/css\" />");
-			}
+            // Any final override from the html writer?
+            if (subwriter != null)
+            {
+                string finalCss = subwriter.Final_CSS;
+                if ( !String.IsNullOrEmpty(finalCss))
+                    Output.WriteLine(finalCss);
+            }
 
             // Add a printer friendly CSS
             Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + Static_Resources.Print_Css + "\" type=\"text/css\" media=\"print\" /> ");
@@ -794,33 +750,8 @@ namespace SobekCM.Library.MainWriters
             // Should the internal header be added?
             if ((subwriter != null) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek) && (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Administrative) && (RequestSpecificValues.Current_User != null))
             {
-
-                bool displayHeader = false;
-                if (( RequestSpecificValues.Current_User.Is_Internal_User ) || ( RequestSpecificValues.Current_User.Is_System_Admin ))
-                {
-                    displayHeader = true;
-                }
-                else
-                {
-                    switch ( RequestSpecificValues.Current_Mode.Mode )
-                    {
-                        case Display_Mode_Enum.Item_Display:
-                            if (RequestSpecificValues.Current_User.Can_Edit_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List))
-                                displayHeader = true;
-                            break;
-
-                        case Display_Mode_Enum.Aggregation:
-                        case Display_Mode_Enum.Results:
-                        case Display_Mode_Enum.Search:
-                            if (( RequestSpecificValues.Current_User.Is_Aggregation_Curator( RequestSpecificValues.Current_Mode.Aggregation )) || ( RequestSpecificValues.Current_User.Can_Edit_All_Items( RequestSpecificValues.Current_Mode.Aggregation )))
-                            {
-                                displayHeader = true;
-                            }
-                            break;
-                    }
-                }
-                
-                if (( displayHeader ) && ( !behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header)))
+         
+                if (( subwriter.Include_Internal_Header ) && ( !behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Internal_Header)))
                 {
                     string return_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                     if ((HttpContext.Current != null) && (HttpContext.Current.Session["Original_URL"] != null))
@@ -856,7 +787,7 @@ namespace SobekCM.Library.MainWriters
             }
 
             if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Header))
-                HeaderFooter_Helper_HtmlSubWriter.Add_Header(Output, RequestSpecificValues, subwriter.Container_CssClass, Get_Page_Title(null),  behaviors);
+                subwriter.Add_Header(Output);
 
             Output.WriteLine(String.Empty);
         }
@@ -879,7 +810,8 @@ namespace SobekCM.Library.MainWriters
 			if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Footer))
 				return;
 
-            HeaderFooter_Helper_HtmlSubWriter.Add_Footer(Output, RequestSpecificValues, behaviors);
+            // Let the subwriter add the footer
+            subwriter.Add_Footer(Output);
 
             // Add the time and trace at the end
 			if ((HttpContext.Current.Request.Url.AbsoluteUri.Contains("shibboleth")) || (RequestSpecificValues.Current_Mode.Trace_Flag_Simple) || ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_System_Admin)))

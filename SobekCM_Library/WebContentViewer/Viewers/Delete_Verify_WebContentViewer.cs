@@ -20,7 +20,9 @@ namespace SobekCM.Library.WebContentViewer.Viewers
 
         /// <summary>  Constructor for a new instance of the Delete_Verify_WebContentViewer class  </summary>
         /// <param name="RequestSpecificValues">  All the necessary, non-global data specific to the current request  </param>
-        public Delete_Verify_WebContentViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="StaticPage"> Static page info for this request </param>
+        public Delete_Verify_WebContentViewer(RequestCache RequestSpecificValues, HTML_Based_Content StaticPage)
+            : base(RequestSpecificValues, StaticPage )
         {
             // Pull the web content page
             if (RequestSpecificValues.Current_Mode.WebContentID.HasValue)
