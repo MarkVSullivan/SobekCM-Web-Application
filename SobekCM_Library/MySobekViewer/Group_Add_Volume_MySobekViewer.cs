@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Web;
+using SobekCM.Core.Client;
 using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -61,6 +62,8 @@ namespace SobekCM.Library.MySobekViewer
         private readonly string title;
         private readonly string trackingBox;
 
+        private readonly SobekCM_Item currentItem;
+
 
         /// <summary> Constructor for a new instance of the Group_Add_Volume_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -68,16 +71,55 @@ namespace SobekCM.Library.MySobekViewer
         {
             RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", String.Empty);
 
+            // If no user then that is an error
+            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
+
+            // Ensure BibID provided
+            RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Validate provided bibid");
+            if (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.BibID))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "BibID was not provided!");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID missing in item group metadata edit request";
+                return;
+            }
+
+            // Ensure the item is valid
+            RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Validate bibid exists");
+            if (!UI_ApplicationCache_Gateway.Items.Contains_BibID(RequestSpecificValues.Current_Mode.BibID))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "BibID indicated is not valid", Custom_Trace_Type_Enum.Error);
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID indicated is not valid";
+                return;
+            }
+
+            RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Try to pull this sobek complete item group");
+            currentItem = SobekEngineClient.Items.Get_Sobek_Item_Group(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Tracer);
+            if (currentItem == null)
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Unable to build complete item group");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : Unable to build complete item";
+                return;
+            }
+
             // Pull the list of items tied to this group
-            itemsInTitle = CachedDataManager.Items.Retrieve_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
+            itemsInTitle = CachedDataManager.Items.Retrieve_Items_In_Title(currentItem.BibID, RequestSpecificValues.Tracer);
             if (itemsInTitle == null)
             {
                 // Get list of information about this item group and save the item list
-                DataSet itemDetails = Engine_Database.Get_Item_Group_Details(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
+                DataSet itemDetails = Engine_Database.Get_Item_Group_Details(currentItem.BibID, RequestSpecificValues.Tracer);
                 itemsInTitle = new SobekCM_Items_In_Title(itemDetails.Tables[1]);
 
                 // Store in cache if retrieved
-                CachedDataManager.Items.Store_Items_In_Title(RequestSpecificValues.Current_Item.BibID, itemsInTitle, RequestSpecificValues.Tracer);
+                CachedDataManager.Items.Store_Items_In_Title(currentItem.BibID, itemsInTitle, RequestSpecificValues.Tracer);
             }
 
             // Set some defaults
@@ -101,7 +143,7 @@ namespace SobekCM.Library.MySobekViewer
 
 
             // If the user cannot edit this item, go back
-            if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List))
+            if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
@@ -362,10 +404,10 @@ namespace SobekCM.Library.MySobekViewer
 				// Copy the static HTML file to the web server
 				try
 				{
-					if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + RequestSpecificValues.Current_Item.BibID.Substring(0, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(2, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(4, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(6, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(8)))
-						Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + RequestSpecificValues.Current_Item.BibID.Substring(0, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(2, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(4, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(6, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(8));
-					if (File.Exists(user_in_process_directory + "\\" + RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html"))
-						File.Copy(user_in_process_directory + "\\" + RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html", UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + RequestSpecificValues.Current_Item.BibID.Substring(0, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(2, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(4, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(6, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(8) + "\\" + RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html", true);
+					if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + currentItem.BibID.Substring(0, 2) + "\\" + currentItem.BibID.Substring(2, 2) + "\\" + currentItem.BibID.Substring(4, 2) + "\\" + currentItem.BibID.Substring(6, 2) + "\\" + currentItem.BibID.Substring(8)))
+						Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + currentItem.BibID.Substring(0, 2) + "\\" + currentItem.BibID.Substring(2, 2) + "\\" + currentItem.BibID.Substring(4, 2) + "\\" + currentItem.BibID.Substring(6, 2) + "\\" + currentItem.BibID.Substring(8));
+					if (File.Exists(user_in_process_directory + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html"))
+						File.Copy(user_in_process_directory + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html", UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + currentItem.BibID.Substring(0, 2) + "\\" + currentItem.BibID.Substring(2, 2) + "\\" + currentItem.BibID.Substring(4, 2) + "\\" + currentItem.BibID.Substring(6, 2) + "\\" + currentItem.BibID.Substring(8) + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html", true);
 				}
 				catch (Exception)
 				{
@@ -424,10 +466,10 @@ namespace SobekCM.Library.MySobekViewer
                 Directory.CreateDirectory(serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name);
 
 			// Copy the static HTML page over first
-			if (File.Exists(user_in_process_directory + "\\" + RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html"))
+			if (File.Exists(user_in_process_directory + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html"))
 			{
-                File.Copy(user_in_process_directory + "\\" + RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html", serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html", true);
-				File.Delete(user_in_process_directory + "\\" + RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html");
+                File.Copy(user_in_process_directory + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html", serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html", true);
+				File.Delete(user_in_process_directory + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html");
 			}
 
 			// Copy all the files 
@@ -491,7 +533,7 @@ namespace SobekCM.Library.MySobekViewer
 
 		    Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
 
-            string grouptitle = RequestSpecificValues.Current_Item.Behaviors.GroupTitle;
+            string grouptitle = currentItem.Behaviors.GroupTitle;
 		    if (grouptitle.Length > 125)
 		    {
 			    Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + grouptitle + "\">" + grouptitle.Substring(0, 120) + "...</abbr></h1>");
@@ -573,7 +615,7 @@ namespace SobekCM.Library.MySobekViewer
 	        bool isMozilla = ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Browser_Type)) && (RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0));
 
 		    // Create a new blank item for display purposes
-		    SobekCM_Item displayItem = new SobekCM_Item {BibID = RequestSpecificValues.Current_Item.BibID};
+		    SobekCM_Item displayItem = new SobekCM_Item {BibID = currentItem.BibID};
 		    displayItem.Behaviors.IP_Restriction_Membership = ipRestrict;
 		    displayItem.Behaviors.Serial_Info.Clear();
 		    displayItem.Tracking.Born_Digital = bornDigital;

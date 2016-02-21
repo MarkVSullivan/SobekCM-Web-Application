@@ -15,7 +15,6 @@ using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
-using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
@@ -53,8 +52,9 @@ namespace SobekCM.Library.MySobekViewer
         #region Constructor
 
         /// <summary> Constructor for a new instance of the Edit_Item_Metadata_MySobekViewer class </summary>
+        /// <param name="DefaultMetadata"> Default metadata object, if that is how this is being used </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Edit_Item_Metadata_MySobekViewer( RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Edit_Item_Metadata_MySobekViewer( SobekCM_Item DefaultMetadata, RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", String.Empty);
 
@@ -70,34 +70,42 @@ namespace SobekCM.Library.MySobekViewer
                 return;
             }
 
-            // Ensure BibID and VID provided
-            RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Validate provided bibid / vid");
-            if ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.BibID)) || (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.VID)))
+            // If the default metadata was provided, use that
+            if (DefaultMetadata != null)
             {
-                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "BibID or VID was not provided!");
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
-                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID/VID missing in item metadata edit request";
-                return;
+                currentItem = DefaultMetadata;
             }
-
-            // Ensure the item is valid
-            RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Validate bibid/vid exists");
-            if (!UI_ApplicationCache_Gateway.Items.Contains_BibID_VID(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID))
+            else
             {
-                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "BibID/VID indicated is not valid", Custom_Trace_Type_Enum.Error);
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
-                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID/VID indicated is not valid";
-                return;
-            }
+                // Ensure BibID and VID provided
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Validate provided bibid / vid");
+                if ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.BibID)) || (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.VID)))
+                {
+                    RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "BibID or VID was not provided!");
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                    RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID/VID missing in item metadata edit request";
+                    return;
+                }
 
-            RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Try to pull this sobek complete item");
-            currentItem = SobekEngineClient.Items.Get_Sobek_Item(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
-            if (currentItem == null)
-            {
-                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Unable to build complete item");
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
-                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : Unable to build complete item";
-                return;
+                // Ensure the item is valid
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Validate bibid/vid exists");
+                if (!UI_ApplicationCache_Gateway.Items.Contains_BibID_VID(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID))
+                {
+                    RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "BibID/VID indicated is not valid", Custom_Trace_Type_Enum.Error);
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                    RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID/VID indicated is not valid";
+                    return;
+                }
+
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Try to pull this sobek complete item");
+                currentItem = SobekEngineClient.Items.Get_Sobek_Item(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
+                if (currentItem == null)
+                {
+                    RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Unable to build complete item");
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                    RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : Unable to build complete item";
+                    return;
+                }
             }
 
             // If the RequestSpecificValues.Current_User cannot edit this item, go back

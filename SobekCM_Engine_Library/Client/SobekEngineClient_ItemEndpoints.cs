@@ -148,10 +148,22 @@ namespace SobekCM.Core.Client
             return returnValue;
         }
 
+        public SobekCM_Item Get_Sobek_Item(string BibID, string VID, Custom_Tracer Tracer)
+        {
+            ItemServices srvcs = new ItemServices();
+            return srvcs.getSobekItem(BibID, VID, Tracer);
+        }
+
         public SobekCM_Item Get_Sobek_Item(string BibID, string VID, int UserID, Custom_Tracer Tracer)
         {
             ItemServices srvcs = new ItemServices();
             return srvcs.getSobekItem(BibID, VID, UserID, Tracer);
+        }
+
+        public SobekCM_Item Get_Sobek_Item_Group(string BibID, Custom_Tracer Tracer)
+        {
+            ItemServices srvcs = new ItemServices();
+            return srvcs.getSobekItemGroup(BibID, Tracer);
         }
     }
 }

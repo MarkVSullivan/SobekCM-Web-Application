@@ -52,7 +52,7 @@ namespace SobekCM.Library.MySobekViewer
                     return new Edit_Item_Behaviors_MySobekViewer(RequestSpecificValues);
 
                 case My_Sobek_Type_Enum.Edit_Item_Metadata:
-                    return new Edit_Item_Metadata_MySobekViewer(RequestSpecificValues.Current_Item, RequestSpecificValues);
+                    return new Edit_Item_Metadata_MySobekViewer(null, RequestSpecificValues);
 
                 case My_Sobek_Type_Enum.Edit_Item_Permissions:
                     return new Edit_Item_Permissions_MySobekViewer(RequestSpecificValues);

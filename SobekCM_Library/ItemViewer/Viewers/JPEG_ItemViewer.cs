@@ -168,7 +168,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
             }
 
-            string displayFileName = CurrentItem.Web.Source_URL + "/" + filename;
+            string displayFileName = BriefItem.Web.Source_URL + "/" + filename;
 
             // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
             if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0))

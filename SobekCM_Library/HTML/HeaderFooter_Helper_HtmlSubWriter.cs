@@ -6,12 +6,11 @@ using System.IO;
 using System.Text;
 using System.Web;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration;
+using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.UI;
-using SobekCM.Resource_Object.Behaviors;
 
 #endregion
 
@@ -26,7 +25,9 @@ namespace SobekCM.Library.HTML
         /// <param name="Container_CssClass"> Class name for the container around the page </param>
         /// <param name="Web_Page_Title"> Title for this web page, to include behind the banner possibly </param>
         /// <param name="Behaviors"> List of behaviors from the html subwriters </param>
-        public static void Add_Header(TextWriter Output, RequestCache RequestSpecificValues, string Container_CssClass, string Web_Page_Title, List<HtmlSubwriter_Behaviors_Enum> Behaviors)
+        /// <param name="Current_Aggregation"> Current aggregation object, if there is one </param>
+        /// <param name="Current_Item"> Current item object, if there is one </param>
+        public static void Add_Header(TextWriter Output, RequestCache RequestSpecificValues, string Container_CssClass, string Web_Page_Title, List<HtmlSubwriter_Behaviors_Enum> Behaviors, Item_Aggregation Current_Aggregation, BriefItemInfo Current_Item )
         {
             // Get the url options
             string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);
@@ -58,17 +59,18 @@ namespace SobekCM.Library.HTML
                     codes_added++;
                 }
 
-                if (RequestSpecificValues.Current_Item != null)
+                if (Current_Item != null)
                 {
-                    if (RequestSpecificValues.Current_Item.Behaviors.Aggregation_Count > 0)
+                    if (( Current_Item.Behaviors.Aggregation_Code_List != null ) && ( Current_Item.Behaviors.Aggregation_Code_List.Count > 0))
                     {
-                        foreach (Aggregation_Info aggregation in RequestSpecificValues.Current_Item.Behaviors.Aggregations)
+                        foreach (string aggrCode in Current_Item.Behaviors.Aggregation_Code_List)
                         {
-                            string aggrCode = aggregation.Code;
                             if (aggrCode.ToLower() != RequestSpecificValues.Current_Mode.Aggregation)
                             {
-                                if ((aggrCode.ToUpper() != "I" + RequestSpecificValues.Current_Item.Bib_Info.Source.Code.ToUpper()) &&
-                                    (aggrCode.ToUpper() != "I" + RequestSpecificValues.Current_Item.Bib_Info.Location.Holding_Code.ToUpper()))
+                                if (( String.Compare(aggrCode,Current_Item.Behaviors.Source_Institution_Aggregation, StringComparison.OrdinalIgnoreCase ) != 0 ) &&
+                                    ( String.Compare(aggrCode, "i" + Current_Item.Behaviors.Source_Institution_Aggregation, StringComparison.OrdinalIgnoreCase) != 0) &&
+                                    ( String.Compare(aggrCode, Current_Item.Behaviors.Holding_Location_Aggregation, StringComparison.OrdinalIgnoreCase) != 0) &&
+                                    (String.Compare(aggrCode, "i" + Current_Item.Behaviors.Holding_Location_Aggregation, StringComparison.OrdinalIgnoreCase) != 0))
                                 {
                                     Item_Aggregation_Related_Aggregations thisAggr = UI_ApplicationCache_Gateway.Aggregations[aggrCode];
                                     if ((thisAggr != null) && (thisAggr.Active))
@@ -88,10 +90,10 @@ namespace SobekCM.Library.HTML
 
                     if (codes_added < 5)
                     {
-                        if (RequestSpecificValues.Current_Item.Bib_Info.Source.Code.Length > 0)
+                        if ( !String.IsNullOrEmpty(Current_Item.Behaviors.Source_Institution_Aggregation))
                         {
                             // Add source code
-                            string source_code = RequestSpecificValues.Current_Item.Bib_Info.Source.Code;
+                            string source_code = Current_Item.Behaviors.Source_Institution_Aggregation;
                             if ((source_code[0] != 'i') && (source_code[0] != 'I'))
                                 source_code = "I" + source_code;
                             Item_Aggregation_Related_Aggregations thisSourceAggr = UI_ApplicationCache_Gateway.Aggregations[source_code];
@@ -107,11 +109,11 @@ namespace SobekCM.Library.HTML
                             }
 
                             // Add the holding code
-                            if ((RequestSpecificValues.Current_Item.Bib_Info.Location.Holding_Code.Length > 0) &&
-                                (RequestSpecificValues.Current_Item.Bib_Info.Location.Holding_Code != RequestSpecificValues.Current_Item.Bib_Info.Source.Code))
+                            if (( !String.IsNullOrEmpty(Current_Item.Behaviors.Holding_Location_Aggregation)) &&
+                                (String.Compare(Current_Item.Behaviors.Source_Institution_Aggregation, Current_Item.Behaviors.Source_Institution_Aggregation, StringComparison.OrdinalIgnoreCase) != 0 ))
                             {
                                 // Add holding code
-                                string holding_code = RequestSpecificValues.Current_Item.Bib_Info.Location.Holding_Code;
+                                string holding_code = Current_Item.Behaviors.Holding_Location_Aggregation;
                                 if ((holding_code[0] != 'i') && (holding_code[0] != 'I'))
                                     holding_code = "I" + holding_code;
 
@@ -131,10 +133,10 @@ namespace SobekCM.Library.HTML
                         }
                         else
                         {
-                            if (RequestSpecificValues.Current_Item.Bib_Info.Location.Holding_Code.Length > 0)
+                            if (!String.IsNullOrEmpty(Current_Item.Behaviors.Holding_Location_Aggregation))
                             {
                                 // Add holding code
-                                string holding_code = RequestSpecificValues.Current_Item.Bib_Info.Location.Holding_Code;
+                                string holding_code = Current_Item.Behaviors.Holding_Location_Aggregation;
                                 if ((holding_code[0] != 'i') && (holding_code[0] != 'I'))
                                     holding_code = "I" + holding_code;
                                 string holding_name = UI_ApplicationCache_Gateway.Aggregations.Get_Collection_Short_Name(holding_code);
@@ -298,23 +300,23 @@ namespace SobekCM.Library.HTML
                 }
                 else
                 {
-                    if (RequestSpecificValues.Hierarchy_Object != null)
+                    if (Current_Aggregation!= null)
                     {
-                        string banner_image = RequestSpecificValues.Hierarchy_Object.Get_Banner_Image( RequestSpecificValues.HTML_Skin);
-                        if (RequestSpecificValues.Hierarchy_Object.Code != "all")
+                        string banner_image = Current_Aggregation.Get_Banner_Image( RequestSpecificValues.HTML_Skin);
+                        if (Current_Aggregation.Code != "all")
                         {
                             if (banner_image.Length > 0)
-                                banner = "<section id=\"sbkHmw_BannerDiv\" role=\"banner\" title=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\"><h1 class=\"hidden-element\">" + Web_Page_Title + "</h1><a alt=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.Hierarchy_Object.Code + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + banner_image + "\"  alt=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\" /></a></section>";
+                                banner = "<section id=\"sbkHmw_BannerDiv\" role=\"banner\" title=\"" + Current_Aggregation.ShortName + "\"><h1 class=\"hidden-element\">" + Web_Page_Title + "</h1><a alt=\"" + Current_Aggregation.ShortName + "\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + Current_Aggregation.Code + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + banner_image + "\"  alt=\"" + Current_Aggregation.ShortName + "\" /></a></section>";
                         }
                         else
                         {
                             if (banner_image.Length > 0)
                             {
-                                banner = "<section id=\"sbkHmw_BannerDiv\" role=\"banner\" title=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\"><h1 class=\"hidden-element\">" + Web_Page_Title + "</h1><a alt=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\"  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + banner_image + "\"  alt=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\" /></a></section>";
+                                banner = "<section id=\"sbkHmw_BannerDiv\" role=\"banner\" title=\"" + Current_Aggregation.ShortName + "\"><h1 class=\"hidden-element\">" + Web_Page_Title + "</h1><a alt=\"" + Current_Aggregation.ShortName + "\"  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + banner_image + "\"  alt=\"" + Current_Aggregation.ShortName + "\" /></a></section>";
                             }
                             else
                             {
-                                banner = "<section id=\"sbkHmw_BannerDiv\" role=\"banner\" title=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\"><h1 class=\"hidden-element\">" + Web_Page_Title + "</h1><a alt=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\"  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + skin_url + "default.jpg\" alt=\"" + RequestSpecificValues.Hierarchy_Object.ShortName + "\" /></a></section>";
+                                banner = "<section id=\"sbkHmw_BannerDiv\" role=\"banner\" title=\"" + Current_Aggregation.ShortName + "\"><h1 class=\"hidden-element\">" + Web_Page_Title + "</h1><a alt=\"" + Current_Aggregation.ShortName + "\"  href=\"" + RequestSpecificValues.Current_Mode.Base_URL + urlOptions1 + "\"><img id=\"mainBanner\" src=\"" + skin_url + "default.jpg\" alt=\"" + Current_Aggregation.ShortName + "\" /></a></section>";
                             }
                         }
                     }
@@ -350,7 +352,9 @@ namespace SobekCM.Library.HTML
         /// <param name="Output"> Stream to which to write the HTML for this header </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="Behaviors"> List of behaviors from the html subwriters </param>
-        public static void Add_Footer(TextWriter Output, RequestCache RequestSpecificValues, List<HtmlSubwriter_Behaviors_Enum> Behaviors)
+        /// <param name="Current_Aggregation"> Current aggregation object, if there is one </param>
+        /// <param name="Current_Item"> Current item object, if there is one </param>
+        public static void Add_Footer(TextWriter Output, RequestCache RequestSpecificValues, List<HtmlSubwriter_Behaviors_Enum> Behaviors, Item_Aggregation Current_Aggregation, BriefItemInfo Current_Item)
         {
             // Determine which header and footer to display
             bool useItemFooter = (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Item_Print) || ((Behaviors != null) && (Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter)));
@@ -381,7 +385,7 @@ namespace SobekCM.Library.HTML
             // Get the skin url
             string skin_url = RequestSpecificValues.Current_Mode.Base_Design_URL + "skins/" + RequestSpecificValues.HTML_Skin.Skin_Code + "/";
 
-            bool end_div = !((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Simple_HTML_CMS) && (RequestSpecificValues.Site_Map != null));
+            bool end_div = true;// !((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Simple_HTML_CMS) && (RequestSpecificValues.Site_Map != null));
 
             string version = UI_ApplicationCache_Gateway.Settings.Static.Current_Web_Version;
             if (version.IndexOf(" ") > 0)

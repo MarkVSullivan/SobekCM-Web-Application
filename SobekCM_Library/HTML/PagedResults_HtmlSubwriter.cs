@@ -40,10 +40,28 @@ namespace SobekCM.Library.HTML
 		private string sortOptions;
 		private int term_counter;
 
+        private readonly Item_Aggregation hierarchyObject;
+
 		/// <summary> Constructor for a new instance of the paged_result_html_subwriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public PagedResults_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
 		{
+            // Check that the current aggregation code is valid
+            if (!UI_ApplicationCache_Gateway.Aggregations.isValidCode(RequestSpecificValues.Current_Mode.Aggregation))
+            {
+                // Is there a "forward value"
+                if (UI_ApplicationCache_Gateway.Collection_Aliases.ContainsKey(RequestSpecificValues.Current_Mode.Aggregation))
+                {
+                    RequestSpecificValues.Current_Mode.Aggregation = UI_ApplicationCache_Gateway.Collection_Aliases[RequestSpecificValues.Current_Mode.Aggregation];
+                }
+            }
+
+            // Use the method in the base class to actually pull the entire hierarchy
+            if (!Get_Collection(RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer, out hierarchyObject))
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                return;
+            }
 
 			Browse_Title = String.Empty;
 			sortOptions = String.Empty;
@@ -188,21 +206,21 @@ namespace SobekCM.Library.HTML
 					string user_view = "default";
 					if (HttpContext.Current.Session["User_Default_View"] != null)
 						user_view = HttpContext.Current.Session["User_Default_View"].ToString();
-					RequestSpecificValues.Current_Mode.Result_Display_Type = RequestSpecificValues.Hierarchy_Object.Default_Result_View;
+					RequestSpecificValues.Current_Mode.Result_Display_Type = hierarchyObject.Default_Result_View;
 					switch (user_view)
 					{
 						case "brief":
-							if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Brief))
+							if (hierarchyObject.Result_Views.Contains(Result_Display_Type_Enum.Brief))
 								RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
 							break;
 
 						case "thumb":
-							if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
+							if (hierarchyObject.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
 								RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
 							break;
 
 						case "table":
-							if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Table))
+							if (hierarchyObject.Result_Views.Contains(Result_Display_Type_Enum.Table))
 								RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Table;
 							break;
 
@@ -570,7 +588,7 @@ namespace SobekCM.Library.HTML
                     else
                     {
                         DESCRIPTION = "<h1>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(Browse_Title, RequestSpecificValues.Current_Mode.Language) + "</h1>";
-                        summation = UI_ApplicationCache_Gateway.Translation.Get_Translation(Browse_Title, RequestSpecificValues.Current_Mode.Language) + " browse in " + RequestSpecificValues.Hierarchy_Object.Name;
+                        summation = UI_ApplicationCache_Gateway.Translation.Get_Translation(Browse_Title, RequestSpecificValues.Current_Mode.Language) + " browse in " + hierarchyObject.Name;
                     }
                 }
                 else
@@ -714,7 +732,7 @@ namespace SobekCM.Library.HTML
                 StringBuilder iconBuilder = new StringBuilder(1000);
                 iconBuilder.AppendLine();
                 iconBuilder.AppendLine("    <div class=\"sbkPrsw_ViewIconButtons\">");
-                if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates)) || (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map)))
+                if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates)) || (hierarchyObject.Result_Views.Contains(Result_Display_Type_Enum.Map)))
                 {
                     if (resultView == Result_Display_Type_Enum.Map)
                     {
@@ -727,7 +745,7 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
-                //if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates)) || (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map_Beta)))
+                //if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates)) || (hierarchyObject.Result_Views.Contains(Result_Display_Type_Enum.Map_Beta)))
                 //{
                 //    if (resultView == Result_Display_Type_Enum.Map_Beta)
                 //    {
@@ -740,7 +758,7 @@ namespace SobekCM.Library.HTML
                 //    }
                 //}
 
-                if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Brief))
+                if (hierarchyObject.Result_Views.Contains(Result_Display_Type_Enum.Brief))
                 {
                     if (resultView == Result_Display_Type_Enum.Brief)
                     {
@@ -753,7 +771,7 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
-                if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Table))
+                if (hierarchyObject.Result_Views.Contains(Result_Display_Type_Enum.Table))
                 {
                     if (resultView == Result_Display_Type_Enum.Table)
                     {
@@ -766,7 +784,7 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
-                if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
+                if (hierarchyObject.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
                 {
                     if (resultView == Result_Display_Type_Enum.Thumbnails)
                     {
@@ -1043,7 +1061,7 @@ namespace SobekCM.Library.HTML
                 StringBuilder iconBuilder = new StringBuilder(1000);
                 iconBuilder.AppendLine();
                 iconBuilder.AppendLine("    <div class=\"sbkPrsw_ViewIconButtons\">");
-                if ((RequestSpecificValues.Current_Mode.Coordinates.Length > 0) || (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map)))
+                if ((RequestSpecificValues.Current_Mode.Coordinates.Length > 0) || (hierarchyObject.Result_Views.Contains(Result_Display_Type_Enum.Map)))
                 {
                     if (resultView == Result_Display_Type_Enum.Map)
                     {
@@ -1056,7 +1074,7 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
-		        if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Brief))
+		        if (hierarchyObject.Result_Views.Contains(Result_Display_Type_Enum.Brief))
                 {
                     if (resultView == Result_Display_Type_Enum.Brief)
                     {
@@ -1069,7 +1087,7 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
-                if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Table))
+                if (hierarchyObject.Result_Views.Contains(Result_Display_Type_Enum.Table))
                 {
                     if (resultView == Result_Display_Type_Enum.Table)
                     {
@@ -1082,7 +1100,7 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
-                if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
+                if (hierarchyObject.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
                 {
                     if (resultView == Result_Display_Type_Enum.Thumbnails)
                     {
@@ -1218,7 +1236,7 @@ namespace SobekCM.Library.HTML
 			switch (RequestSpecificValues.Current_Mode.Language)
 			{
 				case Web_Language_Enum.French:
-					Output.Write("Votre recherche de <i>" + RequestSpecificValues.Hierarchy_Object.Name + "</i> en ");
+					Output.Write("Votre recherche de <i>" + hierarchyObject.Name + "</i> en ");
 					and_language = "et ";
 					or_language = "ou ";
 					and_not_language = "non ";
@@ -1233,7 +1251,7 @@ namespace SobekCM.Library.HTML
 					break;
 
 				case Web_Language_Enum.Spanish:
-					Output.Write("Su búsqueda de <i>" + RequestSpecificValues.Hierarchy_Object.Name + "</i> en ");
+					Output.Write("Su búsqueda de <i>" + hierarchyObject.Name + "</i> en ");
 					and_language = "y ";
 					or_language = "o ";
 					and_not_language = "no ";
@@ -1249,9 +1267,9 @@ namespace SobekCM.Library.HTML
 
 				default:
 					if ((RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Map)||(RequestSpecificValues.Current_Mode.Search_Type == Search_Type_Enum.Map_Beta))
-						Output.Write("Your geographic search of <i>" + RequestSpecificValues.Hierarchy_Object.Name + "</i> ");
+						Output.Write("Your geographic search of <i>" + hierarchyObject.Name + "</i> ");
 					else
-						Output.Write("Your search of <i>" + RequestSpecificValues.Hierarchy_Object.Name + "</i> for ");
+						Output.Write("Your search of <i>" + hierarchyObject.Name + "</i> for ");
 					break;
 			}
 
@@ -1375,7 +1393,7 @@ namespace SobekCM.Library.HTML
 								}
 								else
 								{
-									if (RequestSpecificValues.Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.All_New_Items))
+									if (hierarchyObject.Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.All_New_Items))
 									{
 										RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
 										RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;

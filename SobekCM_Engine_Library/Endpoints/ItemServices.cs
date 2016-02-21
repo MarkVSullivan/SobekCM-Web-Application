@@ -12,6 +12,7 @@ using Jil;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.EAD;
+using SobekCM.Core.Items;
 using SobekCM.Core.MARC;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Engine_Library.ApplicationState;
@@ -549,6 +550,38 @@ namespace SobekCM.Engine_Library.Endpoints
             BriefItemInfo item2 = BriefItem_Factory.Create(currentItem, MappingSet, Tracer);
             return item2;
         }
+
+
+        public SobekCM_Item getSobekItemGroup(string BibID, Custom_Tracer Tracer)
+        {
+            // Try to get this from the cache
+            SobekCM_Item currentItem = CachedDataManager.Items.Retrieve_Digital_Resource_Object(BibID, Tracer);
+            if (currentItem != null)
+            {
+                Tracer.Add_Trace("ItemServices.getSobekItemGroup", "Found the digital resource object on the cache");
+                return currentItem;
+            }
+
+            // If not pulled from the cache, then we will have to build the item
+
+            Tracer.Add_Trace("ItemServices.getSobekItemGroup", "Unable to find the digital resource on the cache.. will build");
+            SobekCM_Items_In_Title outItems;
+            SobekCM_Item_Factory.Get_Item_Group(BibID, Tracer, out outItems, out currentItem);
+            if (currentItem != null)
+            {
+                Tracer.Add_Trace("ItemServices.getSobekItemGroup", "Store the digital resource object to the cache");
+                CachedDataManager.Items.Store_Digital_Resource_Object(BibID, currentItem, Tracer);
+            }
+            else
+            {
+                Tracer.Add_Trace("ItemServices.getSobekItemGroup", "Call to the SobekCM_Item_Factory returned NULL");
+                return null;
+            }
+
+            return currentItem;
+        }
+
+
 
         #endregion
 

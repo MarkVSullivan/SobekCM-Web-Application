@@ -4,11 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
 
@@ -60,28 +62,29 @@ namespace SobekCM.Library.MainWriters
         /// <param name="Output"> Stream to which to write the JSON item information </param>
         protected internal void display_item_info(TextWriter Output)
         {
+            SobekCM_Item currentItem = SobekEngineClient.Items.Get_Sobek_Item(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, RequestSpecificValues.Tracer);
             // What if the page requested is greater than pages in the book?
             // What is the ID?
             // What if an item does not have jpeg's for each page?  No jpegs at all?
             Output.Write("[");
-            if (RequestSpecificValues.Current_Item != null)
+            if (currentItem != null)
             {
                 if (RequestSpecificValues.Current_Mode.ViewerCode != "text")
                 {
                     int currentPageIndex = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
                     int first_page_to_show = (currentPageIndex - 1) * 20;
                     int last_page_to_show = (currentPageIndex * 20) - 1;
-                    if (first_page_to_show < RequestSpecificValues.Current_Item.Web.Static_PageCount)
+                    if (first_page_to_show < currentItem.Web.Static_PageCount)
                     {
                         int page = first_page_to_show;
                         string jpeg_to_view = String.Empty;
-                        while ((page < RequestSpecificValues.Current_Item.Web.Static_PageCount) && (page <= last_page_to_show))
+                        while ((page < currentItem.Web.Static_PageCount) && (page <= last_page_to_show))
                         {
-                            Page_TreeNode thisPage = RequestSpecificValues.Current_Item.Web.Pages_By_Sequence[page];
+                            Page_TreeNode thisPage = currentItem.Web.Pages_By_Sequence[page];
                             bool found = false;
                             foreach (SobekCM_File_Info thisFile in thisPage.Files.Where(ThisFile => ThisFile.System_Name.ToUpper().IndexOf(".JPG") > 0))
                             {
-                                jpeg_to_view = currentGreenstoneImageRoot + RequestSpecificValues.Current_Item.Web.AssocFilePath + "/" + thisFile.System_Name;
+                                jpeg_to_view = currentGreenstoneImageRoot + currentItem.Web.AssocFilePath + "/" + thisFile.System_Name;
                                 found = true;
                                 break;
                             }
@@ -100,19 +103,19 @@ namespace SobekCM.Library.MainWriters
                 {
                     // Get the list of all TEXT files
                     List<string> existing_text_files = new List<string>();
-                    if (Directory.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + RequestSpecificValues.Current_Item.Web.AssocFilePath))
+                    if (Directory.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + currentItem.Web.AssocFilePath))
                     {
-                        string[] allFiles = Directory.GetFiles(UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + RequestSpecificValues.Current_Item.Web.AssocFilePath, "*.txt");
+                        string[] allFiles = Directory.GetFiles(UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + currentItem.Web.AssocFilePath, "*.txt");
                         existing_text_files.AddRange(allFiles.Select(ThisFile => (new FileInfo(ThisFile)).Name.ToUpper()));
                     }
 
 
                     int page = 0;
                     string jpeg_to_view = String.Empty;
-                    while (page < RequestSpecificValues.Current_Item.Web.Static_PageCount)
+                    while (page < currentItem.Web.Static_PageCount)
                     {
                         string text_to_read = String.Empty;
-                        Page_TreeNode thisPage = RequestSpecificValues.Current_Item.Web.Pages_By_Sequence[page];
+                        Page_TreeNode thisPage = currentItem.Web.Pages_By_Sequence[page];
                         bool found = false;
                         foreach (SobekCM_File_Info thisFile in thisPage.Files)
                         {
@@ -120,9 +123,9 @@ namespace SobekCM.Library.MainWriters
                             {
                                 if (existing_text_files.Contains(thisFile.System_Name.ToUpper().Replace(".JPG", "") + ".TXT"))
                                 {
-                                    text_to_read = currentGreenstoneImageRoot + RequestSpecificValues.Current_Item.Web.AssocFilePath + "/" + thisFile.System_Name.Replace(".JPG", ".TXT").Replace(".jpg", ".txt");
+                                    text_to_read = currentGreenstoneImageRoot + currentItem.Web.AssocFilePath + "/" + thisFile.System_Name.Replace(".JPG", ".TXT").Replace(".jpg", ".txt");
                                 }
-                                jpeg_to_view = currentGreenstoneImageRoot + RequestSpecificValues.Current_Item.Web.AssocFilePath + "/" + thisFile.System_Name;
+                                jpeg_to_view = currentGreenstoneImageRoot + currentItem.Web.AssocFilePath + "/" + thisFile.System_Name;
                                 found = true;
                                 break;
                             }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
+using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -39,6 +40,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly SobekCM_Item item;
         private readonly CompleteTemplate completeTemplate;
 
+
         #region Constructor
 
         /// <summary> Constructor for a new instance of the Mass_Update_Items_MySobekViewer class </summary>
@@ -47,11 +49,49 @@ namespace SobekCM.Library.MySobekViewer
         {
             RequestSpecificValues.Tracer.Add_Trace("Mass_Update_Items_MySobekViewer.Constructor", String.Empty);
 
+            // If no user then that is an error
+            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
+
+            // Ensure BibID provided
+            RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Validate provided bibid");
+            if (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.BibID))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "BibID was not provided!");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID missing in item group metadata edit request";
+                return;
+            }
+
+            // Ensure the item is valid
+            RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Validate bibid exists");
+            if (!UI_ApplicationCache_Gateway.Items.Contains_BibID(RequestSpecificValues.Current_Mode.BibID))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "BibID indicated is not valid", Custom_Trace_Type_Enum.Error);
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID indicated is not valid";
+                return;
+            }
+
+            RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Try to pull this sobek complete item group");
+            SobekCM_Item currentItem = SobekEngineClient.Items.Get_Sobek_Item_Group(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Tracer);
+            if (currentItem == null)
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Unable to build complete item group");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : Unable to build complete item";
+                return;
+            }
 
             // Since this is a mass update, just create a new empty item with the GroupID included
             // from the provided item
-            SobekCM_Item emptyItem = new SobekCM_Item {BibID = RequestSpecificValues.Current_Item.BibID};
-            emptyItem.Web.GroupID = RequestSpecificValues.Current_Item.Web.GroupID;
+            SobekCM_Item emptyItem = new SobekCM_Item {BibID = currentItem.BibID};
+            emptyItem.Web.GroupID = currentItem.Web.GroupID;
             emptyItem.Bib_Info.Source.Code = String.Empty;
             emptyItem.Behaviors.CheckOut_Required_Is_Null = true;
             emptyItem.Behaviors.IP_Restriction_Membership_Is_Null = true;
@@ -59,7 +99,7 @@ namespace SobekCM.Library.MySobekViewer
             item = emptyItem;           
 
             // If the user cannot edit this item, go back
-            if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List))
+            if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);

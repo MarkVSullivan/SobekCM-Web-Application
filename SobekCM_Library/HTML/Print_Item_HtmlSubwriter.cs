@@ -5,10 +5,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
+using SobekCM.Core.BriefItem;
+using SobekCM.Core.Client;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
 
@@ -22,23 +26,64 @@ namespace SobekCM.Library.HTML
     {
         private bool isRestricted;
         private string restriction_message;
+        private readonly BriefItemInfo currentItem;
 
         /// <summary> Constructor for a new instancee of the Print_Item_HtmlSubwriter class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Print_Item_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
         {
+            // Ensure BibID and VID provided
+            RequestSpecificValues.Tracer.Add_Trace("Print_Item_HtmlSubwriter.Constructor", "Validate provided bibid / vid");
+            if ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.BibID)) || (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.VID)))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Print_Item_HtmlSubwriter.Constructor", "BibID or VID was not provided!");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID/VID missing in item behavior request";
+                return;
+            }
+
+            // Ensure the item is valid
+            RequestSpecificValues.Tracer.Add_Trace("Print_Item_HtmlSubwriter.Constructor", "Validate bibid/vid exists");
+            if (!UI_ApplicationCache_Gateway.Items.Contains_BibID_VID(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "BibID/VID indicated is not valid", Custom_Trace_Type_Enum.Error);
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID/VID indicated is not valid";
+                return;
+            }
+
+
+
+            RequestSpecificValues.Tracer.Add_Trace("Print_Item_HtmlSubwriter.Constructor", "Try to pull this brief item");
+            currentItem = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer);
+            if (currentItem == null)
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Print_Item_HtmlSubwriter.Constructor", "Unable to build brief item");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : Unable to build brief item";
+                return;
+            }
+
+
+            // If no item, then an error occurred
+            if (currentItem == null)
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid item indicated";
+                return;
+            }
 
             // Check for IP restriction
             restriction_message = String.Empty;
-            if (RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership > 0)
+            if (currentItem.Behaviors.IP_Restriction_Membership > 0)
             {
                 if (HttpContext.Current != null)
                 {
                     int user_mask = (int)HttpContext.Current.Session["IP_Range_Membership"];
-                    int comparison = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership & user_mask;
+                    int comparison = currentItem.Behaviors.IP_Restriction_Membership & user_mask;
                     if (comparison == 0)
                     {
-                        int restriction = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership;
+                        int restriction = currentItem.Behaviors.IP_Restriction_Membership;
                         int restriction_counter = 1;
                         while (restriction % 2 != 1)
                         {
@@ -107,7 +152,7 @@ namespace SobekCM.Library.HTML
                     {
                         if (mode[2] == '*')
                         {
-                            print_pages(include_brief_citation, 1, RequestSpecificValues.Current_Item.Web.Static_PageCount, Output);
+                            print_pages(include_brief_citation, 1, currentItem.Images.Count, Output);
                         }
                         else
                         {
@@ -157,8 +202,8 @@ namespace SobekCM.Library.HTML
             }
 
             Output.WriteLine("<table cellspacing=\"5px\" class=\"citation\" width=\"550px\" >");
-            Output.WriteLine("  <tr align=\"left\"><td><b>Title:</b> &nbsp; </td><td>" + RequestSpecificValues.Current_Item.Bib_Info.Main_Title + "</td></tr>");
-            Output.WriteLine("  <tr align=\"left\"><td><b>URL:</b> &nbsp; </td><td>" + RequestSpecificValues.Current_Mode.Base_URL + "/" + RequestSpecificValues.Current_Item.BibID + "/" + RequestSpecificValues.Current_Item.VID + "</td></tr>");
+            Output.WriteLine("  <tr align=\"left\"><td><b>Title:</b> &nbsp; </td><td>" + currentItem.Title + "</td></tr>");
+            Output.WriteLine("  <tr align=\"left\"><td><b>URL:</b> &nbsp; </td><td>" + RequestSpecificValues.Current_Mode.Base_URL + "/" + currentItem.BibID + "/" + currentItem.VID + "</td></tr>");
             Output.WriteLine("  <tr align=\"left\"><td><b>Site:</b> &nbsp; </td><td>" + RequestSpecificValues.Current_Mode.Instance_Name + "</td></tr>");
             Output.WriteLine("</table>");
         }
@@ -176,17 +221,17 @@ namespace SobekCM.Library.HTML
             while (page_index < to_page)
             {
                 // Get this page
-                Page_TreeNode thisPage = RequestSpecificValues.Current_Item.Web.Pages_By_Sequence[page_index];
+                BriefItem_FileGrouping thisPage = currentItem.Images[page_index];
 
                 // Find the jpeg image and show the image
-                foreach (SobekCM_File_Info thisFile in thisPage.Files)
+                foreach (BriefItem_File thisFile in thisPage.Files)
                 {
-                    if (thisFile.System_Name.IndexOf(".jpg") > 0)
+                    if (thisFile.Name.IndexOf(".jpg") > 0)
                     {
                         if (page_index > from_page - 1)
                             Output.WriteLine("<br />");
 
-                        Output.WriteLine("<img src=\"" + RequestSpecificValues.Current_Item.Web.Source_URL + "/" + thisFile.System_Name + "\" />");
+                        Output.WriteLine("<img src=\"" + currentItem.Web.Source_URL + "/" + thisFile.Name + "\" />");
                         break;
                     }
                 }
@@ -206,12 +251,12 @@ namespace SobekCM.Library.HTML
 
             int page_index = 0;
             int col = 0;
-            while (page_index < RequestSpecificValues.Current_Item.Web.Static_PageCount)
+            while (page_index < currentItem.Images.Count)
             {
-                Page_TreeNode thisPage = RequestSpecificValues.Current_Item.Web.Pages_By_Sequence[page_index];
+                BriefItem_FileGrouping thisPage = currentItem.Images[page_index];
 
                 // Find the jpeg image
-                foreach (SobekCM_File_Info thisFile in thisPage.Files.Where(thisFile => thisFile.System_Name.IndexOf(".jpg") > 0))
+                foreach (BriefItem_File thisFile in thisPage.Files.Where(thisFile => thisFile.Name.IndexOf(".jpg") > 0))
                 {
                     // Should a new row be started
                     if (col == 3)
@@ -221,7 +266,7 @@ namespace SobekCM.Library.HTML
                         Output.WriteLine("  <tr align=\"center\" valign=\"top\">");
                     }
 
-                    Output.WriteLine("    <td><img src=\"" + RequestSpecificValues.Current_Item.Web.Source_URL + "/" + thisFile.System_Name.Replace(".jpg", "thm.jpg") + "\" border=\"1\" /><br />" + thisPage.Label + "</td>");
+                    Output.WriteLine("    <td><img src=\"" + currentItem.Web.Source_URL + "/" + thisFile.Name.Replace(".jpg", "thm.jpg") + "\" border=\"1\" /><br />" + thisPage.Label + "</td>");
                     col++;
                     break;
                 }
@@ -254,15 +299,10 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("<br />");
             }
 
-            Output.WriteLine("<div class=\"SobekCitation\">");
-            Citation_ItemViewer citationViewer = new Citation_ItemViewer( UI_ApplicationCache_Gateway.Translation, UI_ApplicationCache_Gateway.Aggregations, false);
-            citationViewer.CurrentItem = RequestSpecificValues.Current_Item;
-            citationViewer.CurrentMode = RequestSpecificValues.Current_Mode;
-            citationViewer.Translator = UI_ApplicationCache_Gateway.Translation;
-            citationViewer.CurrentUser = RequestSpecificValues.Current_User;
-            citationViewer.Code_Manager = UI_ApplicationCache_Gateway.Aggregations;
-            citationViewer.Item_Restricted = isRestricted;
+            // For this, also need the brief item (OBVIOUSLY NEEDS TO CHANGE!)
 
+            Output.WriteLine("<div class=\"SobekCitation\">");
+            Citation_Standard_ItemViewer citationViewer = new Citation_Standard_ItemViewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode);
             Output.WriteLine(citationViewer.Standard_Citation_String(false,null));
             Output.WriteLine("</div>");
         }
@@ -290,7 +330,7 @@ namespace SobekCM.Library.HTML
         public override string WebPage_Title
         {
             get {
-                return RequestSpecificValues.Current_Item != null ? RequestSpecificValues.Current_Item.Bib_Info.Main_Title.Title : "{0} Item";
+                return currentItem != null ? currentItem.Title : "{0} Item";
             }
         }
 

@@ -481,7 +481,6 @@
     <Compile Include="MainWriters\Dataset_MainWriter.cs" />
     <Compile Include="MainWriters\abstractMainWriter.cs" />
     <Compile Include="MainWriters\Oai_MainWriter.cs" />
-    <Compile Include="MainWriters\Text_MainWriter.cs" />
     <Compile Include="MainWriters\Xml_MainWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResultsViewer\abstract_ResultsViewer.cs" />
