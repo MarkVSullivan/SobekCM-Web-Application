@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using SobekCM.Core;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
@@ -28,7 +29,7 @@ namespace SobekCM.Library.HTML
         private readonly string lastMode;
         private readonly ContactForm_Configuration configuration;
         private readonly Dictionary<string, string> postBackValues;
-        private string errorMsg;
+        private readonly string errorMsg;
         private bool email_invalid;
 
         /// <summary> Constructor for a new instance of the Contact_HtmlSubwriter class </summary>
@@ -43,10 +44,17 @@ namespace SobekCM.Library.HTML
             // Set the error message to an empty string to start with
             errorMsg = String.Empty;
 
+            // We need the aggregation here
+            Item_Aggregation aggregation;
+            if (!Get_Collection(RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer, out aggregation))
+            {
+                aggregation = RequestSpecificValues.Top_Collection;
+            }
+
             // Determine the configuration to use for this contact us form
             configuration = UI_ApplicationCache_Gateway.Configuration.ContactForm;
-            if ((RequestSpecificValues.Hierarchy_Object != null) && (RequestSpecificValues.Hierarchy_Object.ContactForm != null))
-                configuration = RequestSpecificValues.Hierarchy_Object.ContactForm;
+            if ((aggregation != null) && (aggregation.ContactForm != null))
+                configuration = aggregation.ContactForm;
 
             postBackValues = new Dictionary<string, string>();
             foreach (string thisKey in HttpContext.Current.Request.Form.AllKeys)
@@ -160,9 +168,9 @@ namespace SobekCM.Library.HTML
 
                 // Determine the sendee
                 string sendTo = UI_ApplicationCache_Gateway.Settings.Email.System_Email;
-                if ((RequestSpecificValues.Hierarchy_Object != null) && (!String.IsNullOrEmpty(RequestSpecificValues.Hierarchy_Object.Contact_Email)))
+                if ((aggregation != null) && (!String.IsNullOrEmpty(aggregation.Contact_Email)))
                 {
-                    sendTo = RequestSpecificValues.Hierarchy_Object.Contact_Email.Replace(";", ",");
+                    sendTo = aggregation.Contact_Email.Replace(";", ",");
                 }
 
                 int userid = -1;
@@ -199,9 +207,9 @@ namespace SobekCM.Library.HTML
             }
         }
 
-        private bool IsValidEmail(string strIn)
+        private bool IsValidEmail(string StrIn)
         {
-            if (String.IsNullOrEmpty(strIn))
+            if (String.IsNullOrEmpty(StrIn))
                 return false;
 
             email_invalid = false;
@@ -209,7 +217,7 @@ namespace SobekCM.Library.HTML
             // Use IdnMapping class to convert Unicode domain names. 
             try
             {
-                strIn = Regex.Replace(strIn, @"(@)(.+)$", DomainMapper, RegexOptions.None, TimeSpan.FromMilliseconds(200));
+                StrIn = Regex.Replace(StrIn, @"(@)(.+)$", DomainMapper, RegexOptions.None, TimeSpan.FromMilliseconds(200));
             }
             catch (RegexMatchTimeoutException)
             {
@@ -222,7 +230,7 @@ namespace SobekCM.Library.HTML
             // Return true if strIn is in valid e-mail format. 
             try
             {
-                return Regex.IsMatch(strIn,
+                return Regex.IsMatch(StrIn,
                       @"^(?("")("".+?(?<!\\)""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
                       @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$",
                       RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
@@ -233,12 +241,12 @@ namespace SobekCM.Library.HTML
             }
         }
 
-        private string DomainMapper(Match match)
+        private string DomainMapper(Match MatchValue)
         {
             // IdnMapping class with default property values.
             IdnMapping idn = new IdnMapping();
 
-            string domainName = match.Groups[2].Value;
+            string domainName = MatchValue.Groups[2].Value;
             try
             {
                 domainName = idn.GetAscii(domainName);
@@ -247,7 +255,7 @@ namespace SobekCM.Library.HTML
             {
                 email_invalid = true;
             }
-            return match.Groups[1].Value + domainName;
+            return MatchValue.Groups[1].Value + domainName;
         }
 
         /// <summary> Write any additional values within the HTML Head of the

@@ -5,12 +5,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Tools;
@@ -26,21 +28,52 @@ namespace SobekCM.Library.MySobekViewer
         private readonly bool isDark;
         private DateTime? embargoDate;
         private readonly bool restrictedSelected;
+        private readonly SobekCM_Item currentItem;
 
         /// <summary> Constructor for a new instance of the Edit_Item_Permissions_MySobekViewer class  </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Edit_Item_Permissions_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
-
-
-            if ( RequestSpecificValues.Current_User == null ) 
+            // If no user then that is an error
+            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
             {
-                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 return;
             }
 
-            bool userCanEditItem = RequestSpecificValues.Current_User.Can_Edit_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List);
+            // Ensure BibID and VID provided
+            RequestSpecificValues.Tracer.Add_Trace("File_Management_MySobekViewer.Constructor", "Validate provided bibid / vid");
+            if ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.BibID)) || (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.VID)))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("File_Management_MySobekViewer.Constructor", "BibID or VID was not provided!");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID/VID missing in item file upload request";
+                return;
+            }
+
+            // Ensure the item is valid
+            RequestSpecificValues.Tracer.Add_Trace("File_Management_MySobekViewer.Constructor", "Validate bibid/vid exists");
+            if (!UI_ApplicationCache_Gateway.Items.Contains_BibID_VID(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("File_Management_MySobekViewer.Constructor", "BibID/VID indicated is not valid", Custom_Trace_Type_Enum.Error);
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID/VID indicated is not valid";
+                return;
+            }
+
+            RequestSpecificValues.Tracer.Add_Trace("File_Management_MySobekViewer.Constructor", "Try to pull this sobek complete item");
+            currentItem = SobekEngineClient.Items.Get_Sobek_Item(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
+            if (currentItem == null)
+            {
+                RequestSpecificValues.Tracer.Add_Trace("File_Management_MySobekViewer.Constructor", "Unable to build complete item");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : Unable to build complete item";
+                return;
+            }
+
+            bool userCanEditItem = RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List);
 
             if (!userCanEditItem)
             {
@@ -49,14 +82,14 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // Start by setting the values by the item (good the first time user comes here)
-            ipRestrictionMask = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership;
-            isDark = RequestSpecificValues.Current_Item.Behaviors.Dark_Flag;
+            ipRestrictionMask = currentItem.Behaviors.IP_Restriction_Membership;
+            isDark = currentItem.Behaviors.Dark_Flag;
             restrictedSelected = (ipRestrictionMask > 0);
 
 
             // Is there already a RightsMD module in the item?
             // Ensure this metadata module extension exists
-            RightsMD_Info rightsInfo = RequestSpecificValues.Current_Item.Get_Metadata_Module(GlobalVar.PALMM_RIGHTSMD_METADATA_MODULE_KEY) as RightsMD_Info;
+            RightsMD_Info rightsInfo = currentItem.Get_Metadata_Module(GlobalVar.PALMM_RIGHTSMD_METADATA_MODULE_KEY) as RightsMD_Info;
             if (( rightsInfo != null) && ( rightsInfo.Has_Embargo_End ))
             {
                 embargoDate = rightsInfo.Embargo_End;
@@ -143,20 +176,20 @@ namespace SobekCM.Library.MySobekViewer
                     string behaviorRequest = HttpContext.Current.Request.Form["behaviors_request"];
                     if (behaviorRequest == "save")
                     {
-                        RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership = ipRestrictionMask;
-                        RequestSpecificValues.Current_Item.Behaviors.Dark_Flag = isDark;
+                        currentItem.Behaviors.IP_Restriction_Membership = ipRestrictionMask;
+                        currentItem.Behaviors.Dark_Flag = isDark;
 
                         if ( checked_mask > 0 )
                             ipRestrictionMask = checked_mask;
 
                         // Save this to the database
-                        if (SobekCM_Database.Set_Item_Visibility(RequestSpecificValues.Current_Item.Web.ItemID, ipRestrictionMask, isDark, embargoDate, RequestSpecificValues.Current_User.UserName))
+                        if (SobekCM_Database.Set_Item_Visibility(currentItem.Web.ItemID, ipRestrictionMask, isDark, embargoDate, RequestSpecificValues.Current_User.UserName))
                         {
                             // Update the web.config
-                            Resource_Web_Config_Writer.Update_Web_Config(RequestSpecificValues.Current_Item.Source_Directory, RequestSpecificValues.Current_Item.Behaviors.Dark_Flag, ipRestrictionMask, RequestSpecificValues.Current_Item.Behaviors.Main_Thumbnail);
+                            Resource_Web_Config_Writer.Update_Web_Config(currentItem.Source_Directory, currentItem.Behaviors.Dark_Flag, ipRestrictionMask, currentItem.Behaviors.Main_Thumbnail);
 
                             // Remove the cached item
-                            CachedDataManager.Items.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Tracer);
+                            CachedDataManager.Items.Remove_Digital_Resource_Object(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
 
                             // Also clear any searches or browses ( in the future could refine this to only remove those
                             // that are impacted by this save... but this is good enough for now )
@@ -204,7 +237,7 @@ namespace SobekCM.Library.MySobekViewer
             string item_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
 
-            short selectIpMask = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership;
+            short selectIpMask = currentItem.Behaviors.IP_Restriction_Membership;
             if (selectIpMask == 0)
                 selectIpMask = 1;
 
@@ -217,8 +250,8 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<input type=\"hidden\" id=\"selectRestrictionMask\" name=\"selectRestrictionMask\" value=\"" + selectIpMask + "\" />");
             Output.WriteLine("<input type=\"hidden\" id=\"isDark\" name=\"isDark\" value=\"" + isDark.ToString() + "\" />");
 
-            // Write the top RequestSpecificValues.Current_Item mimic html portion
-            Write_Item_Type_Top(Output, RequestSpecificValues.Current_Item);
+            // Write the top currentItem mimic html portion
+            Write_Item_Type_Top(Output, currentItem);
 
             Output.WriteLine("<div id=\"container-inner1000\">");
             Output.WriteLine("<div id=\"pagecontainer\">");
@@ -284,8 +317,8 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("              <button title=\"Make item dark\" class=\"sbkMyEip_VisButton sbkMyEip_VisButtonDark\" onclick=\"set_item_access('dark'); return false;\">DARKEN ITEM</button>");
 
 
-            // Should we add ability to delete this RequestSpecificValues.Current_Item?
-            if (RequestSpecificValues.Current_User.Can_Delete_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List))
+            // Should we add ability to delete this currentItem?
+            if (RequestSpecificValues.Current_User.Can_Delete_This_Item(currentItem.BibID, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List))
             {
                 // Determine the delete URL
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
@@ -325,7 +358,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("           <td>");
 
                 // At least always select the FIRST ip range, if restricted is selected
-                short forComparison = RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership;
+                short forComparison = currentItem.Behaviors.IP_Restriction_Membership;
                 if (forComparison == 0)
                     forComparison = 1;
                 foreach (IP_Restriction_Range thisRange in UI_ApplicationCache_Gateway.IP_Restrictions.IpRanges)
@@ -379,7 +412,7 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
         /// requests from the main HTML subwriter. </summary>
-        /// <value> This tells the HTML and mySobek writers to mimic the RequestSpecificValues.Current_Item viewer </value>
+        /// <value> This tells the HTML and mySobek writers to mimic the currentItem viewer </value>
         public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
         {
             get

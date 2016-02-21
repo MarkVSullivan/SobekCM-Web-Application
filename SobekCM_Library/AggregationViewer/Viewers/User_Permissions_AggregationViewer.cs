@@ -21,7 +21,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     {
         /// <summary> Constructor for a new instance of the User_Permissions_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public User_Permissions_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public User_Permissions_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
             // User must AT LEAST be logged on, return
             if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
@@ -32,7 +34,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             // If the user is not an admin of some type, also return
-            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_Aggregation_Curator(RequestSpecificValues.Hierarchy_Object.Code)))
+            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_Aggregation_Curator(ViewBag.Hierarchy_Object.Code)))
             {
                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
@@ -94,7 +96,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <remarks> This writes the HTML from the static browse or info page here  </remarks>
         public override void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            DataTable permissionsTbl = SobekCM_Database.Get_Aggregation_User_Permissions(RequestSpecificValues.Hierarchy_Object.Code, RequestSpecificValues.Tracer);
+            DataTable permissionsTbl = SobekCM_Database.Get_Aggregation_User_Permissions(ViewBag.Hierarchy_Object.Code, RequestSpecificValues.Tracer);
 
 
             // Is this a system administrator?

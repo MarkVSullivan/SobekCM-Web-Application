@@ -52,200 +52,200 @@ namespace SobekCM.Library.MainWriters
 
 		private void provide_dataset_items_view_data(TextWriter Output)
 		{
-			string error_message = String.Empty;
-			string key = RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + "_Dataset";
-			DataSet itemDataset = HttpContext.Current.Cache[key] as DataSet;
-			if (itemDataset == null)
-			{
-				// Find the dataset from the METS strucutre map.  Currently this looks
-				// only for XML with attached XSD
-				string xml_file = (from thisFile in RequestSpecificValues.Current_Item.Divisions.Download_Other_Files where thisFile.System_Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) > 0 select thisFile.System_Name).FirstOrDefault();
+            //string error_message = String.Empty;
+            //string key = RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + "_Dataset";
+            //DataSet itemDataset = HttpContext.Current.Cache[key] as DataSet;
+            //if (itemDataset == null)
+            //{
+            //    // Find the dataset from the METS strucutre map.  Currently this looks
+            //    // only for XML with attached XSD
+            //    string xml_file = (from thisFile in RequestSpecificValues.Current_Item.Divisions.Download_Other_Files where thisFile.System_Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) > 0 select thisFile.System_Name).FirstOrDefault();
 
-				// If one was found, read it in!
-				if (!String.IsNullOrEmpty(xml_file))
-				{
-					itemDataset = new DataSet();
-					try
-					{
-						// Read the XML file
-						itemDataset.ReadXml(RequestSpecificValues.Current_Item.Source_Directory + "\\" + xml_file);
+            //    // If one was found, read it in!
+            //    if (!String.IsNullOrEmpty(xml_file))
+            //    {
+            //        itemDataset = new DataSet();
+            //        try
+            //        {
+            //            // Read the XML file
+            //            itemDataset.ReadXml(RequestSpecificValues.Current_Item.Source_Directory + "\\" + xml_file);
 
-						// Add this to the cache
-						HttpContext.Current.Cache.Insert(key, itemDataset, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
-					}
-					catch (Exception)
-					{
-						itemDataset = null;
-						error_message = "Error while reading XML file " + xml_file;
-					}
-				}
-			}
+            //            // Add this to the cache
+            //            HttpContext.Current.Cache.Insert(key, itemDataset, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(5));
+            //        }
+            //        catch (Exception)
+            //        {
+            //            itemDataset = null;
+            //            error_message = "Error while reading XML file " + xml_file;
+            //        }
+            //    }
+            //}
 
-			// Return if the result was null
-			if (itemDataset == null)
-				return;
+            //// Return if the result was null
+            //if (itemDataset == null)
+            //    return;
 
-			// Get ready to pull the informaiton from the query string which the
-			// jquery datatables library pass in
-			int displayStart;
-			int displayLength;
-			int sortingColumn1;
-			string sortDirection1 = "asc";
-			int sortingColumn2;
-
-
-			// Get the display start and length from the DataTables generated data URL
-			Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayStart"], out displayStart);
-			Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayLength"], out displayLength);
-
-			// Get the echo value
-			string sEcho = HttpContext.Current.Request.QueryString["sEcho"];
-
-			// Get the sorting column and sorting direction
-			Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_0"], out sortingColumn1);
-			if ((HttpContext.Current.Request.QueryString["sSortDir_0"] != null) && (HttpContext.Current.Request.QueryString["sSortDir_0"] == "desc"))
-				sortDirection1 = "desc";
-			Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_1"], out sortingColumn2);
-
-			// Look for the search term and such from the current query string
-			string term = String.Empty;
-			string field = String.Empty;
-			string[] possibles = { "col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9", "col10", "col11", "col12", "col13", "col14", "col15", "col16", "col17", "col18", "col19", "col20" };
-			foreach (string possibility in possibles)
-			{
-				if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString[possibility]))
-				{
-					field = possibility;
-					term = HttpContext.Current.Request.QueryString[possibility];
-					break;
-				}
-			}
-
-			// Create the results view
-		    int subpage = RequestSpecificValues.Current_Mode.SubPage.HasValue ? RequestSpecificValues.Current_Mode.SubPage.Value : 0;
-			DataTable results = itemDataset.Tables[subpage - 2];
-			DataView resultsView = new DataView(results);
-
-			// Should a filter be applied?
-			if (term.Length > 0)
-			{
-				int column = Convert.ToInt32(field.Replace("col", "")) - 1;
-				if ((column >= 0) && (column < results.Columns.Count))
-				{
-					string columnname = results.Columns[column].ColumnName;
-					resultsView.RowFilter = columnname + " like '%" + term.Replace("'", "''") + "%'";
-				}
-			}
-
-			// Get the count of results
-			int total_results = resultsView.Count;
-
-			// Start the JSON response
-			Output.WriteLine("{");
-			Output.WriteLine("\"sEcho\": " + sEcho + ",");
-			Output.WriteLine("\"iTotalRecords\": \"" + total_results + "\",");
-			Output.WriteLine("\"iTotalDisplayRecords\": \"" + total_results + "\",");
-			Output.WriteLine("\"aaData\": [");
+            //// Get ready to pull the informaiton from the query string which the
+            //// jquery datatables library pass in
+            //int displayStart;
+            //int displayLength;
+            //int sortingColumn1;
+            //string sortDirection1 = "asc";
+            //int sortingColumn2;
 
 
-			// Get columns to display 
-			List<DataColumn> columns_to_display = results.Columns.Cast<DataColumn>().ToList();
+            //// Get the display start and length from the DataTables generated data URL
+            //Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayStart"], out displayStart);
+            //Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayLength"], out displayLength);
 
-			// Sort by the correct column
-			DataColumn sortColumn = null;
-			if (sortingColumn1 > 0)
-			{
-				sortColumn = columns_to_display[sortingColumn1 - 1];
-				string column_name_for_sort = sortColumn.ColumnName;
-				resultsView.Sort = column_name_for_sort + " " + sortDirection1;
+            //// Get the echo value
+            //string sEcho = HttpContext.Current.Request.QueryString["sEcho"];
 
-				//if (column_name_for_sort == "InstitutionName")
-				//	resultsView.Sort = resultsView.Sort + ", Standard1 asc";
+            //// Get the sorting column and sorting direction
+            //Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_0"], out sortingColumn1);
+            //if ((HttpContext.Current.Request.QueryString["sSortDir_0"] != null) && (HttpContext.Current.Request.QueryString["sSortDir_0"] == "desc"))
+            //    sortDirection1 = "desc";
+            //Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_1"], out sortingColumn2);
 
-				if (sortColumn.DataType == Type.GetType("System.Int32"))
-				{
-					if ( resultsView.RowFilter.Length > 0 )
-						resultsView.RowFilter = resultsView.RowFilter + " and " + column_name_for_sort + " >= 0 and " + column_name_for_sort + " is not null";
-					else
-						resultsView.RowFilter = column_name_for_sort + " >= 0 and " + column_name_for_sort + " is not null";
-				}
-				if (sortColumn.DataType == Type.GetType("System.String"))
-				{
-					if (resultsView.RowFilter.Length > 0)
-						resultsView.RowFilter = resultsView.RowFilter + " and " + column_name_for_sort + " <> '' and " + column_name_for_sort + " is not null";
-					else
-						resultsView.RowFilter = column_name_for_sort + " <> '' and " + column_name_for_sort + " is not null";
-				}
-			}
+            //// Look for the search term and such from the current query string
+            //string term = String.Empty;
+            //string field = String.Empty;
+            //string[] possibles = { "col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9", "col10", "col11", "col12", "col13", "col14", "col15", "col16", "col17", "col18", "col19", "col20" };
+            //foreach (string possibility in possibles)
+            //{
+            //    if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString[possibility]))
+            //    {
+            //        field = possibility;
+            //        term = HttpContext.Current.Request.QueryString[possibility];
+            //        break;
+            //    }
+            //}
 
-			// Get the last column
-			DataColumn lastColumn = columns_to_display[columns_to_display.Count - 1];
+            //// Create the results view
+            //int subpage = RequestSpecificValues.Current_Mode.SubPage.HasValue ? RequestSpecificValues.Current_Mode.SubPage.Value : 0;
+            //DataTable results = itemDataset.Tables[subpage - 2];
+            //DataView resultsView = new DataView(results);
 
-			// Add the data for the rows to show
-			int adjust_for_filter = 0;
-			bool filter_modified = false;
-			int row_count = 1;
-			for (int i = displayStart; (i < displayStart + displayLength) && (i < total_results); i++)
-			{
+            //// Should a filter be applied?
+            //if (term.Length > 0)
+            //{
+            //    int column = Convert.ToInt32(field.Replace("col", "")) - 1;
+            //    if ((column >= 0) && (column < results.Columns.Count))
+            //    {
+            //        string columnname = results.Columns[column].ColumnName;
+            //        resultsView.RowFilter = columnname + " like '%" + term.Replace("'", "''") + "%'";
+            //    }
+            //}
 
-				// Is this now over the resultsView count, possibly due to a sort?
-				if (i - adjust_for_filter > resultsView.Count - 1)
-				{
-					if ((resultsView.RowFilter.Length > 0) && (sortColumn != null) && (!filter_modified))
-					{
-						adjust_for_filter = resultsView.Count;
-						filter_modified = true;
+            //// Get the count of results
+            //int total_results = resultsView.Count;
 
-						if (sortColumn.DataType == Type.GetType("System.Int32"))
-							resultsView.RowFilter = sortColumn.ColumnName + " < 0 or " + sortColumn.ColumnName + " is null";
-						if (sortColumn.DataType == Type.GetType("System.String"))
-							resultsView.RowFilter = sortColumn.ColumnName + " = '' or " + sortColumn.ColumnName + " is null";
-					}
-					else
-					{
-						// Should never get here, but just in case, exit cleanly
-						break;
-					}
-				}
-
-				// Start the JSON response for this row
-				Output.Write("[ \"" + row_count + "\",");
-
-				DataRow thisRow = resultsView[i - adjust_for_filter].Row;
-
-				// Add the data for each column
-				foreach (DataColumn thisCOlumn in columns_to_display)
-				{
-					string value = String.Empty;
-					if (thisRow[thisCOlumn] != DBNull.Value)
-					{
-						value = thisRow[thisCOlumn].ToString().Replace(" 12:00:00 AM", "").Replace("1/1/1900", "");
-						if (value == "-1")
-							value = String.Empty;
-					}
+            //// Start the JSON response
+            //Output.WriteLine("{");
+            //Output.WriteLine("\"sEcho\": " + sEcho + ",");
+            //Output.WriteLine("\"iTotalRecords\": \"" + total_results + "\",");
+            //Output.WriteLine("\"iTotalDisplayRecords\": \"" + total_results + "\",");
+            //Output.WriteLine("\"aaData\": [");
 
 
-					if (thisCOlumn == lastColumn)
-					{
-						Output.Write("\"" + value.Replace(" | ", "<br />").Replace("\"", "'") + "\"");
-					}
-					else
-					{
-						Output.Write("\"" + value.Replace(" | ", "<br />").Replace("\"", "'") + "\",");
-					}
-				}
+            //// Get columns to display 
+            //List<DataColumn> columns_to_display = results.Columns.Cast<DataColumn>().ToList();
 
-				// Finish this row
-				if ((i < displayStart + displayLength - 1) && (i < total_results - 1))
-					Output.WriteLine("],");
-				else
-					Output.WriteLine("]");
+            //// Sort by the correct column
+            //DataColumn sortColumn = null;
+            //if (sortingColumn1 > 0)
+            //{
+            //    sortColumn = columns_to_display[sortingColumn1 - 1];
+            //    string column_name_for_sort = sortColumn.ColumnName;
+            //    resultsView.Sort = column_name_for_sort + " " + sortDirection1;
 
-				row_count++;
-			}
+            //    //if (column_name_for_sort == "InstitutionName")
+            //    //	resultsView.Sort = resultsView.Sort + ", Standard1 asc";
 
-			Output.WriteLine("]");
-			Output.WriteLine("}");
+            //    if (sortColumn.DataType == Type.GetType("System.Int32"))
+            //    {
+            //        if ( resultsView.RowFilter.Length > 0 )
+            //            resultsView.RowFilter = resultsView.RowFilter + " and " + column_name_for_sort + " >= 0 and " + column_name_for_sort + " is not null";
+            //        else
+            //            resultsView.RowFilter = column_name_for_sort + " >= 0 and " + column_name_for_sort + " is not null";
+            //    }
+            //    if (sortColumn.DataType == Type.GetType("System.String"))
+            //    {
+            //        if (resultsView.RowFilter.Length > 0)
+            //            resultsView.RowFilter = resultsView.RowFilter + " and " + column_name_for_sort + " <> '' and " + column_name_for_sort + " is not null";
+            //        else
+            //            resultsView.RowFilter = column_name_for_sort + " <> '' and " + column_name_for_sort + " is not null";
+            //    }
+            //}
+
+            //// Get the last column
+            //DataColumn lastColumn = columns_to_display[columns_to_display.Count - 1];
+
+            //// Add the data for the rows to show
+            //int adjust_for_filter = 0;
+            //bool filter_modified = false;
+            //int row_count = 1;
+            //for (int i = displayStart; (i < displayStart + displayLength) && (i < total_results); i++)
+            //{
+
+            //    // Is this now over the resultsView count, possibly due to a sort?
+            //    if (i - adjust_for_filter > resultsView.Count - 1)
+            //    {
+            //        if ((resultsView.RowFilter.Length > 0) && (sortColumn != null) && (!filter_modified))
+            //        {
+            //            adjust_for_filter = resultsView.Count;
+            //            filter_modified = true;
+
+            //            if (sortColumn.DataType == Type.GetType("System.Int32"))
+            //                resultsView.RowFilter = sortColumn.ColumnName + " < 0 or " + sortColumn.ColumnName + " is null";
+            //            if (sortColumn.DataType == Type.GetType("System.String"))
+            //                resultsView.RowFilter = sortColumn.ColumnName + " = '' or " + sortColumn.ColumnName + " is null";
+            //        }
+            //        else
+            //        {
+            //            // Should never get here, but just in case, exit cleanly
+            //            break;
+            //        }
+            //    }
+
+            //    // Start the JSON response for this row
+            //    Output.Write("[ \"" + row_count + "\",");
+
+            //    DataRow thisRow = resultsView[i - adjust_for_filter].Row;
+
+            //    // Add the data for each column
+            //    foreach (DataColumn thisCOlumn in columns_to_display)
+            //    {
+            //        string value = String.Empty;
+            //        if (thisRow[thisCOlumn] != DBNull.Value)
+            //        {
+            //            value = thisRow[thisCOlumn].ToString().Replace(" 12:00:00 AM", "").Replace("1/1/1900", "");
+            //            if (value == "-1")
+            //                value = String.Empty;
+            //        }
+
+
+            //        if (thisCOlumn == lastColumn)
+            //        {
+            //            Output.Write("\"" + value.Replace(" | ", "<br />").Replace("\"", "'") + "\"");
+            //        }
+            //        else
+            //        {
+            //            Output.Write("\"" + value.Replace(" | ", "<br />").Replace("\"", "'") + "\",");
+            //        }
+            //    }
+
+            //    // Finish this row
+            //    if ((i < displayStart + displayLength - 1) && (i < total_results - 1))
+            //        Output.WriteLine("],");
+            //    else
+            //        Output.WriteLine("]");
+
+            //    row_count++;
+            //}
+
+            //Output.WriteLine("]");
+            //Output.WriteLine("}");
 
 
 		}

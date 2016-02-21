@@ -6,7 +6,6 @@ using System.IO;
 using System.Web;
 using System.Web.Caching;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -35,7 +34,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     {
         /// <summary> Constructor for a new instance of the Advanced_Search_YearRange_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Advanced_Search_YearRange_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public Advanced_Search_YearRange_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
             // Compute the redirect stem to use
             string fields = RequestSpecificValues.Current_Mode.Search_Fields;
@@ -53,7 +54,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             // Get the browse all url, if enabled
             string browse_url = String.Empty;
-            if (RequestSpecificValues.Hierarchy_Object.Can_Browse_Items)
+            if (ViewBag.Hierarchy_Object.Can_Browse_Items)
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
@@ -110,7 +111,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 			}
 
 			// Get the list of years for this aggregation
-			string aggrCode = RequestSpecificValues.Hierarchy_Object.Code.ToLower();
+			string aggrCode = ViewBag.Hierarchy_Object.Code.ToLower();
 			string key = aggrCode + "_YearRanges";
 			List<int> yearRange = HttpContext.Current.Cache[key] as List<int>;
 			if (yearRange == null)
@@ -343,7 +344,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 				Output.WriteLine("        <span id=\"circular_progress\" class=\"hidden_progress\">&nbsp;</span> &nbsp; ");
 
 
-				if (RequestSpecificValues.Hierarchy_Object.Children_Count > 0)
+				if (ViewBag.Hierarchy_Object.Children_Count > 0)
 				{
 					Output.WriteLine("        <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + Search_Script_Action + ";return false;\">" + searchButtonText + "<img id=\"sbkAsav_ButtonArrow\" src=\"" + Static_Resources.Button_Next_Arrow2_Png + "\" alt=\"\" /></button>");
 				}
@@ -361,7 +362,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 				Output.WriteLine("        <span id=\"circular_progress\" class=\"hidden_progress\">&nbsp;</span> &nbsp; ");
 
 
-				if (RequestSpecificValues.Hierarchy_Object.Children_Count > 0)
+				if (ViewBag.Hierarchy_Object.Children_Count > 0)
 				{
 					Output.WriteLine("        <button name=\"searchButton\" id=\"searchButton\" class=\"sbk_SearchButton\" onclick=\"" + Search_Script_Action + ";return false;\">" + searchButtonText + "<img id=\"sbkAsav_ButtonArrow\" src=\"" + Static_Resources.Button_Next_Arrow2_Png + "\" alt=\"\" /></button>");
 				}
@@ -422,7 +423,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         private void add_drop_down_options(TextWriter Output, string DropValue)
         {
-            foreach (Item_Aggregation_Metadata_Type searchField in RequestSpecificValues.Hierarchy_Object.Search_Fields)
+            foreach (Item_Aggregation_Metadata_Type searchField in ViewBag.Hierarchy_Object.Search_Fields)
             {
                 if (searchField.SobekCode == DropValue)
                 {

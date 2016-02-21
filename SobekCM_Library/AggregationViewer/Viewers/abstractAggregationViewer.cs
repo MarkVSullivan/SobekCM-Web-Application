@@ -31,15 +31,20 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Protected field contains the information specific to the current request </summary>
         protected RequestCache RequestSpecificValues;
 
+        /// <summary> Protected field contains the aggregation-specific request information </summary>
+        protected AggregationViewBag ViewBag;
+
         /// <summary> Empty list of behaviors, returned by default </summary>
         /// <remarks> This just prevents an empty set from having to be created over and over </remarks>
         protected static List<HtmlSubwriter_Behaviors_Enum> emptybehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
 
         /// <summary> Constructor for objects which implement this abstract class  </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        protected abstractAggregationViewer(RequestCache RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        protected abstractAggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
         {
             this.RequestSpecificValues = RequestSpecificValues;
+            this.ViewBag = ViewBag;
         }
 
         #region iAggregationViewer Members

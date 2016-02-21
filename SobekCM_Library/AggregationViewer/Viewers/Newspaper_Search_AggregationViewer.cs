@@ -3,7 +3,6 @@
 using System;
 using System.IO;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
@@ -34,7 +33,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         /// <summary> Constructor for a new instance of the Newspaper_Search_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Newspaper_Search_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public Newspaper_Search_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
             // Determine the sub text to use
             const string SUB_CODE = "s=";
@@ -58,7 +59,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             // Get the browse all url, if enabled
             browse_url = String.Empty;
-            if (RequestSpecificValues.Hierarchy_Object.Can_Browse_Items)
+            if (ViewBag.Hierarchy_Object.Can_Browse_Items)
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
@@ -75,7 +76,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             arg2 = String.Empty;
             arg1 = redirect_stem;
 
-            if ((RequestSpecificValues.Hierarchy_Object.Children_Count > 0) && ((RequestSpecificValues.Current_Mode.Show_Selection_Panel.HasValue) && (RequestSpecificValues.Current_Mode.Show_Selection_Panel.Value )))
+            if ((ViewBag.Hierarchy_Object.Children_Count > 0) && ((RequestSpecificValues.Current_Mode.Show_Selection_Panel.HasValue) && (RequestSpecificValues.Current_Mode.Show_Selection_Panel.Value )))
             {
                 Search_Script_Action = "newspaper_select_search_sobekcm('" + arg1 + "', '" + SUB_CODE + "', '" + browse_url + "');";
                 arg2 = SUB_CODE;

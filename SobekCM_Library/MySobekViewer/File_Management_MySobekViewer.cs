@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -33,7 +34,7 @@ namespace SobekCM.Library.MySobekViewer
     {
         private bool criticalErrorEncountered;
         private readonly string digitalResourceDirectory;
-
+        private readonly SobekCM_Item currentItem;
 
         #region Constructor
 
@@ -43,10 +44,49 @@ namespace SobekCM.Library.MySobekViewer
         {
             RequestSpecificValues.Tracer.Add_Trace("File_Management_MySobekViewer.Constructor", String.Empty);
 
-            digitalResourceDirectory = RequestSpecificValues.Current_Item.Source_Directory;
+            // If no user then that is an error
+            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
 
-            // If the user cannot edit this RequestSpecificValues.Current_Item, go back
-            if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List))
+            // Ensure BibID and VID provided
+            RequestSpecificValues.Tracer.Add_Trace("File_Management_MySobekViewer.Constructor", "Validate provided bibid / vid");
+            if ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.BibID)) || (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.VID)))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("File_Management_MySobekViewer.Constructor", "BibID or VID was not provided!");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID/VID missing in item file upload request";
+                return;
+            }
+
+            // Ensure the item is valid
+            RequestSpecificValues.Tracer.Add_Trace("File_Management_MySobekViewer.Constructor", "Validate bibid/vid exists");
+            if (!UI_ApplicationCache_Gateway.Items.Contains_BibID_VID(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("File_Management_MySobekViewer.Constructor", "BibID/VID indicated is not valid", Custom_Trace_Type_Enum.Error);
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID/VID indicated is not valid";
+                return;
+            }
+
+            RequestSpecificValues.Tracer.Add_Trace("File_Management_MySobekViewer.Constructor", "Try to pull this sobek complete item");
+            currentItem = SobekEngineClient.Items.Get_Sobek_Item(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
+            if (currentItem == null)
+            {
+                RequestSpecificValues.Tracer.Add_Trace("File_Management_MySobekViewer.Constructor", "Unable to build complete item");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : Unable to build complete item";
+                return;
+            }
+
+            digitalResourceDirectory = currentItem.Source_Directory;
+
+            // If the user cannot edit this currentItem, go back
+            if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
@@ -71,14 +111,14 @@ namespace SobekCM.Library.MySobekViewer
                     }
                     if ((file_name_from_keys.Length > 0) && (label_from_keys.Length > 0))
                     {
-                        HttpContext.Current.Session["file_" + RequestSpecificValues.Current_Item.Web.ItemID + "_" + file_name_from_keys.Trim()] = label_from_keys.Trim();
+                        HttpContext.Current.Session["file_" + currentItem.Web.ItemID + "_" + file_name_from_keys.Trim()] = label_from_keys.Trim();
                         file_name_from_keys = String.Empty;
                         label_from_keys = String.Empty;
                     }
 
                     if (thisKey == "url_input")
                     {
-                        RequestSpecificValues.Current_Item.Bib_Info.Location.Other_URL = HttpContext.Current.Request.Form[thisKey];
+                        currentItem.Bib_Info.Location.Other_URL = HttpContext.Current.Request.Form[thisKey];
                     }
                 }
 
@@ -120,31 +160,31 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         case 2:
                             // Clear all the file keys in the session state
-                            List<string> keys = HttpContext.Current.Session.Keys.Cast<string>().Where(ThisKey => ThisKey.IndexOf("file_" + RequestSpecificValues.Current_Item.Web.ItemID + "_") == 0).ToList();
+                            List<string> keys = HttpContext.Current.Session.Keys.Cast<string>().Where(ThisKey => ThisKey.IndexOf("file_" + currentItem.Web.ItemID + "_") == 0).ToList();
 		                    foreach (string thisKey in keys)
                             {
                                 HttpContext.Current.Session.Remove(thisKey);
                             }
 
-                            // Redirect to the RequestSpecificValues.Current_Item
+                            // Redirect to the currentItem
                             RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                             UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                             break;
 
                         case 9:
-                            if (!complete_item_submission(RequestSpecificValues.Current_Item, null))
+                            if (!complete_item_submission(currentItem, null))
                             {
                                 // Clear all the file keys in the session state
-                                List<string> keys2 = HttpContext.Current.Session.Keys.Cast<string>().Where(ThisKey => ThisKey.IndexOf("file_" + RequestSpecificValues.Current_Item.Web.ItemID + "_") == 0).ToList();
+                                List<string> keys2 = HttpContext.Current.Session.Keys.Cast<string>().Where(ThisKey => ThisKey.IndexOf("file_" + currentItem.Web.ItemID + "_") == 0).ToList();
 	                            foreach (string thisKey in keys2)
                                 {
                                     HttpContext.Current.Session.Remove(thisKey);
                                 }
 
-                                // Also clear the RequestSpecificValues.Current_Item from the cache
-                                CachedDataManager.Items.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, null);
+                                // Also clear the currentItem from the cache
+                                CachedDataManager.Items.Remove_Digital_Resource_Object(currentItem.BibID, currentItem.VID, null);
 
-                                // Redirect to the RequestSpecificValues.Current_Item
+                                // Redirect to the currentItem
                                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                             }
@@ -248,9 +288,9 @@ namespace SobekCM.Library.MySobekViewer
                         FileInfo fileInfo = new FileInfo(thisFile);
                         SobekCM_File_Info newFile = new SobekCM_File_Info(fileInfo.Name);
                         string label = fileInfo.Name.Replace(fileInfo.Extension, "");
-                        if (HttpContext.Current.Session["file_" + RequestSpecificValues.Current_Item.Web.ItemID + "_" + thisFileKey] != null)
+                        if (HttpContext.Current.Session["file_" + currentItem.Web.ItemID + "_" + thisFileKey] != null)
                         {
-                            string possible_label = HttpContext.Current.Session["file_" + RequestSpecificValues.Current_Item.Web.ItemID + "_" + thisFileKey].ToString();
+                            string possible_label = HttpContext.Current.Session["file_" + currentItem.Web.ItemID + "_" + thisFileKey].ToString();
                             if (possible_label.Length > 0)
                                 label = possible_label;
                         }
@@ -316,10 +356,10 @@ namespace SobekCM.Library.MySobekViewer
                 //    // Copy the static HTML file to the web server
                 //    try
                 //    {
-                //        if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + RequestSpecificValues.Current_Item.BibID.Substring(0, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(2, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(4, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(6, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(8)))
-                //            Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + RequestSpecificValues.Current_Item.BibID.Substring(0, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(2, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(4, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(6, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(8));
+                //        if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + currentItem.BibID.Substring(0, 2) + "\\" + currentItem.BibID.Substring(2, 2) + "\\" + currentItem.BibID.Substring(4, 2) + "\\" + currentItem.BibID.Substring(6, 2) + "\\" + currentItem.BibID.Substring(8)))
+                //            Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + currentItem.BibID.Substring(0, 2) + "\\" + currentItem.BibID.Substring(2, 2) + "\\" + currentItem.BibID.Substring(4, 2) + "\\" + currentItem.BibID.Substring(6, 2) + "\\" + currentItem.BibID.Substring(8));
                 //        if (File.Exists(filename))
-                //            File.Copy(filename, UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + RequestSpecificValues.Current_Item.BibID.Substring(0, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(2, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(4, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(6, 2) + "\\" + RequestSpecificValues.Current_Item.BibID.Substring(8) + "\\" + RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html", true);
+                //            File.Copy(filename, UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + currentItem.BibID.Substring(0, 2) + "\\" + currentItem.BibID.Substring(2, 2) + "\\" + currentItem.BibID.Substring(4, 2) + "\\" + currentItem.BibID.Substring(6, 2) + "\\" + currentItem.BibID.Substring(8) + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html", true);
                 //    }
                 //    catch (Exception)
                 //    {
@@ -335,7 +375,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Save the rest of the metadata
                 Item_To_Complete.Save_SobekCM_METS();
 
-                // Finally, set the RequestSpecificValues.Current_Item for more processing if there were any files
+                // Finally, set the currentItem for more processing if there were any files
                 if (((image_files.Count > 0) || (download_files.Count > 0)) && ( Item_To_Complete.Web.ItemID > 0 ))
                 {
                     Database.SobekCM_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true, Tracer);
@@ -389,8 +429,8 @@ namespace SobekCM.Library.MySobekViewer
 
             Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
 
-			// Write the top RequestSpecificValues.Current_Item mimic html portion
-			Write_Item_Type_Top(Output, RequestSpecificValues.Current_Item);
+			// Write the top currentItem mimic html portion
+			Write_Item_Type_Top(Output, currentItem);
 
 			Output.WriteLine("<div id=\"container-inner1000\">");
 			Output.WriteLine("<div id=\"pagecontainer\">");
@@ -434,8 +474,8 @@ namespace SobekCM.Library.MySobekViewer
 
             Dictionary<string, string> image_files_to_labels = new Dictionary<string,string>();
             Dictionary<string, string> resource_files_to_labels = new Dictionary<string,string>();
-            List<abstract_TreeNode> imagePages = RequestSpecificValues.Current_Item.Divisions.Physical_Tree.Pages_PreOrder;
-            List<abstract_TreeNode> resourcePages = RequestSpecificValues.Current_Item.Divisions.Download_Tree.Pages_PreOrder;
+            List<abstract_TreeNode> imagePages = currentItem.Divisions.Physical_Tree.Pages_PreOrder;
+            List<abstract_TreeNode> resourcePages = currentItem.Divisions.Download_Tree.Pages_PreOrder;
             foreach( Page_TreeNode thisPage in imagePages )
             {
                 if ( thisPage.Files.Count > 0 )
@@ -492,10 +532,10 @@ namespace SobekCM.Library.MySobekViewer
                     else
                     {
                         // If this does not match the exclusion regular expression, than add this
-                        if ((!Regex.Match(thisFileInfo.Name, UI_ApplicationCache_Gateway.Settings.Resources.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, RequestSpecificValues.Current_Item.BibID + "_" + RequestSpecificValues.Current_Item.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0))
+                        if ((!Regex.Match(thisFileInfo.Name, UI_ApplicationCache_Gateway.Settings.Resources.Files_To_Exclude_From_Downloads, RegexOptions.IgnoreCase).Success) && (String.Compare(thisFileInfo.Name, currentItem.BibID + "_" + currentItem.VID + ".html", StringComparison.OrdinalIgnoreCase) != 0))
                         {
 							if ((thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf("marc.xml", StringComparison.OrdinalIgnoreCase) != 0) && (thisFileInfo.Name.IndexOf(".mets", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("citation_mets.xml", StringComparison.OrdinalIgnoreCase) < 0) && (thisFileInfo.Name.IndexOf("_ingest.xml", StringComparison.OrdinalIgnoreCase) < 0) &&
-	                            ((thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) < 0) || (thisFileInfo.Name.IndexOf(RequestSpecificValues.Current_Item.BibID, StringComparison.OrdinalIgnoreCase) < 0)))
+	                            ((thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) < 0) || (thisFileInfo.Name.IndexOf(currentItem.BibID, StringComparison.OrdinalIgnoreCase) < 0)))
 	                        {
 		                        // Is this the first image file with this name?
 		                        if (download_files.ContainsKey(filename_sans_extension.ToLower()))
@@ -575,11 +615,11 @@ namespace SobekCM.Library.MySobekViewer
 					Output.WriteLine("        <span style=\"color:gray\">Label:</span>");
 		            Output.WriteLine("        <input type=\"hidden\" id=\"upload_file" + file_counter.ToString() + "\" name=\"upload_file" + file_counter.ToString() + "\" value=\"" + fileKey + "\" />");
 
-		            if (HttpContext.Current.Session["file_" + RequestSpecificValues.Current_Item.Web.ItemID + "_" + fileKey] == null)
+		            if (HttpContext.Current.Session["file_" + currentItem.Web.ItemID + "_" + fileKey] == null)
 		            {
 			            if (resource_files_to_labels.ContainsKey(fileKey))
 			            {
-				            HttpContext.Current.Session["file_" + RequestSpecificValues.Current_Item.Web.ItemID + "_" + fileKey] = resource_files_to_labels[fileKey];
+				            HttpContext.Current.Session["file_" + currentItem.Web.ItemID + "_" + fileKey] = resource_files_to_labels[fileKey];
 							Output.WriteLine("        <input type=\"text\" class=\"upload_label_input sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + HttpUtility.HtmlEncode(resource_files_to_labels[fileKey]) + "\" ></input>");
 			            }
 			            else
@@ -589,7 +629,7 @@ namespace SobekCM.Library.MySobekViewer
 		            }
 		            else
 		            {
-			            string label_from_session = HttpContext.Current.Session["file_" + RequestSpecificValues.Current_Item.Web.ItemID + "_" + fileKey].ToString();
+			            string label_from_session = HttpContext.Current.Session["file_" + currentItem.Web.ItemID + "_" + fileKey].ToString();
 						Output.WriteLine("        <input type=\"text\" class=\"upload_label_input sbk_Focusable\" id=\"" + input_name + "\" name=\"" + input_name + "\" value=\"" + HttpUtility.HtmlEncode(label_from_session) + "\" ></input>");
 		            }
 
@@ -675,7 +715,7 @@ namespace SobekCM.Library.MySobekViewer
 
 		/// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
 		/// requests from the main HTML subwriter. </summary>
-		/// <value> This tells the HTML and mySobek writers to mimic the RequestSpecificValues.Current_Item viewer </value>
+		/// <value> This tells the HTML and mySobek writers to mimic the currentItem viewer </value>
 		public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
 		{
 			get

@@ -52,6 +52,12 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(6)]
         public List<BriefItem_Related_Titles> Related_Titles { get; set; }
 
+        /// <summary> Main issue date for this item </summary>
+        [DataMember(Name = "date")]
+        [XmlAttribute("date")]
+        [ProtoMember(7)]
+        public string Date { get; set; }
+
         /// <summary> Add a related title to this web information </summary>
         /// <param name="Relationship"> Relationship between the main title and the related title</param>
         /// <param name="Title"> Title of the related title within this SobekCM library</param>

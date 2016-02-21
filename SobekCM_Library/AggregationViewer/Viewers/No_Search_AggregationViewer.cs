@@ -26,7 +26,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     {
         /// <summary> Constructor for a new instance of the No_Search_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public No_Search_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public No_Search_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
             // Do nothing
         }
@@ -58,7 +60,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("No_Search_AggregationViewer.Add_Search_Box_HTML", "Adding html for search box");
             }
 
-            Output.WriteLine("<h1>" + RequestSpecificValues.Hierarchy_Object.Name + " Home</h1>");
+            Output.WriteLine("<h1>" + ViewBag.Hierarchy_Object.Name + " Home</h1>");
 
         }
     }

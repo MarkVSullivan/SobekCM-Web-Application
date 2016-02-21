@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.Skins;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Email;
@@ -252,6 +253,39 @@ namespace SobekCM.Library.MainWriters
                         break;
 
                 }
+
+                // Now, pull the web skin
+                SobekCM_Assistant assistant = new SobekCM_Assistant();
+
+                // Try to get the web skin from the cache or skin collection, otherwise build it
+                Web_Skin_Object htmlSkin = assistant.Get_HTML_Skin(RequestSpecificValues.Current_Mode.Skin, RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, RequestSpecificValues.Tracer);
+
+                //// If the skin was somehow overriden, default back to the default skin
+                //if ((htmlSkin == null) && (!String.IsNullOrEmpty(defaultSkin)))
+                //{
+                //    if (String.Compare(current_skin_code, defaultSkin, StringComparison.InvariantCultureIgnoreCase) != 0)
+                //    {
+                //        currentMode.Skin = defaultSkin;
+                //        htmlSkin = assistant.Get_HTML_Skin(defaultSkin, currentMode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, tracer);
+                //    }
+                //}
+
+                // If there was no web skin returned, forward user to URL with no web skin. 
+                // This happens if the web skin code is invalid.  If a robot, just return a bad request 
+                // value though.
+                if (htmlSkin == null)
+                {
+                    HttpContext.Current.Response.StatusCode = 404;
+                    HttpContext.Current.Response.Output.WriteLine("404 - INVALID URL");
+                    HttpContext.Current.Response.Output.WriteLine("Web skin indicated is invalid, default web skin invalid - line 1029");
+                    HttpContext.Current.Response.Output.WriteLine(RequestSpecificValues.Tracer.Text_Trace);
+                    HttpContext.Current.ApplicationInstance.CompleteRequest();
+                    RequestSpecificValues.Current_Mode.Request_Completed = true;
+
+                    return;
+                }
+
+                RequestSpecificValues.HTML_Skin = htmlSkin;
             }
             catch (Exception ee)
             {

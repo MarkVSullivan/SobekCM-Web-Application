@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Net.Configuration;
 using System.Text;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
@@ -34,10 +33,12 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     {
         /// <summary> Constructor for a new instance of the Metadata_Browse_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Map_Browse_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public Map_Browse_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
             // Get the coordinate information
-            DataTable coordinates = Engine_Database.Get_All_Coordinate_Points_By_Aggregation(RequestSpecificValues.Hierarchy_Object.Code, RequestSpecificValues.Tracer);
+            DataTable coordinates = Engine_Database.Get_All_Coordinate_Points_By_Aggregation(ViewBag.Hierarchy_Object.Code, RequestSpecificValues.Tracer);
 
             // Add the google script information
             StringBuilder scriptBuilder = new StringBuilder(10000);
@@ -56,9 +57,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             decimal center_longitude = 0;
             int zoom = 1;
             bool zoom_to_extent = true;
-            if ((RequestSpecificValues.Hierarchy_Object.Map_Browse_Display != null) && ( RequestSpecificValues.Hierarchy_Object.Map_Browse_Display.Type == Item_Aggregation_Map_Coverage_Type_Enum.FIXED ))
+            if ((ViewBag.Hierarchy_Object.Map_Browse_Display != null) && ( ViewBag.Hierarchy_Object.Map_Browse_Display.Type == Item_Aggregation_Map_Coverage_Type_Enum.FIXED ))
             {
-                Item_Aggregation_Map_Coverage_Info mapTypeInfo = RequestSpecificValues.Hierarchy_Object.Map_Browse_Display;
+                Item_Aggregation_Map_Coverage_Info mapTypeInfo = ViewBag.Hierarchy_Object.Map_Browse_Display;
                 if ((mapTypeInfo.Latitude.HasValue) && (mapTypeInfo.Longitude.HasValue))
                 {
                     center_latitude = mapTypeInfo.Latitude.Value;

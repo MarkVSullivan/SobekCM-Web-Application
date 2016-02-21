@@ -11,6 +11,7 @@ using System.Text;
 using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.Items;
@@ -48,7 +49,7 @@ namespace SobekCM
 		public Navigation_Object currentMode;
 		public Page_TreeNode currentPage;
 		public User_Object currentUser;
-		public Item_Aggregation hierarchyObject;
+		public Item_Aggregation topLevelCollection;
 		public Web_Skin_Object htmlSkin;
 		public SobekCM_Items_In_Title itemsInTitle;
 		public abstractMainWriter mainWriter;
@@ -57,11 +58,10 @@ namespace SobekCM
 		public Search_Results_Statistics searchResultStatistics;
 		public SobekCM_SiteMap siteMap;
 		public HTML_Based_Content staticWebContent;
-		public Item_Aggregation_Child_Page thisBrowseObject;
-		public Custom_Tracer tracer;
-	    private string defaultSkin;
 
-		#endregion
+		public Custom_Tracer tracer;
+
+	    #endregion
 
 		#region Constructor for this class
 
@@ -195,8 +195,6 @@ namespace SobekCM
 			    currentMode.isPostBack = isPostBack;
                 currentMode.Browser_Type = request.Browser.Type.ToUpper();
 				currentMode.Set_Robot_Flag(request.UserAgent, request.UserHostAddress);
-
-                defaultSkin = currentMode.Skin;
 			}
 			catch  ( Exception ee )
 			{
@@ -297,6 +295,9 @@ namespace SobekCM
 					Perform_Search_Engine_Robot_Checks(currentMode, request.QueryString);
 				}
 
+                // Always pull TOP level collection
+			    SobekEngineClient.Aggregations.Get_Aggregation("all", currentMode.Language, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, tracer);
+
 				// If this is for a public folder, get the data
 				if (currentMode.Mode == Display_Mode_Enum.Public_Folder)
 				{
@@ -314,20 +315,10 @@ namespace SobekCM
 				if (currentMode.Request_Completed)
 					return;
 
-				// Get the group, collection, or subcollection from the database or cache.
-				// This also makes sure they are a proper hierarchy. 
-				Get_Entire_Collection_Hierarchy();
-
 				// Run the search if this should be done now
 				if (currentMode.Mode == Display_Mode_Enum.Results)
 				{
 					Search_Block();
-				}
-
-				// Run the browse/info work if it is of those modes
-				if ((currentMode.Mode == Display_Mode_Enum.Aggregation) && ((currentMode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info) || (currentMode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit)))
-				{
-					Browse_Info_Block();
 				}
 
 				if (currentMode.Mode == Display_Mode_Enum.My_Sobek)
@@ -1000,55 +991,10 @@ namespace SobekCM
 						}
 					}
 				}
-
-				// Check if a differente skin should be used if this is a collection display
-				if ((hierarchyObject != null) && ( hierarchyObject.Web_Skins != null ) && (hierarchyObject.Web_Skins.Count > 0))
-				{
-                    // Do NOT do this replacement if the web skin is in the URL and this is admin mode
-				    if ((!currentMode.Skin_In_URL) || (currentMode.Mode != Display_Mode_Enum.Administrative))
-				    {
-				        if (!hierarchyObject.Web_Skins.Contains(current_skin_code.ToLower()))
-				        {
-				            current_skin_code = hierarchyObject.Web_Skins[0];
-				        }
-				    }
-				}
-
-				SobekCM_Assistant assistant = new SobekCM_Assistant();
-
-				// Try to get the web skin from the cache or skin collection, otherwise build it
-				htmlSkin = assistant.Get_HTML_Skin(current_skin_code, currentMode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, tracer);
-
-                // If the skin was somehow overriden, default back to the default skin
-                if (( htmlSkin == null ) && ( !String.IsNullOrEmpty(defaultSkin)))
-			    {
-			        if (String.Compare(current_skin_code, defaultSkin, StringComparison.InvariantCultureIgnoreCase) != 0)
-			        {
-			            currentMode.Skin = defaultSkin;
-                        htmlSkin = assistant.Get_HTML_Skin(defaultSkin, currentMode, UI_ApplicationCache_Gateway.Web_Skin_Collection, true, tracer);
-			        }
-			    }
-
-			    // If there was no web skin returned, forward user to URL with no web skin. 
-				// This happens if the web skin code is invalid.  If a robot, just return a bad request 
-				// value though.
-				if (htmlSkin == null)
-				{
-
-						HttpContext.Current.Response.StatusCode = 404;
-						HttpContext.Current.Response.Output.WriteLine("404 - INVALID URL");
-                        HttpContext.Current.Response.Output.WriteLine("Web skin indicated is invalid, default web skin invalid - line 1029");
-
-				    HttpContext.Current.Response.Output.WriteLine(tracer.Text_Trace);
-						HttpContext.Current.ApplicationInstance.CompleteRequest();
-						currentMode.Request_Completed = true;
-
-					return;
-				}
-            }
+			}
 
             // Build the RequestCache object
-		    RequestCache RequestSpecificValues = new RequestCache(currentMode, hierarchyObject, searchResultStatistics, pagedSearchResults, thisBrowseObject, currentItem, currentPage, htmlSkin, currentUser, publicFolder, siteMap, itemsInTitle, staticWebContent, tracer);
+		    RequestCache RequestSpecificValues = new RequestCache(currentMode, searchResultStatistics, pagedSearchResults, currentUser, publicFolder, topLevelCollection, tracer);
 
             if ((currentMode.Writer_Type == Writer_Type_Enum.HTML) || (currentMode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
             {
@@ -1195,36 +1141,15 @@ namespace SobekCM
 
 		#endregion
 
-		#region Block for browsing and info
-
-		private void Browse_Info_Block()
-		{
-			tracer.Add_Trace("SobekCM_Page_Globals.Browse_Info_Block", "Retrieiving Browse/Info Object");
-
-			SobekCM_Assistant assistant = new SobekCM_Assistant();
-
-			// If this is a robot, then get the text from the static page
-			if ((currentMode.Is_Robot) && (currentMode.Info_Browse_Mode == "all"))
-			{
-				browse_info_display_text = assistant.Get_All_Browse_Static_HTML(currentMode, tracer);
-				currentMode.Writer_Type = Writer_Type_Enum.HTML_Echo;
-			}
-			else
-			{
-                if (!assistant.Get_Browse_Info(currentMode, hierarchyObject, UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory, tracer, out thisBrowseObject, out searchResultStatistics, out pagedSearchResults, out staticWebContent))
-				{
-					currentMode.Mode = Display_Mode_Enum.Error;
-				}
-			}
-		}
-
-		#endregion
-
 		#region Block for searching
 
 		private void Search_Block()
 		{
 			tracer.Add_Trace("SobekCM_Page_Globals.Search_Block", "Retreiving search results");
+
+            // Here just pull the hierarchy object then (later this will be pused out of here)
+            Item_Aggregation hierarchyObject = SobekEngineClient.Aggregations.Get_Aggregation(currentMode.Aggregation, currentMode.Language, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, tracer);
+
 
 			try
 			{
@@ -1236,6 +1161,7 @@ namespace SobekCM
 					UrlWriterHelper.Redirect(currentMode);
 					return;
 				}
+
 
 				SobekCM_Assistant assistant = new SobekCM_Assistant();
                 assistant.Get_Search_Results(currentMode, UI_ApplicationCache_Gateway.Items, hierarchyObject, UI_ApplicationCache_Gateway.Search_Stop_Words, tracer, out searchResultStatistics, out pagedSearchResults);
@@ -1250,7 +1176,7 @@ namespace SobekCM
 				currentMode.Mode = Display_Mode_Enum.Error;
 				currentMode.Error_Message = "Unable to perform search at this time ";
 				if (hierarchyObject == null)
-					currentMode.Error_Message = "Unlable to perform search - hierarchyObject = null";
+					currentMode.Error_Message = "Unable to perform search - hierarchyObject = null";
 				currentMode.Caught_Exception = ee;
 			}
 		}
@@ -1329,35 +1255,6 @@ namespace SobekCM
 			}
 		}
 
-
-		#endregion
-
-		#region Methods retrieve groups, collections, or subcollections from the database or cache
-
-		private void Get_Entire_Collection_Hierarchy()
-		{
-			// If the mode is NULL or the request was already completed, do nothing
-			if ((currentMode == null) || (currentMode.Request_Completed))
-				return;
-
-			tracer.Add_Trace("SobekCM_Page_Globals.Get_Entire_Collection_Hierarchy", "Retrieving hierarchy information");
-
-			// Check that the current aggregation code is valid
-            if (!UI_ApplicationCache_Gateway.Aggregations.isValidCode(currentMode.Aggregation))
-			{
-				// Is there a "forward value"
-                if (UI_ApplicationCache_Gateway.Collection_Aliases.ContainsKey(currentMode.Aggregation))
-				{
-                    currentMode.Aggregation = UI_ApplicationCache_Gateway.Collection_Aliases[currentMode.Aggregation];
-				}
-			}
-
-			SobekCM_Assistant assistant = new SobekCM_Assistant();
-            if (!assistant.Get_Entire_Collection_Hierarchy(currentMode, UI_ApplicationCache_Gateway.Aggregations, tracer, out hierarchyObject))
-			{
-				currentMode.Mode = Display_Mode_Enum.Error;
-			}
-		}
 
 		#endregion
 

@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
+using SobekCM.Core.BriefItem;
+using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -36,6 +38,7 @@ namespace SobekCM.Library.MySobekViewer
     public class Edit_Group_Behaviors_MySobekViewer : abstract_MySobekViewer
     {
        private readonly CompleteTemplate completeTemplate;
+       private readonly BriefItemInfo briefItem;
 
        #region Constructor
 
@@ -44,6 +47,31 @@ namespace SobekCM.Library.MySobekViewer
        public Edit_Group_Behaviors_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
        {
            RequestSpecificValues.Tracer.Add_Trace("Edit_Group_Behaviors_MySobekViewer.Constructor", String.Empty);
+
+           // Ensure BibID and VID provided
+           RequestSpecificValues.Tracer.Add_Trace("Edit_Group_Behaviors_MySobekViewer.Constructor", "Validate provided bibid / vid");
+           if (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.BibID)) 
+           {
+               RequestSpecificValues.Tracer.Add_Trace("Edit_Group_Behaviors_MySobekViewer.Constructor", "BibID was not provided!");
+           }
+           else
+           {
+               // Ensure the item is valid
+               RequestSpecificValues.Tracer.Add_Trace("Edit_Group_Behaviors_MySobekViewer.Constructor", "Validate bibid exists");
+               if (!UI_ApplicationCache_Gateway.Items.Contains_BibID(RequestSpecificValues.Current_Mode.BibID))
+               {
+                   RequestSpecificValues.Tracer.Add_Trace("Edit_Group_Behaviors_MySobekViewer.Constructor", "BibID indicated is not valid", Custom_Trace_Type_Enum.Error);
+               }
+               else
+               {
+                   RequestSpecificValues.Tracer.Add_Trace("Edit_Group_Behaviors_MySobekViewer.Constructor", "Try to pull this item");
+                   briefItem = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer);
+                   if (briefItem == null)
+                   {
+                       RequestSpecificValues.Tracer.Add_Trace("Edit_Group_Behaviors_MySobekViewer.Constructor", "Unable to pull item from the engine");
+                   }
+               }
+           }
 
            // If the RequestSpecificValues.Current_User cannot edit this RequestSpecificValues.Current_Item, go back
            if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List))

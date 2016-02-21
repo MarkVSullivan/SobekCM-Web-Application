@@ -27,6 +27,7 @@ namespace SobekCM.Library.HTML
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Print_Item_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
         {
+
             // Check for IP restriction
             restriction_message = String.Empty;
             if (RequestSpecificValues.Current_Item.Behaviors.IP_Restriction_Membership > 0)

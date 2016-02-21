@@ -29,5 +29,12 @@ namespace SobekCM.Core.FileSystems
         /// <param name="FileName"> Filename to check for</param>
         /// <returns> URI for the web resource </returns>
         bool FileExists(BriefItemInfo DigitalResource, string FileName);
+
+        /// <summary> Return the NETWORK uri for a digital resource </summary>
+        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <returns> URI for the network resource </returns>
+        /// <remarks> This makes some presumptions on the type of system in the background </remarks>
+        string Resource_Network_Uri(BriefItemInfo DigitalResource);
+
     }
 }

@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -41,7 +40,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         /// <summary> Constructor for a new instance of the Map_Search_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Map_Search_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public Map_Search_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
             // Compute the redirect stem to use
             string fields = RequestSpecificValues.Current_Mode.Search_Fields;
@@ -131,19 +132,19 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             int zoom = 1;
             decimal latitude = 0;
             decimal longitude = 0;
-            if (RequestSpecificValues.Hierarchy_Object.Map_Search_Display != null)
+            if (ViewBag.Hierarchy_Object.Map_Search_Display != null)
             {
-                if ((RequestSpecificValues.Hierarchy_Object.Map_Search_Display.ZoomLevel.HasValue) && (RequestSpecificValues.Hierarchy_Object.Map_Search_Display.Latitude.HasValue) && (RequestSpecificValues.Hierarchy_Object.Map_Search_Display.Longitude.HasValue))
+                if ((ViewBag.Hierarchy_Object.Map_Search_Display.ZoomLevel.HasValue) && (ViewBag.Hierarchy_Object.Map_Search_Display.Latitude.HasValue) && (ViewBag.Hierarchy_Object.Map_Search_Display.Longitude.HasValue))
                 {
-                    latitude = RequestSpecificValues.Hierarchy_Object.Map_Search_Display.Latitude.Value;
-                    longitude = RequestSpecificValues.Hierarchy_Object.Map_Search_Display.Longitude.Value;
-                    zoom = RequestSpecificValues.Hierarchy_Object.Map_Search_Display.ZoomLevel.Value;
+                    latitude = ViewBag.Hierarchy_Object.Map_Search_Display.Latitude.Value;
+                    longitude = ViewBag.Hierarchy_Object.Map_Search_Display.Longitude.Value;
+                    zoom = ViewBag.Hierarchy_Object.Map_Search_Display.ZoomLevel.Value;
                 }
             }
             scriptBuilder.AppendLine("    load_search_map(" + latitude + ", " + longitude + ", " + zoom + ", \"map1\");");
             
             //// If no point searching is allowed, disable it
-            //if (RequestSpecificValues.Hierarchy_Object.Map_Search >= 100)
+            //if (ViewBag.Hierarchy_Object.Map_Search >= 100)
             //{
             //    pointSearchingDisabled = true;
             //    scriptBuilder.AppendLine("    disable_point_searching();");

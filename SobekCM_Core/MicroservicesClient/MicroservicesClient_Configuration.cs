@@ -60,6 +60,9 @@ namespace SobekCM.Core.MicroservicesClient
         /// additional round trips to the SobekCM engine endpoints </summary>
         public bool UseCache { get; set; }
 
+        /// <summary> Change the base URL for the microservices endpoints </summary>
+        /// <param name="Original"> Original URL, which must match EXACTLY the ones present in the microservices </param>
+        /// <param name="New"> New URL to replace that with </param>
         public void Change_Base_URL(string Original, string New)
         {
             foreach (MicroservicesClient_Endpoint thisEndpoint in endpoints.Values)

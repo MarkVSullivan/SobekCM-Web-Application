@@ -46,6 +46,12 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 {
                     New.Add_Description("Copyright Date", Original.Bib_Info.Origin_Info.Date_Copyrighted);
                 }
+
+                // Set the primary date
+                string date = Original.Bib_Info.Origin_Info.Date_Created;
+                if ( String.IsNullOrEmpty(Original.Bib_Info.Origin_Info.Date_Created))
+                    date = Original.Bib_Info.Origin_Info.Date_Issued;
+                New.Web.Date = date;
             }
 
 

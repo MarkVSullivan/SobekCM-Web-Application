@@ -20,7 +20,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         /// <summary> Constructor for a new instance of the Custom_Home_Page_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Custom_Home_Page_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public Custom_Home_Page_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
             // All work done in base class?
         }
@@ -81,7 +83,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             // Do all the replacements
-            string text = RequestSpecificValues.Hierarchy_Object.HomePageHtml.Content; //.Content;
+            string text = ViewBag.Hierarchy_Object.HomePageHtml.Content; //.Content;
             StringBuilder textToDisplay = new StringBuilder(text);
            
             // Determine if certain (more costly) replacements are even needed
@@ -94,7 +96,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 StringBuilder headerBuilder = new StringBuilder();
                 StringWriter headerWriter = new StringWriter(headerBuilder);
-                HeaderFooter_Helper_HtmlSubWriter.Add_Header(headerWriter, RequestSpecificValues, "container-inner-custom", RequestSpecificValues.Hierarchy_Object.ShortName, null);
+                HeaderFooter_Helper_HtmlSubWriter.Add_Header(headerWriter, RequestSpecificValues, "container-inner-custom", ViewBag.Hierarchy_Object.ShortName, null);
                 string header = headerBuilder.ToString();
                 textToDisplay = textToDisplay.Replace("<%HEADER%>", header).Replace("[%HEADER%]", header);
             }
@@ -114,7 +116,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 StringBuilder menuBuilder = new StringBuilder();
                 StringWriter menuWriter = new StringWriter(menuBuilder);
-                MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(menuWriter, RequestSpecificValues);
+                MainMenus_Helper_HtmlSubWriter.Add_Aggregation_Main_Menu(menuWriter, RequestSpecificValues, ViewBag.Hierarchy_Object);
                 string menu = menuBuilder.ToString();
                 textToDisplay = textToDisplay.Replace("<%MAINMENU%>", menu).Replace("[%MAINMENU%]", menu);
             }
@@ -123,11 +125,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             string page_count = "0";
             string item_count = "0";
             string title_count = "0";
-            if (RequestSpecificValues.Hierarchy_Object.Statistics != null)
+            if (ViewBag.Hierarchy_Object.Statistics != null)
             {
-                page_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Statistics.Page_Count);
-                item_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Statistics.Item_Count);
-                title_count = Int_To_Comma_String(RequestSpecificValues.Hierarchy_Object.Statistics.Title_Count);
+                page_count = Int_To_Comma_String(ViewBag.Hierarchy_Object.Statistics.Page_Count);
+                item_count = Int_To_Comma_String(ViewBag.Hierarchy_Object.Statistics.Item_Count);
+                title_count = Int_To_Comma_String(ViewBag.Hierarchy_Object.Statistics.Title_Count);
             }
 
             string url_options = UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode);

@@ -32,7 +32,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     {
         /// <summary> Constructor for a new instance of the Usage_Statistics_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Usage_Statistics_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public Usage_Statistics_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
             // Everything done in base class constructor
         }
@@ -217,19 +219,19 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             switch (submode)
             {
                 case "views":
-                    add_collection_usage_history(Output, SobekCM_Database.Get_Aggregation_Statistics_History(RequestSpecificValues.Hierarchy_Object.Code, Tracer), Tracer);
+                    add_collection_usage_history(Output, SobekCM_Database.Get_Aggregation_Statistics_History(ViewBag.Hierarchy_Object.Code, Tracer), Tracer);
                     break;
 
                 case "itemviews":
-                    add_item_usage_history(Output, SobekCM_Database.Get_Aggregation_Statistics_History(RequestSpecificValues.Hierarchy_Object.Code, Tracer), Tracer);
+                    add_item_usage_history(Output, SobekCM_Database.Get_Aggregation_Statistics_History(ViewBag.Hierarchy_Object.Code, Tracer), Tracer);
                     break;
 
                 case "titles":
-                    add_titles_by_collection(Output, RequestSpecificValues.Hierarchy_Object.Code, Tracer);
+                    add_titles_by_collection(Output, ViewBag.Hierarchy_Object.Code, Tracer);
                     break;
 
                 case "items":
-                    add_items_by_collection(Output, RequestSpecificValues.Hierarchy_Object.Code, Tracer);
+                    add_items_by_collection(Output, ViewBag.Hierarchy_Object.Code, Tracer);
                     break;
 
                 case "definitions":

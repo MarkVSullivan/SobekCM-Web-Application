@@ -6,6 +6,8 @@ using SobekCM.Core.EAD;
 using SobekCM.Core.MARC;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.MicroservicesClient;
+using SobekCM.Engine_Library.Endpoints;
+using SobekCM.Resource_Object;
 using SobekCM.Tools;
 
 #endregion
@@ -144,6 +146,12 @@ namespace SobekCM.Core.Client
 
             // Return the object
             return returnValue;
+        }
+
+        public SobekCM_Item Get_Sobek_Item(string BibID, string VID, int UserID, Custom_Tracer Tracer)
+        {
+            ItemServices srvcs = new ItemServices();
+            return srvcs.getSobekItem(BibID, VID, UserID, Tracer);
         }
     }
 }

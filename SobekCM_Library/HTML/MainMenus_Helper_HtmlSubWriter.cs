@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Search;
@@ -28,7 +27,8 @@ namespace SobekCM.Library.HTML
         /// <summary> Add the aggregation-level main menu </summary>
         /// <param name="Output"> Stream to which to write the HTML for this menu </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public static void Add_Aggregation_Main_Menu(TextWriter Output, RequestCache RequestSpecificValues )
+        /// <param name="Hierarchy_Object"> Aggregation object for which to show this aggregation main menu </param>
+        public static void Add_Aggregation_Main_Menu(TextWriter Output, RequestCache RequestSpecificValues, Item_Aggregation Hierarchy_Object )
         {
             Output.WriteLine("<!-- Add the main aggregation menu -->");
             Output.WriteLine("<nav id=\"sbkAgm_MenuBar\" class=\"sbkMenu_Bar\" role=\"navigation\" aria-label=\"Aggregation menu\">");
@@ -37,7 +37,7 @@ namespace SobekCM.Library.HTML
 
             // Get ready to draw the tabs
             string home = "Home";
-            string collection_home = UI_ApplicationCache_Gateway.Translation.Get_Translation(RequestSpecificValues.Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language ) + " Home";
+            string collection_home = UI_ApplicationCache_Gateway.Translation.Get_Translation(Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language ) + " Home";
             string sobek_home_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home";
             string viewItems = "View Items";
             string allItems = "View All Items";
@@ -54,7 +54,7 @@ namespace SobekCM.Library.HTML
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
             {
                 home = "INICIO";
-                collection_home = "INICIO " + UI_ApplicationCache_Gateway.Translation.Get_Translation(RequestSpecificValues.Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language);
+                collection_home = "INICIO " + UI_ApplicationCache_Gateway.Translation.Get_Translation(Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language);
                 sobek_home_text = "INICIO " + RequestSpecificValues.Current_Mode.Instance_Abbreviation.ToUpper();
                 allItems = "TODOS LOS ARTÍCULOS";
                 newItems = "NUEVOS ARTÍCULOS";
@@ -90,9 +90,9 @@ namespace SobekCM.Library.HTML
 
             // Get the home search type (just to do a matching in case it was explicitly requested)
             Item_Aggregation_Views_Searches_Enum homeView = Item_Aggregation_Views_Searches_Enum.Basic_Search;
-            if (RequestSpecificValues.Hierarchy_Object.Views_And_Searches.Count > 0)
+            if (Hierarchy_Object.Views_And_Searches.Count > 0)
             {
-                homeView = RequestSpecificValues.Hierarchy_Object.Views_And_Searches[0];
+                homeView = Hierarchy_Object.Views_And_Searches[0];
             }
 
             // Remove any search string
@@ -133,14 +133,14 @@ namespace SobekCM.Library.HTML
                   (Aggregation_Nav_Bar_HTML_Factory.Do_Search_Types_Match(homeView, RequestSpecificValues.Current_Mode.Search_Type))));
 
             // Add the HOME tab
-            if ((RequestSpecificValues.Hierarchy_Object.Code == "all") || ( RequestSpecificValues.Hierarchy_Object.Code == RequestSpecificValues.Current_Mode.Default_Aggregation))
+            if ((Hierarchy_Object.Code == "all") || ( Hierarchy_Object.Code == RequestSpecificValues.Current_Mode.Default_Aggregation))
             {
                 // Add the 'SOBEK HOME' first menu option and suboptions
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
                 RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.List;
 
-                if (RequestSpecificValues.Hierarchy_Object.Code == "all")
+                if (Hierarchy_Object.Code == "all")
                 {
                     // What is considered HOME changes here at the top level
                     if ((thisHomeType == Home_Type_Enum.Partners_List) || (thisHomeType == Home_Type_Enum.Partners_Thumbnails) || (thisHomeType == Home_Type_Enum.Personalized))
@@ -255,28 +255,28 @@ namespace SobekCM.Library.HTML
 
                 Output.WriteLine("    </ul></li>");
 
-                RequestSpecificValues.Current_Mode.Aggregation = RequestSpecificValues.Hierarchy_Object.Code;
+                RequestSpecificValues.Current_Mode.Aggregation = Hierarchy_Object.Code;
             }
 
             // Add any additional search types
             RequestSpecificValues.Current_Mode.Mode = thisMode;
-            for (int i = 1; i < RequestSpecificValues.Hierarchy_Object.Views_And_Searches.Count; i++)
+            for (int i = 1; i < Hierarchy_Object.Views_And_Searches.Count; i++)
             {
-                Output.Write("    " + Aggregation_Nav_Bar_HTML_Factory.Menu_Get_Nav_Bar_HTML(RequestSpecificValues.Hierarchy_Object.Views_And_Searches[i], RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Translation));
+                Output.Write("    " + Aggregation_Nav_Bar_HTML_Factory.Menu_Get_Nav_Bar_HTML(Hierarchy_Object.Views_And_Searches[i], RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Translation));
             }
 
             // Replace any search string
             RequestSpecificValues.Current_Mode.Search_String = current_search;
 
             // Check for the existence of any BROWSE BY pages
-            if (RequestSpecificValues.Hierarchy_Object.Has_Browse_By_Pages)
+            if (Hierarchy_Object.Has_Browse_By_Pages)
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_By;
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = String.Empty;
 
                 // Get sorted collection of (public) browse bys linked to this aggregation
-                ReadOnlyCollection<Item_Aggregation_Child_Page> public_browses = RequestSpecificValues.Hierarchy_Object.Browse_By_Pages;
+                ReadOnlyCollection<Item_Aggregation_Child_Page> public_browses = Hierarchy_Object.Browse_By_Pages;
                 if (public_browses.Count > 0)
                 {
                     if (((thisMode == Display_Mode_Enum.Aggregation) && (thisAggrType == Aggregation_Type_Enum.Browse_By)) || (RequestSpecificValues.Current_Mode.Is_Robot))
@@ -312,7 +312,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Check for the existence of any MAP BROWSE pages
-            if (RequestSpecificValues.Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Map_Browse))
+            if (Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.Map_Browse))
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Map;
@@ -340,12 +340,12 @@ namespace SobekCM.Library.HTML
 
             // Only show ALL and NEW if they are in the collection list of searches and views
             int included_browses = 0;
-            if (RequestSpecificValues.Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.All_New_Items))
+            if (Hierarchy_Object.Views_And_Searches.Contains(Item_Aggregation_Views_Searches_Enum.All_New_Items))
             {
                 // First, look for 'ALL'
-                if (RequestSpecificValues.Hierarchy_Object.Contains_Browse_Info("all"))
+                if (Hierarchy_Object.Contains_Browse_Info("all"))
                 {
-                    bool includeNew = ((RequestSpecificValues.Hierarchy_Object.Contains_Browse_Info("new")) && (!RequestSpecificValues.Current_Mode.Is_Robot));
+                    bool includeNew = ((Hierarchy_Object.Contains_Browse_Info("new")) && (!RequestSpecificValues.Current_Mode.Is_Robot));
                     if (includeNew)
                     {
                         if (( thisMode == Display_Mode_Enum.Aggregation ) && ((browse_code == "all") || (browse_code == "new" )))
@@ -382,7 +382,7 @@ namespace SobekCM.Library.HTML
             redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
             // Are there any additional browses to include?
-            ReadOnlyCollection<Item_Aggregation_Child_Page> otherBrowses = RequestSpecificValues.Hierarchy_Object.Browse_Home_Pages;
+            ReadOnlyCollection<Item_Aggregation_Child_Page> otherBrowses = Hierarchy_Object.Browse_Home_Pages;
             if (otherBrowses.Count > included_browses)
             {
                 // Determine the hierarchy
@@ -495,7 +495,7 @@ namespace SobekCM.Library.HTML
 
 
             // If this is NOT the all collection, then show subcollections
-            if ((RequestSpecificValues.Hierarchy_Object.Code != "all") && (RequestSpecificValues.Hierarchy_Object.Children_Count > 0))
+            if ((Hierarchy_Object.Code != "all") && (Hierarchy_Object.Children_Count > 0))
             {
                 // Verify some of the children are active and not hidden
                 // Keep the last aggregation alias
@@ -505,7 +505,7 @@ namespace SobekCM.Library.HTML
 
                 // Collect the html to write (this alphabetizes the children)
                 List<string> html_list = new List<string>();
-                foreach (Item_Aggregation_Related_Aggregations childAggr in RequestSpecificValues.Hierarchy_Object.Children)
+                foreach (Item_Aggregation_Related_Aggregations childAggr in Hierarchy_Object.Children)
                 {
                     Item_Aggregation_Related_Aggregations latest = UI_ApplicationCache_Gateway.Aggregations[childAggr.Code];
                     if ((latest != null) && (!latest.Hidden) && (latest.Active))
@@ -521,7 +521,7 @@ namespace SobekCM.Library.HTML
 
                 if (html_list.Count > 0)
                 {
-                    string childTypes = RequestSpecificValues.Hierarchy_Object.Child_Types.Trim();
+                    string childTypes = Hierarchy_Object.Child_Types.Trim();
                     Output.WriteLine("    <li id=\"sbkAgm_SubCollections\"><a href=\"#subcolls\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(childTypes, RequestSpecificValues.Current_Mode.Language) + "</a><ul id=\"sbkAgm_SubCollectionsMenu\">");
                     foreach (string thisHtml in html_list)
                     {
@@ -537,7 +537,7 @@ namespace SobekCM.Library.HTML
             // If there is a user and this is the main home page, show MY COLLECTIONS
             if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn))
             {
-                if (RequestSpecificValues.Hierarchy_Object.Code == "all")
+                if (Hierarchy_Object.Code == "all")
                 {
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                     RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
@@ -555,7 +555,7 @@ namespace SobekCM.Library.HTML
                 }
                 else
                 {
-                    if (RequestSpecificValues.Current_User.Is_Aggregation_Admin(RequestSpecificValues.Hierarchy_Object.Code))
+                    if (RequestSpecificValues.Current_User.Is_Aggregation_Admin(Hierarchy_Object.Code))
                     {
                         // Return the code and mode back
                         RequestSpecificValues.Current_Mode.Info_Browse_Mode = String.Empty;
@@ -569,7 +569,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Show institutional lists?
-            if (RequestSpecificValues.Hierarchy_Object.Code == "all")
+            if (Hierarchy_Object.Code == "all")
             {
                 // Is this library set to show the partners tab?
                 if (UI_ApplicationCache_Gateway.Settings.System.Include_Partners_On_System_Home)
@@ -632,8 +632,9 @@ namespace SobekCM.Library.HTML
         /// <summary> Add the search results (and item browses) main menu </summary>
         /// <param name="Output"> Stream to which to write the HTML for this menu </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        /// <param name="Hierarchy_Object"> Aggregation object for which to show this aggregation search results menu </param>
         /// <param name="Include_Bookshelf_View"> Flag indicates if the bookshelf view should be included in the list of possible views </param>
-        public static void Add_Aggregation_Search_Results_Menu(TextWriter Output, RequestCache RequestSpecificValues, bool Include_Bookshelf_View )
+        public static void Add_Aggregation_Search_Results_Menu(TextWriter Output, RequestCache RequestSpecificValues, Item_Aggregation Hierarchy_Object, bool Include_Bookshelf_View )
         {
             Output.WriteLine("<!-- Add the main search results menu -->");
             Output.WriteLine("<nav id=\"sbkAgm_MenuBar\" class=\"sbkMenu_Bar\" role=\"navigation\" aria-label=\"Search results menu\">");
@@ -641,7 +642,7 @@ namespace SobekCM.Library.HTML
 
             // Get ready to draw the tabs
             string home = "Home";
-            string collection_home = UI_ApplicationCache_Gateway.Translation.Get_Translation(RequestSpecificValues.Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language) + " Home";
+            string collection_home = UI_ApplicationCache_Gateway.Translation.Get_Translation(Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language) + " Home";
             string sobek_home_text = RequestSpecificValues.Current_Mode.Instance_Abbreviation + " Home";
             string myCollections = "My Collections";
             string otherSearches_text = "Search Options";
@@ -660,7 +661,7 @@ namespace SobekCM.Library.HTML
             if (RequestSpecificValues.Current_Mode.Language == Web_Language_Enum.Spanish)
             {
                 home = "INICIO";
-                collection_home = "INICIO " + UI_ApplicationCache_Gateway.Translation.Get_Translation(RequestSpecificValues.Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language);
+                collection_home = "INICIO " + UI_ApplicationCache_Gateway.Translation.Get_Translation(Hierarchy_Object.ShortName, RequestSpecificValues.Current_Mode.Language);
                 sobek_home_text = "INICIO " + RequestSpecificValues.Current_Mode.Instance_Abbreviation.ToUpper();
                 myCollections = "MIS COLECCIONES";
                 bookshelf_view = "VISTA BIBLIOTECA";
@@ -773,14 +774,14 @@ namespace SobekCM.Library.HTML
             }
 
             // Add the HOME tab
-            if ((RequestSpecificValues.Hierarchy_Object.Code == "all") || (RequestSpecificValues.Hierarchy_Object.Code == RequestSpecificValues.Current_Mode.Default_Aggregation))
+            if ((Hierarchy_Object.Code == "all") || (Hierarchy_Object.Code == RequestSpecificValues.Current_Mode.Default_Aggregation))
             {
                 // Add the 'SOBEK HOME' first menu option and suboptions
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
                 RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.List;
 
-                if (RequestSpecificValues.Hierarchy_Object.Code == "all")
+                if (Hierarchy_Object.Code == "all")
                 {
 
                     // If some instance-wide pre-menu items existed, don't use the home image
@@ -875,15 +876,15 @@ namespace SobekCM.Library.HTML
 
                 Output.WriteLine("    </ul></li>");
 
-                RequestSpecificValues.Current_Mode.Aggregation = RequestSpecificValues.Hierarchy_Object.Code;
+                RequestSpecificValues.Current_Mode.Aggregation = Hierarchy_Object.Code;
             }
 
             // Add any additional search types
             RequestSpecificValues.Current_Mode.Mode = thisMode;
             List<string> other_searches = new List<string>();
-            for (int i = 1; i < RequestSpecificValues.Hierarchy_Object.Views_And_Searches.Count; i++)
+            for (int i = 1; i < Hierarchy_Object.Views_And_Searches.Count; i++)
             {
-                other_searches.Add(Aggregation_Nav_Bar_HTML_Factory.Menu_Get_Nav_Bar_HTML(RequestSpecificValues.Hierarchy_Object.Views_And_Searches[i], RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Translation));
+                other_searches.Add(Aggregation_Nav_Bar_HTML_Factory.Menu_Get_Nav_Bar_HTML(Hierarchy_Object.Views_And_Searches[i], RequestSpecificValues.Current_Mode, UI_ApplicationCache_Gateway.Translation));
             }
             if (other_searches.Count == 1)
             {
@@ -925,7 +926,7 @@ namespace SobekCM.Library.HTML
                 }
             }
 
-            if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates)) || (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map)))
+            if (( !String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates)) || (Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Map)))
             {
                 if (resultView == Result_Display_Type_Enum.Map)
                 {
@@ -938,7 +939,7 @@ namespace SobekCM.Library.HTML
                 }
             }
 
-            if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Brief))
+            if (Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Brief))
             {
                 if (resultView == Result_Display_Type_Enum.Brief)
                 {
@@ -951,7 +952,7 @@ namespace SobekCM.Library.HTML
                 }
             }
 
-            if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Table))
+            if (Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Table))
             {
                 if (resultView == Result_Display_Type_Enum.Table)
                 {
@@ -964,7 +965,7 @@ namespace SobekCM.Library.HTML
                 }
             }
 
-            if (RequestSpecificValues.Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
+            if (Hierarchy_Object.Result_Views.Contains(Result_Display_Type_Enum.Thumbnails))
             {
                 if (resultView == Result_Display_Type_Enum.Thumbnails)
                 {

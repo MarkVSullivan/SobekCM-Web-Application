@@ -107,6 +107,7 @@
     <Compile Include="AdminViewer\WebContent_History_AdminViewer.cs" />
     <Compile Include="AdminViewer\WebContent_Single_AdminViewer.cs" />
     <Compile Include="AdminViewer\WebContent_Usage_AdminViewer.cs" />
+    <Compile Include="AggregationViewBag.cs" />
     <Compile Include="AggregationViewer\Viewers\Basic_Text_Search_Combined_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Manage_Menu_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Advanced_Search_MimeType_AggregationViewer.cs" />

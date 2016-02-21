@@ -39,21 +39,23 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         /// <summary> Constructor for a new instance of the Metadata_Browse_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Metadata_Browse_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public Metadata_Browse_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
             
 
             // If there is not info browse mode listed, use the default
             if ( String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Info_Browse_Mode))
             {
-                string defaultBrowseBy = RequestSpecificValues.Hierarchy_Object.Default_BrowseBy ?? String.Empty;
+                string defaultBrowseBy = ViewBag.Hierarchy_Object.Default_BrowseBy ?? String.Empty;
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = defaultBrowseBy;
 
                 // Still length of zero?
                 if (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Info_Browse_Mode))
                 {
                     // Just look for the first browse by
-                    foreach (Item_Aggregation_Child_Page browse in RequestSpecificValues.Hierarchy_Object.Child_Pages)
+                    foreach (Item_Aggregation_Child_Page browse in ViewBag.Hierarchy_Object.Child_Pages)
                     {
                         if (browse.Browse_Type == Item_Aggregation_Child_Visibility_Enum.Metadata_Browse_By)
                         {
@@ -65,11 +67,11 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             }
 
-            if ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Info_Browse_Mode)) && (RequestSpecificValues.Hierarchy_Object.Has_Browse_By_Pages))
-                RequestSpecificValues.Current_Mode.Info_Browse_Mode = RequestSpecificValues.Hierarchy_Object.Child_Page_By_Code(RequestSpecificValues.Current_Mode.Info_Browse_Mode).Code;
+            if ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Info_Browse_Mode)) && (ViewBag.Hierarchy_Object.Has_Browse_By_Pages))
+                RequestSpecificValues.Current_Mode.Info_Browse_Mode = ViewBag.Hierarchy_Object.Child_Page_By_Code(RequestSpecificValues.Current_Mode.Info_Browse_Mode).Code;
 
             // Get this browse
-            browseObject = RequestSpecificValues.Hierarchy_Object.Child_Page_By_Code(RequestSpecificValues.Current_Mode.Info_Browse_Mode);
+            browseObject = ViewBag.Hierarchy_Object.Child_Page_By_Code(RequestSpecificValues.Current_Mode.Info_Browse_Mode);
 
             // Was this a metadata browseby, or just a static html?
             if (( browseObject == null ) || ( browseObject.Source_Data_Type != Item_Aggregation_Child_Source_Data_Enum.Static_HTML))
@@ -167,14 +169,14 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
             // Get collection of (public) browse bys linked to this aggregation
-            ReadOnlyCollection<Item_Aggregation_Child_Page> public_browses = RequestSpecificValues.Hierarchy_Object.Browse_By_Pages;
+            ReadOnlyCollection<Item_Aggregation_Child_Page> public_browses = ViewBag.Hierarchy_Object.Browse_By_Pages;
 
             // Determine if this is an internal user and create list of internal user browses
             List<string> internal_browses = new List<string>();
             if ((RequestSpecificValues.Current_User != null) && ((RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_Aggregation_Curator(RequestSpecificValues.Current_Mode.Aggregation))))
             {
                 // Just add every metadata field here
-                foreach (Item_Aggregation_Metadata_Type field in RequestSpecificValues.Hierarchy_Object.Browseable_Fields  )
+                foreach (Item_Aggregation_Metadata_Type field in ViewBag.Hierarchy_Object.Browseable_Fields  )
                 {
                     internal_browses.Add(field.DisplayTerm);
                 }
@@ -304,18 +306,18 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             if ((browseObject != null) && (browseObject.Source_Data_Type == Item_Aggregation_Child_Source_Data_Enum.Static_HTML))
             {
                 // Read the content file for this browse
-                string source_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + RequestSpecificValues.Hierarchy_Object.ObjDirectory.Replace("/", "\\") + browseObject.Source;
+                string source_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location + ViewBag.Hierarchy_Object.ObjDirectory.Replace("/", "\\") + browseObject.Source;
                 HTML_Based_Content staticBrowseContent = HTML_Based_Content_Reader.Read_HTML_File( source_file, true, Tracer );
                 if (staticBrowseContent == null)
                 {
-                    staticBrowseContent = new HTML_Based_Content("Unable to find source file!\n\n" + RequestSpecificValues.Hierarchy_Object.ObjDirectory.Replace("/", "\\") + browseObject.Source, browseObject.Code );
+                    staticBrowseContent = new HTML_Based_Content("Unable to find source file!\n\n" + ViewBag.Hierarchy_Object.ObjDirectory.Replace("/", "\\") + browseObject.Source, browseObject.Code );
                 }
 
                 // Apply current user settings for this
-                string browseInfoDisplayText = staticBrowseContent.Apply_Settings_To_Static_Text(staticBrowseContent.Content, RequestSpecificValues.Hierarchy_Object, RequestSpecificValues.HTML_Skin.Skin_Code, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode.Base_URL, UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode), Tracer);
+                string browseInfoDisplayText = staticBrowseContent.Apply_Settings_To_Static_Text(staticBrowseContent.Content, ViewBag.Hierarchy_Object, RequestSpecificValues.HTML_Skin.Skin_Code, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode.Base_URL, UrlWriterHelper.URL_Options(RequestSpecificValues.Current_Mode), Tracer);
 
                 // Is this an admin?
-                bool isAdmin = (RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_Aggregation_Admin(RequestSpecificValues.Hierarchy_Object.Code));
+                bool isAdmin = (RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Is_Aggregation_Admin(ViewBag.Hierarchy_Object.Code));
                 Aggregation_Type_Enum aggrType = RequestSpecificValues.Current_Mode.Aggregation_Type;
 
                 // Output the adjusted home html

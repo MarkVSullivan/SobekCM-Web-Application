@@ -33,7 +33,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         /// <summary> Constructor for a new instance of the DataSet_Browse_Info_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public DataSet_Browse_Info_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public DataSet_Browse_Info_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
             // Do nothing
         }
@@ -104,7 +106,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("DataSet_Browse_Info_AggregationViewer.Add_Secondary_Controls", "Adding HTML");
             }
 
-            writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues) { Browse_Title = RequestSpecificValues.Browse_Object.Label };
+            writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues) { Browse_Title = ViewBag.Browse_Object.Label };
             writeResult.Add_Controls(MainPlaceHolder, Tracer);
 
 

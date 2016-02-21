@@ -1,7 +1,6 @@
 ﻿#region Using directives
 
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
@@ -12,7 +11,6 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Client;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
@@ -69,7 +67,7 @@ namespace SobekCM.Library.AdminViewer
 
 			// Set some defaults
 			actionMessage = String.Empty;
-		    string code = RequestSpecificValues.Hierarchy_Object.Code;
+		    string code = RequestSpecificValues.Current_Mode.Aggregation;
 
 			// If the RequestSpecificValues.Current_User cannot edit this, go back
             if (!RequestSpecificValues.Current_User.Is_Aggregation_Curator(code))

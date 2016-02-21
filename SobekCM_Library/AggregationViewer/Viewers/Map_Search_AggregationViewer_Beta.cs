@@ -24,7 +24,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         /// <summary> Constructor for a new instance of the Map_Search_AggregationViewer class </summary>
         ///<param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Map_Search_AggregationViewer_Beta(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public Map_Search_AggregationViewer_Beta(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
 
             ////redirect

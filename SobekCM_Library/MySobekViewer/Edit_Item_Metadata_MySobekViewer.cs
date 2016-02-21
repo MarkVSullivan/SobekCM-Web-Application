@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -47,36 +48,71 @@ namespace SobekCM.Library.MySobekViewer
         private readonly CompleteTemplate completeTemplate;
 	    private readonly string delayed_popup;
 
-        private readonly SobekCM_Item item;
+        private readonly SobekCM_Item currentItem;
 
         #region Constructor
 
         /// <summary> Constructor for a new instance of the Edit_Item_Metadata_MySobekViewer class </summary>
-        /// <param name="Item"> Item to edit, which may be default metadata or a digital resource in this library </param>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Edit_Item_Metadata_MySobekViewer( SobekCM_Item Item,  RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Edit_Item_Metadata_MySobekViewer( RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", String.Empty);
 
             popUpFormsHtml = String.Empty;
 	        delayed_popup = String.Empty;
 
-            item = Item;
+            // If no user then that is an error
+            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
 
+            // Ensure BibID and VID provided
+            RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Validate provided bibid / vid");
+            if ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.BibID)) || (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.VID)))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "BibID or VID was not provided!");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID/VID missing in item metadata edit request";
+                return;
+            }
+
+            // Ensure the item is valid
+            RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Validate bibid/vid exists");
+            if (!UI_ApplicationCache_Gateway.Items.Contains_BibID_VID(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "BibID/VID indicated is not valid", Custom_Trace_Type_Enum.Error);
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID/VID indicated is not valid";
+                return;
+            }
+
+            RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Try to pull this sobek complete item");
+            currentItem = SobekEngineClient.Items.Get_Sobek_Item(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
+            if (currentItem == null)
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Metadata_MySobekViewer.Constructor", "Unable to build complete item");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : Unable to build complete item";
+                return;
+            }
 
             // If the RequestSpecificValues.Current_User cannot edit this item, go back
-            if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(item.BibID, item.Bib_Info.SobekCM_Type_String, item.Bib_Info.Source.Code, item.Bib_Info.HoldingCode, item.Behaviors.Aggregation_Code_List))
+            if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
                 HttpContext.Current.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode));
             }
 
             // Is this a project
-            isProject = item.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project;
+            isProject = currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Project;
 
 	        string template_code = RequestSpecificValues.Current_User.Edit_Template_Code_Simple;
 
-            if ((item.Contains_Complex_Content) || (item.Using_Complex_Template))
+            if ((currentItem.Contains_Complex_Content) || (currentItem.Using_Complex_Template))
             {
                 template_code = RequestSpecificValues.Current_User.Edit_Template_Code_Complex;
             }
@@ -176,7 +212,7 @@ namespace SobekCM.Library.MySobekViewer
 		        {
 			        if (isProject)
 			        {
-				        CachedDataManager.Remove_Project(RequestSpecificValues.Current_User.UserID, item.BibID, null);
+				        CachedDataManager.Remove_Project(RequestSpecificValues.Current_User.UserID, currentItem.BibID, null);
 
 				        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
 				        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Default_Metadata;
@@ -185,7 +221,7 @@ namespace SobekCM.Library.MySobekViewer
 			        }
 			        else
 			        {
-				        CachedDataManager.Items.Remove_Digital_Resource_Object(RequestSpecificValues.Current_User.UserID, item.BibID, item.VID, null);
+				        CachedDataManager.Items.Remove_Digital_Resource_Object(RequestSpecificValues.Current_User.UserID, currentItem.BibID, currentItem.VID, null);
 
 				        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
 				        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
@@ -195,7 +231,7 @@ namespace SobekCM.Library.MySobekViewer
 
 
 		        // Save these changes to bib
-		        completeTemplate.Save_To_Bib(item, RequestSpecificValues.Current_User, ((int) page));
+		        completeTemplate.Save_To_Bib(currentItem, RequestSpecificValues.Current_User, ((int) page));
 
 		        // See if the RequestSpecificValues.Current_User asked for a new element of a complex form type
 		        delayed_popup = String.Empty;
@@ -203,27 +239,27 @@ namespace SobekCM.Library.MySobekViewer
 		        {
 			        case "name":
 				        delayed_popup = "name";
-				        item.Bib_Info.Add_Named_Entity(String.Empty).Name_Type = Name_Info_Type_Enum.Personal;
+				        currentItem.Bib_Info.Add_Named_Entity(String.Empty).Name_Type = Name_Info_Type_Enum.Personal;
 				        break;
 
 			        case "title":
 				        delayed_popup = "title";
-				        item.Bib_Info.Add_Other_Title(String.Empty, Title_Type_Enum.Alternative);
+				        currentItem.Bib_Info.Add_Other_Title(String.Empty, Title_Type_Enum.Alternative);
 				        break;
 
 			        case "subject":
 				        delayed_popup = "subject";
-				        item.Bib_Info.Add_Subject();
+				        currentItem.Bib_Info.Add_Subject();
 				        break;
 
 			        case "spatial":
 				        delayed_popup = "spatial";
-				        item.Bib_Info.Add_Hierarchical_Geographic_Subject();
+				        currentItem.Bib_Info.Add_Hierarchical_Geographic_Subject();
 				        break;
 
 			        case "relateditem":
 				        delayed_popup = "relateditem";
-				        item.Bib_Info.Add_Related_Item(new Related_Item_Info());
+				        currentItem.Bib_Info.Add_Related_Item(new Related_Item_Info());
 				        break;
 
 			        case "save":
@@ -231,14 +267,14 @@ namespace SobekCM.Library.MySobekViewer
 				        break;
 
 					case "complicate":
-						item.Using_Complex_Template = true;
+						currentItem.Using_Complex_Template = true;
 				        HttpContext.Current.Response.Redirect( "?" + HttpContext.Current.Request.QueryString, false);
 						HttpContext.Current.ApplicationInstance.CompleteRequest();
 						RequestSpecificValues.Current_Mode.Request_Completed = true;
 				        return;
 
 					case "simplify":
-						item.Using_Complex_Template = false;
+						currentItem.Using_Complex_Template = false;
 				        HttpContext.Current.Response.Redirect( "?" + HttpContext.Current.Request.QueryString, false);
 						HttpContext.Current.ApplicationInstance.CompleteRequest();
 						RequestSpecificValues.Current_Mode.Request_Completed = true;
@@ -256,7 +292,7 @@ namespace SobekCM.Library.MySobekViewer
 						if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode == "0")
 							RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "preview";
 						if (isProject)
-							RequestSpecificValues.Current_Mode.My_Sobek_SubMode = page_requested + item.BibID;
+							RequestSpecificValues.Current_Mode.My_Sobek_SubMode = page_requested + currentItem.BibID;
 
 						HttpContext.Current.Response.Redirect(UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "#CompleteTemplate", false);
 						HttpContext.Current.ApplicationInstance.CompleteRequest();
@@ -308,7 +344,7 @@ namespace SobekCM.Library.MySobekViewer
 		    Output.WriteLine("<!-- Edit_Item_Metadata_MySobekViewer.Add_Controls -->");
 
 			// Write the top item mimic html portion
-		    Write_Item_Type_Top(Output, item);
+		    Write_Item_Type_Top(Output, currentItem);
 
 		    Output.WriteLine("<div id=\"container-inner1000\">");
 			Output.WriteLine("<div id=\"pagecontainer\">");
@@ -325,9 +361,9 @@ namespace SobekCM.Library.MySobekViewer
                 // This whole section only applies if the simple and complex templates are different
 			    if (String.Compare(RequestSpecificValues.Current_User.Edit_Template_Code_Complex, RequestSpecificValues.Current_User.Edit_Template_Code_Simple, StringComparison.OrdinalIgnoreCase) != 0)
 			    {
-			        if ((item.Using_Complex_Template) || (item.Contains_Complex_Content))
+			        if ((currentItem.Using_Complex_Template) || (currentItem.Contains_Complex_Content))
 			        {
-			            if (item.Contains_Complex_Content)
+			            if (currentItem.Contains_Complex_Content)
 			            {
 			                Output.WriteLine("      <li>You are using the full editing form because this item contains complex elements or was derived from MARC.</li>");
 			            }
@@ -426,7 +462,7 @@ namespace SobekCM.Library.MySobekViewer
 				{
 				    bool isMozilla = ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Browser_Type)) && (RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0));
 
-					popUpFormsHtml = completeTemplate.Render_Template_HTML(Output, item, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, ((int)page));
+					popUpFormsHtml = completeTemplate.Render_Template_HTML(Output, currentItem, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, ((int)page));
 				}
 			}
 			else
@@ -482,7 +518,7 @@ namespace SobekCM.Library.MySobekViewer
 				{
 
 					case "relateditem":
-						int related_item_count = item.Bib_Info.RelatedItems_Count;
+						int related_item_count = currentItem.Bib_Info.RelatedItems_Count;
 						if (related_item_count > 0)
 						{
 							Output.WriteLine("<!-- Popup the delayed box -->");
@@ -493,9 +529,9 @@ namespace SobekCM.Library.MySobekViewer
 
 					case "subject":
 						int subject_index = 0;
-						if (item.Bib_Info.Subjects_Count > 0)
+						if (currentItem.Bib_Info.Subjects_Count > 0)
 						{
-							subject_index += item.Bib_Info.Subjects.Count(ThisSubject => ThisSubject.Class_Type == Subject_Info_Type.Standard);
+							subject_index += currentItem.Bib_Info.Subjects.Count(ThisSubject => ThisSubject.Class_Type == Subject_Info_Type.Standard);
 						}
 						if (subject_index > 0)
 						{
@@ -507,9 +543,9 @@ namespace SobekCM.Library.MySobekViewer
 
 					case "spatial":
 						int spatial_index = 0;
-						if (item.Bib_Info.Subjects_Count > 0)
+						if (currentItem.Bib_Info.Subjects_Count > 0)
 						{
-							spatial_index += item.Bib_Info.Subjects.Count(ThisSubject => ThisSubject.Class_Type == Subject_Info_Type.Hierarchical_Spatial);
+							spatial_index += currentItem.Bib_Info.Subjects.Count(ThisSubject => ThisSubject.Class_Type == Subject_Info_Type.Hierarchical_Spatial);
 						}
 						if (spatial_index > 0)
 						{
@@ -521,9 +557,9 @@ namespace SobekCM.Library.MySobekViewer
 
 					case "name":
 						int name_count = 0;
-						if ((item.Bib_Info.hasMainEntityName) && (item.Bib_Info.Main_Entity_Name.hasData))
+						if ((currentItem.Bib_Info.hasMainEntityName) && (currentItem.Bib_Info.Main_Entity_Name.hasData))
 							name_count++;
-						name_count += item.Bib_Info.Names_Count;
+						name_count += currentItem.Bib_Info.Names_Count;
 
 						if (name_count > 0)
 						{
@@ -534,8 +570,8 @@ namespace SobekCM.Library.MySobekViewer
 						break;
 
 					case "title":
-						int title_count = item.Bib_Info.Other_Titles_Count;
-						if ((item.Bib_Info.hasSeriesTitle) && (item.Bib_Info.SeriesTitle.Title.Length > 0))
+						int title_count = currentItem.Bib_Info.Other_Titles_Count;
+						if ((currentItem.Bib_Info.hasSeriesTitle) && (currentItem.Bib_Info.SeriesTitle.Title.Length > 0))
 							title_count++;
 						if (title_count > 0)
 						{
@@ -556,10 +592,10 @@ namespace SobekCM.Library.MySobekViewer
             if (isProject)
             {
                 // Save the new project METS
-                item.Save_METS();
+                currentItem.Save_METS();
 
                 // Clear the cache of this item
-                CachedDataManager.Remove_Project(RequestSpecificValues.Current_User.UserID, item.BibID, null);
+                CachedDataManager.Remove_Project(RequestSpecificValues.Current_User.UserID, currentItem.BibID, null);
 
                 // Redirect
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Administrative;
@@ -570,7 +606,7 @@ namespace SobekCM.Library.MySobekViewer
             else
             {
                 string error_message;
-                SobekCM_Item_Updater.Update_Item(item, RequestSpecificValues.Current_User, out error_message);
+                SobekCM_Item_Updater.Update_Item(currentItem, RequestSpecificValues.Current_User, out error_message);
 
                 // Forward to the display item again
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
@@ -620,9 +656,9 @@ namespace SobekCM.Library.MySobekViewer
             {
                 case "marc":
 					Output.WriteLine("<div class=\"sbkEimv_Citation\">");
-                    Citation_ItemViewer marcViewer = new Citation_ItemViewer(UI_ApplicationCache_Gateway.Translation, UI_ApplicationCache_Gateway.Aggregations, false)
-                                                         {CurrentItem = item, CurrentMode = RequestSpecificValues.Current_Mode};
-                    Output.WriteLine(marcViewer.MARC_String("735px", Tracer));
+                    //Citation_ItemViewer marcViewer = new Citation_ItemViewer(UI_ApplicationCache_Gateway.Translation, UI_ApplicationCache_Gateway.Aggregations, false)
+                    //                                     {CurrentItem = currentItem, CurrentMode = RequestSpecificValues.Current_Mode};
+                    //Output.WriteLine(marcViewer.MARC_String("735px", Tracer));
                     break;
 
                 case "mets":
@@ -634,7 +670,7 @@ namespace SobekCM.Library.MySobekViewer
                     METS_File_ReaderWriter metsWriter = new METS_File_ReaderWriter();
 
                     string errorMessage;
-                    metsWriter.Write_Metadata(mets_output, item, null, out errorMessage);
+                    metsWriter.Write_Metadata(mets_output, currentItem, null, out errorMessage);
                     string mets_string = mets_builder.ToString();
                     string header = mets_string.Substring(0, mets_string.IndexOf("<METS:mets"));
                     string remainder = mets_string.Substring(header.Length);
@@ -645,9 +681,9 @@ namespace SobekCM.Library.MySobekViewer
 
                 default:
 					Output.WriteLine("<div class=\"sbkEimv_Citation\">");
-                    Citation_ItemViewer citationViewer = new Citation_ItemViewer(UI_ApplicationCache_Gateway.Translation, UI_ApplicationCache_Gateway.Aggregations, false)
-                                                             {CurrentItem = item, CurrentMode = RequestSpecificValues.Current_Mode};
-                    Output.WriteLine(citationViewer.Standard_Citation_String(false, Tracer));
+                    //Citation_ItemViewer citationViewer = new Citation_ItemViewer(UI_ApplicationCache_Gateway.Translation, UI_ApplicationCache_Gateway.Aggregations, false)
+                    //                                         {CurrentItem = currentItem, CurrentMode = RequestSpecificValues.Current_Mode};
+                    //Output.WriteLine(citationViewer.Standard_Citation_String(false, Tracer));
                     break;
 
             }

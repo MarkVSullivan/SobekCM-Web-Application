@@ -84,5 +84,14 @@ namespace SobekCM.Core.FileSystems
             return File.Exists(filePath);
         }
 
+        /// <summary> Return the NETWORK uri for a digital resource </summary>
+        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <returns> URI for the network resource </returns>
+        /// <remarks> This makes some presumptions on the type of system in the background </remarks>
+        public string Resource_Network_Uri(BriefItemInfo DigitalResource)
+        {
+            return Resource_Network_Uri(DigitalResource.BibID, DigitalResource.VID);
+        }
+
     }
 }

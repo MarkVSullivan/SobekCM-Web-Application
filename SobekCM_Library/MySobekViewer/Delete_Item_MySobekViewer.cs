@@ -1,12 +1,13 @@
-﻿// HTML5 10/15/2013
-
-#region Using directives
+﻿#region Using directives
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Web;
+using SobekCM.Core.BriefItem;
+using SobekCM.Core.Client;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -37,6 +38,7 @@ namespace SobekCM.Library.MySobekViewer
     public class Delete_Item_MySobekViewer : abstract_MySobekViewer
     {
         private int errorCode;
+        private readonly BriefItemInfo itemToDelete;
 
         /// <summary> Constructor for a new instance of the Delete_Item_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -47,55 +49,75 @@ namespace SobekCM.Library.MySobekViewer
             // Save mode and set defaults
             errorCode = -1;
 
+            // Ensure BibID and VID provided
+            RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Validate provided bibid / vid");
+            if ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.BibID)) || (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.VID)))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "BibID or VID was not provided!");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID/VID missing in item behavior request";
+                return;
+            }
+            
+            // Ensure the item is valid
+            RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Validate item exists");
+            if (!UI_ApplicationCache_Gateway.Items.Contains_BibID_VID(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Item indicated is not valid", Custom_Trace_Type_Enum.Error);
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : Item indicated is not valid";
+                return;
+            }
+
+            // Try to pull the item
+            RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Try to pull this brief item");
+            itemToDelete = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer);
+            if (itemToDelete == null)
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Unable to pull brief item from the engine");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : Unable to pull brief item from the engine";
+                return;
+            }
+
             // Second, ensure this is a logged on user and system administrator before continuing
-            RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Validate user permissions");
+                RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Validate user permissions");
             if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
-			{
+            {
                 RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "User does not have delete permissions", Custom_Trace_Type_Enum.Error);
                 errorCode = 1;
             }
             else
             {
-	            bool canDelete = false;
+                bool canDelete = false;
                 if ((RequestSpecificValues.Current_User.Can_Delete_All) || (RequestSpecificValues.Current_User.Is_System_Admin))
-				{
-					canDelete = true;
-				}
-				else
-				{
-					// In this case, we actually need to build this!
-					try
-					{
-	//					SobekCM_Item testItem = SobekCM_Item_Factory.Get_Item(Current_Mode.BibID, Current_Mode.VID, null, Tracer);
-                        if (RequestSpecificValues.Current_User.Can_Edit_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List))
-							canDelete = true;
-					}
-					catch
-					{
-						canDelete = false;
-					}
-				}
+                {
+                    canDelete = true;
+                }
+                else
+                {
+                    try
+                    {
+                        if (RequestSpecificValues.Current_User.Can_Edit_This_Item(itemToDelete.BibID, itemToDelete.Type, itemToDelete.Behaviors.Source_Institution_Aggregation, itemToDelete.Behaviors.Holding_Location_Aggregation, itemToDelete.Behaviors.Aggregation_Code_List))
+                            canDelete = true;
+                    }
+                    catch
+                    {
+                        canDelete = false;
+                    }
+                }
 
-				if (!canDelete)
-				{
+                if (!canDelete)
+                {
                     RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "User does not have delete permissions", Custom_Trace_Type_Enum.Error);
-					errorCode = 1;
-				}
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                    RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
+                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                    return;
+                }
             }
 
-			// Ensure the item is valid
-			if (errorCode == -1)
-			{
-                RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Validate item exists");
-                if (!UI_ApplicationCache_Gateway.Items.Contains_BibID_VID(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID))
-				{
-                    RequestSpecificValues.Tracer.Add_Trace("Delete_Item_MySobekViewer.Constructor", "Item indicated is not valid", Custom_Trace_Type_Enum.Error);
-					errorCode = 2;
-				}
-			}
-    
-
-             // If this is a postback, handle any events first
+            // If this is a postback, handle any events first
             if ((RequestSpecificValues.Current_Mode.isPostBack) && (errorCode < 0))
             {
                 Debug.Assert(RequestSpecificValues.Current_User != null, "User != null");
@@ -135,7 +157,7 @@ namespace SobekCM.Library.MySobekViewer
 			errorCode = 0;
 
 			// Get the current item details
-			string vid_location = RequestSpecificValues.Current_Item.Source_Directory;
+		    string vid_location = SobekFileSystem.Resource_Network_Uri(itemToDelete);
             DirectoryInfo directoryInfo = (new DirectoryInfo(vid_location)).Parent;
 		    if (directoryInfo != null) {
 		        string bib_location = directoryInfo.FullName;
@@ -261,7 +283,7 @@ namespace SobekCM.Library.MySobekViewer
 				Output.WriteLine();
 
 				// Write the top item mimic html portion
-                Write_Item_Type_Top(Output, RequestSpecificValues.Current_Item);
+                Write_Item_Type_Top(Output, itemToDelete);
 
 				Output.WriteLine("<div id=\"container-inner\">");
 				Output.WriteLine("<div id=\"pagecontainer\">");
@@ -294,7 +316,7 @@ namespace SobekCM.Library.MySobekViewer
             if (errorCode >= 0)
             {
 				// Write the top item mimic html portion
-				Write_Item_Type_Top(Output, RequestSpecificValues.Current_Item);
+                Write_Item_Type_Top(Output, itemToDelete);
 
 				Output.WriteLine("<div id=\"container-inner\">");
 				Output.WriteLine("<div id=\"pagecontainer\">");

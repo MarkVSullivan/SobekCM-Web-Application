@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
@@ -39,7 +38,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         /// <summary> Constructor for a new instance of the Private_Items_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Private_Items_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public Private_Items_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
             // Ensure user has some permissions on this aggregation, or is a power/internal user or admin before showing
             // them this list
@@ -57,7 +58,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 bool special_permissions_found = false;
                 foreach (User_Permissioned_Aggregation permissions in RequestSpecificValues.Current_User.PermissionedAggregations)
                 {
-                    if (String.Compare(permissions.Code, RequestSpecificValues.Hierarchy_Object.Code, StringComparison.OrdinalIgnoreCase) == 0)
+                    if (String.Compare(permissions.Code, ViewBag.Hierarchy_Object.Code, StringComparison.OrdinalIgnoreCase) == 0)
                     {
                         if ((permissions.CanChangeVisibility) || (permissions.CanDelete) || (permissions.CanEditBehaviors) || (permissions.CanEditItems) ||
                             (permissions.CanEditMetadata) || (permissions.CanPerformQc) || (permissions.CanUploadFiles) || (permissions.IsAdmin) || (permissions.IsCurator))
@@ -94,7 +95,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Get the list of private items
             int current_sort = RequestSpecificValues.Current_Mode.Sort.HasValue ? RequestSpecificValues.Current_Mode.Sort.Value : 0;
             int current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
-            privateItems = SobekCM_Database.Tracking_Get_Aggregation_Private_Items(RequestSpecificValues.Hierarchy_Object.Code, (int)RESULTS_PER_PAGE, current_page, current_sort, RequestSpecificValues.Tracer);
+            privateItems = SobekCM_Database.Tracking_Get_Aggregation_Private_Items(ViewBag.Hierarchy_Object.Code, (int)RESULTS_PER_PAGE, current_page, current_sort, RequestSpecificValues.Tracer);
         }
 
         /// <summary>Flag indicates whether the subaggregation selection panel is displayed for this collection viewer</summary>

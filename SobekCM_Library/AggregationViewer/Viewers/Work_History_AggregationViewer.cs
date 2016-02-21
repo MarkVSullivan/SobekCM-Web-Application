@@ -19,7 +19,9 @@ namespace SobekCM.Library.AggregationViewer
     {
         /// <summary> Constructor for a new instance of the Work_History_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Work_History_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public Work_History_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
             // User must AT LEAST be logged on, return
             if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
@@ -30,7 +32,7 @@ namespace SobekCM.Library.AggregationViewer
             }
 
             // If the user is not an admin of some type, also return
-            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_Aggregation_Curator(RequestSpecificValues.Hierarchy_Object.Code)))
+            if ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin) && (!RequestSpecificValues.Current_User.Is_Aggregation_Curator(ViewBag.Hierarchy_Object.Code)))
             {
                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
@@ -86,7 +88,7 @@ namespace SobekCM.Library.AggregationViewer
         public override void Add_Secondary_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
 
-            DataTable historyTbl = SobekCM_Database.Get_Aggregation_Change_Log(RequestSpecificValues.Hierarchy_Object.Code, RequestSpecificValues.Tracer);
+            DataTable historyTbl = SobekCM_Database.Get_Aggregation_Change_Log(ViewBag.Hierarchy_Object.Code, RequestSpecificValues.Tracer);
 
             if ((historyTbl == null) || ( historyTbl.Rows.Count == 0 ))
             {

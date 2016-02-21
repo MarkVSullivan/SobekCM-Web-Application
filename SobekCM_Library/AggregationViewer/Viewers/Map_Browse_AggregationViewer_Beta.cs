@@ -2,11 +2,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Text;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
 using SobekCM.Tools;
 
@@ -19,7 +17,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     {
         /// <summary> Constructor for a new instance of the Metadata_Browse_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Map_Browse_AggregationViewer_Beta(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public Map_Browse_AggregationViewer_Beta(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
 
             // Start to build the response
@@ -378,11 +378,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             Body_Attributes.Clear();
         }
         
-        private void add_single_point(string Latitude, string Longitude, Navigation_Object Current_Mode, List<DataRow> DatarowsInThisPoint, StringBuilder ScriptBuilder)
-        {
-
-        }
-        
+       
         /// <summary> Add the HTML to be displayed in the search box </summary>
         /// <param name="Output"> Textwriter to write the HTML for this viewer</param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>

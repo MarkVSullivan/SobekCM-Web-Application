@@ -3,7 +3,6 @@
 using System;
 using System.IO;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.HTML;
@@ -35,7 +34,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         /// <summary> Constructor for a new instance of the Basic_Search_MimeType_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Basic_Search_MimeType_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public Basic_Search_MimeType_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
             // Determine the sub text to use
             const string SUB_CODE = "s=";
@@ -61,7 +62,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             // Get the browse all url, if enabled
             browse_url = String.Empty;
-            if (RequestSpecificValues.Hierarchy_Object.Can_Browse_Items)
+            if (ViewBag.Hierarchy_Object.Can_Browse_Items)
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
@@ -69,7 +70,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 browse_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             }
 
-            if ((!RequestSpecificValues.Current_Mode.Show_Selection_Panel.HasValue) || (!RequestSpecificValues.Current_Mode.Show_Selection_Panel.Value) || (RequestSpecificValues.Hierarchy_Object.Children_Count == 0))
+            if ((!RequestSpecificValues.Current_Mode.Show_Selection_Panel.HasValue) || (!RequestSpecificValues.Current_Mode.Show_Selection_Panel.Value) || (ViewBag.Hierarchy_Object.Children_Count == 0))
             {
                 Search_Script_Action = "basic_search_sobekcm('" + arg1 + "', '" + browse_url + "');";
             }

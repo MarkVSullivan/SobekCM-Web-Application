@@ -16,7 +16,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
     {
         /// <summary> Constructor for a new instance of the Manage_Menu_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Manage_Menu_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public Manage_Menu_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
             // User must AT LEAST be logged on, return
             if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
@@ -100,7 +102,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.User_Permissions;
             string permissions_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
-            string browseby_url = RequestSpecificValues.Current_Mode.Base_URL + "/l/" + RequestSpecificValues.Hierarchy_Object.Code + "/browseby";
+            string browseby_url = RequestSpecificValues.Current_Mode.Base_URL + "/l/" + ViewBag.Hierarchy_Object.Code + "/browseby";
 
             // Special links if this is the ALL collection
             if (isAll)
@@ -174,7 +176,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 
             // Add the link for aggregation management
-            if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin) || (RequestSpecificValues.Current_User.Is_Aggregation_Curator(RequestSpecificValues.Hierarchy_Object.Code)))
+            if ((RequestSpecificValues.Current_User.Is_System_Admin) || (RequestSpecificValues.Current_User.Is_Portal_Admin) || (RequestSpecificValues.Current_User.Is_Aggregation_Curator(ViewBag.Hierarchy_Object.Code)))
             {
 
                 // Add the link for the work log history

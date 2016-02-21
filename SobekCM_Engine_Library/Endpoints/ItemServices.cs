@@ -446,7 +446,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
         #region Helper methods for getting the items
 
-        private SobekCM_Item getSobekItem(string BibID, string VID, Custom_Tracer Tracer)
+        public SobekCM_Item getSobekItem(string BibID, string VID, Custom_Tracer Tracer)
         {
             Tracer.Add_Trace("ItemServices.getSobekItem", "Get the Single_Item object from the Item_Lookup_Object from the cache");
             Single_Item selected_item = Engine_ApplicationCache_Gateway.Items.Item_By_Bib_VID(BibID, VID, Tracer);
@@ -466,6 +466,46 @@ namespace SobekCM.Engine_Library.Endpoints
                     {
                         Tracer.Add_Trace("ItemServices.getSobekItem", "Store the digital resource object to the cache");
                         CachedDataManager.Items.Store_Digital_Resource_Object(BibID, VID, currentItem, Tracer);
+                    }
+                    else
+                    {
+                        Tracer.Add_Trace("ItemServices.getSobekItem", "Call to the SobekCM_Item_Factory returned NULL");
+                        return null;
+                    }
+                }
+                else
+                {
+                    Tracer.Add_Trace("ItemServices.getSobekItem", "Found the digital resource object on the cache");
+                }
+
+                return currentItem;
+            }
+
+            Tracer.Add_Trace("ItemServices.getSobekItem", "Could not locate the object from the Item_Lookup_Object.. may not be a valid bibid/vid combination");
+
+            return null;
+        }
+
+        public SobekCM_Item getSobekItem(string BibID, string VID, int UserID, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("ItemServices.getSobekItem", "Get the Single_Item object from the Item_Lookup_Object from the cache");
+            Single_Item selected_item = Engine_ApplicationCache_Gateway.Items.Item_By_Bib_VID(BibID, VID, Tracer);
+
+            // If this is for a single item, return that
+            if (selected_item != null)
+            {
+                // Try to get this from the cache
+                SobekCM_Item currentItem = CachedDataManager.Items.Retrieve_Digital_Resource_Object(UserID, BibID, VID, Tracer);
+
+                // If not pulled from the cache, then we will have to build the item
+                if (currentItem == null)
+                {
+                    Tracer.Add_Trace("ItemServices.getSobekItem", "Unable to find the digital resource on the cache.. will build");
+                    currentItem = SobekCM_Item_Factory.Get_Item(BibID, VID, Engine_ApplicationCache_Gateway.Icon_List, Engine_ApplicationCache_Gateway.Item_Viewer_Priority, Tracer);
+                    if (currentItem != null)
+                    {
+                        Tracer.Add_Trace("ItemServices.getSobekItem", "Store the digital resource object to the cache");
+                        CachedDataManager.Items.Store_Digital_Resource_Object(UserID, BibID, VID, currentItem, Tracer);
                     }
                     else
                     {
@@ -1030,7 +1070,6 @@ namespace SobekCM.Engine_Library.Endpoints
         }
 
         #endregion
-
 
         #region Methods to serve small snippets of HTML to the users, on demand
 

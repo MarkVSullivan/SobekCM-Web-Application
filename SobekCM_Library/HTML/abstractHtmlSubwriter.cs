@@ -4,11 +4,19 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using SobekCM.Core.Aggregations;
+using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Client;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.Results;
 using SobekCM.Core.Skins;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
+using SobekCM.Core.WebContent;
+using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Library.MainWriters;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
 
 #endregion
@@ -22,6 +30,10 @@ namespace SobekCM.Library.HTML
 	{
         /// <summary> Protected field contains the information specific to the current request </summary>
         protected RequestCache RequestSpecificValues;
+
+        /// <summary> Empty list of behaviors, returned by default </summary>
+        /// <remarks> This just prevents an empty set from having to be created over and over </remarks>
+        protected static List<HtmlSubwriter_Behaviors_Enum> emptybehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
 
         /// <summary> Base constructor </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -78,12 +90,7 @@ namespace SobekCM.Library.HTML
 			}
 			Output.WriteLine();
 		}
-
-
-		/// <summary> Empty list of behaviors, returned by default </summary>
-		/// <remarks> This just prevents an empty set from having to be created over and over </remarks>
-		protected List<HtmlSubwriter_Behaviors_Enum> emptybehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
-
+        
 	    /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
 		/// for the current request, or if it can be hidden. </summary>
 		/// <value> This value can be override by child classes, but by default this returns FALSE </value>
@@ -234,5 +241,235 @@ namespace SobekCM.Library.HTML
 		{
 			get { return "container-inner"; }
 		}
+
+        /// <summary> Gets the item aggregation and search fields for the current item aggregation </summary>
+        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <param name="Aggregation_Object"> [OUT] Fully-built object for the current aggregation object </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
+        /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache. </remarks>
+        protected static bool Get_Collection(Navigation_Object Current_Mode, Custom_Tracer Tracer, out Item_Aggregation Aggregation_Object)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("abstractHtmlSubwriter.Get_Collection", String.Empty);
+            }
+
+            string languageCode = Web_Language_Enum_Converter.Enum_To_Code(Current_Mode.Language);
+
+            // If there is an aggregation listed, try to get that now
+            if ((Current_Mode.Aggregation.Length > 0) && (Current_Mode.Aggregation != "all"))
+            {
+                // Try to pull the aggregation information
+                Aggregation_Object = CachedDataManager.Aggregations.Retrieve_Item_Aggregation(Current_Mode.Aggregation, Web_Language_Enum_Converter.Code_To_Enum(languageCode), Tracer);
+                if (Aggregation_Object != null)
+                    return true;
+
+                // Get the item aggregation from the Sobek Engine Client
+                Aggregation_Object = SobekEngineClient.Aggregations.Get_Aggregation(Current_Mode.Aggregation, Web_Language_Enum_Converter.Code_To_Enum(languageCode), UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Tracer);
+
+                // Return if this was valid
+                if (Aggregation_Object != null)
+                {
+                    if ((Current_Mode.Skin_In_URL != true) && (!String.IsNullOrEmpty(Aggregation_Object.Default_Skin)))
+                    {
+                        Current_Mode.Skin = Aggregation_Object.Default_Skin.ToLower();
+                    }
+                    return true;
+                }
+
+                Current_Mode.Error_Message = "Invalid item aggregation '" + Current_Mode.Aggregation + "' referenced.";
+                return false;
+            }
+
+            return Get_Top_Level_Collection(Current_Mode, Tracer, out Aggregation_Object);
+        }
+
+        /// <summary> Gets the item aggregation and search fields for the current item aggregation </summary>
+        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <param name="Aggregation_Object"> [OUT] Fully-built object for the current aggregation object </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
+        /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache. </remarks>
+        protected static bool Get_Top_Level_Collection(Navigation_Object Current_Mode, Custom_Tracer Tracer, out Item_Aggregation Aggregation_Object)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("abstractHtmlSubwriter.Get_Top_Level_Collection", String.Empty);
+            }
+
+            string languageCode = Web_Language_Enum_Converter.Enum_To_Code(Current_Mode.Language);
+
+            // Get the ALL collection group
+            try
+            {
+                // Try to pull this from the cache
+                Aggregation_Object = CachedDataManager.Aggregations.Retrieve_Item_Aggregation("all", Web_Language_Enum_Converter.Code_To_Enum(languageCode), Tracer);
+                if (Aggregation_Object != null)
+                    return true;
+
+                // Get the item aggregation from the Sobek Engine Client
+                Aggregation_Object = SobekEngineClient.Aggregations.Get_Aggregation("all", Web_Language_Enum_Converter.Code_To_Enum(languageCode), UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Tracer);
+            }
+            catch (Exception ee)
+            {
+                Aggregation_Object = null;
+                Current_Mode.Error_Message = "Error pulling the item aggregation corresponding to all collection groups : " + ee.Message;
+                return false;
+            }
+
+            // If this is null, just stop
+            if (Aggregation_Object == null)
+            {
+                Current_Mode.Error_Message = "Unable to pull the item aggregation corresponding to all collection groups";
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary> Gets the browse or info object and any other needed data for display ( text to display) </summary>
+        /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
+        /// <param name="Aggregation_Object"> Item Aggregation object</param>
+        /// <param name="Base_Directory"> Base directory location under which the the CMS/info source file will be found</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="Browse_Object"> [OUT] Stores all the information about this browse or info </param>
+        /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
+        /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
+        /// <param name="Browse_Info_Display_Text"> [OUT] Static HTML-based content to be displayed if this is browing a staticly created html source file </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This attempts to pull the objects from the cache.  If unsuccessful, it builds the objects from the
+        /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache </remarks>
+        protected static bool Get_Browse_Info(Navigation_Object Current_Mode,
+                                    Item_Aggregation Aggregation_Object,
+                                    string Base_Directory,
+                                    Custom_Tracer Tracer,
+                                    out Item_Aggregation_Child_Page Browse_Object,
+                                    out Search_Results_Statistics Complete_Result_Set_Info,
+                                    out List<iSearch_Title_Result> Paged_Results,
+                                    out HTML_Based_Content Browse_Info_Display_Text)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("abstractHtmlSubwriter.Get_Browse_Info", String.Empty);
+            }
+
+            // Set output initially to null
+            Paged_Results = null;
+            Complete_Result_Set_Info = null;
+            Browse_Info_Display_Text = null;
+
+            // First, make sure the browse submode is valid
+            Browse_Object = Aggregation_Object.Child_Page_By_Code(Current_Mode.Info_Browse_Mode);
+
+            if (Browse_Object == null)
+            {
+                Current_Mode.Error_Message = "Unable to retrieve browse/info item '" + Current_Mode.Info_Browse_Mode + "'";
+                return false;
+            }
+
+            // Is this a table result, or a string?
+            switch (Browse_Object.Source_Data_Type)
+            {
+                case Item_Aggregation_Child_Source_Data_Enum.Database_Table:
+
+                    // Set the current sort to ZERO, if currently set to ONE and this is an ALL BROWSE.
+                    // Those two sorts are the same in this case
+                    int sort = Current_Mode.Sort.HasValue ? Math.Max(Current_Mode.Sort.Value, ((ushort)1)) : 1;
+                    if ((sort == 0) && (Browse_Object.Code == "all"))
+                        sort = 1;
+
+                    // Special code if this is a JSON browse
+                    string browse_code = Current_Mode.Info_Browse_Mode;
+                    if (Current_Mode.Writer_Type == Writer_Type_Enum.JSON)
+                    {
+                        browse_code = browse_code + "_JSON";
+                        sort = 12;
+                    }
+
+                    // Get the page count in the results
+                    int current_page_index = Current_Mode.Page.HasValue ? Math.Max(Current_Mode.Page.Value, ((ushort)1)) : 1;
+
+                    // Determine if this is a special search type which returns more rows and is not cached.
+                    // This is used to return the results as XML and DATASET
+                    bool special_search_type = false;
+                    int results_per_page = 20;
+                    if ((Current_Mode.Writer_Type == Writer_Type_Enum.XML) || (Current_Mode.Writer_Type == Writer_Type_Enum.DataSet))
+                    {
+                        results_per_page = 1000000;
+                        special_search_type = true;
+                        sort = 2; // Sort by BibID always for these
+                    }
+
+                    // Set the flags for how much data is needed.  (i.e., do we need to pull ANYTHING?  or
+                    // perhaps just the next page of results ( as opposed to pulling facets again).
+                    bool need_browse_statistics = true;
+                    bool need_paged_results = true;
+                    if (!special_search_type)
+                    {
+                        // Look to see if the browse statistics are available on any cache for this browse
+                        Complete_Result_Set_Info = CachedDataManager.Retrieve_Browse_Result_Statistics(Aggregation_Object.Code, browse_code, Tracer);
+                        if (Complete_Result_Set_Info != null)
+                            need_browse_statistics = false;
+
+                        // Look to see if the paged results are available on any cache..
+                        Paged_Results = CachedDataManager.Retrieve_Browse_Results(Aggregation_Object.Code, browse_code, current_page_index, sort, Tracer);
+                        if (Paged_Results != null)
+                            need_paged_results = false;
+                    }
+
+                    // Was a copy found in the cache?
+                    if ((!need_browse_statistics) && (!need_paged_results))
+                    {
+                        if (Tracer != null)
+                        {
+                            Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Browse statistics and paged results retrieved from cache");
+                        }
+                    }
+                    else
+                    {
+                        if (Tracer != null)
+                        {
+                            Tracer.Add_Trace("SobekCM_Assistant.Get_Browse_Info", "Building results information");
+                        }
+
+                        // Try to pull more than one page, so we can cache the next page or so
+                        List<List<iSearch_Title_Result>> pagesOfResults;
+
+                        // Get from the hierarchy object
+                            Multiple_Paged_Results_Args returnArgs = Item_Aggregation_Utilities.Get_Browse_Results(Aggregation_Object, Browse_Object, current_page_index, sort, results_per_page, !special_search_type, need_browse_statistics, Tracer);
+                            if (need_browse_statistics)
+                            {
+                                Complete_Result_Set_Info = returnArgs.Statistics;
+                            }
+                            pagesOfResults = returnArgs.Paged_Results;
+                            if ((pagesOfResults != null) && (pagesOfResults.Count > 0))
+                                Paged_Results = pagesOfResults[0];
+
+                        // Save the overall result set statistics to the cache if something was pulled
+                        if (!special_search_type)
+                        {
+                            if ((need_browse_statistics) && (Complete_Result_Set_Info != null))
+                            {
+                                CachedDataManager.Store_Browse_Result_Statistics(Aggregation_Object.Code, browse_code, Complete_Result_Set_Info, Tracer);
+                            }
+
+                            // Save the overall result set statistics to the cache if something was pulled
+                            if ((need_paged_results) && (Paged_Results != null))
+                            {
+                                CachedDataManager.Store_Browse_Results(Aggregation_Object.Code, browse_code, current_page_index, sort, pagesOfResults, Tracer);
+                            }
+                        }
+                    }
+                    break;
+
+                case Item_Aggregation_Child_Source_Data_Enum.Static_HTML:
+                    Browse_Info_Display_Text = SobekEngineClient.Aggregations.Get_Aggregation_HTML_Child_Page(Aggregation_Object.Code, Aggregation_Object.Language, UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Browse_Object.Code, Tracer);
+                    break;
+            }
+            return true;
+        }
 	}
 }

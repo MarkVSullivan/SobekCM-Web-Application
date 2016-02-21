@@ -6,7 +6,6 @@ using System.IO;
 using System.Web;
 using System.Web.Caching;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Engine_Library.Database;
@@ -15,6 +14,7 @@ using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
 
 #endregion
+
 namespace SobekCM.Library.AggregationViewer.Viewers
 {
 	/// <summary> Renders the basic search with year range searching / home page for a given item aggregation </summary>
@@ -37,7 +37,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
 		/// <summary> Constructor for a new instance of the Basic_Search_YearRange_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Basic_Search_YearRange_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public Basic_Search_YearRange_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
             // Save the search term
             if (RequestSpecificValues.Current_Mode.Search_String.Length > 0)
@@ -61,7 +63,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
             // Get the browse all url, if enabled
             browse_url = String.Empty;
-		    if (RequestSpecificValues.Hierarchy_Object.Can_Browse_Items)
+		    if (ViewBag.Hierarchy_Object.Can_Browse_Items)
 		    {
 		        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
 		        RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
@@ -108,7 +110,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
 			// Get the list of years for this aggregation
-	        string aggrCode = RequestSpecificValues.Hierarchy_Object.Code.ToLower();
+	        string aggrCode = ViewBag.Hierarchy_Object.Code.ToLower();
 	        string key = aggrCode + "_YearRanges";
 	        List<int> yearRange = HttpContext.Current.Cache[key] as List<int>;
 			if (yearRange == null)

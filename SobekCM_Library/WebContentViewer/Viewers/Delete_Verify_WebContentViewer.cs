@@ -1,12 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Remoting.Contexts;
 using System.Web;
-using System.Web.Configuration;
 using SobekCM.Core.Client;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.WebContent;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.WebContentViewer.Viewers
@@ -15,15 +14,20 @@ namespace SobekCM.Library.WebContentViewer.Viewers
     /// <remarks> This viewer extends the <see cref="abstractWebContentViewer" /> abstract class and implements the <see cref="iWebContentViewer"/> interface. </remarks>
     public class Delete_Verify_WebContentViewer : abstractWebContentViewer
     {
-        private string ErrorMessage;
-        private bool canDelete;
+        private readonly string errorMessage;
+        private readonly bool canDelete;
+        private readonly HTML_Based_Content webContent;
 
         /// <summary>  Constructor for a new instance of the Delete_Verify_WebContentViewer class  </summary>
         /// <param name="RequestSpecificValues">  All the necessary, non-global data specific to the current request  </param>
         public Delete_Verify_WebContentViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
+            // Pull the web content page
+            if (RequestSpecificValues.Current_Mode.WebContentID.HasValue)
+                webContent = SobekEngineClient.WebContent.Get_HTML_Based_Content(RequestSpecificValues.Current_Mode.WebContentID.Value, true, RequestSpecificValues.Tracer);
+
             // This should never occur, but just a double check
-            if ((RequestSpecificValues.Static_Web_Content == null) || (!RequestSpecificValues.Static_Web_Content.WebContentID.HasValue))
+            if ((webContent == null) || (!webContent.WebContentID.HasValue))
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
@@ -41,9 +45,9 @@ namespace SobekCM.Library.WebContentViewer.Viewers
 
             // If the user was logged on, but did not have permissions, show an error message
             canDelete = true;
-            if (!RequestSpecificValues.Static_Web_Content.Can_Delete(RequestSpecificValues.Current_User))
+            if (!webContent.Can_Delete(RequestSpecificValues.Current_User))
             {
-                ErrorMessage = "ERROR: You do not have permission to delete this page";
+                errorMessage = "ERROR: You do not have permission to delete this page";
                 canDelete = false;
             }
             else if ( HttpContext.Current.Request.RequestType == "POST" )
@@ -56,23 +60,23 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                     string entered_value = HttpContext.Current.Request.Form["admin_delete_confirm"];
                     if ((entered_value == null) || (entered_value.ToUpper() != "DELETE"))
                     {
-                        ErrorMessage = "ERROR: To verify this deletion, type DELETE into the text box and press CONFIRM";
+                        errorMessage = "ERROR: To verify this deletion, type DELETE into the text box and press CONFIRM";
                     }
                     else
                     {
                         string deleteReason = "Requested via web application";
 
 
-                        RestResponseMessage message = SobekEngineClient.WebContent.Delete_HTML_Based_Content(RequestSpecificValues.Static_Web_Content.WebContentID.Value, RequestSpecificValues.Current_User.Full_Name, deleteReason, RequestSpecificValues.Tracer);
+                        RestResponseMessage message = SobekEngineClient.WebContent.Delete_HTML_Based_Content(webContent.WebContentID.Value, RequestSpecificValues.Current_User.Full_Name, deleteReason, RequestSpecificValues.Tracer);
 
-                        ErrorMessage = message.Message;
-                        if ((message.ErrorTypeEnum != ErrorRestTypeEnum.Successful) && (String.IsNullOrEmpty(ErrorMessage)))
+                        errorMessage = message.Message;
+                        if ((message.ErrorTypeEnum != ErrorRestTypeEnum.Successful) && (String.IsNullOrEmpty(errorMessage)))
                         {
-                            ErrorMessage = "Error encountered on SobekCM engine.";
+                            errorMessage = "Error encountered on SobekCM engine.";
                         }
                         else
                         {
-                            ErrorMessage = "Success deleted this web content page.";
+                            errorMessage = "Success deleted this web content page.";
                         }
                     }
                 }
@@ -108,24 +112,25 @@ namespace SobekCM.Library.WebContentViewer.Viewers
 
             // Start the form
             string return_url = (RequestSpecificValues.Current_Mode.Base_URL + HttpContext.Current.Request.RawUrl).Replace("//", "/").Replace("http:/", "http://");
-            Output.WriteLine("<form name=\"itemNavForm\" method=\"post\" action=\"" + return_url + "\" id=\"itemNavForm\">");
+            Output.WriteLine("<form name=\"itemNavForm\" method=\"post\" action=\"" + return_url + "\" id=\"itemNavForm\">");
+
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_delete_item\" name=\"admin_delete_item\" value=\"\" />");
             Output.WriteLine();
 
-            if (!String.IsNullOrEmpty(ErrorMessage))
+            if (!String.IsNullOrEmpty(errorMessage))
             {
                 Output.WriteLine("  <br />");
-                Output.WriteLine("  <div id=\"sbkWchs_ActionMessageError\">" + ErrorMessage + "</div>");
+                Output.WriteLine("  <div id=\"sbkWchs_ActionMessageError\">" + errorMessage + "</div>");
             }
 
             Output.WriteLine("<div class=\"Wchs_Text\">");
             Output.WriteLine("  <p>This form allows you to delete a web content page from the system.  The source files will remain, but the page or redirect will be removed from the system.</p>");
             Output.WriteLine();
             Output.WriteLine("  <table id=\"sbkWchs_DeleteTable\">");
-            Output.WriteLine("    <tr><td>Title: &nbsp; </td><td>" + RequestSpecificValues.Static_Web_Content.Title + "</td></tr>");
-            string url = RequestSpecificValues.Static_Web_Content.URL(RequestSpecificValues.Current_Mode.Base_URL);
+            Output.WriteLine("    <tr><td>Title: &nbsp; </td><td>" + webContent.Title + "</td></tr>");
+            string url = webContent.URL(RequestSpecificValues.Current_Mode.Base_URL);
             Output.WriteLine("    <tr><td>URL:</td><td><a href=\"" + url + "\">" + url + "</a></td></tr>");
             Output.WriteLine("  </table>");
             Output.WriteLine();

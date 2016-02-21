@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
+using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -13,6 +14,7 @@ using SobekCM.Library.Citation.Template;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Tools;
 
@@ -30,12 +32,13 @@ namespace SobekCM.Library.MySobekViewer
     /// <li>Request is analyzed by the QueryString_Analyzer and output as a <see cref="Navigation_Object"/> </li>
     /// <li>Main writer is created for rendering the output, in his case the <see cref="Html_MainWriter"/> </li>
     /// <li>The HTML writer will create the necessary subwriter.  Since this action requires authentication, an instance of the  <see cref="MySobek_HtmlSubwriter"/> class is created. </li>
-    /// <li>The mySobek subwriter creates an instance of this viewer to display the RequestSpecificValues.Current_Item's behaviors for editing</li>
+    /// <li>The mySobek subwriter creates an instance of this viewer to display the currentItem's behaviors for editing</li>
     /// <li>This viewer uses the <see cref="CompleteTemplate"/> class to display the correct elements for editing </li>
     /// </ul></remarks>
     public class Edit_Item_Behaviors_MySobekViewer : abstract_MySobekViewer
     {
         private readonly CompleteTemplate completeTemplate;
+        private readonly SobekCM_Item currentItem;
 
         #region Constructor
 
@@ -45,8 +48,58 @@ namespace SobekCM.Library.MySobekViewer
         {
             RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", String.Empty);
 
-            // If the RequestSpecificValues.Current_User cannot edit this RequestSpecificValues.Current_Item, go back
-            if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String, RequestSpecificValues.Current_Item.Bib_Info.Source.Code, RequestSpecificValues.Current_Item.Bib_Info.HoldingCode, RequestSpecificValues.Current_Item.Behaviors.Aggregation_Code_List))
+            // If no user then that is an error
+            if ((RequestSpecificValues.Current_User == null) || (!RequestSpecificValues.Current_User.LoggedOn))
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
+
+            // Ensure BibID and VID provided
+            RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Validate provided bibid / vid");
+            if ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.BibID)) || (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.VID)))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "BibID or VID was not provided!");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID/VID missing in item behavior request";
+                return;
+            }
+
+            // Ensure the item is valid
+            RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Validate bibid/vid exists");
+            if (!UI_ApplicationCache_Gateway.Items.Contains_BibID_VID(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID))
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "BibID/VID indicated is not valid", Custom_Trace_Type_Enum.Error);
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : BibID/VID indicated is not valid";
+                return;
+            }
+
+
+
+            RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Try to pull this sobek complete item");
+            currentItem = SobekEngineClient.Items.Get_Sobek_Item(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
+            if (currentItem == null)
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Unable to build complete item");
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid Request : Unable to build complete item";
+                return;
+            }
+
+
+            // If no item, then an error occurred
+            if (currentItem == null)
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Invalid item indicated";
+                return;
+            }
+
+            // If the RequestSpecificValues.Current_User cannot edit this currentItem, go back
+            if (!RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
@@ -92,30 +145,30 @@ namespace SobekCM.Library.MySobekViewer
             }
             else if (hidden_request == "save")
             {
-                // Changes to the tracking box require the metadata search citation be rebuilt for this RequestSpecificValues.Current_Item
+                // Changes to the tracking box require the metadata search citation be rebuilt for this currentItem
                 // so save the old tracking box information first
-                string oldTrackingBox = RequestSpecificValues.Current_Item.Tracking.Tracking_Box;
+                string oldTrackingBox = currentItem.Tracking.Tracking_Box;
 
                 // Save these changes to bib
-                completeTemplate.Save_To_Bib(RequestSpecificValues.Current_Item, RequestSpecificValues.Current_User, 1);
+                completeTemplate.Save_To_Bib(currentItem, RequestSpecificValues.Current_User, 1);
 
                 // Save the behaviors
-                SobekCM_Database.Save_Behaviors(RequestSpecificValues.Current_Item, RequestSpecificValues.Current_Item.Behaviors.Text_Searchable, false, false );
+                SobekCM_Database.Save_Behaviors(currentItem, currentItem.Behaviors.Text_Searchable, false, false);
 
                 // Save the serial hierarchy as well (sort of a behavior)
-                SobekCM_Database.Save_Serial_Hierarchy_Information(RequestSpecificValues.Current_Item, RequestSpecificValues.Current_Item.Web.GroupID, RequestSpecificValues.Current_Item.Web.ItemID);
+                SobekCM_Database.Save_Serial_Hierarchy_Information(currentItem, currentItem.Web.GroupID, currentItem.Web.ItemID);
 
                 // Did the tracking box change?
-                if (RequestSpecificValues.Current_Item.Tracking.Tracking_Box != oldTrackingBox)
+                if (currentItem.Tracking.Tracking_Box != oldTrackingBox)
                 {
-                    SobekCM_Database.Create_Full_Citation_Value(RequestSpecificValues.Current_Item.Web.ItemID);
+                    SobekCM_Database.Create_Full_Citation_Value(currentItem.Web.ItemID);
                 }
 
                 // Remoe from the caches (to replace the other)
-                CachedDataManager.Items.Remove_Digital_Resource_Object(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Current_Item.VID, RequestSpecificValues.Tracer);
+                CachedDataManager.Items.Remove_Digital_Resource_Object(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
 
                 // Also remove the list of volumes, since this may have changed
-                CachedDataManager.Items.Remove_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
+                CachedDataManager.Items.Remove_Items_In_Title(currentItem.BibID, RequestSpecificValues.Tracer);
 
                 // Forward
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
@@ -163,8 +216,8 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<!-- Hidden field is used for postbacks to add new form elements (i.e., new name, new other titles, etc..) -->");
             Output.WriteLine("<input type=\"hidden\" id=\"behaviors_request\" name=\"behaviors_request\" value=\"\" />");
 
-			// Write the top RequestSpecificValues.Current_Item mimic html portion
-			Write_Item_Type_Top(Output, RequestSpecificValues.Current_Item);
+			// Write the top currentItem mimic html portion
+			Write_Item_Type_Top(Output, currentItem);
 
 			Output.WriteLine("<div id=\"container-inner1000\">");
 			Output.WriteLine("<div id=\"pagecontainer\">");
@@ -203,7 +256,7 @@ namespace SobekCM.Library.MySobekViewer
 			Output.WriteLine();
 
             bool isMozilla = ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Browser_Type)) && (RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0));
-	        completeTemplate.Render_Template_HTML(Output, RequestSpecificValues.Current_Item, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, 1);
+	        completeTemplate.Render_Template_HTML(Output, currentItem, RequestSpecificValues.Current_Mode.Skin == RequestSpecificValues.Current_Mode.Default_Skin ? RequestSpecificValues.Current_Mode.Skin.ToUpper() : RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, 1);
 
 			// Add the second buttons at the bottom of the form
 			Output.WriteLine();
@@ -235,7 +288,7 @@ namespace SobekCM.Library.MySobekViewer
 
 		/// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
 		/// requests from the main HTML subwriter. </summary>
-		/// <value> This tells the HTML and mySobek writers to mimic the RequestSpecificValues.Current_Item viewer </value>
+		/// <value> This tells the HTML and mySobek writers to mimic the currentItem viewer </value>
 		public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
 		{
 			get

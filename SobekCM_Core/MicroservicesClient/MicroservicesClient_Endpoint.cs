@@ -19,7 +19,14 @@ namespace SobekCM.Core.MicroservicesClient
         JSON_P,
 
         /// <summary> Output of this endpoint is XML </summary>
-        XML
+        XML,
+
+        /// <summary> If the engine and web are in the same solution and loaded together,
+        /// you can also choose to use DIRECT method, which does not use serialization </summary>
+        /// <remarks> This is only valid for a number of endpoints, but these are actually 
+        /// the most used endpoints, such as item aggregations and digital resources.  This is
+        /// particularly useful for testing latency caused by serialization during development. </remarks>
+        DIRECT
     }
 
     /// <summary> Defines a single endpoint for a microservices client </summary>
@@ -46,6 +53,28 @@ namespace SobekCM.Core.MicroservicesClient
         public MicroservicesClient_Endpoint(string URL, string Protocol)
         {
             this.URL = URL;
+            switch (Protocol.ToLower())
+            {
+                case "protobuf":
+                    this.Protocol = Microservice_Endpoint_Protocol_Enum.PROTOBUF;
+                    break;
+
+                case "direct":
+                    this.Protocol = Microservice_Endpoint_Protocol_Enum.DIRECT;
+                    break;
+
+                case "xml":
+                    this.Protocol = Microservice_Endpoint_Protocol_Enum.XML;
+                    break;
+
+                case "json-p":
+                    this.Protocol = Microservice_Endpoint_Protocol_Enum.JSON_P;
+                    break;
+
+                default:
+                    this.Protocol = Microservice_Endpoint_Protocol_Enum.JSON;
+                    break;
+            }
             this.Protocol = String.Compare(Protocol, "protobuf", StringComparison.InvariantCultureIgnoreCase ) == 0 ? Microservice_Endpoint_Protocol_Enum.PROTOBUF : Microservice_Endpoint_Protocol_Enum.JSON;
         }
     }

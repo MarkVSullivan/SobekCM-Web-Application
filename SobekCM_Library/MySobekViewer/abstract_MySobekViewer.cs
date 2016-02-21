@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
+using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.HTML;
@@ -131,27 +132,11 @@ namespace SobekCM.Library.MySobekViewer
 		/// <summary> Writes the top part of the page, mimicing the item viewer </summary>
 		/// <param name="Output"> Stream to write the item-level top to </param>
 		/// <param name="Item"> Item with all the information necessary to write the top </param>
-		protected void Write_Item_Type_Top(TextWriter Output, SobekCM_Item Item )
+		protected void Write_Item_Type_Top(TextWriter Output, BriefItemInfo Item )
 		{
 			Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
 
-			string final_title = Item.Bib_Info.Main_Title.Title;
-			if (Item.Bib_Info.Main_Title.NonSort.Length > 0)
-			{
-				if (Item.Bib_Info.Main_Title.NonSort[Item.Bib_Info.Main_Title.NonSort.Length - 1] == ' ')
-					final_title = Item.Bib_Info.Main_Title.NonSort + Item.Bib_Info.Main_Title.Title;
-				else
-				{
-					if (Item.Bib_Info.Main_Title.NonSort[Item.Bib_Info.Main_Title.NonSort.Length - 1] == '\'')
-					{
-						final_title = Item.Bib_Info.Main_Title.NonSort + Item.Bib_Info.Main_Title.Title;
-					}
-					else
-					{
-						final_title = Item.Bib_Info.Main_Title.NonSort + " " + Item.Bib_Info.Main_Title.Title;
-					}
-				}
-			}
+			string final_title = Item.Title;
 
 			// Add the Title if there is one
 			if (final_title.Length > 0)
@@ -164,20 +149,15 @@ namespace SobekCM.Library.MySobekViewer
 					newspaper = false;
 
 				// Add the date if it should be added
-				if ((newspaper) && ((Item.Bib_Info.Origin_Info.Date_Created.Length > 0) || (Item.Bib_Info.Origin_Info.Date_Issued.Length > 0)))
+				if ((newspaper) && ( !String.IsNullOrEmpty(Item.Web.Date)))
 				{
-					string date = Item.Bib_Info.Origin_Info.Date_Created;
-					if (Item.Bib_Info.Origin_Info.Date_Created.Length == 0)
-						date = Item.Bib_Info.Origin_Info.Date_Issued;
-
-
 					if (final_title.Length > 125)
 					{
-						Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr> ( " + date + " )</h1>");
+                        Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr> ( " + Item.Web.Date + " )</h1>");
 					}
 					else
 					{
-						Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + " ( " + date + " )</h1>");
+                        Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + " ( " + Item.Web.Date + " )</h1>");
 					}
 				}
 				else
@@ -194,9 +174,75 @@ namespace SobekCM.Library.MySobekViewer
 			}
 			Output.WriteLine("</div>");
 			Output.WriteLine("<div class=\"sbkMenu_Bar\" id=\"sbkIsw_MenuBar\" style=\"height:20px\">&nbsp;</div>");
-
-
 		}
+
+        /// <summary> Writes the top part of the page, mimicing the item viewer </summary>
+        /// <param name="Output"> Stream to write the item-level top to </param>
+        /// <param name="Item"> Item with all the information necessary to write the top </param>
+        protected void Write_Item_Type_Top(TextWriter Output, SobekCM_Item Item)
+        {
+            Output.WriteLine("<div id=\"sbkIsw_Titlebar\">");
+
+            string final_title = Item.Bib_Info.Main_Title.Title;
+            if (Item.Bib_Info.Main_Title.NonSort.Length > 0)
+            {
+                if (Item.Bib_Info.Main_Title.NonSort[Item.Bib_Info.Main_Title.NonSort.Length - 1] == ' ')
+                    final_title = Item.Bib_Info.Main_Title.NonSort + Item.Bib_Info.Main_Title.Title;
+                else
+                {
+                    if (Item.Bib_Info.Main_Title.NonSort[Item.Bib_Info.Main_Title.NonSort.Length - 1] == '\'')
+                    {
+                        final_title = Item.Bib_Info.Main_Title.NonSort + Item.Bib_Info.Main_Title.Title;
+                    }
+                    else
+                    {
+                        final_title = Item.Bib_Info.Main_Title.NonSort + " " + Item.Bib_Info.Main_Title.Title;
+                    }
+                }
+            }
+
+            // Add the Title if there is one
+            if (final_title.Length > 0)
+            {
+                // Is this a newspaper?
+                bool newspaper = Item.Behaviors.GroupType.ToUpper() == "NEWSPAPER";
+
+                // Does a custom setting override the default behavior to add a date?
+                if ((newspaper) && (UI_ApplicationCache_Gateway.Settings.Contains_Additional_Setting("Item Viewer.Include Date In Title")) && (UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("Item Viewer.Include Date In Title").ToUpper() == "NEVER"))
+                    newspaper = false;
+
+                // Add the date if it should be added
+                if ((newspaper) && ((Item.Bib_Info.Origin_Info.Date_Created.Length > 0) || (Item.Bib_Info.Origin_Info.Date_Issued.Length > 0)))
+                {
+                    string date = Item.Bib_Info.Origin_Info.Date_Created;
+                    if (Item.Bib_Info.Origin_Info.Date_Created.Length == 0)
+                        date = Item.Bib_Info.Origin_Info.Date_Issued;
+
+
+                    if (final_title.Length > 125)
+                    {
+                        Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr> ( " + date + " )</h1>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + " ( " + date + " )</h1>");
+                    }
+                }
+                else
+                {
+                    if (final_title.Length > 125)
+                    {
+                        Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + final_title + "\">" + final_title.Substring(0, 120) + "...</abbr></h1>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("\t<h1 itemprop=\"name\">" + final_title + "</h1>");
+                    }
+                }
+            }
+            Output.WriteLine("</div>");
+            Output.WriteLine("<div class=\"sbkMenu_Bar\" id=\"sbkIsw_MenuBar\" style=\"height:20px\">&nbsp;</div>");
+        }
 
         /// <summary> Returns a flag indicating whether the file upload specific holder in the itemNavForm form will be utilized 
         /// for the current request, or if it can be hidden/omitted. </summary>

@@ -1,27 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SobekCM.Core.Aggregations;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.AggregationViewer.Viewers
 {
+    /// <summary> Basic search option for an aggregation, that has a checkbox that determines if the full text
+    /// is searched or not </summary>
     public class Basic_Text_Search_Combined_AggregationViewer : abstractAggregationViewer
     {
-              private readonly string arg1;
+        private readonly string arg1;
         private readonly string arg2;
         private readonly string browse_url;
         private readonly string textBoxValue;
 
         /// <summary> Constructor for a new instance of the Basic_Text_Search_Combined_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Basic_Text_Search_Combined_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public Basic_Text_Search_Combined_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
             // Determine the sub text to use
             const string SUB_CODE = "s=";
@@ -47,7 +46,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             
             // Get the browse all url, if enabled
             browse_url = String.Empty;
-            if (RequestSpecificValues.Hierarchy_Object.Can_Browse_Items)
+            if (ViewBag.Hierarchy_Object.Can_Browse_Items)
             {
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
                 RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Browse_Info;
@@ -55,7 +54,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 browse_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             }
 
-            if ((!RequestSpecificValues.Current_Mode.Show_Selection_Panel.HasValue) || ( !RequestSpecificValues.Current_Mode.Show_Selection_Panel.Value ) || (RequestSpecificValues.Hierarchy_Object.Children_Count == 0))
+            if ((!RequestSpecificValues.Current_Mode.Show_Selection_Panel.HasValue) || ( !RequestSpecificValues.Current_Mode.Show_Selection_Panel.Value ) || (ViewBag.Hierarchy_Object.Children_Count == 0))
             {
                 Search_Script_Action = "basic_search_sobekcm('" + arg1 + "', '" + browse_url + "');";
             } 

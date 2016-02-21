@@ -32,7 +32,9 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
         /// <summary> Constructor for a new instance of the Item_Count_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Item_Count_AggregationViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
+        public Item_Count_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
+            : base(RequestSpecificValues, ViewBag)
         {
             // All work done in the base constructor
         }
@@ -106,7 +108,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("Item_Count_AggregationViewer.Add_Secondary_HTML", "Adding HTML");
             }
 
-            DataTable value = SobekCM_Database.Tracking_Get_Milestone_Report(RequestSpecificValues.Hierarchy_Object.Code, Tracer);
+            DataTable value = SobekCM_Database.Tracking_Get_Milestone_Report(ViewBag.Hierarchy_Object.Code, Tracer);
 
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<br />");
