@@ -49,7 +49,9 @@
   <ItemGroup>
     <Compile Include="Abort_Database_Mechanism.cs" />
     <Compile Include="Actionable_Builder_Source_Folder.cs" />
+    <Compile Include="Modules\Folders\ConvertLargeJpegsModule.cs" />
     <Compile Include="Modules\Items\AttachImagesAllModule.cs" />
+    <Compile Include="Modules\Items\TesseractOcrModule.cs" />
     <Compile Include="Modules\Schedulable\CalculateUsageStatisticsModule.cs" />
     <Compile Include="Tools\FDA_Report_Processor.cs" />
     <Compile Include="Tools\HTML_XML_Text_Extractor.cs" />

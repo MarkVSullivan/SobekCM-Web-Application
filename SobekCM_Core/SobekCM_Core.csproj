@@ -123,6 +123,7 @@
     <Compile Include="MARC\MARC_Transfer_Record.cs" />
     <Compile Include="MARC\MARC_Transfer_Subfield.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_ItemServices.cs" />
+    <Compile Include="UI_Configuration\ItemSubViewer.cs" />
     <Compile Include="UI_Configuration\MapEditor_Configuration.cs" />
     <Compile Include="Configuration\Engine\Engine_Component.cs" />
     <Compile Include="Configuration\Engine\Engine_IpRange.cs" />
@@ -253,9 +254,7 @@
       <Name>SobekCM_Tools</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="UI_Configuration\ItemViewers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
