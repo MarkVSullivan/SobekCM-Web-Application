@@ -491,7 +491,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Use the base class to serialize the object according to request protocol
-            Serialize(Engine_ApplicationCache_Gateway.Configuration.UI.Viewers, Response, Protocol, json_callback);
+            Serialize(Engine_ApplicationCache_Gateway.Configuration.UI.WriterViewers, Response, Protocol, json_callback);
         }
 
         /// <summary> Gets the log from reading all of the configuration files </summary>

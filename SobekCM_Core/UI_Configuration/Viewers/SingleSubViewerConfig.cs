@@ -9,7 +9,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
     /// signifying URL segment to the subviewer class to utilize </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("SingleSubViewer")]
-    public class SingleSubViewer
+    public class SingleSubViewerConfig
     {
         /// <summary> Viewer code that is mapped to this subviewer </summary>
         [DataMember(Name = "code")]
@@ -37,20 +37,20 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         [ProtoMember(4)]
         public string Assembly { get; set; }
 
-        /// <summary> Constructor for a new instance of the <see cref="SingleSubViewer"/> class </summary>
-        public SingleSubViewer()
+        /// <summary> Constructor for a new instance of the <see cref="SingleSubViewerConfig"/> class </summary>
+        public SingleSubViewerConfig()
         {
             // Empty constructor for serialzation purposes
         }
 
-        /// <summary> Constructor for a new instance of the <see cref="SingleSubViewer"/> class </summary>
+        /// <summary> Constructor for a new instance of the <see cref="SingleSubViewerConfig"/> class </summary>
         /// <param name="ViewerCode"> Viewer code that is mapped to this subviewer </param>
         /// <param name="Enabled"> Flag indicates if this subviewer is enabled or disabled </param>
         /// <param name="Class"> Fully qualified (including namespace) name of the class used 
         /// for this subviewer </param>
         /// <param name="Assembly"> Name of the assembly within which this class resides, unless this
         /// is one of the default subviewers included in the core code </param>
-        public SingleSubViewer(string ViewerCode, bool Enabled, string Class, string Assembly)
+        public SingleSubViewerConfig(string ViewerCode, bool Enabled, string Class, string Assembly)
         {
             this.ViewerCode = ViewerCode;
             this.Enabled = Enabled;

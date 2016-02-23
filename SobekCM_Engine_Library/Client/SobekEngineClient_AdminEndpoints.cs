@@ -258,7 +258,7 @@ namespace SobekCM.Core.Client
         /// <summary> Gets the viewers (UI) configuration information, read from the configuration files </summary>
         /// <param name="Tracer"></param>
         /// <returns> Fully built viewers (UI) configuration object </returns>
-        public ViewerConfig Get_UI_Viewers_Configuration(Custom_Tracer Tracer)
+        public WriterViewerConfig Get_UI_Viewers_Configuration(Custom_Tracer Tracer)
         {
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_AdminServices.Get_UI_Viewers_Configuration");
@@ -267,7 +267,7 @@ namespace SobekCM.Core.Client
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Configuration.UI.Viewers", Tracer);
 
             // Call out to the endpoint and return the deserialized object
-            return Deserialize<ViewerConfig>(endpoint.URL, endpoint.Protocol, Tracer);
+            return Deserialize<WriterViewerConfig>(endpoint.URL, endpoint.Protocol, Tracer);
         }
 
         #endregion

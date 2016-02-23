@@ -41,7 +41,7 @@ namespace SobekCM.Core.UI_Configuration
         [DataMember(Name = "viewers", EmitDefaultValue = false)]
         [XmlElement("viewers")]
         [ProtoMember(4)]
-        public ViewerConfig Viewers { get; set; }
+        public WriterViewerConfig WriterViewers { get; set; }
 
         /// <summary> Configuration information for the map editor function for this instance </summary>
         [DataMember(Name = "mapEditor", EmitDefaultValue = false)]
@@ -55,7 +55,7 @@ namespace SobekCM.Core.UI_Configuration
         {
             CitationViewer = new CitationConfig();
             TemplateElements = new TemplateElementsConfig();
-            Viewers = new ViewerConfig();
+            WriterViewers = new WriterViewerConfig();
             MapEditor = new MapEditor_Configuration();
         }
     }

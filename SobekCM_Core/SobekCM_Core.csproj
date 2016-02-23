@@ -123,7 +123,8 @@
     <Compile Include="MARC\MARC_Transfer_Record.cs" />
     <Compile Include="MARC\MARC_Transfer_Subfield.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_ItemServices.cs" />
-    <Compile Include="UI_Configuration\ItemSubViewer.cs" />
+    <Compile Include="UI_Configuration\Viewers\AggregationWriterConfig.cs" />
+    <Compile Include="UI_Configuration\Viewers\ItemSubViewerConfig.cs" />
     <Compile Include="UI_Configuration\MapEditor_Configuration.cs" />
     <Compile Include="Configuration\Engine\Engine_Component.cs" />
     <Compile Include="Configuration\Engine\Engine_IpRange.cs" />
@@ -214,8 +215,11 @@
     <Compile Include="UI_Configuration\Citation\CitationSet.cs" />
     <Compile Include="UI_Configuration\Citation\SectionWriter.cs" />
     <Compile Include="UI_Configuration\InstanceWide_UI_Configuration.cs" />
-    <Compile Include="UI_Configuration\Viewers\ViewerConfig.cs" />
-    <Compile Include="UI_Configuration\Viewers\SingleSubViewer.cs" />
+    <Compile Include="UI_Configuration\Viewers\ItemWriterConfig.cs" />
+    <Compile Include="UI_Configuration\Viewers\OtherWriterConfig.cs" />
+    <Compile Include="UI_Configuration\Viewers\WebContentWriterConfig.cs" />
+    <Compile Include="UI_Configuration\Viewers\WriterViewerConfig.cs" />
+    <Compile Include="UI_Configuration\Viewers\SingleSubViewerConfig.cs" />
     <Compile Include="UI_Configuration\Static_Resources.cs" />
     <Compile Include="UI_Configuration\TemplateElements\TemplateElement.cs" />
     <Compile Include="UI_Configuration\TemplateElements\TemplateElementsConfig.cs" />
