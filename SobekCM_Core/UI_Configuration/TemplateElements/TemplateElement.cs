@@ -47,6 +47,21 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
             // Do nothing - used for serialization purposes
         }
 
+
+        /// <summary> Constructor for a new instance of the <see cref="TemplateElement"/> class </summary>
+        /// <param name="Type"> The 'type' value used in the template configuration files
+        ///  to select this metadata template element </param>
+        /// <param name="Subtype"> The 'subtype' value used in the template configuration files
+        ///  to select this metadata template element </param>
+        /// <param name="Class"> Fully qualified (including namespace) name of the class used 
+        /// for this template element </param>
+        public TemplateElement(string Type, string Subtype, string Class)
+        {
+            this.Type = Type;
+            this.Subtype = Subtype;
+            this.Class = Class;
+        }
+
         /// <summary> Constructor for a new instance of the <see cref="TemplateElement"/> class </summary>
         /// <param name="Type"> The 'type' value used in the template configuration files
         ///  to select this metadata template element </param>

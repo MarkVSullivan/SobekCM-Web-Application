@@ -5,15 +5,15 @@ using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Tools;
 
-namespace SobekCM.Core.UI_Configuration
+namespace SobekCM.Core.UI_Configuration.Viewers
 {
     /// <summary> Configuration for a single item subviewer, including some of how
     /// this subviewer maps to the database and digital resource requirements </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("itemSubViewer")]
-    public class ItemSubViewer 
+    public class ItemSubViewerConfig
     {
-               /// <summary> Viewer code that is mapped to this subviewer </summary>
+        /// <summary> Viewer code that is mapped to this subviewer </summary>
         [DataMember(Name = "code")]
         [XmlAttribute("code")]
         [ProtoMember(1)]
@@ -62,32 +62,43 @@ namespace SobekCM.Core.UI_Configuration
         [ProtoMember(7)]
         public string[] FileExtensions { get; set; }
 
+        /// <summary> If this viewer is tied to certain page files existing in the digital resource, this lists all the 
+        /// possible file extensions this supports (from the configuration file usually) </summary>
+        [DataMember(EmitDefaultValue = false, Name = "pageFileExtensions")]
+        [XmlArray("pageFileExtensions")]
+        [XmlArrayItem("fileExtension", typeof(string))]
+        [ProtoMember(8)]
+        public string[] PageExtensions { get; set; }
+
         /// <summary> List of options related to this viewer, from the configuration </summary>
         [DataMember(EmitDefaultValue = false, Name = "options")]
         [XmlArray("options")]
         [XmlArrayItem("option", typeof(StringKeyValuePair))]
-        [ProtoMember(8)]
-        public List<StringKeyValuePair> Options { get; set; } 
+        [ProtoMember(9)]
+        public List<StringKeyValuePair> Options { get; set; }
 
-        /// <summary> Constructor for a new instance of the <see cref="ItemSubViewer"/> class </summary>
-        public ItemSubViewer()
+        /// <summary> Constructor for a new instance of the <see cref="ItemSubViewerConfig"/> class </summary>
+        public ItemSubViewerConfig()
         {
             // Empty constructor for serialzation purposes
         }
 
-        /// <summary> Constructor for a new instance of the <see cref="ItemSubViewer"/> class </summary>
+        /// <summary> Constructor for a new instance of the <see cref="ItemSubViewerConfig"/> class </summary>
         /// <param name="ViewerCode"> Viewer code that is mapped to this subviewer </param>
         /// <param name="Enabled"> Flag indicates if this subviewer is enabled or disabled </param>
         /// <param name="Class"> Fully qualified (including namespace) name of the class used 
         /// for this subviewer </param>
         /// <param name="Assembly"> Name of the assembly within which this class resides, unless this
         /// is one of the default subviewers included in the core code </param>
-        public ItemSubViewer(string ViewerCode, bool Enabled, string Class, string Assembly)
+        public ItemSubViewerConfig(string ViewerCode, bool Enabled, string Class, string Assembly)
         {
             this.ViewerCode = ViewerCode;
             this.Enabled = Enabled;
             this.Class = Class;
             this.Assembly = Assembly;
+
+            AlwaysAdd = true;
+            Enabled = true;
         }
 
         #region Methods that controls XML serialization
