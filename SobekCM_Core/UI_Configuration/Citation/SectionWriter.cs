@@ -27,6 +27,25 @@ namespace SobekCM.Core.UI_Configuration.Citation
         [ProtoMember(2)]
         public string Assembly { get; set; }
 
+        /// <summary> Constructor for a new instance of the <see cref="SectionWriter"/> class </summary>
+        /// <remarks> This creates an empty, uninitialized instance of the <see cref="SectionWriter"/> class,
+        /// but is required for seralization/deserialization purposes </remarks>
+        public SectionWriter()
+        {
+            // Does nothing - primarily for serialization and deserialization
+        }
+
+        /// <summary> Constructor for a new instance of the <see cref="SectionWriter"/> class </summary>
+        /// <param name="Assembly"> Name of the assembly from which this special citation section
+        /// viewer should be loaded </param>
+        /// <param name="Class_Name"> Fully qualified name (including namespace) of the special citation 
+        /// section writer class </param>
+        public SectionWriter( string Assembly, string Class_Name )
+        {
+            this.Assembly = Assembly;
+            this.Class_Name = Class_Name;
+        }
+
         #region Methods that controls XML serialization
 
         /// <summary> Method suppresses XML Serialization of the Assembly property if it is empty </summary>

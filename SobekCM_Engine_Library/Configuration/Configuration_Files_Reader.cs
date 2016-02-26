@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Reflection;
@@ -14,6 +13,9 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Configuration.OAIPMH;
 using SobekCM.Core.Settings;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.Citation;
+using SobekCM.Core.UI_Configuration.TemplateElements;
+using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Items.BriefItems.Mappers;
 using SobekCM.Resource_Object.Configuration;
@@ -233,6 +235,21 @@ namespace SobekCM.Engine_Library.Configuration
                             case "metadata":
                                 ConfigObj.Add_Log("        Parsing METADATA subtree");
                                 read_metadata_details(readerXml.ReadSubtree(), ConfigObj);
+                                break;
+
+                            case "writerviewers":
+                                ConfigObj.Add_Log("        Parsing WRITER/VIEWER subtree");
+                                read_writer_viewer_details(readerXml.ReadSubtree(), ConfigObj);
+                                break;
+
+                            case "citation":
+                                ConfigObj.Add_Log("        Parsing CITATION subtree");
+                                read_citation_details(readerXml.ReadSubtree(), ConfigObj);
+                                break;
+
+                            case "templateelements":
+                                ConfigObj.Add_Log("        Parsing TEMPLATE ELEMENTS subtree");
+                                read_template_elements_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
                         }
@@ -2122,6 +2139,450 @@ namespace SobekCM.Engine_Library.Configuration
         }
 
         #endregion
+
+        #region Section reads all the viewer/writer configuration information
+
+        private static bool read_writer_viewer_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
+        {
+            bool errorEncountered = false;
+
+            try
+            {
+                while (ReaderXml.Read())
+                {
+                    if (ReaderXml.NodeType == XmlNodeType.Element)
+                    {
+                        switch (ReaderXml.Name.ToLower())
+                        {
+                            case "clearall":
+                                Config.UI.WriterViewers.Clear();
+                                break;
+
+                            case "itemwriter":
+                                if (ReaderXml.MoveToAttribute("class"))
+                                    Config.UI.WriterViewers.Items.Class = ReaderXml.Value.Trim();
+                                if (ReaderXml.MoveToAttribute("assembly"))
+                                    Config.UI.WriterViewers.Items.Assembly = ReaderXml.Value.Trim();
+                                ReaderXml.MoveToElement();
+                                read_item_writer_viewer_configs(ReaderXml.ReadSubtree(), Config.UI.WriterViewers);
+                                break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                Config.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_writer_viewer_details");
+                Config.Add_Log(ee.Message);
+                Config.Add_Log(ee.StackTrace);
+
+                Config.ErrorEncountered = true;
+                errorEncountered = true;
+            }
+
+            // If there was an error while reading, use the system defaults
+            if (errorEncountered)
+            {
+                Config.Metadata.Clear();
+                Config.Metadata.Set_Default_Values();
+            }
+
+            return !errorEncountered;
+        }
+
+        private static void read_item_writer_viewer_configs(XmlReader ReaderXml, WriterViewerConfig Config)
+        {
+            while (ReaderXml.Read())
+            {
+                if (ReaderXml.NodeType == XmlNodeType.Element)
+                {
+                    switch (ReaderXml.Name.ToLower())
+                    {
+                        // viewerCode = "#j" 
+                        // assembly = "" 
+                        // class="SobekCM.Library.ItemViewer.Viewers.JPEG_ItemViewer_Prototyper" 
+                        // enabled="true" 
+                        // alwaysAdd="true" 
+                        // pageFileExtensions="JPG|JPEG"
+                        // fileExtensions
+
+                        case "itemviewer":
+                            ItemSubViewerConfig newConfig = new ItemSubViewerConfig();
+                            if (ReaderXml.MoveToAttribute("type"))
+                                newConfig.ViewerType = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("viewerCode"))
+                                newConfig.ViewerCode = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("assembly"))
+                                newConfig.Assembly = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("class"))
+                                newConfig.Class = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("enabled"))
+                            {
+                                bool tempValue;
+                                if (bool.TryParse(ReaderXml.Value, out tempValue))
+                                {
+                                    newConfig.Enabled = tempValue;
+                                }
+                            }
+                            if (ReaderXml.MoveToAttribute("alwaysAdd"))
+                            {
+                                bool tempValue;
+                                if (bool.TryParse(ReaderXml.Value, out tempValue))
+                                {
+                                    newConfig.AlwaysAdd = tempValue;
+                                }
+                            }
+                            if (ReaderXml.MoveToAttribute("pageFileExtensions"))
+                            {
+                                newConfig.PageExtensions = ReaderXml.Value.Trim().Split(new char[] { '|', ',' });
+                            }
+                            if (ReaderXml.MoveToAttribute("fileExtensions"))
+                            {
+                                newConfig.FileExtensions = ReaderXml.Value.Trim().Split(new char[] { '|', ',' });
+                            }
+
+                            // Check for minimum requirements
+                            if ((!String.IsNullOrEmpty(newConfig.ViewerType)) && (!String.IsNullOrEmpty(newConfig.ViewerCode)))
+                                Config.Items.Add_Viewer(newConfig);
+                            break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region Section reads the citation configuration information
+
+        private static bool read_citation_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
+        {
+            bool errorEncountered = false;
+
+            try
+            {
+                while (ReaderXml.Read())
+                {
+                    if (ReaderXml.NodeType == XmlNodeType.Element)
+                    {
+                        switch (ReaderXml.Name.ToLower())
+                        {
+                            case "clearall":
+                                Config.UI.CitationViewer.Clear();
+                                break;
+
+                            case "citationset":
+                                string setName = "UNNAMED";
+                                if (ReaderXml.MoveToAttribute("Name"))
+                                    setName = ReaderXml.Value.Trim();
+                                // Ensure a setname exists
+                                if (String.IsNullOrEmpty(setName))
+                                    setName = "AUTOSETNAME" + (Config.UI.CitationViewer.CitationSets.Count + 1);
+
+                                // Is this the (new) default
+                                if (ReaderXml.MoveToAttribute("Default"))
+                                {
+                                    if (String.Compare(ReaderXml.Value.Trim(), "true", StringComparison.OrdinalIgnoreCase) == 0)
+                                    {
+                                        Config.UI.CitationViewer.DefaultCitationSet = setName;
+                                    }
+                                }
+
+                                // Create the citation set and add it, or get the existing
+                                CitationSet citationSet = Config.UI.CitationViewer.Add_CitationSet(setName);
+
+                                // Read all the details for this citation set
+                                ReaderXml.MoveToElement();
+                                read_citation_set_details(ReaderXml.ReadSubtree(), citationSet);
+
+                                break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                Config.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_citation_details");
+                Config.Add_Log(ee.Message);
+                Config.Add_Log(ee.StackTrace);
+
+                Config.ErrorEncountered = true;
+                errorEncountered = true;
+            }
+
+            // If there was an error while reading, use the system defaults
+            if (errorEncountered)
+            {
+                Config.Metadata.Clear();
+                Config.Metadata.Set_Default_Values();
+            }
+
+            return !errorEncountered;
+        }
+
+
+        private static void read_citation_set_details(XmlReader ReaderXml, CitationSet Config)
+        {
+            CitationFieldSet currFieldSet = null;
+            CitationElement currElement = null;
+            bool inElements = false;
+
+            while (ReaderXml.Read())
+            {
+                if (ReaderXml.NodeType == XmlNodeType.Element)
+                {
+                    switch (ReaderXml.Name.ToLower())
+                    {
+                        case "fieldset":
+                            if (ReaderXml.MoveToAttribute("ID"))
+                            {
+                                // Pull the attributes, basic info about this field set
+                                string fieldSetId = ReaderXml.Value.Trim();
+                                string defaultHeading = fieldSetId;
+                                string order = "append";
+                                string afterid = "";
+                                if (ReaderXml.MoveToAttribute("Heading"))
+                                    defaultHeading = ReaderXml.Value.Trim();
+
+                                // Does this field set already exist? ( in which case order and after id don't matter )
+                                if (ReaderXml.MoveToAttribute("Order"))
+                                    order = ReaderXml.Value.Trim().ToLower();
+                                if (ReaderXml.MoveToAttribute("AfterID"))
+                                    afterid = ReaderXml.Value.Trim();
+
+                                // Ensure the order is one of the terms supported
+                                if ((order != "first") && (order != "after") && (order != "append"))
+                                    order = "append";
+
+                                // Add this field set
+                                currFieldSet = Config.AddFieldSet(fieldSetId, defaultHeading, order, afterid);
+                            }
+                            else
+                            {
+                                currFieldSet = null;
+                            }
+                            break;
+
+                        case "language":
+                            // Get the language code and term
+                            string code = String.Empty;
+                            if (ReaderXml.MoveToAttribute("Code"))
+                                code = ReaderXml.Value.Trim().ToLower();
+                            ReaderXml.Read();
+                            string term = ReaderXml.Value.Trim();
+
+                            // WHich level is this form?
+                            if (!String.IsNullOrEmpty(code))
+                            {
+                                if (currElement != null)
+                                {
+                                    currElement.Add_Translation(Web_Language_Enum_Converter.Code_To_Enum(code), term);
+                                }
+                                else if (currFieldSet != null)
+                                {
+                                    currFieldSet.Add_Translation(Web_Language_Enum_Converter.Code_To_Enum(code), term);
+                                }
+                            }
+                            break;
+
+                        case "elements":
+                            inElements = true;
+                            break;
+
+                        case "clear":
+                            if ( currFieldSet != null )
+                                currFieldSet.Clear_Elements();
+                            break;
+
+                        case "append":
+                            // Collect the basic values
+                            string appendMetadataTerm = (ReaderXml.MoveToAttribute("MetadataTerm")) ? ReaderXml.Value.Trim() : String.Empty;
+                            string appendDisplayTerm = (ReaderXml.MoveToAttribute("DisplayTerm")) ? ReaderXml.Value.Trim() : appendMetadataTerm;
+                            string appendItemProp = (ReaderXml.MoveToAttribute("ItemProp")) ? ReaderXml.Value.Trim() : null;
+                            string appendSearchCode = (ReaderXml.MoveToAttribute("SearchCode")) ? ReaderXml.Value.Trim() : null;
+                            currElement = new CitationElement
+                            {
+                                MetadataTerm = appendMetadataTerm,
+                                DisplayTerm = appendDisplayTerm,
+                                ItemProp = appendItemProp,
+                                SearchCode = appendSearchCode
+                            };
+
+                            // Set the override display enumeration
+                            string appendOverrideDisplay = (ReaderXml.MoveToAttribute("OverrideDisplayTerm")) ? ReaderXml.Value.Trim() : String.Empty;
+                            switch (appendOverrideDisplay.ToLower())
+                            {
+                                case "subterm":
+                                    currElement.OverrideDisplayTerm = CitationElement_OverrideDispayTerm_Enum.subterm;
+                                    break;
+
+                                default:
+                                    currElement.OverrideDisplayTerm = CitationElement_OverrideDispayTerm_Enum.NONE;
+                                    break;
+                            }
+
+                            // Only actually add it if the metadata term is valid
+                            if ((!String.IsNullOrEmpty(appendMetadataTerm)) && (currFieldSet != null))
+                                currFieldSet.Append_Element(currElement);
+                            break;
+
+                        case "insert":
+                            // Collect the basic values
+                            string insertMetadataTerm = (ReaderXml.MoveToAttribute("MetadataTerm")) ? ReaderXml.Value.Trim() : String.Empty;
+                            string insertDisplayTerm = (ReaderXml.MoveToAttribute("DisplayTerm")) ? ReaderXml.Value.Trim() : insertMetadataTerm;
+                            string insertItemProp = (ReaderXml.MoveToAttribute("ItemProp")) ? ReaderXml.Value.Trim() : null;
+                            string insertSearchCode = (ReaderXml.MoveToAttribute("SearchCode")) ? ReaderXml.Value.Trim() : null;
+                            currElement = new CitationElement
+                            {
+                                MetadataTerm = insertMetadataTerm,
+                                DisplayTerm = insertDisplayTerm,
+                                ItemProp = insertItemProp,
+                                SearchCode = insertSearchCode
+                            };
+
+                            // Set the override display enumeration
+                            string insertOverrideDisplay = (ReaderXml.MoveToAttribute("OverrideDisplayTerm")) ? ReaderXml.Value.Trim() : String.Empty;
+                            switch (insertOverrideDisplay.ToLower())
+                            {
+                                case "subterm":
+                                    currElement.OverrideDisplayTerm = CitationElement_OverrideDispayTerm_Enum.subterm;
+                                    break;
+
+                                default:
+                                    currElement.OverrideDisplayTerm = CitationElement_OverrideDispayTerm_Enum.NONE;
+                                    break;
+                            }
+
+                            // Only actually add it if the metadata term is valid
+                            if ((!String.IsNullOrEmpty(insertMetadataTerm)) && (currFieldSet != null))
+                            {
+                                if (ReaderXml.MoveToAttribute("After"))
+                                {
+                                    currFieldSet.Insert_Element_After(currElement, ReaderXml.Value.Trim());
+                                }
+                                else if (ReaderXml.MoveToAttribute("Before"))
+                                {
+                                    currFieldSet.Insert_Element_Before(currElement, ReaderXml.Value.Trim());
+                                }
+                                else
+                                {
+                                    currFieldSet.Append_Element(currElement);
+                                }
+                            }
+                            break;
+
+                        case "remove":
+                            if (( currFieldSet != null ) && ( ReaderXml.MoveToAttribute("Code")))
+                                currFieldSet.Remove_Element(ReaderXml.Value.Trim());
+                            currElement = null;
+                            break;
+
+                        case "sectionwriter":
+                            if (currElement != null)
+                            {
+                                string assembly = (ReaderXml.MoveToAttribute("Assembly")) ? ReaderXml.Value.Trim() : null;
+                                string writer_class = (ReaderXml.MoveToAttribute("Assembly")) ? ReaderXml.Value.Trim() : null;
+                                if (!String.IsNullOrEmpty(writer_class))
+                                {
+                                    currElement.SectionWriter = new SectionWriter(assembly, writer_class);
+                                }
+                            }
+                            break;
+
+                    }
+                }
+                else if (ReaderXml.NodeType == XmlNodeType.EndElement)
+                {
+                    // This is closing out a field set or a single element
+                    switch (ReaderXml.Name.ToLower())
+                    {
+                        case "fieldset":
+                            currFieldSet = null;
+                            currElement = null;
+                            inElements = false;
+                            break;
+
+                        case "append":
+                        case "insert":
+                        case "remove":
+                            currElement = null;
+                            break;
+
+                        case "elements":
+                            inElements = false;
+                            break;
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+        #region Section reads the template element configuration information
+
+        private static bool read_template_elements_details(XmlReader ReaderXml, InstanceWide_Configuration Config)
+        {
+            bool errorEncountered = false;
+
+            try
+            {
+                while (ReaderXml.Read())
+                {
+                    if (ReaderXml.NodeType == XmlNodeType.Element)
+                    {
+                        switch (ReaderXml.Name.ToLower())
+                        {
+                            case "clearall":
+                                Config.UI.TemplateElements.Clear();
+                                break;
+
+                            case "templateelement":
+
+                                // Build the new template element info
+                                TemplateElement newElement = new TemplateElement();
+                                if (ReaderXml.MoveToAttribute("type"))
+                                    newElement.Type = ReaderXml.Value.Trim();
+                                if (ReaderXml.MoveToAttribute("subtype"))
+                                    newElement.Subtype = ReaderXml.Value.Trim();
+                                if (ReaderXml.MoveToAttribute("assembly"))
+                                    newElement.Assembly = ReaderXml.Value.Trim();
+                                if (ReaderXml.MoveToAttribute("assembly"))
+                                    newElement.Class = ReaderXml.Value.Trim();
+                                if (ReaderXml.MoveToAttribute("image"))
+                                    newElement.Image = ReaderXml.Value.Trim();
+
+                                // add if the minimum requirements are met
+                                if ((!String.IsNullOrEmpty(newElement.Type)) && (!String.IsNullOrEmpty(newElement.Class)))
+                                    Config.UI.TemplateElements.Add_Element(newElement);
+
+                                break;
+
+                        }
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                Config.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_template_elements_details");
+                Config.Add_Log(ee.Message);
+                Config.Add_Log(ee.StackTrace);
+
+                Config.ErrorEncountered = true;
+                errorEncountered = true;
+            }
+
+            // If there was an error while reading, use the system defaults
+            if (errorEncountered)
+            {
+                Config.Metadata.Clear();
+                Config.Metadata.Set_Default_Values();
+            }
+
+            return !errorEncountered;
+        }
+
+        #endregion
+
+
 
     }
 }

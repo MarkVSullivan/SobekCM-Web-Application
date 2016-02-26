@@ -34,6 +34,30 @@ namespace SobekCM.Core.UI_Configuration.Citation
             set_defaults();
         }
 
+        /// <summary> Clears all of the values in this configuration, including the default values  </summary>
+        public void Clear()
+        {
+            CitationSets.Clear();
+        }
+
+        /// <summary> Add a citation set </summary>
+        /// <param name="SetName"> Name of the set.</param>
+        /// <returns> Pre-existing citation set with that name, or just a newly added set </returns>
+        public CitationSet Add_CitationSet(string SetName)
+        {
+            // Does this exist? ( skipping dictionary since unlikely to be more than one or two )
+            foreach (CitationSet thisSet in CitationSets)
+            {
+                if (String.Compare(thisSet.Name, SetName, StringComparison.OrdinalIgnoreCase) == 0)
+                    return thisSet;
+            }
+
+            // Add a new one then
+            CitationSet newSet = new CitationSet {Name = SetName};
+            CitationSets.Add(newSet);
+            return newSet;
+        }
+
         /// <summary> Return the default (or first) citation set </summary>
         /// <returns> Citation set, which details how the citation should be written </returns>
         public CitationSet Get_CitationSet()

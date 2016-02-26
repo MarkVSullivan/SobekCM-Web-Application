@@ -61,5 +61,13 @@ namespace SobekCM.Core.UI_Configuration.Viewers
             Aggregations = new AggregationWriterConfig();
             WebContent = new WebContentWriterConfig();
         }
+
+        /// <summary> Clears all the previously loaded information, such as the default values </summary>
+        public void Clear()
+        {
+            Items.Clear();
+            Aggregations.Clear();
+            WebContent.Clear();
+        }
     }
 }

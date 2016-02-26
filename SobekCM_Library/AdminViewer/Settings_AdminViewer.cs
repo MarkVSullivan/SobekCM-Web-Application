@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Data;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
@@ -16,9 +17,14 @@ using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.Configuration.OAIPMH;
+using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.Search;
 using SobekCM.Core.Settings;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.Citation;
+using SobekCM.Core.UI_Configuration.TemplateElements;
+using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
 using SobekCM.Library.Database;
@@ -28,6 +34,7 @@ using SobekCM.Library.ResultsViewer;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object.Configuration;
 using SobekCM.Tools;
+using Microservice_Endpoint_Protocol_Enum = SobekCM.Core.Configuration.Engine.Microservice_Endpoint_Protocol_Enum;
 
 #endregion
 
@@ -103,6 +110,8 @@ namespace SobekCM.Library.AdminViewer
         private enum Settings_Metadata_SubMode_Enum : byte
         {
             NONE,
+
+            Fields,
 
             Metdata_Reader_Writers,
 
@@ -239,6 +248,10 @@ namespace SobekCM.Library.AdminViewer
                         {
                             switch (RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1].ToLower())
                             {
+                                case "fields":
+                                    metadataSubEnum = Settings_Metadata_SubMode_Enum.Fields;
+                                    break;
+
                                 case "filereaders":
                                     metadataSubEnum = Settings_Metadata_SubMode_Enum.Metdata_Reader_Writers;
                                     break;
@@ -574,6 +587,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine(add_leftnav_h2_link("Metadata Configuration", "metadata", redirectUrl, currentViewerCode));
             Output.WriteLine("        <ul>");
+            Output.WriteLine(add_leftnav_li_link("Metadata Search Fields", "metadata/fields", redirectUrl, currentViewerCode));
             Output.WriteLine(add_leftnav_li_link("File Readers/Writers", "metadata/filereaders", redirectUrl, currentViewerCode));
             Output.WriteLine(add_leftnav_li_link("METS Section Readers/Writers", "metadata/metsreaders", redirectUrl, currentViewerCode));
             Output.WriteLine(add_leftnav_li_link("METS Writing Profiles", "metadata/metsprofiles", redirectUrl, currentViewerCode));
@@ -593,7 +607,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine(add_leftnav_h2_link("UI Configuration", "ui", redirectUrl, currentViewerCode));
 			Output.WriteLine("        <ul>");
 			Output.WriteLine(add_leftnav_li_link("Citation Viewer", "ui/citation", redirectUrl, currentViewerCode));
-			Output.WriteLine(add_leftnav_li_link("Map Editor", "ui/mapeditor", redirectUrl, currentViewerCode));
+		//	Output.WriteLine(add_leftnav_li_link("Map Editor", "ui/mapeditor", redirectUrl, currentViewerCode));
 			Output.WriteLine(add_leftnav_li_link("Microservice Client Endpoints", "ui/microservices", redirectUrl, currentViewerCode));
 			Output.WriteLine(add_leftnav_li_link("Template Elements", "ui/template", redirectUrl, currentViewerCode));
 			Output.WriteLine(add_leftnav_li_link("HTML Viewers/Subviewers", "ui/viewers", redirectUrl, currentViewerCode));
@@ -1698,6 +1712,10 @@ namespace SobekCM.Library.AdminViewer
             // If a submode existed, call that method
             switch (metadataSubEnum)
             {
+                case Settings_Metadata_SubMode_Enum.Fields:
+                    add_metadata_fields_info(Output);
+                    break;
+
                 case Settings_Metadata_SubMode_Enum.Metdata_Reader_Writers:
                     add_metadata_file_readers_info(Output);
                     break;
@@ -1719,6 +1737,84 @@ namespace SobekCM.Library.AdminViewer
                     break;
             }
 		}
+
+        private void add_metadata_fields_info(TextWriter Output)
+        {
+            Output.WriteLine("  <h2>Metadata Search Fields</h2>");
+            Output.WriteLine("  <p>These are the current search fields in the system.</p>");
+
+            // Create the data table
+            DataTable tempTable = new DataTable();
+            tempTable.Columns.Add("Name");
+            tempTable.Columns.Add("WebCode");
+            tempTable.Columns.Add("DisplayTerm");
+            tempTable.Columns.Add("FacetTerm");
+            tempTable.Columns.Add("SolrField");
+            foreach (Metadata_Search_Field metadata in UI_ApplicationCache_Gateway.Settings.Metadata_Search_Fields)
+            {
+                DataRow newRow = tempTable.NewRow();
+                newRow[0] = !String.IsNullOrEmpty(metadata.Name) ? metadata.Name : String.Empty;
+                newRow[1] = !String.IsNullOrEmpty(metadata.Web_Code) ? metadata.Web_Code : String.Empty;
+                newRow[2] = !String.IsNullOrEmpty(metadata.Display_Term) ? metadata.Display_Term : String.Empty;
+                newRow[3] = !String.IsNullOrEmpty(metadata.Facet_Term) ? metadata.Facet_Term : String.Empty;
+                newRow[4] = !String.IsNullOrEmpty(metadata.Solr_Field) ? metadata.Solr_Field : String.Empty;
+                tempTable.Rows.Add(newRow);
+            }
+
+            // Determine the column to soret 
+            string columnSort = "Name";
+            string possibleOrder = HttpContext.Current.Request.QueryString["o"];
+            if (!String.IsNullOrEmpty(possibleOrder))
+            {
+                switch (possibleOrder)
+                {
+                    case "2":
+                        columnSort = "WebCode";
+                        break;
+
+                    case "3":
+                        columnSort = "DisplayTerm";
+                        break;
+
+                    case "4":
+                        columnSort = "FacetTerm";
+                        break;
+
+                    case "5":
+                        columnSort = "SolrField";
+                        break;
+                }
+            }
+
+            // Create the data view
+            DataView sortMetadata = new DataView(tempTable);
+            sortMetadata.Sort = columnSort + " ASC";
+
+            Output.WriteLine("  <table class=\"sbkSeav_MetadataFieldsTable\">");
+            Output.WriteLine("    <tr>");
+         //   Output.WriteLine("      <th class=\"sbkSeav_MetadataReadersTable_TypeCol\">ID</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetadataFieldsTable_NameCol\">Name</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetadataFieldsTable_WebCodeCol\">Web Code</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetadataFieldsTable_DisplayTermCol\">Display Term</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetadataFieldsTable_FacetTermCol\">Facet Term</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetadataFieldsTable_SolrFieldCol\">Solr Field</th>");
+            Output.WriteLine("    </tr>");
+
+            // Step through all the basic metadata fields
+            foreach (DataRowView thisRow in sortMetadata )
+            {
+                Output.WriteLine("    <tr>");
+            //    Output.WriteLine("      <td>" + metadata.ID + "</td>");
+                Output.WriteLine("      <td>" + thisRow[0] + "</td>");
+                Output.WriteLine("      <td>" + thisRow[1] + "</td>");
+                Output.WriteLine("      <td>" + thisRow[2] + "</td>");
+                Output.WriteLine("      <td>" + thisRow[3] + "</td>");
+                Output.WriteLine("      <td>" + thisRow[4] + "</td>");
+
+                Output.WriteLine("    </tr>");
+            }
+            Output.WriteLine("  </table>");
+        }
 
         private void add_metadata_file_readers_info(TextWriter Output)
         {
@@ -2571,27 +2667,278 @@ namespace SobekCM.Library.AdminViewer
 
         private void add_ui_citation_info(TextWriter Output)
         {
-            Output.WriteLine("UI CITATION INFO HERE");
+            Output.WriteLine("  <h2>Citation Display Configuration</h2>");
+            Output.WriteLine("  <p>Below are the citation sets included in this instance.</p>");
+
+            // Get the default set
+            CitationSet defaultSet = UI_ApplicationCache_Gateway.Configuration.UI.CitationViewer.Get_CitationSet();
+            Output.WriteLine("  <h3>" + defaultSet.Name + " Citation Field Set (default)</h3>");
+            add_ui_citation_set_info(Output, defaultSet);
+
+            // Add the other sets
+            foreach (CitationSet thisSet in UI_ApplicationCache_Gateway.Configuration.UI.CitationViewer.CitationSets)
+            {
+                if (thisSet != defaultSet)
+                {
+                    Output.WriteLine("  <h3>" + thisSet.Name + " Citation Field Set (default)</h3>");
+                    add_ui_citation_set_info(Output, thisSet);
+                }
+            }
         }
 
-        private void add_ui_map_editor_info(TextWriter Output)
+	    private void add_ui_citation_set_info(TextWriter Output, CitationSet setInfo )
+	    {
+            Output.WriteLine("  <table class=\"sbkSeav_UiCitationTable\">");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <th class=\"sbkSeav_UiCitationTable_TermCol\" colspan=\"2\">Metadata Term</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_UiCitationTable_DisplayCol\">Display Term</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_UiCitationTable_SearchCodeCol\">Search Code</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_UiCitationTable_OtherCol\">Other</th>");
+            Output.WriteLine("    </tr>");
+
+            // Add each field set
+	        foreach (CitationFieldSet fieldSet in setInfo.FieldSets)
+	        {
+                // Add a row for this
+                Output.WriteLine("    <tr class=\"sbkSeav_UiCitationTable_SetRow\">");
+                Output.WriteLine("      <td colspan=\"5\">" + fieldSet.Heading + " ( " + fieldSet.ID + " )</td>");
+                Output.WriteLine("    </tr>");
+
+                // Now, add each individual citation element
+                foreach (CitationElement thisElement in fieldSet.Elements)
+	            {
+                    Output.WriteLine("    <tr>");
+	                Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
+                    Output.WriteLine("      <td>" + thisElement.MetadataTerm + "</td>");
+                    Output.WriteLine("      <td>" + thisElement.DisplayTerm + "</td>");
+                    Output.WriteLine("      <td>" + thisElement.SearchCode + "</td>");
+                    Output.WriteLine("      <td>");
+                    if ( !String.IsNullOrEmpty(thisElement.ItemProp ))
+                        Output.WriteLine("        microservice itemprop of '" + thisElement.ItemProp + "'.<br />");
+                    if ( thisElement.OverrideDisplayTerm == CitationElement_OverrideDispayTerm_Enum.subterm )
+                        Output.WriteLine("        display label can be override by subterm (or display term).<br />");
+	                if ((thisElement.SectionWriter != null) && ( !String.IsNullOrEmpty(thisElement.SectionWriter.Class_Name)))
+	                {
+                        if ( !String.IsNullOrEmpty(thisElement.SectionWriter.Assembly))
+                            Output.WriteLine("        custom display ( " + thisElement.SectionWriter.Assembly + "." + thisElement.SectionWriter.Class_Name + " ).<br />");
+                        else
+                            Output.WriteLine("        custom display ( " + thisElement.SectionWriter.Class_Name + " ).<br />");
+	                }
+	                Output.WriteLine("      </td>");
+                    Output.WriteLine("    </tr>");
+	            }
+	        }
+            Output.WriteLine("  </table>");
+	    }
+
+	    private void add_ui_map_editor_info(TextWriter Output)
         {
             Output.WriteLine("UI MAP EDITOR INFO HERE");
         }
 
         private void add_ui_client_endpoints_info(TextWriter Output)
         {
-            Output.WriteLine("UI MICROSERVICE CLIENT ENDPOINTS INFO HERE");
+            Output.WriteLine("  <h2>Engine Configuration</h2>");
+            Output.WriteLine("  <p>This section details all of the microservice endpoints used by the SobekCM UI.</p>");
+
+            // Create the data table
+            DataTable tempTable = new DataTable();
+            tempTable.Columns.Add("Key");
+            tempTable.Columns.Add("Protocol");
+            tempTable.Columns.Add("URL");
+            foreach (MicroservicesClient_Endpoint microserviceEndpoint in SobekEngineClient.ConfigObj.Endpoints)
+            {
+                DataRow newRow = tempTable.NewRow();
+                newRow[0] = !String.IsNullOrEmpty(microserviceEndpoint.Key) ? microserviceEndpoint.Key : String.Empty;
+                newRow[1] = String.Empty;
+                switch (microserviceEndpoint.Protocol)
+                {
+                    case Core.MicroservicesClient.Microservice_Endpoint_Protocol_Enum.DIRECT:
+                        newRow[1] = "DIRECT";
+                        break;
+
+                    case Core.MicroservicesClient.Microservice_Endpoint_Protocol_Enum.JSON:
+                        newRow[1] = "JSON";
+                        break;
+
+                    case Core.MicroservicesClient.Microservice_Endpoint_Protocol_Enum.JSON_P:
+                        newRow[1] = "JSON-P";
+                        break;
+
+                    case Core.MicroservicesClient.Microservice_Endpoint_Protocol_Enum.PROTOBUF:
+                        newRow[1] = "ProtoBuf";
+                        break;
+
+                    case Core.MicroservicesClient.Microservice_Endpoint_Protocol_Enum.XML:
+                        newRow[1] = "XML";
+                        break;
+                }
+                newRow[2] = !String.IsNullOrEmpty(microserviceEndpoint.URL) ? microserviceEndpoint.URL : String.Empty;
+                tempTable.Rows.Add(newRow);
+            }
+
+            // Create the data view
+            DataView sortMetadata = new DataView(tempTable);
+            sortMetadata.Sort = "Key ASC";
+
+            Output.WriteLine("  <h3>Microservice Endpoints</h3>");
+            Output.WriteLine("  <table class=\"sbkSeav_UiMicroservicesEndpointsTable\">");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <th class=\"sbkSeav_UiMicroservicesEndpointsTablee_KeyCol\">Key</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_UiMicroservicesEndpointsTable_ProtocolCol\">Protocol</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_UiMicroservicesEndpointsTable_UrlCol\">URL</th>");
+            Output.WriteLine("    </tr>");
+
+            // Step through all the endpoint rows
+            foreach (DataRowView thisRow in sortMetadata)
+            {
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>" + thisRow[0] + "</td>");
+                Output.WriteLine("      <td>" + thisRow[1] + "</td>");
+                Output.WriteLine("      <td>" + thisRow[2] + "</td>");
+                Output.WriteLine("    </tr>");
+            }
+
+            Output.WriteLine("  </table>");
         }
 
         private void add_ui_template_elements_info(TextWriter Output)
         {
-            Output.WriteLine("UI TEMPLATE ELEMENTS INFO HERE");
+            Output.WriteLine("  <h2>Template Elements</h2>");
+            Output.WriteLine("  <p>This section lists all of the individual template elements that can be used to edit online metadata.</p>");
+
+            // Create the data table
+            DataTable tempTable = new DataTable();
+            tempTable.Columns.Add("Type");
+            tempTable.Columns.Add("Subtype");
+            tempTable.Columns.Add("Class");
+            foreach (TemplateElement element in UI_ApplicationCache_Gateway.Configuration.UI.TemplateElements.Elements)
+            {
+                DataRow newRow = tempTable.NewRow();
+                newRow[0] = element.Type;
+                newRow[1] = !String.IsNullOrEmpty(element.Subtype) ? element.Subtype : String.Empty;
+                if (!String.IsNullOrEmpty(element.Assembly))
+                    newRow[2] = element.Class + "( " + element.Assembly + " )";
+                else
+                    newRow[2] = element.Class;
+                tempTable.Rows.Add(newRow);
+            }
+
+            Output.WriteLine("  <table class=\"sbkSeav_UiTemplateElementsTable\">");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <th class=\"sbkSeav_UiTemplateElementsTable_TypeCol\">Type</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_UiTemplateElementsTable_SubtypeCol\">Subtype</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_UiTemplateElementsTable_ClassCol\">Class</th>");
+            Output.WriteLine("    </tr>");
+
+            // Create the data view
+            DataView sortMetadata = new DataView(tempTable);
+            sortMetadata.Sort = "Type ASC, Subtype ASC";
+
+            // Step through all the roots
+            foreach (DataRowView thisRow in sortMetadata)
+            {
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>" + thisRow[0] + "</td>");
+                Output.WriteLine("      <td>" + thisRow[1] + "</td>");
+                Output.WriteLine("      <td>" + thisRow[2] + "</td>");
+                Output.WriteLine("    </tr>");
+            }
+
+            Output.WriteLine("  </table>");
         }
 
         private void add_ui_viewers_info(TextWriter Output)
         {
-            Output.WriteLine("UI VIEWER INFO HERE");
+            Output.WriteLine("  <h2>HTML Writers and Viewers</h2>");
+            Output.WriteLine("  <p>This section includes all of the configuration for the HTML writers and subviewers used by those writers.</p>");
+
+            if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.Assembly))
+            {
+                Output.WriteLine("  <h3>Item Writer - " + UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.Class + " ( " + UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.Assembly + " )</h3>");
+            }
+            else
+            {
+                Output.WriteLine("  <h3>Item Writer - " + UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.Class.Replace("SobekCM.Library.ItemViewer.Viewers.", "") + "</h3>");
+            }
+
+            // Create the data table
+            DataTable tempTable = new DataTable();
+            tempTable.Columns.Add("Enabled");
+            tempTable.Columns.Add("ViewerType");
+            tempTable.Columns.Add("ViewerCode");
+            tempTable.Columns.Add("Class");
+            tempTable.Columns.Add("AlwaysAdd");
+            tempTable.Columns.Add("Extensions");
+            foreach (ItemSubViewerConfig viewer in UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.Viewers)
+            {
+                DataRow newRow = tempTable.NewRow();
+                if (viewer.Enabled)
+                    newRow[0] = "<img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" />";
+                else
+                    newRow[0] = "<img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" />";
+                newRow[1] = viewer.ViewerType;
+                newRow[2] = viewer.ViewerCode;
+                if (!String.IsNullOrEmpty(viewer.Assembly))
+                    newRow[3] = viewer.Class + " ( " + viewer.Assembly + " )";
+                else
+                    newRow[3] = viewer.Class.Replace("SobekCM.Library.ItemViewer.Viewers.", "");
+                if (viewer.AlwaysAdd)
+                    newRow[4] = "<img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" />";
+                else
+                    newRow[4] = "<img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" />";
+                StringBuilder extensionsBldr = new StringBuilder();
+                if ((viewer.FileExtensions != null) && ( viewer.FileExtensions.Length > 0 ))
+                {
+                    foreach (string thisExtension in viewer.FileExtensions)
+                    {
+                        if (extensionsBldr.Length > 0)
+                            extensionsBldr.Append(", " + thisExtension);
+                        else
+                            extensionsBldr.Append(thisExtension);
+                    }
+                }
+                else if ((viewer.PageExtensions != null) && ( viewer.PageExtensions.Length > 0 ))
+                {
+                    foreach (string thisExtension in viewer.PageExtensions)
+                    {
+                        if (extensionsBldr.Length > 0)
+                            extensionsBldr.Append(", " + thisExtension);
+                        else
+                            extensionsBldr.Append(thisExtension);
+                    }
+                }
+                newRow[5] = extensionsBldr.ToString();
+                tempTable.Rows.Add(newRow);
+            }
+
+            // Create the data view
+            DataView sortMetadata = new DataView(tempTable);
+            sortMetadata.Sort = "ViewerType ASC";
+
+            Output.WriteLine("  <table class=\"sbkSeav_UiViewersTable\">");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <th class=\"sbkSeav_UiViewersTable_EnabledCol\">Enabled?</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_UiViewersTable_TypeCol\">Viewer Type</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_UiViewersTable_CodeCol\">Viewer Code</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_UiViewersTable_ClassCol\">Class</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_UiViewersTable_AlwaysAddCol\">Always<br />Add?</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_UiViewersTable_ExtensionsCol\">Extensions</th>");
+            Output.WriteLine("    </tr>");
+
+            foreach (DataRowView thisRow in sortMetadata)
+            {
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>" + thisRow[0] + "</td>");
+                Output.WriteLine("      <td>" + thisRow[1] + "</td>");
+                Output.WriteLine("      <td>" + thisRow[2] + "</td>");
+                Output.WriteLine("      <td>" + thisRow[3] + "</td>");
+                Output.WriteLine("      <td>" + thisRow[4] + "</td>");
+                Output.WriteLine("      <td>" + thisRow[5] + "</td>");
+                Output.WriteLine("    </tr>");
+            }
+
+            Output.WriteLine("  </table>");
         }
 
         private void add_ui_toplevel_info(TextWriter Output)

@@ -41,6 +41,12 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
         [ProtoMember(4)]
         public string Assembly { get; set; }
 
+        /// <summary> Image for this template, if one exists </summary>
+        [DataMember(Name = "image", EmitDefaultValue = false)]
+        [XmlAttribute("image")]
+        [ProtoMember(5)]
+        public string Image { get; set; }
+
         /// <summary> Constructor for a new instance of the <see cref="TemplateElement"/> class </summary>
         public TemplateElement()
         {

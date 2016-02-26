@@ -30,6 +30,12 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
             set_defaults();
         }
 
+        /// <summary> Clears all the previously loaded information, such as the default values </summary>
+        public void Clear()
+        {
+            Elements.Clear();
+        }
+
         private void set_defaults()
         {
             Elements.Clear();
@@ -216,10 +222,49 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
                 Assembly = Assembly,
                 Class = Class
             };
+            Elements.Add(newElement);
             elementDictionary[key] = newElement;
 
             // Return the newly built element
             return newElement;
+
+        }
+
+        /// <summary> Add a new metadata template element configuration to this class </summary>
+        public void Add_Element(TemplateElement NewElement )
+        {
+            // Ensure the dictionary is built
+            if (elementDictionary == null)
+                elementDictionary = new Dictionary<string, TemplateElement>(StringComparer.OrdinalIgnoreCase);
+
+            // Does the element dictionary match the current elements list?
+            if (elementDictionary.Count != Elements.Count)
+            {
+                foreach (TemplateElement existing in Elements)
+                {
+                    if (!String.IsNullOrEmpty(existing.Subtype))
+                        elementDictionary[existing.Type + "|" + existing.Subtype] = existing;
+                    else
+                        elementDictionary[existing.Type] = existing;
+                }
+            }
+
+            // Create the dictionary match key
+            string key = NewElement.Type;
+            if (!String.IsNullOrEmpty(NewElement.Subtype))
+                key = NewElement.Type + "|" + NewElement.Subtype;
+
+            // Does this already exist?  If so, remove it
+            if (elementDictionary.ContainsKey(key))
+            {
+                // Already exists
+                if (Elements.Contains(elementDictionary[key]))
+                    Elements.Remove(elementDictionary[key]);
+            }
+
+            // New, so add it
+            Elements.Add(NewElement);
+            elementDictionary[key] = NewElement;
 
         }
     }

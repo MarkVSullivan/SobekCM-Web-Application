@@ -38,21 +38,28 @@ namespace SobekCM.Core.MicroservicesClient
         /// <summary> Protocol to use when connecting to this endpoint, via the URL </summary>
         public readonly Microservice_Endpoint_Protocol_Enum Protocol;
 
+        /// <summary> Lookup key associated with this endpoint </summary>
+        public readonly string Key;
+
         /// <summary> Constructor for a new instance of the MicroservicesClient_Endpoint class </summary>
         /// <param name="URL"> Complete URL for this microservices endpoint </param>
         /// <param name="Protocol"> Protocol to use when connecting to this endpoint, via the URL </param>
-        public MicroservicesClient_Endpoint(string URL, Microservice_Endpoint_Protocol_Enum Protocol)
+        /// <param name="Key"> Lookup key associated with this endpoint </param>
+        public MicroservicesClient_Endpoint(string URL, Microservice_Endpoint_Protocol_Enum Protocol, string Key)
         {
             this.URL = URL;
             this.Protocol = Protocol;
+            this.Key = Key;
         }
 
         /// <summary> Constructor for a new instance of the MicroservicesClient_Endpoint class </summary>
         /// <param name="URL"> Complete URL for this microservices endpoint </param>
         /// <param name="Protocol"> Protocol to use when connecting to this endpoint, via the URL </param>
-        public MicroservicesClient_Endpoint(string URL, string Protocol)
+        /// <param name="Key"> Lookup key associated with this endpoint </param>
+        public MicroservicesClient_Endpoint(string URL, string Protocol, string Key)
         {
             this.URL = URL;
+            this.Key = Key;
             switch (Protocol.ToLower())
             {
                 case "protobuf":

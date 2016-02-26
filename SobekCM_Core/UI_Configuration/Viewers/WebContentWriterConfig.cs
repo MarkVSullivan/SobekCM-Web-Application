@@ -34,5 +34,14 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         {
             Class = "SobekCM.Library.HTML.Web_Content_HtmlSubwriter";
         }
+
+
+        /// <summary> Clears all the previously loaded information, such as the default values </summary>
+        /// <remarks> This clears the assembly, and sets the class to the default web content html subwriter class. </remarks>
+        public void Clear()
+        {
+            Assembly = String.Empty;
+            Class = "SobekCM.Library.HTML.Web_Content_HtmlSubwriter";
+        }
     }
 }

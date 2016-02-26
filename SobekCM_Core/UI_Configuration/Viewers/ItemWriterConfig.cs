@@ -12,6 +12,9 @@ namespace SobekCM.Core.UI_Configuration.Viewers
     [XmlRoot("ItemWriterConfig")]
     public class ItemWriterConfig
     {
+        private Dictionary<string, ItemSubViewerConfig> viewersByCode;
+        private Dictionary<string, ItemSubViewerConfig> viewersByType;
+
         /// <summary> Fully qualified (including namespace) name of the main class used
         /// as the item HTML writer </summary>
         /// <remarks> By default, this would be 'SobekCM.Library.HTML.Item_HtmlSubwriter' </remarks>
@@ -42,6 +45,61 @@ namespace SobekCM.Core.UI_Configuration.Viewers
             Viewers = new List<ItemSubViewerConfig>();
 
             set_default();
+        }
+
+        /// <summary> Add a new item viewer for the writer to use </summary>
+        /// <param name="NewViewer"> New viewer to add </param>
+        /// <remarks> If a viewer config already exists for the viewer type or viewer code, this 
+        /// will replace the existing one </remarks>
+        public void Add_Viewer(ItemSubViewerConfig NewViewer)
+        {
+            // Ensure the dictionaries are built
+            if (viewersByCode == null) viewersByCode = new Dictionary<string, ItemSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
+            if (viewersByType == null) viewersByType = new Dictionary<string, ItemSubViewerConfig>(StringComparer.InvariantCultureIgnoreCase);
+
+            // Check for the count of items in the dictionaries
+            if (viewersByCode.Count != Viewers.Count)
+            {
+                viewersByCode.Clear();
+                foreach (ItemSubViewerConfig existingConfig in Viewers)
+                    viewersByCode[existingConfig.ViewerCode] = existingConfig;
+            }
+            if (viewersByType.Count != Viewers.Count)
+            {
+                viewersByType.Clear();
+                foreach (ItemSubViewerConfig existingConfig in Viewers)
+                    viewersByType[existingConfig.ViewerType] = existingConfig;
+            }
+
+            // Look for a match by code - remove any existing matches
+            if (viewersByCode.ContainsKey(NewViewer.ViewerCode))
+            {
+                if (Viewers.Contains(viewersByCode[NewViewer.ViewerCode]))
+                    Viewers.Remove(viewersByCode[NewViewer.ViewerCode]);
+            }
+
+            // Look for a match by type - remove any existing matches
+            if (viewersByType.ContainsKey(NewViewer.ViewerType))
+            {
+                if (Viewers.Contains(viewersByType[NewViewer.ViewerType]))
+                    Viewers.Remove(viewersByType[NewViewer.ViewerType]);
+            }
+
+            // Now, add the new viewer
+            viewersByCode[NewViewer.ViewerCode] = NewViewer;
+            viewersByType[NewViewer.ViewerType] = NewViewer;
+            Viewers.Add(NewViewer);
+
+        }
+
+        /// <summary> Clears all the previously loaded information, such as the default values </summary>
+        /// <remarks> This clears all the item viewer information, clears the assembly, and sets the class to the
+        /// default item html subwriter class. </remarks>
+        public void Clear()
+        {
+            Viewers.Clear();
+            Assembly = String.Empty;
+            Class = "SobekCM.Library.HTML.Item_HtmlSubwriter";
         }
 
         private void set_default()

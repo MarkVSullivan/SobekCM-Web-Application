@@ -41,5 +41,15 @@ namespace SobekCM.Core.UI_Configuration.Viewers
             Class = "SobekCM.Library.HTML.Aggregation_HtmlSubwriter";
             Viewers = new List<SingleSubViewerConfig>();
         }
+
+        /// <summary> Clears all the previously loaded information, such as the default values </summary>
+        /// <remarks> This clears all the item viewer information, clears the assembly, and sets the class to the
+        /// default aggregation html subwriter class. </remarks>
+        public void Clear()
+        {
+            Viewers.Clear();
+            Assembly = String.Empty;
+            Class = "SobekCM.Library.HTML.Aggregation_HtmlSubwriter";
+        }
     }
 }

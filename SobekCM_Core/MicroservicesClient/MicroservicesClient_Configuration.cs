@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System.Collections.Generic;
+using System.Linq;
 
 #endregion
 
@@ -33,7 +34,7 @@ namespace SobekCM.Core.MicroservicesClient
         /// <param name="Protocol"> Protocol to use when connecting to this endpoint, via the URL ( JSON or ProtoBuf ) </param>
         public void Add_Endpoint(string Key, string URL, Microservice_Endpoint_Protocol_Enum Protocol)
         {
-            Add_Endpoint(Key, new MicroservicesClient_Endpoint(URL, Protocol));
+            Add_Endpoint(Key, new MicroservicesClient_Endpoint(URL, Protocol, Key));
         }
 
         /// <summary> Add a new single endpoint to this configuration </summary>
@@ -42,7 +43,7 @@ namespace SobekCM.Core.MicroservicesClient
         /// <param name="Protocol"> Protocol to use when connecting to this endpoint, via the URL ( JSON or ProtoBuf ) </param>
         public void Add_Endpoint(string Key, string URL, string Protocol)
         {
-            Add_Endpoint(Key, new MicroservicesClient_Endpoint(URL, Protocol));
+            Add_Endpoint(Key, new MicroservicesClient_Endpoint(URL, Protocol, Key));
         }
 
         /// <summary> Add a new single endpoint to this configuration </summary>
@@ -69,6 +70,11 @@ namespace SobekCM.Core.MicroservicesClient
             {
                 thisEndpoint.URL = thisEndpoint.URL.Replace(Original, New);
             }
+        }
+
+        public List<MicroservicesClient_Endpoint> Endpoints
+        {
+            get { return endpoints.Values.ToList(); }
         }
     }
 }
