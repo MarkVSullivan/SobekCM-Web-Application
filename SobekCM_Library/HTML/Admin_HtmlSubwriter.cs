@@ -158,7 +158,10 @@ namespace SobekCM.Library.HTML
                 if ((RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Aggregation_Single) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Skins_Single) && (RequestSpecificValues.Current_Mode.Admin_Type != Admin_Type_Enum.Add_Collection_Wizard))
                 {
                     // Add the banner
-                    Add_Banner(Output, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ",""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
+                    if (!adminViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner))
+                    {
+                        Add_Banner(Output, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
+                    }
 
                     // Add the RequestSpecificValues.Current_User-specific main menu
                     MainMenus_Helper_HtmlSubWriter.Add_UserSpecific_Main_Menu(Output, RequestSpecificValues );
@@ -261,14 +264,17 @@ namespace SobekCM.Library.HTML
             // Add the banner now
             if (((RequestSpecificValues.Current_Mode.Logon_Required) || (adminViewer.Contains_Popup_Forms)) && ( !(adminViewer is Edit_Item_Metadata_MySobekViewer)))
             {
-                // Start to build the result to write, with the banner
-                StringBuilder header_builder = new StringBuilder();
-                StringWriter header_writer = new StringWriter(header_builder);
-                Add_Banner(header_writer, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
+                if (!adminViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner))
+                {
+                    // Start to build the result to write, with the banner
+                    StringBuilder header_builder = new StringBuilder();
+                    StringWriter header_writer = new StringWriter(header_builder);
+                    Add_Banner(header_writer, "sbkAhs_BannerDiv", WebPage_Title.Replace("{0} ", ""), RequestSpecificValues.Current_Mode, RequestSpecificValues.HTML_Skin, RequestSpecificValues.Top_Collection);
 
-                // Now, add this literal
-                LiteralControl header_literal = new LiteralControl(header_builder.ToString());
-				MainPlaceHolder.Controls.Add(header_literal);
+                    // Now, add this literal
+                    LiteralControl header_literal = new LiteralControl(header_builder.ToString());
+                    MainPlaceHolder.Controls.Add(header_literal);
+                }
             }
 
             // Add any controls needed

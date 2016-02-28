@@ -52,15 +52,16 @@ namespace SobekCM.Library.AdminViewer
         {
             get
             {
-                List<HtmlSubwriter_Behaviors_Enum> returnVal = new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Banner };
-
                 if (Contains_Popup_Forms)
                 {
-                    returnVal.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Header);
-                    returnVal.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Footer);
+                    return new List<HtmlSubwriter_Behaviors_Enum>
+                    {
+                        HtmlSubwriter_Behaviors_Enum.Suppress_Header, 
+                        HtmlSubwriter_Behaviors_Enum.Suppress_Footer
+                    };
                 }
 
-                return returnVal;
+                return emptybehaviors;
             }
         }
 
