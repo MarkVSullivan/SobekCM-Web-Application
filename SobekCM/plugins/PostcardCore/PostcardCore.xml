@@ -73,7 +73,7 @@
   <!-- module.  This adds a new dmdSec in the METS for the postcard-specific metadat                      -->
   <Metadata ClearAll="false">
     <METS_Sec_ReaderWriters>
-      <ReaderWriter ID="POSTCARDCORE" label="PostcardCore" namespace="PostcardCore" Code_Assembly="PostcardCore" class="PostcardCore_METS_dmdSec_ReaderWriter" isActive="true" section="dmdSec">
+      <ReaderWriter ID="POSTCARDCORE" label="PostcardCore" namespace="PostcardCore" assembly="PostcardCore" class="PostcardCore_METS_dmdSec_ReaderWriter" isActive="true" section="dmdSec">
         <Mappings>
           <Mapping mdtype="OTHER" othermdtype="POSTCARDCORE" label="PostcardCore" isDefault="true" />
         </Mappings>
@@ -87,7 +87,7 @@
           </dmdSec>
         </Package_Scope>
       </Profile>
-    </METS_Writing>
+    </METS_Writing> 
   </Metadata>
   
   <!-- This adds a brief mapping from the metadata module to the BriefItem object that will be used -->

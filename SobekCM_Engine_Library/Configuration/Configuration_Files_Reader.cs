@@ -729,21 +729,16 @@ namespace SobekCM.Engine_Library.Configuration
                                     }
                                 }
 
+                                BriefItemMapping_Set thisSet = Config.BriefItemMapping.GetMappingSet(id);
+                                if (thisSet == null)
+                                {
+                                    thisSet = new BriefItemMapping_Set {SetName = id};
+                                    Config.BriefItemMapping.Add_MappingSet(thisSet);
+                                }
+
                                 // Read the set here
                                 ReaderXml.MoveToElement();
-                                List<BriefItemMapping_Mapper> mapSet = read_mappingset_details(ReaderXml.ReadSubtree(), mappingObjDictionary);
-
-                                // Save in the dictionary of mapping sets
-                                if (id.Length > 0)
-                                {
-                                    BriefItemMapping_Set setObj = new BriefItemMapping_Set
-                                    {
-                                        SetName = id,
-                                        Mappings = mapSet
-                                    };
-
-                                    Config.BriefItemMapping.MappingSets.Add(setObj);
-                                }
+                                read_mappingset_details(ReaderXml.ReadSubtree(), thisSet, mappingObjDictionary);
                                 break;
                         }
                     }
@@ -762,11 +757,8 @@ namespace SobekCM.Engine_Library.Configuration
             return true;
         }
 
-        private static List<BriefItemMapping_Mapper> read_mappingset_details(XmlReader ReaderXml, Dictionary<string, IBriefItemMapper> MappingObjDictionary)
+        private static void read_mappingset_details(XmlReader ReaderXml, BriefItemMapping_Set ReturnValue, Dictionary<string, IBriefItemMapper> MappingObjDictionary)
         {
-            // Create the empty return value
-            List<BriefItemMapping_Mapper> returnValue = new List<BriefItemMapping_Mapper>();
-
             // Just step through the subtree of this
             while (ReaderXml.Read())
             {
@@ -807,7 +799,7 @@ namespace SobekCM.Engine_Library.Configuration
                                     MappingObject = mapper
                                 };
 
-                                returnValue.Add(mapperConfig);
+                                ReturnValue.Mappings.Add(mapperConfig);
                             }
 
 
@@ -815,8 +807,6 @@ namespace SobekCM.Engine_Library.Configuration
                     }
                 }
             }
-
-            return returnValue;
         }
 
         private static IBriefItemMapper get_or_create_mapper(string MapperAssembly, string MapperClass, Dictionary<string, IBriefItemMapper> MappingObjDictionary, out string ErrorMessage)
@@ -1759,6 +1749,13 @@ namespace SobekCM.Engine_Library.Configuration
 
             // Some collections to read into
             Dictionary<string, METS_Section_ReaderWriter_Config> readerWriters = new Dictionary<string, METS_Section_ReaderWriter_Config>();
+            if ((Config.Metadata.METS_Section_File_ReaderWriter_Configs != null) && (Config.Metadata.METS_Section_File_ReaderWriter_Configs.Count > 0))
+            {
+                foreach (METS_Section_ReaderWriter_Config currentConfig in Config.Metadata.METS_Section_File_ReaderWriter_Configs)
+                {
+                    readerWriters[currentConfig.ID] = currentConfig;
+                }
+            }
 
             try
             {
@@ -2073,7 +2070,18 @@ namespace SobekCM.Engine_Library.Configuration
                                 profile.Profile_Name = "Unnamed" + unnamed_profile_counter;
                                 unnamed_profile_counter++;
                             }
-                            Config.Add_METS_Writing_Profile(profile);
+                            // Does this profile already exist?
+                            METS_Writing_Profile existingProfile = Config.Get_Writing_Profile(profile.Profile_Name);
+                            if (existingProfile != null)
+                            {
+                                profile = existingProfile;
+
+                            }
+                            else
+                            {
+                                Config.Add_METS_Writing_Profile(profile); 
+                            }
+
                             break;
 
                         case "package_scope":
@@ -2540,12 +2548,12 @@ namespace SobekCM.Engine_Library.Configuration
                                 // Build the new template element info
                                 TemplateElement newElement = new TemplateElement();
                                 if (ReaderXml.MoveToAttribute("type"))
-                                    newElement.Type = ReaderXml.Value.Trim();
+                                    newElement.Type = ReaderXml.Value.Trim().ToLower();
                                 if (ReaderXml.MoveToAttribute("subtype"))
-                                    newElement.Subtype = ReaderXml.Value.Trim();
+                                    newElement.Subtype = ReaderXml.Value.Trim().ToLower();
                                 if (ReaderXml.MoveToAttribute("assembly"))
                                     newElement.Assembly = ReaderXml.Value.Trim();
-                                if (ReaderXml.MoveToAttribute("assembly"))
+                                if (ReaderXml.MoveToAttribute("class"))
                                     newElement.Class = ReaderXml.Value.Trim();
                                 if (ReaderXml.MoveToAttribute("image"))
                                     newElement.Image = ReaderXml.Value.Trim();

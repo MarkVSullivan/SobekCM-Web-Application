@@ -25,7 +25,7 @@ namespace SobekCM.Resource_Object.Configuration
     {
         private bool attemptedRead;
 
-        private readonly Dictionary<string, METS_Writing_Profile> metsWritingProfilesDictionary;
+        private Dictionary<string, METS_Writing_Profile> metsWritingProfilesDictionary;
         private METS_Writing_Profile defaultWritingProfile;
 
 
@@ -47,7 +47,7 @@ namespace SobekCM.Resource_Object.Configuration
             MetsWritingProfiles = new List<METS_Writing_Profile>();
 
             // Declare all the new collections in this configuration 
-            metsWritingProfilesDictionary = new Dictionary<string, METS_Writing_Profile>();
+            metsWritingProfilesDictionary = new Dictionary<string, METS_Writing_Profile>(StringComparer.OrdinalIgnoreCase);
 
             packageAmdSecDictionary = new Dictionary<Tuple<string, string>, iPackage_amdSec_ReaderWriter>();
             packageDmdSecDictionary = new Dictionary<Tuple<string, string>, iPackage_dmdSec_ReaderWriter>();
@@ -111,6 +111,29 @@ namespace SobekCM.Resource_Object.Configuration
                 }
                 return null;
             }
+        }
+
+        public METS_Writing_Profile Get_Writing_Profile(string ProfileName)
+        {
+            // Check the dictionary
+            if (metsWritingProfilesDictionary == null)
+                metsWritingProfilesDictionary = new Dictionary<string, METS_Writing_Profile>( StringComparer.OrdinalIgnoreCase);
+
+            // Are they the same count. i.e., is the dictionary good?
+            if (metsWritingProfilesDictionary.Count != MetsWritingProfiles.Count)
+            {
+                metsWritingProfilesDictionary.Clear();
+                foreach (METS_Writing_Profile profile in MetsWritingProfiles)
+                {
+                    metsWritingProfilesDictionary[profile.Profile_Name] = profile;
+                }
+            }
+
+            // Now, return the profile, if it exists
+            if (metsWritingProfilesDictionary.ContainsKey(ProfileName))
+                return metsWritingProfilesDictionary[ProfileName];
+            
+            return null;
         }
 
         /// <summary> Adds a new METS writing profile to this metadata configuration </summary>

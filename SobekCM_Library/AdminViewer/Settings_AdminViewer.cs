@@ -536,20 +536,6 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 			Output.WriteLine();
 
-			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
-			Output.WriteLine("  <div id=\"sbkSeav_Explanation\">");
-			Output.WriteLine("    <p>This form allows a user to view and edit all the main system-wide settings which allow the SobekCM web application and assorted related applications to function correctly within each custom architecture and each institution.</p>");
-			Output.WriteLine("    <p>For more information about these settings, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/settings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
-
-			// Add portal admin message
-			if (!RequestSpecificValues.Current_User.Is_System_Admin)
-			{
-				Output.WriteLine("    <p>Portal Admins have rights to see these settings. System Admins can change these settings.</p>");
-			}
-
-			Output.WriteLine("  </div>");
-			Output.WriteLine("</div>");
-			Output.WriteLine();
 
 		    Output.WriteLine("</div> <!-- ends PageContainer div momentarily for this extra wide table -->");
 
@@ -603,7 +589,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine(add_leftnav_li_link("File Readers/Writers", "metadata/filereaders", redirectUrl, currentViewerCode));
             Output.WriteLine(add_leftnav_li_link("METS Section Readers/Writers", "metadata/metsreaders", redirectUrl, currentViewerCode));
             Output.WriteLine(add_leftnav_li_link("METS Writing Profiles", "metadata/metsprofiles", redirectUrl, currentViewerCode));
-            Output.WriteLine(add_leftnav_li_link("Standard Metadata Modules", "metadata/modules", redirectUrl, currentViewerCode));
+        //    Output.WriteLine(add_leftnav_li_link("Standard Metadata Modules", "metadata/modules", redirectUrl, currentViewerCode));
             Output.WriteLine("        </ul>");
 
 			Output.WriteLine(add_leftnav_h2_link("Engine Configuration", "engine", redirectUrl, currentViewerCode));
@@ -753,7 +739,15 @@ namespace SobekCM.Library.AdminViewer
 
 		private void add_top_level_info(TextWriter Output)
 		{
-			Output.WriteLine("TOP LEVEL INFO HERE");
+            Output.WriteLine("    <p>This form allows a user to view and edit all the main system-wide settings which allow the SobekCM web application and assorted related applications to function correctly within each custom architecture and each institution.</p>");
+            Output.WriteLine("    <p>For more information about these settings, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/settings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+
+            // Add portal admin message
+            if (!RequestSpecificValues.Current_User.Is_System_Admin)
+            {
+                Output.WriteLine("    <p>Portal Admins have rights to see these settings. System Admins can change these settings.</p>");
+            }
+
 		}
 
 		#endregion
@@ -1431,11 +1425,12 @@ namespace SobekCM.Library.AdminViewer
             
             Output.WriteLine("  <h2>Builder Information</h2>");
 
-            Output.WriteLine("  <table style=\"padding-left:50px\">");
-            Output.WriteLine("    <tr><td>Last Run:</td><td>" + lastRun + "</td></tr>");
-            Output.WriteLine("    <tr><td>Last Result:</td><td>" + lastResult + "</td></tr>");
-            Output.WriteLine("    <tr><td>Builder Version:</td><td>" + builderVersion + "</td></tr>");
-            Output.WriteLine("    <tr><td>Builder Operation:</td><td>" + currentBuilderMode + "</td></tr>");
+            Output.WriteLine("  <table class=\"sbkSeav_BaseTableVert\" id=\"sbkSeav_BuilderTopInfo\">");
+
+            Output.WriteLine("    <tr><th>Last Run:</th><td>" + lastRun + "</td></tr>");
+            Output.WriteLine("    <tr><th>Last Result:</th><td>" + lastResult + "</td></tr>");
+            Output.WriteLine("    <tr><th>Builder Version:</th><td>" + builderVersion + "</td></tr>");
+            Output.WriteLine("    <tr><th>Builder Operation:</th><td>" + currentBuilderMode + "</td></tr>");
             Output.WriteLine("  </table>");
 
             // Look to see if any builder folders exist
@@ -1482,14 +1477,14 @@ namespace SobekCM.Library.AdminViewer
             {
                 // Add the basic folder information
                 Output.WriteLine("  <span class=\"sbkSeav_BuilderFolderName\">" + incomingFolder.Folder_Name + "</span>");
-                Output.WriteLine("  <table class=\"sbkSeav_BuilderFolderTable\">");
-                Output.WriteLine("    <tr><td>Network Folder:</td><td>" +  incomingFolder.Inbound_Folder + "</td></tr>");
-                Output.WriteLine("    <tr><td>Processing Folder:</td><td>" + incomingFolder.Processing_Folder + "</td></tr>");
-                Output.WriteLine("    <tr><td>Error Folder:</td><td>" + incomingFolder.Failures_Folder + "</td></tr>");
+                Output.WriteLine("  <table class=\"sbkSeav_BaseTableVert\" id=\"sbkSeav_BuilderFolderTable\">");
+                Output.WriteLine("    <tr><th>Network Folder:</th><td>" +  incomingFolder.Inbound_Folder + "</td></tr>");
+                Output.WriteLine("    <tr><th>Processing Folder:</th><td>" + incomingFolder.Processing_Folder + "</td></tr>");
+                Output.WriteLine("    <tr><th>Error Folder:</th><td>" + incomingFolder.Failures_Folder + "</td></tr>");
 
                 // If there are BibID restrictions, add them
                 if ( !String.IsNullOrEmpty(incomingFolder.BibID_Roots_Restrictions))
-                    Output.WriteLine("    <tr><td>BibID Restrictions:</td><td>" + incomingFolder.BibID_Roots_Restrictions + "</td></tr>");
+                    Output.WriteLine("    <tr><th>BibID Restrictions:</th><td>" + incomingFolder.BibID_Roots_Restrictions + "</td></tr>");
 
                 // Collect all the options and display them
                 StringBuilder builder = new StringBuilder();
@@ -1499,10 +1494,10 @@ namespace SobekCM.Library.AdminViewer
                 if (incomingFolder.Archive_All_Files) builder.Append("Archive all files ; ");
                 else if (incomingFolder.Archive_TIFFs) builder.Append("Archive TIFFs ; ");
                 if (incomingFolder.Perform_Checksum) builder.Append("Perform checksum ; ");
-                Output.WriteLine("    <tr><td>Options</td><td>" + builder.ToString() + "</td></tr>");
+                Output.WriteLine("    <tr><th>Options</th><td>" + builder.ToString() + "</td></tr>");
             
                 // Add the possible actions here
-                Output.WriteLine("    <tr><td>Actions:</td><td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "admin/builderfolders/" + incomingFolder.IncomingFolderID + "\">edit</a></td></tr>");
+                Output.WriteLine("    <tr><th>Actions:</th><td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "admin/builderfolders/" + incomingFolder.IncomingFolderID + "\">edit</a></td></tr>");
                 Output.WriteLine("  </table>");
             }
         }
@@ -1515,7 +1510,7 @@ namespace SobekCM.Library.AdminViewer
             if ((UI_ApplicationCache_Gateway.Settings.Builder.PreProcessModulesSettings != null) && (UI_ApplicationCache_Gateway.Settings.Builder.PreProcessModulesSettings.Count > 0))
             {
                 Output.WriteLine("  <h3>Pre-Process Modules</h3>");
-                Output.WriteLine("  <table class=\"sbkSeav_BuilderModulesTable sbkSeav_BaseTable\">");
+                Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_BuilderModulesTable\">");
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_ClassCol\">Class</th>");
                 Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_DescCol\">Description</th>");
@@ -1563,7 +1558,7 @@ namespace SobekCM.Library.AdminViewer
             if ((UI_ApplicationCache_Gateway.Settings.Builder.ItemProcessModulesSettings != null) && (UI_ApplicationCache_Gateway.Settings.Builder.ItemProcessModulesSettings.Count > 0))
             {
                 Output.WriteLine("  <h3>Item Processing Modules</h3>");
-                Output.WriteLine("  <table class=\"sbkSeav_BuilderModulesTable sbkSeav_BaseTable\">");
+                Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_BuilderModulesTable\">");
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_ClassCol\">Class</th>");
                 Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_DescCol\">Description</th>");
@@ -1617,7 +1612,7 @@ namespace SobekCM.Library.AdminViewer
             if ((UI_ApplicationCache_Gateway.Settings.Builder.ItemDeleteModulesSettings != null) && (UI_ApplicationCache_Gateway.Settings.Builder.ItemDeleteModulesSettings.Count > 0))
             {
                 Output.WriteLine("  <h3>Item Deletion Modules</h3>");
-                Output.WriteLine("  <table class=\"sbkSeav_BuilderModulesTable sbkSeav_BaseTable\">");
+                Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_BuilderModulesTable\">");
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_ClassCol\">Class</th>");
                 Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_DescCol\">Description</th>");
@@ -1668,11 +1663,11 @@ namespace SobekCM.Library.AdminViewer
             }
 
 
-            // Add all the PRE PROCESS MODULE settings
+            // Add all the POST PROCESS MODULE settings
             if ((UI_ApplicationCache_Gateway.Settings.Builder.PostProcessModulesSettings != null) && (UI_ApplicationCache_Gateway.Settings.Builder.PostProcessModulesSettings.Count > 0))
             {
                 Output.WriteLine("  <h3>Pre-Process Modules</h3>");
-                Output.WriteLine("  <table class=\"sbkSeav_BuilderModulesTable sbkSeav_BaseTable\">");
+                Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_BuilderModulesTable\">");
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_ClassCol\">Class</th>");
                 Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_DescCol\">Description</th>");
@@ -1804,14 +1799,14 @@ namespace SobekCM.Library.AdminViewer
             DataView sortMetadata = new DataView(tempTable);
             sortMetadata.Sort = columnSort + " ASC";
 
-            Output.WriteLine("  <table class=\"sbkSeav_MetadataFieldsTable sbkSeav_BaseTable\">");
+            Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_MetadataFieldsTable\">");
             Output.WriteLine("    <tr>");
-         //   Output.WriteLine("      <th class=\"sbkSeav_MetadataReadersTable_TypeCol\">ID</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetadataFieldsTable_NameCol\">Name</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetadataFieldsTable_WebCodeCol\">Web Code</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetadataFieldsTable_DisplayTermCol\">Display Term</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetadataFieldsTable_FacetTermCol\">Facet Term</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetadataFieldsTable_SolrFieldCol\">Solr Field</th>");
+         //   Output.WriteLine("      <th id=\"sbkSeav_MetadataReadersTable_TypeCol\">ID</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_MetadataFieldsTable_NameCol\">Name</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_MetadataFieldsTable_WebCodeCol\">Web Code</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_MetadataFieldsTable_DisplayTermCol\">Display Term</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_MetadataFieldsTable_FacetTermCol\">Facet Term</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_MetadataFieldsTable_SolrFieldCol\">Solr Field</th>");
             Output.WriteLine("    </tr>");
 
             // Step through all the basic metadata fields
@@ -1820,7 +1815,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("    <tr>");
             //    Output.WriteLine("      <td>" + metadata.ID + "</td>");
                 Output.WriteLine("      <td>" + thisRow[0] + "</td>");
-                Output.WriteLine("      <td>" + thisRow[1] + "</td>");
+                Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\">" + thisRow[1] + "</td>");
                 Output.WriteLine("      <td>" + thisRow[2] + "</td>");
                 Output.WriteLine("      <td>" + thisRow[3] + "</td>");
                 Output.WriteLine("      <td>" + thisRow[4] + "</td>");
@@ -1835,14 +1830,14 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <h2>Metadata File Reader and Writers</h2>");
             Output.WriteLine("  <p>This is the complete list of different metadata readers and writers available within the system.</p>");
 
-            Output.WriteLine("  <table class=\"sbkSeav_MetadataReadersTable sbkSeav_BaseTable\">");
+            Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_MetadataReadersTable\">");
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetadataReadersTable_TypeCol\">Type</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetadataReadersTable_LabelCol\">Label</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetadataReadersTable_CanReadCol\">Can Read</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetadataReadersTable_CanWriteCol\">Can Write</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetadataReadersTable_ClassCol\">Class</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetadataReadersTable_OptionsCol\">Options</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_MetadataReadersTable_TypeCol\">Type</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_MetadataReadersTable_LabelCol\">Label</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_MetadataReadersTable_CanReadCol\">Can Read</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_MetadataReadersTable_CanWriteCol\">Can Write</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_MetadataReadersTable_ClassCol\">Class</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_MetadataReadersTable_OptionsCol\">Options</th>");
             Output.WriteLine("    </tr>");
 
             // Step through all the basic metadata reader/writers
@@ -1883,15 +1878,15 @@ namespace SobekCM.Library.AdminViewer
 
                 // Add checkmark for can read
                 if (metadataReader.canRead)
-                    Output.WriteLine("      <td><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                    Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
                 else
-                    Output.WriteLine("      <td><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+                    Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
 
                 // Add checkmark for can write
                 if (metadataReader.canWrite)
-                    Output.WriteLine("      <td><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                    Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
                 else
-                    Output.WriteLine("      <td><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+                    Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
 
                 // Add the class, and optionally assembly
                 string class_name_full = metadataReader.Code_Class;
@@ -1912,7 +1907,7 @@ namespace SobekCM.Library.AdminViewer
                         Output.WriteLine("      <td>");
                         foreach (StringKeyValuePair optionPair in metadataReader.Options)
                         {
-                            Output.WriteLine("        " + optionPair.Key + " = " + optionPair.Value);
+                            Output.WriteLine("        " + optionPair.Key + " = " + optionPair.Value + "<br />");
                         }
 
                         Output.WriteLine("      </td>");
@@ -1932,106 +1927,188 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <h2>METS Sections Readers and Writers</h2>");
             Output.WriteLine("  <p>These metadata readers/writers read individual sections within the METS file that are found in either the bibliographic (dmdSec) or adminstrative (amdSec) portions of the METS file.</p>");
 
-            Output.WriteLine("  <table class=\"sbkSeav_MetsSectionsReadersTable sbkSeav_BaseTable\">");
+            Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_MetsWritersTable\">");
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetsSectionsReadersTable_TypeCol\">Type</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetsSectionsReadersTable_LabelCol\">Label</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetsSectionsReadersTable_CanReadCol\">Can Read</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetsSectionsReadersTable_CanWriteCol\">Can Write</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetsSectionsReadersTable_ClassCol\">Class</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetsSectionsReadersTable_OptionsCol\">Options</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_ActiveCol\">Is Active?</th>");
+      //      Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_TypeCol\">ID</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_BaseTypeCol\">Label</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_NameableCol\">Code Class</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_NameableCol\">METS Section</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_NameableCol\">Options</th>");
             Output.WriteLine("    </tr>");
 
             // Step through all the basic metadata reader/writers
-            foreach (Metadata_File_ReaderWriter_Config metadataReader in UI_ApplicationCache_Gateway.Configuration.Metadata.Metadata_File_ReaderWriter_Configs)
+            foreach (METS_Section_ReaderWriter_Config metadataReader in UI_ApplicationCache_Gateway.Configuration.Metadata.METS_Section_File_ReaderWriter_Configs)
             {
-                Output.WriteLine("    <tr>");
-                switch (metadataReader.MD_Type)
-                {
-                    case Metadata_File_Type_Enum.DC:
-                        Output.WriteLine("      <td>DC</td>");
-                        break;
-
-                    case Metadata_File_Type_Enum.EAD:
-                        Output.WriteLine("      <td>EAD</td>");
-                        break;
-
-                    case Metadata_File_Type_Enum.MARC21:
-                        Output.WriteLine("      <td>MARC21</td>");
-                        break;
-
-                    case Metadata_File_Type_Enum.MARCXML:
-                        Output.WriteLine("      <td>MarcXML</td>");
-                        break;
-
-                    case Metadata_File_Type_Enum.METS:
-                        Output.WriteLine("      <td>METS</td>");
-                        break;
-
-                    case Metadata_File_Type_Enum.MODS:
-                        Output.WriteLine("      <td>MODS</td>");
-                        break;
-
-                    default:
-                        Output.WriteLine("      <td>" + metadataReader.Other_MD_Type + "</td>");
-                        break;
-                }
-                Output.WriteLine("      <td>" + metadataReader.Label + "</td>");
-
-                // Add checkmark for can read
-                if (metadataReader.canRead)
-                    Output.WriteLine("      <td><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
-                else
-                    Output.WriteLine("      <td><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
-
-                // Add checkmark for can write
-                if (metadataReader.canWrite)
-                    Output.WriteLine("      <td><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
-                else
-                    Output.WriteLine("      <td><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
-
-                // Add the class, and optionally assembly
-                string class_name_full = metadataReader.Code_Class;
-                if (!String.IsNullOrEmpty(metadataReader.Code_Namespace))
-                    class_name_full = metadataReader.Code_Namespace + "." + metadataReader.Code_Class;
-                if (!String.IsNullOrEmpty(metadataReader.Code_Assembly))
-                    Output.WriteLine("      <td>" + class_name_full.Replace("SobekCM.Resource_Object.Metadata_File_ReaderWriters.", "") + " ( " + metadataReader.Code_Assembly + " )</td>");
-                else
-                    Output.WriteLine("      <td>" + class_name_full.Replace("SobekCM.Resource_Object.Metadata_File_ReaderWriters.", "") + "</td>");
-
-                // Add any options
-                if ((metadataReader.Options != null) && (metadataReader.Options.Count > 0))
-                {
-                    if (metadataReader.Options.Count == 1)
-                        Output.WriteLine("      <td>" + metadataReader.Options[0].Key + " = " + metadataReader.Options[0].Value + "</td>");
-                    else
-                    {
-                        Output.WriteLine("      <td>");
-                        foreach (StringKeyValuePair optionPair in metadataReader.Options)
-                        {
-                            Output.WriteLine("        " + optionPair.Key + " = " + optionPair.Value);
-                        }
-
-                        Output.WriteLine("      </td>");
-                    }
-                }
-                else
-                {
-                    Output.WriteLine("      <td></td>");
-                }
-                Output.WriteLine("    </tr>");
+                add_metadata_single_config(Output, metadataReader);
             }
             Output.WriteLine("  </table>");
         }
 
         private void add_metadata_mets_profiles_info(TextWriter Output)
         {
-            Output.WriteLine("METADATA METS PROFILE INFO HERE");
+            Output.WriteLine("  <h2>Metadata METS Writing Profiles</h2>");
+            Output.WriteLine("  <p>These are profiles that can be used to write the METS files for the SobeKCM system.</p>");
+
+            METS_Writing_Profile defaultProfile = UI_ApplicationCache_Gateway.Configuration.Metadata.Default_METS_Writing_Profile;
+            if (defaultProfile != null)
+            {
+                Output.WriteLine("  <h3>" + defaultProfile.Profile_Name + " ( <span class=\"sbkSeav_DefaultTextSpan\">default profile</span> )</h3>");
+
+                add_single_metadata_writing_profile(Output, defaultProfile);
+            }
+
+            // Now, loop through the rest of the profiles and display them (if they exist)
+            foreach (METS_Writing_Profile thisProfile in UI_ApplicationCache_Gateway.Configuration.Metadata.MetsWritingProfiles)
+            {
+                if (thisProfile != defaultProfile)
+                {
+                    Output.WriteLine("  <h3>" + thisProfile.Profile_Name + "</h3>");
+
+                    add_single_metadata_writing_profile(Output, thisProfile);
+                }
+            }
         }
+
+        private void add_single_metadata_writing_profile(TextWriter Output, METS_Writing_Profile Profile )
+	    {
+            if (!String.IsNullOrEmpty(Profile.Profile_Description))
+                Output.WriteLine("  <p>" + Profile.Profile_Description + "</p>");
+
+            Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_MetsProfileTable\">");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_ActiveCol\">Is Active?</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_LabelCol\">Label</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_Codeol\">Code Class</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_SectionCol\">METS Section</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_OptionsCol\">Options</th>");
+            Output.WriteLine("    </tr>");
+
+
+            if ((Profile.Package_Level_AmdSec_Writer_Configs.Count > 0) || (Profile.Package_Level_DmdSec_Writer_Configs.Count > 0))
+            {
+                // Add a row for this
+                Output.WriteLine("    <tr class=\"sbkSeav_MetsProfileTable_LevelRow\">");
+                Output.WriteLine("      <td colspan=\"5\">Package Level Writers</td>");
+                Output.WriteLine("    </tr>");
+
+                foreach (METS_Section_ReaderWriter_Config config in Profile.Package_Level_DmdSec_Writer_Configs)
+                {
+                    add_metadata_single_config(Output, config);
+                }
+
+                foreach (METS_Section_ReaderWriter_Config config in Profile.Package_Level_AmdSec_Writer_Configs)
+                {
+                    add_metadata_single_config(Output, config);
+                }
+            }
+
+            if ((Profile.Division_Level_DmdSec_Writer_Configs.Count > 0) || (Profile.Division_Level_AmdSec_Writer_Configs.Count > 0))
+            {
+                // Add a row for this
+                Output.WriteLine("    <tr class=\"sbkSeav_MetsProfileTable_LevelRow\">");
+                Output.WriteLine("      <td colspan=\"5\">Division Level Writers</td>");
+                Output.WriteLine("    </tr>");
+
+                foreach (METS_Section_ReaderWriter_Config config in Profile.Division_Level_DmdSec_Writer_Configs)
+                {
+                    add_metadata_single_config(Output, config);
+                }
+
+                foreach (METS_Section_ReaderWriter_Config config in Profile.Division_Level_AmdSec_Writer_Configs)
+                {
+                    add_metadata_single_config(Output, config);
+                }
+            }
+
+
+            if ((Profile.File_Level_DmdSec_Writer_Configs.Count > 0) || (Profile.File_Level_AmdSec_Writer_Configs.Count > 0))
+            {
+                // Add a row for this
+                Output.WriteLine("    <tr class=\"sbkSeav_MetsProfileTable_LevelRow\">");
+                Output.WriteLine("      <td colspan=\"5\">File Level Writers</td>");
+                Output.WriteLine("    </tr>");
+
+                foreach (METS_Section_ReaderWriter_Config config in Profile.File_Level_DmdSec_Writer_Configs)
+                {
+                    add_metadata_single_config(Output, config);
+                }
+
+                foreach (METS_Section_ReaderWriter_Config config in Profile.File_Level_AmdSec_Writer_Configs)
+                {
+                    add_metadata_single_config(Output, config);
+                }
+            }
+            Output.WriteLine("  </table>");
+	    }
+
+	    private void add_metadata_single_config(TextWriter Output, METS_Section_ReaderWriter_Config config)
+	    {
+            Output.WriteLine("    <tr>");
+
+            if (config.isActive)
+                Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+            else
+                Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+
+       //     Output.WriteLine("      <td>" + config.ID + "</td>");
+            Output.WriteLine("      <td>" + config.Label + "</td>");
+            if (!String.IsNullOrEmpty(config.Code_Assembly))
+                Output.WriteLine("      <td>" + config.Code_Namespace + "." + config.Code_Class + " ( " + config.Code_Assembly + " )</td>");
+            else
+                Output.WriteLine("      <td>" + (config.Code_Namespace + "." + config.Code_Class).Replace("SobekCM.Resource_Object.METS_Sec_ReaderWriters.","") + "</td>");
+
+            switch (config.METS_Section)
+            {
+                case METS_Section_Type_Enum.DmdSec:
+                    Output.WriteLine("      <td>dmdSec</td>");
+                    break;
+                case METS_Section_Type_Enum.AmdSec:
+                    switch (config.AmdSecType)
+                    {
+                        case METS_amdSec_Type_Enum.DigiProvMD:
+                            Output.WriteLine("      <td>amdSec ( digiProvMD )</td>");
+                            break;
+
+                        case METS_amdSec_Type_Enum.RightsMD:
+                            Output.WriteLine("      <td>amdSec ( rightsMD )</td>");
+                            break;
+
+                        case METS_amdSec_Type_Enum.SourceMD:
+                            Output.WriteLine("      <td>amdSec ( sourceMD )</td>");
+                            break;
+
+                        case METS_amdSec_Type_Enum.TechMD:
+                            Output.WriteLine("      <td>amdSec ( techMD )</td>");
+                            break;
+
+                        default:
+                            Output.WriteLine("      <td>amdSec </td>");
+                            break;
+                    }
+                    break;
+            }
+
+
+            if (config.Options == null)
+                Output.WriteLine("      <td></td>");
+            else
+            {
+                Output.WriteLine("      <td>");
+                foreach (StringKeyValuePair thisOption in config.Options)
+                {
+                    Output.WriteLine("        " + thisOption.Key + " = " + thisOption.Value + "<br />");
+                }
+                Output.WriteLine("      </td>");
+            }
+
+            Output.WriteLine("    </tr>");
+	    }
 
         private void add_metadata_modules_info(TextWriter Output)
         {
-            Output.WriteLine("METADATA MODULES TO INCLUDE INFO HERE");
+            Output.WriteLine("<h2>Metadata Modules</h2>");
+            Output.WriteLine("<p>These are extra metadata modules that are selected to always be added to digital resource when built.  Usually modules are added by reader/writers, but these could be forced to be added by default whenever a new package is added.</p>");
         }
 
         private void add_metadata_toplevel_info(TextWriter Output)
@@ -2086,13 +2163,13 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <h2>Authentication Configuration</h2>");
 
             Output.WriteLine("  <h3>Authentication Modes</h3>");
-            Output.WriteLine("  <table class=\"sbkSeav_AuthModesTable\">");
+            Output.WriteLine("  <table class=\"sbkSeav_BaseTableVert\" id=\"sbkSeav_AuthModesTable\">");
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>SobekCM Standard Authentication</td>");
+            Output.WriteLine("      <th>SobekCM Standard Authentication:</th>");
             Output.WriteLine("      <td>ENABLED</td>");
             Output.WriteLine("    </tr>");
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>Shibboleth Authentication</td>");
+            Output.WriteLine("      <th>Shibboleth Authentication:</th>");
 
 	        bool shib_enabled = ((UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth != null) && (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Enabled));
             if ( shib_enabled )
@@ -2107,7 +2184,7 @@ namespace SobekCM.Library.AdminViewer
 	            Shibboleth_Configuration shibConfig = UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth;
                 Output.WriteLine("  <h3>Shibboleth Details</h3>");
 	            Output.WriteLine("  <p>Below are some of the top-level values related to the Shibboleth configuration, including the URL and display label.  The <i>User Identity Attribute</i> is the Shibboleth attribute passed back after the user is authenticated which uniquely identifies the user for the purposes of this system.</p>");
-                Output.WriteLine("  <table class=\"sbkSeav_ShibDetailsTable\">");
+                Output.WriteLine("  <table class=\"sbkSeav_BaseTableVert\" id=\"sbkSeav_ShibDetailsTable\">");
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <th>Display Label</th>");
                 Output.WriteLine("      <td>" + shibConfig.Label + "</td>");
@@ -2130,7 +2207,7 @@ namespace SobekCM.Library.AdminViewer
 	            if ((shibConfig.AttributeMapping != null) && (shibConfig.AttributeMapping.Count > 0))
 	            {
                     Output.WriteLine("  <p>When a user first signs on via Shibboleth, the following attributes returned from Shibboleth are mapped to certain SobekCM user attributes.</p>");
-                    Output.WriteLine("  <table class=\"sbkSeav_ShibDetails2Table sbkSeav_BaseTable\">");
+                    Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_ShibDetails2Table\">");
                     Output.WriteLine("    <tr>");
                     Output.WriteLine("      <th>Shibboleth Attribute</th>");
                     Output.WriteLine("      <th>SobekCM User Attribute</th>");
@@ -2151,7 +2228,7 @@ namespace SobekCM.Library.AdminViewer
                 if ((shibConfig.Constants != null) && (shibConfig.Constants.Count > 0))
                 {
                     Output.WriteLine("  <p>Constants can also be applied to the SobekCM user record when a user first signs on via Shibboleth.  This allows certain permissions, templates, and default metadata to be applied to these users automatically. </p>");
-                    Output.WriteLine("  <table class=\"sbkSeav_ShibDetails3Table sbkSeav_BaseTable\">");
+                    Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_ShibDetails3Table\">");
                     Output.WriteLine("    <tr>");
                     Output.WriteLine("      <th>SobekCM User Attribute</th>");
                     Output.WriteLine("      <th>Default Value</th>");
@@ -2172,7 +2249,7 @@ namespace SobekCM.Library.AdminViewer
                 if ((shibConfig.CanSubmitIndicators != null) && (shibConfig.CanSubmitIndicators.Count > 0))
                 {
                     Output.WriteLine("  <p>Indicators can be used to determine if users should automatically get the permission to submit, based on the Shibboleth authentication attributes.  So, for example, if a user type of 'F' indicates this user is faculty and should automatically be allowed to submit,  this could be set in this portion of the configuration.</p>");
-                    Output.WriteLine("  <table class=\"sbkSeav_ShibDetails3Table sbkSeav_BaseTable\">");
+                    Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_ShibDetails4Table\">");
                     Output.WriteLine("    <tr>");
                     Output.WriteLine("      <th>Shibboleth Attribute</th>");
                     Output.WriteLine("      <th>Indicative Value</th>");
@@ -2199,19 +2276,19 @@ namespace SobekCM.Library.AdminViewer
             BriefItemMapping_Set defaultSet = UI_ApplicationCache_Gateway.Configuration.BriefItemMapping.GetMappingSet(defaultSetName);
             if (defaultSet != null)
             {
-                Output.WriteLine("  <h3>" + defaultSetName + " (DEFAULT SET)</h3>");
-                Output.WriteLine("  <table class=\"sbkSeav_BriefItemMappingTable sbkSeav_BaseTable\">");
+                Output.WriteLine("  <h3>" + defaultSetName + " ( <span class=\"sbkSeav_DefaultTextSpan\">default set</span> )</h3>");
+                Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_BriefItemMappingTable\">");
                 Output.WriteLine("    <tr>");
-                Output.WriteLine("      <th class=\"sbkSeav_BriefItemMappingTable_Enabled\">Enabled</th>");
+                Output.WriteLine("      <th class=\"sbkSeav_BriefItemMappingTable_EnabledCol\">Enabled</th>");
                 Output.WriteLine("      <th class=\"sbkSeav_BriefItemMappingTable_ClassCol\">Class</th>");
                 Output.WriteLine("    </tr>");
                 foreach (BriefItemMapping_Mapper thisModule in defaultSet.Mappings)
                 {
                     Output.WriteLine("    <tr>");
-                    if ( thisModule.Enabled )
-                        Output.WriteLine("      <td>enabled</td>");
+                    if (thisModule.Enabled)
+                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
                     else
-                        Output.WriteLine("      <td>&nbsp;</td>");
+                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
 
 
                     if (!String.IsNullOrEmpty(thisModule.Assembly))
@@ -2230,7 +2307,7 @@ namespace SobekCM.Library.AdminViewer
                 if (String.Compare(thisSet.SetName, defaultSetName, StringComparison.OrdinalIgnoreCase) != 0)
                 {
                     Output.WriteLine("  <h3>" + thisSet.SetName + "</h3>");
-                    Output.WriteLine("  <table class=\"sbkSeav_BriefItemMappingTable sbkSeav_BaseTable\">");
+                    Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_BriefItemMappingTable\">");
                     Output.WriteLine("    <tr>");
                     Output.WriteLine("      <th class=\"sbkSeav_BriefItemMappingTable_EnabledCol\">Enabled</th>");
                     Output.WriteLine("      <th class=\"sbkSeav_BriefItemMappingTable_ClassCol\">Class</th>");
@@ -2239,9 +2316,9 @@ namespace SobekCM.Library.AdminViewer
                     {
                         Output.WriteLine("    <tr>");
                         if (thisModule.Enabled)
-                            Output.WriteLine("      <td><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
                         else
-                            Output.WriteLine("      <td><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
 
 
                         if (!String.IsNullOrEmpty(thisModule.Assembly))
@@ -2261,13 +2338,13 @@ namespace SobekCM.Library.AdminViewer
 	        Output.WriteLine("  <h2>Contact Us Form Configuration</h2>");
 
 
-            Output.WriteLine("  <table class=\"sbkSeav_ContactFormTable sbkSeav_BaseTable\">");
+            Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_ContactFormTable\">");
 	        Output.WriteLine("    <tr>");
-	        Output.WriteLine("      <th class=\"sbkSeav_ContactForm_NameCol\">Name</th>");
-	        Output.WriteLine("      <th class=\"sbkSeav_ContactForm_PromptCol\">Prompt</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_ContactForm_TypeCol\">Type</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_ContactForm_ChoicesCol\">Choices</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_ContactForm_NotesCol\">Notes</th>");
+	        Output.WriteLine("      <th id=\"sbkSeav_ContactForm_NameCol\">Name</th>");
+	        Output.WriteLine("      <th id=\"sbkSeav_ContactForm_PromptCol\">Prompt</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_ContactForm_TypeCol\">Type</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_ContactForm_ChoicesCol\">Choices</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_ContactForm_NotesCol\">Notes</th>");
             Output.WriteLine("    </tr>");
 	        foreach (ContactForm_Configuration_Element thisElement in UI_ApplicationCache_Gateway.Configuration.ContactForm.FormElements)
 	        {
@@ -2325,14 +2402,14 @@ namespace SobekCM.Library.AdminViewer
 
 
             Output.WriteLine("  <h3>Engine Endpoints</h3>");
-            Output.WriteLine("  <table class=\"sbkSeav_EngineServerEndpointsTable sbkSeav_BaseTable\">");
+            Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_EngineServerEndpointsTable\">");
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <th class=\"sbkSeav_EngineServerEndpointsTable_UrlCol\">URL</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_EngineServerEndpointsTable_VerbCol\">Verb</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_EngineServerEndpointsTable_ProtocolCol\">Protocol</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_EngineServerEndpointsTable_MethodCol\">Method</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_EngineServerEndpointsTable_ComponentCol\">Component ID</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_EngineServerEndpointsTable_RestrictionsCol\">IP Restrictions</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_EngineServerEndpointsTable_UrlCol\">URL</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_EngineServerEndpointsTable_VerbCol\">Verb</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_EngineServerEndpointsTable_ProtocolCol\">Protocol</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_EngineServerEndpointsTable_MethodCol\">Method</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_EngineServerEndpointsTable_ComponentCol\">Component</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_EngineServerEndpointsTable_RestrictionsCol\">Restrictions</th>");
             Output.WriteLine("    </tr>");
 
             // Step through all the roots
@@ -2345,14 +2422,14 @@ namespace SobekCM.Library.AdminViewer
 
             // Add the engine components lookup table
             Output.WriteLine("  <h3>Engine Components</h3>");
-            Output.WriteLine("  <table class=\"sbkSeav_EngineServerComponentsTable sbkSeav_BaseTable\">");
+            Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_EngineServerComponentsTable\">");
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <th class=\"sbkSeav_EngineServerComponentsTable_IdCol\">Component ID</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_EngineServerComponentsTable_ClassCol\">Class</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_EngineServerComponentsTable_IdCol\">Component ID</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_EngineServerComponentsTable_ClassCol\">Class</th>");
             Output.WriteLine("    </tr>");
             foreach (Engine_Component thisComponent in UI_ApplicationCache_Gateway.Configuration.Engine.Components)
             {
-                Output.WriteLine("    <tr>");
+                Output.WriteLine("    <tr id=\"CO" + thisComponent.ID + "\">");
                 Output.WriteLine("      <td>" + thisComponent.ID + "</td>");
 
                 if (!String.IsNullOrEmpty(thisComponent.Assembly))
@@ -2366,12 +2443,12 @@ namespace SobekCM.Library.AdminViewer
 
             // Add the engine restrictions table
             Output.WriteLine("  <h3>Engine IP Restrictions</h3>");
-            Output.WriteLine("  <table class=\"sbkSeav_EngineServerRestrictionsTable sbkSeav_BaseTable\">");
+            Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_EngineServerRestrictionsTable\">");
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <th class=\"sbkSeav_ContactForm_IdCol\">Range ID</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_ContactForm_DescCol\">Range Description</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_ContactForm_IpCol\">IP Range</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_ContactForm_IpLabelCol\">IP Range Label</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_ContactForm_IdCol\">Range ID</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_ContactForm_DescCol\">Range Description</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_ContactForm_IpCol\">IP Range</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_ContactForm_IpLabelCol\">IP Range Label</th>");
             Output.WriteLine("    </tr>");
             foreach (Engine_RestrictionRange thisRestrictionRange in UI_ApplicationCache_Gateway.Configuration.Engine.RestrictionRanges)
             {
@@ -2380,7 +2457,7 @@ namespace SobekCM.Library.AdminViewer
                 if (thisRestrictionRange.IpRanges != null)
                     ip_count = thisRestrictionRange.IpRanges.Count;
 
-                Output.WriteLine("    <tr>");
+                Output.WriteLine("    <tr id=\"RR" + thisRestrictionRange.ID + "\">");
                 Output.WriteLine("      <td rowspan=\"" + Math.Max(1, ip_count) + "\">" + thisRestrictionRange.ID + "</td>");
                 Output.WriteLine("      <td rowspan=\"" + Math.Max(1, ip_count) + "\">" + thisRestrictionRange.Label + "</td>");
 
@@ -2520,28 +2597,37 @@ namespace SobekCM.Library.AdminViewer
 
 
             Output.WriteLine("      <td>" + mapping.Method + "</td>");
-            Output.WriteLine("      <td>" + mapping.ComponentId + "</td>");
-            Output.WriteLine("      <td>" + mapping.RestrictionRangeSetId + "</td>");
+            Output.WriteLine("      <td><a href=\"#CO" + mapping.ComponentId + "\">" + mapping.ComponentId + "</a></td>");
+            Output.WriteLine("      <td><a href=\"#RR" + mapping.RestrictionRangeSetId + "\">" + mapping.RestrictionRangeSetId + "</a></td>");
         }
 
         private void add_engine_oai_pmh_info(TextWriter Output)
         {
             OAI_PMH_Configuration config = UI_ApplicationCache_Gateway.Configuration.OAI_PMH;
 
+            // Determine some global settings
+            string oai_resource_identifier_base = config.Identifier_Base;
+            string oai_repository_name = config.Name;
+            string oai_repository_identifier = config.Identifier;
+
+            if (String.IsNullOrEmpty(oai_resource_identifier_base)) oai_resource_identifier_base = "oai:" + UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation + ":";
+            if (String.IsNullOrEmpty(oai_repository_name)) oai_repository_name = UI_ApplicationCache_Gateway.Settings.System.System_Name;
+            if (String.IsNullOrEmpty(oai_repository_identifier)) oai_repository_identifier = UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
+
             Output.WriteLine("  <h2>OAI-PMH Configuration</h2>");
 
             Output.WriteLine("  <h3>Basic Repository Information</h3>");
-            Output.WriteLine("  <table class=\"sbkSeav_OaiPmhBasicTable sbkSeav_BaseTable\">");
+            Output.WriteLine("  <table class=\"sbkSeav_BaseTableVert\" id=\"sbkSeav_OaiPmhBasicTable\">");
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <th class=\"sbkSeav_OaiPmhBasicTable_FirstCol\">OAI-PMH Enabled?</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_OaiPmhBasicTable_FirstCol\">OAI-PMH Enabled?</th>");
             if (config.Enabled)
-                Output.WriteLine("      <td class=\"sbkSeav_OaiPmhBasicTable_SecondCol\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                Output.WriteLine("      <td class=\"sbkSeav_OaiPmhBasicTable_SecondCol\">ENABLED</td>");
             else
-                Output.WriteLine("      <td class=\"sbkSeav_OaiPmhBasicTable_SecondCol\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+                Output.WriteLine("      <td class=\"sbkSeav_OaiPmhBasicTable_SecondCol\">NOT ENABLED</td>");
             Output.WriteLine("    </tr>");
 
-            Output.WriteLine("    <tr><th>Repository Name:</th><td>" + config.Name + "</td></tr>");
-            Output.WriteLine("    <tr><th>Repository Identifier:</th><td>" + config.Identifier + "</td></tr>");
+            Output.WriteLine("    <tr><th>Repository Name:</th><td>" + oai_repository_name + "</td></tr>");
+            Output.WriteLine("    <tr><th>Repository Identifier:</th><td>" + oai_repository_identifier + "</td></tr>");
 
             if ((config.Descriptions != null) && (config.Descriptions.Count > 0))
             {
@@ -2574,7 +2660,7 @@ namespace SobekCM.Library.AdminViewer
                 }
                 Output.WriteLine("    </tr>");
             }
-            Output.WriteLine("    <tr><th>Resource Identifier:</th><td>" + config.Identifier_Base + "</td></tr>");
+            Output.WriteLine("    <tr><th>Resource Identifier:</th><td>" + oai_resource_identifier_base + "</td></tr>");
             Output.WriteLine("  </table>");
 
                 Output.WriteLine("  <h3>Metadata Prefixes</h3>");
@@ -2584,13 +2670,12 @@ namespace SobekCM.Library.AdminViewer
                 // Add any constants 
             if ((config.Metadata_Prefixes != null) && (config.Metadata_Prefixes.Count > 0))
             {
-                Output.WriteLine("  <table class=\"sbkSeav_OaiPmhPrefixesTable sbkSeav_BaseTable\">");
+                Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_OaiPmhPrefixesTable\">");
                 Output.WriteLine("    <tr>");
-                Output.WriteLine("      <th class=\"sbkSeav_OaiPmhPrefixesTable_EnabledCol\">Enabled</th>");
-                Output.WriteLine("      <th class=\"sbkSeav_OaiPmhPrefixesTable_PrefixCol\">Prefix</th>");
-                Output.WriteLine("      <th class=\"sbkSeav_OaiPmhPrefixesTable_SchemaCol\">Schema</th>");
-                Output.WriteLine("      <th class=\"sbkSeav_OaiPmhPrefixesTable_NamespaceCol\">Metadata Namespace</th>");
-                Output.WriteLine("      <th class=\"sbkSeav_OaiPmhPrefixesTable_ClassCol\">Class</th>");
+                Output.WriteLine("      <th id=\"sbkSeav_OaiPmhPrefixesTable_EnabledCol\">Enabled</th>");
+                Output.WriteLine("      <th id=\"sbkSeav_OaiPmhPrefixesTable_PrefixCol\">Prefix</th>");
+                Output.WriteLine("      <th id=\"sbkSeav_OaiPmhPrefixesTable_SchemaCol\">Metadata Namespace / Schema</th>");
+                Output.WriteLine("      <th id=\"sbkSeav_OaiPmhPrefixesTable_ClassCol\">Class</th>");
                 Output.WriteLine("    </tr>");
 
                 foreach (OAI_PMH_Metadata_Format thisMapping in config.Metadata_Prefixes)
@@ -2599,18 +2684,15 @@ namespace SobekCM.Library.AdminViewer
 
                     // Enabled flag
                     if (thisMapping.Enabled)
-                        Output.WriteLine("      <td><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
                     else
-                        Output.WriteLine("      <td><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
 
                     // Prefix
                     Output.WriteLine("      <td>" + thisMapping.Prefix + "</td>");
 
-                    // Schema
-                    Output.WriteLine("      <td>" + thisMapping.Schema + "</td>");
-
-                    // Namespace
-                    Output.WriteLine("      <td>" + thisMapping.MetadataNamespace + "</td>");
+                    // Namespace / Schema
+                    Output.WriteLine("      <td>" + thisMapping.MetadataNamespace + "<br />" + thisMapping.Schema + "</td>");
 
                     // Add the class, and optionally assembly
                     string class_name_full = thisMapping.Class;
@@ -2635,7 +2717,97 @@ namespace SobekCM.Library.AdminViewer
 
         private void add_engine_qc_tool_info(TextWriter Output)
 	    {
-	        Output.WriteLine("ENGINE QC TOOL INFO HERE");
+            Output.WriteLine("  <h2>Quality Control Configuration</h2>");
+            Output.WriteLine("  <p>This configuration controls the divisions which are available for different users when creating the structural metadata online through the quality control tool.</p>");
+
+            string defaultSetName = UI_ApplicationCache_Gateway.Configuration.QualityControlTool.DefaultProfile;
+
+            QualityControl_Profile defaultProfile = UI_ApplicationCache_Gateway.Configuration.QualityControlTool.Get_Default_Profile();
+            if (defaultProfile != null)
+            {
+                Output.WriteLine("  <h3>" + defaultSetName + " ( <span class=\"sbkSeav_DefaultTextSpan\">default profile</span> )</h3>");
+
+                if ( !String.IsNullOrEmpty(defaultProfile.Profile_Description))
+                    Output.WriteLine("  <p>" + defaultProfile.Profile_Description + "</p>");
+
+
+                Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_QcToolProfileTable\">");
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <th class=\"sbkSeav_QcToolProfileTable_TypeCol\">Division Type</th>");
+                Output.WriteLine("      <th class=\"sbkSeav_QcToolProfileTable_BaseTypeCol\">Base Division Type</th>");
+                Output.WriteLine("      <th class=\"sbkSeav_QcToolProfileTable_ActiveCol\">Is Active?</th>");
+                Output.WriteLine("      <th class=\"sbkSeav_QcToolProfileTable_NameableCol\">Is Nameable?</th>");
+                Output.WriteLine("    </tr>");
+                foreach (QualityControl_Division_Config thisDivision in defaultProfile.Division_Types)
+                {
+                    Output.WriteLine("    <tr>");
+
+                    Output.WriteLine("      <td>" + thisDivision.TypeName + "</td>");
+
+                    if ( !String.IsNullOrEmpty(thisDivision.BaseTypeName ))
+                        Output.WriteLine("      <td>" + thisDivision.TypeName + "</td>");
+                    else
+                        Output.WriteLine("      <td></td>");
+
+                    if (thisDivision.isActive)
+                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                    else
+                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+
+                    if (thisDivision.isNameable)
+                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                    else
+                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+
+                    Output.WriteLine("    </tr>");
+                }
+                Output.WriteLine("  </table>");
+            }
+
+            // Now, loop through the rest of the profiles and display them (if they exist)
+            foreach (QualityControl_Profile thisProfile in UI_ApplicationCache_Gateway.Configuration.QualityControlTool.Profiles)
+            {
+                if ( thisProfile != defaultProfile )
+                {
+                    Output.WriteLine("  <h3>" + thisProfile.Profile_Name + "</h3>");
+
+                    if (!String.IsNullOrEmpty(thisProfile.Profile_Description))
+                        Output.WriteLine("  <p>" + thisProfile.Profile_Description + "</p>");
+
+
+                    Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_QcToolProfileTable\">");
+                    Output.WriteLine("    <tr>");
+                    Output.WriteLine("      <th class=\"sbkSeav_QcToolProfileTable_TypeCol\">Division Type</th>");
+                    Output.WriteLine("      <th class=\"sbkSeav_QcToolProfileTable_BaseTypeCol\">Base Division Type</th>");
+                    Output.WriteLine("      <th class=\"sbkSeav_QcToolProfileTable_ActiveCol\">Is Active?</th>");
+                    Output.WriteLine("      <th class=\"sbkSeav_QcToolProfileTable_NameableCol\">Is Nameable?</th>");
+                    Output.WriteLine("    </tr>");
+                    foreach (QualityControl_Division_Config thisDivision in thisProfile.Division_Types)
+                    {
+                        Output.WriteLine("    <tr>");
+
+                        Output.WriteLine("      <td>" + thisDivision.TypeName + "</td>");
+
+                        if (!String.IsNullOrEmpty(thisDivision.BaseTypeName))
+                            Output.WriteLine("      <td>" + thisDivision.TypeName + "</td>");
+                        else
+                            Output.WriteLine("      <td></td>");
+
+                        if (thisDivision.isActive)
+                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                        else
+                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+
+                        if (thisDivision.isNameable)
+                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                        else
+                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+
+                        Output.WriteLine("    </tr>");
+                    }
+                    Output.WriteLine("  </table>");
+                }
+            }
 	    }
 
         private void add_engine_toplevel_info(TextWriter Output)
@@ -2686,7 +2858,7 @@ namespace SobekCM.Library.AdminViewer
 
             // Get the default set
             CitationSet defaultSet = UI_ApplicationCache_Gateway.Configuration.UI.CitationViewer.Get_CitationSet();
-            Output.WriteLine("  <h3>" + defaultSet.Name + " Citation Field Set (default)</h3>");
+            Output.WriteLine("  <h3>" + defaultSet.Name + " Citation Field Set ( <span class=\"sbkSeav_DefaultTextSpan\">default</span> )</h3>");
             add_ui_citation_set_info(Output, defaultSet);
 
             // Add the other sets
@@ -2694,7 +2866,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 if (thisSet != defaultSet)
                 {
-                    Output.WriteLine("  <h3>" + thisSet.Name + " Citation Field Set (default)</h3>");
+                    Output.WriteLine("  <h3>" + thisSet.Name + " Citation Field Set ( <span class=\"sbkSeav_DefaultTextSpan\">default</span> )</h3>");
                     add_ui_citation_set_info(Output, thisSet);
                 }
             }
@@ -2702,9 +2874,9 @@ namespace SobekCM.Library.AdminViewer
 
 	    private void add_ui_citation_set_info(TextWriter Output, CitationSet setInfo )
 	    {
-            Output.WriteLine("  <table class=\"sbkSeav_UiCitationTable sbkSeav_BaseTable\">");
+            Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_UiCitationTable\">");
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <th class=\"sbkSeav_UiCitationTable_TermCol\" colspan=\"2\">Metadata Term</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_UiCitationTable_TermCol\">Metadata Term</th>");
             Output.WriteLine("      <th class=\"sbkSeav_UiCitationTable_DisplayCol\">Display Term</th>");
             Output.WriteLine("      <th class=\"sbkSeav_UiCitationTable_SearchCodeCol\">Search Code</th>");
             Output.WriteLine("      <th class=\"sbkSeav_UiCitationTable_OtherCol\">Other</th>");
@@ -2715,17 +2887,16 @@ namespace SobekCM.Library.AdminViewer
 	        {
                 // Add a row for this
                 Output.WriteLine("    <tr class=\"sbkSeav_UiCitationTable_SetRow\">");
-                Output.WriteLine("      <td colspan=\"5\">" + fieldSet.Heading + " ( " + fieldSet.ID + " )</td>");
+                Output.WriteLine("      <td colspan=\"4\">" + fieldSet.Heading + " ( " + fieldSet.ID + " )</td>");
                 Output.WriteLine("    </tr>");
 
                 // Now, add each individual citation element
                 foreach (CitationElement thisElement in fieldSet.Elements)
 	            {
                     Output.WriteLine("    <tr>");
-	                Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
-                    Output.WriteLine("      <td>" + thisElement.MetadataTerm + "</td>");
+	                Output.WriteLine("      <td style=\"padding-left: 50px;\">" + thisElement.MetadataTerm + "</td>");
                     Output.WriteLine("      <td>" + thisElement.DisplayTerm + "</td>");
-                    Output.WriteLine("      <td>" + thisElement.SearchCode + "</td>");
+                    Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\">" + thisElement.SearchCode + "</td>");
                     Output.WriteLine("      <td>");
                     if ( !String.IsNullOrEmpty(thisElement.ItemProp ))
                         Output.WriteLine("        microservice itemprop of '" + thisElement.ItemProp + "'.<br />");
@@ -2796,11 +2967,11 @@ namespace SobekCM.Library.AdminViewer
             sortMetadata.Sort = "Key ASC";
 
             Output.WriteLine("  <h3>Microservice Endpoints</h3>");
-            Output.WriteLine("  <table class=\"sbkSeav_UiMicroservicesEndpointsTable sbkSeav_BaseTable\">");
+            Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_UiMicroservicesEndpointsTable\">");
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <th class=\"sbkSeav_UiMicroservicesEndpointsTablee_KeyCol\">Key</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_UiMicroservicesEndpointsTable_ProtocolCol\">Protocol</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_UiMicroservicesEndpointsTable_UrlCol\">URL</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_UiMicroservicesEndpointsTablee_KeyCol\">Key</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_UiMicroservicesEndpointsTable_ProtocolCol\">Protocol</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_UiMicroservicesEndpointsTable_UrlCol\">URL</th>");
             Output.WriteLine("    </tr>");
 
             // Step through all the endpoint rows
@@ -2838,11 +3009,11 @@ namespace SobekCM.Library.AdminViewer
                 tempTable.Rows.Add(newRow);
             }
 
-            Output.WriteLine("  <table class=\"sbkSeav_UiTemplateElementsTable sbkSeav_BaseTable\">");
+            Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_UiTemplateElementsTable\">");
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <th class=\"sbkSeav_UiTemplateElementsTable_TypeCol\">Type</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_UiTemplateElementsTable_SubtypeCol\">Subtype</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_UiTemplateElementsTable_ClassCol\">Class</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_UiTemplateElementsTable_TypeCol\">Type</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_UiTemplateElementsTable_SubtypeCol\">Subtype</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_UiTemplateElementsTable_ClassCol\">Class</th>");
             Output.WriteLine("    </tr>");
 
             // Create the data view
@@ -2930,24 +3101,24 @@ namespace SobekCM.Library.AdminViewer
             DataView sortMetadata = new DataView(tempTable);
             sortMetadata.Sort = "ViewerType ASC";
 
-            Output.WriteLine("  <table class=\"sbkSeav_UiViewersTable sbkSeav_BaseTable\">");
+            Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_UiViewersTable\">");
             Output.WriteLine("    <tr>");
-            Output.WriteLine("      <th class=\"sbkSeav_UiViewersTable_EnabledCol\">Enabled?</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_UiViewersTable_TypeCol\">Viewer Type</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_UiViewersTable_CodeCol\">Viewer Code</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_UiViewersTable_ClassCol\">Class</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_UiViewersTable_AlwaysAddCol\">Always<br />Add?</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_UiViewersTable_ExtensionsCol\">Extensions</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_UiViewersTable_EnabledCol\">Enabled?</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_UiViewersTable_TypeCol\">Viewer Type</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_UiViewersTable_CodeCol\">Viewer Code</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_UiViewersTable_ClassCol\">Class</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_UiViewersTable_AlwaysAddCol\">Always<br />Add?</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_UiViewersTable_ExtensionsCol\">Extensions</th>");
             Output.WriteLine("    </tr>");
 
             foreach (DataRowView thisRow in sortMetadata)
             {
                 Output.WriteLine("    <tr>");
-                Output.WriteLine("      <td>" + thisRow[0] + "</td>");
+                Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\">" + thisRow[0] + "</td>");
                 Output.WriteLine("      <td>" + thisRow[1] + "</td>");
                 Output.WriteLine("      <td>" + thisRow[2] + "</td>");
                 Output.WriteLine("      <td>" + thisRow[3] + "</td>");
-                Output.WriteLine("      <td>" + thisRow[4] + "</td>");
+                Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\">" + thisRow[4] + "</td>");
                 Output.WriteLine("      <td>" + thisRow[5] + "</td>");
                 Output.WriteLine("    </tr>");
             }
@@ -3054,9 +3225,35 @@ namespace SobekCM.Library.AdminViewer
 		#endregion
 
 
-		/// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
-		/// <value> Returns 'sbkAsav_ContainerInner' </value>
-		public override string Container_CssClass { get { return "sbkSeav_ContainerInner"; } }
+	    /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+	    /// <value> Returns 'sbkAsav_ContainerInner' </value>
+	    public override string Container_CssClass
+	    {
+	        get
+	        {
+	            switch (mainMode)
+	            {
+	                case Settings_Mode_Enum.Settings:
+                        return "sbkSeav_ContainerInner1300"; 
+
+                    case Settings_Mode_Enum.Builder:
+                        if ( builderSubEnum == Settings_Builder_SubMode_Enum.Builder_Modules )
+                            return "sbkSeav_ContainerInner1500";
+                        return "sbkSeav_ContainerInner1300"; 
+
+                    case Settings_Mode_Enum.Metadata:
+                        if (( metadataSubEnum == Settings_Metadata_SubMode_Enum.METS_Section_Reader_Writers ) || ( metadataSubEnum == Settings_Metadata_SubMode_Enum.Metdata_Reader_Writers ))
+                            return "sbkSeav_ContainerInner1600";
+                        if ( metadataSubEnum == Settings_Metadata_SubMode_Enum.NONE )
+                            return "sbkSeav_ContainerInner1300";
+                        return "sbkSeav_ContainerInner1500"; 
+
+
+	            }
+	            return "sbkSeav_ContainerInner"; 
+	            
+	        }
+	    }
 
 	}
 }

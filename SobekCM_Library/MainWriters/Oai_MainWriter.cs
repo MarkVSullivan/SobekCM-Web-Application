@@ -84,8 +84,8 @@ namespace SobekCM.Library.MainWriters
                 config.Enabled = true;
             }
             if (String.IsNullOrEmpty(oai_resource_identifier_base)) oai_resource_identifier_base = "oai:" + UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation + ":";
-            if (String.IsNullOrEmpty(oai_repository_name)) oai_resource_identifier_base = UI_ApplicationCache_Gateway.Settings.System.System_Name;
-            if (String.IsNullOrEmpty(oai_repository_identifier)) oai_resource_identifier_base = UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
+            if (String.IsNullOrEmpty(oai_repository_name)) oai_repository_name = UI_ApplicationCache_Gateway.Settings.System.System_Name;
+            if (String.IsNullOrEmpty(oai_repository_identifier)) oai_repository_identifier = UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
 
             // Get the list of metadata prefixes permissiable by the system
             metadataPrefixes = new List<string>();

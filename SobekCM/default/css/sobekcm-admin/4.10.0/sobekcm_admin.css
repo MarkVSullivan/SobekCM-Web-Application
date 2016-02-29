@@ -336,12 +336,12 @@ select.sbkPav_select { width: 465px; margin-top: 6px; }
 #sbkSeav_Explanation {  margin: 0 auto; width: 750px; }
 #sbkSeav_Explanation p {  margin: 0;padding: 10px 0 10px 0; }
 .sbkSeav_ButtonsDiv { float: right; }
-.sbkSeav_SettingsTable {margin: 20px 0 20px 35px; border-collapse: collapse; border-spacing: 0;border: 1px solid silver; text-align: left; width: 800px; }
+.sbkSeav_SettingsTable {margin: 20px 0 20px 35px; border-collapse: collapse; border-spacing: 0;border: 1px solid silver; text-align: left; width: 900px; }
 .sbkSeav_SettingsTable tr { height: 35px;vertical-align: middle;border-bottom: 1px solid silver; }
-.sbkSeav_SettingsTable th {padding-left: 5px;text-transform: uppercase; background-color: silver;text-align: left;font-weight: bold; }
+.sbkSeav_SettingsTable th {padding-left: 5px;text-transform: uppercase; background-color: #7d90d5; text-align: left;font-weight: bold; color: white; }
 .sbkSeav_SettingsTable td {padding-left: 3px; }
 .sbkSeav_TableOddRow { background-color: #eeeeee; }
-.sbkSeav_TableKeyCell { font-weight: bold;width: 260px;color: #222222; }
+.sbkSeav_TableKeyCell { font-weight: bold; color: #222222; width: 360px; vertical-align: middle; padding-left: 6px; }
 .sbkSeav_HelpButton { padding-left:5px; margin-top:3px; cursor:pointer; border:0; }
 .sbkSeav_TableRule { background-color:#e7e7e7; }
 .sbkSeav_InnerTable { padding: 0;margin: 0;}
@@ -368,6 +368,80 @@ input.sbkSeav_CustomValue_Input { width: 300px; }
 #sbkSeav_TocArea_SelectedH2:hover { background-color: white !important;cursor: default;}
 #sbkSeav_TocArea_SelectedLI  { font-weight: bold; color: black; }
 #sbkSeav_TocArea_SelectedLI:hover { background-color: white !important;cursor: default;}
+
+
+#sbkSeav_ContainerInner { min-width: 1600px; }
+#sbkSeav_ContainerInner1300 { width: 1600px; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color: #fff; position: relative; margin: 0 auto; }
+#sbkSeav_ContainerInner1500 { width: 1600px; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color: #fff; position: relative; margin: 0 auto; }
+#sbkSeav_ContainerInner1600 { width: 1600px; border-right: 1px solid #ccc; border-left: 1px solid #ccc; border-bottom: 1px solid #ccc; background-color: #fff; position: relative; margin: 0 auto; }
+#sbkSeav_MainTable { width: 100%; margin: 5px; border: none; }
+#sbkSeav_TocArea { border-right: 2px solid #bbbbbb; width: 250px; }
+#sbkSeav_MainArea { padding: 20px; }
+
+
+
+.sbkSeav_BaseTable {  border-collapse: collapse; border-spacing: 0; border: 1px solid #888;   }
+.sbkSeav_BaseTable th { background-color: #7d90d5; padding: 4px 8px 4px 3px; color: white; vertical-align: middle; }
+.sbkSeav_BaseTable td { border: 1px solid #ccc; padding: 4px 8px 4px 3px; vertical-align: middle; }
+
+.sbkSeav_BaseTableVert {  border-collapse: collapse; border-spacing: 0; margin-left: 30px;  }
+.sbkSeav_BaseTableVert th { background-color: #7d90d5; padding: 8px 8px 8px 5px; color: white;text-align: left; }
+.sbkSeav_BaseTableVert td {padding: 8px 8px 8px 5px;  }
+
+.sbkSeav_TableCenterCell { padding: 4px 0 4px 9; text-align: center; }
+.sbkSeav_DefaultTextSpan { font-style: italic; }
+
+.sbkSeav_UiCitationTable_SetRow { background-color: #eeeeee; }
+
+.sbkSeav_BuilderFolderName { display: block; font-size: 1.17em; font-weight: bold; margin-bottom: 12px;  }
+
+.sbkSeav_BuilderModulesTable { width: 1150px; margin-left: 30px; }
+.sbkSeav_BuilderModulesTable_ClassCol { width: 290px; }
+.sbkSeav_BuilderModulesTable_DescCol { width: 450px; }
+.sbkSeav_BuilderModulesTable_ArgsCol { width: 410px; }
+
+#sbkSeav_MetadataFieldsTable  { width: 1150px; margin-left: 30px; }
+#sbkSeav_MetadataFieldsTable_WebCodeCol { text-align: center; width: 60px; }
+
+#sbkSeav_MetadataReadersTable { width: 1250px; margin-left: 30px;}
+#sbkSeav_MetadataReadersTable_CanReadCol  { text-align: center; width:40px;  }
+#sbkSeav_MetadataReadersTable_CanWriteCol  { text-align: center; width:40px;  }
+
+#sbkSeav_MetsSectionsReadersTable { width: 1250px; margin-left: 30px;}
+#sbkSeav_MetsSectionsReadersTable_CanReadCol  { text-align: center; width:40px; }
+#sbkSeav_MetsSectionsReadersTable_CanWriteCol  { text-align: center; width:40px; }
+
+.sbkSeav_BriefItemMappingTable { width: 750px; margin-left: 30px;  }
+.sbkSeav_BriefItemMappingTable_EnabledCol { text-align: center; width: 70px; }
+      
+#sbkSeav_ContactFormTable { width: 1250px; margin-left: 30px;}
+#sbkSeav_ContactForm_PromptCol { width: 350px; }
+#sbkSeav_ContactForm_NotesCol { width: 300px; }
+      
+#sbkSeav_EngineServerEndpointsTable { max-width: 1250px; margin-left:30px; }
+#sbkSeav_EngineServerComponentsTable { max-width: 1250px; margin-left:30px; }
+#sbkSeav_EngineServerRestrictionsTable { max-width: 1250px; margin-left:30px; }
+
+#sbkSeav_OaiPmhPrefixesTable { max-width: 1250px; margin-left:30px; }
+#sbkSeav_OaiPmhPrefixesTable_EnabledCol  { text-align: center; width: 70px; }
+
+#sbkSeav_ShibDetailsTable { margin-left: 80px; }
+#sbkSeav_ShibDetails2Table { margin-left: 80px; }
+#sbkSeav_ShibDetails3Table { margin-left: 80px; }
+#sbkSeav_ShibDetails4Table { margin-left: 80px; }
+
+
+.sbkSeav_UiCitationTable   { max-width: 1250px; margin-left:30px; }
+.sbkSeav_UiCitationTable_SearchCodeCol   { text-align: center; width: 70px; }
+
+#sbkSeav_UiMicroservicesEndpointsTable  { max-width: 1250px; margin-left:30px; }
+#sbkSeav_UiMicroservicesEndpointsTable_ProtocolCol { width:85px; }
+
+#sbkSeav_UiTemplateElementsTable  { max-width: 1250px; margin-left:30px; }
+      
+#sbkSeav_UiViewersTable { max-width: 1250px; margin-left:30px; }
+#sbkSeav_UiViewersTable_AlwaysAddCol { text-align: center; width: 50px; }
+      
 
 /** Skins_AdminViewer **/
 .sbkSav_NewDiv { width:675px; FONT-FAMILY: Arial, sans-serif; font-size: small;padding-left: 22px;} 
