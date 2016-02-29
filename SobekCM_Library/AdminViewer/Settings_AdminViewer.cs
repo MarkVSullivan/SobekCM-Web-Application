@@ -4,13 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Windows.Forms.VisualStyles;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Authentication;
@@ -68,6 +66,7 @@ namespace SobekCM.Library.AdminViewer
 	    private List<Admin_Setting_Value> builderSettings;
 
         private readonly Settings_Mode_Enum mainMode = Settings_Mode_Enum.NONE;
+        private readonly Settings_Configuration_SubMode_Enum configSubMode = Settings_Configuration_SubMode_Enum.NONE;
         private readonly Settings_Builder_SubMode_Enum builderSubEnum = Settings_Builder_SubMode_Enum.NONE;
 	    private readonly Settings_Metadata_SubMode_Enum metadataSubEnum = Settings_Metadata_SubMode_Enum.NONE;
         private readonly Settings_Engine_SubMode_Enum engineSubEnum = Settings_Engine_SubMode_Enum.NONE;
@@ -83,6 +82,8 @@ namespace SobekCM.Library.AdminViewer
 	
 			Settings,
 
+            Configuration,
+
 			Builder,
 
             Metadata,
@@ -95,6 +96,15 @@ namespace SobekCM.Library.AdminViewer
 
 			Extensions
 		}
+
+        private enum Settings_Configuration_SubMode_Enum : byte
+        {
+            NONE,
+
+            Files,
+
+            Reading_Log
+        }
 
 	    private enum Settings_Builder_SubMode_Enum : byte
 	    {
@@ -219,6 +229,23 @@ namespace SobekCM.Library.AdminViewer
                 {
                     case "settings":
                         mainMode = Settings_Mode_Enum.Settings;
+                        break;
+
+                    case "config":
+                        mainMode = Settings_Mode_Enum.Configuration;
+                        if (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 1)
+                        {
+                            switch (RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1].ToLower())
+                            {
+                                case "files":
+                                    configSubMode = Settings_Configuration_SubMode_Enum.Files;
+                                    break;
+
+                                case "log":
+                                    configSubMode = Settings_Configuration_SubMode_Enum.Reading_Log;
+                                    break;
+                            }
+                        }
                         break;
 
                     case "builder":
@@ -403,13 +430,13 @@ namespace SobekCM.Library.AdminViewer
 					// First, create the setting lookup by ID, and the list of IDs to look for
 					List<short> settingIds = new List<short>();
 					Dictionary<short, Admin_Setting_Value> settingsObjsById = new Dictionary<short, Admin_Setting_Value>();
-					foreach (Admin_Setting_Value Value in currSettings.Settings)
+					foreach (Admin_Setting_Value value in currSettings.Settings)
 					{
 						// If this is readonly, will not prepare to update
-						if ((!Is_Value_ReadOnly(Value, readonlyMode, limitedRightsMode )) && ( !Value.Hidden ))
+						if ((!Is_Value_ReadOnly(value, readonlyMode, limitedRightsMode )) && ( !value.Hidden ))
 						{
-							settingIds.Add(Value.SettingID);
-							settingsObjsById[Value.SettingID] = Value;
+							settingIds.Add(value.SettingID);
+							settingsObjsById[value.SettingID] = value;
 						}
 					}
 
@@ -576,6 +603,12 @@ namespace SobekCM.Library.AdminViewer
 			}
 			Output.WriteLine("        </ul>");
 
+            Output.WriteLine(add_leftnav_h2_link("Configuration", "config", redirectUrl, currentViewerCode));
+            Output.WriteLine("        <ul>");
+            Output.WriteLine(add_leftnav_li_link("Source Files", "config/files", redirectUrl, currentViewerCode));
+            Output.WriteLine(add_leftnav_li_link("Reading Log", "config/log", redirectUrl, currentViewerCode));
+            Output.WriteLine("        </ul>");
+
 			Output.WriteLine(add_leftnav_h2_link("Builder", "builder", redirectUrl, currentViewerCode));
 			Output.WriteLine("        <ul>");
 			Output.WriteLine(add_leftnav_li_link("Builder Settings", "builder/settings", redirectUrl, currentViewerCode));
@@ -652,6 +685,10 @@ namespace SobekCM.Library.AdminViewer
 				case Settings_Mode_Enum.Settings:
 					add_settings_info(Output);
 					break;
+
+                case Settings_Mode_Enum.Configuration:
+                    add_configuration_info(Output);
+                    break;
 
 				case Settings_Mode_Enum.Builder:
 					add_builder_info(Output);
@@ -827,24 +864,12 @@ namespace SobekCM.Library.AdminViewer
 
 			// Add some readonly configuration information from the config file
 			// First, look for a server tab name
-			string tabNameForConfig = null;
-			foreach (string thisTabName in tabPageNames.Values)
+			string tabNameForConfig = tabPageNames.Values.FirstOrDefault(ThisTabName => ThisTabName.IndexOf("Server", StringComparison.OrdinalIgnoreCase) >= 0);
+		    if (String.IsNullOrEmpty(tabNameForConfig))
 			{
-				if (thisTabName.IndexOf("Server", StringComparison.OrdinalIgnoreCase) >= 0)
-				{
-					tabNameForConfig = thisTabName;
-					break;
-				}
-			}
-			if (String.IsNullOrEmpty(tabNameForConfig))
-			{
-				foreach (string thisTabName in tabPageNames.Values)
-				{
-					if (thisTabName.IndexOf("System", StringComparison.OrdinalIgnoreCase) >= 0)
-					{
-						tabNameForConfig = thisTabName;
-						break;
-					}
+				foreach (string thisTabName in tabPageNames.Values.Where(ThisTabName => ThisTabName.IndexOf("System", StringComparison.OrdinalIgnoreCase) >= 0)) {
+				    tabNameForConfig = thisTabName;
+				    break;
 				}
 			}
 			if (String.IsNullOrEmpty(tabNameForConfig))
@@ -1121,10 +1146,10 @@ namespace SobekCM.Library.AdminViewer
 
 		#region Methods related to special validations
 
-		private bool validate_update_entered_data(List<Simple_Setting> newValues)
+		private bool validate_update_entered_data(List<Simple_Setting> NewValues)
 		{
 			isValid = true;
-			foreach (Simple_Setting thisSetting in newValues)
+			foreach (Simple_Setting thisSetting in NewValues)
 			{
 				string value = thisSetting.Value;
 				string key = thisSetting.Key;
@@ -1299,17 +1324,9 @@ namespace SobekCM.Library.AdminViewer
 				return;
 
 			// Check for the start against all possible combinations
-			bool missing_start = true;
-			foreach (string possibleStart in StartsWith)
-			{
-				if (NewSetting.Value.StartsWith(possibleStart, StringComparison.OrdinalIgnoreCase))
-				{
-					missing_start = false;
-					break;
-				}
-			}
+			bool missing_start = StartsWith.All(possibleStart => !NewSetting.Value.StartsWith(possibleStart, StringComparison.OrdinalIgnoreCase));
 
-			if (missing_start)
+		    if (missing_start)
 			{
 				NewSetting.Value = StartsWith[0] + NewSetting.Value;
 			}
@@ -1346,17 +1363,9 @@ namespace SobekCM.Library.AdminViewer
 				return;
 
 			// Check for the start against all possible combinations
-			bool missing_start = true;
-			foreach (string possibleStart in StartsWith)
-			{
-				if (NewSetting.Value.StartsWith(possibleStart, StringComparison.OrdinalIgnoreCase))
-				{
-					missing_start = false;
-					break;
-				}
-			}
+			bool missing_start = StartsWith.All(PossibleStart => !NewSetting.Value.StartsWith(PossibleStart, StringComparison.OrdinalIgnoreCase));
 
-			if ((missing_start) || (!NewSetting.Value.EndsWith(EndsWith, StringComparison.OrdinalIgnoreCase)))
+		    if ((missing_start) || (!NewSetting.Value.EndsWith(EndsWith, StringComparison.OrdinalIgnoreCase)))
 			{
 				if (missing_start)
 					NewSetting.Value = StartsWith[0] + NewSetting.Value;
@@ -1369,9 +1378,70 @@ namespace SobekCM.Library.AdminViewer
 
 		#endregion
 
-		#region HTML helper methods for the builder main page and subpages
+        #region HTML helper methods for the configuration main pages and subpages
 
-		private void add_builder_info(TextWriter Output)
+
+        private void add_configuration_info(TextWriter Output)
+        {
+            // If a submode existed, call that method
+            switch (configSubMode)
+            {
+                case Settings_Configuration_SubMode_Enum.Files:
+                    add_configuration_file_info(Output);
+                    break;
+
+                case Settings_Configuration_SubMode_Enum.Reading_Log:
+                    add_configuration_log_info(Output);
+                    break;
+
+                default:
+                    add_configuration_toplevel_info(Output);
+                    break;
+            }
+        }
+
+        private void add_configuration_toplevel_info(TextWriter Output)
+        {
+            Output.WriteLine("  <h2>Configuration Information</h2>");
+        }
+
+        private void add_configuration_file_info(TextWriter Output)
+        {
+            Output.WriteLine("  <h2>Configuration Files</h2>");
+            Output.WriteLine("  <p>The great bulk of the content displayed in this form is derived from the configuration files which are read when the application starts.</p>");
+
+            Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_ConfigFilesTable\">");
+            Output.WriteLine("    <tr><th>Configuration File</th></tr>");
+
+            foreach (string thisFile in UI_ApplicationCache_Gateway.Configuration.Source.Files)
+            {
+                Output.WriteLine("    <tr><td>" + thisFile + "</td></tr>");
+            }
+            Output.WriteLine("  </table>");
+        }
+
+        private void add_configuration_log_info(TextWriter Output)
+        {
+            Output.WriteLine("  <h2>Configuration Reading Log</h2>");
+            Output.WriteLine("  <p>This is the log file that is written as the configuration files are read.</p>");
+
+            Output.WriteLine("  <div id=\"sbkSeav_ConfigReadingLog\">");
+            Output.WriteLine("    <pre>");
+
+            foreach (string thisLog in UI_ApplicationCache_Gateway.Configuration.Source.ReadingLog)
+            {
+                Output.WriteLine("      " + thisLog);
+            }
+            Output.WriteLine("    </pre>");
+            Output.WriteLine("  </div>");
+        }
+
+
+        #endregion
+
+        #region HTML helper methods for the builder main page and subpages
+
+        private void add_builder_info(TextWriter Output)
 		{
             // If a submode existed, call that method
 		    switch (builderSubEnum)
@@ -1494,7 +1564,7 @@ namespace SobekCM.Library.AdminViewer
                 if (incomingFolder.Archive_All_Files) builder.Append("Archive all files ; ");
                 else if (incomingFolder.Archive_TIFFs) builder.Append("Archive TIFFs ; ");
                 if (incomingFolder.Perform_Checksum) builder.Append("Perform checksum ; ");
-                Output.WriteLine("    <tr><th>Options</th><td>" + builder.ToString() + "</td></tr>");
+                Output.WriteLine("    <tr><th>Options</th><td>" + builder + "</td></tr>");
             
                 // Add the possible actions here
                 Output.WriteLine("    <tr><th>Actions:</th><td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "admin/builderfolders/" + incomingFolder.IncomingFolderID + "\">edit</a></td></tr>");
@@ -1796,8 +1866,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Create the data view
-            DataView sortMetadata = new DataView(tempTable);
-            sortMetadata.Sort = columnSort + " ASC";
+            DataView sortMetadata = new DataView(tempTable) {Sort = columnSort + " ASC"};
 
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_MetadataFieldsTable\">");
             Output.WriteLine("    <tr>");
@@ -2042,29 +2111,29 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  </table>");
 	    }
 
-	    private void add_metadata_single_config(TextWriter Output, METS_Section_ReaderWriter_Config config)
+	    private void add_metadata_single_config(TextWriter Output, METS_Section_ReaderWriter_Config Config)
 	    {
             Output.WriteLine("    <tr>");
 
-            if (config.isActive)
+            if (Config.isActive)
                 Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
             else
                 Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
 
        //     Output.WriteLine("      <td>" + config.ID + "</td>");
-            Output.WriteLine("      <td>" + config.Label + "</td>");
-            if (!String.IsNullOrEmpty(config.Code_Assembly))
-                Output.WriteLine("      <td>" + config.Code_Namespace + "." + config.Code_Class + " ( " + config.Code_Assembly + " )</td>");
+            Output.WriteLine("      <td>" + Config.Label + "</td>");
+            if (!String.IsNullOrEmpty(Config.Code_Assembly))
+                Output.WriteLine("      <td>" + Config.Code_Namespace + "." + Config.Code_Class + " ( " + Config.Code_Assembly + " )</td>");
             else
-                Output.WriteLine("      <td>" + (config.Code_Namespace + "." + config.Code_Class).Replace("SobekCM.Resource_Object.METS_Sec_ReaderWriters.","") + "</td>");
+                Output.WriteLine("      <td>" + (Config.Code_Namespace + "." + Config.Code_Class).Replace("SobekCM.Resource_Object.METS_Sec_ReaderWriters.","") + "</td>");
 
-            switch (config.METS_Section)
+            switch (Config.METS_Section)
             {
                 case METS_Section_Type_Enum.DmdSec:
                     Output.WriteLine("      <td>dmdSec</td>");
                     break;
                 case METS_Section_Type_Enum.AmdSec:
-                    switch (config.AmdSecType)
+                    switch (Config.AmdSecType)
                     {
                         case METS_amdSec_Type_Enum.DigiProvMD:
                             Output.WriteLine("      <td>amdSec ( digiProvMD )</td>");
@@ -2090,12 +2159,12 @@ namespace SobekCM.Library.AdminViewer
             }
 
 
-            if (config.Options == null)
+            if (Config.Options == null)
                 Output.WriteLine("      <td></td>");
             else
             {
                 Output.WriteLine("      <td>");
-                foreach (StringKeyValuePair thisOption in config.Options)
+                foreach (StringKeyValuePair thisOption in Config.Options)
                 {
                     Output.WriteLine("        " + thisOption.Key + " = " + thisOption.Value + "<br />");
                 }
@@ -2461,7 +2530,7 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("      <td rowspan=\"" + Math.Max(1, ip_count) + "\">" + thisRestrictionRange.ID + "</td>");
                 Output.WriteLine("      <td rowspan=\"" + Math.Max(1, ip_count) + "\">" + thisRestrictionRange.Label + "</td>");
 
-                if (ip_count == 0)
+                if ((ip_count == 0) || ( thisRestrictionRange.IpRanges == null ))
                 {
                     Output.WriteLine("      <td></td>");
                     Output.WriteLine("      <td></td>");
@@ -2528,10 +2597,10 @@ namespace SobekCM.Library.AdminViewer
 	        }
 	    }
 
-	    private void add_single_verb_mapping_in_table(Engine_VerbMapping mapping, TextWriter Output)
+	    private void add_single_verb_mapping_in_table(Engine_VerbMapping Mapping, TextWriter Output)
 	    {
             // Add the request type ( i.e., GET, POST, PUT, etc.. )
-            switch (mapping.RequestType)
+            switch (Mapping.RequestType)
             {
                 case Microservice_Endpoint_RequestType_Enum.GET:
                     Output.WriteLine("      <td>GET</td>");
@@ -2556,7 +2625,7 @@ namespace SobekCM.Library.AdminViewer
 
 
             // Add the protocol type ( i.e., XML, JSON, PROTOBUF, etc.. )
-            switch (mapping.Protocol)
+            switch (Mapping.Protocol)
             {
                 case Microservice_Endpoint_Protocol_Enum.BINARY:
                     Output.WriteLine("      <td>BINARY</td>");
@@ -2596,9 +2665,9 @@ namespace SobekCM.Library.AdminViewer
             }
 
 
-            Output.WriteLine("      <td>" + mapping.Method + "</td>");
-            Output.WriteLine("      <td><a href=\"#CO" + mapping.ComponentId + "\">" + mapping.ComponentId + "</a></td>");
-            Output.WriteLine("      <td><a href=\"#RR" + mapping.RestrictionRangeSetId + "\">" + mapping.RestrictionRangeSetId + "</a></td>");
+            Output.WriteLine("      <td>" + Mapping.Method + "</td>");
+            Output.WriteLine("      <td><a href=\"#CO" + Mapping.ComponentId + "\">" + Mapping.ComponentId + "</a></td>");
+            Output.WriteLine("      <td><a href=\"#RR" + Mapping.RestrictionRangeSetId + "\">" + Mapping.RestrictionRangeSetId + "</a></td>");
         }
 
         private void add_engine_oai_pmh_info(TextWriter Output)
@@ -2872,7 +2941,7 @@ namespace SobekCM.Library.AdminViewer
             }
         }
 
-	    private void add_ui_citation_set_info(TextWriter Output, CitationSet setInfo )
+	    private void add_ui_citation_set_info(TextWriter Output, CitationSet SetInfo )
 	    {
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_UiCitationTable\">");
             Output.WriteLine("    <tr>");
@@ -2883,7 +2952,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    </tr>");
 
             // Add each field set
-	        foreach (CitationFieldSet fieldSet in setInfo.FieldSets)
+	        foreach (CitationFieldSet fieldSet in SetInfo.FieldSets)
 	        {
                 // Add a row for this
                 Output.WriteLine("    <tr class=\"sbkSeav_UiCitationTable_SetRow\">");
@@ -2963,8 +3032,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Create the data view
-            DataView sortMetadata = new DataView(tempTable);
-            sortMetadata.Sort = "Key ASC";
+            DataView sortMetadata = new DataView(tempTable) {Sort = "Key ASC"};
 
             Output.WriteLine("  <h3>Microservice Endpoints</h3>");
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_UiMicroservicesEndpointsTable\">");
@@ -3017,8 +3085,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    </tr>");
 
             // Create the data view
-            DataView sortMetadata = new DataView(tempTable);
-            sortMetadata.Sort = "Type ASC, Subtype ASC";
+            DataView sortMetadata = new DataView(tempTable) {Sort = "Type ASC, Subtype ASC"};
 
             // Step through all the roots
             foreach (DataRowView thisRow in sortMetadata)
@@ -3098,8 +3165,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Create the data view
-            DataView sortMetadata = new DataView(tempTable);
-            sortMetadata.Sort = "ViewerType ASC";
+            DataView sortMetadata = new DataView(tempTable) {Sort = "ViewerType ASC"};
 
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_UiViewersTable\">");
             Output.WriteLine("    <tr>");

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
@@ -31,54 +30,16 @@ namespace SobekCM.Core.Configuration
             Metadata = new Metadata_Configuration();
             OAI_PMH = new OAI_PMH_Configuration();
             UI = new InstanceWide_UI_Configuration();
+            Source = new Configuration_Source_Info();
 
             // Set some defaults
             HasData = false;
-            ReadingLog = new List<string>();
-            ErrorEncountered = false;
-            LatestDateTimeStamp = new DateTime(2000,1,1);
         }
 
         /// <summary> Flag indicates if the data has been pulled into this </summary>
         [XmlIgnore]
         [IgnoreDataMember]
         public bool HasData { get; set; }
-
-        /// <summary> Log file keeps the log of the attempt to read all of the
-        /// configuration files, just in case there is an error, or the log is requested </summary>
-        [XmlIgnore]
-        [IgnoreDataMember]
-        public List<string>  ReadingLog { get; set; }
-
-        /// <summary> Flag indicates if an error was encountered while reading the configuration
-        /// files. </summary>
-        /// <remarks> The actual error (and other entries) will appear in the ReadingLog property </remarks>
-        [XmlIgnore]
-        [IgnoreDataMember]
-        public bool ErrorEncountered { get; set; }
-
-        /// <summary> Add an empty line to the reading log  </summary>
-        public void Add_Log()
-        {
-            if (ReadingLog == null) ReadingLog = new List<string>();
-
-            ReadingLog.Add(String.Empty);
-        }
-
-        /// <summary> Add a reading log line to the log  </summary>
-        /// <param name="LogLine"> Information to add to the log </param>
-        public void Add_Log(string LogLine)
-        {
-            if (ReadingLog == null) ReadingLog = new List<string>();
-
-            ReadingLog.Add( DateTime.Now.Hour.ToString().PadLeft(2,'0') + ":" + DateTime.Now.Minute.ToString().PadLeft(2,'0') + ":" + DateTime.Now.Second.ToString().PadLeft(2,'0') + "." + DateTime.Now.Millisecond.ToString().PadLeft(3,'0') + " - " + LogLine);
-        }
-
-        /// <summary> Most recent timestamp on any of the configuration files </summary>
-        [DataMember(Name = "timestamp", EmitDefaultValue = false)]
-        [XmlAttribute("timestamp")]
-        [ProtoMember(1)]
-        public DateTime LatestDateTimeStamp { get; set; }
 
         /// <summary> Configuration for authentication for this instance </summary>
         [DataMember(Name = "authentication", EmitDefaultValue = false)]
@@ -128,6 +89,12 @@ namespace SobekCM.Core.Configuration
         [XmlElement("qcConfig")]
         [ProtoMember(9)]
         public QualityControl_Configuration QualityControlTool { get; set; }
+
+        /// <summary> Basic source and error information from reading the configuration files </summary>
+        [DataMember(Name = "source", EmitDefaultValue = false)]
+        [XmlElement("source")]
+        [ProtoMember(10)]
+        public Configuration_Source_Info Source { get; set; }
 
         /// <summary> Configuration for the user-inteface specific configurations for this instance </summary>
         /// <remarks> This property is not serialized </remarks>

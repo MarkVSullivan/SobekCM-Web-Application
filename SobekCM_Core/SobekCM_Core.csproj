@@ -102,6 +102,7 @@
     <Compile Include="BriefItem\IBriefItemMapper.cs" />
     <Compile Include="Configuration\Authentication\Authentication_Configuration.cs" />
     <Compile Include="Configuration\BriefItemMapping_Configuration.cs" />
+    <Compile Include="Configuration\Configuration_Source_Info.cs" />
     <Compile Include="Configuration\ContactForm_Configuration.cs" />
     <Compile Include="Configuration\Database_Instance_Configuration.cs" />
     <Compile Include="Configuration\Extensions\ExtensionCssInfo.cs" />

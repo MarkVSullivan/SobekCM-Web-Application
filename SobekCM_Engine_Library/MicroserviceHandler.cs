@@ -47,7 +47,7 @@ namespace SobekCM.Engine_Library
                 Context.Response.TrySkipIisCustomErrors = true;
 
                 // Make sure the microservices configuration has been read
-                if (Engine_ApplicationCache_Gateway.Configuration.ErrorEncountered)
+                if (Engine_ApplicationCache_Gateway.Configuration.Source.ErrorEncountered)
                 {
                     // If we got to here, it means it attempted to read it and failed somehow
                     Context.Response.ContentType = "text/plain";
@@ -55,7 +55,7 @@ namespace SobekCM.Engine_Library
                     Context.Response.Output.WriteLine("Error reading the configuration files!");
                     Context.Response.Output.WriteLine();
 
-                    foreach (string thisLine in Engine_ApplicationCache_Gateway.Configuration.ReadingLog)
+                    foreach (string thisLine in Engine_ApplicationCache_Gateway.Configuration.Source.ReadingLog)
                         Context.Response.Output.WriteLine(thisLine);
                     return;
                 }
@@ -81,7 +81,7 @@ namespace SobekCM.Engine_Library
                     Context.Response.Output.WriteLine("No endpoint found");
                     Context.Response.Output.WriteLine();
 
-                    foreach (string thisLine in Engine_ApplicationCache_Gateway.Configuration.ReadingLog)
+                    foreach (string thisLine in Engine_ApplicationCache_Gateway.Configuration.Source.ReadingLog)
                         Context.Response.Output.WriteLine(thisLine);
                 }
                 else

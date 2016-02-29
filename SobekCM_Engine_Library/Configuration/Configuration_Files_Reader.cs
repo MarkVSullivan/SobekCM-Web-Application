@@ -74,16 +74,17 @@ namespace SobekCM.Engine_Library.Configuration
         {
             // Start to build the instance wide configuration
             InstanceWide_Configuration returnValue = new InstanceWide_Configuration();
-            
+
+           
             // Add an initial log, with the data
-            returnValue.Add_Log("Beginning to read configuration files (" + DateTime.Now.ToShortDateString() + ")");
+            returnValue.Source.Add_Log("Beginning to read configuration files (" + DateTime.Now.ToShortDateString() + ")");
 
             // Log the directories to look within
-            returnValue.Add_Log();
-            returnValue.Add_Log("Looking in the following directories for config/xml files");
+            returnValue.Source.Add_Log();
+            returnValue.Source.Add_Log("Looking in the following directories for config/xml files");
             foreach (string configDir in ConfigurationDirectories)
             {
-                returnValue.Add_Log("     " + configDir);
+                returnValue.Source.Add_Log("     " + configDir.ToLower().Replace(Settings.Servers.Application_Server_Network.ToLower(), ""));
             }
 
             // Step through and get the configuration files to be read (in folder and alphabetical order)
@@ -94,7 +95,7 @@ namespace SobekCM.Engine_Library.Configuration
                 if (Directory.Exists(thisConfigDir))
                 {
                     // Get the list of XML and CONFIG files, and read them in alphabetical order
-                    string[] files = SobekCM.Tools.SobekCM_File_Utilities.GetFiles(thisConfigDir, "*.xml|*.config");
+                    string[] files = Tools.SobekCM_File_Utilities.GetFiles(thisConfigDir, "*.xml|*.config");
                     if (files.Length > 0)
                     {
                         // Get all the files and sort by name
@@ -114,12 +115,18 @@ namespace SobekCM.Engine_Library.Configuration
                 }
             }
 
+            // Add the source list to the source
+            foreach (string fileFound in configFiles)
+            {
+                returnValue.Source.Files.Add(fileFound.ToLower().Replace(Settings.Servers.Application_Server_Network.ToLower(), ""));
+            }
+
             // Log this
-            returnValue.Add_Log();
-            returnValue.Add_Log("Found the following config files to attempt to read:");
+            returnValue.Source.Add_Log();
+            returnValue.Source.Add_Log("Found the following config files to attempt to read:");
             foreach (string configFile in configFiles)
             {
-                returnValue.Add_Log("     " + configFile );
+                returnValue.Source.Add_Log("     " + configFile.ToLower().Replace(Settings.Servers.Application_Server_Network.ToLower(), ""));
             }
 
             // With all the files to read collected and sorted, read each one
@@ -150,7 +157,7 @@ namespace SobekCM.Engine_Library.Configuration
             }
 
             // Add to the log
-            ConfigObj.Add_Log();
+            ConfigObj.Source.Add_Log();
             try
             {
                 string file = Path.GetFileName(ConfigFile);
@@ -158,11 +165,11 @@ namespace SobekCM.Engine_Library.Configuration
                 string directory = dirInfo.Name;
                 string directory2 = dirInfo.Parent.Name;
 
-                ConfigObj.Add_Log("Reading " + directory2 + "\\" + directory + "\\" + file);
+                ConfigObj.Source.Add_Log("Reading " + directory2 + "\\" + directory + "\\" + file);
             }
             catch
             {
-                ConfigObj.Add_Log("Reading " + ConfigFile + " (Error parsing for logging)");
+                ConfigObj.Source.Add_Log("Reading " + ConfigFile + " (Error parsing for logging)");
             }
 
             // Streams used for reading
@@ -173,8 +180,8 @@ namespace SobekCM.Engine_Library.Configuration
             {
                 // Check the file for the last modified date
                 DateTime lastModifiedDate = (new FileInfo(ConfigFile)).LastWriteTime;
-                if (DateTime.Compare(ConfigObj.LatestDateTimeStamp, lastModifiedDate) < 0)
-                    ConfigObj.LatestDateTimeStamp = lastModifiedDate;
+                if (DateTime.Compare(ConfigObj.Source.LatestDateTimeStamp, lastModifiedDate) < 0)
+                    ConfigObj.Source.LatestDateTimeStamp = lastModifiedDate;
 
                 // Open a link to the file
                 readerStream = new FileStream(ConfigFile, FileMode.Open, FileAccess.Read);
@@ -190,32 +197,32 @@ namespace SobekCM.Engine_Library.Configuration
                         switch (readerXml.Name.ToLower())
                         {
                             case "authentication":
-                                ConfigObj.Add_Log("        Parsing AUTHENTICATION subtree");
+                                ConfigObj.Source.Add_Log("        Parsing AUTHENTICATION subtree");
                                 read_authentication_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
                             case "oai-pmh":
-                                ConfigObj.Add_Log("        Parsing OAI-PMH subtree");
+                                ConfigObj.Source.Add_Log("        Parsing OAI-PMH subtree");
                                 read_oai_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
                             case "contactform":
-                                ConfigObj.Add_Log("        Parsing CONTACTFORM subtree");
+                                ConfigObj.Source.Add_Log("        Parsing CONTACTFORM subtree");
                                 read_contactform_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
                             case "briefitem_mapping":
-                                ConfigObj.Add_Log("        Parsing BRIEFITEM_MAPPING subtree");
+                                ConfigObj.Source.Add_Log("        Parsing BRIEFITEM_MAPPING subtree");
                                 read_briefitem_mapping_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
                             case "mapeditor":
-                                ConfigObj.Add_Log("        Parsing MAPEDITOR subtree");
+                                ConfigObj.Source.Add_Log("        Parsing MAPEDITOR subtree");
                                 read_mapeditor_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
                             case "engine":
-                                ConfigObj.Add_Log("        Parsing ENGINE subtree");
+                                ConfigObj.Source.Add_Log("        Parsing ENGINE subtree");
                                 if (readerXml.MoveToAttribute("ClearAll"))
                                 {
                                     if ((readerXml.Value.Trim().ToLower() == "true") && ( ConfigObj.Engine != null ))
@@ -228,27 +235,27 @@ namespace SobekCM.Engine_Library.Configuration
                                 break;
 
                             case "qualitycontrol":
-                                ConfigObj.Add_Log("        Parsing QUALITYCONTROL subtree");
+                                ConfigObj.Source.Add_Log("        Parsing QUALITYCONTROL subtree");
                                 read_quality_control_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
                             case "metadata":
-                                ConfigObj.Add_Log("        Parsing METADATA subtree");
+                                ConfigObj.Source.Add_Log("        Parsing METADATA subtree");
                                 read_metadata_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
                             case "writerviewers":
-                                ConfigObj.Add_Log("        Parsing WRITER/VIEWER subtree");
+                                ConfigObj.Source.Add_Log("        Parsing WRITER/VIEWER subtree");
                                 read_writer_viewer_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
                             case "citation":
-                                ConfigObj.Add_Log("        Parsing CITATION subtree");
+                                ConfigObj.Source.Add_Log("        Parsing CITATION subtree");
                                 read_citation_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
                             case "templateelements":
-                                ConfigObj.Add_Log("        Parsing TEMPLATE ELEMENTS subtree");
+                                ConfigObj.Source.Add_Log("        Parsing TEMPLATE ELEMENTS subtree");
                                 read_template_elements_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
@@ -258,11 +265,11 @@ namespace SobekCM.Engine_Library.Configuration
             }
             catch (Exception ee)
             {
-                ConfigObj.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_config_files");
-                ConfigObj.Add_Log(ee.Message);
-                ConfigObj.Add_Log(ee.StackTrace);
+                ConfigObj.Source.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_config_files");
+                ConfigObj.Source.Add_Log(ee.Message);
+                ConfigObj.Source.Add_Log(ee.StackTrace);
 
-                ConfigObj.ErrorEncountered = true;
+                ConfigObj.Source.ErrorEncountered = true;
             }
             finally
             {
@@ -746,11 +753,11 @@ namespace SobekCM.Engine_Library.Configuration
             }
             catch (Exception ee)
             {
-                Config.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_briefitem_mapping_details");
-                Config.Add_Log(ee.Message);
-                Config.Add_Log(ee.StackTrace);
+                Config.Source.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_briefitem_mapping_details");
+                Config.Source.Add_Log(ee.Message);
+                Config.Source.Add_Log(ee.StackTrace);
 
-                Config.ErrorEncountered = true;
+                Config.Source.ErrorEncountered = true;
                 return false;
             }
 
@@ -1790,11 +1797,11 @@ namespace SobekCM.Engine_Library.Configuration
             }
             catch (Exception ee)
             {
-                Config.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_metadata_details");
-                Config.Add_Log(ee.Message);
-                Config.Add_Log(ee.StackTrace);
+                Config.Source.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_metadata_details");
+                Config.Source.Add_Log(ee.Message);
+                Config.Source.Add_Log(ee.StackTrace);
 
-                Config.ErrorEncountered = true;
+                Config.Source.ErrorEncountered = true;
                 errorEncountered = true;
             }
 
@@ -2180,11 +2187,11 @@ namespace SobekCM.Engine_Library.Configuration
             }
             catch (Exception ee)
             {
-                Config.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_writer_viewer_details");
-                Config.Add_Log(ee.Message);
-                Config.Add_Log(ee.StackTrace);
+                Config.Source.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_writer_viewer_details");
+                Config.Source.Add_Log(ee.Message);
+                Config.Source.Add_Log(ee.StackTrace);
 
-                Config.ErrorEncountered = true;
+                Config.Source.ErrorEncountered = true;
                 errorEncountered = true;
             }
 
@@ -2309,11 +2316,11 @@ namespace SobekCM.Engine_Library.Configuration
             }
             catch (Exception ee)
             {
-                Config.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_citation_details");
-                Config.Add_Log(ee.Message);
-                Config.Add_Log(ee.StackTrace);
+                Config.Source.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_citation_details");
+                Config.Source.Add_Log(ee.Message);
+                Config.Source.Add_Log(ee.StackTrace);
 
-                Config.ErrorEncountered = true;
+                Config.Source.ErrorEncountered = true;
                 errorEncountered = true;
             }
 
@@ -2570,11 +2577,11 @@ namespace SobekCM.Engine_Library.Configuration
             }
             catch (Exception ee)
             {
-                Config.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_template_elements_details");
-                Config.Add_Log(ee.Message);
-                Config.Add_Log(ee.StackTrace);
+                Config.Source.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_template_elements_details");
+                Config.Source.Add_Log(ee.Message);
+                Config.Source.Add_Log(ee.StackTrace);
 
-                Config.ErrorEncountered = true;
+                Config.Source.ErrorEncountered = true;
                 errorEncountered = true;
             }
 

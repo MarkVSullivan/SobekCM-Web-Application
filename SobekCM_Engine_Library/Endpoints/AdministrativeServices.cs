@@ -505,7 +505,7 @@ namespace SobekCM.Engine_Library.Endpoints
             if (Protocol == Microservice_Endpoint_Protocol_Enum.TEXT)
             {
                 Response.ContentType = "text/plain";
-                foreach (string thisLine in Engine_ApplicationCache_Gateway.Configuration.ReadingLog)
+                foreach (string thisLine in Engine_ApplicationCache_Gateway.Configuration.Source.ReadingLog)
                     Response.Output.WriteLine(thisLine);
                 return;
             }
@@ -518,7 +518,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
 
             // Use the base class to serialize the object according to request protocol
-            Serialize(Engine_ApplicationCache_Gateway.Configuration.ReadingLog, Response, Protocol, json_callback);
+            Serialize(Engine_ApplicationCache_Gateway.Configuration.Source.ReadingLog, Response, Protocol, json_callback);
         }
 
         #endregion
