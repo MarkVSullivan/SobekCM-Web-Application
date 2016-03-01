@@ -34,5 +34,16 @@ namespace SobekCM.Core.Client
             // Call out to the endpoint and return the deserialized object
             return Deserialize<Builder_Settings>(url, endpoint.Protocol, Tracer);
         }
+
+        /// <summary> Get the URL for the list of all builder log files for consumption by the jQuery DataTable.net plug-in </summary>
+        /// <remarks> This URL is not an endpoint used by the user interface library, but rather employed by the 
+        /// user's browser in concert with the jQuery DataTable.net plug-in.  </remarks>
+        public string Get_Builder_Logs_JDataTable_URL
+        {
+            get
+            {
+                return Config["Builder.Get_Builder_Logs_JDataTable"] == null ? null : Config["Builder.Get_Builder_Logs_JDataTable"].URL;
+            }
+        }
     }
 }

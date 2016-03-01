@@ -123,6 +123,7 @@
     <Compile Include="MARC\MARC_Transfer_Field.cs" />
     <Compile Include="MARC\MARC_Transfer_Record.cs" />
     <Compile Include="MARC\MARC_Transfer_Subfield.cs" />
+    <Compile Include="MemoryMgmt\CachedDataManager_BuilderServices.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_ItemServices.cs" />
     <Compile Include="UI_Configuration\Viewers\AggregationWriterConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\ItemSubViewerConfig.cs" />

@@ -37,6 +37,8 @@ namespace SobekCM.Core.MemoryMgmt
         /// <summary> Top-level digital resource (item) specific cached data manager services  </summary>
         public static CachedDataManager_ItemServices Items { get; private set; }
 
+        /// <summary> Top-level builder services specific cached data manager services  </summary>
+        public static CachedDataManager_BuilderServices Builder { get; private set; }
 
         /// <summary> Static constructor initializes several variables </summary>
         static CachedDataManager()
@@ -48,6 +50,7 @@ namespace SobekCM.Core.MemoryMgmt
             WebSkins = new CachedDataManager_WebSkinServices(Settings);
             WebContent = new CachedDataManager_WebContentServices(Settings);
             Items = new CachedDataManager_ItemServices(Settings);
+            Builder = new CachedDataManager_BuilderServices(Settings);
         }
 
         /// <summary> Read-only list of basic information about all the objects stored in the local cache </summary>

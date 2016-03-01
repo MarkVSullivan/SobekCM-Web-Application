@@ -74,9 +74,11 @@ namespace SobekCM.Library.AdminViewer
         private readonly Settings_HTML_SubMode_Enum htmlSubEnum = Settings_HTML_SubMode_Enum.NONE;
 	    private readonly int extensionSubMode = -1;
 
-		#region Enumeration of the main modes of the settings, as well as submodes
+	    private readonly string redirectUrl;
 
-		private enum Settings_Mode_Enum : byte
+        #region Enumeration of the main modes of the settings, as well as submodes
+
+        private enum Settings_Mode_Enum : byte
 		{
 			NONE,
 	
@@ -401,8 +403,14 @@ namespace SobekCM.Library.AdminViewer
 			actionMessage = String.Empty;
 			category_view = Convert.ToBoolean(RequestSpecificValues.Current_User.Get_Setting("Settings_AdminViewer:Category_View", "false"));
 
-			// Is this a post-back requesting to save all this data?
-			if (RequestSpecificValues.Current_Mode.isPostBack)
+            // Determine the redirect URL now
+            string[] origUrlSegments = RequestSpecificValues.Current_Mode.Remaining_Url_Segments;
+            RequestSpecificValues.Current_Mode.Remaining_Url_Segments = new string[] { "%SETTINGSCODE%" };
+            redirectUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Current_Mode.Remaining_Url_Segments = origUrlSegments;
+
+            // Is this a post-back requesting to save all this data?
+            if (RequestSpecificValues.Current_Mode.isPostBack)
 			{
 				NameValueCollection form = HttpContext.Current.Request.Form;
 
@@ -570,12 +578,6 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  <tr>");
 			Output.WriteLine("    <td id=\"sbkSeav_TocArea\">");
 
-
-			// Determine the redirect URL now
-			string[] origUrlSegments = RequestSpecificValues.Current_Mode.Remaining_Url_Segments;
-			RequestSpecificValues.Current_Mode.Remaining_Url_Segments = new string[] { "%SETTINGSCODE%" };
-			string redirectUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-			RequestSpecificValues.Current_Mode.Remaining_Url_Segments = origUrlSegments;
 
 			// Determine the current viewer code
 			string currentViewerCode = String.Empty;
@@ -802,18 +804,41 @@ namespace SobekCM.Library.AdminViewer
 
 			if ((tabPage < 1) || ( tabPage > tabPageNames.Count ))
 			{
-				Output.WriteLine("SETTINGS TOP LEVEL PAGE");
-			}
-			else
+			    Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
+
+				Output.WriteLine("  <h2>Settings</h2>");
+                Output.WriteLine("  <p>This section includes all the basic setting information which governs the very basic operation of this SobekCM instance.  These settings include information about the actual servers, email information, help settings, top-level search settings, and more.  These settings are retained in the database and can be changed directly from these forms.</p>");
+                Output.WriteLine("  <p>The (non-builder) settings are split between the following subpages:</p>");
+
+                int tab_count = 1;
+			    Output.WriteLine("  <ul>");
+                foreach (string tabPageName in tabPageNames.Values)
+                {
+                    Output.WriteLine("    <li><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "settings/" + tab_count ) + "\">" + tabPageName.Trim() + "</a></li>");
+                    tab_count++;
+                }
+                Output.WriteLine("  </ul>");
+
+                Output.WriteLine("  <p>All of the variables used to display the settings, such as the subpage names, the grouping of the settings, and the help information, are found in the database.  This list of settings can be extended by plug-ins and other custom mechanisms, if necessary.");
+
+            }
+            else
 			{
-				string tabPageNameKey = tabPageNames.Keys[tabPage - 1];
+                Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "settings") + "\">Back to Settings</a></span>");
+
+                string tabPageNameKey = tabPageNames.Keys[tabPage - 1];
 				string tabPageName = tabPageNames[tabPageNameKey];
 				Output.WriteLine("  <h2>" + tabPageName.Trim() + "</h2>");
+
+			    Output.WriteLine("  <div id=\"sbkSeav_SmallerPageWrapper\">");
 
 				// Add the buttons
 				add_buttons(Output);
 
 				Output.WriteLine();
+                Output.WriteLine("  <br /><br />");
+                Output.WriteLine();
+
 				add_tab_page_info(Output, tabPageName, settingsByPage[tabPageName]);
 
 				Output.WriteLine("<br />");
@@ -821,6 +846,8 @@ namespace SobekCM.Library.AdminViewer
 
 				// Add final buttons
 				add_buttons(Output);
+
+			    Output.WriteLine("  </div>");
 			}
 		}
 
@@ -1402,13 +1429,40 @@ namespace SobekCM.Library.AdminViewer
 
         private void add_configuration_toplevel_info(TextWriter Output)
         {
+            Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
+
             Output.WriteLine("  <h2>Configuration Information</h2>");
+
+            Output.WriteLine("  <p>The SobekCM is highly configurable and extensible through the use of configuration files and plug-ins/extensions.  Most of the content displayed in this form is derived from the configuration files which are read when the application starts.</p>");
+            Output.WriteLine("  <p>The subpages under this page provide information on the files that were read and any errors that may have occurred.</p>");
+            Output.WriteLine("  <div id=\"sbkSeav_SubPageDesc\">");
+            Output.WriteLine("    <h4>Source Files</h4>");
+            Output.WriteLine("    <p>This subpage lists all the configuration files which were discovered during system start-up and lists the files in the order they would be read.</p>");
+            Output.WriteLine("    <p>If the configuration from a particular file does not appear to be working, this is a great place to start.  Here, you can see whether the configuration file is marked to be read and see the order in which it is being applied.</p>");
+
+
+            Output.WriteLine("    <h4>Reading Log</h4>");
+            Output.WriteLine("    <p>The reading log subpage shows the log which was written as the configuration files were read.  This log includes which configuration files were read, which configuration sections were found in each file, and any errors that may have occurred during the reading process.</p>");
+            Output.WriteLine("    <p>If a configuration file's contents are not being applied correctly, and you have already verified the file is included in the list in the subpage above, this is a great next step.  From here, you can verify if the file was read, if any errors occurred during that process, and which sections of the configuration file were recognized by the reader.</p>");
+            Output.WriteLine("  </div>");
+
         }
 
         private void add_configuration_file_info(TextWriter Output)
         {
+            Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "config") + "\">Back to Configuration</a></span>");
+
             Output.WriteLine("  <h2>Configuration Files</h2>");
             Output.WriteLine("  <p>The great bulk of the content displayed in this form is derived from the configuration files which are read when the application starts.</p>");
+            Output.WriteLine("  <p>Below is the list of all the configuration files that were discovered during system start-up and lists the file in the order they would be read.</p>");
+            Output.WriteLine("  <p>In general, the order that configuration files are read is:</p>");
+            Output.WriteLine("    <ol>");
+            Output.WriteLine("      <li>First, all the .config and .xml files under the config/default subfolder are read in alphabetical order.</li>");
+            Output.WriteLine("      <li>All the .config and .xml files found in plug-in subfolders under the plugins subfolder are read.</li>");
+            Output.WriteLine("      <li>Finally, all the .config and .xml files under the config/users subfolder are read and provide a last chance for an instance to override any default configuration or plug-in configuration.  This can be particularly useful if a collision is detected between two different plug-ins.</li>");
+            Output.WriteLine("    </ol>");
+
+
 
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_ConfigFilesTable\">");
             Output.WriteLine("    <tr><th>Configuration File</th></tr>");
@@ -1422,8 +1476,12 @@ namespace SobekCM.Library.AdminViewer
 
         private void add_configuration_log_info(TextWriter Output)
         {
+            Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "config") + "\">Back to Configuration</a></span>");
+
             Output.WriteLine("  <h2>Configuration Reading Log</h2>");
-            Output.WriteLine("  <p>This is the log file that is written as the configuration files are read.</p>");
+
+            Output.WriteLine("  <p>Below is the log which was written as the configuration files were read.  This log includes which configuration files were read, which configuration sections were found in each file, and any errors that may have occurred during the reading process.</p>");
+
 
             Output.WriteLine("  <div id=\"sbkSeav_ConfigReadingLog\">");
             Output.WriteLine("    <pre>");
@@ -1492,7 +1550,9 @@ namespace SobekCM.Library.AdminViewer
 	                    break;
 	            }
 	        }
-            
+
+            Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
+
             Output.WriteLine("  <h2>Builder Information</h2>");
 
             Output.WriteLine("  <table class=\"sbkSeav_BaseTableVert\" id=\"sbkSeav_BuilderTopInfo\">");
@@ -1517,8 +1577,14 @@ namespace SobekCM.Library.AdminViewer
         {
             Output.WriteLine("  <h2>Builder Settings</h2>");
 
+            Output.WriteLine("  <div id=\"sbkSeav_SmallerPageWrapper\">");
+
             // Add the buttons
             add_buttons(Output);
+
+            Output.WriteLine();
+            Output.WriteLine("<br /><br />");
+            Output.WriteLine();
 
             Output.WriteLine();
             add_tab_page_info(Output, "Builder Settings", builderSettings, "Status");
@@ -1528,6 +1594,8 @@ namespace SobekCM.Library.AdminViewer
 
             // Add final buttons
             add_buttons(Output);
+
+            Output.WriteLine("  </div>");
         }
 
         private void add_builder_folders_info(TextWriter Output)
@@ -2182,6 +2250,8 @@ namespace SobekCM.Library.AdminViewer
 
         private void add_metadata_toplevel_info(TextWriter Output)
         {
+            Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
+
             Output.WriteLine("METADATA TOP-LEVEL INFO HERE");
         }
 
@@ -2881,6 +2951,8 @@ namespace SobekCM.Library.AdminViewer
 
         private void add_engine_toplevel_info(TextWriter Output)
         {
+            Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
+
             Output.WriteLine("ENGINE TOP-LEVEL INFO HERE");
         }
 
@@ -3199,7 +3271,6 @@ namespace SobekCM.Library.AdminViewer
 
 		#endregion
 
-
 		#region HTML helper methods for the HTML snippets main page and subpages
 
 		private void add_html_info(TextWriter Output)
@@ -3224,11 +3295,15 @@ namespace SobekCM.Library.AdminViewer
 
         private void add_html_missing_page_info(TextWriter Output)
         {
-            Output.WriteLine("  <h2>No Results HTML Snippet</h2>");
+            Output.WriteLine("  <h2>Missing Page HTML Snippet</h2>");
+
+            Output.WriteLine("  <div id=\"sbkSeav_SmallerPageWrapper\">");
 
             // Add the buttons
             add_buttons(Output);
 
+            Output.WriteLine();
+            Output.WriteLine("<br /><br />");
             Output.WriteLine();
 
             HTML_Based_Content missingContent = SobekEngineClient.WebContent.Get_Special_Missing_Page(RequestSpecificValues.Tracer);
@@ -3250,15 +3325,21 @@ namespace SobekCM.Library.AdminViewer
 
             // Add final buttons
             add_buttons(Output);
+
+            Output.WriteLine("  </div>");
         }
 
         private void add_html_no_results_info(TextWriter Output)
         {
             Output.WriteLine("  <h2>No Results HTML Snippet</h2>");
 
+            Output.WriteLine("  <div id=\"sbkSeav_SmallerPageWrapper\">");
+
             // Add the buttons
             add_buttons(Output);
 
+            Output.WriteLine();
+            Output.WriteLine("<br /><br />");
             Output.WriteLine();
 
             string noResultsSnippet = No_Results_ResultsViewer.Get_NoResults_Text();
@@ -3271,28 +3352,33 @@ namespace SobekCM.Library.AdminViewer
 
             // Add final buttons
             add_buttons(Output);
+
+            Output.WriteLine("  </div>");
         }
 
         private void add_html_toplevel_info(TextWriter Output)
         {
+            Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
+
             Output.WriteLine("HTML TOP-LEVEL INFO HERE");
         }
 
 		#endregion
 
-
 		#region HTML helper methods for the extensions main page and subpages
 
 		private void add_extensions_info(TextWriter Output)
 		{
-			Output.WriteLine("EXTENSIONS INFO HERE");
+            Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
+
+            Output.WriteLine("EXTENSIONS INFO HERE");
 		}
 
 		#endregion
 
 
 	    /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
-	    /// <value> Returns 'sbkAsav_ContainerInner' </value>
+	    /// <value> Returns .... </value>
 	    public override string Container_CssClass
 	    {
 	        get

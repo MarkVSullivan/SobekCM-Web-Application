@@ -3435,6 +3435,49 @@ namespace SobekCM.Engine_Library.Database
 			}
 		}
 
+        /// <summary> Gets the matching builder logs, including a possible restriction by date range or bibid/vid </summary>
+        /// <param name="StartDate"> Possibly the starting date for the log range </param>
+        /// <param name="EndDate"> Possibly the ending date for the log range </param>
+        /// <param name="BibVidFilter"> Any search filter to see only particular BibID or BibID/VID</param>
+        /// <param name="IncludeNoWorkFlag"> Flag indicates if 'No Work' entries should be included</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Dataset with all the builder logs </returns>
+        public static DataSet Get_Builder_Logs(DateTime? StartDate, DateTime? EndDate, string BibVidFilter, bool IncludeNoWorkFlag, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Get_Builder_Logs", "Pulling builder logs for filter specified");
+            }
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[4];
+                if ( StartDate.HasValue )
+                    parameters[0] = new EalDbParameter("@startdate", StartDate.Value);
+                else
+                    parameters[0] = new EalDbParameter("@startdate", DBNull.Value);
+
+                if (EndDate.HasValue)
+                    parameters[1] = new EalDbParameter("@enddate", EndDate.Value);
+                else
+                    parameters[1] = new EalDbParameter("@enddate", DBNull.Value);
+
+                parameters[2] = new EalDbParameter("@bibid_vid", BibVidFilter);
+                parameters[3] = new EalDbParameter("@include_no_work_entries", IncludeNoWorkFlag);
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Builder_Log_Search", parameters);
+                return tempSet;
+            }
+            catch (Exception ee)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Get_Builder_Logs", "Error during execution: " + ee.Message);
+                }
+                Last_Exception = ee;
+                return null;
+            }
+        }
+
 		/// <summary> Gets the simple list of items for a single item aggregation, or the list of all items in the library </summary>
 		/// <param name="AggregationCode"> Code for the item aggregation of interest, or an empty string</param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>

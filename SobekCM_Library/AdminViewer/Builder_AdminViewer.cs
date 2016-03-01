@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
+using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Library.Database;
@@ -35,6 +36,7 @@ namespace SobekCM.Library.AdminViewer
     public class Builder_AdminViewer : abstract_AdminViewer
     {
         private string actionMessage;
+        private int page;
 
         /// <summary> Constructor for a new instance of the Builder_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -65,7 +67,41 @@ namespace SobekCM.Library.AdminViewer
                     }
                 }
             }
+
+            page = 1;
+            if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode))
+            {
+                switch (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.ToLower())
+                {
+                    case "b":
+                        page = 2;
+                        break;
+
+                    case "c":
+                        page = 3;
+                        break;
+                }
+            }
         }
+
+        /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
+        /// requests from the main HTML subwriter. </summary>
+        public override List<HtmlSubwriter_Behaviors_Enum> Viewer_Behaviors
+        {
+            get { return new List<HtmlSubwriter_Behaviors_Enum> { HtmlSubwriter_Behaviors_Enum.Suppress_Banner, HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables }; }
+        }
+
+        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        /// <value> Returns 'container-inner1215' always. </value>
+	    public override string Container_CssClass
+	    {
+	        get
+	        {
+                return "container-inner1215"; 
+	            
+	        }
+	    }
+        
 
         /// <summary> Title for the page that displays this viewer, this is shown in the search box at the top of the page, just below the banner </summary>
         /// <value> This always returns the value 'SobekCM Builder Status' </value>
@@ -79,6 +115,24 @@ namespace SobekCM.Library.AdminViewer
         public override string Viewer_Icon
         {
             get { return Static_Resources.Gears_Img; }
+        }
+
+        /// <summary> Write any additional values within the HTML Head of the
+        /// final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public override bool Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+           // Output.WriteLine("   <script type = \"text/javascript\" src=\"" + Static_Resources.Chart_Js + "\"></script>");
+
+            // Add the code for the calendar pop-up if it may be required
+            if (page == 2)
+            {
+                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + Static_Resources.Jsdatepick_Ltr_Css + "\" />");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jsdatepick_Min_1_3_Js + "\"></script>");
+            }
+
+            return false;
         }
 
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
@@ -103,31 +157,6 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("<!-- WebContent_Mgmt_AdminViewer.Write_ItemNavForm_Closing -->");
             Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
-
-            int page = 1;
-            string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
-            if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode))
-            {
-                switch (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.ToLower())
-                {
-                    case "b":
-                        page = 2;
-                        break;
-
-                    case "c":
-                        page = 3;
-                        break;
-
-                    case "d":
-                        page = 4;
-                        break;
-
-                    case "e":
-                        page = 5;
-                        break;
-                }
-            }
-
 
 
             // Show any action message
@@ -169,16 +198,14 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <div class=\"tabs\">");
             Output.WriteLine("    <ul>");
 
-
+            string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "XyzzyXyzzy";
             string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
 
             const string TAB1_TITLE = "STATUS";
-            const string TAB2_TITLE = "SETTINGS";
-            const string TAB3_TITLE = "INCOMING FOLDERS"; 
-            const string TAB4_TITLE = "MODULES";
-            const string TAB5_TITLE = "SCHEDULED TASKS";
+            const string TAB2_TITLE = "BUILDER LOGS";
+            const string TAB3_TITLE = "SCHEDULED TASKS";
 
             if (page == 1)
             {
@@ -205,24 +232,6 @@ namespace SobekCM.Library.AdminViewer
             else
             {
                 Output.WriteLine("    <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "c") + "';return false;\"> " + TAB3_TITLE + " </li>");
-            }
-
-            if (page == 4)
-            {
-                Output.WriteLine("      <li class=\"tabActiveHeader\"> " + TAB4_TITLE + " </li>");
-            }
-            else
-            {
-                Output.WriteLine("    <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "d") + "';return false;\"> " + TAB4_TITLE + " </li>");
-            }
-
-            if (page == 5)
-            {
-                Output.WriteLine("      <li class=\"tabActiveHeader\"> " + TAB5_TITLE + " </li>");
-            }
-            else
-            {
-                Output.WriteLine("    <li onclick=\"window.location.href=\'" + url.Replace("XyzzyXyzzy", "e") + "';return false;\"> " + TAB5_TITLE + " </li>");
             }
 
 
@@ -252,18 +261,10 @@ namespace SobekCM.Library.AdminViewer
                     break;
 
                 case 2:
-                    add_builder_settings(Output, base_url, Tracer);
+                    add_builder_logs(Output, base_url, Tracer);
                     break;
 
                 case 3:
-                    add_builder_folders(Output, base_url, Tracer);
-                    break;
-
-                case 4:
-                    add_builder_modules(Output, base_url, Tracer);
-                    break;
-
-                case 5:
                     add_builder_scheduled_tasks(Output, base_url, Tracer);
                     break;
             }
@@ -363,19 +364,203 @@ namespace SobekCM.Library.AdminViewer
 
         }
 
-        public void add_builder_settings(TextWriter Output, string Base_URL, Custom_Tracer Tracer)
+        public void add_builder_logs(TextWriter Output, string Base_URL, Custom_Tracer Tracer)
         {
+            // Get the base url
+            string baseURL = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
-        }
+            Output.WriteLine("  <p>Below you can view the list of builder logs.</p>");
 
-        public void add_builder_folders(TextWriter Output, string Base_URL, Custom_Tracer Tracer)
-        {
+            // Add the filter boxes
+            Output.WriteLine("  <p>Use the boxes below to filter the results to only show a subset.</p>");
+            Output.WriteLine("  <div id=\"sbkWcav_FilterPanel\">");
 
-        }
+            // Get the browse info mode, and also the redirect url without the mode information
+            string currentInfoBrowseMode = RequestSpecificValues.Current_Mode.Info_Browse_Mode;
+            RequestSpecificValues.Current_Mode.Info_Browse_Mode = String.Empty;
+            string redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+            RequestSpecificValues.Current_Mode.Info_Browse_Mode = currentInfoBrowseMode;
 
-        public void add_builder_modules(TextWriter Output, string Base_URL, Custom_Tracer Tracer)
-        {
 
+            // Get the two dates
+            DateTime? date1 = null;
+            DateTime? date2 = null;
+            if (!String.IsNullOrEmpty(currentInfoBrowseMode))
+            {
+                try
+                {
+                    string[] splitter = currentInfoBrowseMode.Split("-".ToCharArray());
+                    if (splitter.Length == 3)
+                    {
+                        int year1;
+                        Int32.TryParse(splitter[2], out year1);
+                        if (year1 < 100)
+                            year1 = 2000 + year1;
+                        date1 = new DateTime(year1, Convert.ToInt32(splitter[0]), Convert.ToInt32(splitter[1]));
+                    }
+                    else if (splitter.Length == 6)
+                    {
+                        int year1;
+                        Int32.TryParse(splitter[2], out year1);
+                        if (year1 < 100)
+                            year1 = 2000 + year1;
+                        int year2;
+                        Int32.TryParse(splitter[5], out year2);
+                        if (year2 < 100)
+                            year2 = 2000 + year2;
+                        date1 = new DateTime(year1, Convert.ToInt32(splitter[0]), Convert.ToInt32(splitter[1]));
+                        date2 = new DateTime(year2, Convert.ToInt32(splitter[3]), Convert.ToInt32(splitter[4]));
+
+                        if (date1.Value.CompareTo(date2.Value) > 0)
+                        {
+                            DateTime? tempDate = date1;
+                            date1 = date2;
+                            date2 = tempDate;
+                        }
+
+                        DateTime modifiedDate = date2.Value.AddDays(1);
+                    }
+
+                }
+                catch (Exception)
+                {
+                    // If the parsing of the date from the URL fails, no item count information is pulled from the database
+                }
+            }
+
+            Output.WriteLine("  <script type=\"text/javascript\">");
+            Output.WriteLine("    window.onload = function() { ");
+            if (date1.HasValue)
+            {
+                Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date1input\", target_cssClass:\"sbkShw_smallinput\", launcher:\"calendar1img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + date1.Value.Year + ", month:" + date1.Value.Month + ", day:" + date1.Value.Day + "	} 	});");
+            }
+            else
+            {
+                Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date1input\", target_cssClass:\"sbkShw_smallinput\", launcher:\"calendar1img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + DateTime.Now.Year + ", month:" + DateTime.Now.Month + ", day:" + DateTime.Now.Day + "	} 	});");
+            }
+
+            if (date2.HasValue)
+            {
+                Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date2input\", target_cssClass:\"sbkShw_smallinput\", launcher:\"calendar2img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + date2.Value.Year + ", month:" + date2.Value.Month + ", day:" + date2.Value.Day + "	} 	});");
+            }
+            else
+            {
+                Output.WriteLine("      new JsDatePick({ useMode:2, target:\"date2input\", target_cssClass:\"sbkShw_smallinput\", launcher:\"calendar2img\", dateFormat: \"%n/%j/%Y\", imgPath: \"" + RequestSpecificValues.Current_Mode.Base_URL + "default/images/datepicker/\", selectedDate:{ year:" + DateTime.Now.Year + ", month:" + DateTime.Now.Month + ", day:" + DateTime.Now.Day + "	} 	});");
+            }
+            Output.WriteLine("    }; ");
+            Output.WriteLine("  </script>");
+
+            Output.WriteLine("  <form name=\"log_filter_form\" id=\"addedForm\">");
+            Output.WriteLine("    <table id=\"sbkBav_LogFilterTable\">");
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <th>Filter by Date:</th>");
+            Output.WriteLine("        <td>From:</td>");
+            if (date1.HasValue)
+            {
+                Output.WriteLine("        <td><input type=\"text\" name=\"date1input\" id=\"date1input\" class=\"sbkShw_smallinput\" value=\"" + date1.Value.ToShortDateString() + "\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
+            }
+            else
+            {
+                Output.WriteLine("        <td><input type=\"text\" name=\"date1input\" id=\"date1input\" class=\"sbkShw_smallinput_initial\" value=\"mm/dd/yyyy\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
+            }
+            Output.WriteLine("        <td style=\"width:50px;\"><img src=\"" + Static_Resources.Calendar_Button_Img + "\" title=\"Show a calendar to select this date\"  onclick=\"return false;\" name=\"calendar1img\" ID=\"calendar1img\" class=\"calendar_button\" /></td>");
+            Output.WriteLine("        <td>To:</td>");
+            if (date2.HasValue)
+            {
+                Output.WriteLine("        <td><input type=\"text\" name=\"date2input\" id=\"date2input\" class=\"sbkShw_smallinput\" value=\"" + date2.Value.ToShortDateString() + "\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
+            }
+            else
+            {
+                Output.WriteLine("        <td><input type=\"text\" name=\"date2input\" id=\"date2input\" class=\"sbkShw_smallinput_initial\" value=\"mm/dd/yyyy\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
+            }
+            Output.WriteLine("        <td><img src=\"" + Static_Resources.Calendar_Button_Img + "\" title=\"Show a calendar to select this date\" onclick=\"return false;\" name=\"calendar2img\" ID=\"calendar2img\" class=\"calendar_button\" /></td>");
+            Output.WriteLine("      </tr>");
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <th>Filter by BibID/VID:</th>");
+            Output.WriteLine("        <td colspan=\"6\"><input type=\"text\" id=\"bibVidFilter\" name=\"bibVidFilter\" class=\"sbkBav_LogFilterBox\"></td>");
+            Output.WriteLine("      </tr>");
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <td colspan=\"6\" id=\"sbkBav_LogFilterInstructions\">To change the dates shown or set a filter, choose your dates above and hit the GO button.</td>");
+            Output.WriteLine("        <td>");
+            Output.WriteLine("          <button title=\"Select Range\" class=\"roundbutton\" onclick=\"arbitrary_item_count('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("        </td>");
+            Output.WriteLine("      </tr>");
+            Output.WriteLine("    </table>");
+            Output.WriteLine("  </form>");
+            Output.WriteLine();
+
+
+            Output.WriteLine("  </div>");
+            Output.WriteLine();
+
+            Output.WriteLine("  <table id=\"sbkWcav_MainTable\" class=\"sbkWcav_Table display\">");
+            Output.WriteLine("    <thead>");
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <th>Log Date</th>");
+            Output.WriteLine("        <th>BibID : VID</th>");
+            Output.WriteLine("        <th>Log Type</th>");
+            Output.WriteLine("        <th>Log Message</th>");
+            Output.WriteLine("      </tr>");
+            Output.WriteLine("    </thead>");
+            Output.WriteLine("    <tbody>");
+            Output.WriteLine("      <tr><td colspan=\"4\" class=\"dataTables_empty\">Loading data from server</td></tr>");
+            Output.WriteLine("    </tbody>");
+            Output.WriteLine("  </table>");
+
+            Output.WriteLine();
+            Output.WriteLine("<script type=\"text/javascript\">");
+            Output.WriteLine("  $(document).ready(function() {");
+            Output.WriteLine("     var shifted=false;");
+            Output.WriteLine("     $(document).on('keydown', function(e){shifted = e.shiftKey;} );");
+            Output.WriteLine("     $(document).on('keyup', function(e){shifted = false;} );");
+
+            Output.WriteLine();
+            Output.WriteLine("      var oTable = $('#sbkWcav_MainTable').dataTable({");
+            Output.WriteLine("           \"lengthMenu\": [ [50, 100, 500, 1000, -1], [50, 100, 500, 1000, \"All\"] ],");
+            Output.WriteLine("           \"pageLength\": 50,");
+            //Output.WriteLine("           \"bFilter\": false,");
+            Output.WriteLine("           \"processing\": true,");
+            Output.WriteLine("           \"serverSide\": true,");
+            Output.WriteLine("           \"sDom\": \"lprtip\",");
+
+            // Determine the URL for the results
+            string data_source_url = SobekEngineClient.Builder.Get_Builder_Logs_JDataTable_URL;
+
+            //// Add any query string (should probably use StringBuilder, but this should be fairly seldomly used very deeply)
+            //if (!String.IsNullOrEmpty(userFilter))
+            //{
+            //    data_source_url = data_source_url + "?user=" + userFilter;
+            //}
+            //else if (!String.IsNullOrEmpty(level1))
+            //{
+            //    data_source_url = data_source_url + "?l1=" + level1;
+            //    if (!String.IsNullOrEmpty(level2))
+            //    {
+            //        data_source_url = data_source_url + "&l2=" + level2;
+            //        if (!String.IsNullOrEmpty(level3))
+            //        {
+            //            data_source_url = data_source_url + "&l3=" + level3;
+            //            if (!String.IsNullOrEmpty(level4))
+            //            {
+            //                data_source_url = data_source_url + "&l4=" + level4;
+            //                if (!String.IsNullOrEmpty(level5))
+            //                {
+            //                    data_source_url = data_source_url + "&l5=" + level5;
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+
+            Output.WriteLine("           \"sAjaxSource\": \"" + data_source_url + "\",");
+            Output.WriteLine("           \"aoColumns\": [ null, null, null, null ]  });");
+            Output.WriteLine();
+
+            Output.WriteLine("  });");
+            Output.WriteLine("</script>");
+            Output.WriteLine();
+
+            Output.WriteLine();
         }
 
         public void add_builder_scheduled_tasks(TextWriter Output, string Base_URL, Custom_Tracer Tracer)
