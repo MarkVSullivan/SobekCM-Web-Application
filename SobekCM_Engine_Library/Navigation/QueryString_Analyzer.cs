@@ -764,7 +764,7 @@ namespace SobekCM.Engine_Library.Navigation
                                             break;
 
                                         case "builderfolder":
-                                            Navigator.Admin_Type = Admin_Type_Enum.Settings;
+                                            Navigator.Admin_Type = Admin_Type_Enum.Builder_Folder_Mgmt;
                                             Navigator.Remaining_Url_Segments = copy_remaining_segments_as_array(url_relative_list, 2);
                                             break;
                                     }

@@ -3045,6 +3045,7 @@ namespace SobekCM.Core.UI_Configuration
             // Some values for testing
             Sobekcm_Css = "http://cdn.sobekdigital.com/css/sobekcm/4.10.0/sobekcm.css";
             Sobekcm_Admin_Css = "http://cdn.sobekdigital.com/css/sobekcm-admin/4.10.0/sobekcm_admin.css";
+            Sobekcm_Admin_Js = "http://cdn.sobekdigital.com/js/sobekcm-admin/4.10.0/sobekcm_admin.js";
 
             return returnValue;
         }

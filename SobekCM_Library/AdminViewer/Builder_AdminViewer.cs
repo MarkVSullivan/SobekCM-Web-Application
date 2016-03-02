@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Web;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
@@ -36,7 +37,7 @@ namespace SobekCM.Library.AdminViewer
     public class Builder_AdminViewer : abstract_AdminViewer
     {
         private string actionMessage;
-        private int page;
+        private readonly int page;
 
         /// <summary> Constructor for a new instance of the Builder_AdminViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
@@ -369,6 +370,8 @@ namespace SobekCM.Library.AdminViewer
             // Get the base url
             string baseURL = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
 
+
+
             Output.WriteLine("  <p>Below you can view the list of builder logs.</p>");
 
             // Add the filter boxes
@@ -381,52 +384,59 @@ namespace SobekCM.Library.AdminViewer
             string redirect_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             RequestSpecificValues.Current_Mode.Info_Browse_Mode = currentInfoBrowseMode;
 
+            // Determine the URL for the results
+            StringBuilder data_source_url_builder = new StringBuilder(SobekEngineClient.Builder.Get_Builder_Logs_JDataTable_URL);
+            bool added_arg = false;
 
-            // Get the two dates
+            // Get the two dates from the query string and append to the data source URl at the same time
             DateTime? date1 = null;
             DateTime? date2 = null;
-            if (!String.IsNullOrEmpty(currentInfoBrowseMode))
+            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["date1"]))
             {
-                try
+                string date1_string = HttpContext.Current.Request.QueryString["date1"];
+                DateTime temp;
+                if (DateTime.TryParse(date1_string, out temp))
                 {
-                    string[] splitter = currentInfoBrowseMode.Split("-".ToCharArray());
-                    if (splitter.Length == 3)
-                    {
-                        int year1;
-                        Int32.TryParse(splitter[2], out year1);
-                        if (year1 < 100)
-                            year1 = 2000 + year1;
-                        date1 = new DateTime(year1, Convert.ToInt32(splitter[0]), Convert.ToInt32(splitter[1]));
-                    }
-                    else if (splitter.Length == 6)
-                    {
-                        int year1;
-                        Int32.TryParse(splitter[2], out year1);
-                        if (year1 < 100)
-                            year1 = 2000 + year1;
-                        int year2;
-                        Int32.TryParse(splitter[5], out year2);
-                        if (year2 < 100)
-                            year2 = 2000 + year2;
-                        date1 = new DateTime(year1, Convert.ToInt32(splitter[0]), Convert.ToInt32(splitter[1]));
-                        date2 = new DateTime(year2, Convert.ToInt32(splitter[3]), Convert.ToInt32(splitter[4]));
-
-                        if (date1.Value.CompareTo(date2.Value) > 0)
-                        {
-                            DateTime? tempDate = date1;
-                            date1 = date2;
-                            date2 = tempDate;
-                        }
-
-                        DateTime modifiedDate = date2.Value.AddDays(1);
-                    }
-
-                }
-                catch (Exception)
-                {
-                    // If the parsing of the date from the URL fails, no item count information is pulled from the database
+                    date1 = temp;
+                    data_source_url_builder.Append("?date1=" + temp.ToShortDateString());
+                    added_arg = true;
                 }
             }
+            if (!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["date2"]))
+            {
+                string date2_string = HttpContext.Current.Request.QueryString["date2"];
+                DateTime temp;
+                if (DateTime.TryParse(date2_string, out temp))
+                {
+                    date2 = temp;
+                    if ( added_arg )
+                        data_source_url_builder.Append("&date2=" + temp.ToShortDateString());
+                    else
+                        data_source_url_builder.Append("?date2=" + temp.ToShortDateString());
+                    added_arg = true;
+                }
+            }
+
+            // Get the other query string filter values
+            string currentFilter = String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["filter"]) ? String.Empty : HttpContext.Current.Request.QueryString["filter"];
+            bool includeNoWorkFlag = ((!String.IsNullOrEmpty(HttpContext.Current.Request.QueryString["showall"])) && (HttpContext.Current.Request.QueryString["showall"].ToLower() == "true"));
+
+            // Finish building the data source url
+            if (!String.IsNullOrEmpty(currentFilter))
+            {
+                if (added_arg)
+                    data_source_url_builder.Append("&filter=" + currentFilter);
+                else
+                    data_source_url_builder.Append("?filter=" + currentFilter);
+            }
+            if (includeNoWorkFlag)
+            {
+                if (added_arg)
+                    data_source_url_builder.Append("&includeNoWork=true");
+                else
+                    data_source_url_builder.Append("?includeNoWork=true");
+            }
+            string data_source_url = data_source_url_builder.ToString();
 
             Output.WriteLine("  <script type=\"text/javascript\">");
             Output.WriteLine("    window.onload = function() { ");
@@ -475,14 +485,23 @@ namespace SobekCM.Library.AdminViewer
             }
             Output.WriteLine("        <td><img src=\"" + Static_Resources.Calendar_Button_Img + "\" title=\"Show a calendar to select this date\" onclick=\"return false;\" name=\"calendar2img\" ID=\"calendar2img\" class=\"calendar_button\" /></td>");
             Output.WriteLine("      </tr>");
+
+            // Add the filter by bibid/vid
             Output.WriteLine("      <tr>");
             Output.WriteLine("        <th>Filter by BibID/VID:</th>");
-            Output.WriteLine("        <td colspan=\"6\"><input type=\"text\" id=\"bibVidFilter\" name=\"bibVidFilter\" class=\"sbkBav_LogFilterBox\"></td>");
+            Output.WriteLine("        <td colspan=\"6\"><input type=\"text\" id=\"bibVidFilter\" name=\"bibVidFilter\" class=\"sbkBav_LogFilterBox\" value=\"" + currentFilter + "\" /></td>");
+            Output.WriteLine("      </tr>");
+
+            // Add the no works check mark
+            string checkedValue = includeNoWorkFlag ? "checked=\"checked\" " : String.Empty;
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <th>Include logs with no work:</th>");
+            Output.WriteLine("        <td colspan=\"6\"><input type=\"checkbox\" id=\"noWorkFilter\" name=\"noWorkFilter\" class=\"sbkBav_NoWorkCheckBox\" " + checkedValue + " /><label for=\"noWorkFilter\">Include log entries of no work (but demonstrates polling)</td>");
             Output.WriteLine("      </tr>");
             Output.WriteLine("      <tr>");
             Output.WriteLine("        <td colspan=\"6\" id=\"sbkBav_LogFilterInstructions\">To change the dates shown or set a filter, choose your dates above and hit the GO button.</td>");
             Output.WriteLine("        <td>");
-            Output.WriteLine("          <button title=\"Select Range\" class=\"roundbutton\" onclick=\"arbitrary_item_count('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("          <button title=\"Select Range\" class=\"roundbutton\" onclick=\"builder_log_filter_change('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("        </td>");
             Output.WriteLine("      </tr>");
             Output.WriteLine("    </table>");
@@ -523,8 +542,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("           \"serverSide\": true,");
             Output.WriteLine("           \"sDom\": \"lprtip\",");
 
-            // Determine the URL for the results
-            string data_source_url = SobekEngineClient.Builder.Get_Builder_Logs_JDataTable_URL;
+
 
             //// Add any query string (should probably use StringBuilder, but this should be fairly seldomly used very deeply)
             //if (!String.IsNullOrEmpty(userFilter))

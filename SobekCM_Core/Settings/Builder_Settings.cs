@@ -12,6 +12,7 @@ namespace SobekCM.Core.Settings
 {
     /// <summary> [DataContract] Class stores the all the settings used by the builder </summary>
     [Serializable, DataContract, ProtoContract]
+    [XmlRoot("builderSettings")]
     public class Builder_Settings
     {
         /// <summary> Constructor for a new instance of the Builder_Settings class </summary>

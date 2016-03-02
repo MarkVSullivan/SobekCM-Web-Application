@@ -266,7 +266,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 return fromCache;
 
             // Try to pull from the database
-            DataSet fromDb = Engine_Database.Get_Builder_Logs(StartDate, EndDate, Filter, Include_No_Work, Tracer);
+            DataSet fromDb = Engine_Database.Builder_Log_Search(StartDate, EndDate, Filter, Include_No_Work, Tracer);
 
             // Store in the cache if not null
             if (fromDb != null)

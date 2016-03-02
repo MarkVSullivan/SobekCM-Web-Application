@@ -37,6 +37,9 @@ namespace SobekCM.Library.AdminViewer
                 case Admin_Type_Enum.Builder_Status:
                     return new Builder_AdminViewer(RequestSpecificValues);
 
+                case Admin_Type_Enum.Builder_Folder_Mgmt:
+                    return new Builder_Folder_Mgmt_AdminViewer(RequestSpecificValues);
+
                 case Admin_Type_Enum.Skins_Single:
                     return new Skin_Single_AdminViewer(RequestSpecificValues);
 

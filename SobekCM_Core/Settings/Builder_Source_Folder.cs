@@ -14,6 +14,7 @@ namespace SobekCM.Core.Settings
     /// packages destined to be bulk loaded into a SobekCM library incoming FTP folder, including 
     /// network locations, archiving instructions, and what type of packages are permissable </summary>
     [Serializable, DataContract, ProtoContract]
+    [XmlRoot("builderFolder")]
     public class Builder_Source_Folder
     {
 
@@ -33,6 +34,8 @@ namespace SobekCM.Core.Settings
 	        //Can_Move_To_Content_Folder = true;
 	        BibID_Roots_Restrictions = String.Empty;
             IncomingFolderID = -1;
+
+            Builder_Module_Set = new Builder_Module_Set_Info();
         }
 
         /// <summary> Human readable label for this folder </summary>
@@ -103,28 +106,16 @@ namespace SobekCM.Core.Settings
         [ProtoMember(10)]
         public string BibID_Roots_Restrictions { get; set; }
 
-		/// <summary> Flag indicates if content can be moved, or must be copied, from this incoming
-		/// folder to the content folder.  Essentially, set to TRUE if on the same system </summary>
-        //[DataMember]
-		//public Nullable<bool> Can_Move_To_Content_Folder { get; set; }
-
-        /// <summary> Folder builder module settings to run for this folder </summary>
-        [DataMember(Name = "preProcessModules")]
-        [XmlArray("preProcessModules")]
-        [XmlArrayItem("module", typeof(Builder_Module_Setting))]
+        /// <summary> Set of the builder modules used by this incoming folder </summary>
+        [DataMember(Name = "builderModuleSet", EmitDefaultValue = false)]
+        [XmlElement("builderModuleSet")]
         [ProtoMember(11)]
-        public List<Builder_Module_Setting> Builder_Module_Settings { get; set;  }
-
-        /// <summary> Primary key for the folder builder modules for this inbound folder </summary>
-        [DataMember(Name = "modulesSetId", EmitDefaultValue = false)]
-        [XmlAttribute("modulesSetId")]
-        [ProtoMember(12)]
-        public int Builder_Module_SetID { get; set; }
+        public Builder_Module_Set_Info Builder_Module_Set { get; set; }
 
         /// <summary> Primary key for this incoming folder in the database </summary>
         [DataMember(Name = "id", EmitDefaultValue = false)]
         [XmlAttribute("id")]
-        [ProtoMember(13)]
+        [ProtoMember(12)]
         public int IncomingFolderID { get; set; }
     }
 }

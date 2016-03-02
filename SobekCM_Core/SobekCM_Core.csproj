@@ -125,6 +125,7 @@
     <Compile Include="MARC\MARC_Transfer_Subfield.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_BuilderServices.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_ItemServices.cs" />
+    <Compile Include="Settings\Builder_Module_Set_Info.cs" />
     <Compile Include="UI_Configuration\Viewers\AggregationWriterConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\ItemSubViewerConfig.cs" />
     <Compile Include="UI_Configuration\MapEditor_Configuration.cs" />

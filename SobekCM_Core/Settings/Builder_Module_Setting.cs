@@ -12,6 +12,7 @@ namespace SobekCM.Core.Settings
 {
     /// <summary> Setting information for a single builder module </summary>
     [Serializable, DataContract, ProtoContract]
+    [XmlRoot("builderModule")]
     public class Builder_Module_Setting
     {
         /// <summary> [DataMember] Name of the assembly DLL (if not a part of the standard SobekCM assembly </summary>

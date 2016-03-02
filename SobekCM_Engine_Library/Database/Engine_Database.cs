@@ -1021,7 +1021,7 @@ namespace SobekCM.Engine_Library.Database
 
 				// Have the database popoulate the little bit of bibid/vid information we retain
 				bool returnValue = Populate_Item_Lookup_Object(IncludePrivate, ItemLookupObject, Tracer);
-				if (returnValue)
+				if ((returnValue) && ( ItemLookupObject != null ))
 					ItemLookupObject.Last_Updated = DateTime.Now;
 				return returnValue;
 			}
@@ -3435,6 +3435,8 @@ namespace SobekCM.Engine_Library.Database
 			}
 		}
 
+        #region Methods that support the builder integration into the UI (engine)
+
         /// <summary> Gets the matching builder logs, including a possible restriction by date range or bibid/vid </summary>
         /// <param name="StartDate"> Possibly the starting date for the log range </param>
         /// <param name="EndDate"> Possibly the ending date for the log range </param>
@@ -3442,17 +3444,17 @@ namespace SobekCM.Engine_Library.Database
         /// <param name="IncludeNoWorkFlag"> Flag indicates if 'No Work' entries should be included</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Dataset with all the builder logs </returns>
-        public static DataSet Get_Builder_Logs(DateTime? StartDate, DateTime? EndDate, string BibVidFilter, bool IncludeNoWorkFlag, Custom_Tracer Tracer)
+        public static DataSet Builder_Log_Search(DateTime? StartDate, DateTime? EndDate, string BibVidFilter, bool IncludeNoWorkFlag, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Engine_Database.Get_Builder_Logs", "Pulling builder logs for filter specified");
+                Tracer.Add_Trace("Engine_Database.Builder_Log_Search", "Pulling builder logs for filter specified");
             }
 
             try
             {
                 EalDbParameter[] parameters = new EalDbParameter[4];
-                if ( StartDate.HasValue )
+                if (StartDate.HasValue)
                     parameters[0] = new EalDbParameter("@startdate", StartDate.Value);
                 else
                     parameters[0] = new EalDbParameter("@startdate", DBNull.Value);
@@ -3471,12 +3473,229 @@ namespace SobekCM.Engine_Library.Database
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("Engine_Database.Get_Builder_Logs", "Error during execution: " + ee.Message);
+                    Tracer.Add_Trace("Engine_Database.Builder_Log_Search", "Error during execution: " + ee.Message);
                 }
                 Last_Exception = ee;
                 return null;
             }
         }
+
+        /// <summary> Gets the most recent updates for the builder including the builder settings and scheduled tasks </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Dataset with all the builder updates </returns>
+        public static DataSet Builder_Get_Recent_Updates(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Builder_Get_Recent_Updates", "Pulling the latest builder information");
+            }
+
+            try
+            {
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Builder_Get_Latest_Update");
+                return tempSet;
+            }
+            catch (Exception ee)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Builder_Get_Recent_Updates", "Error during execution: " + ee.Message);
+                }
+                Last_Exception = ee;
+                return null;
+            }
+        }
+
+        /// <summary> Gets the most recent updates for the builder including the builder settings and scheduled tasks </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Dataset with all the builder updates </returns>
+        public static List<Builder_Module_Set_Info> Builder_Get_Folder_Module_Sets(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Builder_Get_Folder_Module_Sets", "Pulling the information about the current folder module sets");
+            }
+
+            try
+            {
+                // Pull the data
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Builder_Get_Folder_Module_Sets");
+                
+                // Build the module sets to return
+                List<Builder_Module_Set_Info> returnvalue = new List<Builder_Module_Set_Info>();
+                foreach (DataRow thisRow in tempSet.Tables[0].Rows)
+                {
+                    Builder_Module_Set_Info thisModule = new Builder_Module_Set_Info
+                    {
+                        SetID = Int32.Parse(thisRow["ModuleSetID"].ToString()), 
+                        SetName = thisRow["SetName"].ToString(), 
+                        Used_Count = Int32.Parse(thisRow["UsedCount"].ToString())
+                    };
+
+                    returnvalue.Add(thisModule);
+                }
+
+                return returnvalue;
+            }
+            catch (Exception ee)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Builder_Get_Folder_Module_Sets", "Error during execution: " + ee.Message);
+                }
+                Last_Exception = ee;
+                return null;
+            }
+        }
+
+        /// <summary> Gets the latest information about a builder source folder, by primary key </summary>
+        /// <param name="FolderID"> Primary key for the builder incoming folder to retrieve </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Fully built information about a single builder source folder </returns>
+        /// <remarks> This calls the 'SobekCM_Builder_Get_Incoming_Folder' stored procedure </remarks> 
+        public static Builder_Source_Folder Builder_Get_Incoming_Folder(int FolderID, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Builder_Get_Incoming_Folder", "Get latest information for a builder incoming folder");
+            }
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@FolderId", FolderID);
+
+                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Builder_Get_Incoming_Folder", parameters);
+
+                if ((resultSet == null) || (resultSet.Tables.Count == 0) || (resultSet.Tables[0].Rows.Count == 0))
+                    return null;
+
+                DataRow thisRow = resultSet.Tables[0].Rows[0];
+                Builder_Source_Folder newFolder = new Builder_Source_Folder
+                {
+                    IncomingFolderID = Convert.ToInt32(thisRow["IncomingFolderId"]),
+                    Folder_Name = thisRow["FolderName"].ToString(),
+                    Inbound_Folder = thisRow["NetworkFolder"].ToString(),
+                    Failures_Folder = thisRow["ErrorFolder"].ToString(),
+                    Processing_Folder = thisRow["ProcessingFolder"].ToString(),
+                    Perform_Checksum = Convert.ToBoolean(thisRow["Perform_Checksum_Validation"]),
+                    Archive_TIFFs = Convert.ToBoolean(thisRow["Archive_TIFF"]),
+                    Archive_All_Files = Convert.ToBoolean(thisRow["Archive_All_Files"]),
+                    Allow_Deletes = Convert.ToBoolean(thisRow["Allow_Deletes"]),
+                    Allow_Folders_No_Metadata = Convert.ToBoolean(thisRow["Allow_Folders_No_Metadata"]),
+                    Allow_Metadata_Updates = Convert.ToBoolean(thisRow["Allow_Metadata_Updates"]),
+                    BibID_Roots_Restrictions = thisRow["BibID_Roots_Restrictions"].ToString(),
+                    Builder_Module_Set = { SetID = Convert.ToInt32(thisRow["ModuleSetID"]), SetName = thisRow["SetName"].ToString() }
+                };
+
+                return newFolder;
+                
+            }
+            catch (Exception ee)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Builder_Get_Incoming_Folder", "Error during execution: " + ee.Message);
+                }
+                Last_Exception = ee;
+                return null;
+            }
+        }
+
+        /// <summary> Deletes an existing builder incoming folder from the table </summary>
+        /// <param name="FolderID"> Primary key for the builder incoming folder to delete </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Builder_Incoming_Folder_Delete' stored procedure </remarks> 
+        public static bool Builder_Delete_Incoming_Folder(int FolderID, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Builder_Delete_Incoming_Folder", "Processing delete for an incoming folder");
+            }
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@IncomingFolderId", FolderID);
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Builder_Incoming_Folder_Delete", parameters);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Builder_Delete_Incoming_Folder", "Error during execution: " + ee.Message);
+                }
+                Last_Exception = ee;
+                return false;
+            }
+        }
+
+        /// <summary> Edits an existing builder incoming folder or adds a new folder </summary>
+        /// <param name="FolderID"> Primary key for the builder incoming folder to edit </param>
+        /// <param name="Folder_Name"> Name of this folder (human friendly) </param>
+        /// <param name="Network_Folder"> Directory for this incoming folder on the network </param>
+        /// <param name="Error_Folder"> Directory for the error folder for this incoming folder on the network  </param>
+        /// <param name="Processing_Folder"> Directory for the processing folder for this incoming folder on the network </param>
+        /// <param name="Perform_Checksum"> Flag indicates if a checksum check should occur on incoming resources </param>
+        /// <param name="Archive_TIFF"> Flag indicates if TIFF files should be archived </param>
+        /// <param name="Archive_All_Files"> Flag indicates if all files should be archived  </param>
+        /// <param name="Allow_Deletes"> Flag indicates if DELETE METS can be processed from this incoming folder </param>
+        /// <param name="Allow_Folders_No_Metadata"> Flag indicates if folders without any metadata should be processed from this incoming folder </param>
+        /// <param name="BibID_Roots_Restrictions"> Any restrictions on the incoming BibIDs that can be processed from this incoming folder </param>
+        /// <param name="ModuleSetID"> Primary key to the builder module set for this folder </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Builder_Incoming_Folder_Edit' stored procedure </remarks> 
+        public static bool Builder_Edit_Incoming_Folder(int FolderID, string Folder_Name, string Network_Folder, string Error_Folder, string Processing_Folder,
+            bool Perform_Checksum, bool Archive_TIFF, bool Archive_All_Files, bool Allow_Deletes, bool Allow_Folders_No_Metadata, 
+            string BibID_Roots_Restrictions, int ModuleSetID, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Builder_Edit_Incoming_Folder", "Processing edit for an incoming folder");
+            }
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[13];
+                parameters[0] = new EalDbParameter("@IncomingFolderId", FolderID);
+                parameters[1] = new EalDbParameter("@NetworkFolder", Network_Folder);
+                parameters[2] = new EalDbParameter("@ErrorFolder", Error_Folder);
+                parameters[3] = new EalDbParameter("@ProcessingFolder", Processing_Folder);
+                parameters[4] = new EalDbParameter("@Perform_Checksum_Validation", Perform_Checksum);
+                parameters[5] = new EalDbParameter("@Archive_TIFF", Archive_TIFF);
+                parameters[6] = new EalDbParameter("@Archive_All_Files", Archive_All_Files);
+                parameters[7] = new EalDbParameter("@Allow_Deletes", Allow_Deletes);
+                parameters[8] = new EalDbParameter("@Allow_Folders_No_Metadata", Allow_Folders_No_Metadata);
+                parameters[9] = new EalDbParameter("@FolderName", Folder_Name);
+                parameters[10] = new EalDbParameter("@BibID_Roots_Restrictions", BibID_Roots_Restrictions);
+                parameters[11] = new EalDbParameter("@ModuleSetID", ModuleSetID);
+                parameters[12] = new EalDbParameter("@NewID", -1) { Direction = ParameterDirection.InputOutput };
+
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Builder_Incoming_Folder_Edit", parameters);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Builder_Edit_Incoming_Folder", "Error during execution: " + ee.Message);
+                }
+                Last_Exception = ee;
+                return false;
+            }
+        }
+
+
+
+        #endregion
+
+ 
 
 		/// <summary> Gets the simple list of items for a single item aggregation, or the list of all items in the library </summary>
 		/// <param name="AggregationCode"> Code for the item aggregation of interest, or an empty string</param>

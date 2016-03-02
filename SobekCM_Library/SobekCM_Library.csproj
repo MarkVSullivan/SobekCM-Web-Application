@@ -97,6 +97,7 @@
     <Compile Include="AdminViewer\abstract_AdminViewer.cs" />
     <Compile Include="AdminViewer\Add_Collection_AdminViewer.cs" />
     <Compile Include="AdminViewer\AdminViewer_Factory.cs" />
+    <Compile Include="AdminViewer\Builder_Folder_Mgmt_AdminViewer.cs" />
     <Compile Include="AdminViewer\Settings_AdminViewer_Newer.cs" />
     <Compile Include="AdminViewer\Settings_AdminViewer_Legacy.cs" />
     <Compile Include="AdminViewer\iMySobek_Admin_Viewer.cs" />

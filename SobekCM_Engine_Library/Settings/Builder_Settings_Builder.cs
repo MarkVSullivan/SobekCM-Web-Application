@@ -38,7 +38,7 @@ namespace SobekCM.Engine_Library.Settings
                         List<Builder_Source_Folder> folders = folder_to_set_dictionary[module.Key];
                         foreach (Builder_Source_Folder thisFolder in folders)
                         {
-                            thisFolder.Builder_Module_Settings = module.Value;
+                            thisFolder.Builder_Module_Set.Builder_Modules = module.Value;
                         }
                     }
                 }
@@ -157,14 +157,10 @@ namespace SobekCM.Engine_Library.Settings
                     Allow_Deletes = Convert.ToBoolean(thisRow["Allow_Deletes"]),
                     Allow_Folders_No_Metadata = Convert.ToBoolean(thisRow["Allow_Folders_No_Metadata"]),
                     Allow_Metadata_Updates = Convert.ToBoolean(thisRow["Allow_Metadata_Updates"]),
-                    BibID_Roots_Restrictions = thisRow["BibID_Roots_Restrictions"].ToString(),
-                    Builder_Module_SetID = Convert.ToInt32(thisRow["ModuleSetID"])
+                    BibID_Roots_Restrictions = thisRow["BibID_Roots_Restrictions"].ToString(), 
+                    Builder_Module_Set = {SetID = Convert.ToInt32(thisRow["ModuleSetID"]), SetName = thisRow["SetName"].ToString()}
                 };
 
-                //if (thisRow["Can_Move_To_Content_Folder"] == DBNull.Value)
-                //    newFolder.Can_Move_To_Content_Folder = null;
-                //else
-                //    newFolder.Can_Move_To_Content_Folder = Convert.ToBoolean(thisRow["Can_Move_To_Content_Folder"]);
 
                 if (( thisRow["ModuleSetID"] != null) && ( thisRow["ModuleSetID"].ToString().Length > 0 ))
                 {
