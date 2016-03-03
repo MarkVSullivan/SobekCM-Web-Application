@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Authentication;
@@ -631,10 +632,10 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("        <ul>");
 			Output.WriteLine(add_leftnav_li_link("Authentication", "engine/authentication", redirectUrl, currentViewerCode));
 			Output.WriteLine(add_leftnav_li_link("Brief Item Mapping", "engine/briefitem", redirectUrl, currentViewerCode));
-			Output.WriteLine(add_leftnav_li_link("Contact Form", "engine/contact", redirectUrl, currentViewerCode));  /** UI? **/
+			Output.WriteLine(add_leftnav_li_link("Contact Form", "engine/contact", redirectUrl, currentViewerCode));  // Move to UI? 
 			Output.WriteLine(add_leftnav_li_link("Engine Server Endpoints", "engine/endpoints", redirectUrl, currentViewerCode));
 			Output.WriteLine(add_leftnav_li_link("OAI-PMH Protocol", "engine/oaipmh", redirectUrl, currentViewerCode));
-			Output.WriteLine(add_leftnav_li_link("Quality Control Tool", "engine/qctool", redirectUrl, currentViewerCode));    /** UI? **/
+			Output.WriteLine(add_leftnav_li_link("Quality Control Tool", "engine/qctool", redirectUrl, currentViewerCode));    // Move to UI?
 			Output.WriteLine("        </ul>");
 
 			Output.WriteLine(add_leftnav_h2_link("UI Configuration", "ui", redirectUrl, currentViewerCode));

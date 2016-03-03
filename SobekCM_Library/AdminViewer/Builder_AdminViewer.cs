@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Web;
+using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -36,7 +37,6 @@ namespace SobekCM.Library.AdminViewer
     /// </ul></remarks>
     public class Builder_AdminViewer : abstract_AdminViewer
     {
-        private string actionMessage;
         private readonly int page;
 
         /// <summary> Constructor for a new instance of the Builder_AdminViewer class </summary>
@@ -83,6 +83,8 @@ namespace SobekCM.Library.AdminViewer
                         break;
                 }
             }
+
+
         }
 
         /// <summary> Gets the collection of special behaviors which this admin or mySobek viewer
@@ -159,40 +161,11 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<!-- WebContent_Mgmt_AdminViewer.Write_ItemNavForm_Closing -->");
             Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
-
-            // Show any action message
-            if (!String.IsNullOrEmpty( actionMessage))
-            {
-                Output.WriteLine("  <div class=\"sbkAdm_HomeText\">");
-                Output.WriteLine("  <br />");
-                if (actionMessage.IndexOf("Error", StringComparison.InvariantCultureIgnoreCase) >= 0)
-                {
-                    Output.WriteLine("  <br />");
-                    Output.WriteLine("  <div id=\"sbkAdm_ActionMessageError\">" + actionMessage + "</div>");
-                }
-                else
-                {
-
-                    Output.WriteLine("  <div id=\"sbkAdm_ActionMessageSuccess\">" + actionMessage + "</div>");
-                }
-                Output.WriteLine("  <br />");
-                Output.WriteLine("  </div>");
-            }
-
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Add_New;
             string wizard_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Builder_Status;
 
-            Output.WriteLine("  <table style=\"margin-left: 50px;\">");
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td style=\"width:500px; text-align: left;\">");
-            Output.WriteLine("        <p>Press the button to the right to add a new web content page or redirect, or just type the URL for the new web content page. </p>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("      <td style=\"padding-left: 30px;\">");
-            Output.WriteLine("        <button title=\"Add a new web content page or redirect\" class=\"sbkAdm_RoundButton\" style=\"padding: 6px;width: 190px;\" onclick=\"window.location.href='" + wizard_url + "';return false;\"> &nbsp; ADD NEW &nbsp; <br />PAGE OR REDIRECT</button>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
-            Output.WriteLine("  </table>");
+            Output.WriteLine("  <pThis page contains the latest status information from the builder, including the builder logs, pulled from the database.</p>");
 
             // Start the outer tab containe
             Output.WriteLine("  <div id=\"tabContainer\" class=\"fulltabs sbkAdm_HomeTabs\">");
@@ -288,10 +261,10 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<br />");
         }
 
-        public void add_builder_status(TextWriter Output, string Base_URL, Custom_Tracer Tracer)
+        private void add_builder_status(TextWriter Output, string Base_URL, Custom_Tracer Tracer)
         {
-            // Pull the builder settings
-            Dictionary<string, string> builderSettings = SobekCM_Database.Get_Settings(Tracer);
+            // Pull the lastest builder status
+            Builder_Status builderStatus = SobekEngineClient.Builder.Get_Builder_Status(Tracer);
 
             Output.WriteLine("<!-- Hidden field to keep the newly requested status -->");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_builder_tosave\" name=\"admin_builder_tosave\" value=\"\" />");
@@ -305,15 +278,14 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine();
 
             // If missing values, display an error
-            if ((!builderSettings.ContainsKey("Builder Operation Flag")) || (!builderSettings.ContainsKey("Log Files URL")) || (!builderSettings.ContainsKey("Log Files Directory")))
+            if ( String.IsNullOrEmpty(builderStatus.Get_Setting("Builder Operation Flag"))) 
             {
                 Output.WriteLine("<br /><br />ERROR PULLING BUILDER SETTINGS... MISSING VALUES<br /><br />");
             }
             else
             {
                 // Get the current pertinent values
-                string operationFlag = builderSettings["Builder Operation Flag"];
-                string logURL = builderSettings["Log Files URL"];
+                string operationFlag = builderStatus.Get_Setting("Builder Operation Flag");
 
 
                 Output.WriteLine("  <h2>SobekCM Builder Status</h2>");
@@ -353,6 +325,22 @@ namespace SobekCM.Library.AdminViewer
 	            Output.WriteLine("  </table>");
 				Output.WriteLine();
 
+
+                // Look for some values
+                string lastRun = builderStatus.Get_Setting("builder last run finished");
+                string builderVersion = builderStatus.Get_Setting("builder version");
+                string lastResult = builderStatus.Get_Setting("builder last message");
+                string currentBuilderMode = builderStatus.Get_Setting("builder operation flag");
+
+
+                Output.WriteLine("  <table class=\"sbkSeav_BaseTableVert\" id=\"sbkSeav_BuilderTopInfo\">");
+
+                Output.WriteLine("    <tr><th>Last Run:</th><td>" + (lastRun ?? String.Empty) + "</td></tr>");
+                Output.WriteLine("    <tr><th>Last Result:</th><td>" + (lastResult ?? String.Empty) + "</td></tr>");
+                Output.WriteLine("    <tr><th>Builder Version:</th><td>" + (builderVersion ?? String.Empty) + "</td></tr>");
+                Output.WriteLine("    <tr><th>Builder Operation:</th><td>" + (currentBuilderMode ?? String.Empty) + "</td></tr>");
+                Output.WriteLine("  </table>");
+
             }
 
 			Output.WriteLine();
@@ -365,13 +353,8 @@ namespace SobekCM.Library.AdminViewer
 
         }
 
-        public void add_builder_logs(TextWriter Output, string Base_URL, Custom_Tracer Tracer)
+        private void add_builder_logs(TextWriter Output, string Base_URL, Custom_Tracer Tracer)
         {
-            // Get the base url
-            string baseURL = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
-
-
-
             Output.WriteLine("  <p>Below you can view the list of builder logs.</p>");
 
             // Add the filter boxes
@@ -581,9 +564,62 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine();
         }
 
-        public void add_builder_scheduled_tasks(TextWriter Output, string Base_URL, Custom_Tracer Tracer)
+        private void add_builder_scheduled_tasks(TextWriter Output, string Base_URL, Custom_Tracer Tracer)
         {
+            // Pull the lastest builder status
+            Builder_Status builderStatus = SobekEngineClient.Builder.Get_Builder_Status(Tracer);
 
+            Output.WriteLine("  <p>Below you can view the list of scheduled tasks for the builder to run, along with the results from the last run.</p>");
+
+            if ((builderStatus.ScheduledTasks == null) || (builderStatus.ScheduledTasks.Count == 0))
+            {
+                Output.WriteLine("  <p>This instance has no scheduled tasks configured, which is unusual and may be an ERROR.</p>");
+                return;
+            }
+
+
+            Output.WriteLine("  <p>Below you can view the list of scheduled tasks for the builder to run, along with the results from the last run.</p>");
+
+            Output.WriteLine("    <table id=\"sbkBav_SchedTaskTable\">");
+            Output.WriteLine("      <tr>");
+            Output.WriteLine("        <th id=\"sbkBav_SchedTaskTable_EnabledCol\">Enabled</th>");
+            Output.WriteLine("        <th id=\"sbkBav_SchedTaskTable_DescCol\">Description</th>");
+            Output.WriteLine("        <th id=\"sbkBav_SchedTaskTable_DaysCol\">Days Of Week</th>");
+            Output.WriteLine("        <th id=\"sbkBav_SchedTaskTable_TimeCol\">Time Of Day</th>");
+            Output.WriteLine("        <th id=\"sbkBav_SchedTaskTable_LastRunTimeCol\">Last Run Time</th>");
+            Output.WriteLine("        <th id=\"sbkBav_SchedTaskTable_LastRunResultCol\">Last Run Result</th>");
+            Output.WriteLine("      </tr>");
+
+            foreach (Builder_Scheduled_Task_Status schedTask in builderStatus.ScheduledTasks)
+            {
+                Output.WriteLine("      <tr>");
+                if (schedTask.Enabled)
+                    Output.WriteLine("        <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                else
+                    Output.WriteLine("        <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+
+                Output.WriteLine("        <td>" + HttpUtility.HtmlEncode(schedTask.Description) + "</td>");
+                Output.WriteLine("        <td>" + schedTask.DaysOfWeek + "</td>");
+                Output.WriteLine("        <td>" + schedTask.TimesOfDay + "</td>");
+
+                if (schedTask.LastRun != null)
+                {
+                    Output.WriteLine("        <td>" + schedTask.LastRun + "</td>");
+                    
+                    if ( !String.IsNullOrEmpty( schedTask.LastRun.Message ))
+                        Output.WriteLine("        <td>" + HttpUtility.HtmlEncode(schedTask.LastRun.Outcome) + " ( " + schedTask.LastRun.Message + " )</td>");
+                    else
+                        Output.WriteLine("        <td>" + HttpUtility.HtmlEncode(schedTask.LastRun.Outcome) + "</td>");
+                }
+                else
+                {
+                    Output.WriteLine("        <td></td>");
+                    Output.WriteLine("        <td></td>");  
+                }
+                Output.WriteLine("      </tr>");
+            }
+
+            Output.WriteLine("    </table>");
         }
     }
 }

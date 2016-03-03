@@ -8,12 +8,12 @@ namespace SobekCM.Library.Citation.SectionWriter
 {
     /// <summary> Special citation section writer adds the coordinate information
     /// to the citation, from the main geographic section of the brief item object </summary>
-    /// <param name="ElementInfo"> Additional possible data about this citation element </param>
-    /// <remarks> This class implements the <see cref="iCitationSectionWriter"/> interface. </remarks>
+    ///  <remarks> This class implements the <see cref="iCitationSectionWriter"/> interface. </remarks>
     public class Coordinates_SectionWriter : iCitationSectionWriter
     {
         /// <summary> Returns flag that indicates this citation section writer 
         /// will be writing alues to the output stream </summary>
+        /// <param name="ElementInfo"> Additional possible data about this citation element </param>
         /// <param name="Item"> Digital resource to analyze for data to write </param>
         public bool Has_Data_To_Write(CitationElement ElementInfo, BriefItemInfo Item)
         {

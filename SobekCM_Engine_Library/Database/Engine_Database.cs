@@ -9,6 +9,7 @@ using EngineAgnosticLayerDbAccess;
 using SobekCM.Core;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
+using SobekCM.Core.Builder;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
 using SobekCM.Core.Settings;
@@ -3482,8 +3483,9 @@ namespace SobekCM.Engine_Library.Database
 
         /// <summary> Gets the most recent updates for the builder including the builder settings and scheduled tasks </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Dataset with all the builder updates </returns>
-        public static DataSet Builder_Get_Recent_Updates(Custom_Tracer Tracer)
+        /// <returns> Fully built builder status object with the builder/status settings and information on the scheduled tasks 
+        /// and the last time the scheduled tasks ran </returns>
+        public static Builder_Status Builder_Get_Recent_Updates(Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -3493,7 +3495,70 @@ namespace SobekCM.Engine_Library.Database
             try
             {
                 DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Builder_Get_Latest_Update");
-                return tempSet;
+
+                // If the return value isn't right, return NULL
+                if ((tempSet == null) || (tempSet.Tables.Count < 2) || (tempSet.Tables[0].Rows.Count < 0))
+                    return null;
+
+                // Create the return object
+                Builder_Status returnObj = new Builder_Status();
+
+                // Add the settings first
+                foreach (DataRow thisRow in tempSet.Tables[0].Rows)
+                {
+                    returnObj.Add_Setting(thisRow["Setting_Key"].ToString(), thisRow["Setting_Value"].ToString());
+                }
+
+                // Add the scheduled task information next
+                foreach (DataRow thisRow in tempSet.Tables[1].Rows)
+                {
+                    // Builder the scheduled task update object
+                    Builder_Scheduled_Task_Status schedTask = new Builder_Scheduled_Task_Status
+                    {
+                        ModuleScheduleID = Int32.Parse(thisRow["ModuleScheduleID"].ToString()), 
+                        Description = thisRow["Description"].ToString(), 
+                        DaysOfWeek = thisRow["DaysOfWeek"].ToString(), 
+                        TimesOfDay = thisRow["TimesOfDay"].ToString(),
+                        Enabled = bool.Parse(thisRow["ScheduleEnabled"].ToString())
+                    };
+
+                    // Add the builder module set (should always be one though)
+                    if (thisRow["ModuleSetID"] != DBNull.Value)
+                    {
+                        schedTask.ModuleSet = new Builder_Module_Set_Info
+                        {
+                            SetID = Int32.Parse(thisRow["ModuleSetID"].ToString()), 
+                            SetName = thisRow["SetName"].ToString()
+                        };
+
+                        // If the SET is not enabled, than disabled the overall schedule
+                        if (!bool.Parse(thisRow["SetEnabled"].ToString()))
+                            schedTask.Enabled = false;
+                    }
+
+                    // Add the information about the last run, if there was one
+                    if ((thisRow["LastRun"] != DBNull.Value) && (thisRow["LastRun"].ToString().IndexOf("1/1/1900") < 0))
+                    {
+                        string lastRun = thisRow["LastRun"].ToString();
+
+                        schedTask.LastRun = new Builder_Scheduled_Task_Execution_History
+                        {
+                            Date = DateTime.Parse(lastRun), 
+                            Message = thisRow["Message"].ToString(), 
+                            Outcome = thisRow["Outcome"].ToString()
+                        };
+                    }
+
+                    // If the description is empty and the SET has a description, use that
+                    if ((String.IsNullOrEmpty(schedTask.Description)) && (schedTask.ModuleSet != null) && (String.IsNullOrEmpty(schedTask.ModuleSet.SetName)))
+                        schedTask.Description = schedTask.ModuleSet.SetName;
+
+                    // Add this to the return object
+                    returnObj.ScheduledTasks.Add(schedTask);
+
+                }
+
+                return returnObj;
             }
             catch (Exception ee)
             {

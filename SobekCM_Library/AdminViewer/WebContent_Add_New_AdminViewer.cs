@@ -2,30 +2,25 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using System.Web;
-using System.Web.Caching;
-using System.Web.UI.WebControls;
 using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.WebContent;
-using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.AdminViewer
 {
+    /// <summary> Viewer is used to add new web content pages to the system </summary>
     public class WebContent_Add_New_AdminViewer : abstract_AdminViewer
     {
         
-        private string actionMessage;
+        private readonly string actionMessage;
 
         private readonly string level1;
         private readonly string level2;
@@ -274,8 +269,6 @@ namespace SobekCM.Library.AdminViewer
         {
             Output.WriteLine("<!-- WebContent_Add_New_AdminViewer.Write_ItemNavForm_Closing -->");
             Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
-
-            string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
 
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
@@ -534,7 +527,7 @@ namespace SobekCM.Library.AdminViewer
 
         /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
         /// <value> Returns 'sbkWcav_ContainerInner' </value>
-        public override string Container_CssClass { get { return "sbkWcav_ContainerInner"; } }        /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
+        public override string Container_CssClass { get { return "sbkWcav_ContainerInner"; } }        
 
     }
 }

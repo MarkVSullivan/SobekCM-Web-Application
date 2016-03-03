@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Web;
+using SobekCM.Core.Builder;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.Database;
@@ -31,7 +32,7 @@ namespace SobekCM.Engine_Library.Endpoints
             {
                 tracer.Add_Trace("BuilderServices.GetBuilderSettings", "Pulling dataset from the database");
 
-                // Get the complete aggregation
+                // Get the dataset with all the builder settings
                 DataSet builderSet = Engine_Database.Get_Builder_Settings(true, tracer);
 
                 // If the returned value from the database was NULL, there was an error
@@ -119,6 +120,93 @@ namespace SobekCM.Engine_Library.Endpoints
             }
         }
 
+        /// <summary> Gets the latest update on the builder status, including the relevant builder
+        /// setting values and updates on the scheduled tasks </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetBuilderStatus(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            try
+            {
+                tracer.Add_Trace("BuilderServices.GetBuilderStatus", "Pulling builder status from the database");
+
+                // Get the status
+                Builder_Status builderStatus = Engine_Database.Builder_Get_Recent_Updates(tracer);
+
+                // If the returned value from the database was NULL, there was an error
+                if (builderStatus == null) 
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Error completing request");
+
+                    if (IsDebug)
+                    {
+                        Response.Output.WriteLine("Builder status object returned from the database was either NULL or empty");
+                        if (Engine_Database.Last_Exception != null)
+                        {
+                            Response.Output.WriteLine();
+                            Response.Output.WriteLine(Engine_Database.Last_Exception.Message);
+                            Response.Output.WriteLine();
+                            Response.Output.WriteLine(Engine_Database.Last_Exception.StackTrace);
+                        }
+
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                    }
+
+                    Response.StatusCode = 500;
+                    return;
+                }
+
+                tracer.Add_Trace("BuilderServices.GetBuilderStatus", "Successfully built builder status");
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+
+                    return;
+                }
+
+                // Get the JSON-P callback function
+                string json_callback = "parseBuilderStatus";
+                if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                {
+                    json_callback = QueryString["callback"];
+                }
+
+                // Use the base class to serialize the object according to request protocol
+                Serialize(builderStatus, Response, Protocol, json_callback);
+            }
+            catch (Exception ee)
+            {
+                if (IsDebug)
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("EXCEPTION CAUGHT!");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.Message);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(ee.StackTrace);
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+                    return;
+                }
+
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Error completing request");
+                Response.StatusCode = 500;
+            }
+        }
+
         /// <summary> Get the list of all the recent updates for consumption by the jQuery DataTable.net plug-in </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
@@ -133,8 +221,6 @@ namespace SobekCM.Engine_Library.Endpoints
             // jquery datatables library pass in
             int displayStart;
             int displayLength;
-            int sortingColumn1;
-            string sortDirection1 = "asc";
 
             // Get the display start and length from the DataTables generated data URL
             if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iDisplayStart"], out displayStart)) displayStart = 0;
@@ -142,11 +228,6 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Get the echo value
             string sEcho = HttpContext.Current.Request.QueryString["sEcho"];
-
-            // Get the sorting column and sorting direction
-            if (!Int32.TryParse(HttpContext.Current.Request.QueryString["iSortCol_0"], out sortingColumn1)) sortingColumn1 = 0;
-            if ((HttpContext.Current.Request.QueryString["sSortDir_0"] != null) && (HttpContext.Current.Request.QueryString["sSortDir_0"] == "desc"))
-                sortDirection1 = "desc";
 
             // Look for specific arguments in the URL
             DateTime? startDate = null;

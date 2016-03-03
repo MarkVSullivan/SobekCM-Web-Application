@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
+using SobekCM.Core.Builder;
 
 #endregion
 

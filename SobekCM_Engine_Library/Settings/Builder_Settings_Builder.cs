@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using SobekCM.Core.Builder;
 using SobekCM.Core.Settings;
 
 #endregion
@@ -45,9 +46,8 @@ namespace SobekCM.Engine_Library.Settings
 
                 return true;
             }
-            catch (Exception ee)
+            catch 
             {
-                return ee.Message.Length > 0;
                 return false;
             }
         }

@@ -136,6 +136,10 @@ namespace SobekCM.Library.ResultsViewer
             MainPlaceHolder.Controls.Add(thisLiteral);
         }
 
+        /// <summary> Gets the no results text to display, from the HTML static page or uses the default </summary>
+        /// <returns> HTML text </returns>
+        /// <remarks> This is public (I think) so it can be pulled directly from here for the configuration display. 
+        /// This should probably move into a configuration file or engine endpoint though.  </remarks>
         public static string Get_NoResults_Text()
         {
             string noResultsText = HttpContext.Current.Application["NORESULTS"] as string;

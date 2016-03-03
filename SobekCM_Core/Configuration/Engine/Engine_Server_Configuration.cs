@@ -2,9 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.Serialization;
-using System.Text;
 using System.Xml.Serialization;
 using ProtoBuf;
 
@@ -29,7 +27,6 @@ namespace SobekCM.Core.Configuration.Engine
             ensure_dictionary_built();
 
             // Find a match by path
-            int currentIndex = 0;
             if (rootPathsDictionary.ContainsKey(Paths[0]))
             {
                 Engine_Path_Endpoint path = rootPathsDictionary[Paths[0]];

@@ -2,12 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Xml;
 using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
@@ -23,8 +21,6 @@ namespace SobekCM.Resource_Object.Configuration
     [XmlRoot("MetadataConfig")]
     public  class Metadata_Configuration
     {
-        private bool attemptedRead;
-
         private Dictionary<string, METS_Writing_Profile> metsWritingProfilesDictionary;
         private METS_Writing_Profile defaultWritingProfile;
 
@@ -57,7 +53,6 @@ namespace SobekCM.Resource_Object.Configuration
             fileAmdSecDictionary = new Dictionary<Tuple<string, string>, iFile_amdSec_ReaderWriter>();
 
             // Set some default values
-            attemptedRead = false;
             errorsEncountered = new List<string>();
 
             // Set default reader/writer values to have a baseline in case there is no file to be read 
@@ -113,6 +108,9 @@ namespace SobekCM.Resource_Object.Configuration
             }
         }
 
+        /// <summary> Gets an individual METS writing profile, by profile name </summary>
+        /// <param name="ProfileName"> Name of the profile to get </param>
+        /// <returns> Either the requested profile, if it exists, or NULL </returns>
         public METS_Writing_Profile Get_Writing_Profile(string ProfileName)
         {
             // Check the dictionary

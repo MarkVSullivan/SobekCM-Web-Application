@@ -447,7 +447,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     StringWriter results = new StringWriter();
                     XmlReaderSettings settings = new XmlReaderSettings
                     {
-                        ProhibitDtd = false
+                        DtdProcessing = DtdProcessing.Parse
                     };
                     using (XmlReader transformreader = XmlReader.Create(new StringReader(eadInfo.Full_Description), settings))
                     {

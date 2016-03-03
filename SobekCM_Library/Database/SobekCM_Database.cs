@@ -3445,24 +3445,25 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		/// <summary> Sets some of the permissions values for a single user </summary>
-		/// <param name="UserID"> Primary key for this user from the database </param>
-        /// <param name="CanSubmit"> Flag indicates if this user can submit items </param>
-		/// <param name="IsInternal"> Flag indicates if this user is considered an 'internal user'</param>
-		/// <param name="CanEditAll"> Flag indicates if this user is authorized to edit all items in the library</param>
-		/// <param name="IsPortalAdmin"> Flag indicates if this user is a portal Administrator </param>
-		/// <param name="CanDeleteAll"> Flag indicates if this user can delete anything in the repository </param>
-		/// <param name="IsSystemAdmin"> Flag indicates if this user is a system Administrator</param>
-		/// <param name="IncludeTrackingStandardForms"> Flag indicates if this user should have tracking portions appear in their standard forms </param>
-		/// <param name="EditTemplate"> CompleteTemplate name for editing non-MARC records </param>
-		/// <param name="EditTemplateMarc"> CompleteTemplate name for editing MARC-derived records </param>
-		/// <param name="ClearProjectsTemplates"> Flag indicates whether to clear projects and templates for this user </param>
-		/// <param name="ClearAggregationLinks"> Flag indicates whether to clear item aggregationPermissions linked to this user</param>
-		/// <param name="ClearUserGroups"> Flag indicates whether to clear user group membership for this user </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> TRUE if successful, otherwise FALSE </returns>
-		/// <remarks> This calls the 'mySobek_Update_User' stored procedure</remarks> 
-		public static bool Update_SobekCM_User(int UserID, bool CanSubmit, bool IsInternal, bool CanEditAll, bool CanDeleteAll, bool IsSystemAdmin, bool IsHostAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, string EditTemplate, string EditTemplateMarc, bool ClearProjectsTemplates, bool ClearAggregationLinks, bool ClearUserGroups, Custom_Tracer Tracer)
+	    /// <summary> Sets some of the permissions values for a single user </summary>
+	    /// <param name="UserID"> Primary key for this user from the database </param>
+	    /// <param name="CanSubmit"> Flag indicates if this user can submit items </param>
+	    /// <param name="IsInternal"> Flag indicates if this user is considered an 'internal user'</param>
+	    /// <param name="CanEditAll"> Flag indicates if this user is authorized to edit all items in the library</param>
+	    /// <param name="IsHostAdmin"> Flag indicates if this used is the host administrator (if this is a hosted instance) </param>
+	    /// <param name="IsPortalAdmin"> Flag indicates if this user is a portal Administrator </param>
+	    /// <param name="CanDeleteAll"> Flag indicates if this user can delete anything in the repository </param>
+	    /// <param name="IsSystemAdmin"> Flag indicates if this user is a system Administrator</param>
+	    /// <param name="IncludeTrackingStandardForms"> Flag indicates if this user should have tracking portions appear in their standard forms </param>
+	    /// <param name="EditTemplate"> CompleteTemplate name for editing non-MARC records </param>
+	    /// <param name="EditTemplateMarc"> CompleteTemplate name for editing MARC-derived records </param>
+	    /// <param name="ClearProjectsTemplates"> Flag indicates whether to clear projects and templates for this user </param>
+	    /// <param name="ClearAggregationLinks"> Flag indicates whether to clear item aggregationPermissions linked to this user</param>
+	    /// <param name="ClearUserGroups"> Flag indicates whether to clear user group membership for this user </param>
+	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+	    /// <returns> TRUE if successful, otherwise FALSE </returns>
+	    /// <remarks> This calls the 'mySobek_Update_User' stored procedure</remarks> 
+	    public static bool Update_SobekCM_User(int UserID, bool CanSubmit, bool IsInternal, bool CanEditAll, bool CanDeleteAll, bool IsSystemAdmin, bool IsHostAdmin, bool IsPortalAdmin, bool IncludeTrackingStandardForms, string EditTemplate, string EditTemplateMarc, bool ClearProjectsTemplates, bool ClearAggregationLinks, bool ClearUserGroups, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{

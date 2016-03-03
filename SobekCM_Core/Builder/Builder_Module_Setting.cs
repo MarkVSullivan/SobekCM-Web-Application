@@ -8,7 +8,7 @@ using ProtoBuf;
 
 #endregion
 
-namespace SobekCM.Core.Settings
+namespace SobekCM.Core.Builder
 {
     /// <summary> Setting information for a single builder module </summary>
     [Serializable, DataContract, ProtoContract]

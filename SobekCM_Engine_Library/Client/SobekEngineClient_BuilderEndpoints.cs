@@ -1,4 +1,5 @@
 ﻿using System;
+using SobekCM.Core.Builder;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Settings;
 using SobekCM.Tools;
@@ -20,7 +21,7 @@ namespace SobekCM.Core.Client
         /// <param name="IncludeDescriptions"> Flag indicates if the builder module descriptions should be included in the response </param>
         /// <param name="Tracer"></param>
         /// <returns> Fully built builder-specific settings, including incoming folders and builder module sets </returns>
-        public Builder_Settings Get_Builder_Settings( bool IncludeDescriptions, Custom_Tracer Tracer)
+        public Builder_Settings Get_Builder_Settings(bool IncludeDescriptions, Custom_Tracer Tracer)
         {
             // Add a beginning trace
             Tracer.Add_Trace("SobekEngineClient_BuilderServices.Get_Builder_Settings");
@@ -28,11 +29,36 @@ namespace SobekCM.Core.Client
             // Get the endpoint
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Builder.Get_Builder_Settings", Tracer);
 
+            // If the endpoint was null, show an error
+            if (endpoint == null)
+                Tracer.Add_Trace("SobekEngineClient_BuilderServices.Get_Builder_Settings", "Unable to find the endpoint configuration for Builder.Get_Builder_Settings");
+
+
             // Format the URL
             string url = String.Format(endpoint.URL, IncludeDescriptions);
 
             // Call out to the endpoint and return the deserialized object
             return Deserialize<Builder_Settings>(url, endpoint.Protocol, Tracer);
+        }
+
+        /// <summary> Gets the latest update on the builder status, including the relevant builder
+        /// setting values and updates on the scheduled tasks </summary>
+        /// <param name="Tracer"></param>
+        /// <returns> Fully built builder-specific settings, including incoming folders and builder module sets </returns>
+        public Builder_Status Get_Builder_Status(Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_BuilderServices.Get_Builder_Status");
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Builder.Get_Builder_Status", Tracer);
+
+            // If the endpoint was null, show an error
+            if ( endpoint == null )
+                Tracer.Add_Trace("SobekEngineClient_BuilderServices.Get_Builder_Status", "Unable to find the endpoint configuration for Builder.Get_Builder_Status");
+
+            // Call out to the endpoint and return the deserialized object
+            return Deserialize<Builder_Status>(endpoint.URL, endpoint.Protocol, Tracer);
         }
 
         /// <summary> Get the URL for the list of all builder log files for consumption by the jQuery DataTable.net plug-in </summary>

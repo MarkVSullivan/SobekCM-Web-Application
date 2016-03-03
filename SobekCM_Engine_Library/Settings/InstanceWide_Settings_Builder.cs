@@ -258,9 +258,8 @@ namespace SobekCM.Engine_Library.Settings
                 Builder_Settings_Builder.Refresh(SettingsObject.Builder, SobekCM_Settings, true, 4);
                 return true;
             }
-            catch ( Exception ee )
+            catch
             {
-                return ee.Message.Length > 0;
                 return false;
             }
         }

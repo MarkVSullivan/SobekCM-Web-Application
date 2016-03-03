@@ -100,6 +100,9 @@
     <Compile Include="BriefItem\BriefItem_TocElement.cs" />
     <Compile Include="BriefItem\BriefItem_Web.cs" />
     <Compile Include="BriefItem\IBriefItemMapper.cs" />
+    <Compile Include="Builder\Builder_Scheduled_Task_Execution_History.cs" />
+    <Compile Include="Builder\Builder_Scheduled_Task_Status.cs" />
+    <Compile Include="Builder\Builder_Status.cs" />
     <Compile Include="Configuration\Authentication\Authentication_Configuration.cs" />
     <Compile Include="Configuration\BriefItemMapping_Configuration.cs" />
     <Compile Include="Configuration\Configuration_Source_Info.cs" />
@@ -125,7 +128,7 @@
     <Compile Include="MARC\MARC_Transfer_Subfield.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_BuilderServices.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_ItemServices.cs" />
-    <Compile Include="Settings\Builder_Module_Set_Info.cs" />
+    <Compile Include="Builder\Builder_Module_Set_Info.cs" />
     <Compile Include="UI_Configuration\Viewers\AggregationWriterConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\ItemSubViewerConfig.cs" />
     <Compile Include="UI_Configuration\MapEditor_Configuration.cs" />
@@ -189,9 +192,9 @@
     <Compile Include="Settings\Admin_Setting_Collection.cs" />
     <Compile Include="Settings\Admin_Setting_Value.cs" />
     <Compile Include="Settings\Archive_Settings.cs" />
-    <Compile Include="Settings\Builder_Module_Setting.cs" />
+    <Compile Include="Builder\Builder_Module_Setting.cs" />
     <Compile Include="Settings\Builder_Settings.cs" />
-    <Compile Include="Settings\Builder_Source_Folder.cs" />
+    <Compile Include="Builder\Builder_Source_Folder.cs" />
     <Compile Include="Settings\Disposition_Option.cs" />
     <Compile Include="Settings\Email_Settings.cs" />
     <Compile Include="Settings\Email_Setup_Settings.cs" />

@@ -2339,7 +2339,6 @@ namespace SobekCM.Engine_Library.Configuration
         {
             CitationFieldSet currFieldSet = null;
             CitationElement currElement = null;
-            bool inElements = false;
 
             while (ReaderXml.Read())
             {
@@ -2397,10 +2396,6 @@ namespace SobekCM.Engine_Library.Configuration
                                     currFieldSet.Add_Translation(Web_Language_Enum_Converter.Code_To_Enum(code), term);
                                 }
                             }
-                            break;
-
-                        case "elements":
-                            inElements = true;
                             break;
 
                         case "clear":
@@ -2513,17 +2508,12 @@ namespace SobekCM.Engine_Library.Configuration
                         case "fieldset":
                             currFieldSet = null;
                             currElement = null;
-                            inElements = false;
                             break;
 
                         case "append":
                         case "insert":
                         case "remove":
                             currElement = null;
-                            break;
-
-                        case "elements":
-                            inElements = false;
                             break;
                     }
                 }

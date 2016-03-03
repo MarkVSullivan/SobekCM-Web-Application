@@ -1,14 +1,13 @@
 #region Using directives
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
 
 #endregion
 
-namespace SobekCM.Core.Settings
+namespace SobekCM.Core.Builder
 {
     /// <summary> Class which contains all the specifications for an source folder which may contain 
     /// packages destined to be bulk loaded into a SobekCM library incoming FTP folder, including 

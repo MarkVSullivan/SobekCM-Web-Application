@@ -23,7 +23,6 @@ namespace SobekCM.Core.Configuration
     public class QualityControl_Configuration
     {
         private static bool attemptedRead;
-        private static string sobekcm_qc_configfilePath;
         private static Dictionary<string, QualityControl_Profile> profilesDictionary;
         
         /// <summary> Static constructor for the QualityControl_Configuration class </summary>

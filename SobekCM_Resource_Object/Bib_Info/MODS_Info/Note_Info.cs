@@ -20,6 +20,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Acquisitions note </summary>
         Acquisition = 1,
 
+        /// <summary> Action note indicates action taken, or recommended action </summary>
         Action,
 
         /// <summary> Additional physical form note </summary>
