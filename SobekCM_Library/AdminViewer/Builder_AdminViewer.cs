@@ -580,7 +580,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <p>Below you can view the list of scheduled tasks for the builder to run, along with the results from the last run.</p>");
 
-            Output.WriteLine("    <table id=\"sbkBav_SchedTaskTable\">");
+            Output.WriteLine("    <table class=\"sbkSeav_BaseTable\" id=\"sbkBav_SchedTaskTable\">");
             Output.WriteLine("      <tr>");
             Output.WriteLine("        <th id=\"sbkBav_SchedTaskTable_EnabledCol\">Enabled</th>");
             Output.WriteLine("        <th id=\"sbkBav_SchedTaskTable_DescCol\">Description</th>");

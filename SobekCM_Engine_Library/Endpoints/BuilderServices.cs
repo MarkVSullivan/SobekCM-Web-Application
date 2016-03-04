@@ -207,6 +207,120 @@ namespace SobekCM.Engine_Library.Endpoints
             }
         }
 
+        /// <summary> Gets the information about a single incoming builder folder  </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetSingleFolder(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            Custom_Tracer tracer = new Custom_Tracer();
+
+            // Must at least have one URL segment for the BibID
+            if (UrlSegments.Count > 0)
+            {
+                int folderid;
+                if (!Int32.TryParse(UrlSegments[0], out folderid))
+                {
+                    if (IsDebug)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("Invalid request - folder id must be an integer");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                        return;
+                    }
+
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Invalid request - folder id must be an integer");
+                    Response.StatusCode = 400;
+                    return;
+                }
+
+                try
+                {
+                    tracer.Add_Trace("BuilderServices.GetSingleFolder", "Pulling builder folder information by id " + folderid);
+
+                    // Get the status
+                    Builder_Source_Folder builderFolder = Engine_Database.Builder_Get_Incoming_Folder(folderid, tracer);
+
+                    // If the returned value from the database was NULL, there was an error
+                    if (builderFolder == null)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("Error completing request");
+
+                        if (IsDebug)
+                        {
+                            Response.Output.WriteLine("Builder folder object returned from the database was either NULL or empty");
+                            if (Engine_Database.Last_Exception != null)
+                            {
+                                Response.Output.WriteLine();
+                                Response.Output.WriteLine(Engine_Database.Last_Exception.Message);
+                                Response.Output.WriteLine();
+                                Response.Output.WriteLine(Engine_Database.Last_Exception.StackTrace);
+                            }
+
+                            Response.Output.WriteLine();
+                            Response.Output.WriteLine(tracer.Text_Trace);
+                        }
+
+                        Response.StatusCode = 500;
+                        return;
+                    }
+
+                    tracer.Add_Trace("BuilderServices.GetSingleFolder", "Successfully built builder folder");
+
+                    // If this was debug mode, then just write the tracer
+                    if (IsDebug)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+
+                        return;
+                    }
+
+                    // Get the JSON-P callback function
+                    string json_callback = "parseBuilderFolder";
+                    if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                    {
+                        json_callback = QueryString["callback"];
+                    }
+
+                    // Use the base class to serialize the object according to request protocol
+                    Serialize(builderFolder, Response, Protocol, json_callback);
+                }
+                catch (Exception ee)
+                {
+                    if (IsDebug)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("EXCEPTION CAUGHT!");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.Message);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.StackTrace);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                        return;
+                    }
+
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Error completing request");
+                    Response.StatusCode = 500;
+                }
+            }
+            else
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("Invalid request - folder id must be included");
+                Response.StatusCode = 400;
+            }
+        }
+
         /// <summary> Get the list of all the recent updates for consumption by the jQuery DataTable.net plug-in </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>

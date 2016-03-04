@@ -1578,6 +1578,16 @@ namespace SobekCM.Library.AdminViewer
         {
             Output.WriteLine("  <h2>Builder Settings</h2>");
 
+            Output.WriteLine("  <p>The builder utilizes a number of settings, stored within the database, to control its behavior while processing items.  These settings can be changed here by a system administrator</p>");
+
+            Output.WriteLine("  <p>The first group of settings controls files which the application makes available to be archived.  If an archival folder is set, the builder can copy all incoming materials to this folder.  This folder would become the point of entry into your own archiving system.  In addition, files can be selected to be deleted before archiving (if extraneous files are entering your archiving workflow) or after archiving (if you want the files to not be retained with the other digital resource files).</p>");
+
+            Output.WriteLine("  <p>The second group of settings reflect the ability of the machine that is running the builder and provides several spots to override the default behavior.  For example, if you want to modify the standard JPEG2000 creation script, you can provide your own script to be called.</p>");
+
+            Output.WriteLine("  <p>Many of these settings work in concert with the builder module configuration.  For example, if you deselect the JPEG2000 creation builder module, it doesn't matter what you put in the field to override the JPEG2000 creation script.</p>");
+
+            Output.WriteLine("  <p>Changes you make here will be reflected almost immediately by the builder.</p>");
+
             Output.WriteLine("  <div id=\"sbkSeav_SmallerPageWrapper\">");
 
             // Add the buttons
@@ -1603,42 +1613,65 @@ namespace SobekCM.Library.AdminViewer
         {
             Output.WriteLine("  <h2>Builder Folders</h2>");
 
+            Output.WriteLine("  <p>One of the primary tasks of the builder is to handle bulk ingest of digital resources and digital resource files.  To facilitate this process, the builder can look in multiple different incoming folders and can process the files differently, depending on which folder they come in on.  Usually one incoming folder is set to a FTP location as well, to allow FTP of new materials directly into your SobekCM instance.</p>");
+
+            Output.WriteLine("  <p>You can edit or delete an existing builder folder from this form.  In addition, new builder folders can also be added from this form by selecting Add New Builder Folder button below.</p>");
+
+            Output.WriteLine("  <p>Changes you make here will be reflected almost immediately by the builder.</p>");
+
+            Output.WriteLine("  <h3>Existing Builder Folders</h3>");
             // Look to see if any builder folders exist
             if ((UI_ApplicationCache_Gateway.Settings.Builder.IncomingFolders == null) || (UI_ApplicationCache_Gateway.Settings.Builder.IncomingFolders.Count == 0))
             {
                 Output.WriteLine("  <br /><br />");
                 Output.WriteLine("  <strong>YOU HAVE NO BUILDER FOLDERS DEFINED!!</strong>");
-                return;
             }
-
-            // Show the information for each builder folder
-            foreach (Builder_Source_Folder incomingFolder in UI_ApplicationCache_Gateway.Settings.Builder.IncomingFolders)
+            else
             {
-                // Add the basic folder information
-                Output.WriteLine("  <span class=\"sbkSeav_BuilderFolderName\">" + incomingFolder.Folder_Name + "</span>");
-                Output.WriteLine("  <table class=\"sbkSeav_BaseTableVert\" id=\"sbkSeav_BuilderFolderTable\">");
-                Output.WriteLine("    <tr><th>Network Folder:</th><td>" +  incomingFolder.Inbound_Folder + "</td></tr>");
-                Output.WriteLine("    <tr><th>Processing Folder:</th><td>" + incomingFolder.Processing_Folder + "</td></tr>");
-                Output.WriteLine("    <tr><th>Error Folder:</th><td>" + incomingFolder.Failures_Folder + "</td></tr>");
+                // Show the information for each builder folder
+                foreach (Builder_Source_Folder incomingFolder in UI_ApplicationCache_Gateway.Settings.Builder.IncomingFolders)
+                {
+                    // Add the basic folder information
+                    Output.WriteLine("  <span class=\"sbkSeav_BuilderFolderName\">" + incomingFolder.Folder_Name + "</span>");
+                    Output.WriteLine("  <table class=\"sbkSeav_BaseTableVert sbkSeav_BuilderFolderTable\">");
+                    Output.WriteLine("    <tr><th>Inbound Folder:</th><td>" + incomingFolder.Inbound_Folder + "</td></tr>");
+                    Output.WriteLine("    <tr><th>Processing Folder:</th><td>" + incomingFolder.Processing_Folder + "</td></tr>");
+                    Output.WriteLine("    <tr><th>Failures Folder:</th><td>" + incomingFolder.Failures_Folder + "</td></tr>");
 
-                // If there are BibID restrictions, add them
-                if ( !String.IsNullOrEmpty(incomingFolder.BibID_Roots_Restrictions))
-                    Output.WriteLine("    <tr><th>BibID Restrictions:</th><td>" + incomingFolder.BibID_Roots_Restrictions + "</td></tr>");
+                    // If there are BibID restrictions, add them
+                    if (!String.IsNullOrEmpty(incomingFolder.BibID_Roots_Restrictions))
+                        Output.WriteLine("    <tr><th>BibID Restrictions:</th><td>" + incomingFolder.BibID_Roots_Restrictions + "</td></tr>");
 
-                // Collect all the options and display them
-                StringBuilder builder = new StringBuilder();
-                if (incomingFolder.Allow_Deletes) builder.Append("Allow deletes ; ");
-                if (incomingFolder.Allow_Folders_No_Metadata) builder.Append("Allow folder with no metadata ; ");
-                if (incomingFolder.Allow_Metadata_Updates) builder.Append("Allow metadata updates ; ");
-                if (incomingFolder.Archive_All_Files) builder.Append("Archive all files ; ");
-                else if (incomingFolder.Archive_TIFFs) builder.Append("Archive TIFFs ; ");
-                if (incomingFolder.Perform_Checksum) builder.Append("Perform checksum ; ");
-                Output.WriteLine("    <tr><th>Options</th><td>" + builder + "</td></tr>");
-            
-                // Add the possible actions here
-                Output.WriteLine("    <tr><th>Actions:</th><td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "admin/builderfolders/" + incomingFolder.IncomingFolderID + "\">edit</a></td></tr>");
-                Output.WriteLine("  </table>");
+                    // Collect all the options and display them
+                    StringBuilder builder = new StringBuilder();
+                    if (incomingFolder.Allow_Deletes) builder.Append("Allow deletes ; ");
+                    if (incomingFolder.Allow_Folders_No_Metadata) builder.Append("Allow folder with no metadata ; ");
+                    if (incomingFolder.Allow_Metadata_Updates) builder.Append("Allow metadata updates ; ");
+                    if (incomingFolder.Archive_All_Files) builder.Append("Archive all files ; ");
+                    else if (incomingFolder.Archive_TIFFs) builder.Append("Archive TIFFs ; ");
+                    if (incomingFolder.Perform_Checksum) builder.Append("Perform checksum ; ");
+                    Output.WriteLine("    <tr><th>Options</th><td>" + builder + "</td></tr>");
+
+                    // Add the possible actions here
+                    Output.WriteLine("    <tr><th>Actions:</th><td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "admin/builderfolder/" + incomingFolder.IncomingFolderID + "\">edit</a></td></tr>");
+                    Output.WriteLine("  </table>");
+                }
             }
+
+            Output.WriteLine("  <h3>New Builder Folder</h3>");
+            Output.WriteLine("  <table id=\"sbkSeav_BuilderNewFolderDisplay\">");
+            Output.WriteLine("    <tr>");
+            Output.WriteLine("      <td id=\"sbkSeav_BuilderNewFolderDisplay_TextCol\">");
+            Output.WriteLine("        <p>Press the button to the right to add the configuration for a new builder incoming folder.  If this is the first folder you add, it will also be the default for doing bulk imports via the SMaRT tool.</p>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("      <td id=\"sbkSeav_BuilderNewFolderDisplay_ButtonCol>");
+            Output.WriteLine("        <button title=\"Add configuration for a new builder incoming folder\" id=\"sbkSeav_BuilderNewFolderButton\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "admin/builderfolder/new';return false;\"> &nbsp; ADD NEW &nbsp; <br />BUILDER FOLDER</button>");
+            Output.WriteLine("      </td>");
+            Output.WriteLine("    </tr>");
+            Output.WriteLine("  </table>");
+
+
+
         }
 
         private void add_builder_modules_info(TextWriter Output)
