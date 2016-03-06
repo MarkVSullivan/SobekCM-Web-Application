@@ -778,15 +778,42 @@ namespace SobekCM.Library.AdminViewer
 		#region HTML helper method for the top-level information page
 
 		private void add_top_level_info(TextWriter Output)
-		{
-            Output.WriteLine("    <p>This form allows a user to view and edit all the main system-wide settings which allow the SobekCM web application and assorted related applications to function correctly within each custom architecture and each institution.</p>");
-            Output.WriteLine("    <p>For more information about these settings, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/settings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
+		{;
+		    Output.WriteLine("  <h2>System-Wide Settings</h2>");
+            Output.WriteLine("  <p>This form allows a user to view all the main system-wide settings and configurations which allow the SobekCM web application and assorted related applications to function correctly within each custom architecture and each institution.  This page highlights the great degree of customizations that can be done within the SobekCM framework, through the settings in the database and the configuration files.</p>");
+            Output.WriteLine("  <p>For more information about these settings, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/settings\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p>");
 
             // Add portal admin message
             if (!RequestSpecificValues.Current_User.Is_System_Admin)
             {
                 Output.WriteLine("    <p>Portal Admins have rights to see these settings. System Admins can change these settings.</p>");
             }
+
+            Output.WriteLine("  <div id=\"sbkSeav_SubPageDesc\">");
+
+            Output.WriteLine("    <p id=\"sbkSeav_SubPageTitle\">This screen contains the following sections:</p>");
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "settings") + "\">Settings</a></h4>");
+            Output.WriteLine("    <p>This section includes all the basic setting information which governs the very basic operation of this SobekCM instance. These settings include information about the actual servers, email information, help settings, top-level search settings, and more. These settings are retained in the database and can be changed directly from these forms.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "config") + "\">Configuration Files</a></h4>");
+            Output.WriteLine("    <p>The SobekCM is highly configurable and extensible through the use of configuration files and plug-ins/extensions. Most of the content displayed in this form is derived from the configuration files which are read when the application starts.  This section provides information on the files that were read and any errors that may have occurred.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "builder") + "\">Builder</a></h4>");
+            Output.WriteLine("    <p>The builder runs in the background and handles bulk loading, reprocessing of recently loaded materials, and other regular maintenance tasks. Generally, the builder will look at incoming folders and look for newly loaded materials once every 60 seconds.  The subpages under this section provide information on the basic settings for the builder, the incoming folders which the builder watches for newly bulk loaded materials, and the builder modules that define the work it completes.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "metadata") + "\">Metadata Configuration</a></h4>");
+            Output.WriteLine("    <p>Metadata reading and writing within the system can be completely customized by utilizing the appropriate portions of the metadata configuration. This can control how overall metadata files are written as well as how the sections within a METS file are read and written.  This section provides information on this configuration and all of the different metadata readers and writers the system can employ.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "engine") + "\">Engine Configuration</a></h4>");
+            Output.WriteLine("    <p>Some of the core functionality is controlled by configuration files that are primarily consumed by the engine and provided to the user interface as needed.  The configuration information displayed here controls how the final display digital resource object is constructed from the METS-based object, what authentication is available for users of the system, and the overall behavior and metadata support for OAI-PMH.  In addition, this includes the list of all the microservice endpoints which are exposed by the engine for consumption by the user interface or other reporting tools.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "ui") + "\">UI Configuration</a></h4>");
+            Output.WriteLine("    <p>Many aspects of the final display of aggregations and digital resources are controlled by configuration files.  This configuration includes how the citation, or description, appears for digital resources, how the overall system displays HTML, which metadata fields can be exposed for editing, and the overall operation through the configuration of the microservices employed by the user interface.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "html") + "\">HTML Snippets</a></h4>");
+            Output.WriteLine("    <p>Several small snippets of HTML exist that allow an instance to easily customize several standard messages for your users. The subpages here allow you to view and edit these HTML snippets.</p>");
+
+            Output.WriteLine("  </div>");
 
 		}
 
@@ -3157,6 +3184,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <h2>Engine Configuration</h2>");
 
             Output.WriteLine("  <p>Some of the core functionality is controlled by configuration files that are primarily consumed by the engine and provided to the user interface as needed.</p>");
+            Output.WriteLine("  <p>The configuration information displayed here controls how the final display digital resource object is constructed from the METS-based object, what authentication is available for users of the system, and the overall behavior and metadata support for OAI-PMH.  In addition, this includes the list of all the microservice endpoints which are exposed by the engine for consumption by the user interface or other reporting tools.</p>");
 
             Output.WriteLine("  <div id=\"sbkSeav_SubPageDesc\">");
 
@@ -3226,11 +3254,13 @@ namespace SobekCM.Library.AdminViewer
         private void add_ui_citation_info(TextWriter Output)
         {
             Output.WriteLine("  <h2>Citation Display Configuration</h2>");
-            Output.WriteLine("  <p>Below are the citation sets included in this instance.</p>");
+            Output.WriteLine("  <p>Below is the configuration of the display of the citation, or description, of a single digital resource.  The display of the citation is completely configurable through the configuration files. For more extreme customizations, custom citation section writers can be created.</p>");
+            Output.WriteLine("  <p>The citation set is split into a series of field sets.  Field sets are used to group similar citation elements under a heading.</p>");
+            Output.WriteLine("  <p>It is possible to have multiple citation sets, although the system currently only uses the default set.  However, you could reference the other set in code if you were to customize a citation viewer or add a new item view entirely.</p>");
 
             // Get the default set
             CitationSet defaultSet = UI_ApplicationCache_Gateway.Configuration.UI.CitationViewer.Get_CitationSet();
-            Output.WriteLine("  <h3>" + defaultSet.Name + " Citation Field Set ( <span class=\"sbkSeav_DefaultTextSpan\">default</span> )</h3>");
+            Output.WriteLine("  <h3>" + defaultSet.Name + " Citation Set ( <span class=\"sbkSeav_DefaultTextSpan\">default</span> )</h3>");
             add_ui_citation_set_info(Output, defaultSet);
 
             // Add the other sets
@@ -3238,7 +3268,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 if (thisSet != defaultSet)
                 {
-                    Output.WriteLine("  <h3>" + thisSet.Name + " Citation Field Set ( <span class=\"sbkSeav_DefaultTextSpan\">default</span> )</h3>");
+                    Output.WriteLine("  <h3>" + thisSet.Name + " Citation Set ( <span class=\"sbkSeav_DefaultTextSpan\">default</span> )</h3>");
                     add_ui_citation_set_info(Output, thisSet);
                 }
             }
@@ -3295,8 +3325,9 @@ namespace SobekCM.Library.AdminViewer
 
         private void add_ui_client_endpoints_info(TextWriter Output)
         {
-            Output.WriteLine("  <h2>Engine Configuration</h2>");
-            Output.WriteLine("  <p>This section details all of the microservice endpoints used by the SobekCM UI.</p>");
+            Output.WriteLine("  <h2>Microservice Endpoints Configuration</h2>");
+            Output.WriteLine("  <p>Just as the engine exposes endpoints for the user interface, the user interface utilizes endpoints to retrieve the data.  In general, there will be great symmetry between the endpoints seen under the engine configuration, and the microservice client endpoints, although the engine generally exposes a single endpoint in multiple formats (i.e., xml, json, json-p, etc.. ) where the user interface will just use one of the formats for each endpoint.</p>");
+            Output.WriteLine("  <p>It would also be possible to point a set of endpoints to an entirely different system or create custom endpoints outside the application.  The microservice endpoints configuration is where you would instruct the user interface to use those different endpoints.</p>");
 
             // Create the data table
             DataTable tempTable = new DataTable();
@@ -3361,7 +3392,10 @@ namespace SobekCM.Library.AdminViewer
         private void add_ui_template_elements_info(TextWriter Output)
         {
             Output.WriteLine("  <h2>Template Elements</h2>");
-            Output.WriteLine("  <p>This section lists all of the individual template elements that can be used to edit online metadata.</p>");
+            Output.WriteLine("  <p>This section lists all of the individual template elements that can be used to create new digital resources online or edit existing metadata.  The template files are XML-driven and reference each individual template element via a <span style=\"font-style:italic\">Type</span> and <span style=\"font-style:italic\">Subtype</span>. This configuration maps from those attributes in the template XML file to the class to use to provide access to edit and enter that metadata.</p>");
+            Output.WriteLine("  <p>There are often multiple formats of entry for the same main metadata elements.  This allows different levels of complexity for different templates and different projects.</p>");
+            Output.WriteLine("  <p>This configuration allows you to override existing elements or add your own custom template elements for the templates.</p>");
+
 
             // Create the data table
             DataTable tempTable = new DataTable();
@@ -3406,7 +3440,8 @@ namespace SobekCM.Library.AdminViewer
         private void add_ui_viewers_info(TextWriter Output)
         {
             Output.WriteLine("  <h2>HTML Writers and Viewers</h2>");
-            Output.WriteLine("  <p>This section includes all of the configuration for the HTML writers and subviewers used by those writers.</p>");
+            Output.WriteLine("  <p>This section includes all of the configuration for the HTML writers and subviewers used by those writers.  This allows complete customization of the item viewers, aggregation viewers, and many of the other views in the system.  You could also add new custom viewers through this configuration.</p>");
+            Output.WriteLine("  <p>Currently, only the item viewers utilize the configuration files to determine viewers, but as of version 4.11, the rest of the viewer information should also appear here.</p>");
 
             if (!String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.Assembly))
             {
@@ -3497,7 +3532,29 @@ namespace SobekCM.Library.AdminViewer
 
         private void add_ui_toplevel_info(TextWriter Output)
         {
-            Output.WriteLine("UI TOP-LEVEL INFO HERE");
+            Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
+
+            Output.WriteLine("  <h2>User Interface Configuration</h2>");
+
+            Output.WriteLine("  <p>Many aspects of the final display of aggregations and digital resources are controlled by configuration files.  This configuration includes how the citation, or description, appears for digital resources, how the overall system displays HTML, which metadata fields can be exposed for editing, and the overall operation through the configuration of the microservices employed by the user interface.</p>");
+
+            Output.WriteLine("  <div id=\"sbkSeav_SubPageDesc\">");
+
+            Output.WriteLine("    <p id=\"sbkSeav_SubPageTitle\">This page contains the following subpages:</p>");
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "ui/citation") + "\">Citation Viewer</a></h4>");
+            Output.WriteLine("    <p>The citation viewer subpage includes the configuration of the display of the citation, or description, of a single digital resource.  The display of the citation is completely configurable through the configuration files. For more extreme customizations, custom citation section writers can be created.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "ui/microservices") + "\">Microservice Client Endpoints</a></h4>");
+            Output.WriteLine("    <p>Just as the engine exposes endpoints for the user interface, the user interface utilizes endpoints to retrieve the data.  In general, there will be great symmetry between the endpoints seen under the engine configuration, and the microservice client endpoints, although the engine generally exposes a single endpoint in multiple formats (i.e., xml, json, json-p, etc.. ) where the user interface will just use one of the formats for each endpoint.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "ui/template") + "\">Template Elements</a></h4>");
+            Output.WriteLine("    <p>This subpage lists all of the individual template elements that can be used to create new digital resources online or edit existing metadata.  The template files are XML-driven and reference each individual template element via a <span style=\"font-style:italic\">Type</span> and <span style=\"font-style:italic\">Subtype</span>. This configuration maps from those attributes in the template XML file to the class to use to provide access to edit and enter that metadata.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "ui/viewers") + "\">HTML Viewers/Subviewers</a></h4>");
+            Output.WriteLine("    <p>This subpage includes all of the configuration for the HTML writers and subviewers used by those writers.  This allows complete customization of the item viewers, aggregation viewers, and many of the other views in the system.  You could also add new custom viewers through this configuration.</p>");
+
+
+            Output.WriteLine("  </div>");
         }
 
 		#endregion
@@ -3597,7 +3654,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <h2>Special HTML Source Snippets</h2>");
 
-            Output.WriteLine("  <p>Several small snippets of HTML exist that allow an instance to easily customize several stanard messages for your users.  The subpages here allow you to view and edit these HTML snippets.</p>");
+            Output.WriteLine("  <p>Several small snippets of HTML exist that allow an instance to easily customize several standard messages for your users.  The subpages here allow you to view and edit these HTML snippets.</p>");
 
             Output.WriteLine("  <div id=\"sbkSeav_SubPageDesc\">");
 
