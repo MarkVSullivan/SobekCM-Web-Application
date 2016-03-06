@@ -4,7 +4,9 @@ using System.Linq;
 using System.Web;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
+using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.AdminViewer
@@ -20,6 +22,15 @@ namespace SobekCM.Library.AdminViewer
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Builder_Folder_Mgmt_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
+            // Verify this user can edit this
+            bool allowEdit = (((!UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && (RequestSpecificValues.Current_User.Is_System_Admin)) || (RequestSpecificValues.Current_User.Is_Host_Admin));
+            if (!allowEdit)
+            {
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
+
             sourceFolder = new Builder_Source_Folder();
 
             // Is there a folder specified?

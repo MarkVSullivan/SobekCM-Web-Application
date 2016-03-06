@@ -377,6 +377,14 @@ input.sbkSeav_CustomValue_Input { width: 300px; }
 #sbkSeav_MainTable { width: 100%; margin: 5px; border: none; }
 #sbkSeav_TocArea { border-right: 2px solid #bbbbbb; width: 250px; }
 #sbkSeav_MainArea { padding: 20px; }
+#sbkSeav_MainArea p { width: 800px; line-height:1.42em; }
+#sbkSeav_MainArea ol { margin: 10px 0 10px 50px; width: 700px; }
+#sbkSeav_MainArea ol li { margin-bottom: 10px; }
+#sbkSeav_MainArea ul { margin: 10px 0 10px 50px;  width: 700px;  }
+#sbkSeav_MainArea h3 { padding-top: 30px; }
+
+#sbkAdm_ActionMessageWarning { width: 600px;text-align: left;margin-left: 200px; font-weight: bold;color: black; background-color: #FFFFCC;border: 1px solid #333333;padding: 10px;background-image: url('http://cdn.sobekrepository.org/images/misc/warning.png');background-repeat: no-repeat;padding-left: 60px;padding-top: 5px;background-position: 10px 5px; }
+#sbkAdm_ActionMessageWarning p {font-weight: normal;margin: 5px 0 5px 0;padding-left: 0;margin-left: 0;width: 550px; } 
 
 
 
@@ -388,12 +396,20 @@ input.sbkSeav_CustomValue_Input { width: 300px; }
 .sbkSeav_BaseTableVert th { background-color: #7d90d5; padding: 8px 8px 8px 5px; color: white;text-align: left; }
 .sbkSeav_BaseTableVert td {padding: 8px 8px 8px 5px;  }
 
-.sbkSeav_TableCenterCell { padding: 4px 0 4px 9; text-align: center; }
+.sbkSeav_TableCenterCell { padding: 4px 0 4px 0; text-align: center; }
 .sbkSeav_DefaultTextSpan { font-style: italic; }
 
 .sbkSeav_UiCitationTable_SetRow { background-color: #eeeeee; }
 
-.sbkSeav_BuilderFolderName { display: block; font-size: 1.17em; font-weight: bold; margin-bottom: 12px;  }
+#sbkSeav_BuilderTopInfo { margin-left: 90px; }
+
+.sbkSeav_BuilderFolderName { display: block; font-size: 1.05em; font-weight: bold; margin-bottom: 12px;  margin-left: 90px;  }
+.sbkSeav_BuilderFolderTable { margin-left: 90px; }
+
+#sbkSeav_BuilderNewFolderDisplay_TextCol { width: 600px; }
+#sbkSeav_BuilderNewFolderDisplay_TextCol p { width: 550px; margin-top: 0; }
+#sbkSeav_BuilderNewFolderDisplay { width: 850px; }
+#sbkSeav_BuilderNewFolderButton { width: 150px; margin-top: 5px; }
 
 .sbkSeav_BuilderModulesTable { width: 1150px; margin-left: 30px; }
 .sbkSeav_BuilderModulesTable_ClassCol { width: 290px; }
@@ -441,6 +457,48 @@ input.sbkSeav_CustomValue_Input { width: 300px; }
       
 #sbkSeav_UiViewersTable { max-width: 1250px; margin-left:30px; }
 #sbkSeav_UiViewersTable_AlwaysAddCol { text-align: center; width: 50px; }
+
+
+
+#sbkSeav_SubPageDesc { margin-left: 40px; padding-left: 20px; padding-right:20px; width: 750px; background-color: #ffffcc; border: 1px solid #cccccc; }
+#sbkSeav_SubPageDesc h4 { margin-bottom: 0; padding-bottom: 0; padding-top: 10px; }
+#sbkSeav_SubPageDesc p { width: 700px; margin-top: 8px; }
+
+.sbkSeav_SettingsTable th { vertical-align: middle; }
+
+#sbkSeav_SmallerPageWrapper { width: 1000px; }
+.sbkSeav_ButtonsDiv { margin-right: 100px; }
+#sbkSeav_HtmlEdit { width: 900px !important; height: 700px !important; margin-bottom: 12px; }
+
+#sbkSeav_ConfigFilesTable { margin-left: 50px; margin-top: 40px; }
+#sbkSeav_ConfigReadingLog { border: 1px solid #cccccc; width: 1100px; margin-left: 30px; }
+
+#sbkSeav_AuthModesTable { margin-left: 80px; }
+
+.sbkSeav_MetsWritersTable { width: 1250px; margin-left: 30px; }
+.sbkSeav_MetsWritersTable_ActiveCol { width: 55px; text-align: center; }
+.sbkSeav_MetsProfileTable  { width: 1250px; margin-left: 30px; }
+.sbkSeav_MetsProfileTable_ActiveCol  { width: 55px; text-align: center; }
+.sbkSeav_MetsProfileTable_LevelRow { background-color: #eeeeee; }
+
+.sbkSeav_QcToolProfileTable { margin-left: 30px; max-width: 1250px;  }
+      
+
+#sbkBav_SchedTaskTable { margin-left: 30px; max-width: 960px; }
+
+#sbkBav_LogFilterTable { margin-left: 90px; width: 700px; margin-bottom: 20px; }
+#sbkBav_LogFilterTable tr { height: 35px;  }
+
+      
+
+.sbkBfmav_DescNameBox { width: 300px; }
+.sbkBfmav_NetworkInput { width: 500px; }
+      
+
+#sbkBfmav_DisplayTable { padding-left: 45px; padding-top: 20px; padding-bottom: 20px; }
+#sbkBfmav_DisplayTable_EntryCol { width: 310px; }
+#sbkBfmav_DisplayTable tr { height: 32px; }
+      
       
 
 /** Skins_AdminViewer **/

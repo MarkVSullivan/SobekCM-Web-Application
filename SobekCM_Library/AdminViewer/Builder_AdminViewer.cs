@@ -450,21 +450,21 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("        <td>From:</td>");
             if (date1.HasValue)
             {
-                Output.WriteLine("        <td><input type=\"text\" name=\"date1input\" id=\"date1input\" class=\"sbkShw_smallinput\" value=\"" + date1.Value.ToShortDateString() + "\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
+                Output.WriteLine("        <td><input type=\"text\" name=\"date1input\" id=\"date1input\" class=\"sbkShw_smallinput sbkAdmin_Focusable\" value=\"" + date1.Value.ToShortDateString() + "\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
             }
             else
             {
-                Output.WriteLine("        <td><input type=\"text\" name=\"date1input\" id=\"date1input\" class=\"sbkShw_smallinput_initial\" value=\"mm/dd/yyyy\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
+                Output.WriteLine("        <td><input type=\"text\" name=\"date1input\" id=\"date1input\" class=\"sbkShw_smallinput_initial  sbkAdmin_Focusable\" value=\"mm/dd/yyyy\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
             }
             Output.WriteLine("        <td style=\"width:50px;\"><img src=\"" + Static_Resources.Calendar_Button_Img + "\" title=\"Show a calendar to select this date\"  onclick=\"return false;\" name=\"calendar1img\" ID=\"calendar1img\" class=\"calendar_button\" /></td>");
             Output.WriteLine("        <td>To:</td>");
             if (date2.HasValue)
             {
-                Output.WriteLine("        <td><input type=\"text\" name=\"date2input\" id=\"date2input\" class=\"sbkShw_smallinput\" value=\"" + date2.Value.ToShortDateString() + "\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
+                Output.WriteLine("        <td><input type=\"text\" name=\"date2input\" id=\"date2input\" class=\"sbkShw_smallinput sbkAdmin_Focusable\" value=\"" + date2.Value.ToShortDateString() + "\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
             }
             else
             {
-                Output.WriteLine("        <td><input type=\"text\" name=\"date2input\" id=\"date2input\" class=\"sbkShw_smallinput_initial\" value=\"mm/dd/yyyy\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
+                Output.WriteLine("        <td><input type=\"text\" name=\"date2input\" id=\"date2input\" class=\"sbkShw_smallinput_initial sbkAdmin_Focusable\" value=\"mm/dd/yyyy\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
             }
             Output.WriteLine("        <td><img src=\"" + Static_Resources.Calendar_Button_Img + "\" title=\"Show a calendar to select this date\" onclick=\"return false;\" name=\"calendar2img\" ID=\"calendar2img\" class=\"calendar_button\" /></td>");
             Output.WriteLine("      </tr>");
@@ -472,7 +472,7 @@ namespace SobekCM.Library.AdminViewer
             // Add the filter by bibid/vid
             Output.WriteLine("      <tr>");
             Output.WriteLine("        <th>Filter by BibID/VID:</th>");
-            Output.WriteLine("        <td colspan=\"6\"><input type=\"text\" id=\"bibVidFilter\" name=\"bibVidFilter\" class=\"sbkBav_LogFilterBox\" value=\"" + currentFilter + "\" /></td>");
+            Output.WriteLine("        <td colspan=\"6\"><input type=\"text\" id=\"bibVidFilter\" name=\"bibVidFilter\" class=\"sbkBav_LogFilterBox sbkAdmin_Focusable\" value=\"" + currentFilter + "\" /></td>");
             Output.WriteLine("      </tr>");
 
             // Add the no works check mark

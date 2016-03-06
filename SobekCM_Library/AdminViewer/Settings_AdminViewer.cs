@@ -606,7 +606,7 @@ namespace SobekCM.Library.AdminViewer
 			}
 			Output.WriteLine("        </ul>");
 
-            Output.WriteLine(add_leftnav_h2_link("Configuration", "config", redirectUrl, currentViewerCode));
+            Output.WriteLine(add_leftnav_h2_link("Configuration Files", "config", redirectUrl, currentViewerCode));
             Output.WriteLine("        <ul>");
             Output.WriteLine(add_leftnav_li_link("Source Files", "config/files", redirectUrl, currentViewerCode));
             Output.WriteLine(add_leftnav_li_link("Reading Log", "config/log", redirectUrl, currentViewerCode));
@@ -1432,17 +1432,18 @@ namespace SobekCM.Library.AdminViewer
         {
             Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
 
-            Output.WriteLine("  <h2>Configuration Information</h2>");
+            Output.WriteLine("  <h2>Configuration Files</h2>");
 
             Output.WriteLine("  <p>The SobekCM is highly configurable and extensible through the use of configuration files and plug-ins/extensions.  Most of the content displayed in this form is derived from the configuration files which are read when the application starts.</p>");
             Output.WriteLine("  <p>The subpages under this page provide information on the files that were read and any errors that may have occurred.</p>");
             Output.WriteLine("  <div id=\"sbkSeav_SubPageDesc\">");
-            Output.WriteLine("    <h4>Source Files</h4>");
+            Output.WriteLine("    <p id=\"sbkSeav_SubPageTitle\">This page contains the following subpages:</p>");
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "config/files") + "\">Source Files</a></h4>");
             Output.WriteLine("    <p>This subpage lists all the configuration files which were discovered during system start-up and lists the files in the order they would be read.</p>");
             Output.WriteLine("    <p>If the configuration from a particular file does not appear to be working, this is a great place to start.  Here, you can see whether the configuration file is marked to be read and see the order in which it is being applied.</p>");
 
 
-            Output.WriteLine("    <h4>Reading Log</h4>");
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "config/files") + "\">Reading Log</a></h4>");
             Output.WriteLine("    <p>The reading log subpage shows the log which was written as the configuration files were read.  This log includes which configuration files were read, which configuration sections were found in each file, and any errors that may have occurred during the reading process.</p>");
             Output.WriteLine("    <p>If a configuration file's contents are not being applied correctly, and you have already verified the file is included in the list in the subpage above, this is a great next step.  From here, you can verify if the file was read, if any errors occurred during that process, and which sections of the configuration file were recognized by the reader.</p>");
             Output.WriteLine("  </div>");
@@ -1451,7 +1452,7 @@ namespace SobekCM.Library.AdminViewer
 
         private void add_configuration_file_info(TextWriter Output)
         {
-            Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "config") + "\">Back to Configuration</a></span>");
+            Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "config") + "\">Back to Configuration Files</a></span>");
 
             Output.WriteLine("  <h2>Configuration Files</h2>");
             Output.WriteLine("  <p>The great bulk of the content displayed in this form is derived from the configuration files which are read when the application starts.</p>");
@@ -1477,7 +1478,7 @@ namespace SobekCM.Library.AdminViewer
 
         private void add_configuration_log_info(TextWriter Output)
         {
-            Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "config") + "\">Back to Configuration</a></span>");
+            Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "config") + "\">Back to Configuration Files</a></span>");
 
             Output.WriteLine("  <h2>Configuration Reading Log</h2>");
 
@@ -1556,21 +1557,42 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <h2>Builder Information</h2>");
 
-            Output.WriteLine("  <table class=\"sbkSeav_BaseTableVert\" id=\"sbkSeav_BuilderTopInfo\">");
+            // Look to see if any builder folders exist
+	        if (String.IsNullOrEmpty(lastRun))
+	        {
+                Output.WriteLine("  <div id=\"sbkAdm_ActionMessageWarning\">The builder has never run against this instance!<br /><br /><p>Make sure the builder is running and includes a reference to the database for this instance.</p></div>");
+	        }
+            else if ((UI_ApplicationCache_Gateway.Settings.Builder.IncomingFolders == null) || (UI_ApplicationCache_Gateway.Settings.Builder.IncomingFolders.Count == 0))
+            {
+                Output.WriteLine("  <div id=\"sbkAdm_ActionMessageWarning\">There are no incoming builder folders defined!<br /><br />You should probably add a builder folder by <a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "builder/folders") + "\">clicking here</a>.</div>");
+            }
+            
+            Output.WriteLine("  <p>The builder runs in the background and handles bulk loading, reprocessing of recently loaded materials, and other regular maintenance tasks.  Generally, the builder will look at incoming folders and look for newly loaded materials once every 60 seconds.</p>");
 
+            Output.WriteLine("  <p>The table below reflects information obtained the last time the builder ran against this SobekCM instance.</p>");
+
+            Output.WriteLine("  <table class=\"sbkSeav_BaseTableVert\" id=\"sbkSeav_BuilderTopInfo\">");
             Output.WriteLine("    <tr><th>Last Run:</th><td>" + lastRun + "</td></tr>");
             Output.WriteLine("    <tr><th>Last Result:</th><td>" + lastResult + "</td></tr>");
             Output.WriteLine("    <tr><th>Builder Version:</th><td>" + builderVersion + "</td></tr>");
             Output.WriteLine("    <tr><th>Builder Operation:</th><td>" + currentBuilderMode + "</td></tr>");
             Output.WriteLine("  </table>");
 
-            // Look to see if any builder folders exist
-	        if ((UI_ApplicationCache_Gateway.Settings.Builder.IncomingFolders == null) || (UI_ApplicationCache_Gateway.Settings.Builder.IncomingFolders.Count == 0))
-	        {
-	            Output.WriteLine("  <br /><br />");
-                Output.WriteLine("  <strong>YOU HAVE NO BUILDER FOLDERS DEFINED!!</strong>");
-	        }
+            Output.WriteLine("  <p>The subpages under this page provide information on the basic settings for the builder, the incoming folders which the builder watches for newly bulk loaded materials, and the builder modules that define the work it completes. </p>");
 
+            Output.WriteLine("  <div id=\"sbkSeav_SubPageDesc\">");
+            Output.WriteLine("    <p id=\"sbkSeav_SubPageTitle\">This page contains the following subpages:</p>");
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "builder/settings") + "\">Builder Settings</a></h4>");
+            Output.WriteLine("    <p>The builder settings subpage lists all settings that help to control the behavior while processing items.  These values are all from the database and generally reflect the capability of the system running the builder.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "builder/folders") + "\">Incoming Folders</a></h4>");
+	        Output.WriteLine("    <p>This subpage lists all of the existing incoming folders.  In addition, it allows new incoming builder folders to be added and existing incoming builder folders to be modified.</p>");
+	        Output.WriteLine("    <p>One of the primary tasks of the builder is to handle bulk ingest of digital resources and digital resource files.  To facilitate this process, the builder can look in multiple different incoming folders and can process the files differently, depending on which folder they come in on.  Usually one incoming folder is set to a FTP location as well, to allow FTP of new materials directly into your SobekCM instance.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "builder/modules") + "\">Builder Modules</a></h4>");
+	        Output.WriteLine("    <p>The builder modules subpage shows the list of all the builder modules which will run during each phase of the builder's processing.</p>");
+            Output.WriteLine("    <p>The builder operates as a framework of builder modules operating at different levels.  Several module types operate across the breadth of the entire repository, or for a single polling.  Other modules work at the level of each individual incoming folder.  And finally, other modules perform work against each individual incoming resource or resource flagged for additional work.</p>");
+            Output.WriteLine("  </div>");
 
 	    }
 
@@ -1615,9 +1637,13 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <p>One of the primary tasks of the builder is to handle bulk ingest of digital resources and digital resource files.  To facilitate this process, the builder can look in multiple different incoming folders and can process the files differently, depending on which folder they come in on.  Usually one incoming folder is set to a FTP location as well, to allow FTP of new materials directly into your SobekCM instance.</p>");
 
-            Output.WriteLine("  <p>You can edit or delete an existing builder folder from this form.  In addition, new builder folders can also be added from this form by selecting Add New Builder Folder button below.</p>");
+            bool allowEdit = (((!UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && ( RequestSpecificValues.Current_User.Is_System_Admin )) || (RequestSpecificValues.Current_User.Is_Host_Admin));
+            if (allowEdit)
+            {
+                Output.WriteLine("  <p>You can edit or delete an existing builder folder from this form.  In addition, new builder folders can also be added from this form by selecting Add New Builder Folder button below.</p>");
 
-            Output.WriteLine("  <p>Changes you make here will be reflected almost immediately by the builder.</p>");
+                Output.WriteLine("  <p>Changes you make here will be reflected almost immediately by the builder.</p>");
+            }
 
             Output.WriteLine("  <h3>Existing Builder Folders</h3>");
             // Look to see if any builder folders exist
@@ -1628,6 +1654,15 @@ namespace SobekCM.Library.AdminViewer
             }
             else
             {
+                if (allowEdit)
+                {
+                    Output.WriteLine("  <p>Below is the list of all builder incoming folders, along with the network folders and indicated options.  You can edit an existing folder by selected EDIT under the actions of that individual folder and you can additionally add new incoming folders.</p>");
+                }
+                else
+                {
+                    Output.WriteLine("  <p>Below is the list of all builder incoming folders, along with the network folders and indicated options. </p>");
+                }
+
                 // Show the information for each builder folder
                 foreach (Builder_Source_Folder incomingFolder in UI_ApplicationCache_Gateway.Settings.Builder.IncomingFolders)
                 {
@@ -1653,22 +1688,28 @@ namespace SobekCM.Library.AdminViewer
                     Output.WriteLine("    <tr><th>Options</th><td>" + builder + "</td></tr>");
 
                     // Add the possible actions here
-                    Output.WriteLine("    <tr><th>Actions:</th><td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "admin/builderfolder/" + incomingFolder.IncomingFolderID + "\">edit</a></td></tr>");
+                    if (allowEdit)
+                    {
+                        Output.WriteLine("    <tr><th>Actions:</th><td><a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "admin/builderfolder/" + incomingFolder.IncomingFolderID + "\">edit</a></td></tr>");
+                    }
                     Output.WriteLine("  </table>");
                 }
             }
 
-            Output.WriteLine("  <h3>New Builder Folder</h3>");
-            Output.WriteLine("  <table id=\"sbkSeav_BuilderNewFolderDisplay\">");
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td id=\"sbkSeav_BuilderNewFolderDisplay_TextCol\">");
-            Output.WriteLine("        <p>Press the button to the right to add the configuration for a new builder incoming folder.  If this is the first folder you add, it will also be the default for doing bulk imports via the SMaRT tool.</p>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("      <td id=\"sbkSeav_BuilderNewFolderDisplay_ButtonCol>");
-            Output.WriteLine("        <button title=\"Add configuration for a new builder incoming folder\" id=\"sbkSeav_BuilderNewFolderButton\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "admin/builderfolder/new';return false;\"> &nbsp; ADD NEW &nbsp; <br />BUILDER FOLDER</button>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
-            Output.WriteLine("  </table>");
+            if (allowEdit)
+            {
+                Output.WriteLine("  <h3>New Builder Folder</h3>");
+                Output.WriteLine("  <table id=\"sbkSeav_BuilderNewFolderDisplay\">");
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td id=\"sbkSeav_BuilderNewFolderDisplay_TextCol\">");
+                Output.WriteLine("        <p>Press the button to the right to add the configuration for a new builder incoming folder.  If this is the first folder you add, it will also be the default for doing bulk imports via the SMaRT tool.</p>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("      <td id=\"sbkSeav_BuilderNewFolderDisplay_ButtonCol\">");
+                Output.WriteLine("        <button title=\"Add configuration for a new builder incoming folder\" id=\"sbkSeav_BuilderNewFolderButton\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "admin/builderfolder/new';return false;\">ADD NEW<br />BUILDER FOLDER</button>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+                Output.WriteLine("  </table>");
+            }
 
 
 
@@ -1678,10 +1719,15 @@ namespace SobekCM.Library.AdminViewer
         {
             Output.WriteLine("  <h2>Builder Modules</h2>");
 
+            Output.WriteLine("  <p>The builder operates as a framework of builder modules operating at different levels.  Several module types operate across the breadth of the entire repository, or for a single polling.  Other modules work at the level of each individual incoming folder.  And finally, other modules perform work against each individual incoming resource or resource flagged for additional work.</p>");
+            Output.WriteLine("  <p>This architecture module allows for the overall process of the builder (and hence the SobekCM instance) to be extremely customizable.  By creating a DLL and a configuration file, you can greatly impact the overall process of the builder.</p>");
+
             // Add all the PRE PROCESS MODULE settings
             if ((UI_ApplicationCache_Gateway.Settings.Builder.PreProcessModulesSettings != null) && (UI_ApplicationCache_Gateway.Settings.Builder.PreProcessModulesSettings.Count > 0))
             {
                 Output.WriteLine("  <h3>Pre-Process Modules</h3>");
+                Output.WriteLine("  <p>Pre-process modules are executed before the builder polls the database and incoming folders for work to complete.  These modules can either be a good place to perform repository-wide work that should occur very frequently, or to do some preparation work such as putting resources or metadata files INTO the incoming folders that are checked next.</p>");
+                Output.WriteLine("  <p>In addition, if a custom module in another portion of the processing needs configuration data, these modules can pull data from the database or read configuration files.</p>");
                 Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_BuilderModulesTable\">");
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_ClassCol\">Class</th>");
@@ -1730,6 +1776,7 @@ namespace SobekCM.Library.AdminViewer
             if ((UI_ApplicationCache_Gateway.Settings.Builder.ItemProcessModulesSettings != null) && (UI_ApplicationCache_Gateway.Settings.Builder.ItemProcessModulesSettings.Count > 0))
             {
                 Output.WriteLine("  <h3>Item Processing Modules</h3>");
+                Output.WriteLine("  <p>These are the modules that are used to process both new incoming (non-delete) packages as well as existing packages that are flagged to have additional work completed.</p>");
                 Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_BuilderModulesTable\">");
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_ClassCol\">Class</th>");
@@ -1784,6 +1831,7 @@ namespace SobekCM.Library.AdminViewer
             if ((UI_ApplicationCache_Gateway.Settings.Builder.ItemDeleteModulesSettings != null) && (UI_ApplicationCache_Gateway.Settings.Builder.ItemDeleteModulesSettings.Count > 0))
             {
                 Output.WriteLine("  <h3>Item Deletion Modules</h3>");
+                Output.WriteLine("  <p>This set of modules are run when an item is deleted from this instance.  Adding custom modules here can be useful for cleaning up resources that may be placed on other auxiliary servers or doing any other final cleanup actions.</p>");
                 Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_BuilderModulesTable\">");
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_ClassCol\">Class</th>");
@@ -1838,7 +1886,9 @@ namespace SobekCM.Library.AdminViewer
             // Add all the POST PROCESS MODULE settings
             if ((UI_ApplicationCache_Gateway.Settings.Builder.PostProcessModulesSettings != null) && (UI_ApplicationCache_Gateway.Settings.Builder.PostProcessModulesSettings.Count > 0))
             {
-                Output.WriteLine("  <h3>Pre-Process Modules</h3>");
+                Output.WriteLine("  <h3>Post-Process Modules</h3>");
+                Output.WriteLine("  <p>Post-process modules are executed after the builder completes all other tasks for a single execution.  These modules can either be a good place to perform repository-wide work that should occur after all new materials load or to release resources.</p>");
+
                 Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_BuilderModulesTable\">");
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <th class=\"sbkSeav_BuilderModulesTable_ClassCol\">Class</th>");
@@ -1922,7 +1972,17 @@ namespace SobekCM.Library.AdminViewer
         private void add_metadata_fields_info(TextWriter Output)
         {
             Output.WriteLine("  <h2>Metadata Search Fields</h2>");
-            Output.WriteLine("  <p>These are the current search fields in the system.</p>");
+            Output.WriteLine("  <p>These are all of the current search fields in the system that are utilized by the main searching methods.  These terms (and their link into the solr/lucene indexes) are defined in the database.</p>");
+            Output.WriteLine("  <p>The columns are defined below:</p>");
+            Output.WriteLine("  <ul>");
+            Output.WriteLine("    <li><span style=\"font-weight:bold\">Name</span> - The name field is a unique value that defines the metadata field and is referenced while saving the metadata for a single digital resource.</li>");
+            Output.WriteLine("    <li><span style=\"font-weight:bold\">Web Code</span> - The web code is the code used in the URL during an advanced search to indicate that this metadata field should be individually searched.</li>");
+            Output.WriteLine("    <li><span style=\"font-weight:bold\">Display Term</span> - This field is the version that is generally used throughout the system when referencing this field.</li>");
+            Output.WriteLine("    <li><span style=\"font-weight:bold\">Facet Term</span> - The facet term is the value used as the heading if facets from this field are displayed while searching or browsing digital resources within an aggregation.  This can be different than the general display term.</li>");
+            Output.WriteLine("    <li><span style=\"font-weight:bold\">Solr Field</span> - This maps this metadata field from a digital resource into the appropriate solr/lucene field for indexing and searching.</li>");
+            Output.WriteLine("  </ul>");
+
+            Output.WriteLine("  <p>Generally, new metadata terms do not need to be added directly to the database.  If a new metadata module is added to the METS file, when the values are saved, new metadata fields will automatically be claimed by the SobekCM system and will then appear in the list below.</p>");
 
             // Create the data table
             DataTable tempTable = new DataTable();
@@ -1999,7 +2059,9 @@ namespace SobekCM.Library.AdminViewer
         private void add_metadata_file_readers_info(TextWriter Output)
         {
             Output.WriteLine("  <h2>Metadata File Reader and Writers</h2>");
-            Output.WriteLine("  <p>This is the complete list of different metadata readers and writers available within the system.</p>");
+            Output.WriteLine("  <p>This is the complete list of different metadata readers and writers available within the system.  The referenced objects can read a complete metadata file and/or write a complete metadata file.   These are not the readers/writers used for individual sections within a METS file.</p>");
+            Output.WriteLine("  <p>Just adding a new reader/writer in the configuration does not add any additional functionality to the system, as the system must know to reference the appropriate reader/writer.  However, it is possible to override the exsting class to change the way an individual exiting metadata file is used.  For example, by override the standard METS writer, you could begin to add a new section within the METS, or change the way the structMap is read and written.</p>");
+
 
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_MetadataReadersTable\">");
             Output.WriteLine("    <tr>");
@@ -2096,22 +2158,33 @@ namespace SobekCM.Library.AdminViewer
         private void add_metadata_mets_sections_info(TextWriter Output)
         {
             Output.WriteLine("  <h2>METS Sections Readers and Writers</h2>");
-            Output.WriteLine("  <p>These metadata readers/writers read individual sections within the METS file that are found in either the bibliographic (dmdSec) or adminstrative (amdSec) portions of the METS file.</p>");
+            Output.WriteLine("  <p>These metadata readers/writers read individual sections within the METS file that are found in either the bibliographic (dmdSec) or administrative (amdSec) portions of the METS file.</p>");
+            Output.WriteLine("  <p>These reader/writers will automatically be utilized if a METS file is read with a matching MD Type found in either the dmdSec or amdSec.</p>");
+
+            Output.WriteLine("  <p>The columns are defined below:</p>");
+            Output.WriteLine("  <ul>");
+            Output.WriteLine("    <li><span style=\"font-weight:bold\">Is Active?</span> - Flag indicates if this reader is active and will be utilized if a matching METS section is found</li>");
+            Output.WriteLine("    <li><span style=\"font-weight:bold\">Label</span> - Label for the reader/writer which is also included in the label tag of the METS section when written.</li>");
+            Output.WriteLine("    <li><span style=\"font-weight:bold\">MD Type</span> - If this matches either the MDTYPE, OTHERMDTYPE, or LABEL of a METS section, this reader will be utilized.  The first MD Type listed is the default that will generally be used when writing the METS section, unless otherwise indicated in the METS writing profile.</li>");
+            Output.WriteLine("    <li><span style=\"font-weight:bold\">METS Section</span> - This indicates which METS section the reader should be employed for, either the bibliographic (dmdSec) or administrative (amdSec).  The amdSec also has some different subtypes which are also listed here.</li>");
+            Output.WriteLine("    <li><span style=\"font-weight:bold\">Code Class</span> - The class for the C# reader/writer object to be created and utilized for any matching METS sections.</li>");
+            Output.WriteLine("  </ul>");
 
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_MetsWritersTable\">");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_ActiveCol\">Is Active?</th>");
       //      Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_TypeCol\">ID</th>");
             Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_BaseTypeCol\">Label</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_LabelCol\">MD Type</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_SectionCol\">METS Section</th>");
             Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_NameableCol\">Code Class</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_NameableCol\">METS Section</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_NameableCol\">Options</th>");
+     //       Output.WriteLine("      <th class=\"sbkSeav_MetsWritersTable_NameableCol\">Options</th>");
             Output.WriteLine("    </tr>");
 
             // Step through all the basic metadata reader/writers
             foreach (METS_Section_ReaderWriter_Config metadataReader in UI_ApplicationCache_Gateway.Configuration.Metadata.METS_Section_File_ReaderWriter_Configs)
             {
-                add_metadata_single_config(Output, metadataReader);
+                add_metadata_single_config(Output, metadataReader, false);
             }
             Output.WriteLine("  </table>");
         }
@@ -2119,7 +2192,9 @@ namespace SobekCM.Library.AdminViewer
         private void add_metadata_mets_profiles_info(TextWriter Output)
         {
             Output.WriteLine("  <h2>Metadata METS Writing Profiles</h2>");
-            Output.WriteLine("  <p>These are profiles that can be used to write the METS files for the SobeKCM system.</p>");
+            Output.WriteLine("  <p>These are profiles that can be used to write the METS files for the SobekCM system.  During the reading process, every enabled METS section reader/writer is utilized if a match is found in the existing METS file.  However, when writing the METS, the profiles indicate which METS sections should be utilized when a digital resource is saved to a METS file.</p>");
+            Output.WriteLine("  <p>The individual metadata METS section writers are linked to the levels of the package hierarchy where they can write.  A writer can be tagged to the top, or package, level.  In addition, it can also be linked to the division level, in which case it will write information tied to the division level of the digital resource.  And, finally, the writers can also be linked to the individual file level, to write information which will be linked to an individual file within the METS.</p>");
+            Output.WriteLine("  <p>While multiple METS writing profiles can be defined, the system will only utilized the default profile, which appears first in the list below.</p>");
 
             METS_Writing_Profile defaultProfile = UI_ApplicationCache_Gateway.Configuration.Metadata.Default_METS_Writing_Profile;
             if (defaultProfile != null)
@@ -2150,9 +2225,10 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_ActiveCol\">Is Active?</th>");
             Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_LabelCol\">Label</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_Codeol\">Code Class</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_LabelCol\">MD Type</th>");
             Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_SectionCol\">METS Section</th>");
-            Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_OptionsCol\">Options</th>");
+            Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_Codeol\">Code Class</th>");
+         //   Output.WriteLine("      <th class=\"sbkSeav_MetsProfileTable_OptionsCol\">Options</th>");
             Output.WriteLine("    </tr>");
 
 
@@ -2165,12 +2241,12 @@ namespace SobekCM.Library.AdminViewer
 
                 foreach (METS_Section_ReaderWriter_Config config in Profile.Package_Level_DmdSec_Writer_Configs)
                 {
-                    add_metadata_single_config(Output, config);
+                    add_metadata_single_config(Output, config, true);
                 }
 
                 foreach (METS_Section_ReaderWriter_Config config in Profile.Package_Level_AmdSec_Writer_Configs)
                 {
-                    add_metadata_single_config(Output, config);
+                    add_metadata_single_config(Output, config, true);
                 }
             }
 
@@ -2183,12 +2259,12 @@ namespace SobekCM.Library.AdminViewer
 
                 foreach (METS_Section_ReaderWriter_Config config in Profile.Division_Level_DmdSec_Writer_Configs)
                 {
-                    add_metadata_single_config(Output, config);
+                    add_metadata_single_config(Output, config, true);
                 }
 
                 foreach (METS_Section_ReaderWriter_Config config in Profile.Division_Level_AmdSec_Writer_Configs)
                 {
-                    add_metadata_single_config(Output, config);
+                    add_metadata_single_config(Output, config, true);
                 }
             }
 
@@ -2202,18 +2278,18 @@ namespace SobekCM.Library.AdminViewer
 
                 foreach (METS_Section_ReaderWriter_Config config in Profile.File_Level_DmdSec_Writer_Configs)
                 {
-                    add_metadata_single_config(Output, config);
+                    add_metadata_single_config(Output, config, true);
                 }
 
                 foreach (METS_Section_ReaderWriter_Config config in Profile.File_Level_AmdSec_Writer_Configs)
                 {
-                    add_metadata_single_config(Output, config);
+                    add_metadata_single_config(Output, config, true);
                 }
             }
             Output.WriteLine("  </table>");
 	    }
 
-	    private void add_metadata_single_config(TextWriter Output, METS_Section_ReaderWriter_Config Config)
+	    private void add_metadata_single_config(TextWriter Output, METS_Section_ReaderWriter_Config Config, bool onlyShowDefaultMd)
 	    {
             Output.WriteLine("    <tr>");
 
@@ -2224,11 +2300,50 @@ namespace SobekCM.Library.AdminViewer
 
        //     Output.WriteLine("      <td>" + config.ID + "</td>");
             Output.WriteLine("      <td>" + Config.Label + "</td>");
-            if (!String.IsNullOrEmpty(Config.Code_Assembly))
-                Output.WriteLine("      <td>" + Config.Code_Namespace + "." + Config.Code_Class + " ( " + Config.Code_Assembly + " )</td>");
-            else
-                Output.WriteLine("      <td>" + (Config.Code_Namespace + "." + Config.Code_Class).Replace("SobekCM.Resource_Object.METS_Sec_ReaderWriters.","") + "</td>");
 
+            // Add all the mappings (or only the default)
+	        if (onlyShowDefaultMd)
+	        {
+	            if (Config.Default_Mapping != null)
+	            {
+                    if ( !String.IsNullOrEmpty(Config.Default_Mapping.Other_MD_Type))
+                        Output.WriteLine("      <td>" + Config.Default_Mapping.Other_MD_Type + "</td>");
+                    else
+                        Output.WriteLine("      <td>" + Config.Default_Mapping.MD_Type + "</td>");
+	            }
+	            else
+	            {
+                    Output.WriteLine("      <td></td>");
+	            }
+	        }
+	        else
+	        {
+	            Output.WriteLine("      <td>");
+                // Start with the default
+	            METS_Section_ReaderWriter_Mapping defaultMapping = Config.Default_Mapping;
+                if (defaultMapping != null)
+                {
+                    if (!String.IsNullOrEmpty(defaultMapping.Other_MD_Type))
+                        Output.WriteLine("        " + defaultMapping.Other_MD_Type + "<br />");
+                    else
+                        Output.WriteLine("        " + defaultMapping.MD_Type + "<br />");
+                }
+	            foreach (METS_Section_ReaderWriter_Mapping mapping in Config.Mappings)
+	            {
+	                if ((defaultMapping == null) || (defaultMapping != mapping))
+	                {
+	                    if (!String.IsNullOrEmpty(mapping.Other_MD_Type))
+	                        Output.WriteLine("        " + mapping.Other_MD_Type + "<br />");
+	                    else
+	                        Output.WriteLine("        " + mapping.MD_Type + "<br />");
+	                }
+	            }
+	            Output.WriteLine("      </td>");
+	        }
+
+
+
+            // Add the METS sections
             switch (Config.METS_Section)
             {
                 case METS_Section_Type_Enum.DmdSec:
@@ -2261,17 +2376,25 @@ namespace SobekCM.Library.AdminViewer
             }
 
 
-            if (Config.Options == null)
-                Output.WriteLine("      <td></td>");
+            if (!String.IsNullOrEmpty(Config.Code_Assembly))
+                Output.WriteLine("      <td>" + Config.Code_Namespace + "." + Config.Code_Class + " ( " + Config.Code_Assembly + " )</td>");
             else
-            {
-                Output.WriteLine("      <td>");
-                foreach (StringKeyValuePair thisOption in Config.Options)
-                {
-                    Output.WriteLine("        " + thisOption.Key + " = " + thisOption.Value + "<br />");
-                }
-                Output.WriteLine("      </td>");
-            }
+                Output.WriteLine("      <td>" + (Config.Code_Namespace + "." + Config.Code_Class).Replace("SobekCM.Resource_Object.METS_Sec_ReaderWriters.","") + "</td>");
+
+
+
+
+            //if (Config.Options == null)
+            //    Output.WriteLine("      <td></td>");
+            //else
+            //{
+            //    Output.WriteLine("      <td>");
+            //    foreach (StringKeyValuePair thisOption in Config.Options)
+            //    {
+            //        Output.WriteLine("        " + thisOption.Key + " = " + thisOption.Value + "<br />");
+            //    }
+            //    Output.WriteLine("      </td>");
+            //}
 
             Output.WriteLine("    </tr>");
 	    }
@@ -2286,7 +2409,27 @@ namespace SobekCM.Library.AdminViewer
         {
             Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
 
-            Output.WriteLine("METADATA TOP-LEVEL INFO HERE");
+            Output.WriteLine("  <h2>Metadata Configuration</h2>");
+
+            Output.WriteLine("  <p>Metadata reading and writing within the system can be completely customized by utilizing the appropriate portions of the metadata configuration.  This can control how overall metadata files are written as well as how the sections within a METS file are read and written.</p>");
+
+            Output.WriteLine("  <p>The subpages under this page provide information on this configuration and all of the different metadata readers and writers the system can employ.</p>");
+
+            Output.WriteLine("  <div id=\"sbkSeav_SubPageDesc\">");
+            Output.WriteLine("    <p id=\"sbkSeav_SubPageTitle\">This page contains the following subpages:</p>");
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "metadata/fields") + "\">Metadata Search Fields</a></h4>");
+            Output.WriteLine("    <p>The metadata search fields subpage lists all of the current search fields in the system that are utilized by the main searching methods.  These terms (and their link into the solr/lucene indexes) are defined in the database.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "metadata/filereaders") + "\">File Readers/Writers</a></h4>");
+            Output.WriteLine("    <p>The metadata file readers/writers subpage is the complete list of different metadata readers and writers available within the system.  The referenced objects can read a complete metadata file and/or write a complete metadata file.   These are not the readers/writers used for individual sections within a METS file.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "metadata/metsreaders") + "\">METS Section Reader/Writers</a></h4>");
+            Output.WriteLine("    <p>These metadata readers/writers read individual sections within the METS file that are found in either the bibliographic (dmdSec) or administrative (amdSec) portions of the METS file.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "metadata/metsprofiles") + "\">METS Writing Profiles</a></h4>");
+            Output.WriteLine("    <p>This subpage includes all the METS writing profiles that can be used to write the METS files for the SobekCM system.  During the reading process, every enabled METS section reader/writer is utilized if a match is found in the existing METS file.  However, when writing the METS, the profiles indicate which METS sections should be written at each level of the hierarchy when a digital resource is saved to a METS file.</p>");
+            Output.WriteLine("  </div>");
+
         }
 
 
@@ -2334,6 +2477,9 @@ namespace SobekCM.Library.AdminViewer
 	    private void add_engine_authentication_info(TextWriter Output)
 	    {
             Output.WriteLine("  <h2>Authentication Configuration</h2>");
+
+	        Output.WriteLine("  <p>Information about different authentication systems allowed for signing up and logging into this system are detailed here.  This includes the highest level information, such as whether Shibboleth and the standard authentication system is enabled.</p>");
+            Output.WriteLine("  <p>If Shibboleth, or any other specialized authentication systems are enabled, additional details will display in this section as well.  In the case of Shibboleth, this includes the basic information (such as URL, name, etc..) for the Shibboleth authentication, as well as how certain data fields returned with the Shiboleth token should be handled.</p>");
 
             Output.WriteLine("  <h3>Authentication Modes</h3>");
             Output.WriteLine("  <table class=\"sbkSeav_BaseTableVert\" id=\"sbkSeav_AuthModesTable\">");
@@ -2445,6 +2591,10 @@ namespace SobekCM.Library.AdminViewer
 	    {
             Output.WriteLine("  <h2>Brief Item Mapping Sets Configuration</h2>");
 
+            Output.WriteLine("  <p>When an item is requested, the METS file is read into a rich complete SobekCM item object.  In addition, data from the database is mapped into this object.  For display purposes, the data from this SobekCM item is mapped into a Brief Item which is what is generally transferred via the REST API from the engine to the user interface.  The Brief Item is what is used for displaying an item in the public interface.</p>");
+            Output.WriteLine("  <p>The mapping from the rich SobekCM Item to the Brief Item is controlled by a number of brief item mappers.  If new metadata fields are being added for display, you will almost certainly need to create a new BriefItemMapper object, to ensure the metadata is available for display online.  In addition, by overriding an existing mapper, you can change how metadata is displayed in the citation, or how the item behaves within your instance of SobekCM.</p>");
+            Output.WriteLine("  <p>There can be multiple mapping sets in your instance.  It is most common to have a 'Standard' mapping set, which brings over all the file and division information and also to have a 'citation' mapping set which only maps over the descriptive citation information.</p>");
+
             string defaultSetName = UI_ApplicationCache_Gateway.Configuration.BriefItemMapping.DefaultSetName;
             BriefItemMapping_Set defaultSet = UI_ApplicationCache_Gateway.Configuration.BriefItemMapping.GetMappingSet(defaultSetName);
             if (defaultSet != null)
@@ -2510,6 +2660,9 @@ namespace SobekCM.Library.AdminViewer
 	    {
 	        Output.WriteLine("  <h2>Contact Us Form Configuration</h2>");
 
+            Output.WriteLine("  <p>This controls the behavior of the main, top-level, contact form within SobekCM.  If you wish to use this form, you can control which fields display, the order of display, and the options for a user to select.</p>");
+            Output.WriteLine("  <p>This can also be customized at the collection level, but those custom contact us forms would not display here, since they are embedded within the aggregation folders.</p>");
+
 
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_ContactFormTable\">");
 	        Output.WriteLine("    <tr>");
@@ -2571,10 +2724,12 @@ namespace SobekCM.Library.AdminViewer
         private void add_engine_server_endpoints_info(TextWriter Output)
         {
             Output.WriteLine("  <h2>Engine Configuration</h2>");
-            Output.WriteLine("  <p>This section details all of the endpoints exposed via the SobekCM engine.</p>");
+            Output.WriteLine("  <p>This section details all of the REST API endpoints exposed via the SobekCM engine.  This details each endpoint that is made available, including which HTTP verb(s) are supported (GET, POST, PUT, and/or DELETE), which transfer schemas are supported (JSON, JSON-P, XML, ProtoBuf, or something else), and which method is called to support this endpoint.  In addition, any IP restrictions and component information is included.</p>");
+            Output.WriteLine("  <p>The first table lists all of the endpoints and links to the two tables at the bottom of the page.  At the bottom of the page is the list of componentns, which are linked to the endpoints by Component ID.  Also at the bottom is each IP restriction range, which again is linked to the endpoint by ID.  This lists all of the IP ranges that are allowed access to those particular endpoints.</p>");
 
 
             Output.WriteLine("  <h3>Engine Endpoints</h3>");
+            Output.WriteLine("  <p>These are all the endpoints that are suppored by the SobekCM engine in your instance.</p>");
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_EngineServerEndpointsTable\">");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <th id=\"sbkSeav_EngineServerEndpointsTable_UrlCol\">URL</th>");
@@ -2595,6 +2750,7 @@ namespace SobekCM.Library.AdminViewer
 
             // Add the engine components lookup table
             Output.WriteLine("  <h3>Engine Components</h3>");
+            Output.WriteLine("  <p>These are all the components which are loaded, either from the default assembly or a referenced assembly, to support all the endpoints above.</p>");
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_EngineServerComponentsTable\">");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <th id=\"sbkSeav_EngineServerComponentsTable_IdCol\">Component ID</th>");
@@ -2616,6 +2772,7 @@ namespace SobekCM.Library.AdminViewer
 
             // Add the engine restrictions table
             Output.WriteLine("  <h3>Engine IP Restrictions</h3>");
+            Output.WriteLine("  <p>This table lists all of the IP restriction ranges which exist in this instance to limit access to some of the endpoints.</p>");
             Output.WriteLine("  <table class=\"sbkSeav_BaseTable\" id=\"sbkSeav_EngineServerRestrictionsTable\">");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <th id=\"sbkSeav_ContactForm_IdCol\">Range ID</th>");
@@ -2788,8 +2945,11 @@ namespace SobekCM.Library.AdminViewer
             if (String.IsNullOrEmpty(oai_repository_identifier)) oai_repository_identifier = UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation;
 
             Output.WriteLine("  <h2>OAI-PMH Configuration</h2>");
+            Output.WriteLine("  <p>The top-level information for this repository and OAI-PMH ( the <a href=\"https://www.openarchives.org/pmh/\">Open Archives Initiative Protocol for Metadata Harvesting</a> ) is displayed below.  This includes whether it is enabled to be available for this repository and the basic identifying information about this repository as well as the different metadata formats that can be shared via OAI-PMH.</p>");
+            Output.WriteLine("  <p>This just configures how OAI-PMH will work with this overall instance and how the repository responds to the basic Identify verb.  Each individual aggregation can be selected to include as an OAI-PMH set from within the single aggregation administrative screens.</p>");
 
             Output.WriteLine("  <h3>Basic Repository Information</h3>");
+            Output.WriteLine("  <p>Below is the top-level information for this repository, including if OAI-PMH is enabled in your instance.</p>");
             Output.WriteLine("  <table class=\"sbkSeav_BaseTableVert\" id=\"sbkSeav_OaiPmhBasicTable\">");
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <th id=\"sbkSeav_OaiPmhBasicTable_FirstCol\">OAI-PMH Enabled?</th>");
@@ -2837,7 +2997,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  </table>");
 
                 Output.WriteLine("  <h3>Metadata Prefixes</h3>");
-            Output.WriteLine("  <p>This details the different metadata formats available in this repository for OAI-PMH sharing.</p>");
+            Output.WriteLine("  <p>This details the different metadata formats available in this repository for OAI-PMH sharing.  New formats can be supported by adding new metadata namespaces and classes to render the metadata.  In addition, the existing output could be modified by overriding the default metadata writer to use a class you include within a DLL on your site.</p>");
 
 
                 // Add any constants 
@@ -2891,7 +3051,14 @@ namespace SobekCM.Library.AdminViewer
         private void add_engine_qc_tool_info(TextWriter Output)
 	    {
             Output.WriteLine("  <h2>Quality Control Configuration</h2>");
-            Output.WriteLine("  <p>This configuration controls the divisions which are available for different users when creating the structural metadata online through the quality control tool.</p>");
+            Output.WriteLine("  <p>This configuration controls the divisions which are available for different users when creating the structural metadata online through the quality control tool.  This does not control which types the system supports, only the types that appear for a particular user in the division drop down in the quality control tool used to create structural metadata.  So, if you are working on a project where you know there may only be three types of divisions in the very uniform material, you could create your own profile to make it easier to use and more controlled.</p>");
+            Output.WriteLine("  <p>The columns are defined below:</p>");
+            Output.WriteLine("  <ul>");
+            Output.WriteLine("    <li><span style=\"font-weight:bold\">Division Type</span> - This is the division type the user selects and the type that is most likely to appear within the METS file as the type of division.</li>");
+            Output.WriteLine("    <li><span style=\"font-weight:bold\">Base Division Type</span> - If there is a base division type, this base division type will actually be used in the METS and the division type selected will become a division label.</li>");
+            Output.WriteLine("    <li><span style=\"font-weight:bold\">Is Active?</span> - This flag indicates if this division type is available for a user to select.</li>");
+            Output.WriteLine("    <li><span style=\"font-weight:bold\">Is Nameable?</span> - The flag determines if a user should be allowed to enter a custom name for this division.  For example, if the division is a chapter, then the user can enter the name of the chapter if this flag id set.</li>");
+             Output.WriteLine("  </ul>");
 
             string defaultSetName = UI_ApplicationCache_Gateway.Configuration.QualityControlTool.DefaultProfile;
 
@@ -2987,7 +3154,37 @@ namespace SobekCM.Library.AdminViewer
         {
             Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
 
-            Output.WriteLine("ENGINE TOP-LEVEL INFO HERE");
+            Output.WriteLine("  <h2>Engine Configuration</h2>");
+
+            Output.WriteLine("  <p>Some of the core functionality is controlled by configuration files that are primarily consumed by the engine and provided to the user interface as needed.</p>");
+
+            Output.WriteLine("  <div id=\"sbkSeav_SubPageDesc\">");
+
+            Output.WriteLine("    <p id=\"sbkSeav_SubPageTitle\">This page contains the following subpages:</p>");
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "engine/authentication") + "\">Authentication</a></h4>");
+            Output.WriteLine("    <p>This subpage contains information about different authentication systems allowed for signing up and logging into this system are detailed here.  This includes the highest level information, such as whether Shibboleth and the standard authentication system is enabled.</p>");
+            Output.WriteLine("    <p>If Shibboleth, or any other specialized authentication systems are enabled, additional details will display in this section as well.  In the case of Shibboleth, this includes the basic information (such as URL, name, etc..) for the Shibboleth authentication, as well as how certain data fields returned with the Shiboleth token should be handled.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "engine/briefitem") + "\">Brief Item Mapping</a></h4>");
+            Output.WriteLine("    <p>When an item is requested, the METS file is read into a rich complete SobekCM item object.  In addition, data from the database is mapped into this object.  For display purposes, the data from this SobekCM item is mapped into a Brief Item which is what is generally transferred via the REST API from the engine to the user interface.  The Brief Item is what is used for displaying an item in the public interface.</p>");
+            Output.WriteLine("    <p>The mapping from the rich SobekCM Item to the Brief Item is controlled by a number of brief item mappers and displayed in this subpage.  If new metadata fields are being added for display, you will almost certainly need to create a new BriefItemMapper object, to ensure the metadata is available for display online.  In addition, by overriding an existing mapper, you can change how metadata is displayed in the citation, or how the item behaves within your instance of SobekCM.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "engine/contact") + "\">Contact Form</a></h4>");
+            Output.WriteLine("    <p>This controls the behavior of the main, top-level, contact form within SobekCM.  If you wish to use this form, you can control which fields display, the order of display, and the options for a user to select.</p>");
+            Output.WriteLine("    <p>This can also be customized at the collection level, but those custom contact us forms would not display here, since they are embedded within the aggregation folders.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "engine/engine") + "\">Engine Server Endpoints</a></h4>");
+            Output.WriteLine("    <p>This subpage details all of the REST API endpoints exposed via the SobekCM engine.  This details each endpoint that is made available, including which HTTP verb(s) are supported (GET, POST, PUT, and/or DELETE), which transfer schemas are supported (JSON, JSON-P, XML, ProtoBuf, or something else), and which method is called to support this endpoint.  In addition, any IP restrictions and component information is included.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "engine/oaipmh") + "\">OAI-PMH Protocol</a></h4>");
+            Output.WriteLine("    <p>The oai-pmh protocol subpage displays all the top-level information for this repository and OAI-PMH ( the <a href=\"https://www.openarchives.org/pmh/\">Open Archives Initiative Protocol for Metadata Harvesting</a> ) is displayed below.  This includes whether it is enabled to be available for this repository and the basic identifying information about this repository as well as the different metadata formats that can be shared via OAI-PMH.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "engine/qctool") + "\">Quality Control Tool</a></h4>");
+            Output.WriteLine("    <p>This subpage displays all of the configuration which controls the divisions which are available for different users when creating the structural metadata online through the quality control tool.  This does not control which types the system supports, only the types that appear for a particular user in the division drop down in the quality control tool used to create structural metadata.  So, if you are working on a project where you know there may only be three types of divisions in the very uniform material, you could create your own profile to make it easier to use and more controlled.</p>");
+
+
+            Output.WriteLine("  </div>");
+
         }
 
 		#endregion
@@ -3331,6 +3528,9 @@ namespace SobekCM.Library.AdminViewer
         {
             Output.WriteLine("  <h2>Missing Page HTML Snippet</h2>");
 
+            Output.WriteLine("  <p>This special snippet of HTML is displayed when a non-administrative user requests a page that does not exist.  In addition, a 404 error code is returned.</p>");
+            Output.WriteLine("  <p>Administrative users see a special missing page message where they have options to add web content pages, aggregations, or items to match the errant URL.  To see this snippet in action, you will need to logout and then request a non-existant item, aggregation, or page.</p>");
+
             Output.WriteLine("  <div id=\"sbkSeav_SmallerPageWrapper\">");
 
             // Add the buttons
@@ -3366,6 +3566,7 @@ namespace SobekCM.Library.AdminViewer
         private void add_html_no_results_info(TextWriter Output)
         {
             Output.WriteLine("  <h2>No Results HTML Snippet</h2>");
+            Output.WriteLine("  <p>This special HTML snippet is used to provide users's a customized message when no results are found for a search (or a browse).  This mesasge is in place of the generic 'Your search returned no results' message.</p>");
 
             Output.WriteLine("  <div id=\"sbkSeav_SmallerPageWrapper\">");
 
@@ -3394,7 +3595,21 @@ namespace SobekCM.Library.AdminViewer
         {
             Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
 
-            Output.WriteLine("HTML TOP-LEVEL INFO HERE");
+            Output.WriteLine("  <h2>Special HTML Source Snippets</h2>");
+
+            Output.WriteLine("  <p>Several small snippets of HTML exist that allow an instance to easily customize several stanard messages for your users.  The subpages here allow you to view and edit these HTML snippets.</p>");
+
+            Output.WriteLine("  <div id=\"sbkSeav_SubPageDesc\">");
+
+            Output.WriteLine("    <p id=\"sbkSeav_SubPageTitle\">This page contains the following subpages:</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "html/missing") + "\">Missing Page</a></h4>");
+            Output.WriteLine("    <p>This special snippet of HTML is displayed when a non-administrative user requests a page that does not exist.  In addition, a 404 error code is returned.</p>");
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "html/noresults") + "\">No Results</a></h4>");
+            Output.WriteLine("    <p>This special HTML snippet is used to provide users's a customized message when no results are found for a search (or a browse).  This message is used in place of the generic 'Your search returned no results' message.</p>");
+             
+            Output.WriteLine("  </div>");
         }
 
 		#endregion
