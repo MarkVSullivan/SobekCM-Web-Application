@@ -30,20 +30,20 @@ namespace SobekCM.Core.ApplicationState
         /// <summary> Month portion of earliest date for usage stats </summary>
         /// <remarks> 1 = January, 2 = February, .. 12 = December </remarks>
         [DataMember]
-        public int Earliest_Month { get; private set; }
+        public int Earliest_Month { get; set; }
 
         /// <summary> Year portion of earliest date for usage stats </summary>
         [DataMember]
-        public int Earliest_Year { get; private set; }
+        public int Earliest_Year { get; set; }
 
         /// <summary> Month portion of last date for usage stats </summary>
         /// <remarks> 1 = January, 2 = February, .. 12 = December </remarks>
         [DataMember]
-        public int Latest_Month { get; private set; }
+        public int Latest_Month { get; set; }
 
         /// <summary> Year portion of last date for usage stats </summary>
         [DataMember]
-        public int Latest_Year { get; private set; }
+        public int Latest_Year { get; set; }
 
         /// <summary> Sets the date range from the table of statistical months available </summary>
         /// <param name="dateRangeTable"> Table which lists every date statistical information exists</param>

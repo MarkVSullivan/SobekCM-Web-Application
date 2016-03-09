@@ -292,6 +292,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                         thisModule = new Aggregations_BriefItemMapper();
                         break;
 
+                    case "SobekCM.Engine_Library.Items.BriefItems.Mappers.Behaviors_BriefItemMapper":
+                        thisModule = new Behaviors_BriefItemMapper();
+                        break;
+
                     case "SobekCM.Engine_Library.Items.BriefItems.Mappers.Classifications_BriefItemMapper":
                         thisModule = new Classifications_BriefItemMapper();
                         break;
@@ -392,6 +396,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                         thisModule = new Source_Institution_BriefItemMapper();
                         break;
 
+                    case "SobekCM.Engine_Library.Items.BriefItems.Mappers.Standard_BriefItemMapper":
+                        thisModule = new Standard_BriefItemMapper();
+                        break;
+
                     case "SobekCM.Engine_Library.Items.BriefItems.Mappers.Subjects_BriefItemMapper":
                         thisModule = new Subjects_BriefItemMapper();
                         break;
@@ -418,6 +426,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems
 
                     case "SobekCM.Engine_Library.Items.BriefItems.Mappers.VRACore_BriefItemMapper":
                         thisModule = new VRACore_BriefItemMapper();
+                        break;
+
+                    case "SobekCM.Engine_Library.Items.BriefItems.Mappers.Web_BriefItemMapper":
+                        thisModule = new Web_BriefItemMapper();
                         break;
 
                     case "SobekCM.Engine_Library.Items.BriefItems.Mappers.Zoological_Taxonomy_BriefItemMapper":

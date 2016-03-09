@@ -11,6 +11,7 @@ using SobekCM.Builder_Library.Modules.PostProcess;
 using SobekCM.Builder_Library.Modules.PreProcess;
 using SobekCM.Builder_Library.Modules.Schedulable;
 using SobekCM.Builder_Library.Settings;
+using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.MemoryMgmt;

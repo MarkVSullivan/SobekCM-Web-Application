@@ -54,15 +54,17 @@ namespace SobekCM.Builder_Library.Statistics
         public void Process_IIS_Logs()
         {
             // **** READ THE LOOKUP TABLES FROM THE DATABASE **** //
-            DataSet lookupTables;
+            DataSet lookupTables = new DataSet();
+            //lookupTables.ReadXml(@"C:\Users\mark.v.sullivan\Documents\Visual Studio 2012\Projects\SobekDbInfoSaver\SobekDbInfoSaver\bin\Release\uf\lookup.xml");
+
             try
             {
                 lookupTables = Engine_Database.Get_Statistics_Lookup_Tables();
-                On_New_Status("Retrieved statistics lookup tables from the database", false );
+                On_New_Status("Retrieved statistics lookup tables from the database", false);
             }
             catch (Exception ee)
             {
-                On_New_Status("Error getting statistics lookup tables from the database.  " + ee.Message, true );
+                On_New_Status("Error getting statistics lookup tables from the database.  " + ee.Message, true);
                 return;
             }
 
@@ -84,9 +86,10 @@ namespace SobekCM.Builder_Library.Statistics
             On_New_Status("Read all needed log files and write them as XML datasets", false);
             SobekCM_Log_Reader sobekcm_log_reader = new SobekCM_Log_Reader(lookupTables.Tables[0], sobekcm_web_location);
             string[] files = Directory.GetFiles(sobekcm_log_location, "u_ex*.log");
-            try
+
+            foreach (string thisFile in files)
             {
-                foreach (string thisFile in files)
+                try
                 {
                     string filename_lower = Path.GetFileName(thisFile).ToLower().Substring(0, 8);
                     if (logs_start.Contains(filename_lower))
@@ -103,12 +106,12 @@ namespace SobekCM.Builder_Library.Statistics
                             sobekcm_log_reader.Read_Log(thisFile).Write_XML(dataset_location);
                     }
                 }
+                catch (Exception ee)
+                {
+                    On_New_Status("Error reading a log file and writing as XML dataset. " + ee.Message, true);
+                }
             }
-            catch (Exception ee)
-            {
-                On_New_Status("Error reading a log file and writing as XML dataset. " + ee.Message, true);
-                return;
-            }
+
 
 
             // ***** CODE BELOW READS ALL THE DAILY XML DATASETS AND COMBINES THEM INTO MONTHLY *****//

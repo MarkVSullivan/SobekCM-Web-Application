@@ -10,7 +10,7 @@ namespace SobekCM.Core.WebContent.Hierarchy
     /// <summary> Web content page (and redirects) hierarchy object </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("webHierarchy")]
-    public class WebContent_Hierarchy
+    public class WebContent_Hierarchy : iSerializationEvents
     {
         /// <summary> Collection of child nodes, indexed by segment </summary>
         [DataMember(EmitDefaultValue = false, Name = "children")]
@@ -22,21 +22,7 @@ namespace SobekCM.Core.WebContent.Hierarchy
         [IgnoreDataMember]
         [XmlArray("children")]
         [XmlArrayItem("webHierarchyNode", typeof(WebContent_Hierarchy_Node))]
-        public List<WebContent_Hierarchy_Node> Children_XML
-        {
-            get { return Children.Values.ToList(); }
-            set
-            {
-                if ((value != null) && (value.Count > 0))
-                {
-                    // Add each child 
-                    foreach (WebContent_Hierarchy_Node thisChild in value)
-                    {
-                        Children[thisChild.Segment] = new WebContent_Hierarchy_Node(thisChild.Segment, thisChild.WebContentID, thisChild.Redirect);
-                    }
-                }
-            }
-        }
+        public List<WebContent_Hierarchy_Node> Children_XML { get; set;}
 
         /// <summary> Number of child root nodes in this hierarchy </summary>
         [IgnoreDataMember]
@@ -309,6 +295,30 @@ namespace SobekCM.Core.WebContent.Hierarchy
             }
 
             return currentNode;
+        }
+
+        /// <summary> Method is called by the serializer after this item is unserialized </summary>
+        /// <region> This method needs to be called if this is unserialized from XML</region>
+        public void PostUnSerialization()
+        {
+            // If this came over from XML, the children need to be transferred to the Children collection
+            if (((Children == null) || (Children.Count == 0)) && ((Children_XML != null) && (Children_XML.Count > 0)))
+            {
+                // Make sure the children collection exists
+                if (Children == null)
+                {
+                    Children = new Dictionary<string, WebContent_Hierarchy_Node>(StringComparer.OrdinalIgnoreCase);
+                }
+
+                // Copy over all the child nodes
+                foreach (WebContent_Hierarchy_Node childNode in Children_XML)
+                {
+                    Children[childNode.Segment] = childNode;
+                }
+
+                // Clear the Children_XML
+                Children_XML.Clear();
+            }
         }
     }
 }

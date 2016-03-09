@@ -103,7 +103,15 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
 
             // Determine which year/months already have been analyzed for this instance
             Statistics_Dates statsDates = new Statistics_Dates();
-            Engine_Database.Populate_Statistics_Dates(statsDates, null);
+            if (Engine_ApplicationCache_Gateway.Stats_Date_Range != null)
+            {
+
+                Engine_Database.Populate_Statistics_Dates(statsDates, null);
+            }
+            else
+            {
+                statsDates = Engine_ApplicationCache_Gateway.Stats_Date_Range;
+            }
 
             // Get the list of all IIS web logs
             string[] log_files = Directory.GetFiles( log_directory, "u_ex*.log");
@@ -196,7 +204,7 @@ namespace SobekCM.Builder_Library.Modules.Schedulable
                 return;
 
             // Refresh the items
-            Engine_ApplicationCache_Gateway.RefreshItems();
+ //           Engine_ApplicationCache_Gateway.RefreshItems();
 
             // Create the processor
             SobekCM_Stats_Reader_Processor processor = new SobekCM_Stats_Reader_Processor(log_directory, temporary_workspace, sobekcm_directory, year_month);

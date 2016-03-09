@@ -137,6 +137,10 @@ namespace SobekCM.Engine_Library.ApplicationState
                     return statsDates;
                 }
             }
+            set
+            {
+                statsDates = value;
+            }
         }
 
         #endregion
@@ -238,6 +242,10 @@ namespace SobekCM.Engine_Library.ApplicationState
                     return webSkins;
                 }
             }
+            set
+            {
+                webSkins = value;
+            }
         }
 
         #endregion
@@ -286,6 +294,10 @@ namespace SobekCM.Engine_Library.ApplicationState
 
                     return portals;
                 }
+            }
+            set
+            {
+                portals = value;
             }
         }
 
@@ -337,6 +349,10 @@ namespace SobekCM.Engine_Library.ApplicationState
                     return codes;
                 }
             }
+            set
+            {
+                codes = value;
+            }
         }
 
         #endregion
@@ -387,10 +403,10 @@ namespace SobekCM.Engine_Library.ApplicationState
                     return itemLookup;
                 }
             }
-            //set
-            //{
-            //    itemLookup = value;
-            //}
+            set
+            {
+                itemLookup = value;
+            }
         }
 
         #endregion
@@ -863,6 +879,10 @@ namespace SobekCM.Engine_Library.ApplicationState
                     return collectionAliases;
                 }
             }
+            set
+            {
+                collectionAliases = value;
+            }
         }
 
 
@@ -1107,6 +1127,10 @@ namespace SobekCM.Engine_Library.ApplicationState
 
                     return webContentHierarchy;
                 }
+            }
+            set
+            {
+                webContentHierarchy = value;
             }
         }
 

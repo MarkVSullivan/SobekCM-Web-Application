@@ -1,15 +1,19 @@
 ﻿#region Using directives
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
+using ProtoBuf;
 
 #endregion
 
 namespace SobekCM.Core.ApplicationState
 {
     /// <summary> Collection of all the URL Portals into this SobekCM library </summary>
-    [DataContract]
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("portalList")]
     public class Portal_List
     {
         private Portal defaultPortal;
@@ -21,10 +25,16 @@ namespace SobekCM.Core.ApplicationState
         }
 
         /// <summary> Gets a readonly collection of all the portals in this system </summary>
-        [DataMember]
+        [DataMember(EmitDefaultValue = false, Name = "portals")]
+        [XmlArray("portals")]
+        [XmlArrayItem("portal", typeof(Portal))]
+        [ProtoMember(1)]
         public List<Portal> All_Portals { get; private set; }
 
         /// <summary> Gets and sets the default portal </summary>
+        [DataMember(EmitDefaultValue = false, Name = "default")]
+        [XmlElement("default")]
+        [ProtoMember(2)]
         public Portal Default_Portal
         {
             get
@@ -38,6 +48,7 @@ namespace SobekCM.Core.ApplicationState
         }
 
         /// <summary> Returns the number of URL Portals present in this collection </summary>
+        [XmlIgnore]
         public int Count
         {
             get { return All_Portals.Count; }

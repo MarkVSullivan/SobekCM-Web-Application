@@ -717,6 +717,39 @@ namespace SobekCM.Engine_Library.Database
 			}
 		}
 
+        /// <summary> Returns the URL portals dataset </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Dataset </returns>
+        /// <remarks> This calls the 'SobekCM_Get_All_Portals' stored procedure </remarks>
+        public static DataSet URL_Portals_DataSet(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+			{
+                Tracer.Add_Trace("Engine_Database.URL_Portals_DataSet", "Get the URL portal dataset from the database");
+			}
+
+            try
+            {
+                // Build the parameter list
+                EalDbParameter[] paramList = new EalDbParameter[1];
+                paramList[0] = new EalDbParameter("@activeonly", true);
+
+                // Define a temporary dataset
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_All_Portals", paramList);
+                return tempSet;
+            }
+            catch (Exception ee)
+            {
+                // Add the default url portal then
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.URL_Portals_DataSet", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.URL_Portals_DataSet", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.URL_Portals_DataSet", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
 
 		/// <summary> Populates the collection of possible portals from the database </summary>
 		/// <param name="Portals"> List of possible URL portals into this library/cms </param>
@@ -1028,6 +1061,42 @@ namespace SobekCM.Engine_Library.Database
 			}
 		}
 
+        /// <summary> Gets the item dataset, usually used to populate the item list </summary>
+        /// <param name="IncludePrivate"> Flag indicates whether to include private items in this list </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataSet </returns>
+        /// <remarks> This calls the 'SobekCM_Item_List_Web' stored procedure </remarks> 
+        public static DataSet Item_List(bool IncludePrivate, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Item_List", String.Empty);
+            }
+
+            try
+            {
+                // Create the parameter list
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@include_private", IncludePrivate);
+
+                // Get the data reader (wrapper)
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String + "Connection Timeout=45", CommandType.StoredProcedure, "SobekCM_Item_List", parameters);
+
+                // Return the first table from the returned dataset
+                return tempSet;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Item_List", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Item_List", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Item_List", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
 
 		/// <summary> Populates the item lookup object with all the valid bibids and vids in the system </summary>
 		/// <param name="IncludePrivate"> Flag indicates whether to include private items in this list </param>
@@ -4882,6 +4951,7 @@ namespace SobekCM.Engine_Library.Database
                 return null;
             }
         }
+
 
         /// <summary> Gets the hierarchy of all global content pages AND redirects, used for looking for a match from a requested URL </summary>
         /// <param name="ReturnValue"> Web content hierarchy object to populate - should be pre-cleared </param>

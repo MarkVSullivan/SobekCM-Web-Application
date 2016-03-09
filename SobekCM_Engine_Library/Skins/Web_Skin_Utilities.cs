@@ -46,6 +46,30 @@ namespace SobekCM.Engine_Library.Skins
             return true;
         }
 
+	    /// <summary> Populates/builds the main default HTML skin during application startup </summary>
+	    /// <param name="SkinList"> List of skin to populate with the default, commonly used skin</param>
+	    /// <param name="SourceTable"> Source table with the skin data </param>
+	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering  </param>
+	    /// <returns> TRUE if successful, otherwise FALSE </returns>
+	    /// <remarks> Most HTML skins are built as they are needed and then cached for a period of time.  The main default skins are
+	    /// permanently stored in this global <see cref="Web_Skin_Collection"/> object.</remarks>
+	    public static bool Populate_Default_Skins(Web_Skin_Collection SkinList, DataTable SourceTable, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Skin_Collection_Builder.Populate_Default_Skins", "Build the standard interfaces");
+            }
+
+            // Just return if the data appears bad..
+            if ((SourceTable == null) || (SourceTable.Rows.Count == 0))
+                return false;
+
+            // Clear existing interfaces
+            SkinList.Initialize(SourceTable);
+
+            return true;
+        }
+
 	    /// <summary> Builds the complete web skin object </summary>
 	    /// <param name="Skin_Row"> Row for this web skin, from the database query </param>
 	    /// <param name="Tracer"></param>

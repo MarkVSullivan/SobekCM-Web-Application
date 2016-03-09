@@ -8,6 +8,7 @@ using SobekCM.Builder_Library.Modules.Folders;
 using SobekCM.Builder_Library.Modules.Items;
 using SobekCM.Builder_Library.Modules.PostProcess;
 using SobekCM.Builder_Library.Modules.PreProcess;
+using SobekCM.Core.Builder;
 using SobekCM.Core.Settings;
 
 #endregion
@@ -191,14 +192,14 @@ namespace SobekCM.Builder_Library.Settings
             foreach (Builder_Source_Folder thisFolder in IncomingFolders)
             {
                 // If not linked to a module set, do nothing
-                if (thisFolder.Builder_Module_Settings == null)
+                if (thisFolder.Builder_Module_Set == null)
                 {
                     errors.Add("Folder has no module set, so no processing will occur ( " + thisFolder.Folder_Name + " )");
                     continue;
                 }
 
                 // Step through all the folder builer modules and if it hasn't been built yet, do so now
-                foreach (Builder_Module_Setting folderSetting in thisFolder.Builder_Module_Settings)
+                foreach (Builder_Module_Setting folderSetting in thisFolder.Builder_Module_Set.Builder_Modules)
                 {
                    
                     string key = folderSetting.Key;

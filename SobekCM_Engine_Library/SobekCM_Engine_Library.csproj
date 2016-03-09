@@ -91,6 +91,7 @@
     <Compile Include="Items\BriefItems\Mappers\Abstracts_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Affiliations_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Aggregations_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\Mappers\Behaviors_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Classifications_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Containers_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Dates_BriefItemMapper.cs" />
@@ -116,6 +117,7 @@
     <Compile Include="Items\BriefItems\Mappers\Rights_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Rights_MD_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Source_Institution_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\Mappers\Standard_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Subjects_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Target_Audience_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Temporal_Coverage_BriefItemMapper.cs" />
@@ -123,6 +125,7 @@
     <Compile Include="Items\BriefItems\Mappers\Titles_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\User_Tags_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\VRACore_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\Mappers\Web_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Zoological_Taxonomy_BriefItemMapper.cs" />
     <Compile Include="Items\SobekCM_Item_Updater.cs" />
     <Compile Include="Database\Database_Item_Result.cs" />

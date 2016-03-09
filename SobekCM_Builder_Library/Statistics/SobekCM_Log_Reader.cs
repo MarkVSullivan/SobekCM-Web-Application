@@ -21,6 +21,7 @@ namespace SobekCM.Builder_Library.Statistics
         private SortedList<SobekCM_Hit, SobekCM_Hit> hits;
         private readonly DataTable itemList;
         private Dictionary<string, SobekCM_Session> sessions;
+        private Dictionary<string, int> bib_vid_itemid_dictionary;
 
         /// <summary> Constructor for a new instance of the SobekCM_Log_Reader class </summary>
         /// <param name="Item_List"> List of all items </param>
@@ -31,6 +32,20 @@ namespace SobekCM.Builder_Library.Statistics
 
             // Set the constant settings base directory value to the production location
             UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = SobekCM_Web_App_Directory;
+
+            // Build the BibiD/VID dictionary
+            bib_vid_itemid_dictionary = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            DataColumn bibColumn = itemList.Columns["bibid"];
+            DataColumn vidColumn = itemList.Columns["vid"];
+            DataColumn idColumn = itemList.Columns["itemid"];
+            foreach (DataRow thisRow in Item_List.Rows)
+            {
+                string bibid = thisRow[bibColumn].ToString();
+                string vid = thisRow[vidColumn].ToString();
+                int id = Int32.Parse(thisRow[idColumn].ToString());
+
+                bib_vid_itemid_dictionary[bibid + ":" + vid] = id;
+            }
         }
 
         /// <summary> Read a IIS web log, analyze completely, and return the corresponding <see cref="SobekCM_Stats_DataSet"/> object </summary>
@@ -162,13 +177,9 @@ namespace SobekCM.Builder_Library.Statistics
                                 {
                                     if ((!currentMode.ItemID_DEPRECATED.HasValue ) || ( currentMode.ItemID_DEPRECATED < 0 ))
                                     {
-                                        DataRow[] sobek2_bib_select =
-                                            itemList.Select("bibid = '" + currentMode.BibID + "' and vid='" +
-                                                            currentMode.VID + "'");
-										if (sobek2_bib_select.Length > 0)
+                                        if (bib_vid_itemid_dictionary.ContainsKey(currentMode.BibID + ":" + currentMode.VID))
                                         {
-                                            currentMode.ItemID_DEPRECATED =
-												Convert.ToInt32(sobek2_bib_select[0]["itemid"]);
+                                            currentMode.ItemID_DEPRECATED = bib_vid_itemid_dictionary[currentMode.BibID + ":" + currentMode.VID];
                                         }
                                     }
 

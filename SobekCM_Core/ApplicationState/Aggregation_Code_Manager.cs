@@ -1,9 +1,12 @@
 #region Using directives
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Xml.Serialization;
+using ProtoBuf;
 using SobekCM.Core.Aggregations;
 
 #endregion
@@ -16,7 +19,8 @@ namespace SobekCM.Core.ApplicationState
     ///   also provides a lookup from aggregation code to greenstone full text collection code
     ///   to allow for full text searching of single items from the item viewer.
     /// </summary>
-    [DataContract]
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("codeManager")]
     public class Aggregation_Code_Manager : iSerializationEvents
     {
         private readonly Dictionary<string, Item_Aggregation_Related_Aggregations> aggregationsByCode;
@@ -38,14 +42,19 @@ namespace SobekCM.Core.ApplicationState
         }
 
         /// <summary> Collection of basic information about every aggregation in this instance, sorted by code </summary>
-        [DataMember]
+        [DataMember(EmitDefaultValue = false, Name = "aggregations")]
+        [XmlArray("aggregations")]
+        [XmlArrayItem("aggregation", typeof(Item_Aggregation_Related_Aggregations))]
+        [ProtoMember(1)]
         public List<Item_Aggregation_Related_Aggregations> All_Aggregations { get; private set; }
 
         /// <summary> Dictionary which maps aggregations to thematic headings </summary>
         [DataMember]
+        [XmlIgnore]
         public Dictionary<int, List<Item_Aggregation_Related_Aggregations>> Aggregations_By_Thematic_Heading { get; private set; }
 
         /// <summary> Read-only collection of all the aggregation information sorted by full name </summary>
+        [XmlIgnore]
 		public ReadOnlyCollection<Item_Aggregation_Related_Aggregations> All_Aggregations_Name_Sorted
 		{
 			get 
@@ -61,6 +70,7 @@ namespace SobekCM.Core.ApplicationState
 		}
 
 		/// <summary> Read-only collection of all the aggregation information sorted by short name  </summary>
+        [XmlIgnore]
 		public ReadOnlyCollection<Item_Aggregation_Related_Aggregations> All_Aggregations_ShortName_Sorted
 		{
 			get
@@ -86,12 +96,14 @@ namespace SobekCM.Core.ApplicationState
         }
 
         /// <summary> Read-only collection of all the aggregation types </summary>
+        [XmlIgnore]
         public ReadOnlyCollection<string> All_Types
         {
             get { return new ReadOnlyCollection<string>(allTypes); }
         }
 
         /// <summary> Gets the number of different aggregation types present </summary>
+        [XmlIgnore]
         public int Types_Count
         {
             get { return allTypes.Count; }

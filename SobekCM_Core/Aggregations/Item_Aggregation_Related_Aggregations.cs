@@ -123,7 +123,7 @@ namespace SobekCM.Core.Aggregations
         [XmlArray("children")]
         [XmlArrayItem("relatedAggr", typeof(Item_Aggregation_Related_Aggregations))]
         [ProtoMember(10)]
-        public List<Item_Aggregation_Related_Aggregations> Children { get; private set; }
+        public List<Item_Aggregation_Related_Aggregations> Children { get; set; }
 
         /// <summary> Thematic heading, used for placing items on the home page of the entire collection </summary>
         [DataMember(Name = "thematicHeading", EmitDefaultValue = false)]
@@ -136,7 +136,7 @@ namespace SobekCM.Core.Aggregations
         [XmlArray("parents")]
         [XmlArrayItem("parent", typeof(Item_Aggregation_Minimal))]
         [ProtoMember(12)]
-        public List<Item_Aggregation_Minimal> Parents { get; private set; }
+        public List<Item_Aggregation_Minimal> Parents { get; set; }
 
         /// <summary> Gets the number of child item aggregations present </summary>
         [IgnoreDataMember]

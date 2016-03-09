@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using SobekCM.Builder_Library.Modules.Folders;
 using SobekCM.Builder_Library.Settings;
+using SobekCM.Core.Builder;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
 
@@ -45,7 +46,7 @@ namespace SobekCM.Builder_Library
             BuilderModules = new List<iFolderModule>();
 
             // Copy over the folder modules
-            foreach (Builder_Module_Setting settings in ExistingBaseInstance.Builder_Module_Settings)
+            foreach (Builder_Module_Setting settings in ExistingBaseInstance.Builder_Module_Set.Builder_Modules)
             {
                 iFolderModule module = BuilderModulesConfig.Get_Folder_Module_By_Key(settings.Key);
                 if (module != null)
