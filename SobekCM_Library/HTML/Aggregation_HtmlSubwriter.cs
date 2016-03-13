@@ -334,7 +334,7 @@ namespace SobekCM.Library.HTML
 						break;
 
 					case Aggregation_Type_Enum.Browse_Info:
-						if (RequestSpecificValues.Results_Statistics == null)
+						if (datasetBrowseResultsStats == null)
 						{
                             collectionViewer = new Static_Browse_Info_AggregationViewer(RequestSpecificValues, viewBag);
 						}
@@ -577,8 +577,8 @@ namespace SobekCM.Library.HTML
 			}
 
             // If this is the thumbnails results, add the QTIP script and css
-            if ((RequestSpecificValues.Results_Statistics != null ) && 
-                ( RequestSpecificValues.Results_Statistics.Total_Items > 0) &&
+            if ((datasetBrowseResultsStats != null ) && 
+                ( datasetBrowseResultsStats.Total_Items > 0) &&
                 ( RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Thumbnails ))
             {
                 Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Qtip_Js + "\"></script>");
@@ -1051,7 +1051,7 @@ namespace SobekCM.Library.HTML
 
             if (( RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation ) && ( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info ))
             {
-                if (RequestSpecificValues.Results_Statistics != null)
+                if (datasetBrowseResultsStats != null)
                     finish_page = false;
             }
             return finish_page;
@@ -2283,7 +2283,7 @@ namespace SobekCM.Library.HTML
                 }
 
 
-                if (RequestSpecificValues.Results_Statistics != null && RequestSpecificValues.Results_Statistics.Total_Items > 0)
+                if (datasetBrowseResultsStats != null && datasetBrowseResultsStats.Total_Items > 0)
                 {
                     // Get the values for the <%LEFTBUTTONS%> and <%RIGHTBUTTONS%>
                     string LEFT_BUTTONS = String.Empty;
@@ -2299,7 +2299,7 @@ namespace SobekCM.Library.HTML
 
                     #region Determine the Next, Last, First, Previous buttons display
 
-                    //if(RequestSpecificValues.Results_Statistics.)
+                    //if(datasetBrowseResultsStats.)
                     ushort current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : (ushort) 1;
                     StringBuilder buttons_builder = new StringBuilder(1000);
 
@@ -2321,13 +2321,13 @@ namespace SobekCM.Library.HTML
 
 
                     // Should the next and last buttons be enabled?
-                    if ((current_page*RESULTS_PER_PAGE) < RequestSpecificValues.Results_Statistics.Total_Titles)
+                    if ((current_page*RESULTS_PER_PAGE) < datasetBrowseResultsStats.Total_Titles)
                     {
                         buttons_builder.Append("<div class=\"sbkPrsw_RightButtons\">");
                         RequestSpecificValues.Current_Mode.Page = (ushort) (current_page + 1);
                         buttons_builder.Append("<button title=\"" + next_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\">" + next_page_text + "<img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
-                        RequestSpecificValues.Current_Mode.Page = (ushort) (RequestSpecificValues.Results_Statistics.Total_Titles/RESULTS_PER_PAGE);
-                        if (RequestSpecificValues.Results_Statistics.Total_Titles%RESULTS_PER_PAGE > 0)
+                        RequestSpecificValues.Current_Mode.Page = (ushort) (datasetBrowseResultsStats.Total_Titles/RESULTS_PER_PAGE);
+                        if (datasetBrowseResultsStats.Total_Titles%RESULTS_PER_PAGE > 0)
                             RequestSpecificValues.Current_Mode.Page = (ushort) (RequestSpecificValues.Current_Mode.Page + 1);
                         buttons_builder.Append("<button title=\"" + last_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\">" + last_page_text + "<img src=\"" + Static_Resources.Button_Last_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                         buttons_builder.Append("</div>");
@@ -2376,7 +2376,7 @@ namespace SobekCM.Library.HTML
 						return "container-inner1215";
 
 					case Aggregation_Type_Enum.Browse_Info:
-						if (RequestSpecificValues.Paged_Results != null)
+						if (pagedResults != null)
 						{
 							return "container-facets";
 						}

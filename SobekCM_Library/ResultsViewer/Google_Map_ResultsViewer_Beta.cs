@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Results;
 using SobekCM.Library.Database;
 using SobekCM.Tools;
 
@@ -18,7 +19,10 @@ namespace SobekCM.Library.ResultsViewer
     {
         /// <summary> Constructor for a new instance of the Full_ResultsViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Google_Map_ResultsViewer_Beta(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ResultsStats"> Statistics about the results to display including the facets </param>
+        /// <param name="PagedResults"> Actual pages of results </param>
+        public Google_Map_ResultsViewer_Beta(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults)
+            : base(RequestSpecificValues, ResultsStats, PagedResults)
         {
  
             //holds actions from page

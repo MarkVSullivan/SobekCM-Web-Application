@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Web;
@@ -22,7 +23,10 @@ namespace SobekCM.Library.ResultsViewer
     {
         /// <summary> Constructor for a new instance of the Export_File_ResultsViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Export_File_ResultsViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ResultsStats"> Statistics about the results to display including the facets </param>
+        /// <param name="PagedResults"> Actual pages of results </param>
+        public Export_File_ResultsViewer(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults)
+            : base(RequestSpecificValues, ResultsStats, PagedResults)
         {
             Results_Per_Page = 1000;
         }
@@ -214,7 +218,7 @@ namespace SobekCM.Library.ResultsViewer
                 row++;
 
                 // Add each row
-                foreach (iSearch_Title_Result titleResult in RequestSpecificValues.Paged_Results)
+                foreach (iSearch_Title_Result titleResult in PagedResults)
                 {
                     for (int item_count = 0; item_count < titleResult.Item_Count; item_count++)
                     {

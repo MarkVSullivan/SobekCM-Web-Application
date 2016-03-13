@@ -30,7 +30,10 @@ namespace SobekCM.Library.ResultsViewer
 
         /// <summary> Constructor for a new instance of the Full_ResultsViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Google_Map_ResultsViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ResultsStats"> Statistics about the results to display including the facets </param>
+        /// <param name="PagedResults"> Actual pages of results </param>
+        public Google_Map_ResultsViewer(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults)
+            : base(RequestSpecificValues, ResultsStats, PagedResults)
         {
             // Do nothing
         }
@@ -57,7 +60,7 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // If results are null, or no results, return empty string
-            if ((RequestSpecificValues.Paged_Results == null) || (RequestSpecificValues.Results_Statistics == null) || (RequestSpecificValues.Results_Statistics.Total_Items <= 0))
+            if ((PagedResults == null) || (ResultsStats == null) || (ResultsStats.Total_Items <= 0))
                 return;
 
             // Get the text search redirect stem and (writer-adjusted) base url 
@@ -101,7 +104,7 @@ namespace SobekCM.Library.ResultsViewer
             // Step through and add each item to the result set
             // All of the item rows to be displayed together are collected first, and then 
             // the information and google map are rendered.
-            foreach (iSearch_Title_Result titleResult in RequestSpecificValues.Paged_Results)
+            foreach (iSearch_Title_Result titleResult in PagedResults)
             {
                 // If this new spatial does not match the last spatial, need to close out the last coordiante
                 // and render all the HTML and map script information
@@ -397,9 +400,9 @@ namespace SobekCM.Library.ResultsViewer
                     }
                 }
 
-                for (int i = 0; i < RequestSpecificValues.Results_Statistics.Metadata_Labels.Count; i++)
+                for (int i = 0; i < ResultsStats.Metadata_Labels.Count; i++)
 				{
-                    string field = RequestSpecificValues.Results_Statistics.Metadata_Labels[i];
+                    string field = ResultsStats.Metadata_Labels[i];
 					string value = titleResult.Metadata_Display_Values[i];
 					Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Name(field);
 					string display_field = string.Empty;

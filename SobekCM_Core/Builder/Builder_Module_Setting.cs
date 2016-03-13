@@ -45,11 +45,17 @@ namespace SobekCM.Core.Builder
         [ProtoMember(5)]
         public string Argument3 { get; set; }
 
-        /// <summary> [DataMember] Description of the module's primary function, from the dataase </summary>
+        /// <summary> [DataMember] Description of the module's primary function, from the database </summary>
         [DataMember(Name = "description", EmitDefaultValue = false)]
         [XmlAttribute("description")]
         [ProtoMember(6)]
         public string Description { get; set; }
+
+        /// <summary> [DataMember] Help URL which explains the operation of the builder module, and what the arguments mean </summary>
+        [DataMember(Name = "uri", EmitDefaultValue = false)]
+        [XmlAttribute("uri")]
+        [ProtoMember(7)]
+        public string Uri { get; set; }
 
         /// <summary> Key for this setting, used to lookup for duplicate references to the same module </summary>
         [IgnoreDataMember]

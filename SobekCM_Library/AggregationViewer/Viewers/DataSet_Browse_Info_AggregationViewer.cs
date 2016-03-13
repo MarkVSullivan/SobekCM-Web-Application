@@ -5,6 +5,7 @@ using System.IO;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.Results;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Tools;
@@ -39,6 +40,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         {
             // Do nothing
         }
+
+
 
         /// <summary> Gets the type of collection view or search supported by this collection viewer </summary>
         /// <value> This returns the <see cref="Item_Aggregation_Views_Searches_Enum.DataSet_Browse"/> enumerational value </value>
@@ -106,7 +109,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("DataSet_Browse_Info_AggregationViewer.Add_Secondary_Controls", "Adding HTML");
             }
 
-            writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues) { Browse_Title = ViewBag.Browse_Object.Label };
+            writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, ViewBag.Results_Statistics, ViewBag.Paged_Results) { Browse_Title = ViewBag.Browse_Object.Label };
             writeResult.Add_Controls(MainPlaceHolder, Tracer);
 
 

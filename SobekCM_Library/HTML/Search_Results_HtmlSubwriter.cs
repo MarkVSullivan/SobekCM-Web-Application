@@ -143,7 +143,7 @@ namespace SobekCM.Library.HTML
             {
                 Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_Controls", "Building Result DataSet Writer");
 
-                writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues);
+                writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results);
             }
 
             Tracer.Add_Trace("Search_Results_HtmlSubwriter.Add_Controls", "Add controls");
@@ -189,7 +189,7 @@ namespace SobekCM.Library.HTML
                 if (writeResult == null)
                 {
                     Tracer.Add_Trace("Search_Results_HtmlSubwriter.Write_HTML", "Building Result DataSet Writer");
-                    writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues);
+                    writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results);
                 }
                 writeResult.Write_HTML(Output, Tracer);
             }

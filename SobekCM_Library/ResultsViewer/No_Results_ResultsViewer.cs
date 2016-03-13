@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -9,6 +10,7 @@ using System.Web;
 using System.Web.Caching;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
+using SobekCM.Core.Results;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
@@ -23,7 +25,10 @@ namespace SobekCM.Library.ResultsViewer
     {
         /// <summary> Constructor for a new instance of the No_Results_ResultsViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public No_Results_ResultsViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ResultsStats"> Statistics about the results to display including the facets </param>
+        /// <param name="PagedResults"> Actual pages of results </param>
+        public No_Results_ResultsViewer(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults)
+            : base(RequestSpecificValues, ResultsStats, PagedResults)
         {
             // Do nothing
         }
@@ -84,11 +89,11 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // Show or hide the links
-            if ((union_catalog_matches > 0) || ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation.ToUpper() != "ALL") && (RequestSpecificValues.Results_Statistics.All_Collections_Items > 0) && (RequestSpecificValues.Current_Mode.Default_Aggregation == "all")))
+            if ((union_catalog_matches > 0) || ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation.ToUpper() != "ALL") && (ResultsStats.All_Collections_Items > 0) && (RequestSpecificValues.Current_Mode.Default_Aggregation == "all")))
             {
                 noResultsText = noResultsText.Replace("[%MatchesFoundDivDisplay%]", "block");
 
-                if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation.ToUpper() != "ALL") && (RequestSpecificValues.Results_Statistics.All_Collections_Items.HasValue) && (RequestSpecificValues.Results_Statistics.All_Collections_Items.Value > 0) && (RequestSpecificValues.Current_Mode.Default_Aggregation == "all"))
+                if ((RequestSpecificValues.Current_Mode.Aggregation.Length > 0) && (RequestSpecificValues.Current_Mode.Aggregation.ToUpper() != "ALL") && (ResultsStats.All_Collections_Items.HasValue) && (ResultsStats.All_Collections_Items.Value > 0) && (RequestSpecificValues.Current_Mode.Default_Aggregation == "all"))
                 {
                     string aggregation = RequestSpecificValues.Current_Mode.Aggregation;
                     RequestSpecificValues.Current_Mode.Aggregation = String.Empty;
@@ -96,7 +101,7 @@ namespace SobekCM.Library.ResultsViewer
                     RequestSpecificValues.Current_Mode.Aggregation = aggregation;
 
 
-                    noResultsText = noResultsText.Replace("[%WithinInstanceSpanDisplay%]", "inline-block").Replace("[%WithinInstanceUrl%]", instance_search_url).Replace("[%WithinInstanceCount%]", number_to_string(RequestSpecificValues.Results_Statistics.All_Collections_Items));
+                    noResultsText = noResultsText.Replace("[%WithinInstanceSpanDisplay%]", "inline-block").Replace("[%WithinInstanceUrl%]", instance_search_url).Replace("[%WithinInstanceCount%]", number_to_string(ResultsStats.All_Collections_Items));
                 }
                 else
                 {

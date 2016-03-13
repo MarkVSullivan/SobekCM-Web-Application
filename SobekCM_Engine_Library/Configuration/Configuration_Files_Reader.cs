@@ -28,7 +28,7 @@ namespace SobekCM.Engine_Library.Configuration
     {
 
         /// <summary> Refreshes the values from the database settings </summary>
-        /// <returns> A fully builder instance-wide setting object </returns>
+        /// <returns> A fully built instance-wide setting object </returns>
         public static InstanceWide_Configuration Read_Config_Files( InstanceWide_Settings Settings)
         {
             // Get the directories to read
@@ -69,7 +69,7 @@ namespace SobekCM.Engine_Library.Configuration
         }
 
         /// <summary> Refreshes the values from the database settings </summary>
-        /// <returns> A fully builder instance-wide setting object </returns>
+        /// <returns> A fully built instance-wide setting object </returns>
         public static InstanceWide_Configuration Read_Config_Files(List<string> ConfigurationDirectories, InstanceWide_Settings Settings)
         {
             // Start to build the instance wide configuration
@@ -2554,6 +2554,10 @@ namespace SobekCM.Engine_Library.Configuration
                                     newElement.Class = ReaderXml.Value.Trim();
                                 if (ReaderXml.MoveToAttribute("image"))
                                     newElement.Image = ReaderXml.Value.Trim();
+                                if (ReaderXml.MoveToAttribute("adminUri"))
+                                    newElement.AdminUri = ReaderXml.Value.Trim();
+                                if (ReaderXml.MoveToAttribute("helpUri"))
+                                    newElement.HelpUri = ReaderXml.Value.Trim();
 
                                 // add if the minimum requirements are met
                                 if ((!String.IsNullOrEmpty(newElement.Type)) && (!String.IsNullOrEmpty(newElement.Class)))

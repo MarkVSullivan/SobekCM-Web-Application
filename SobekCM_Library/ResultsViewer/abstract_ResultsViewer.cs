@@ -31,12 +31,19 @@ namespace SobekCM.Library.ResultsViewer
         private string textRedirectStem;
 
         /// <summary> Values specific to the current HTML request </summary>
-        protected RequestCache RequestSpecificValues;
+        protected readonly RequestCache RequestSpecificValues;
+        protected readonly Search_Results_Statistics ResultsStats;
+        protected readonly List<iSearch_Title_Result> PagedResults;
 
         /// <summary> Constructor for a new instance of the abstract_ResultsViewer class  </summary>
-        protected abstract_ResultsViewer( RequestCache RequestSpecificValues )
+        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+        /// <param name="ResultsStats"> Statistics about the results to display including the facets </param>
+        /// <param name="PagedResults"> Actual pages of results </param>
+        protected abstract_ResultsViewer(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults)
         {
             this.RequestSpecificValues = RequestSpecificValues;
+            this.ResultsStats = ResultsStats;
+            this.PagedResults = PagedResults;
 
             // Determine the current user mask
             CurrentUserMask = 0;
@@ -101,7 +108,7 @@ namespace SobekCM.Library.ResultsViewer
         public virtual int Total_Results
         {
             get {
-                return RequestSpecificValues.Current_Mode.Sort >= 10 ? RequestSpecificValues.Results_Statistics.Total_Items : RequestSpecificValues.Results_Statistics.Total_Titles;
+                return RequestSpecificValues.Current_Mode.Sort >= 10 ? ResultsStats.Total_Items : ResultsStats.Total_Titles;
             }
         }
 
@@ -291,7 +298,7 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // Get the appropriate title result
-            iSearch_Title_Result titleResult = RequestSpecificValues.Paged_Results[Convert.ToInt32(resultsIndex)];
+            iSearch_Title_Result titleResult = PagedResults[Convert.ToInt32(resultsIndex)];
 
             // Is this tree built?
             if (titleResult.Item_Tree == null)

@@ -1,6 +1,7 @@
 ﻿#region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
@@ -18,7 +19,10 @@ namespace SobekCM.Library.ResultsViewer
     {
         /// <summary> Constructor for a new instance of the Bookshelf_View_ResultsViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Bookshelf_View_ResultsViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ResultsStats"> Statistics about the results to display including the facets </param>
+        /// <param name="PagedResults"> Actual pages of results </param>
+        public Bookshelf_View_ResultsViewer(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults)
+            : base(RequestSpecificValues, ResultsStats, PagedResults)
         {
             // do nothing
         }
@@ -35,7 +39,7 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // If results are null, or no results, return empty string
-            if ((RequestSpecificValues.Paged_Results == null) || (RequestSpecificValues.Results_Statistics == null) || (RequestSpecificValues.Results_Statistics.Total_Items <= 0))
+            if ((PagedResults == null) || (ResultsStats == null) || (ResultsStats.Total_Items <= 0))
                 return;
 
             // Get the text search redirect stem and (writer-adjusted) base url 
@@ -60,11 +64,11 @@ namespace SobekCM.Library.ResultsViewer
 
             // Add the next row for manipulating checked items
             resultsBldr.AppendLine("\t<tr align=\"left\" bgcolor=\"#7d90d5\" >");
-            resultsBldr.Append("\t\t<td class=\"SobekFolderActionLink\" ><span style=\"color: White\"> ( <a href=\"\" id=\"bookshelf_all_remove\" name=\"bookshelf_all_remove\" onclick=\"return remove_all('" + RequestSpecificValues.Paged_Results.Count + "' );\"><span style=\"color: White\" title=\"Remove all checked items from your bookshelf\" >remove<span style=\"color: White\"></a> | ");
-            resultsBldr.AppendLine("<a href=\"\" id=\"bookshelf_all_move\" id=\"bookshelf_all_move\" onclick=\"return move_all('" + RequestSpecificValues.Paged_Results.Count + "' );\"><span style=\"color: White\" title=\"Move all checked items to a new bookshelf\" >move<span style=\"color: White\"></a> )</span></td>");
+            resultsBldr.Append("\t\t<td class=\"SobekFolderActionLink\" ><span style=\"color: White\"> ( <a href=\"\" id=\"bookshelf_all_remove\" name=\"bookshelf_all_remove\" onclick=\"return remove_all('" + PagedResults.Count + "' );\"><span style=\"color: White\" title=\"Remove all checked items from your bookshelf\" >remove<span style=\"color: White\"></a> | ");
+            resultsBldr.AppendLine("<a href=\"\" id=\"bookshelf_all_move\" id=\"bookshelf_all_move\" onclick=\"return move_all('" + PagedResults.Count + "' );\"><span style=\"color: White\" title=\"Move all checked items to a new bookshelf\" >move<span style=\"color: White\"></a> )</span></td>");
 
             // Add the check box (checks all or removes all checks)
-            resultsBldr.AppendLine("\t\t<td><span style=\"color: White\"><input title=\"Select or unselect all items in this bookshelf\" type=\"checkbox\" id=\"bookshelf_all_check\" name=\"bookshelf_all_check\" onclick=\"bookshelf_all_check_clicked('" + RequestSpecificValues.Paged_Results.Count + "');\" /></span></td>");
+            resultsBldr.AppendLine("\t\t<td><span style=\"color: White\"><input title=\"Select or unselect all items in this bookshelf\" type=\"checkbox\" id=\"bookshelf_all_check\" name=\"bookshelf_all_check\" onclick=\"bookshelf_all_check_clicked('" + PagedResults.Count + "');\" /></span></td>");
 
             // Add the title
             resultsBldr.AppendLine("\t\t<td><span style=\"color: White\">&nbsp;</span></td>\n\t</tr>");
@@ -81,7 +85,7 @@ namespace SobekCM.Library.ResultsViewer
             int current_row = 0;
 
             // Step through all the results
-            foreach (iSearch_Title_Result titleResult in RequestSpecificValues.Paged_Results)
+            foreach (iSearch_Title_Result titleResult in PagedResults)
             {
                 // Write a single row
                 Write_Single_Row(resultsBldr, titleResult, current_row + 1, textRedirectStem, base_url, internal_user);

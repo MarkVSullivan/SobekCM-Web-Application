@@ -41,11 +41,19 @@ namespace SobekCM.Library.HTML
 		private int term_counter;
 
         private readonly Item_Aggregation hierarchyObject;
+        private readonly Search_Results_Statistics resultsStatistics;
+        private readonly List<iSearch_Title_Result> pagedResults;
 
-		/// <summary> Constructor for a new instance of the paged_result_html_subwriter class </summary>
-        /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public PagedResults_HtmlSubwriter(RequestCache RequestSpecificValues) : base(RequestSpecificValues) 
+	    /// <summary> Constructor for a new instance of the paged_result_html_subwriter class </summary>
+	    /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
+	    /// <param name="ResultsStats"> Statistics about the results to display including the facets </param>
+        /// <param name="PagedResults"> Actual pages of results </param>
+	    public PagedResults_HtmlSubwriter(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults) : base(RequestSpecificValues) 
 		{
+            // Save the search results info
+            resultsStatistics = ResultsStats;
+		    pagedResults = PagedResults;
+
             // Check that the current aggregation code is valid
             if (!UI_ApplicationCache_Gateway.Aggregations.isValidCode(RequestSpecificValues.Current_Mode.Aggregation))
             {
@@ -165,6 +173,8 @@ namespace SobekCM.Library.HTML
 
         #region Properties
 
+
+
         /// <summary> If the results dataset should be displayed in the context of an outer form (such as in
         /// the case that this is part of the mySobek bookshelf functionality) then the form name should go here.  If 
         /// no outer form name is provided, this will create its own sort form  </summary>
@@ -190,9 +200,9 @@ namespace SobekCM.Library.HTML
         /// <summary> Creates the specific results viewer according the user's preferences in the current request mode </summary>
 		private void create_resultwriter()
 		{
-			if ( RequestSpecificValues.Results_Statistics.Total_Items == 0)
+			if ( resultsStatistics.Total_Items == 0)
 			{
-			    resultWriter = new No_Results_ResultsViewer(RequestSpecificValues);
+                resultWriter = new No_Results_ResultsViewer(RequestSpecificValues, resultsStatistics, pagedResults);
 				return;
 			}
 
@@ -234,54 +244,54 @@ namespace SobekCM.Library.HTML
 			{
 				if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.My_Sobek)
 				{
-                    resultWriter = new Bookshelf_View_ResultsViewer(RequestSpecificValues);
+                    resultWriter = new Bookshelf_View_ResultsViewer(RequestSpecificValues, resultsStatistics, pagedResults);
 				}
 				else
 				{
-                    resultWriter = new Brief_ResultsViewer(RequestSpecificValues);
+                    resultWriter = new Brief_ResultsViewer(RequestSpecificValues, resultsStatistics, pagedResults);
 				}
 			}
 
 			// Create the result writer and populate the sort list for BRIEF view
 			if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Brief)
 			{
-                resultWriter = new Brief_ResultsViewer(RequestSpecificValues);
+                resultWriter = new Brief_ResultsViewer(RequestSpecificValues, resultsStatistics, pagedResults);
 			}
 
 			// Create the result writer and populate the sort list for THUMBNAIL view
 			if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Thumbnails)
 			{
-                resultWriter = new Thumbnail_ResultsViewer(RequestSpecificValues);
+                resultWriter = new Thumbnail_ResultsViewer(RequestSpecificValues, resultsStatistics, pagedResults);
 			}
 
 			// Create the result writer and populate the sort list for TABLE view
 			if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Table)
 			{
-                resultWriter = new Table_ResultsViewer(RequestSpecificValues);
+                resultWriter = new Table_ResultsViewer(RequestSpecificValues, resultsStatistics, pagedResults);
 			}
 
 			// Create the result writer and populate the sort list for FULL view
 			if ((RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Full_Citation) || (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Full_Image))
 			{
-                resultWriter = new Full_ResultsViewer(RequestSpecificValues);
+                resultWriter = new Full_ResultsViewer(RequestSpecificValues, resultsStatistics, pagedResults);
 			}
 
 			// Create the result writer and populate the sort list for MAP view
 			if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map)
 			{
-                resultWriter = new Google_Map_ResultsViewer(RequestSpecificValues);
+                resultWriter = new Google_Map_ResultsViewer(RequestSpecificValues, resultsStatistics, pagedResults);
 			}
 
             // Create the result writer and populate the sort list for MAP view
             if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Map_Beta)
             {
-                resultWriter = new Google_Map_ResultsViewer_Beta(RequestSpecificValues);
+                resultWriter = new Google_Map_ResultsViewer_Beta(RequestSpecificValues, resultsStatistics, pagedResults);
             }
 
 			// Create the result writer and populate the sort list for TEXT view
 			if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Export)
 			{
-				resultWriter = new Export_File_ResultsViewer(RequestSpecificValues);
+                resultWriter = new Export_File_ResultsViewer(RequestSpecificValues, resultsStatistics, pagedResults);
 			}
 			
 			// Populate the sort list and sort the result set
@@ -401,7 +411,7 @@ namespace SobekCM.Library.HTML
 			Tracer.Add_Trace("paged_result_html_subwriter.Add_Controls", "Adding controls for the result set");
 
 			// If the results have facets, this should be rendered in a table with the facets to the left
-			if ((RequestSpecificValues.Results_Statistics.Has_Facet_Info) && (RequestSpecificValues.Results_Statistics.Total_Items > 1) && (RequestSpecificValues.Current_Mode.Result_Display_Type != Result_Display_Type_Enum.Export) && (RequestSpecificValues.Current_Mode.Result_Display_Type != Result_Display_Type_Enum.Map))
+			if ((resultsStatistics.Has_Facet_Info) && (resultsStatistics.Total_Items > 1) && (RequestSpecificValues.Current_Mode.Result_Display_Type != Result_Display_Type_Enum.Export) && (RequestSpecificValues.Current_Mode.Result_Display_Type != Result_Display_Type_Enum.Map))
 			{
 				// Start this table, write the facets, and start the next TD section for the results
 				Literal startFacetTable = new Literal { Text = string.Format("<table id=\"sbkPrsw_ResultsOuterTable\">" + Environment.NewLine + "<tr style=\"vertical-align:top;\">" + Environment.NewLine + "<td id=\"sbkPrsw_FacetOuterColumn\">" + Environment.NewLine + "{0}" + Environment.NewLine + "</td>" + Environment.NewLine + "<td>" + Environment.NewLine, Add_Facet_Information(Tracer)) };
@@ -421,7 +431,7 @@ namespace SobekCM.Library.HTML
 				return;
 
 
-			if (RequestSpecificValues.Results_Statistics.Total_Items == 0)
+			if (resultsStatistics.Total_Items == 0)
 			{
 				resultWriter.Add_HTML(MainPlaceHolder, Tracer);
 				return;
@@ -447,7 +457,7 @@ namespace SobekCM.Library.HTML
 		{
 			Tracer.Add_Trace("paged_result_html_subwriter.Write_Final_Html", "Rendering HTML ( finish the main viewer section )");
 
-			if ( RequestSpecificValues.Results_Statistics.Total_Items > 0 )
+			if ( resultsStatistics.Total_Items > 0 )
 			{
 				Output.WriteLine("<div class=\"sbkPrsw_ResultsNavBar\">");
 				Output.Write(leftButtons);
@@ -507,7 +517,7 @@ namespace SobekCM.Library.HTML
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
 
                 // If no results, display different information here
-                if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Results) && (RequestSpecificValues.Results_Statistics.Total_Items == 0))
+                if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Results) && (resultsStatistics.Total_Items == 0))
                 {
                     Output.WriteLine("<div class=\"sbkPrsw_DescPanel\" style=\"margin-top:10px\">");
                     Show_Search_Info(Output, true);
@@ -610,11 +620,11 @@ namespace SobekCM.Library.HTML
                 string SHOWING = String.Empty;
                 if (RequestSpecificValues.Current_Mode.Result_Display_Type == Result_Display_Type_Enum.Export)
                 {
-                    SHOWING = RequestSpecificValues.Results_Statistics.Total_Items.ToString();
+                    SHOWING = resultsStatistics.Total_Items.ToString();
                 }
                 else
                 {
-                    SHOWING = String.Format(showing_range_text, startRow, Math.Min(lastRow, RequestSpecificValues.Results_Statistics.Total_Titles), resultWriter.Total_Results);
+                    SHOWING = String.Format(showing_range_text, startRow, Math.Min(lastRow, resultsStatistics.Total_Titles), resultWriter.Total_Results);
                     if (startRow == lastRow)
                     {
                         SHOWING = Showing_Text.Replace(startRow + " - " + startRow, startRow + " ");
@@ -981,7 +991,7 @@ namespace SobekCM.Library.HTML
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Results;
 
                 // If no results, display different information here
-                if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Results) && (RequestSpecificValues.Results_Statistics.Total_Items == 0))
+                if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Results) && (resultsStatistics.Total_Items == 0))
                 {
                     Output.WriteLine("<div class=\"sbkPrsw_DescPanel\" style=\"margin-top:10px\">");
                     Show_Search_Info(Output, true);
@@ -1497,27 +1507,27 @@ namespace SobekCM.Library.HTML
             if (!IncludeResultCount)
                 return;
 
-            if ((RequestSpecificValues.Results_Statistics == null) || (RequestSpecificValues.Results_Statistics.Total_Titles == 0))
+            if ((resultsStatistics == null) || (resultsStatistics.Total_Titles == 0))
 			{
 				Output.WriteLine(no_matches_language );
 			}
 			else
 			{
-				if (RequestSpecificValues.Results_Statistics.Total_Titles == RequestSpecificValues.Results_Statistics.Total_Items)
+				if (resultsStatistics.Total_Titles == resultsStatistics.Total_Items)
 				{
-					Output.WriteLine(RequestSpecificValues.Results_Statistics.Total_Titles == 1 ? one_match_language : String.Format(multiple_records_language, RequestSpecificValues.Results_Statistics.Total_Titles));
+					Output.WriteLine(resultsStatistics.Total_Titles == 1 ? one_match_language : String.Format(multiple_records_language, resultsStatistics.Total_Titles));
 				}
 				else
 				{
-					Output.Write(RequestSpecificValues.Results_Statistics.Total_Items == 1 ? one_item_language : String.Format(multiple_items_language, RequestSpecificValues.Results_Statistics.Total_Items.ToString()));
+					Output.Write(resultsStatistics.Total_Items == 1 ? one_item_language : String.Format(multiple_items_language, resultsStatistics.Total_Items.ToString()));
 
-					if (RequestSpecificValues.Results_Statistics.Total_Titles == 1)
+					if (resultsStatistics.Total_Titles == 1)
 					{
 						Output.WriteLine(one_title_language);
 					}
 					else
 					{
-						Output.WriteLine(RequestSpecificValues.Results_Statistics.Total_Titles + multiple_titles_language);
+						Output.WriteLine(resultsStatistics.Total_Titles + multiple_titles_language);
 					}
 				}
 			}
@@ -1668,7 +1678,7 @@ namespace SobekCM.Library.HTML
 
 
                 // Add the aggregation information first
-                if (((RequestSpecificValues.Current_Mode.Aggregation.Length == 0) || (RequestSpecificValues.Current_Mode.Aggregation == "all")) && (RequestSpecificValues.Results_Statistics.Aggregation_Facets_Count > 0))
+                if (((RequestSpecificValues.Current_Mode.Aggregation.Length == 0) || (RequestSpecificValues.Current_Mode.Aggregation == "all")) && (resultsStatistics.Aggregation_Facets_Count > 0))
                 {
                     string title = collection;
                     const int FACET_INDEX = 0;
@@ -1712,16 +1722,16 @@ namespace SobekCM.Library.HTML
 
                     builder.AppendLine("<div class=\"sbkPrsw_FacetBoxTitle\">" + title + "</div>");
                     builder.AppendLine("<div class=\"sbkPrsw_FacetBox\">");
-                    if (RequestSpecificValues.Results_Statistics.Aggregation_Facets.Count > 1)
+                    if (resultsStatistics.Aggregation_Facets.Count > 1)
                         builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/" + resort_image + "\" alt=\"Resort " + title + "\" /></a></div>");
                     if ((facetInformation[FACET_INDEX] == '2') || (facetInformation[FACET_INDEX] == '3'))
                     {
                         SortedList<string, string> order_facets = new SortedList<string, string>();
-                        while ((facet_count < total_facets_to_show) && (facet_count < RequestSpecificValues.Results_Statistics.Aggregation_Facets.Count))
+                        while ((facet_count < total_facets_to_show) && (facet_count < resultsStatistics.Aggregation_Facets.Count))
                         {
-                            if (RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
+                            if (resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
                             {
-                                order_facets[RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Facet.ToUpper()] = "<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Frequency + " ) <br />";
+                                order_facets[resultsStatistics.Aggregation_Facets[facet_count].Facet.ToUpper()] = "<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + resultsStatistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />";
                             }
                             facet_count++;
                         }
@@ -1732,11 +1742,11 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        while ((facet_count < total_facets_to_show) && (facet_count < RequestSpecificValues.Results_Statistics.Aggregation_Facets.Count))
+                        while ((facet_count < total_facets_to_show) && (facet_count < resultsStatistics.Aggregation_Facets.Count))
                         {
-                            if (RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
+                            if (resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
                             {
-                                builder.AppendLine("<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Frequency + " ) <br />");
+                                builder.AppendLine("<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + resultsStatistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />");
                             }
                             facet_count++;
                         }
@@ -1747,7 +1757,7 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        if (facet_count < RequestSpecificValues.Results_Statistics.Aggregation_Facets.Count)
+                        if (facet_count < resultsStatistics.Aggregation_Facets.Count)
                         {
                             builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a href=\"\" onclick=\"return set_facet(" + FACET_INDEX + ",'" + other_show_type + "');\">" + show_more + " &gt;&gt; &nbsp;</a></div>");
                         }
@@ -1756,10 +1766,10 @@ namespace SobekCM.Library.HTML
                 }
 
                 // Add the facet information 
-                if ((RequestSpecificValues.Results_Statistics.Facet_Collections != null) && (RequestSpecificValues.Results_Statistics.Facet_Collections.Count > 0))
+                if ((resultsStatistics.Facet_Collections != null) && (resultsStatistics.Facet_Collections.Count > 0))
                 {
                     int facetIndex = 1;
-                    foreach (Search_Facet_Collection theseFacets in RequestSpecificValues.Results_Statistics.Facet_Collections)
+                    foreach (Search_Facet_Collection theseFacets in resultsStatistics.Facet_Collections)
                     {
                         if ((theseFacets.MetadataTypeID > 0) && (theseFacets.Count > 0))
                         {
@@ -1898,7 +1908,7 @@ namespace SobekCM.Library.HTML
                 builder.AppendLine("<div class=\"sbkPrsw_FacetColumnTitle\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("NARROW RESULTS BY", RequestSpecificValues.Current_Mode.Language) + ":</div>");
                 
                 // Add the aggregation information first
-                if (((RequestSpecificValues.Current_Mode.Aggregation.Length == 0) || (RequestSpecificValues.Current_Mode.Aggregation == "all")) && (RequestSpecificValues.Results_Statistics.Aggregation_Facets_Count > 0))
+                if (((RequestSpecificValues.Current_Mode.Aggregation.Length == 0) || (RequestSpecificValues.Current_Mode.Aggregation == "all")) && (resultsStatistics.Aggregation_Facets_Count > 0))
                 {
                     string title = collection;
                     const int FACET_INDEX = 0;
@@ -1942,16 +1952,16 @@ namespace SobekCM.Library.HTML
 
                     builder.AppendLine("<div class=\"sbkPrsw_FacetBoxTitle\">" + title + "</div>");
                     builder.AppendLine("<div class=\"sbkPrsw_FacetBox\">");
-                    if (RequestSpecificValues.Results_Statistics.Aggregation_Facets.Count > 1)
+                    if (resultsStatistics.Aggregation_Facets.Count > 1)
                         builder.AppendLine("<div class=\"sbkPrsw_FacetReorder\"><a onclick=\"set_facet_callback(" + FACET_INDEX + ",'" + other_sort_type + "');\" title=\"" + sort_instructions + "\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/" + resort_image + "\" alt=\"RESORT\" /></a></div>");
                     if ((facetInformation[FACET_INDEX] == '2') || (facetInformation[FACET_INDEX] == '3'))
                     {
                         SortedList<string, string> order_facets = new SortedList<string, string>();
-                        while ((facet_count < total_facets_to_show) && (facet_count < RequestSpecificValues.Results_Statistics.Aggregation_Facets.Count))
+                        while ((facet_count < total_facets_to_show) && (facet_count < resultsStatistics.Aggregation_Facets.Count))
                         {
-                            if (RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
+                            if (resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
                             {
-                                order_facets[RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Facet.ToUpper()] = "<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Frequency + " ) <br />";
+                                order_facets[resultsStatistics.Aggregation_Facets[facet_count].Facet.ToUpper()] = "<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + resultsStatistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />";
                             }
                             facet_count++;
                         }
@@ -1962,11 +1972,11 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        while ((facet_count < total_facets_to_show) && (facet_count < RequestSpecificValues.Results_Statistics.Aggregation_Facets.Count))
+                        while ((facet_count < total_facets_to_show) && (facet_count < resultsStatistics.Aggregation_Facets.Count))
                         {
-                            if (RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
+                            if (resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower() != "iuf")
                             {
-                                builder.AppendLine("<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + RequestSpecificValues.Results_Statistics.Aggregation_Facets[facet_count].Frequency + " ) <br />");
+                                builder.AppendLine("<a href=\"" + aggregation_url.Replace("<%AGGREGATION%>", resultsStatistics.Aggregation_Facets[facet_count].Code.ToLower()) + "\">" + resultsStatistics.Aggregation_Facets[facet_count].Facet + "</a> ( " + resultsStatistics.Aggregation_Facets[facet_count].Frequency + " ) <br />");
                             }
                             facet_count++;
                         }
@@ -1977,7 +1987,7 @@ namespace SobekCM.Library.HTML
                     }
                     else
                     {
-                        if (facet_count < RequestSpecificValues.Results_Statistics.Aggregation_Facets.Count)
+                        if (facet_count < resultsStatistics.Aggregation_Facets.Count)
                         {
                             builder.AppendLine("<div class=\"sbkPrsw_ShowHideFacets\"><a onclick=\"set_facet_callback(" + FACET_INDEX + ",'" + other_show_type + "');\">" + show_more + " &gt;&gt; &nbsp;</a></div>");
                         }
@@ -1992,10 +2002,10 @@ namespace SobekCM.Library.HTML
                 List<string> fids = new List<string>();
 
                 // Add the facet information 
-                if ((RequestSpecificValues.Results_Statistics.Facet_Collections != null) && (RequestSpecificValues.Results_Statistics.Facet_Collections.Count > 0))
+                if ((resultsStatistics.Facet_Collections != null) && (resultsStatistics.Facet_Collections.Count > 0))
                 {
                     int facetIndex = 1;
-                    foreach (Search_Facet_Collection theseFacets in RequestSpecificValues.Results_Statistics.Facet_Collections)
+                    foreach (Search_Facet_Collection theseFacets in resultsStatistics.Facet_Collections)
                     {
                         if ((theseFacets.MetadataTypeID > 0) && (theseFacets.Count > 0))
                         {

@@ -1,5 +1,6 @@
 #region Using directives
 
+using System.Collections.Generic;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
@@ -21,7 +22,10 @@ namespace SobekCM.Library.ResultsViewer
     {
         /// <summary> Constructor for a new instance of the Thumbnail_ResultsViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Thumbnail_ResultsViewer(RequestCache RequestSpecificValues ) : base(RequestSpecificValues)
+        /// <param name="ResultsStats"> Statistics about the results to display including the facets </param>
+        /// <param name="PagedResults"> Actual pages of results </param>
+        public Thumbnail_ResultsViewer(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults)
+            : base(RequestSpecificValues, ResultsStats, PagedResults)
         {
             // Do nothing
         }
@@ -38,7 +42,7 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // If results are null, or no results, return empty string
-            if ((RequestSpecificValues.Paged_Results == null) || (RequestSpecificValues.Results_Statistics == null) || (RequestSpecificValues.Results_Statistics.Total_Items <= 0))
+            if ((PagedResults == null) || (ResultsStats == null) || (ResultsStats.Total_Items <= 0))
                 return;
 
             // Get the text search redirect stem and (writer-adjusted) base url 
@@ -48,11 +52,7 @@ namespace SobekCM.Library.ResultsViewer
                 base_url = RequestSpecificValues.Current_Mode.Base_URL + "l/";
 
             // Should the publication date be shown?
-            bool showDate = false;
-            if (RequestSpecificValues.Current_Mode.Sort >= 10)
-            {
-                showDate = true;
-            }
+            bool showDate = RequestSpecificValues.Current_Mode.Sort >= 10;
 
             // Start this table
             StringBuilder resultsBldr = new StringBuilder(5000);
@@ -75,7 +75,7 @@ namespace SobekCM.Library.ResultsViewer
             int col = 0;
             int title_count = 0;
 
-            foreach (iSearch_Title_Result titleResult in RequestSpecificValues.Paged_Results)
+            foreach (iSearch_Title_Result titleResult in PagedResults)
             {
                 title_count++;
                 // Should a new row be started
@@ -221,9 +221,9 @@ namespace SobekCM.Library.ResultsViewer
                     }
                 }
 
-                for (int i = 0; i < RequestSpecificValues.Results_Statistics.Metadata_Labels.Count; i++)
+                for (int i = 0; i < ResultsStats.Metadata_Labels.Count; i++)
 				{
-                    string field = RequestSpecificValues.Results_Statistics.Metadata_Labels[i];
+                    string field = ResultsStats.Metadata_Labels[i];
 
                     // Somehow the metadata for this item did not fully save in the database.  Break out, rather than
                     // throw the exception

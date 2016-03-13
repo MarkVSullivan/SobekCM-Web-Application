@@ -39,7 +39,7 @@ namespace SobekCM.Library.HTML
                 {
                     Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Add_Controls", "Building Result DataSet Writer");
 
-                    writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues)
+                    writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results)
                                       {
                                           Browse_Title = RequestSpecificValues.Public_Folder.FolderName,
                                           Folder_Owner_Name = RequestSpecificValues.Public_Folder.Name,
@@ -119,7 +119,7 @@ namespace SobekCM.Library.HTML
                 if (writeResult == null)
                 {
                     Tracer.Add_Trace("Public_Folder_HtmlSubwriter.Write_HTML", "Building Result DataSet Writer");
-                    writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues)
+                    writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results)
                                       {
                                           Browse_Title = RequestSpecificValues.Public_Folder.FolderName,
                                           Folder_Owner_Name = RequestSpecificValues.Public_Folder.Name,

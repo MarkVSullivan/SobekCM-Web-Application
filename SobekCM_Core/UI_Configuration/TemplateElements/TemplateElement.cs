@@ -47,6 +47,22 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
         [ProtoMember(5)]
         public string Image { get; set; }
 
+        /// <summary> Url for any relevant help page online, which details any TECHNICAL 
+        /// aspects about this template element generally  </summary> 
+        [DataMember(Name = "adminUri", EmitDefaultValue = false)]
+        [XmlAttribute("adminUri")]
+        [ProtoMember(6)]
+        public string AdminUri { get; set; }
+         
+
+        /// <summary> Url for any relevant help page online which were created for 
+        /// the end users who request help  </summary> 
+        /// <remarks> This can be overriden within the individual template configuration </remarks>
+        [DataMember(Name = "helpUri", EmitDefaultValue = false)]
+        [XmlAttribute("helpUri")]
+        [ProtoMember(7)]
+        public string HelpUri { get; set; }
+
         /// <summary> Constructor for a new instance of the <see cref="TemplateElement"/> class </summary>
         public TemplateElement()
         {

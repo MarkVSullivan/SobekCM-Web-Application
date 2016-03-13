@@ -678,7 +678,7 @@ namespace SobekCM.Library.MySobekViewer
                 else
                 {
 
-                    writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues)
+                    writeResult = new PagedResults_HtmlSubwriter(RequestSpecificValues, RequestSpecificValues.Results_Statistics, RequestSpecificValues.Paged_Results)
                                       {
                                           Browse_Title = properFolderName,
                                           Outer_Form_Name = "itemNavForm"

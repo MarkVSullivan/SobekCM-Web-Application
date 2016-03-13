@@ -1,6 +1,8 @@
 ﻿#region Using directives
 
+using System.Collections.Generic;
 using System.Web.UI.WebControls;
+using SobekCM.Core.Results;
 using SobekCM.Tools;
 
 #endregion
@@ -14,7 +16,10 @@ namespace SobekCM.Library.ResultsViewer
     {
         /// <summary> Constructor for a new instance of the Full_ResultsViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Full_ResultsViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        /// <param name="ResultsStats"> Statistics about the results to display including the facets </param>
+        /// <param name="PagedResults"> Actual pages of results </param>
+        public Full_ResultsViewer(RequestCache RequestSpecificValues, Search_Results_Statistics ResultsStats, List<iSearch_Title_Result> PagedResults)
+            : base(RequestSpecificValues, ResultsStats, PagedResults)
         {
             // Do nothing
         }
