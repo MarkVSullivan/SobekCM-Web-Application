@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
@@ -44,9 +45,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             // Copy over the wordmarks
             if (Original.Behaviors.Wordmark_Count > 0)
             {
+                New.Behaviors.Wordmarks = new List<string>();
                 foreach (Wordmark_Info origWordmark in Original.Behaviors.Wordmarks)
                 {
-                    New.Behaviors.Add_Wordmark(origWordmark.Code, origWordmark.Title, origWordmark.HTML, origWordmark.Link );
+                    New.Behaviors.Wordmarks.Add(origWordmark.Code);
                 }
             }
 

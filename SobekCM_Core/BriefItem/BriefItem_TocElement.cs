@@ -57,5 +57,40 @@ namespace SobekCM.Core.BriefItem
         {
             // Does nothing - needed for deserialization
         }
+
+        /// <summary> Shorter version of the name for this toc element, which is either the short label or the type </summary>
+        [IgnoreDataMember]
+        [XmlIgnore]
+        public string Shortened_Name
+        {
+            get
+            {
+                return shorten(Name);
+            }
+        }
+
+        private static string shorten(string LongLabel)
+        {
+            const int SHORT_LENGTH = 30;
+            if (LongLabel.Length > SHORT_LENGTH)
+            {
+                // See if there is a space somewhere convenient
+                int spaceLocation = LongLabel.IndexOf(" ", SHORT_LENGTH, StringComparison.Ordinal);
+                if (spaceLocation >= 0)
+                {
+                    return LongLabel.Substring(0, spaceLocation) + "...";
+                }
+
+                spaceLocation = LongLabel.IndexOf(" ", SHORT_LENGTH - 5, StringComparison.Ordinal);
+                if ((spaceLocation >= 0) && (spaceLocation <= SHORT_LENGTH + 5))
+                {
+                    return LongLabel.Substring(0, spaceLocation) + "...";
+                }
+
+                return LongLabel.Substring(0, SHORT_LENGTH) + "...";
+            }
+
+            return LongLabel;
+        }
     }
 }

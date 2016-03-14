@@ -340,6 +340,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                         thisModule = new Identifiers_BriefItemMapper();
                         break;
 
+                    case "SobekCM.Engine_Library.Items.BriefItems.Mappers.InternalComments_BriefItemMapper":
+                        thisModule = new InternalComments_BriefItemMapper();
+                        break;
+
                     case "SobekCM.Engine_Library.Items.BriefItems.Mappers.InternalVarious_BriefItemMapper":
                         thisModule = new InternalVarious_BriefItemMapper();
                         break;
@@ -422,6 +426,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems
 
                     case "SobekCM.Engine_Library.Items.BriefItems.Mappers.User_Tags_BriefItemMapper":
                         thisModule = new User_Tags_BriefItemMapper();
+                        break;
+
+                    case "SobekCM.Engine_Library.Items.BriefItems.Mappers.User_Tags_Internal_BriefItemMapper":
+                        thisModule = new User_Tags_Internal_BriefItemMapper();
                         break;
 
                     case "SobekCM.Engine_Library.Items.BriefItems.Mappers.VRACore_BriefItemMapper":

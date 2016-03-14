@@ -2620,7 +2620,12 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  <p>When an item is requested, the METS file is read into a rich complete SobekCM item object.  In addition, data from the database is mapped into this object.  For display purposes, the data from this SobekCM item is mapped into a Brief Item which is what is generally transferred via the REST API from the engine to the user interface.  The Brief Item is what is used for displaying an item in the public interface.</p>");
             Output.WriteLine("  <p>The mapping from the rich SobekCM Item to the Brief Item is controlled by a number of brief item mappers.  If new metadata fields are being added for display, you will almost certainly need to create a new BriefItemMapper object, to ensure the metadata is available for display online.  In addition, by overriding an existing mapper, you can change how metadata is displayed in the citation, or how the item behaves within your instance of SobekCM.</p>");
-            Output.WriteLine("  <p>There can be multiple mapping sets in your instance.  It is most common to have a 'Standard' mapping set, which brings over all the file and division information and also to have a 'citation' mapping set which only maps over the descriptive citation information.</p>");
+            Output.WriteLine("  <p>There can be multiple mapping sets in your instance.  It is most common to have the following mapping sets:</p>");
+            Output.WriteLine("  <ol>");
+            Output.WriteLine("    <li>'Citation' mapping set, which only maps over the descriptive citation information</li>");
+            Output.WriteLine("    <li>'Standard' mapping set, which brings over all the file and division information</li>");
+            Output.WriteLine("    <li>'Internal' mapping set, which is generally restricted and includes some private information and primary keys</li>");
+            Output.WriteLine("  </ol>");
 
             string defaultSetName = UI_ApplicationCache_Gateway.Configuration.BriefItemMapping.DefaultSetName;
             BriefItemMapping_Set defaultSet = UI_ApplicationCache_Gateway.Configuration.BriefItemMapping.GetMappingSet(defaultSetName);

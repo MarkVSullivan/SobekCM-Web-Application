@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
+using SobekCM.Resource_Object.Behaviors;
 
 namespace SobekCM.Core.BriefItem
 {
@@ -63,6 +65,71 @@ namespace SobekCM.Core.BriefItem
         [XmlElement("internalComments")]
         [ProtoMember(8)]
         public string Internal_Comments { get; set; }
+
+        /// <summary> Additional HTML (usually a link) to display in the title box, just below the title </summary>
+        /// <remarks> This highlights some additional piece of information, such as an external link </remarks>
+        [DataMember(EmitDefaultValue = false, Name = "titleBoxAdditionalLink")]
+        [XmlElement("titleBoxAdditionalLink")]
+        [ProtoMember(9)]
+        public string Title_Box_Additional_Link { get; set; }
+
+        /// <summary> Type (usually 'Related Link') of the additional HTML to display in the title box, just below the title </summary>
+        /// <remarks> This highlights some additional piece of information, such as an external link </remarks>
+        [DataMember(EmitDefaultValue = false, Name = "titleBoxAdditionalType")]
+        [XmlElement("titleBoxAdditionalType")]
+        [ProtoMember(10)]
+        public string Title_Box_Additional_Link_Type { get; set; }
+
+        /// <summary> List of all the user entered tags in this item </summary>
+        [DataMember(EmitDefaultValue = false, Name = "userTags")]
+        [XmlArray("userTags")]
+        [XmlArrayItem("userTag", typeof(BriefItem_UserTag))]
+        [ProtoMember(11)]
+        public List<BriefItem_UserTag> User_Tags { get; set; }
+
+
+        /// <summary> Add a new user tag to this item </summary>
+        /// <param name="UserID"> Primary key for the user who entered this tag </param>
+        /// <param name="UserName"> Name of the user ( Last Name, Firt Name )</param>
+        /// <param name="Description_Tag"> Text of the user-entered descriptive tag </param>
+        /// <param name="Date_Added"> Date the tag was added or last modified </param>
+        /// <param name="TagID"> Primary key for this tag from the database </param>
+        public void Add_User_Tag(int UserID, string UserName, string Description_Tag, DateTime Date_Added, int TagID)
+        {
+            if (User_Tags == null)
+                User_Tags = new List<BriefItem_UserTag>();
+
+            foreach (BriefItem_UserTag thisTag in User_Tags.Where(ThisTag => ThisTag.TagID == TagID))
+            {
+                thisTag.Description_Tag = Description_Tag;
+                thisTag.UserID = UserID;
+                thisTag.Date_Added = DateTime.Now;
+                return;
+            }
+
+            User_Tags.Add(new BriefItem_UserTag(UserID, UserName, Description_Tag, Date_Added, TagID));
+        }
+
+
+        /// <summary> Delete a user tag from this object, by TagID and UserID </summary>
+        /// <param name="TagID"> Primary key for this tag from the database </param>
+        /// <param name="UserID">  Primary key for the user who entered this tag </param>
+        /// <returns> Returns TRUE is successful, otherwise FALSE </returns>
+        /// <remarks> This only deletes the user tag if the UserID for the tag matches the provided userid </remarks>
+        public bool Delete_User_Tag(int TagID, int UserID)
+        {
+            if (User_Tags == null)
+                return false;
+
+            BriefItem_UserTag tag_to_delete = User_Tags.FirstOrDefault(ThisTag => (ThisTag.TagID == TagID) && (ThisTag.UserID == UserID));
+            if (tag_to_delete == null)
+            {
+                return false;
+            }
+
+            User_Tags.Remove(tag_to_delete);
+            return true;
+        }
 
         /// <summary> Add a related title to this web information </summary>
         /// <param name="Relationship"> Relationship between the main title and the related title</param>

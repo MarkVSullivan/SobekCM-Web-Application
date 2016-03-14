@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.UI.WebControls;
+using SobekCM.Core.ApplicationState;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Localization;
@@ -23,12 +24,7 @@ using SobekCM.Library.Email;
 using SobekCM.Library.ItemViewer;
 using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.UI;
-using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
-using SobekCM.Resource_Object.Bib_Info;
-using SobekCM.Resource_Object.Divisions;
-using SobekCM.Resource_Object.Metadata_Modules;
-using SobekCM.Resource_Object.Metadata_Modules.EAD;
 using SobekCM.Tools;
 
 #endregion
@@ -40,7 +36,7 @@ namespace SobekCM.Library.HTML
     public class Item_HtmlSubwriter : abstractHtmlSubwriter
     {
         #region Private class members 
-        private readonly bool isEadTypeItem;
+        
         private bool itemCheckedOutByOtherUser;
         private readonly bool itemRestrictedFromUserByIp;
         private readonly int searchResultsCount;
@@ -53,6 +49,8 @@ namespace SobekCM.Library.HTML
         private string buttonsHtml;
         private string pageLinksHtml;
         private readonly string restriction_message;
+
+        private readonly bool is_ead;
         private readonly bool is_bib_level;
 
         private BriefItemInfo currentItem;
@@ -71,7 +69,7 @@ namespace SobekCM.Library.HTML
         public Item_HtmlSubwriter( RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             showZoomable = (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.JP2ServerUrl));
-            userCanEditItem = false;
+
             searchResultsCount = 0;
 
             // Determine if the TOC should be shown
@@ -84,9 +82,16 @@ namespace SobekCM.Library.HTML
             // Try to get the current item
             currentItem = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer);
 
-            // Set flag if this is a bib level item or not
+            // Set some flags based on the resource type
             is_bib_level = (String.Compare(currentItem.Type, "BIB_LEVEL", StringComparison.OrdinalIgnoreCase) == 0);
+            is_ead = (String.Compare(currentItem.Type, "EAD", StringComparison.OrdinalIgnoreCase) == 0);
 
+            // Determine if this user can edit this item
+            userCanEditItem = false;
+            if (RequestSpecificValues.Current_User != null)
+            {
+                userCanEditItem = RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Type, currentItem.Behaviors.Source_Institution_Aggregation, currentItem.Behaviors.Holding_Location_Aggregation, currentItem.Behaviors.Aggregation_Code_List );
+            }
 
             // Check that this item is not checked out by another user
             itemCheckedOutByOtherUser = false;
@@ -123,7 +128,344 @@ namespace SobekCM.Library.HTML
                 }
             }
 
-         }
+            // If this item is restricted by IP than alot of the upcoming code is unnecessary
+            if ((RequestSpecificValues.Current_User != null) && ((!itemRestrictedFromUserByIp) || (userCanEditItem) || (RequestSpecificValues.Current_User.Is_Internal_User)))
+            {
+                #region Region suppressed currently - was for adding feature to a map image?
+
+                //// Searching for EAD/EAC type items is different from others
+                //if (!isEadTypeItem)
+                //{
+                //    // If there is a coordinate search, and polygons, do that
+                //    // GEt the geospatial metadata module
+                //    GeoSpatial_Information geoInfo = RequestSpecificValues.Current_Item.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+                //    if ((geoInfo != null) && (geoInfo.hasData))
+                //    {
+                //        if ((currentMode.Coordinates.Length > 0) && (geoInfo.Polygon_Count > 1))
+                //        {
+                //            // Determine the coordinates in this search
+                //            string[] splitter = currentMode.Coordinates.Split(",".ToCharArray());
+
+                //            if (((splitter.Length > 1) && (splitter.Length < 4)) || ((splitter.Length == 4) && (splitter[2].Length == 0) && (splitter[3].Length == 0)))
+                //            {
+                //                Double.TryParse(splitter[0], out providedMaxLat);
+                //                Double.TryParse(splitter[1], out providedMaxLong);
+                //                providedMinLat = providedMaxLat;
+                //                providedMinLong = providedMaxLong;
+                //            }
+                //            else if (splitter.Length >= 4)
+                //            {
+                //                Double.TryParse(splitter[0], out providedMaxLat);
+                //                Double.TryParse(splitter[1], out providedMaxLong);
+                //                Double.TryParse(splitter[2], out providedMinLat);
+                //                Double.TryParse(splitter[3], out providedMinLong);
+                //            }
+
+
+                //            // Now, if there is length, determine the count of results
+                //            searchResultsString = new List<string>();
+                //            if (searchResultsString.Count > 0)
+                //            {
+                //                searchResultsCount = searchResultsString.Count;
+
+                //                // Also, look to see where the current point lies in the matching, current polygon
+                //                if ((providedMaxLong == providedMinLong) && (providedMaxLat == providedMinLat))
+                //                {
+                //                    foreach (Coordinate_Polygon itemPolygon in geoInfo.Polygons)
+                //                    {
+                //                        // Is this the current page?
+                //                        if (itemPolygon.Page_Sequence == currentMode.Page)
+                //                        {
+                //                            if (itemPolygon.is_In_Bounding_Box(providedMaxLat, providedMaxLong))
+                //                            {
+                //                                searchMatchOnThisPage = true;
+                //                                ReadOnlyCollection<Coordinate_Point> boundingBox = itemPolygon.Bounding_Box;
+                //                                featureYRatioLocation = Math.Abs(((providedMaxLat - boundingBox[0].Latitude)/(boundingBox[0].Latitude - boundingBox[1].Latitude)));
+                //                                featureXRatioLocation = Math.Abs(((providedMaxLong - boundingBox[0].Longitude)/(boundingBox[0].Longitude - boundingBox[1].Longitude)));
+                //                            }
+                //                        }
+                //                    }
+                //                }
+                //            }
+                //        }
+                //    }
+                //}
+
+                #endregion
+
+                // Is this a postback?
+                if (RequestSpecificValues.Current_Mode.isPostBack)
+                {
+                    // Handle any actions from standard user action (i.e., email, add to bookshelf, etc. )
+                    if (HttpContext.Current.Request.Form["item_action"] != null)
+                    {
+                        string action = HttpContext.Current.Request.Form["item_action"].ToLower().Trim();
+
+                        if (action == "email")
+                        {
+                            string address = HttpContext.Current.Request.Form["email_address"].Replace(";", ",").Trim();
+                            string comments = HttpContext.Current.Request.Form["email_comments"].Trim();
+                            string format = HttpContext.Current.Request.Form["email_format"].Trim().ToUpper();
+                            if (address.Length > 0)
+                            {
+                                // Determine the email format
+                                bool is_html_format = format != "TEXT";
+
+                                // CC: the user, unless they are already on the list
+                                string cc_list = RequestSpecificValues.Current_User.Email;
+                                if (address.ToUpper().IndexOf(RequestSpecificValues.Current_User.Email.ToUpper()) >= 0)
+                                    cc_list = String.Empty;
+
+                                // Send the email
+                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", !Item_Email_Helper.Send_Email(address, cc_list, comments, RequestSpecificValues.Current_User.Full_Name, RequestSpecificValues.Current_Mode.Instance_Abbreviation, currentItem, is_html_format, HttpContext.Current.Items["Original_URL"].ToString(), RequestSpecificValues.Current_User.UserID)
+                                    ? "Error encountered while sending email" : "Your email has been sent");
+
+                                HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
+                                HttpContext.Current.ApplicationInstance.CompleteRequest();
+                                RequestSpecificValues.Current_Mode.Request_Completed = true;
+                                return;
+                            }
+                        }
+
+                        if (action == "add_item")
+                        {
+                            string usernotes = HttpContext.Current.Request.Form["add_notes"].Trim();
+                            string foldername = HttpContext.Current.Request.Form["add_bookshelf"].Trim();
+                            bool open_bookshelf = HttpContext.Current.Request.Form["open_bookshelf"] != null;
+
+                            if (SobekCM_Database.Add_Item_To_User_Folder(RequestSpecificValues.Current_User.UserID, foldername, currentItem.BibID, currentItem.VID, 0, usernotes, RequestSpecificValues.Tracer))
+                            {
+                                RequestSpecificValues.Current_User.Add_Bookshelf_Item(currentItem.BibID, currentItem.VID);
+
+                                // Ensure this user folder is not sitting in the cache
+                                CachedDataManager.Remove_User_Folder_Browse(RequestSpecificValues.Current_User.UserID, foldername, RequestSpecificValues.Tracer);
+
+                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "Item was saved to your bookshelf.");
+
+                                if (open_bookshelf)
+                                {
+                                    HttpContext.Current.Session.Add("ON_LOAD_WINDOW", "?m=lmfl" + foldername.Replace("\"", "%22").Replace("'", "%27").Replace("=", "%3D").Replace("&", "%26") + "&vp=1");
+                                }
+                            }
+                            else
+                            {
+                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "ERROR encountered while trying to save to your bookshelf.");
+                            }
+
+                            HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
+                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            RequestSpecificValues.Current_Mode.Request_Completed = true;
+                            return;
+                        }
+
+                        if (action == "remove")
+                        {
+                            if (SobekCM_Database.Delete_Item_From_User_Folders(RequestSpecificValues.Current_User.UserID, currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer))
+                            {
+                                RequestSpecificValues.Current_User.Remove_From_Bookshelves(currentItem.BibID, currentItem.VID);
+                                CachedDataManager.Remove_All_User_Folder_Browses(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Tracer);
+                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "Item was removed from your bookshelves.");
+                            }
+                            else
+                            {
+                                HttpContext.Current.Session.Add("ON_LOAD_MESSAGE", "ERROR encountered while trying to remove item from your bookshelves.");
+                            }
+
+                            HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
+                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            RequestSpecificValues.Current_Mode.Request_Completed = true;
+                            return;
+                        }
+
+                        if (action.IndexOf("add_tag") == 0)
+                        {
+                            int tagid = -1;
+                            if (action.Replace("add_tag", "").Length > 0)
+                            {
+                                tagid = Convert.ToInt32(action.Replace("add_tag_", ""));
+                            }
+                            string description = HttpContext.Current.Request.Form["add_tag"].Trim();
+                            int new_tagid = SobekCM_Database.Add_Description_Tag(RequestSpecificValues.Current_User.UserID, tagid, currentItem.Web.ItemID, description, RequestSpecificValues.Tracer);
+                            if (new_tagid > 0)
+                            {
+                                currentItem.Web.Add_User_Tag(RequestSpecificValues.Current_User.UserID, RequestSpecificValues.Current_User.Full_Name, description, DateTime.Now, new_tagid);
+                                RequestSpecificValues.Current_User.Has_Descriptive_Tags = true;
+                            }
+
+                            HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
+                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            RequestSpecificValues.Current_Mode.Request_Completed = true;
+                            return;
+                        }
+
+                        if (action.IndexOf("delete_tag") == 0)
+                        {
+                            if (action.Replace("delete_tag", "").Length > 0)
+                            {
+                                int tagid = Convert.ToInt32(action.Replace("delete_tag_", ""));
+                                if (currentItem.Web.Delete_User_Tag(tagid, RequestSpecificValues.Current_User.UserID))
+                                {
+                                    SobekCM_Database.Delete_Description_Tag(tagid, RequestSpecificValues.Tracer);
+                                }
+                            }
+                            HttpContext.Current.Response.Redirect(HttpContext.Current.Items["Original_URL"].ToString(), false);
+                            HttpContext.Current.ApplicationInstance.CompleteRequest();
+                            RequestSpecificValues.Current_Mode.Request_Completed = true;
+                            return;
+                        }
+                    }
+                }
+
+                // Handle any request from the internal header for the item
+                if ((HttpContext.Current != null) && (HttpContext.Current.Request.Form["internal_header_action"] != null) && (RequestSpecificValues.Current_User != null))
+                {
+                    // Pull the action value
+                    string internalHeaderAction = HttpContext.Current.Request.Form["internal_header_action"].Trim();
+
+                    // Was this to save the item comments?
+                    if (internalHeaderAction == "save_comments")
+                    {
+                        string new_comments = HttpContext.Current.Request.Form["intheader_internal_notes"].Trim();
+                        if (Resource_Object.Database.SobekCM_Database.Save_Item_Internal_Comments(currentItem.Web.ItemID, new_comments))
+                            currentItem.Web.Internal_Comments = new_comments;
+                    }
+                }
+            }
+
+            // Set the code for bib level mets to show the volume tree by default
+            if ((is_bib_level) && (String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.ViewerCode)))
+            {
+                RequestSpecificValues.Current_Mode.ViewerCode = "allvolumes1";
+            }
+
+            // If there is a file name included, look for the sequence of that file
+            if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Page_By_FileName))
+            {
+                int page_sequence = RequestSpecificValues.Current_Item.Divisions.Physical_Tree.Page_Sequence_By_FileName(RequestSpecificValues.Current_Mode.Page_By_FileName);
+                if (page_sequence > 0)
+                {
+                    RequestSpecificValues.Current_Mode.ViewerCode = page_sequence.ToString();
+                    RequestSpecificValues.Current_Mode.Page = (ushort)page_sequence;
+                }
+            }
+
+            // Get the valid viewer code
+            RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Add_Controls", "Getting the appropriate item viewer");
+
+            if ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.ViewerCode)) && (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates)))
+            {
+                RequestSpecificValues.Current_Mode.ViewerCode = "map";
+            }
+            int currentPageIndex = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
+            RequestSpecificValues.Current_Mode.ViewerCode = RequestSpecificValues.Current_Item.Web.Get_Valid_Viewer_Code(RequestSpecificValues.Current_Mode.ViewerCode, currentPageIndex);
+            View_Object viewObject = RequestSpecificValues.Current_Item.Web.Get_Viewer(RequestSpecificValues.Current_Mode.ViewerCode);
+            PageViewer = ItemViewer_Factory.Get_Viewer(viewObject, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String.ToUpper(), RequestSpecificValues.Current_Item, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode);
+
+            // If this was in fact restricted by IP address, restrict now
+            if (itemRestrictedFromUserByIp)
+            {
+                if ((PageViewer == null) || ((PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.Citation) &&
+                    (PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.MultiVolume) &&
+                    (PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.Related_Images)))
+                {
+                    PageViewer = new Restricted_ItemViewer(Item_Restricted_Message);
+                    RequestSpecificValues.Current_Mode.ViewerCode = "res";
+                }
+            }
+
+            // If execution should end, do it now
+            if (RequestSpecificValues.Current_Mode.Request_Completed)
+                return;
+
+            RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Created " + PageViewer.GetType().ToString().Replace("SobekCM.Library.ItemViewer.Viewers.", ""));
+
+            // Assign the rest of the information, if a page viewer was created
+            if (PageViewer != null)
+            {
+                PageViewer.CurrentItem = RequestSpecificValues.Current_Item;
+                PageViewer.CurrentMode = RequestSpecificValues.Current_Mode;
+                PageViewer.Translator = UI_ApplicationCache_Gateway.Translation;
+                PageViewer.CurrentUser = RequestSpecificValues.Current_User;
+
+                // Special code if this is the citation viewer
+                Citation_ItemViewer viewer = PageViewer as Citation_ItemViewer;
+                if (viewer != null)
+                {
+                    viewer.Code_Manager = UI_ApplicationCache_Gateway.Aggregations;
+                    viewer.Item_Restricted = itemRestrictedFromUserByIp;
+                }
+
+                // Special code if this is the multi-volumes viewer
+                var itemViewer = PageViewer as MultiVolumes_ItemViewer_OLD;
+                if (itemViewer != null)
+                {
+                    if (RequestSpecificValues.Items_In_Title == null)
+                    {
+                        // Look in the cache first
+                        RequestSpecificValues.Items_In_Title = CachedDataManager.Items.Retrieve_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
+
+                        // If still null, try to pull from the database
+                        if (RequestSpecificValues.Items_In_Title == null)
+                        {
+                            // Get list of information about this item group and save the item list
+                            DataSet itemDetails = Engine_Database.Get_Item_Group_Details(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
+                            RequestSpecificValues.Items_In_Title = new SobekCM_Items_In_Title(itemDetails.Tables[1]);
+
+                            //// Add the related titles, if there are some
+                            //if ((currentGroup.Tables.Count > 3) && (currentGroup.Tables[3].Rows.Count > 0))
+                            //{
+                            //    foreach (DataRow thisRow in currentGroup.Tables[3].Rows)
+                            //    {
+                            //        string relationship = thisRow["Relationship"].ToString();
+                            //        string title = thisRow["GroupTitle"].ToString();
+                            //        string bibid = thisRow["BibID"].ToString();
+                            //        string link_and_title = "<a href=\"" + currentMode.Base_URL + bibid + "<%URL_OPTS%>\">" + title + "</a>";
+                            //        RequestSpecificValues.Current_Item.Behaviors.All_Related_Titles.Add(new SobekCM.Resource_Object.Behaviors.Related_Titles(relationship, link_and_title));
+                            //    }
+                            //}
+
+                            // Store in cache if retrieved
+                            if (RequestSpecificValues.Items_In_Title != null)
+                            {
+                                CachedDataManager.Items.Store_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Items_In_Title, RequestSpecificValues.Tracer);
+                            }
+                        }
+                    }
+
+                    itemViewer.Item_List = RequestSpecificValues.Items_In_Title;
+                }
+
+                // Finally, perform any necessary work before display
+                PageViewer.Perform_PreDisplay_Work(RequestSpecificValues.Tracer);
+
+                // Get the list of any special behaviors
+                behaviors = PageViewer.ItemViewer_Behaviors;
+            }
+            else
+            {
+                behaviors = new List<HtmlSubwriter_Behaviors_Enum>();
+            }
+
+            // ALways suppress the banner and skip to main content
+            if (behaviors == null)
+                behaviors = new List<HtmlSubwriter_Behaviors_Enum>();
+
+            if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Suppress_Banner))
+                behaviors.Add(HtmlSubwriter_Behaviors_Enum.Suppress_Banner);
+            if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Include_Skip_To_Main_Content_Link))
+                behaviors.Add(HtmlSubwriter_Behaviors_Enum.Include_Skip_To_Main_Content_Link);
+
+            //if ((searchMatchOnThisPage) && ((PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG) || (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000)))
+            //{
+            //    if (PageViewer.ItemViewer_Type == ItemViewer_Type_Enum.JPEG2000)
+            //    {
+            //        Aware_JP2_ItemViewer jp2_viewer = (Aware_JP2_ItemViewer) PageViewer;
+            //        jp2_viewer.Add_Feature("Red", "DrawEllipse", ((int) (featureXRatioLocation*jp2_viewer.Width)), ((int) (featureYRatioLocation*jp2_viewer.Height)), 800, 800);
+
+            //    }
+            //}
+
+        }
 
         #endregion
 
@@ -542,31 +884,13 @@ namespace SobekCM.Library.HTML
 
                     // Add the link if there is one  
                     // Links_BriefItemMapper
-                    if ((currentItem.Bib_Info.hasLocationInformation) && (currentItem.Bib_Info.Location.Other_URL.Length > 0))
+                    if (!String.IsNullOrEmpty(currentItem.Web.Title_Box_Additional_Link))
                     {
-                        if (currentItem.Bib_Info.Location.Other_URL.ToLower().IndexOf("www.youtube.com") < 0)
-                        {
+                        // Get the translated TYPE
+                        string type = UI_ApplicationCache_Gateway.Translation.Get_Translation((currentItem.Web.Title_Box_Additional_Link_Type ?? "Related Link"), RequestSpecificValues.Current_Mode.Language);
 
-
-                            // Determine the type of link
-                            string type = UI_ApplicationCache_Gateway.Translation.Get_Translation("Related Link", RequestSpecificValues.Current_Mode.Language);
-                            if (currentItem.Bib_Info.Location.Other_URL_Display_Label.Length > 0)
-                            {
-                                type = UI_ApplicationCache_Gateway.Translation.Get_Translation(currentItem.Bib_Info.Location.Other_URL_Display_Label, RequestSpecificValues.Current_Mode.Language);
-                            }
-
-
-                            // Determine the display value
-                            string note = currentItem.Bib_Info.Location.Other_URL;
-                            if (currentItem.Bib_Info.Location.Other_URL_Note.Length > 0)
-                            {
-                                note = currentItem.Bib_Info.Location.Other_URL_Note;
-                            }
-
-
-                            // Add the link
-                            Output.WriteLine("\t<a href=\"" + currentItem.Bib_Info.Location.Other_URL + "\">" + note + " ( " + type + " )</a><br />");
-                        }
+                        // Add the link
+                        Output.WriteLine("\t" + currentItem.Web.Title_Box_Additional_Link + " ( " + type + " )<br />");
                     }
 
 
@@ -587,8 +911,7 @@ namespace SobekCM.Library.HTML
             if (!behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Suppress_Item_Menu))
             {
                 // Can this user (if there is one) edit this item?
-                bool canManage = (RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Bib_Info.SobekCM_Type_String, currentItem.Bib_Info.Source.Code, currentItem.Bib_Info.HoldingCode, currentItem.Behaviors.Aggregation_Code_List));
-
+                bool canManage = (RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.Can_Edit_This_Item(currentItem.BibID, currentItem.Type, currentItem.Behaviors.Source_Institution_Aggregation, currentItem.Behaviors.Holding_Location_Aggregation, currentItem.Behaviors.Aggregation_Code_List));
 
                 // Add the item views
                 Output.WriteLine("<!-- Add the different view and social options -->");
@@ -716,226 +1039,226 @@ namespace SobekCM.Library.HTML
                     }
                 }
 
-                // Add the item level views
-                foreach (BriefItem_BehaviorViewer thisView in currentItem.Behaviors.Viewers)
-                {
-                    if (((!itemRestrictedFromUserByIp) && (!currentItem.Behaviors.Dark_Flag)) || (thisView.View_Type == View_Enum.CITATION) ||
-                        (thisView.View_Type == View_Enum.ALL_VOLUMES) ||
-                        (thisView.View_Type == View_Enum.RELATED_IMAGES))
-                    {
-                        // Special code for the CITATION view (TEMPORARY - v.3.2)
-                        if (thisView.View_Type == View_Enum.CITATION)
-                        {
-                            if (RequestSpecificValues.Current_Mode.Is_Robot)
-                            {
-                                Output.Write("\t\t<li class=\"selected-sf-menu-item-link\"><a href=\"\">Description</a></li>");
-                            }
-                            else
-                            {
-                                RequestSpecificValues.Current_Mode.ViewerCode = "citation";
-                                if (currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
-                                    RequestSpecificValues.Current_Mode.ViewerCode = "description";
-                                if ((viewerCode == "citation") || (viewerCode == "marc") || (viewerCode == "metadata") ||
-                                    (viewerCode == "usage") || (viewerCode == "description"))
-                                {
-                                    Output.Write("\t\t<li class=\"selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Description</a>");
-                                }
-                                else
-                                {
-                                    Output.Write("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Description</a>");
-                                }
-                                Output.WriteLine("<ul>");
+                //// Add the item level views
+                //foreach (BriefItem_BehaviorViewer thisView in currentItem.Behaviors.Viewers)
+                //{
+                //    if (((!itemRestrictedFromUserByIp) && (!currentItem.Behaviors.Dark_Flag)) || (thisView.View_Type == View_Enum.CITATION) ||
+                //        (thisView.View_Type == View_Enum.ALL_VOLUMES) ||
+                //        (thisView.View_Type == View_Enum.RELATED_IMAGES))
+                //    {
+                //        // Special code for the CITATION view (TEMPORARY - v.3.2)
+                //        if (thisView.View_Type == View_Enum.CITATION)
+                //        {
+                //            if (RequestSpecificValues.Current_Mode.Is_Robot)
+                //            {
+                //                Output.Write("\t\t<li class=\"selected-sf-menu-item-link\"><a href=\"\">Description</a></li>");
+                //            }
+                //            else
+                //            {
+                //                RequestSpecificValues.Current_Mode.ViewerCode = "citation";
+                //                if (currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
+                //                    RequestSpecificValues.Current_Mode.ViewerCode = "description";
+                //                if ((viewerCode == "citation") || (viewerCode == "marc") || (viewerCode == "metadata") ||
+                //                    (viewerCode == "usage") || (viewerCode == "description"))
+                //                {
+                //                    Output.Write("\t\t<li class=\"selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Description</a>");
+                //                }
+                //                else
+                //                {
+                //                    Output.Write("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Description</a>");
+                //                }
+                //                Output.WriteLine("<ul>");
 
 
-                                if (currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
-                                    Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Archival Description</a></li>");
-                                else
-                                    Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Standard View</a></li>");
+                //                if (currentItem.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD)
+                //                    Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Archival Description</a></li>");
+                //                else
+                //                    Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Standard View</a></li>");
 
 
 
-                                RequestSpecificValues.Current_Mode.ViewerCode = "marc";
-                                Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">MARC View</a></li>");
+                //                RequestSpecificValues.Current_Mode.ViewerCode = "marc";
+                //                Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">MARC View</a></li>");
 
 
-                                RequestSpecificValues.Current_Mode.ViewerCode = "metadata";
-                                Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Metadata</a></li>");
+                //                RequestSpecificValues.Current_Mode.ViewerCode = "metadata";
+                //                Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Metadata</a></li>");
 
 
-                                RequestSpecificValues.Current_Mode.ViewerCode = "usage";
-                                Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Usage Statistics</a></li>");
+                //                RequestSpecificValues.Current_Mode.ViewerCode = "usage";
+                //                Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Usage Statistics</a></li>");
 
 
-                                Output.WriteLine("\t\t</ul></li>");
-                                RequestSpecificValues.Current_Mode.ViewerCode = viewerCode;
-                            }
-                        }
-                        else if (thisView.View_Type == View_Enum.ALL_VOLUMES)
-                        {
-                            string resource_type_upper = currentItem.Bib_Info.SobekCM_Type_String.ToUpper();
-                            string all_volumes = "All Volumes";
-                            if (resource_type_upper.IndexOf("NEWSPAPER") >= 0)
-                            {
-                                all_volumes = "All Issues";
-                            }
-                            else if (resource_type_upper.IndexOf("MAP") >= 0)
-                            {
-                                all_volumes = "Related Maps";
-                            }
-                            else if (resource_type_upper.IndexOf("AERIAL") >= 0)
-                            {
-                                all_volumes = "Related Flights";
-                            }
+                //                Output.WriteLine("\t\t</ul></li>");
+                //                RequestSpecificValues.Current_Mode.ViewerCode = viewerCode;
+                //            }
+                //        }
+                //        else if (thisView.View_Type == View_Enum.ALL_VOLUMES)
+                //        {
+                //            string resource_type_upper = currentItem.Bib_Info.SobekCM_Type_String.ToUpper();
+                //            string all_volumes = "All Volumes";
+                //            if (resource_type_upper.IndexOf("NEWSPAPER") >= 0)
+                //            {
+                //                all_volumes = "All Issues";
+                //            }
+                //            else if (resource_type_upper.IndexOf("MAP") >= 0)
+                //            {
+                //                all_volumes = "Related Maps";
+                //            }
+                //            else if (resource_type_upper.IndexOf("AERIAL") >= 0)
+                //            {
+                //                all_volumes = "Related Flights";
+                //            }
 
-                            if (RequestSpecificValues.Current_Mode.Is_Robot)
-                            {
-                                Output.Write("\t\t<li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Base_URL + "\\" + currentItem.BibID + "\">" + all_volumes + "</a></li>");
-                            }
-                            else
-                            {
+                //            if (RequestSpecificValues.Current_Mode.Is_Robot)
+                //            {
+                //                Output.Write("\t\t<li><a href=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Base_URL + "\\" + currentItem.BibID + "\">" + all_volumes + "</a></li>");
+                //            }
+                //            else
+                //            {
 
-                                RequestSpecificValues.Current_Mode.ViewerCode = "allvolumes";
-                                if ((viewerCode == "allvolumes") || (viewerCode == "allvolumes2") ||
-                                    (viewerCode == "allvolumes3"))
-                                {
-                                    Output.Write("\t\t<li class=\"selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + all_volumes + "</a>");
-                                }
-                                else
-                                {
-                                    Output.Write("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + all_volumes + "</a>");
-                                }
-                                Output.WriteLine("<ul>");
-
-
-                                RequestSpecificValues.Current_Mode.ViewerCode = "allvolumes";
-                                Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Tree View</a></li>");
+                //                RequestSpecificValues.Current_Mode.ViewerCode = "allvolumes";
+                //                if ((viewerCode == "allvolumes") || (viewerCode == "allvolumes2") ||
+                //                    (viewerCode == "allvolumes3"))
+                //                {
+                //                    Output.Write("\t\t<li class=\"selected-sf-menu-item-link\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + all_volumes + "</a>");
+                //                }
+                //                else
+                //                {
+                //                    Output.Write("\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + all_volumes + "</a>");
+                //                }
+                //                Output.WriteLine("<ul>");
 
 
-                                RequestSpecificValues.Current_Mode.ViewerCode = "allvolumes2";
-                                Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Thumbnails</a></li>");
+                //                RequestSpecificValues.Current_Mode.ViewerCode = "allvolumes";
+                //                Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Tree View</a></li>");
 
 
-                                if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn) && (RequestSpecificValues.Current_User.Is_Internal_User))
-                                {
-                                    RequestSpecificValues.Current_Mode.ViewerCode = "allvolumes3";
-                                    Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">List View</a></li>");
-                                }
+                //                RequestSpecificValues.Current_Mode.ViewerCode = "allvolumes2";
+                //                Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Thumbnails</a></li>");
 
 
-                                Output.WriteLine("\t\t</ul></li>");
-                                RequestSpecificValues.Current_Mode.ViewerCode = viewerCode;
-                            }
-                        }
-                        else
-                        {
-                            List<string> item_nav_bar_link = Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisView, currentItem.Bib_Info.SobekCM_Type_String, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode, -1, UI_ApplicationCache_Gateway.Translation, showZoomable, currentItem);
+                //                if ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.LoggedOn) && (RequestSpecificValues.Current_User.Is_Internal_User))
+                //                {
+                //                    RequestSpecificValues.Current_Mode.ViewerCode = "allvolumes3";
+                //                    Output.WriteLine("\t\t\t<li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">List View</a></li>");
+                //                }
 
 
-                            // Add each nav bar link
-                            foreach (string this_link in item_nav_bar_link)
-                            {
-                                Output.WriteLine("\t\t" + this_link + "");
-                            }
-                        }
-                    }
-                }
+                //                Output.WriteLine("\t\t</ul></li>");
+                //                RequestSpecificValues.Current_Mode.ViewerCode = viewerCode;
+                //            }
+                //        }
+                //        else
+                //        {
+                //            List<string> item_nav_bar_link = Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisView, currentItem.Bib_Info.SobekCM_Type_String, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode, -1, UI_ApplicationCache_Gateway.Translation, showZoomable, currentItem);
 
 
-                // If this is citation or index mode, the number may be an invalid page sequence
-                if ((page <= 0) ||
-                    (RequestSpecificValues.Current_Mode.ViewerCode == View_Object.Viewer_Code_By_Type(View_Enum.RELATED_IMAGES)[0]))
-                {
-                    RequestSpecificValues.Current_Mode.Page = 1;
-                }
+                //            // Add each nav bar link
+                //            foreach (string this_link in item_nav_bar_link)
+                //            {
+                //                Output.WriteLine("\t\t" + this_link + "");
+                //            }
+                //        }
+                //    }
+                //}
 
 
-                if ((currentItem.Web.Static_PageCount > 0) && (RequestSpecificValues.Current_Page == null))
-                {
-                    RequestSpecificValues.Current_Page = currentItem.Web.Pages_By_Sequence[0];
-                }
+                //// If this is citation or index mode, the number may be an invalid page sequence
+                //if ((page <= 0) ||
+                //    (RequestSpecificValues.Current_Mode.ViewerCode == View_Object.Viewer_Code_By_Type(View_Enum.RELATED_IMAGES)[0]))
+                //{
+                //    RequestSpecificValues.Current_Mode.Page = 1;
+                //}
 
 
-                // Add each page display type
-                if ((RequestSpecificValues.Current_Page != null) && (!itemRestrictedFromUserByIp))
-                {
-                    int page_seq = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
-                    string resourceType = currentItem.Bib_Info.SobekCM_Type_String.ToUpper();
-                    if (currentItem.Behaviors.Item_Level_Page_Views_Count > 0)
-                    {
-                        List<string> pageViewLinks = new List<string>();
-
-                        foreach (View_Object thisPageView in currentItem.Behaviors.Item_Level_Page_Views)
-                        {
-                            View_Enum thisViewType = thisPageView.View_Type;
-                            foreach (SobekCM_File_Info thisFile in RequestSpecificValues.Current_Page.Files)
-                            {
-                                View_Object fileObject = thisFile.Get_Viewer();
-                                if ((fileObject != null) && (fileObject.View_Type == thisViewType))
-                                {
-                                    pageViewLinks.AddRange(Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisFile.Get_Viewer(), resourceType, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode, page_seq, UI_ApplicationCache_Gateway.Translation, showZoomable, currentItem));
-                                }
-                            }
-                        }
+                //if ((currentItem.Web.Static_PageCount > 0) && (RequestSpecificValues.Current_Page == null))
+                //{
+                //    RequestSpecificValues.Current_Page = currentItem.Web.Pages_By_Sequence[0];
+                //}
 
 
-                        if (currentItem.BibID == "UF00001672")
-                        {
-                            string filename = RequestSpecificValues.Current_Page.Files[0].File_Name_Sans_Extension + ".txt";
-                            SobekCM_File_Info newFile = new SobekCM_File_Info(filename);
-                            pageViewLinks.AddRange(Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(newFile.Get_Viewer(), resourceType, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode, page_seq, UI_ApplicationCache_Gateway.Translation, showZoomable, currentItem));
-                        }
+                //// Add each page display type
+                //if ((RequestSpecificValues.Current_Page != null) && (!itemRestrictedFromUserByIp))
+                //{
+                //    int page_seq = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
+                //    string resourceType = currentItem.Bib_Info.SobekCM_Type_String.ToUpper();
+                //    if (currentItem.Behaviors.Item_Level_Page_Views_Count > 0)
+                //    {
+                //        List<string> pageViewLinks = new List<string>();
 
-                        // Only continue if there were views
-                        if (pageViewLinks.Count > 0)
-                        {
-                            // Determine the name for this menu item
-                            string menu_title = "Page Image";
-                            if (resourceType.IndexOf("MAP") >= 0)
-                            {
-                                menu_title = "Map Image";
-                            }
-                            else if ((resourceType.IndexOf("AERIAL") >= 0) || (resourceType.IndexOf("PHOTOGRAPH") >= 0))
-                            {
-                                menu_title = "Image";
-                            }
-                            if ((currentItem.Images != null ) && ( currentItem.Images.Count > 1 ))
-                                menu_title = menu_title + "s";
-
-
-                            // Get the link for the first page view
-                            string link = pageViewLinks[0].Substring(pageViewLinks[0].IndexOf("href=\"") + 6);
-                            link = link.Substring(0, link.IndexOf("\""));
+                //        foreach (View_Object thisPageView in currentItem.Behaviors.Item_Level_Page_Views)
+                //        {
+                //            View_Enum thisViewType = thisPageView.View_Type;
+                //            foreach (SobekCM_File_Info thisFile in RequestSpecificValues.Current_Page.Files)
+                //            {
+                //                View_Object fileObject = thisFile.Get_Viewer();
+                //                if ((fileObject != null) && (fileObject.View_Type == thisViewType))
+                //                {
+                //                    pageViewLinks.AddRange(Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(thisFile.Get_Viewer(), resourceType, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode, page_seq, UI_ApplicationCache_Gateway.Translation, showZoomable, currentItem));
+                //                }
+                //            }
+                //        }
 
 
-                            // Was this a match?
-                            if ((RequestSpecificValues.Current_Mode.ViewerCode == page_seq + "t") || (RequestSpecificValues.Current_Mode.ViewerCode == page_seq + "x") || (RequestSpecificValues.Current_Mode.ViewerCode == page_seq + "j"))
-                            {
-                                Output.Write("\t\t<li class=\"selected-sf-menu-item-link\"><a href=\"" + link + "\">" + menu_title + "</a>");
-                            }
-                            else
-                            {
-                                Output.Write("\t\t<li><a href=\"" + link + "\">" + menu_title + "</a>");
-                            }
-                            Output.WriteLine("<ul>");
+                //        if (currentItem.BibID == "UF00001672")
+                //        {
+                //            string filename = RequestSpecificValues.Current_Page.Files[0].File_Name_Sans_Extension + ".txt";
+                //            SobekCM_File_Info newFile = new SobekCM_File_Info(filename);
+                //            pageViewLinks.AddRange(Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(newFile.Get_Viewer(), resourceType, RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode, page_seq, UI_ApplicationCache_Gateway.Translation, showZoomable, currentItem));
+                //        }
+
+                //        // Only continue if there were views
+                //        if (pageViewLinks.Count > 0)
+                //        {
+                //            // Determine the name for this menu item
+                //            string menu_title = "Page Image";
+                //            if (resourceType.IndexOf("MAP") >= 0)
+                //            {
+                //                menu_title = "Map Image";
+                //            }
+                //            else if ((resourceType.IndexOf("AERIAL") >= 0) || (resourceType.IndexOf("PHOTOGRAPH") >= 0))
+                //            {
+                //                menu_title = "Image";
+                //            }
+                //            if ((currentItem.Images != null ) && ( currentItem.Images.Count > 1 ))
+                //                menu_title = menu_title + "s";
 
 
-                            foreach (string pageLink in pageViewLinks)
-                            {
-                                Output.WriteLine("\t\t\t<li>" + pageLink + "</li>");
-                            }
+                //            // Get the link for the first page view
+                //            string link = pageViewLinks[0].Substring(pageViewLinks[0].IndexOf("href=\"") + 6);
+                //            link = link.Substring(0, link.IndexOf("\""));
 
 
-                            Output.WriteLine("\t\t</ul></li>");
-                        }
-                    }
-                }
+                //            // Was this a match?
+                //            if ((RequestSpecificValues.Current_Mode.ViewerCode == page_seq + "t") || (RequestSpecificValues.Current_Mode.ViewerCode == page_seq + "x") || (RequestSpecificValues.Current_Mode.ViewerCode == page_seq + "j"))
+                //            {
+                //                Output.Write("\t\t<li class=\"selected-sf-menu-item-link\"><a href=\"" + link + "\">" + menu_title + "</a>");
+                //            }
+                //            else
+                //            {
+                //                Output.Write("\t\t<li><a href=\"" + link + "\">" + menu_title + "</a>");
+                //            }
+                //            Output.WriteLine("<ul>");
 
 
-                if (itemRestrictedFromUserByIp)
-                {
-                    List<string> restricted_nav_bar_link = Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(new View_Object(View_Enum.RESTRICTED), currentItem.Bib_Info.SobekCM_Type_String.ToUpper(), RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode, 0, UI_ApplicationCache_Gateway.Translation, showZoomable, currentItem);
-                    Output.WriteLine("\t\t" + restricted_nav_bar_link[0] + "");
-                }
+                //            foreach (string pageLink in pageViewLinks)
+                //            {
+                //                Output.WriteLine("\t\t\t<li>" + pageLink + "</li>");
+                //            }
+
+
+                //            Output.WriteLine("\t\t</ul></li>");
+                //        }
+                //    }
+                //}
+
+
+                //if (itemRestrictedFromUserByIp)
+                //{
+                //    List<string> restricted_nav_bar_link = Item_Nav_Bar_HTML_Factory.Get_Nav_Bar_HTML(new View_Object(View_Enum.RESTRICTED), currentItem.Bib_Info.SobekCM_Type_String.ToUpper(), RequestSpecificValues.HTML_Skin.Base_Skin_Code, RequestSpecificValues.Current_Mode, 0, UI_ApplicationCache_Gateway.Translation, showZoomable, currentItem);
+                //    Output.WriteLine("\t\t" + restricted_nav_bar_link[0] + "");
+                //}
 
 
                 // Add the MANAGE button?
@@ -1132,55 +1455,44 @@ namespace SobekCM.Library.HTML
 
             Tracer.Add_Trace("Item_HtmlSubwriter.Write_Additional_HTML", "Rendering HTML ( finish left navigation bar, begin main viewer section )");
 
-            // Add google map stuff if that is selected
-            if ((pageViewer != null) && (pageViewer.ItemViewer_Type == ItemViewer_Type_Enum.Google_Map))
-            {
-                ((Google_Map_ItemViewer_OLD) pageViewer).Add_Google_Map_Scripts(Output, Tracer);
-            }
-
-            //// Add google map beta stuff if that is selected
-            //if ((pageViewer != null) && (pageViewer.ItemViewer_Type == ItemViewer_Type_Enum.Google_Map_Beta))
-            //{
-            //    ((Google_Map_ItemViewer_Beta)pageViewer).Add_Google_Map_Scripts(Output, Tracer);
-            //}
-
 
             if (ShouldLeftNavigationBarBeShown)
             {
                 // If this is an EAD-type item, show the table of contents here since it is all done
                 // in HTML, and does not use the tree control
 
-                if (isEadTypeItem)
-                {
-                    EAD_Info eadInfo = (EAD_Info) currentItem.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY);
-                    if ((eadInfo != null) && (eadInfo.TOC_Included_Sections.Count > 0))
-                    {
-                        // Determine the URL to use for most of these
-                        string description_link = String.Empty;
-                        if (RequestSpecificValues.Current_Mode.ViewerCode != "description")
-                            description_link = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode, "description");
+                //if (isEadTypeItem)
+                //{
+                //    EAD_Info eadInfo = (EAD_Info) currentItem.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY);
+                //    if ((eadInfo != null) && (eadInfo.TOC_Included_Sections.Count > 0))
+                //    {
+                //        // Determine the URL to use for most of these
+                //        string description_link = String.Empty;
+                //        if (RequestSpecificValues.Current_Mode.ViewerCode != "description")
+                //            description_link = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode, "description");
 
-                        // Add the TOC as a floating DIV
-                        Output.WriteLine("      <div id=\"sbkEad_FloatingTOC\">");
-                        Output.WriteLine("      <ul class=\"sbkEad_TocMenu\">");
-                        Output.WriteLine("        <li class=\"sbkEad_TocHeader\">TABLE OF CONTENTS &nbsp; <span style=\"color:#eeeeee\"><a href=\"#\" title=\"Return to the top of this document\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/up_arrow.gif\" /></a></span></li>");
+                //        // Add the TOC as a floating DIV
+                //        Output.WriteLine("      <div id=\"sbkEad_FloatingTOC\">");
+                //        Output.WriteLine("      <ul class=\"sbkEad_TocMenu\">");
+                //        Output.WriteLine("        <li class=\"sbkEad_TocHeader\">TABLE OF CONTENTS &nbsp; <span style=\"color:#eeeeee\"><a href=\"#\" title=\"Return to the top of this document\"><img src=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Base_Skin_Or_Skin + "/buttons/up_arrow.gif\" /></a></span></li>");
 
-                        foreach (EAD_TOC_Included_Section thisMatch in eadInfo.TOC_Included_Sections)
-                        {
-                            Output.WriteLine("        <li><a href=\"" + description_link + "#" + thisMatch.Internal_Link_Name + "\">" + thisMatch.Section_Title + "</a></li>");
-                        }
+                //        foreach (EAD_TOC_Included_Section thisMatch in eadInfo.TOC_Included_Sections)
+                //        {
+                //            Output.WriteLine("        <li><a href=\"" + description_link + "#" + thisMatch.Internal_Link_Name + "\">" + thisMatch.Section_Title + "</a></li>");
+                //        }
 
-                        // Add the container list if there is one
-                        if (eadInfo.Container_Hierarchy.Containers.Count > 0)
-                        {
-                            Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode, "container") + "\">Container List</a></li>");
-                        }
+                //        // Add the container list if there is one
+                //        if (eadInfo.Container_Hierarchy.Containers.Count > 0)
+                //        {
+                //            Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode, "container") + "\">Container List</a></li>");
+                //        }
 
-                        Output.WriteLine("      </ul>");
-                        Output.WriteLine("      </div>");
-                    }
-                }
+                //        Output.WriteLine("      </ul>");
+                //        Output.WriteLine("      </div>");
+                //    }
+                //}
 
+                // Add any wordmarks
                 if ((currentItem.Behaviors.Wordmarks != null) && (currentItem.Behaviors.Wordmarks.Count > 0))
                 {
                     Output.WriteLine("\t<div id=\"sbkIsw_Wordmarks\">");
@@ -1195,9 +1507,16 @@ namespace SobekCM.Library.HTML
                         urlOptions2 = "&" + url_options;
                     }
 
-                    foreach (BriefItem_Wordmark thisIcon in currentItem.Behaviors.Wordmarks)
+                    // Step through each wordmark mentioned in the brief item
+                    foreach (string thisIcon in currentItem.Behaviors.Wordmarks)
                     {
-                        Output.WriteLine("\t\t" + thisIcon.HTML.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2));
+                        // Look for a match in the dictionary
+                        if (UI_ApplicationCache_Gateway.Icon_List.ContainsKey(thisIcon))
+                        {
+                            Wordmark_Icon wordmarkInfo = UI_ApplicationCache_Gateway.Icon_List[thisIcon];
+
+                            Output.WriteLine("\t\t" + wordmarkInfo.HTML.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2));
+                        }
                     }
 
                     Output.WriteLine("\t</div>");
@@ -1221,21 +1540,21 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("<section id=\"main-content\" role=\"main\">");
             if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode))
             {
-                if (pageViewer != null && pageViewer.Viewer_Height > 0)
-                    Output.WriteLine("<table id=\"sbkIsw_DocumentNonWindowed\" style=\"height:" + pageViewer.Viewer_Height + "px;\" >");
-                else
+                //if (pageViewer != null && pageViewer.Viewer_Height > 0)
+                //    Output.WriteLine("<table id=\"sbkIsw_DocumentNonWindowed\" style=\"height:" + pageViewer.Viewer_Height + "px;\" >");
+                //else
                     Output.WriteLine("<table id=\"sbkIsw_DocumentNonWindowed\" >");
             }
             else
             {
-                if ((pageViewer == null) || (pageViewer.Viewer_Width < 0))
-                {
+                //if ((pageViewer == null) || (pageViewer.Viewer_Width < 0))
+                //{
                     Output.WriteLine("<table id=\"sbkIsw_DocumentDisplay2\" >");
-                }
-                else
-                {
-                    Output.WriteLine("<table id=\"sbkIsw_DocumentDisplay\" style=\"width:" + pageViewer.Viewer_Width + "px;\" >");
-                }
+                //}
+                //else
+                //{
+                //    Output.WriteLine("<table id=\"sbkIsw_DocumentDisplay\" style=\"width:" + pageViewer.Viewer_Width + "px;\" >");
+                //}
 
                 // In this format, add the DARK and RESTRICTED information
                 if (currentItem.Behaviors.Dark_Flag)
@@ -1519,10 +1838,10 @@ namespace SobekCM.Library.HTML
             Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Closing", "Close the item viewer and add final pagination");
 
             // If this is the page turner viewer, don't draw anything else
-            if ((pageViewer != null) && (pageViewer.ItemViewer_Type == ItemViewer_Type_Enum.GnuBooks_PageTurner))
-            {
-                return;
-            }
+            //if ((pageViewer != null) && (pageViewer.ItemViewer_Type == ItemViewer_Type_Enum.GnuBooks_PageTurner))
+            //{
+            //    return;
+            //}
 
 
             Output.WriteLine("\t</tr>");
@@ -1552,10 +1871,10 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("\t</tr>");
             }
 
-            if (pageViewer != null && ((currentItem.Behaviors.Single_Use) && (pageViewer.ItemViewer_Type != ItemViewer_Type_Enum.Checked_Out)))
-            {
-                Output.WriteLine("<tr><td><span id=\"sbkIsw_CheckOutRequired\">This item contains copyrighted material and is reserved for single (fair) use.  Once you finish working with this item,<br />it will return to the digital stacks in fifteen minutes for another patron to use.<br /><br /></span></td></tr>");
-            }
+            //if (pageViewer != null && ((currentItem.Behaviors.Single_Use) && (pageViewer.ItemViewer_Type != ItemViewer_Type_Enum.Checked_Out)))
+            //{
+            //    Output.WriteLine("<tr><td><span id=\"sbkIsw_CheckOutRequired\">This item contains copyrighted material and is reserved for single (fair) use.  Once you finish working with this item,<br />it will return to the digital stacks in fifteen minutes for another patron to use.<br /><br /></span></td></tr>");
+            //}
             Output.WriteLine("</table>");
             Output.WriteLine("</section>");
 
@@ -1648,7 +1967,7 @@ namespace SobekCM.Library.HTML
             // Add a thumbnail to this item
             if ((currentItem != null) && (currentItem.Behaviors.Main_Thumbnail.Length > 0))
             {
-                string image_src = UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + "/" + currentItem.Web.AssocFilePath + "/" + currentItem.Behaviors.Main_Thumbnail;
+                string image_src = currentItem.Web.Source_URL + "/" + currentItem.Behaviors.Main_Thumbnail;
 
                 Output.WriteLine("  <link rel=\"image_src\" href=\"" + image_src.Replace("\\", "/").Replace("//", "/").Replace("http:/", "http://") + "\" />");
             }
@@ -1793,15 +2112,14 @@ namespace SobekCM.Library.HTML
             List<TreeNode> nodes = new List<TreeNode>();
             List<TreeNode> selectedNodes = new List<TreeNode>();
 
-            int sequence = 0;
-            foreach (abstract_TreeNode absNode in currentItem.Divisions.Physical_Tree.Roots)
+            //int sequence = 0;
+            foreach (BriefItem_TocElement divNode in currentItem.Images_TOC)
             {
-                Division_TreeNode divNode = (Division_TreeNode)absNode;
-                TreeNode treeViewNode = new TreeNode { Text = string.Format("<span class=\"sbkIsw_TocTreeViewItem\" Title=\"{0}\">{1}</span>", divNode.Display_Label, divNode.Display_Short_Label) };
+                TreeNode treeViewNode = new TreeNode { Text = string.Format("<span class=\"sbkIsw_TocTreeViewItem\" Title=\"{0}\">{1}</span>", divNode.Name, divNode.Shortened_Name) };
                 TreeViewArg.Nodes.Add(treeViewNode);
                 nodes.Add(treeViewNode);
-                List<TreeNode> pathNodes = new List<TreeNode> { treeViewNode };
-                recurse_through_tree(divNode, treeViewNode, nodes, selectedNodes, pathNodes, ref sequence);
+               // List<TreeNode> pathNodes = new List<TreeNode> { treeViewNode };
+               // recurse_through_tree(divNode, treeViewNode, nodes, selectedNodes, pathNodes, ref sequence);
             }
 
             foreach (TreeNode selectedNode in selectedNodes)
@@ -1816,46 +2134,46 @@ namespace SobekCM.Library.HTML
             }
         }
 
-        private void recurse_through_tree(Division_TreeNode ParentNode, TreeNode ParentViewNode, List<TreeNode> Nodes, List<TreeNode> SelectedNodes, List<TreeNode> PathNodes, ref int Sequence)
-        {
-            foreach (abstract_TreeNode absNode in ParentNode.Nodes)
-            {
-                if (absNode.Page)
-                {
-                    Sequence++;
+        //private void recurse_through_tree(BriefItem_TocElement ParentNode, TreeNode ParentViewNode, List<TreeNode> Nodes, List<TreeNode> SelectedNodes, List<TreeNode> PathNodes, ref int Sequence)
+        //{
+        //    foreach (abstract_TreeNode absNode in ParentNode.Nodes)
+        //    {
+        //        if (absNode.Page)
+        //        {
+        //            Sequence++;
 
-                    foreach (TreeNode thisNode in Nodes)
-                    {
-                        thisNode.Value = Sequence.ToString();
-                    }
-                    if (Sequence >= RequestSpecificValues.Current_Mode.Page)
-                    {
-                        if (!tocSelectedComplete)
-                        {
-                            SelectedNodes.AddRange(PathNodes);
-                            tocSelectedComplete = true;
-                        }
-                        else
-                        {
-                            if (Sequence == RequestSpecificValues.Current_Mode.Page)
-                            {
-                                SelectedNodes.AddRange(PathNodes);
-                            }
-                        }
-                    }
-                    Nodes.Clear();
-                }
-                else
-                {
-                    Division_TreeNode divNode = (Division_TreeNode)absNode;
-                    TreeNode treeViewNode = new TreeNode { Text = string.Format("<span class=\"SobekTocTreeViewItem\" Title='{0}'>{1}</span>", divNode.Display_Label, divNode.Display_Short_Label) };
-                    ParentViewNode.ChildNodes.Add(treeViewNode);
-                    Nodes.Add(treeViewNode);
-                    List<TreeNode> pathNodes2 = new List<TreeNode> { treeViewNode };
-                    recurse_through_tree(divNode, treeViewNode, Nodes, SelectedNodes, pathNodes2, ref Sequence);
-                }
-            }
-        }
+        //            foreach (TreeNode thisNode in Nodes)
+        //            {
+        //                thisNode.Value = Sequence.ToString();
+        //            }
+        //            if (Sequence >= RequestSpecificValues.Current_Mode.Page)
+        //            {
+        //                if (!tocSelectedComplete)
+        //                {
+        //                    SelectedNodes.AddRange(PathNodes);
+        //                    tocSelectedComplete = true;
+        //                }
+        //                else
+        //                {
+        //                    if (Sequence == RequestSpecificValues.Current_Mode.Page)
+        //                    {
+        //                        SelectedNodes.AddRange(PathNodes);
+        //                    }
+        //                }
+        //            }
+        //            Nodes.Clear();
+        //        }
+        //        else
+        //        {
+        //            Division_TreeNode divNode = (Division_TreeNode)absNode;
+        //            TreeNode treeViewNode = new TreeNode { Text = string.Format("<span class=\"SobekTocTreeViewItem\" Title='{0}'>{1}</span>", divNode.Display_Label, divNode.Display_Short_Label) };
+        //            ParentViewNode.ChildNodes.Add(treeViewNode);
+        //            Nodes.Add(treeViewNode);
+        //            List<TreeNode> pathNodes2 = new List<TreeNode> { treeViewNode };
+        //            recurse_through_tree(divNode, treeViewNode, Nodes, SelectedNodes, pathNodes2, ref Sequence);
+        //        }
+        //    }
+        //}
 
         #endregion
     }

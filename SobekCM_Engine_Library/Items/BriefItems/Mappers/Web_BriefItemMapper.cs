@@ -49,6 +49,32 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 }
             }
 
+            // Set the additional link to show under the title, in the title box
+            if ((Original.Bib_Info.hasLocationInformation) && (Original.Bib_Info.Location.Other_URL.Length > 0))
+            {
+                // Exclude YOUTUBE urls
+                if (Original.Bib_Info.Location.Other_URL.ToLower().IndexOf("www.youtube.com") < 0)
+                {
+                    // Determine the type of link
+                    New.Web.Title_Box_Additional_Link_Type = "Related Link";
+                    if ( !String.IsNullOrEmpty(Original.Bib_Info.Location.Other_URL_Display_Label))
+                    {
+                        New.Web.Title_Box_Additional_Link_Type = Original.Bib_Info.Location.Other_URL_Display_Label;
+                    }
+
+
+                    // Determine the display value
+                    string note = Original.Bib_Info.Location.Other_URL;
+                    if (Original.Bib_Info.Location.Other_URL_Note.Length > 0)
+                    {
+                        note = Original.Bib_Info.Location.Other_URL_Note;
+                    }
+
+                    // Add the link
+                    New.Web.Title_Box_Additional_Link = "<a href=\"" + Original.Bib_Info.Location.Other_URL + "\">" + note + "</a>";
+                }
+            }
+
             return true;
         }
 

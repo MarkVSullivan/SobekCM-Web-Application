@@ -141,13 +141,36 @@ namespace SobekCM.Engine_Library.Endpoints
         }
 
 
-        /// <summary> Gets the information about a single digital resource </summary>
+        /// <summary> Gets the information about a single digital resource, using the STANDARD mapping set </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
         /// <param name="Protocol"></param>
         /// <param name="IsDebug"></param>
-        public void GetItemBrief(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        public void GetItemBriefStandard(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            brief_item_response("standard", Response, UrlSegments, QueryString, Protocol, IsDebug );
+        }
+
+        /// <summary> Gets the information about a single digital resource, using the STANDARD mapping set </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetItemBriefInternal(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            brief_item_response("internal", Response, UrlSegments, QueryString, Protocol, IsDebug);
+        }
+
+        /// <summary> Gets the information about a single digital resource, using the indicated mapping set </summary>
+        /// <param name="Mapping"> Mapping set to use </param>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        protected void brief_item_response(string Mapping, HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
         {
             // Must at least have one URL segment for the BibID
             if (UrlSegments.Count > 0)
@@ -160,12 +183,12 @@ namespace SobekCM.Engine_Library.Endpoints
                     string bibid = UrlSegments[0];
                     string vid = (UrlSegments.Count > 1) ? UrlSegments[1] : "00001";
 
-                    tracer.Add_Trace("ItemServices.GetItemBrief", "Requested brief item info for " + bibid + ":" + vid);
+                    tracer.Add_Trace("ItemServices.GetItemBrief", "Requested brief item info for " + bibid + ":" + vid + " using " + Mapping + " mapping");
 
                     if ((vid.Length > 0) && (vid != "00000"))
                     {
-                        tracer.Add_Trace("ItemServices.GetItemBrief", "Build full brief item");
-                        BriefItemInfo returnValue = GetBriefItem(bibid, vid, null, tracer);
+                        tracer.Add_Trace("ItemServices.GetItemBrief", "Build full brief item using " + Mapping + " mapping");
+                        BriefItemInfo returnValue = GetBriefItem(bibid, vid, Mapping, tracer);
 
                         // Was the item null?
                         if (returnValue == null)

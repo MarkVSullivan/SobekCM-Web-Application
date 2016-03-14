@@ -89,6 +89,7 @@
     <Compile Include="BriefItem\BriefItem_Coordinate_Line.cs" />
     <Compile Include="BriefItem\BriefItem_Coordinate_Point.cs" />
     <Compile Include="BriefItem\BriefItem_Coordinate_Polygon.cs" />
+    <Compile Include="BriefItem\BriefItem_UserTag.cs" />
     <Compile Include="BriefItem\BriefItem_DescriptiveTerm.cs" />
     <Compile Include="BriefItem\BriefItem_DescTermValue.cs" />
     <Compile Include="BriefItem\BriefItem_ExtensionData.cs" />
@@ -99,7 +100,6 @@
     <Compile Include="BriefItem\BriefItem_Related_Titles.cs" />
     <Compile Include="BriefItem\BriefItem_TocElement.cs" />
     <Compile Include="BriefItem\BriefItem_Web.cs" />
-    <Compile Include="BriefItem\BriefItem_Wordmark.cs" />
     <Compile Include="BriefItem\IBriefItemMapper.cs" />
     <Compile Include="Builder\Builder_Scheduled_Task_Execution_History.cs" />
     <Compile Include="Builder\Builder_Scheduled_Task_Status.cs" />

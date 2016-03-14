@@ -103,6 +103,7 @@
     <Compile Include="Items\BriefItems\Mappers\GeoSpatial_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Holding_Location_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Identifiers_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\Mappers\InternalComments_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\InternalVarious_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Languages_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\LearningObjectMetadata_BriefItemMapper.cs" />
@@ -123,6 +124,7 @@
     <Compile Include="Items\BriefItems\Mappers\Temporal_Coverage_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Thesis_Dissertation_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Titles_BriefItemMapper.cs" />
+    <Compile Include="Items\BriefItems\Mappers\User_Tags_Internal_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\User_Tags_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\VRACore_BriefItemMapper.cs" />
     <Compile Include="Items\BriefItems\Mappers\Web_BriefItemMapper.cs" />

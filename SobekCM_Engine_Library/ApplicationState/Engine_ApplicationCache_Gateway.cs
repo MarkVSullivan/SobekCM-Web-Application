@@ -950,7 +950,7 @@ namespace SobekCM.Engine_Library.ApplicationState
                 lock (iconListLock)
                 {
                     if (iconList == null)
-                        iconList = new Dictionary<string, Wordmark_Icon>();
+                        iconList = new Dictionary<string, Wordmark_Icon>(StringComparer.OrdinalIgnoreCase);
 
                     Engine_Database.Populate_Icon_List(iconList, null);
                 }
@@ -972,7 +972,7 @@ namespace SobekCM.Engine_Library.ApplicationState
                 {
                     if (iconList == null)
                     {
-                        iconList = new Dictionary<string, Wordmark_Icon>();
+                        iconList = new Dictionary<string, Wordmark_Icon>(StringComparer.OrdinalIgnoreCase);
                         Engine_Database.Populate_Icon_List(iconList, null);
                     }
 

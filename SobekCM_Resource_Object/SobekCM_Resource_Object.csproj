@@ -156,9 +156,7 @@
     </Compile>
     <Compile Include="Builder\Bib_Package_Builder.cs" />
     <Compile Include="Configuration\ResourceObjectSettings.cs" />
-    <Compile Include="Database\DataSets\SobekCM_All_Items.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Database\DataSets\SobekCM_All_Items.cs" />
     <Compile Include="Event_Delegates.cs" />
     <Compile Include="Generic_Reader.cs" />
     <Compile Include="Configuration\Additional_Metadata_Module_Config.cs" />
@@ -366,9 +364,7 @@
     <Compile Include="Metadata_Modules\Maps\Map_Info.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Metadata_Modules\Maps\Map_Info_Tables.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Metadata_Modules\Maps\Map_Info_Tables.cs" />
     <Compile Include="Metadata_Modules\Maps\Map_Person.cs">
       <SubType>Code</SubType>
     </Compile>
