@@ -26,9 +26,14 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             {
                 foreach (Identifier_Info thisIdentifier in Original.Bib_Info.Identifiers)
                 {
+                    // Add this identifier
                     if (!String.IsNullOrWhiteSpace(thisIdentifier.Type))
                     {
                         New.Add_Description("Resource Identifier", thisIdentifier.Identifier).Authority = thisIdentifier.Type;
+
+                        // Special code for accession number
+                        if (thisIdentifier.Type.IndexOf("ACCESSION", StringComparison.OrdinalIgnoreCase) >= 0)
+                            New.Add_Description("Accession Number", thisIdentifier.Identifier).Authority = thisIdentifier.Type;
                     }
                     else
                     {
@@ -36,6 +41,8 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                     }
                 }
             }
+
+
 
             return true;
         }

@@ -88,6 +88,13 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(12)] 
         public bool Single_Use { get; set; }
 
+        /// <summary> List of viewers attached to this item </summary>
+        [DataMember(EmitDefaultValue = false, Name = "wordmarks")]
+        [XmlArray("wordmarks")]
+        [XmlArrayItem("wordmark", typeof(BriefItem_Wordmark))]
+        [ProtoMember(13)]
+        public List<BriefItem_Wordmark> Wordmarks { get; set; }
+
         /// <summary> Constructor for a new instance of the BriefItem_Behaviors class </summary>
         public BriefItem_Behaviors()
         {
@@ -129,6 +136,30 @@ namespace SobekCM.Core.BriefItem
 
             // Return the match
             return viewerTypeToConfig[ViewerType];
+        }
+
+        /// <summary> Add a single workdmark to these behaviors </summary>
+        /// <param name="Code"> Code for this new wordmark, which links back to the collection of wordmarks </param>
+        /// <param name="Title"> Title for this new wordmark </param>
+        /// <param name="HTML"> HTML for this new wordmark </param>
+        /// <param name="Link"> Link for this new wordmark </param>
+        public void Add_Wordmark( string Code, string Title, string HTML, string Link )
+        {
+            // Make sure the collection is built
+            if (Wordmarks == null)
+                Wordmarks = new List<BriefItem_Wordmark>();
+
+            // Build the new wordmark
+            BriefItem_Wordmark newWordmark = new BriefItem_Wordmark
+            {
+                Code = Code, 
+                Title = Title, 
+                HTML = HTML, 
+                Link = Link
+            };
+
+            // Add this wordmark
+            Wordmarks.Add(newWordmark);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Behaviors;
 
 namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 {
@@ -31,7 +32,24 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             New.Behaviors.Single_Use = Original.Behaviors.CheckOut_Required;
 
             // Copy over the viewers
-            
+            New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer("CITATION", 1, false));
+            New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer("PDF", 1, false));
+            New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer("JPEG", 1, false));
+            New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer("JPEG2000", 1, false));
+            New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer("RELATED_IMAGES", 1, false));
+            New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer("MANAGE_MENU", 1, false));
+            New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer("MARC", 1, false));
+            New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer("METADATA", 1, false));
+
+            // Copy over the wordmarks
+            if (Original.Behaviors.Wordmark_Count > 0)
+            {
+                foreach (Wordmark_Info origWordmark in Original.Behaviors.Wordmarks)
+                {
+                    New.Behaviors.Add_Wordmark(origWordmark.Code, origWordmark.Title, origWordmark.HTML, origWordmark.Link );
+                }
+            }
+
 
             return true;
         }

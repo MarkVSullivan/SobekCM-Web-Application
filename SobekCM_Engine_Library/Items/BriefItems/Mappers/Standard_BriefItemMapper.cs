@@ -19,7 +19,25 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
         /// <returns> TRUE if successful, FALSE if an exception is encountered </returns>
         public bool MapToBriefItem(SobekCM_Item Original, BriefItemInfo New)
         {
-
+            // Create the main title for this, which includes the non-sort value
+            string final_title = Original.Bib_Info.Main_Title.Title;
+            if (Original.Bib_Info.Main_Title.NonSort.Length > 0)
+            {
+                if (Original.Bib_Info.Main_Title.NonSort[Original.Bib_Info.Main_Title.NonSort.Length - 1] == ' ')
+                    final_title = Original.Bib_Info.Main_Title.NonSort + Original.Bib_Info.Main_Title.Title;
+                else
+                {
+                    if (Original.Bib_Info.Main_Title.NonSort[Original.Bib_Info.Main_Title.NonSort.Length - 1] == '\'')
+                    {
+                        final_title = Original.Bib_Info.Main_Title.NonSort + Original.Bib_Info.Main_Title.Title;
+                    }
+                    else
+                    {
+                        final_title = Original.Bib_Info.Main_Title.NonSort + " " + Original.Bib_Info.Main_Title.Title;
+                    }
+                }
+            }
+            New.Title = final_title;
 
             return true;
         }

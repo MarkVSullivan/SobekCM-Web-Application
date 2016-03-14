@@ -58,6 +58,12 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(7)]
         public string Date { get; set; }
 
+        /// <summary> Internal comments linked to this item </summary>
+        [DataMember(EmitDefaultValue = false, Name = "internalComments")]
+        [XmlElement("internalComments")]
+        [ProtoMember(8)]
+        public string Internal_Comments { get; set; }
+
         /// <summary> Add a related title to this web information </summary>
         /// <param name="Relationship"> Relationship between the main title and the related title</param>
         /// <param name="Title"> Title of the related title within this SobekCM library</param>

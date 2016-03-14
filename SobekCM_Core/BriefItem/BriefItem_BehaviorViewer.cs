@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using System.Web.UI.WebControls;
 using System.Xml.Serialization;
 using ProtoBuf;
 
@@ -10,6 +11,23 @@ namespace SobekCM.Core.BriefItem
     [XmlRoot("behaviors")]
     public class BriefItem_BehaviorViewer
     {
+        /// <summary> Constructor for a new instance of the BriefItem_BehaviorViewer class </summary>
+        public BriefItem_BehaviorViewer()
+        {
+            // Empty constructor
+        }
+
+        /// <summary> Constructor for a new instance of the BriefItem_BehaviorViewer class </summary>
+        /// <param name="ViewerType"> Name of this viewer type, from the database </param>
+        /// <param name="Order"> Order of this viewer within the context of other viewers </param>
+        /// <param name="Excluded"> Flag indicates if this viewer is explicitly excluded from this digital resource </param>
+        public BriefItem_BehaviorViewer(string ViewerType, int Order, bool Excluded )
+        {
+            this.ViewerType = ViewerType;
+            this.Order = Order;
+            this.Excluded = Excluded;
+        }
+
         /// <summary> Name of this viewer type, from the database </summary>
         [DataMember(Name = "type")]
         [XmlAttribute("type")]
