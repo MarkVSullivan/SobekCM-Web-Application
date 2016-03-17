@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Xml;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration;
@@ -21,6 +22,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems
     /// from the METS file </summary>
     public static class BriefItem_Factory
     {
+        private static Dictionary<string, List<IBriefItemMapper>> mappingSets;
+        private static Dictionary<string, IBriefItemMapper> mappingObjDictionary;
+
+
         /// <summary> Create the BriefItemInfo from a full METS-based SobekCM_Item object,
         /// using the default mapping set </summary>
         /// <param name="Original"> Original METS-based object to use </param>
@@ -41,25 +46,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
         public static BriefItemInfo Create(SobekCM_Item Original, string MappingSetId, Custom_Tracer Tracer )
         {
             // Try to get the brief mapping set
-            BriefItemMapping_Set mappingSet = Engine_ApplicationCache_Gateway.Configuration.BriefItemMapping.GetMappingSet(MappingSetId);
-
-            // Ensure the mapping set exists
-            if (mappingSet ==  null)
-            {
-                Tracer.Add_Trace("BriefItem_Factory.Create", "Requested MappingSetID '" + MappingSetId + "' not found.  Will use default set instead.");
-
-                // Just try to use the default
-                MappingSetId = Engine_ApplicationCache_Gateway.Configuration.BriefItemMapping.DefaultSetName;
-                mappingSet = Engine_ApplicationCache_Gateway.Configuration.BriefItemMapping.GetMappingSet(MappingSetId);
-
-                // Determine the mapping set
-                if (mappingSet == null )
-                {
-                    Tracer.Add_Trace("BriefItem_Factory.Create", "Default mapping set is not present either.");
-                }
-
-                return null;
-            }
+            List<IBriefItemMapper> mappingSet = get_mapping_set(MappingSetId);
 
             // Create the mostly empty new brief item
             Tracer.Add_Trace("BriefItem_Factory.Create", "Create the mostly empty new brief item");
@@ -72,7 +59,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
 
             // Build the new item using the selected mapping set
             Tracer.Add_Trace("BriefItem_Factory.Create", "Use the set of mappers to map data to the brief item");
-            foreach (IBriefItemMapper thisMapper in mappingSet.Mappings)
+            foreach (IBriefItemMapper thisMapper in mappingSet)
             {
                 Tracer.Add_Trace("BriefItem_Factory.Create", "...." + thisMapper.GetType().ToString().Replace("SobekCM.Engine_Library.Items.BriefItems.Mappers.",""));
                 thisMapper.MapToBriefItem(Original, newItem);
@@ -81,13 +68,17 @@ namespace SobekCM.Engine_Library.Items.BriefItems
             return newItem;
         }
 
-        private static IBriefItemMapper get_or_create_mapper(string MapperAssembly, string MapperClass, Dictionary<string, IBriefItemMapper> MappingObjDictionary, out string ErrorMessage)
+        private static IBriefItemMapper get_or_create_mapper(string MapperAssembly, string MapperClass, out string ErrorMessage)
         {
             ErrorMessage = String.Empty;
 
+            // Ensure this is built
+            if (mappingObjDictionary == null)
+                mappingObjDictionary = new Dictionary<string, IBriefItemMapper>();
+
             // Was this already created (for a different mapping set)?
-            if (MappingObjDictionary.ContainsKey(MapperAssembly + "." + MapperClass))
-                return MappingObjDictionary[MapperAssembly + "." + MapperClass];
+            if (mappingObjDictionary.ContainsKey(MapperAssembly + "." + MapperClass))
+                return mappingObjDictionary[MapperAssembly + "." + MapperClass];
 
             // Look for the standard classes, just to avoid having to use reflection
             // for these that are built right into the system
@@ -265,7 +256,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                 if (thisModule != null)
                 {
                     // Add to the dictionary to avoid looking this up again
-                    MappingObjDictionary[MapperAssembly + "." + MapperClass] = thisModule;
+                    mappingObjDictionary[MapperAssembly + "." + MapperClass] = thisModule;
 
                     // Return this standard IBriefItemMapper
                     return thisModule;
@@ -290,11 +281,57 @@ namespace SobekCM.Engine_Library.Items.BriefItems
 
 
             // Add to the dictionary to avoid looking this up again
-            MappingObjDictionary[MapperAssembly + "." + MapperClass] = itemAsItem;
+            mappingObjDictionary[MapperAssembly + "." + MapperClass] = itemAsItem;
 
             // Return this custom IBriefItemMapper
             return itemAsItem;
         }
+
+        /// <summary> Clears the built instances of the mapping objects here, which forces the mappers
+        /// to be rebuilt the next time it is called </summary>
+        public static void Clear()
+        {
+            if (mappingSets != null) mappingSets.Clear();
+            mappingSets = null;
+            if (mappingObjDictionary != null) mappingObjDictionary.Clear();
+            mappingObjDictionary = null;
+        }
+
+        private static List<IBriefItemMapper> get_mapping_set(string mappingSet)
+        {
+            // First, look in the dictionary, if it exists
+            if ((mappingSets != null) && (mappingSets.ContainsKey(mappingSet)))
+                return mappingSets[mappingSet];
+
+            // Ensure the dictionary exists
+            if (mappingSets == null)
+                mappingSets = new Dictionary<string, List<IBriefItemMapper>>(StringComparer.OrdinalIgnoreCase);
+
+            // Is this a valid mapping set id?
+            BriefItemMapping_Set set = Engine_ApplicationCache_Gateway.Configuration.BriefItemMapping.GetMappingSet(mappingSet);
+            if (set == null)
+                return null;
+
+            // build error messages
+            StringBuilder errormessages = new StringBuilder();
+
+            // Build this return list
+            List<IBriefItemMapper> returnValue = new List<IBriefItemMapper>();
+            foreach (BriefItemMapping_Mapper mappingConfig in set.Mappings)
+            {
+                // Build the mapper
+                string errorMessage;
+                IBriefItemMapper mapper = get_or_create_mapper(mappingConfig.Assembly, mappingConfig.Class, out errorMessage);
+                if ( mapper != null )
+                    returnValue.Add(mapper);
+            }
+
+            // Now, set to the dictionary
+            mappingSets[mappingSet] = returnValue;
+
+            // Return
+            return returnValue;
+        } 
 
         private static object Get_Mapper(string MapperAssembly, string MapperClass, out string ErrorMessage)
         {

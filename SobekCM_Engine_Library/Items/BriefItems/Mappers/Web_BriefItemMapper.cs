@@ -20,6 +20,9 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
         /// <returns> TRUE if successful, FALSE if an exception is encountered </returns>
         public bool MapToBriefItem(SobekCM_Item Original, BriefItemInfo New)
         {
+            if (New.Web == null)
+                New.Web = new BriefItem_Web();
+
             // Set the primary date
             string date = Original.Bib_Info.Origin_Info.Date_Created;
             if (String.IsNullOrEmpty(Original.Bib_Info.Origin_Info.Date_Created))

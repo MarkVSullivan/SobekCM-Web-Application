@@ -82,6 +82,9 @@ namespace SobekCM.Library.ItemViewer
 
                     // Also add this to the menu order sorted list
                     menuOrderSort[menuOrder] = viewer.ViewerType;
+
+                    // Also add this to the dictionary for lookup
+                    BriefItem.UI.Add_Viewer_Code(protoTyper.ViewerCode, protoTyper.ViewerType);
                 }
             }
 

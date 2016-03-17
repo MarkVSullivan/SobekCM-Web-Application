@@ -366,14 +366,16 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Created " + pageViewer.GetType().ToString().Replace("SobekCM.Library.ItemViewer.Viewers.", ""));
 
             // Assign the rest of the information, if a page viewer was created
+            behaviors = new List<HtmlSubwriter_Behaviors_Enum>();
             if (pageViewer != null)
             {
                 // Get the list of any special behaviors
-                behaviors = pageViewer.ItemViewer_Behaviors;
+                pageViewerBehaviors = pageViewer.ItemViewer_Behaviors;
+                behaviors.AddRange(pageViewerBehaviors);
             }
             else
             {
-                behaviors = new List<HtmlSubwriter_Behaviors_Enum>();
+                pageViewerBehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
             }
 
             // ALways suppress the banner and skip to main content
@@ -1292,8 +1294,6 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Opening", "Start the left navigational bar");
 
-            Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Opening", "Start the left navigational bar");
-
             // Add the divs for loading the pop-up forms
             Output.WriteLine("<!-- Place holders for pop-up forms which load dynamically if required -->");
             Output.WriteLine("<div class=\"print_popup_div\" id=\"form_print\" style=\"display:none;\"></div>");
@@ -1895,7 +1895,7 @@ namespace SobekCM.Library.HTML
                 pageViewer.Write_Within_HTML_Head(Output, Tracer);
 
             // Add a thumbnail to this item
-            if ((currentItem != null) && (currentItem.Behaviors.Main_Thumbnail.Length > 0))
+            if ((currentItem != null) && ( !String.IsNullOrEmpty(currentItem.Behaviors.Main_Thumbnail)))
             {
                 string image_src = currentItem.Web.Source_URL + "/" + currentItem.Behaviors.Main_Thumbnail;
 

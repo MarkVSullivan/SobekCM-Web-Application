@@ -31,6 +31,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             New.Behaviors.GroupType = Original.Behaviors.GroupType;
             New.Behaviors.IP_Restriction_Membership = Original.Behaviors.IP_Restriction_Membership;
             New.Behaviors.Single_Use = Original.Behaviors.CheckOut_Required;
+            New.Behaviors.Main_Thumbnail = Original.Behaviors.Main_Thumbnail;
 
             // Copy over the viewers
             foreach (View_Object origView in Original.Behaviors.Views)

@@ -114,7 +114,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Behaviors = EmptyBehaviors;
 
             // Check to see if the user can edit this
-            userCanEdit = CurrentUser.Can_Edit_This_Item(BriefItem.BibID, BriefItem.Type, BriefItem.Behaviors.Source_Institution_Aggregation, BriefItem.Behaviors.Holding_Location_Aggregation, BriefItem.Behaviors.Aggregation_Code_List);
+            userCanEdit = false;
+            if ( CurrentUser != null )
+                userCanEdit = CurrentUser.Can_Edit_This_Item(BriefItem.BibID, BriefItem.Type, BriefItem.Behaviors.Source_Institution_Aggregation, BriefItem.Behaviors.Holding_Location_Aggregation, BriefItem.Behaviors.Aggregation_Code_List);
         }
 
         /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
@@ -134,19 +136,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("Citation_Standard_ItemViewer.Write_Main_Viewer_Section", "Write the citation information directly to the output stream");
             }
 
-            // Determine if user can edit
-            bool userCanEditItem = false;
-            if (CurrentUser != null)
-            {
-                userCanEditItem = CurrentUser.Can_Edit_This_Item(BriefItem.BibID, BriefItem.Type, BriefItem.Behaviors.Source_Institution_Aggregation, BriefItem.Behaviors.Holding_Location_Aggregation, BriefItem.Behaviors.Aggregation_Code_List);
-            }
 
             // Add the HTML for the citation
             Output.WriteLine("        <!-- CITATION ITEM VIEWER OUTPUT -->");
             Output.WriteLine("        <td>");
 
             // If this is DARK and the user cannot edit and the flag is not set to show citation, show nothing here
-            if ((BriefItem.Behaviors.Dark_Flag) && (!userCanEditItem) && (!UI_ApplicationCache_Gateway.Settings.Resources.Show_Citation_For_Dark_Items))
+            if ((BriefItem.Behaviors.Dark_Flag) && (!userCanEdit) && (!UI_ApplicationCache_Gateway.Settings.Resources.Show_Citation_For_Dark_Items))
             {
                 Output.WriteLine("          <div id=\"darkItemSuppressCitationMsg\">This item is DARK and cannot be viewed at this time</div>" + Environment.NewLine + "</td>" + Environment.NewLine + "  <!-- END CITATION VIEWER OUTPUT -->");
                 return;
