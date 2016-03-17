@@ -7,6 +7,8 @@ using System.Linq;
 using System.Reflection;
 using System.Xml;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.Configuration;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Items.BriefItems.Mappers;
 using SobekCM.Resource_Object;
 using SobekCM.Tools;
@@ -19,17 +21,6 @@ namespace SobekCM.Engine_Library.Items.BriefItems
     /// from the METS file </summary>
     public static class BriefItem_Factory
     {
-        private static string defaultSetId;
-        private static readonly Dictionary<string, List<IBriefItemMapper>> mappingSets;
-
-
-        /// <summary> Static constructor for the BriefItem_Factory static class </summary>
-        static BriefItem_Factory()
-        {
-            // Create the mapping set dictionary
-            mappingSets = new Dictionary<string, List<IBriefItemMapper>>( StringComparer.OrdinalIgnoreCase );
-        }
-
         /// <summary> Create the BriefItemInfo from a full METS-based SobekCM_Item object,
         /// using the default mapping set </summary>
         /// <param name="Original"> Original METS-based object to use </param>
@@ -38,40 +29,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
         public static BriefItemInfo Create(SobekCM_Item Original, Custom_Tracer Tracer)
         {
             // Determine the mapping set
-            string mappingSet = defaultSetId;
-            if (((String.IsNullOrEmpty(mappingSet)) || ( !mappingSets.ContainsKey(mappingSet))) && ( mappingSets.Count > 0 ))
-            {
-                Tracer.Add_Trace("BriefItem_Factory.Create", "Default mapping set is not present.  Will use (arbitrarily) first set instead.");
-
-                mappingSet = mappingSets.Keys.First();
-            }
-
-            // If still no mapping set, return NULL
-            if ((String.IsNullOrEmpty(mappingSet)) || (!mappingSets.ContainsKey(mappingSet)))
-            {
-                Tracer.Add_Trace("BriefItem_Factory.Create", "No suitable mapping set could be found.  Returning NULL");
-                return null;
-            }
-
-            // Create the mostly empty new brief item
-            Tracer.Add_Trace("BriefItem_Factory.Create", "Create the mostly empty new brief item");
-            BriefItemInfo newItem = new BriefItemInfo
-            {
-                BibID = Original.BibID, 
-                VID = Original.VID, 
-                Title = Original.Bib_Info.Main_Title.Title
-            };
-
-            // Build the new item using the selected mapping set
-            Tracer.Add_Trace("BriefItem_Factory.Create", "Use the set of mappers to map data to the brief item");
-            List<IBriefItemMapper> mappers = mappingSets[mappingSet];
-            foreach (IBriefItemMapper thisMapper in mappers)
-            {
-                Tracer.Add_Trace("BriefItem_Factory.Create", "...." + thisMapper.GetType().ToString().Replace("SobekCM.Engine_Library.Items.BriefItems.Mappers.", ""));
-                thisMapper.MapToBriefItem(Original, newItem);
-            }
-
-            return newItem;
+            return Create(Original, Engine_ApplicationCache_Gateway.Configuration.BriefItemMapping.DefaultSetName, Tracer);
         }
 
         /// <summary> Create the BriefItemInfo from a full METS-based SobekCM_Item object,
@@ -82,28 +40,25 @@ namespace SobekCM.Engine_Library.Items.BriefItems
         /// <returns> Completely built BriefItemInfo object from the METS-based SobekCM_Item object </returns>
         public static BriefItemInfo Create(SobekCM_Item Original, string MappingSetId, Custom_Tracer Tracer )
         {
+            // Try to get the brief mapping set
+            BriefItemMapping_Set mappingSet = Engine_ApplicationCache_Gateway.Configuration.BriefItemMapping.GetMappingSet(MappingSetId);
+
             // Ensure the mapping set exists
-            if (!mappingSets.ContainsKey(MappingSetId))
+            if (mappingSet ==  null)
             {
                 Tracer.Add_Trace("BriefItem_Factory.Create", "Requested MappingSetID '" + MappingSetId + "' not found.  Will use default set instead.");
 
                 // Just try to use the default
-                MappingSetId = defaultSetId;
+                MappingSetId = Engine_ApplicationCache_Gateway.Configuration.BriefItemMapping.DefaultSetName;
+                mappingSet = Engine_ApplicationCache_Gateway.Configuration.BriefItemMapping.GetMappingSet(MappingSetId);
 
                 // Determine the mapping set
-                if (((String.IsNullOrEmpty(MappingSetId)) || (!mappingSets.ContainsKey(MappingSetId))) && (mappingSets.Count > 0))
+                if (mappingSet == null )
                 {
-                    Tracer.Add_Trace("BriefItem_Factory.Create", "Default mapping set is not present either.  Will use (arbitrarily) first set instead.");
-
-                    MappingSetId = mappingSets.Keys.First();
+                    Tracer.Add_Trace("BriefItem_Factory.Create", "Default mapping set is not present either.");
                 }
 
-                // If still no mapping set, return NULL
-                if ((String.IsNullOrEmpty(MappingSetId)) || (!mappingSets.ContainsKey(MappingSetId)))
-                {
-                    Tracer.Add_Trace("BriefItem_Factory.Create", "No suitable mapping set could be found.  Returning NULL");
-                    return null;
-                }
+                return null;
             }
 
             // Create the mostly empty new brief item
@@ -117,152 +72,13 @@ namespace SobekCM.Engine_Library.Items.BriefItems
 
             // Build the new item using the selected mapping set
             Tracer.Add_Trace("BriefItem_Factory.Create", "Use the set of mappers to map data to the brief item");
-            List<IBriefItemMapper> mappers = mappingSets[MappingSetId];
-            foreach (IBriefItemMapper thisMapper in mappers)
+            foreach (IBriefItemMapper thisMapper in mappingSet.Mappings)
             {
                 Tracer.Add_Trace("BriefItem_Factory.Create", "...." + thisMapper.GetType().ToString().Replace("SobekCM.Engine_Library.Items.BriefItems.Mappers.",""));
                 thisMapper.MapToBriefItem(Original, newItem);
             }
 
             return newItem;
-        }
-
-
-        /// <summary> If there was an error while reading the configuration,
-        /// the error will be placed here for displaying later </summary>
-        public static string Read_Config_Error { get; private set; }
-
-        /// <summary> Read the configuration file for the brief item mapping sets </summary>
-        /// <param name="ConfigFile"> Path and name of the configuration file to read </param>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool Read_Config(string ConfigFile)
-        {
-            // Initialize the config error read
-            Read_Config_Error = String.Empty;
-
-            // Streams used for reading
-            Stream readerStream = null;
-            XmlTextReader readerXml = null;
-
-            // During this process, small objects ( IBriefItemMappers ) which contain no data
-            // but implement the mapping method will be created.  This dictionary helps to ensure
-            // each one is created only once.
-            Dictionary<string, IBriefItemMapper> mappingObjDictionary = new Dictionary<string, IBriefItemMapper>();
-
-            try
-            {
-                // Open a link to the file
-                readerStream = new FileStream(ConfigFile, FileMode.Open, FileAccess.Read);
-
-                // Open a XML reader connected to the file
-                readerXml = new XmlTextReader(readerStream);
-
-                while (readerXml.Read())
-                {
-                    if (readerXml.NodeType == XmlNodeType.Element)
-                    {
-                        switch (readerXml.Name.ToLower())
-                        {
-                            case "mappingset":
-                                // Get the ID for this mapping set
-                                string id = String.Empty;
-                                if (readerXml.MoveToAttribute("ID"))
-                                    id = readerXml.Value.Trim();
-
-                                // Was this indicated as the default set?
-                                if (readerXml.MoveToAttribute("Default"))
-                                {
-                                    if (String.Compare(readerXml.Value, "true", StringComparison.OrdinalIgnoreCase) == 0)
-                                    {
-                                        if (id.Length > 0)
-                                            defaultSetId = id;
-                                        else
-                                        {
-                                            defaultSetId = "DEFAULT";
-                                            id = "DEFAULT";
-                                        }
-                                    }
-                                }
-
-                                // Read the set here
-                                readerXml.MoveToElement();
-                                List<IBriefItemMapper> mapSet = read_mappingset_details(readerXml.ReadSubtree(), mappingObjDictionary);
-
-                                // Save in the dictionary of mapping sets
-                                if (id.Length > 0)
-                                {
-                                    mappingSets[id] = mapSet;
-                                }
-                                break;
-                        }
-                    }
-                }
-            }
-            catch (Exception ee)
-            {
-                Read_Config_Error = ee.Message;
-            }
-            finally
-            {
-                if (readerXml != null)
-                {
-                    readerXml.Close();
-                }
-                if (readerStream != null)
-                {
-                    readerStream.Close();
-                }
-            }
-
-            return ( Read_Config_Error.Length == 0 );
-        }
-
-        private static List<IBriefItemMapper> read_mappingset_details(XmlReader ReaderXml, Dictionary<string, IBriefItemMapper> MappingObjDictionary)
-        {
-            // Create the empty return value
-            List<IBriefItemMapper> returnValue = new List<IBriefItemMapper>();
-
-            // Just step through the subtree of this
-            while (ReaderXml.Read())
-            {
-                if (ReaderXml.NodeType == XmlNodeType.Element)
-                {
-                    switch (ReaderXml.Name.ToLower())
-                    {
-                        case "mapper":
-                            // Read all the data for this mapper class
-                            string mapperAssembly = String.Empty;
-                            string mapperClass = String.Empty;
-                            if (ReaderXml.MoveToAttribute("Assembly"))
-                                mapperAssembly = ReaderXml.Value.Trim();
-                            if (ReaderXml.MoveToAttribute("Class"))
-                                mapperClass = ReaderXml.Value.Trim();
-
-                            // Was this enabled?
-                            bool enabled = true;
-                            if (ReaderXml.MoveToAttribute("Default"))
-                            {
-                                if (String.Compare(ReaderXml.Value, "false", StringComparison.OrdinalIgnoreCase) == 0)
-                                {
-                                    enabled = false;
-                                }
-                            }
-
-                            // Add this (if enabled) to the list of mappers
-                            if (enabled)
-                            {
-                                string error;
-                                IBriefItemMapper mapper = get_or_create_mapper(mapperAssembly, mapperClass, MappingObjDictionary, out error );
-                                returnValue.Add(mapper);
-                            }
-
-
-                            break;
-                    }
-                }
-            }
-
-            return returnValue;
         }
 
         private static IBriefItemMapper get_or_create_mapper(string MapperAssembly, string MapperClass, Dictionary<string, IBriefItemMapper> MappingObjDictionary, out string ErrorMessage)

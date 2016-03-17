@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Settings;
@@ -24,6 +25,72 @@ namespace SobekCM.Library.ItemViewer
     {
         private static Dictionary<string, iItemViewerPrototyper> viewerCodeToItemViewerPrototyper;
         private static Dictionary<string, iItemViewerPrototyper> viewTypeToItemViewerPrototyper;
+
+        /// <summary> Configure the viewers for a single brief item to match this user interface settings </summary>
+        /// <param name="BriefItem"> Brief item to adjust selected viewers </param>
+        public static void Configure_Brief_Item_Viewers(BriefItemInfo BriefItem)
+        {
+            // Ensure the necessary dictionaries are built
+            configureItemViewers();
+
+            // If the brief item already has the UI built, skip this
+            if ((BriefItem.UI != null) && (BriefItem.UI.Viewers_By_Priority != null) && (BriefItem.UI.Viewers_Menu_Order != null))
+                return;
+
+            // Now, add the UI object (if null) and set the values
+            if (BriefItem.UI == null) BriefItem.UI = new BriefItem_UI();
+            if (BriefItem.UI.Viewers_By_Priority == null) BriefItem.UI.Viewers_By_Priority = new List<string>();
+            if (BriefItem.UI.Viewers_Menu_Order == null) BriefItem.UI.Viewers_Menu_Order = new List<string>();
+
+            //// Step through each viewer included from the database and build lookup dictionary
+            //Dictionary<string, string> dbViews = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            //foreach (BriefItem_BehaviorViewer viewer in BriefItem.Behaviors.Viewers)
+            //{
+            //    dbViews[viewer.ViewerType] = viewer.ViewerType;
+            //}
+
+            //// Add any viewers that should be added
+
+
+            // Use a sorted list to build the menu order
+            SortedDictionary<float, string> menuOrderSort = new SortedDictionary<float, string>();
+
+            // Step through each viewer included from the database
+            foreach (BriefItem_BehaviorViewer viewer in BriefItem.Behaviors.Viewers)
+            {
+                // If this is an EXCLUDE viewer, just skip it here
+                if (viewer.Excluded)
+                    continue;
+
+                // Verify a match in the UI configuration for the actual item viewers
+                if (!viewTypeToItemViewerPrototyper.ContainsKey(viewer.ViewerType))
+                    continue;
+
+                // Get the item prototype object
+                iItemViewerPrototyper protoTyper = viewTypeToItemViewerPrototyper[viewer.ViewerType];
+
+                // Verify this prototyper believes it should be added
+                if (protoTyper.Include_Viewer(BriefItem))
+                {
+                    // Add this view to the ordained views
+                    BriefItem.UI.Viewers_By_Priority.Add(viewer.ViewerType);
+
+                    // CHeck for collisions on the menu order
+                    float menuOrder = viewer.MenuOrder;
+                    while (menuOrderSort.ContainsKey(menuOrder))
+                        menuOrder = menuOrder + .001f;
+
+                    // Also add this to the menu order sorted list
+                    menuOrderSort[menuOrder] = viewer.ViewerType;
+                }
+            }
+
+            // Add the viewers back in menu order
+            foreach (float thisKey in menuOrderSort.Keys)
+            {
+                BriefItem.UI.Viewers_Menu_Order.Add( menuOrderSort[thisKey]);
+            }
+        }
 
 
         private static void configureItemViewers()
@@ -211,6 +278,20 @@ namespace SobekCM.Library.ItemViewer
                 return viewTypeToItemViewerPrototyper[ViewType];
 
             return null;
+        }
+
+        /// <summary> Gets the appropriate item viewer prototyper ( <see cref="SobekCM.Library.ItemViewer.Viewer.iItemViewerPriority"/> )
+        /// class for an individual item, based on the requested viewer code </summary>
+        /// <param name="CurrentItem">The current item.</param>
+        /// <param name="ViewerCode">The viewer code.</param>
+        /// <returns> Item viewer prototyper class, which can then be used to create the viewer, if applicable </returns>
+        public static iItemViewerPrototyper Get_Item_Viewer(BriefItemInfo CurrentItem, string ViewerCode)
+        {
+            // Get the viewer type from the item
+            string validType = CurrentItem.UI.Get_Viewer_Type(ViewerCode);
+
+            // Now, return this prototype 
+            return Get_Viewer_By_ViewType(validType);
         }
     }
 }

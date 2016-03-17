@@ -81,6 +81,9 @@ namespace SobekCM.Library.HTML
 
             // Try to get the current item
             currentItem = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer);
+            
+            // Ensure the UI portion has been configured for this user interface
+            ItemViewer_Factory.Configure_Brief_Item_Viewers(currentItem);
 
             // Set some flags based on the resource type
             is_bib_level = (String.Compare(currentItem.Type, "BIB_LEVEL", StringComparison.OrdinalIgnoreCase) == 0);
@@ -341,7 +344,7 @@ namespace SobekCM.Library.HTML
             // If there is a file name included, look for the sequence of that file
             if (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Page_By_FileName))
             {
-                int page_sequence = RequestSpecificValues.Current_Item.Divisions.Physical_Tree.Page_Sequence_By_FileName(RequestSpecificValues.Current_Mode.Page_By_FileName);
+                int page_sequence = currentItem.Page_Sequence_By_FileName(RequestSpecificValues.Current_Mode.Page_By_FileName);
                 if (page_sequence > 0)
                 {
                     RequestSpecificValues.Current_Mode.ViewerCode = page_sequence.ToString();
@@ -351,95 +354,22 @@ namespace SobekCM.Library.HTML
 
             // Get the valid viewer code
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Add_Controls", "Getting the appropriate item viewer");
+            iItemViewerPrototyper prototyper = ItemViewer_Factory.Get_Item_Viewer(currentItem, RequestSpecificValues.Current_Mode.ViewerCode);
+            if (prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, !String.IsNullOrEmpty(restriction_message)))
+                pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode);
 
-            if ((String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.ViewerCode)) && (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Coordinates)))
-            {
-                RequestSpecificValues.Current_Mode.ViewerCode = "map";
-            }
-            int currentPageIndex = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
-            RequestSpecificValues.Current_Mode.ViewerCode = RequestSpecificValues.Current_Item.Web.Get_Valid_Viewer_Code(RequestSpecificValues.Current_Mode.ViewerCode, currentPageIndex);
-            View_Object viewObject = RequestSpecificValues.Current_Item.Web.Get_Viewer(RequestSpecificValues.Current_Mode.ViewerCode);
-            PageViewer = ItemViewer_Factory.Get_Viewer(viewObject, RequestSpecificValues.Current_Item.Bib_Info.SobekCM_Type_String.ToUpper(), RequestSpecificValues.Current_Item, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode);
-
-            // If this was in fact restricted by IP address, restrict now
-            if (itemRestrictedFromUserByIp)
-            {
-                if ((PageViewer == null) || ((PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.Citation) &&
-                    (PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.MultiVolume) &&
-                    (PageViewer.ItemViewer_Type != ItemViewer_Type_Enum.Related_Images)))
-                {
-                    PageViewer = new Restricted_ItemViewer(Item_Restricted_Message);
-                    RequestSpecificValues.Current_Mode.ViewerCode = "res";
-                }
-            }
 
             // If execution should end, do it now
             if (RequestSpecificValues.Current_Mode.Request_Completed)
                 return;
 
-            RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Created " + PageViewer.GetType().ToString().Replace("SobekCM.Library.ItemViewer.Viewers.", ""));
+            RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Created " + pageViewer.GetType().ToString().Replace("SobekCM.Library.ItemViewer.Viewers.", ""));
 
             // Assign the rest of the information, if a page viewer was created
-            if (PageViewer != null)
+            if (pageViewer != null)
             {
-                PageViewer.CurrentItem = RequestSpecificValues.Current_Item;
-                PageViewer.CurrentMode = RequestSpecificValues.Current_Mode;
-                PageViewer.Translator = UI_ApplicationCache_Gateway.Translation;
-                PageViewer.CurrentUser = RequestSpecificValues.Current_User;
-
-                // Special code if this is the citation viewer
-                Citation_ItemViewer viewer = PageViewer as Citation_ItemViewer;
-                if (viewer != null)
-                {
-                    viewer.Code_Manager = UI_ApplicationCache_Gateway.Aggregations;
-                    viewer.Item_Restricted = itemRestrictedFromUserByIp;
-                }
-
-                // Special code if this is the multi-volumes viewer
-                var itemViewer = PageViewer as MultiVolumes_ItemViewer_OLD;
-                if (itemViewer != null)
-                {
-                    if (RequestSpecificValues.Items_In_Title == null)
-                    {
-                        // Look in the cache first
-                        RequestSpecificValues.Items_In_Title = CachedDataManager.Items.Retrieve_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
-
-                        // If still null, try to pull from the database
-                        if (RequestSpecificValues.Items_In_Title == null)
-                        {
-                            // Get list of information about this item group and save the item list
-                            DataSet itemDetails = Engine_Database.Get_Item_Group_Details(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Tracer);
-                            RequestSpecificValues.Items_In_Title = new SobekCM_Items_In_Title(itemDetails.Tables[1]);
-
-                            //// Add the related titles, if there are some
-                            //if ((currentGroup.Tables.Count > 3) && (currentGroup.Tables[3].Rows.Count > 0))
-                            //{
-                            //    foreach (DataRow thisRow in currentGroup.Tables[3].Rows)
-                            //    {
-                            //        string relationship = thisRow["Relationship"].ToString();
-                            //        string title = thisRow["GroupTitle"].ToString();
-                            //        string bibid = thisRow["BibID"].ToString();
-                            //        string link_and_title = "<a href=\"" + currentMode.Base_URL + bibid + "<%URL_OPTS%>\">" + title + "</a>";
-                            //        RequestSpecificValues.Current_Item.Behaviors.All_Related_Titles.Add(new SobekCM.Resource_Object.Behaviors.Related_Titles(relationship, link_and_title));
-                            //    }
-                            //}
-
-                            // Store in cache if retrieved
-                            if (RequestSpecificValues.Items_In_Title != null)
-                            {
-                                CachedDataManager.Items.Store_Items_In_Title(RequestSpecificValues.Current_Item.BibID, RequestSpecificValues.Items_In_Title, RequestSpecificValues.Tracer);
-                            }
-                        }
-                    }
-
-                    itemViewer.Item_List = RequestSpecificValues.Items_In_Title;
-                }
-
-                // Finally, perform any necessary work before display
-                PageViewer.Perform_PreDisplay_Work(RequestSpecificValues.Tracer);
-
                 // Get the list of any special behaviors
-                behaviors = PageViewer.ItemViewer_Behaviors;
+                behaviors = pageViewer.ItemViewer_Behaviors;
             }
             else
             {

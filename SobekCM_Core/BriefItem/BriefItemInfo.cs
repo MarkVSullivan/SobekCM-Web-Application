@@ -215,5 +215,34 @@ namespace SobekCM.Core.BriefItem
             // Now, look to see if it exists
             return descriptionTermLookup.ContainsKey(Term) ? descriptionTermLookup[Term] : null;
         }
+
+        /// <summary> Look for the sequence for a page with a matching filename (without extension) </summary>
+        /// <param name="FileName"> Name of the file, without the extension </param>
+        /// <returns> Sequence of the matching page, or -1 if no match exists </returns>
+        public int Page_Sequence_By_FileName(string FileName)
+        {
+            // If no pages, then no match
+            if ((Images == null) || (Images.Count == 0))
+                return -1;
+
+            // Step through looking for matches (this occurs very infrequently, so no dictionary overhead)
+            int sequence = 1;
+            foreach (BriefItem_FileGrouping page in Images)
+            {
+                if ((page.Files != null) && (page.Files.Count > 0))
+                {
+                    foreach (BriefItem_File thisFile in page.Files)
+                    {
+                        if (thisFile.Name.IndexOf(FileName + ".", StringComparison.OrdinalIgnoreCase) == 0)
+                            return sequence;
+                    }
+                }
+
+                sequence++;
+            }
+
+            // No match
+            return -1;
+        }
     }
 }

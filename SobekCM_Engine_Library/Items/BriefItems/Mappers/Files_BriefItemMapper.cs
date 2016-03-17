@@ -45,6 +45,9 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             if (downloads_toc.Count > 0)
                 New.Downloads_TOC = downloads_toc;
 
+            // Also, add the file extensions to the UI portion
+
+
             // No exception
             return true;
         }

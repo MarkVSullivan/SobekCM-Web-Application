@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SobekCM.Library.ItemViewer
+﻿namespace SobekCM.Library.ItemViewer
 {
     public class Item_MenuItem
     {

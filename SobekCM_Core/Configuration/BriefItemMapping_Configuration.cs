@@ -81,7 +81,7 @@ namespace SobekCM.Core.Configuration
         public BriefItemMapping_Configuration()
         {
             MappingSets = new List<BriefItemMapping_Set>();
-            mappingSetsDictionary = new Dictionary<string, BriefItemMapping_Set>();
+            mappingSetsDictionary = new Dictionary<string, BriefItemMapping_Set>(StringComparer.OrdinalIgnoreCase);
         }
 
     }
