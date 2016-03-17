@@ -500,10 +500,10 @@ namespace SobekCM.Resource_Object.Testing
             testPackage.Behaviors.Clear_Web_Skins();
             testPackage.Behaviors.Add_Web_Skin("dLOC");
             testPackage.Behaviors.Add_Web_Skin("UFDC");
-            testPackage.Behaviors.Add_View(View_Enum.JPEG2000);
-            testPackage.Behaviors.Add_View(View_Enum.JPEG);
-            testPackage.Behaviors.Add_View(View_Enum.RELATED_IMAGES);
-            testPackage.Behaviors.Add_View(View_Enum.HTML, "Full Document", "MVS001214.html");
+            testPackage.Behaviors.Add_View("JPEG2000");
+            testPackage.Behaviors.Add_View("JPEG");
+            testPackage.Behaviors.Add_View("RELATED_IMAGES");
+            testPackage.Behaviors.Add_View("HTML", "Full Document", "MVS001214.html");
 
             // Create the chapters and pages and link them
             Division_TreeNode chapter1 = new Division_TreeNode("Chapter", "First Chapter");

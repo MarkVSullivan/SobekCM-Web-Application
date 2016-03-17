@@ -89,6 +89,7 @@
     <Compile Include="BriefItem\BriefItem_Coordinate_Line.cs" />
     <Compile Include="BriefItem\BriefItem_Coordinate_Point.cs" />
     <Compile Include="BriefItem\BriefItem_Coordinate_Polygon.cs" />
+    <Compile Include="BriefItem\BriefItem_UI.cs" />
     <Compile Include="BriefItem\BriefItem_UserTag.cs" />
     <Compile Include="BriefItem\BriefItem_DescriptiveTerm.cs" />
     <Compile Include="BriefItem\BriefItem_DescTermValue.cs" />

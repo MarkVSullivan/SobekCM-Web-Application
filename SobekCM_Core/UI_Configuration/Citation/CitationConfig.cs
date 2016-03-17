@@ -41,7 +41,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
         }
 
         /// <summary> Add a citation set </summary>
-        /// <param name="SetName"> Name of the set.</param>
+        /// <param name="SetName"> Name of the set </param>
         /// <returns> Pre-existing citation set with that name, or just a newly added set </returns>
         public CitationSet Add_CitationSet(string SetName)
         {
@@ -67,11 +67,24 @@ namespace SobekCM.Core.UI_Configuration.Citation
                 return null;
 
             // Look for the default set
+            return Get_CitationSet(DefaultCitationSet);
+        }
+
+        /// <summary> Return the citation set indicated by set name </summary>
+        /// <param name="SetName"> Name of the set </param>
+        /// <returns> Citation set, which details how the citation should be written </returns>
+        public CitationSet Get_CitationSet(string SetName )
+        {
+            // If there are no sets, return NULL
+            if ((CitationSets == null) || (CitationSets.Count == 0))
+                return null;
+
+            // Look for the default set
             if (!String.IsNullOrEmpty(DefaultCitationSet))
             {
                 foreach (CitationSet set in CitationSets)
                 {
-                    if (String.Compare(set.Name, DefaultCitationSet, StringComparison.Ordinal) == 0)
+                    if (String.Compare(set.Name, SetName, StringComparison.Ordinal) == 0)
                         return set;
                 }
             }

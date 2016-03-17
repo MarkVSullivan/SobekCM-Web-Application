@@ -93,13 +93,9 @@ namespace SobekCM.Library.Citation.Elements
             // Options = NONE, HTML, HTML_MAP, JPEG, JPEG2000, RELATED_IMAGES, TEXT, PAGE TURNER, GOOGLE MAP, EMPTY STRING
             // Get collection of all items
             List<View_Object> views = new List<View_Object>();
-            if (Bib.Behaviors.Item_Level_Page_Views_Count > 0)
-            {
-                views.AddRange(Bib.Behaviors.Item_Level_Page_Views);
-            }
             if (Bib.Behaviors.Views_Count > 0)
             {
-                views.AddRange(Bib.Behaviors.Views.Where(ItemView => (ItemView.View_Type != View_Enum.CITATION) && (ItemView.View_Type != View_Enum.ALL_VOLUMES) && (ItemView.View_Type != View_Enum.DOWNLOADS) && (ItemView.View_Type != View_Enum.FLASH) && (ItemView.View_Type != View_Enum.GOOGLE_MAP) && (ItemView.View_Type != View_Enum.GOOGLE_MAP_BETA) && (ItemView.View_Type != View_Enum.PDF) && (ItemView.View_Type != View_Enum.TOC)));
+                views.AddRange(Bib.Behaviors.Views);
             }
 
             if (views.Count == 0 )
@@ -140,99 +136,99 @@ namespace SobekCM.Library.Citation.Elements
             }
             else
             {
-				List<View_Enum> handledTypes = new List<View_Enum> {View_Enum.HTML, View_Enum.JPEG, View_Enum.JPEG2000, View_Enum.GOOGLE_MAP, View_Enum.PAGE_TURNER, View_Enum.RELATED_IMAGES,  View_Enum.TEXT, View_Enum.TEI, View_Enum.JPEG_TEXT_TWO_UP, View_Enum.DATASET_CODEBOOK, View_Enum.DATASET_REPORTS, View_Enum.DATASET_VIEWDATA };
+                //List<View_Enum> handledTypes = new List<View_Enum> {View_Enum.HTML, View_Enum.JPEG, View_Enum.JPEG2000, View_Enum.GOOGLE_MAP, View_Enum.PAGE_TURNER, View_Enum.RELATED_IMAGES,  View_Enum.TEXT, View_Enum.TEI, View_Enum.JPEG_TEXT_TWO_UP, View_Enum.DATASET_CODEBOOK, View_Enum.DATASET_REPORTS, View_Enum.DATASET_VIEWDATA };
 
-	            for (int i = 1; i <= views.Count; i++)
-                {
-	                if ((i == 1) || (handledTypes.Contains(views[i - 1].View_Type)))
-	                {
-		                // Add the view types select
-		                Output.Write("<select name=\"" + id_name + "_type" + i + "\" id=\"" + id_name + "_type" + i + "\" class=\"" + html_element_name + "_type\" onchange=\"viewer_type_changed('" + id_name + "_type" + i + "');\">");
-		                Output.Write(views[i - 1].View_Type == View_Enum.None
-			                             ? "<option value=\"\" selected=\"selected\" >&nbsp;</option>"
-			                             : "<option value=\"\">&nbsp;</option>");
+                //for (int i = 1; i <= views.Count; i++)
+                //{
+                //    if ((i == 1) || (handledTypes.Contains(views[i - 1].View_Type)))
+                //    {
+                //        // Add the view types select
+                //        Output.Write("<select name=\"" + id_name + "_type" + i + "\" id=\"" + id_name + "_type" + i + "\" class=\"" + html_element_name + "_type\" onchange=\"viewer_type_changed('" + id_name + "_type" + i + "');\">");
+                //        Output.Write(views[i - 1].View_Type == View_Enum.None
+                //                         ? "<option value=\"\" selected=\"selected\" >&nbsp;</option>"
+                //                         : "<option value=\"\">&nbsp;</option>");
 
-						Output.Write(views[i - 1].View_Type == View_Enum.DATASET_CODEBOOK
-										 ? "<option value=\"dscodebook\" selected=\"selected\" >Dataset Codebook</option>"
-										 : "<option value=\"dscodebook\" >Dataset Codebook</option>");
+                //        Output.Write(views[i - 1].View_Type == View_Enum.DATASET_CODEBOOK
+                //                         ? "<option value=\"dscodebook\" selected=\"selected\" >Dataset Codebook</option>"
+                //                         : "<option value=\"dscodebook\" >Dataset Codebook</option>");
 
-						Output.Write(views[i - 1].View_Type == View_Enum.DATASET_REPORTS
-										 ? "<option value=\"dsreports\" selected=\"selected\" >Dataset Reports</option>"
-										 : "<option value=\"dsreports\" >Dataset Reports</option>");
+                //        Output.Write(views[i - 1].View_Type == View_Enum.DATASET_REPORTS
+                //                         ? "<option value=\"dsreports\" selected=\"selected\" >Dataset Reports</option>"
+                //                         : "<option value=\"dsreports\" >Dataset Reports</option>");
 
-						Output.Write(views[i - 1].View_Type == View_Enum.DATASET_VIEWDATA
-										 ? "<option value=\"dsviewdata\" selected=\"selected\" >Dataset View Data</option>"
-										 : "<option value=\"dsviewdata\" >Dataset View Data</option>");
+                //        Output.Write(views[i - 1].View_Type == View_Enum.DATASET_VIEWDATA
+                //                         ? "<option value=\"dsviewdata\" selected=\"selected\" >Dataset View Data</option>"
+                //                         : "<option value=\"dsviewdata\" >Dataset View Data</option>");
 
-		                Output.Write(views[i - 1].View_Type == View_Enum.HTML
-			                             ? "<option value=\"html\" selected=\"selected\" >HTML</option>"
-			                             : "<option value=\"html\" >HTML</option>");
+                //        Output.Write(views[i - 1].View_Type == View_Enum.HTML
+                //                         ? "<option value=\"html\" selected=\"selected\" >HTML</option>"
+                //                         : "<option value=\"html\" >HTML</option>");
 
-		                Output.Write(views[i - 1].View_Type == View_Enum.JPEG
-			                             ? "<option value=\"jpeg\" selected=\"selected\" >JPEG</option>"
-			                             : "<option value=\"jpeg\" >JPEG</option>");
+                //        Output.Write(views[i - 1].View_Type == View_Enum.JPEG
+                //                         ? "<option value=\"jpeg\" selected=\"selected\" >JPEG</option>"
+                //                         : "<option value=\"jpeg\" >JPEG</option>");
 
-						Output.Write(views[i - 1].View_Type == View_Enum.JPEG_TEXT_TWO_UP
-										? "<option value=\"jpeg2up\" selected=\"selected\" >JPEG AND TEXT</option>"
-										: "<option value=\"jpeg2up\" >JPEG AND TEXT</option>");
+                //        Output.Write(views[i - 1].View_Type == View_Enum.JPEG_TEXT_TWO_UP
+                //                        ? "<option value=\"jpeg2up\" selected=\"selected\" >JPEG AND TEXT</option>"
+                //                        : "<option value=\"jpeg2up\" >JPEG AND TEXT</option>");
 
-		                Output.Write(views[i - 1].View_Type == View_Enum.JPEG2000
-			                             ? "<option value=\"jpeg2000\" selected=\"selected\" >JPEG2000</option>"
-			                             : "<option value=\"jpeg2000\" >JPEG2000</option>");
+                //        Output.Write(views[i - 1].View_Type == View_Enum.JPEG2000
+                //                         ? "<option value=\"jpeg2000\" selected=\"selected\" >JPEG2000</option>"
+                //                         : "<option value=\"jpeg2000\" >JPEG2000</option>");
 
-		                Output.Write(views[i - 1].View_Type == View_Enum.GOOGLE_MAP
-			                             ? "<option value=\"map\" selected=\"selected\" >Map Display</option>"
-			                             : "<option value=\"map\" >Map Display</option>");
+                //        Output.Write(views[i - 1].View_Type == View_Enum.GOOGLE_MAP
+                //                         ? "<option value=\"map\" selected=\"selected\" >Map Display</option>"
+                //                         : "<option value=\"map\" >Map Display</option>");
 
-                        Output.Write(views[i - 1].View_Type == View_Enum.GOOGLE_MAP_BETA
-                                         ? "<option value=\"mapbeta\" selected=\"selected\" >Map Display Beta</option>"
-                                         : "<option value=\"mapbeta\" >Map Display Beta</option>");
+                //        Output.Write(views[i - 1].View_Type == View_Enum.GOOGLE_MAP_BETA
+                //                         ? "<option value=\"mapbeta\" selected=\"selected\" >Map Display Beta</option>"
+                //                         : "<option value=\"mapbeta\" >Map Display Beta</option>");
 
-		                Output.Write(views[i - 1].View_Type == View_Enum.PAGE_TURNER
-			                             ? "<option value=\"pageturner\" selected=\"selected\" >Page Turner</option>"
-			                             : "<option value=\"pageturner\" >Page Turner</option>");
+                //        Output.Write(views[i - 1].View_Type == View_Enum.PAGE_TURNER
+                //                         ? "<option value=\"pageturner\" selected=\"selected\" >Page Turner</option>"
+                //                         : "<option value=\"pageturner\" >Page Turner</option>");
 
-		                Output.Write(views[i - 1].View_Type == View_Enum.RELATED_IMAGES
-			                             ? "<option value=\"related\" selected=\"selected\" >Related Images</option>"
-			                             : "<option value=\"related\" >Related Images</option>");
+                //        Output.Write(views[i - 1].View_Type == View_Enum.RELATED_IMAGES
+                //                         ? "<option value=\"related\" selected=\"selected\" >Related Images</option>"
+                //                         : "<option value=\"related\" >Related Images</option>");
 
-		                Output.Write(views[i - 1].View_Type == View_Enum.TEXT
-			                             ? "<option value=\"text\" selected=\"selected\" >Text</option>"
-			                             : "<option value=\"text\" >Text</option>");
+                //        Output.Write(views[i - 1].View_Type == View_Enum.TEXT
+                //                         ? "<option value=\"text\" selected=\"selected\" >Text</option>"
+                //                         : "<option value=\"text\" >Text</option>");
 
-		                Output.Write(views[i - 1].View_Type == View_Enum.TEI
-			                             ? "<option value=\"tei\" selected=\"selected\" >TEI</option>"
-			                             : "<option value=\"tei\" >TEI</option>");
+                //        Output.Write(views[i - 1].View_Type == View_Enum.TEI
+                //                         ? "<option value=\"tei\" selected=\"selected\" >TEI</option>"
+                //                         : "<option value=\"tei\" >TEI</option>");
 
-		                Output.Write("</select>");
+                //        Output.Write("</select>");
 
-		                // Add the file sublabel
-		                Output.Write("<span id=\"" + id_name + "_details" + i + "\" style=\"display:none\">");
-		                Output.Write("<span class=\"metadata_sublabel\">File:</span>");
+                //        // Add the file sublabel
+                //        Output.Write("<span id=\"" + id_name + "_details" + i + "\" style=\"display:none\">");
+                //        Output.Write("<span class=\"metadata_sublabel\">File:</span>");
 
-		                // Add the file select
-		                Output.Write("<select name=\"" + id_name + "_file" + i + "\" id=\"" + id_name + "_file" + i + "\" class=\"" + html_element_name + "_file\">");
+                //        // Add the file select
+                //        Output.Write("<select name=\"" + id_name + "_file" + i + "\" id=\"" + id_name + "_file" + i + "\" class=\"" + html_element_name + "_file\">");
 
-		                if (views[i - 1].FileName.Length > 0)
-		                {
-			                Output.Write("<option value=\"\">&nbsp;</option>");
-			                Output.Write("<option value=\"" + views[i - 1].FileName + "\" selected=\"selected\">" + views[i - 1].FileName + "</option>");
-		                }
-		                else
-		                {
-			                Output.Write("<option value=\"\" selected=\"selected\">&nbsp;</option>");
-		                }
-		                Output.Write("</select>");
+                //        if (views[i - 1].FileName.Length > 0)
+                //        {
+                //            Output.Write("<option value=\"\">&nbsp;</option>");
+                //            Output.Write("<option value=\"" + views[i - 1].FileName + "\" selected=\"selected\">" + views[i - 1].FileName + "</option>");
+                //        }
+                //        else
+                //        {
+                //            Output.Write("<option value=\"\" selected=\"selected\">&nbsp;</option>");
+                //        }
+                //        Output.Write("</select>");
 
-		                // Add the label sublabel
-		                Output.Write("<span class=\"metadata_sublabel\">Label:</span>");
+                //        // Add the label sublabel
+                //        Output.Write("<span class=\"metadata_sublabel\">Label:</span>");
 
-		                // Add the label input
-		                Output.Write("<input name=\"" + id_name + "_label" + i + "\" id=\"" + id_name + "_label" + i + "\" class=\"" + html_element_name + "_label_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(views[i - 1].Label) + "\" /></span>");
+                //        // Add the label input
+                //        Output.Write("<input name=\"" + id_name + "_label" + i + "\" id=\"" + id_name + "_label" + i + "\" class=\"" + html_element_name + "_label_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(views[i - 1].Label) + "\" /></span>");
 
-		                Output.WriteLine(i < views.Count ? "<br />" : "</div>");
-	                }
-                }
+                //        Output.WriteLine(i < views.Count ? "<br />" : "</div>");
+                //    }
+                //}
             }
             Output.WriteLine("          </td>");
 
@@ -272,85 +268,85 @@ namespace SobekCM.Library.Citation.Elements
             {
                 if (thisKey.IndexOf("viewer_type") == 0)
                 {
-                    string key = thisKey.Replace("viewer_type", "");
-                    string file_key = "viewer_file" + key;
-                    string label_key = "viewer_label" + key;
+                    //string key = thisKey.Replace("viewer_type", "");
+                    //string file_key = "viewer_file" + key;
+                    //string label_key = "viewer_label" + key;
 
-                    string type = HttpContext.Current.Request.Form[thisKey].Trim();
-                    string file = String.Empty;
-                    string label = String.Empty;
-                    View_Enum viewType = View_Enum.None;
-                    switch (type)
-                    {
+                    //string type = HttpContext.Current.Request.Form[thisKey].Trim();
+                    //string file = String.Empty;
+                    //string label = String.Empty;
+                    //View_Enum viewType = View_Enum.None;
+                    //switch (type)
+                    //{
 
-						case "dscodebook":
-							viewType = View_Enum.DATASET_CODEBOOK;
-							break;
+                    //    case "dscodebook":
+                    //        viewType = View_Enum.DATASET_CODEBOOK;
+                    //        break;
 
-						case "dsreports":
-							viewType = View_Enum.DATASET_REPORTS;
-							break;
+                    //    case "dsreports":
+                    //        viewType = View_Enum.DATASET_REPORTS;
+                    //        break;
 
-						case "dsviewdata":
-							viewType = View_Enum.DATASET_VIEWDATA;
-							break;
+                    //    case "dsviewdata":
+                    //        viewType = View_Enum.DATASET_VIEWDATA;
+                    //        break;
 
-                        case "html":
-                            viewType = View_Enum.HTML;
-                            break;
+                    //    case "html":
+                    //        viewType = View_Enum.HTML;
+                    //        break;
 
-                        case "jpeg":
-                            viewType = View_Enum.JPEG;
-                            break;
+                    //    case "jpeg":
+                    //        viewType = View_Enum.JPEG;
+                    //        break;
 
-						case "jpeg2up":
-							viewType = View_Enum.JPEG_TEXT_TWO_UP;
-							break;
+                    //    case "jpeg2up":
+                    //        viewType = View_Enum.JPEG_TEXT_TWO_UP;
+                    //        break;
 
-                        case "jpeg2000":
-                            viewType = View_Enum.JPEG2000;
-                            break;
+                    //    case "jpeg2000":
+                    //        viewType = View_Enum.JPEG2000;
+                    //        break;
 
-                        case "map":
-                            viewType = View_Enum.GOOGLE_MAP;
-                            break;
+                    //    case "map":
+                    //        viewType = View_Enum.GOOGLE_MAP;
+                    //        break;
 
-                        case "mapbeta":
-                            viewType = View_Enum.GOOGLE_MAP_BETA;
-                            break;
+                    //    case "mapbeta":
+                    //        viewType = View_Enum.GOOGLE_MAP_BETA;
+                    //        break;
 
-                        case "pageturner":
-                            viewType = View_Enum.PAGE_TURNER;
-                            break;
+                    //    case "pageturner":
+                    //        viewType = View_Enum.PAGE_TURNER;
+                    //        break;
 
-                        case "related":
-                            viewType = View_Enum.RELATED_IMAGES;
-                            break;
+                    //    case "related":
+                    //        viewType = View_Enum.RELATED_IMAGES;
+                    //        break;
 
-                        case "text":
-                            viewType = View_Enum.TEXT;
-                            break;
+                    //    case "text":
+                    //        viewType = View_Enum.TEXT;
+                    //        break;
 
-                        case "tei":
-                            viewType = View_Enum.TEI;
-                            break;
-                    }
+                    //    case "tei":
+                    //        viewType = View_Enum.TEI;
+                    //        break;
+                    //}
 
-                    // Get the details information for html and html map
-                    if (viewType == View_Enum.HTML)
-                    {
-                        if (HttpContext.Current.Request.Form[file_key] != null)
-                        {
-                            file = HttpContext.Current.Request.Form[file_key].Trim();
-                        }
-                        if (HttpContext.Current.Request.Form[label_key] != null)
-                        {
-                            label = HttpContext.Current.Request.Form[label_key].Trim();
-                        }
-                    }
+                    //// Get the details information for html and html map
+                    //if (viewType == View_Enum.HTML)
+                    //{
+                    //    if (HttpContext.Current.Request.Form[file_key] != null)
+                    //    {
+                    //        file = HttpContext.Current.Request.Form[file_key].Trim();
+                    //    }
+                    //    if (HttpContext.Current.Request.Form[label_key] != null)
+                    //    {
+                    //        label = HttpContext.Current.Request.Form[label_key].Trim();
+                    //    }
+                    //}
 
-                    // Add this view
-                    Bib.Behaviors.Add_View(viewType, label, file);
+                    //// Add this view
+                    //Bib.Behaviors.Add_View(viewType, label, file);
                 }
             }
         }

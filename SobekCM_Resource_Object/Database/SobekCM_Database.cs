@@ -331,178 +331,178 @@ namespace SobekCM.Resource_Object.Database
             while (aggregationCodes.Count < 8)
                 aggregationCodes.Add(String.Empty);
 
-            // Collect the behavior information
-            List<int> view_type_ids = new List<int>();
-            List<string> view_labels = new List<string>();
-            List<string> view_attributes = new List<string>();
-            foreach (View_Object thisView in ThisPackage.Behaviors.Item_Level_Page_Views)
-            {
-                switch (thisView.View_Type)
-                {
-                    case View_Enum.JPEG:
-                        if (!view_type_ids.Contains(1))
-                        {
-                            view_type_ids.Add(1);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //// Collect the behavior information
+            //List<int> view_type_ids = new List<int>();
+            //List<string> view_labels = new List<string>();
+            //List<string> view_attributes = new List<string>();
+            //foreach (View_Object thisView in ThisPackage.Behaviors.Item_Level_Page_Views)
+            //{
+            //    switch (thisView.View_Type)
+            //    {
+            //        case View_Enum.JPEG:
+            //            if (!view_type_ids.Contains(1))
+            //            {
+            //                view_type_ids.Add(1);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.JPEG_TEXT_TWO_UP:
-                        if (!view_type_ids.Contains(14))
-                        {
-                            view_type_ids.Add(14);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.JPEG_TEXT_TWO_UP:
+            //            if (!view_type_ids.Contains(14))
+            //            {
+            //                view_type_ids.Add(14);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.JPEG2000:
-                        if (!view_type_ids.Contains(2))
-                        {
-                            view_type_ids.Add(2);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.JPEG2000:
+            //            if (!view_type_ids.Contains(2))
+            //            {
+            //                view_type_ids.Add(2);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.TEXT:
-                        if (!view_type_ids.Contains(3))
-                        {
-                            view_type_ids.Add(3);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
-                }
-            }
+            //        case View_Enum.TEXT:
+            //            if (!view_type_ids.Contains(3))
+            //            {
+            //                view_type_ids.Add(3);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
+            //    }
+            //}
 
-            foreach (View_Object thisView in ThisPackage.Behaviors.Views)
-            {
-                switch (thisView.View_Type)
-                {
-                    case View_Enum.DATASET_CODEBOOK:
-                        if (!view_type_ids.Contains(11))
-                        {
-                            view_type_ids.Add(11);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //foreach (View_Object thisView in ThisPackage.Behaviors.Views)
+            //{
+            //    switch (thisView.View_Type)
+            //    {
+            //        case View_Enum.DATASET_CODEBOOK:
+            //            if (!view_type_ids.Contains(11))
+            //            {
+            //                view_type_ids.Add(11);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.DATASET_REPORTS:
-                        if (!view_type_ids.Contains(12))
-                        {
-                            view_type_ids.Add(12);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.DATASET_REPORTS:
+            //            if (!view_type_ids.Contains(12))
+            //            {
+            //                view_type_ids.Add(12);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.DATASET_VIEWDATA:
-                        if (!view_type_ids.Contains(13))
-                        {
-                            view_type_ids.Add(13);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.DATASET_VIEWDATA:
+            //            if (!view_type_ids.Contains(13))
+            //            {
+            //                view_type_ids.Add(13);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.GOOGLE_MAP:
-                        if (!view_type_ids.Contains(5))
-                        {
-                            view_type_ids.Add(5);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.GOOGLE_MAP:
+            //            if (!view_type_ids.Contains(5))
+            //            {
+            //                view_type_ids.Add(5);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.GOOGLE_MAP_BETA:
-                        if (!view_type_ids.Contains(5))
-                        {
-                            view_type_ids.Add(5);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.GOOGLE_MAP_BETA:
+            //            if (!view_type_ids.Contains(5))
+            //            {
+            //                view_type_ids.Add(5);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.HTML:
-                        view_type_ids.Add(6);
-                        view_labels.Add(thisView.Label);
-                        view_attributes.Add(thisView.Attributes);
-                        break;
+            //        case View_Enum.HTML:
+            //            view_type_ids.Add(6);
+            //            view_labels.Add(thisView.Label);
+            //            view_attributes.Add(thisView.Attributes);
+            //            break;
 
-                    case View_Enum.JPEG:
-                        if (!view_type_ids.Contains(1))
-                        {
-                            view_type_ids.Add(1);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.JPEG:
+            //            if (!view_type_ids.Contains(1))
+            //            {
+            //                view_type_ids.Add(1);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.JPEG_TEXT_TWO_UP:
-                        if (!view_type_ids.Contains(14))
-                        {
-                            view_type_ids.Add(14);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.JPEG_TEXT_TWO_UP:
+            //            if (!view_type_ids.Contains(14))
+            //            {
+            //                view_type_ids.Add(14);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.JPEG2000:
-                        if (!view_type_ids.Contains(2))
-                        {
-                            view_type_ids.Add(2);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.JPEG2000:
+            //            if (!view_type_ids.Contains(2))
+            //            {
+            //                view_type_ids.Add(2);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.PAGE_TURNER:
-                        if (!view_type_ids.Contains(4))
-                        {
-                            view_type_ids.Add(4);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.PAGE_TURNER:
+            //            if (!view_type_ids.Contains(4))
+            //            {
+            //                view_type_ids.Add(4);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.RELATED_IMAGES:
-                        view_type_ids.Add(8);
-                        view_labels.Add(String.Empty);
-                        view_attributes.Add(String.Empty);
-                        break;
+            //        case View_Enum.RELATED_IMAGES:
+            //            view_type_ids.Add(8);
+            //            view_labels.Add(String.Empty);
+            //            view_attributes.Add(String.Empty);
+            //            break;
 
-                    case View_Enum.TEI:
-                        view_type_ids.Add(10);
-                        view_labels.Add(String.Empty);
-                        view_attributes.Add(String.Empty);
-                        break;
+            //        case View_Enum.TEI:
+            //            view_type_ids.Add(10);
+            //            view_labels.Add(String.Empty);
+            //            view_attributes.Add(String.Empty);
+            //            break;
 
-                    case View_Enum.TEXT:
-                        if (!view_type_ids.Contains(3))
-                        {
-                            view_type_ids.Add(3);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.TEXT:
+            //            if (!view_type_ids.Contains(3))
+            //            {
+            //                view_type_ids.Add(3);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.TOC:
-                        view_type_ids.Add(9);
-                        view_labels.Add(String.Empty);
-                        view_attributes.Add(String.Empty);
-                        break;
-                }
-            }
+            //        case View_Enum.TOC:
+            //            view_type_ids.Add(9);
+            //            view_labels.Add(String.Empty);
+            //            view_attributes.Add(String.Empty);
+            //            break;
+            //    }
+            //}
 
-            while (view_type_ids.Count < 6)
-            {
-                view_type_ids.Add(0);
-                view_labels.Add(String.Empty);
-                view_attributes.Add(String.Empty);
-            }
+            //while (view_type_ids.Count < 6)
+            //{
+            //    view_type_ids.Add(0);
+            //    view_labels.Add(String.Empty);
+            //    view_attributes.Add(String.Empty);
+            //}
 
             string level1_text = String.Empty;
             string level2_text = String.Empty;
@@ -558,7 +558,7 @@ namespace SobekCM.Resource_Object.Database
             {
                 int i = 0;
                 // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[89];
+                EalDbParameter[] param_list = new EalDbParameter[71];
                 param_list[i++] = new EalDbParameter("@GroupID", ThisPackage.Web.GroupID);
                 param_list[i++] = new EalDbParameter("@VID", ThisPackage.VID);
                 param_list[i++] = new EalDbParameter("@PageCount", ThisPackage.Divisions.Page_Count);
@@ -604,24 +604,6 @@ namespace SobekCM.Resource_Object.Database
                 param_list[i++] = new EalDbParameter("@Icon3_Name", icon3_name);
                 param_list[i++] = new EalDbParameter("@Icon4_Name", icon4_name);
                 param_list[i++] = new EalDbParameter("@Icon5_Name", icon5_name);
-                param_list[i++] = new EalDbParameter("@Viewer1_TypeID", view_type_ids[0]);
-                param_list[i++] = new EalDbParameter("@Viewer1_Label", view_labels[0]);
-                param_list[i++] = new EalDbParameter("@Viewer1_Attribute", view_attributes[0]);
-                param_list[i++] = new EalDbParameter("@Viewer2_TypeID", view_type_ids[1]);
-                param_list[i++] = new EalDbParameter("@Viewer2_Label", view_labels[1]);
-                param_list[i++] = new EalDbParameter("@Viewer2_Attribute", view_attributes[1]);
-                param_list[i++] = new EalDbParameter("@Viewer3_TypeID", view_type_ids[2]);
-                param_list[i++] = new EalDbParameter("@Viewer3_Label", view_labels[2]);
-                param_list[i++] = new EalDbParameter("@Viewer3_Attribute", view_attributes[2]);
-                param_list[i++] = new EalDbParameter("@Viewer4_TypeID", view_type_ids[3]);
-                param_list[i++] = new EalDbParameter("@Viewer4_Label", view_labels[3]);
-                param_list[i++] = new EalDbParameter("@Viewer4_Attribute", view_attributes[3]);
-                param_list[i++] = new EalDbParameter("@Viewer5_TypeID", view_type_ids[4]);
-                param_list[i++] = new EalDbParameter("@Viewer5_Label", view_labels[4]);
-                param_list[i++] = new EalDbParameter("@Viewer5_Attribute", view_attributes[4]);
-                param_list[i++] = new EalDbParameter("@Viewer6_TypeID", view_type_ids[5]);
-                param_list[i++] = new EalDbParameter("@Viewer6_Label", view_labels[5]);
-                param_list[i++] = new EalDbParameter("@Viewer6_Attribute", view_attributes[5]);
 
                 if (level1_index >= 0)
                 {
@@ -1758,167 +1740,167 @@ namespace SobekCM.Resource_Object.Database
             List<int> view_type_ids = new List<int>();
             List<string> view_labels = new List<string>();
             List<string> view_attributes = new List<string>();
-            foreach (View_Object thisView in ThisPackage.Behaviors.Item_Level_Page_Views)
-            {
-                switch (thisView.View_Type)
-                {
-                    case View_Enum.JPEG:
-                        if (!view_type_ids.Contains(1))
-                        {
-                            view_type_ids.Add(1);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //foreach (View_Object thisView in ThisPackage.Behaviors.Item_Level_Page_Views)
+            //{
+            //    switch (thisView.View_Type)
+            //    {
+            //        case View_Enum.JPEG:
+            //            if (!view_type_ids.Contains(1))
+            //            {
+            //                view_type_ids.Add(1);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.JPEG_TEXT_TWO_UP:
-                        if (!view_type_ids.Contains(14))
-                        {
-                            view_type_ids.Add(14);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.JPEG_TEXT_TWO_UP:
+            //            if (!view_type_ids.Contains(14))
+            //            {
+            //                view_type_ids.Add(14);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.JPEG2000:
-                        if (!view_type_ids.Contains(2))
-                        {
-                            view_type_ids.Add(2);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.JPEG2000:
+            //            if (!view_type_ids.Contains(2))
+            //            {
+            //                view_type_ids.Add(2);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.TEXT:
-                        if (!view_type_ids.Contains(3))
-                        {
-                            view_type_ids.Add(3);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
-                }
-            }
+            //        case View_Enum.TEXT:
+            //            if (!view_type_ids.Contains(3))
+            //            {
+            //                view_type_ids.Add(3);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
+            //    }
+            //}
 
-            foreach (View_Object thisView in ThisPackage.Behaviors.Views)
-            {
-                switch (thisView.View_Type)
-                {
-                    case View_Enum.DATASET_CODEBOOK:
-                        if (!view_type_ids.Contains(11))
-                        {
-                            view_type_ids.Add(11);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //foreach (View_Object thisView in ThisPackage.Behaviors.Views)
+            //{
+            //    switch (thisView.View_Type)
+            //    {
+            //        case View_Enum.DATASET_CODEBOOK:
+            //            if (!view_type_ids.Contains(11))
+            //            {
+            //                view_type_ids.Add(11);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.DATASET_REPORTS:
-                        if (!view_type_ids.Contains(12))
-                        {
-                            view_type_ids.Add(12);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.DATASET_REPORTS:
+            //            if (!view_type_ids.Contains(12))
+            //            {
+            //                view_type_ids.Add(12);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.DATASET_VIEWDATA:
-                        if (!view_type_ids.Contains(13))
-                        {
-                            view_type_ids.Add(13);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.DATASET_VIEWDATA:
+            //            if (!view_type_ids.Contains(13))
+            //            {
+            //                view_type_ids.Add(13);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.GOOGLE_MAP:
-                        if (!view_type_ids.Contains(5))
-                        {
-                            view_type_ids.Add(5);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.GOOGLE_MAP:
+            //            if (!view_type_ids.Contains(5))
+            //            {
+            //                view_type_ids.Add(5);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.GOOGLE_MAP_BETA:
-                        if (!view_type_ids.Contains(5))
-                        {
-                            view_type_ids.Add(5);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.GOOGLE_MAP_BETA:
+            //            if (!view_type_ids.Contains(5))
+            //            {
+            //                view_type_ids.Add(5);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.HTML:
-                        view_type_ids.Add(6);
-                        view_labels.Add(thisView.Label);
-                        view_attributes.Add(thisView.Attributes);
-                        break;
+            //        case View_Enum.HTML:
+            //            view_type_ids.Add(6);
+            //            view_labels.Add(thisView.Label);
+            //            view_attributes.Add(thisView.Attributes);
+            //            break;
 
-                    case View_Enum.JPEG:
-                        if (!view_type_ids.Contains(1))
-                        {
-                            view_type_ids.Add(1);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.JPEG:
+            //            if (!view_type_ids.Contains(1))
+            //            {
+            //                view_type_ids.Add(1);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.JPEG_TEXT_TWO_UP:
-                        if (!view_type_ids.Contains(14))
-                        {
-                            view_type_ids.Add(14);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.JPEG_TEXT_TWO_UP:
+            //            if (!view_type_ids.Contains(14))
+            //            {
+            //                view_type_ids.Add(14);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.JPEG2000:
-                        if (!view_type_ids.Contains(2))
-                        {
-                            view_type_ids.Add(2);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.JPEG2000:
+            //            if (!view_type_ids.Contains(2))
+            //            {
+            //                view_type_ids.Add(2);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.PAGE_TURNER:
-                        if (!view_type_ids.Contains(4))
-                        {
-                            view_type_ids.Add(4);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.PAGE_TURNER:
+            //            if (!view_type_ids.Contains(4))
+            //            {
+            //                view_type_ids.Add(4);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.RELATED_IMAGES:
-                        view_type_ids.Add(8);
-                        view_labels.Add(String.Empty);
-                        view_attributes.Add(String.Empty);
-                        break;
+            //        case View_Enum.RELATED_IMAGES:
+            //            view_type_ids.Add(8);
+            //            view_labels.Add(String.Empty);
+            //            view_attributes.Add(String.Empty);
+            //            break;
 
-                    case View_Enum.TEI:
-                        view_type_ids.Add(10);
-                        view_labels.Add(String.Empty);
-                        view_attributes.Add(String.Empty);
-                        break;
+            //        case View_Enum.TEI:
+            //            view_type_ids.Add(10);
+            //            view_labels.Add(String.Empty);
+            //            view_attributes.Add(String.Empty);
+            //            break;
 
-                    case View_Enum.TEXT:
-                        if (!view_type_ids.Contains(3))
-                        {
-                            view_type_ids.Add(3);
-                            view_labels.Add(String.Empty);
-                            view_attributes.Add(String.Empty);
-                        }
-                        break;
+            //        case View_Enum.TEXT:
+            //            if (!view_type_ids.Contains(3))
+            //            {
+            //                view_type_ids.Add(3);
+            //                view_labels.Add(String.Empty);
+            //                view_attributes.Add(String.Empty);
+            //            }
+            //            break;
 
-                    case View_Enum.TOC:
-                        view_type_ids.Add(9);
-                        view_labels.Add(String.Empty);
-                        view_attributes.Add(String.Empty);
-                        break;
-                }
-            }
+            //        case View_Enum.TOC:
+            //            view_type_ids.Add(9);
+            //            view_labels.Add(String.Empty);
+            //            view_attributes.Add(String.Empty);
+            //            break;
+            //    }
+            //}
 
             while (view_type_ids.Count < 6)
             {

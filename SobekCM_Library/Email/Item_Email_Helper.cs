@@ -2,12 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Web;
 using SobekCM.Core;
+using SobekCM.Core.BriefItem;
+using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.UI;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
 
 #endregion
 
@@ -27,7 +29,7 @@ namespace SobekCM.Library.Email
         /// <param name="URL"> Direct URL for this item </param>
         /// <param name="UserID"> Primary key for the user that is sendig the email </param>
         /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool Send_Email( string Recepient_List, string CcList, string Comments, string User_Name, string SobekCM_Instance_Name, SobekCM_Item Item, bool HTML_Format, string URL, int UserID )
+        public static bool Send_Email( string Recepient_List, string CcList, string Comments, string User_Name, string SobekCM_Instance_Name, BriefItemInfo Item, bool HTML_Format, string URL, int UserID )
         {
             if (HTML_Format)
             {
@@ -38,60 +40,10 @@ namespace SobekCM.Library.Email
         }
 
 
-        private static bool HTML_Send_Email(string Recepient_List, string CcList, string Comments, string User_Name, string SobekCM_Instance_Name, SobekCM_Item Item, string URL, int UserID )
+        private static bool HTML_Send_Email(string Recepient_List, string CcList, string Comments, string User_Name, string SobekCM_Instance_Name, BriefItemInfo Item, string URL, int UserID)
         {
             try
             {
-                // Collect the titles
-                List<string> uniform_titles = new List<string>();
-                List<string> alternative_titles = new List<string>();
-                List<string> translated_titles = new List<string>();
-                List<string> abbreviated_titles = new List<string>();
-                if (Item.Bib_Info.Other_Titles_Count > 0)
-                {
-                    foreach (Title_Info thisTitle in Item.Bib_Info.Other_Titles)
-                    {
-                        switch (thisTitle.Title_Type)
-                        {
-                            case Title_Type_Enum.UNSPECIFIED:
-                            case Title_Type_Enum.Alternative:
-                                alternative_titles.Add(thisTitle.ToString());
-                                break;
-
-                            case Title_Type_Enum.Uniform:
-                                uniform_titles.Add(thisTitle.ToString());
-                                break;
-
-                            case Title_Type_Enum.Translated:
-                                translated_titles.Add(thisTitle.ToString());
-                                break;
-
-                            case Title_Type_Enum.Abbreviated:
-                                abbreviated_titles.Add(thisTitle.ToString());
-                                break;
-                        }
-                    }
-                }
-
-                List<string> subjects = new List<string>();
-                List<string> hierGeo = new List<string>();
-                if (Item.Bib_Info.Subjects_Count > 0)
-                {
-                    foreach (Subject_Info thisSubject in Item.Bib_Info.Subjects)
-                    {
-                        switch (thisSubject.Class_Type)
-                        {
-                            case Subject_Info_Type.Hierarchical_Spatial:
-                                hierGeo.Add(thisSubject.ToString());
-                                break;
-
-                            default:
-                                subjects.Add(thisSubject.ToString());
-                                break;
-                        }
-                    }
-                }
-
                 StringBuilder messageBuilder = new StringBuilder();
 
                 messageBuilder.AppendLine("<span style=\"font-family:Arial, Helvetica, sans-serif;\">");
@@ -112,195 +64,132 @@ namespace SobekCM.Library.Email
                 if (String.IsNullOrEmpty(Item.Behaviors.Main_Thumbnail))
                     messageBuilder.AppendLine("<tr>");
                 else
-                    messageBuilder.AppendLine("<tr valign=\"top\"><td><a href=\"" + URL + "\"><img src=\"" + UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + Item.Web.AssocFilePath.Replace("\\", "/") + "/" + Item.Behaviors.Main_Thumbnail + "\" alt=\"BLOCKED THUMBNAIL IMAGE\" border=\"1px\" /></a></td>\n");
+                    messageBuilder.AppendLine("<tr valign=\"top\"><td><a href=\"" + URL + "\"><img src=\"" + Item.Web.Source_URL.Replace("\\", "/") + "/" + Item.Behaviors.Main_Thumbnail + "\" alt=\"BLOCKED THUMBNAIL IMAGE\" border=\"1px\" /></a></td>\n");
 
                 messageBuilder.AppendLine("<td>");
                 messageBuilder.AppendLine("<table style=\"font-family:Arial, Helvetica, sans-serif; font-size:smaller;\">");
-                messageBuilder.AppendLine("<tr><td>Title:</td><td><a href=\"" + URL + "\"><b>" + Item.Bib_Info.Main_Title + "</b></a></td></tr>");
 
-                if (( Item.Bib_Info.hasSeriesTitle ) && ( Item.Bib_Info.SeriesTitle.Title.Length > 0))
-                {
-                    messageBuilder.AppendLine("<tr><td>Series Title:</td><td>" + Item.Bib_Info.SeriesTitle + "</td></tr>\n");
-                }
 
-                bool first_data = true;
-                foreach (string title in uniform_titles)
-                {
-                    if (first_data)
-                    {
-                        messageBuilder.AppendLine("<tr><td>Uniform Title:\t" + title + "</td></tr>\n");
-                        first_data = false;
-                    }
-                    else
-                    {
-                        messageBuilder.AppendLine("<tr><td>&nbsp;</td><td>" + title + "</td></tr>\n");
-                    }
-                }
 
-                first_data = true;
-                foreach (string title in alternative_titles)
+                // Step through the citation configuration here
+                CitationSet citationSet = UI_ApplicationCache_Gateway.Configuration.UI.CitationViewer.Get_CitationSet("EMAIL");
+                foreach (CitationFieldSet fieldsSet in citationSet.FieldSets)
                 {
-                    if (first_data)
+                    // Check to see if any of the values indicated in this field set exist
+                    bool foundExistingData = false;
+                    foreach (CitationElement thisField in fieldsSet.Elements)
                     {
-                        messageBuilder.AppendLine("<tr><td>Alternate Title:</td><td>" + title + "</td></tr>\n");
-                        first_data = false;
-                    }
-                    else
-                    {
-                        messageBuilder.AppendLine("<tr><td>&nbsp;</td><td>" + title.Replace("<i>", "") + "</td></tr>\n");
-                    }
-                }
+                        // Look for a match in the item description
+                        BriefItem_DescriptiveTerm briefTerm = Item.Get_Description(thisField.MetadataTerm);
 
-                first_data = true;
-                foreach (string title in translated_titles)
-                {
-                    if (first_data)
-                    {
-                        messageBuilder.AppendLine("<tr><td>Translated Title:</td><td>" + title + "</td></tr>\n");
-                        first_data = false;
-                    }
-                    else
-                    {
-                        messageBuilder.AppendLine("<tr><td>&nbsp;</td><td>" + title + "</td></tr>\n");
-                    }
-                }
-
-                first_data = true;
-                foreach (string title in abbreviated_titles)
-                {
-                    if (first_data)
-                    {
-                        messageBuilder.AppendLine("<tr><td>Abbreviated Title:</td><td>" + title + "</td></tr>\n");
-                        first_data = false;
-                    }
-                    else
-                    {
-                        messageBuilder.AppendLine("<tr><td>&nbsp;</td><td>" + title + "</td></tr>\n");
-                    }
-                }
-
-                if (( Item.Bib_Info.hasMainEntityName ) && ( Item.Bib_Info.Main_Entity_Name.hasData))
-                {
-                    messageBuilder.AppendLine("<tr><td>Creator:</td><td>" + Item.Bib_Info.Main_Entity_Name + "</td></tr>\n");
-                    first_data = false;
-                }
-
-                if (Item.Bib_Info.Names_Count > 0)
-                {
-                    foreach (Name_Info thisName in Item.Bib_Info.Names)
-                    {
-                        if (first_data)
+                        // If no match, just continue
+                        if ((briefTerm != null) && (briefTerm.Values.Count > 0))
                         {
-                            messageBuilder.AppendLine("<tr><td>Creator:</td><td>" + thisName + "</td></tr>\n");
-                            first_data = false;
+                            foundExistingData = true;
+                            break;
+                        }
+                    }
+
+                    // If no data was found to put in this field set, skip it
+                    if (!foundExistingData)
+                        continue;
+
+                    // Step through all the fields in this field set and write them
+                    foreach (CitationElement thisField in fieldsSet.Elements)
+                    {
+                        // Look for a match in the item description
+                        BriefItem_DescriptiveTerm briefTerm = Item.Get_Description(thisField.MetadataTerm);
+
+                        // If no match, just continue
+                        if ((briefTerm == null) || (briefTerm.Values.Count == 0))
+                            continue;
+
+                        // If they can all be listed one after the other do so now
+                        if (!thisField.IndividualFields)
+                        {
+                            List<string> valueArray = new List<string>();
+                            foreach (BriefItem_DescTermValue thisValue in briefTerm.Values)
+                            {
+
+                                if (String.IsNullOrEmpty(thisValue.Authority))
+                                {
+                                    if (String.IsNullOrEmpty(thisValue.Language))
+                                    {
+                                        valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value));
+                                    }
+                                    else
+                                    {
+                                        valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )");
+                                    }
+                                }
+                                else
+                                {
+                                    if (String.IsNullOrEmpty(thisValue.Language))
+                                    {
+                                        valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )");
+                                    }
+                                    else
+                                    {
+                                        valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
+                                    }
+                                }
+
+                            }
+
+                            // Now, add this to the citation HTML
+                            Add_Citation_HTML_Rows(thisField.DisplayTerm, valueArray, messageBuilder);
                         }
                         else
                         {
-                            messageBuilder.AppendLine("<tr><td>&nbsp;</td><td>" + thisName + "</td></tr>\n");
-                        }
-                    }
-                }
-                if (Item.Bib_Info.Publishers_Count > 0)
-                {
-                    first_data = true;
-                    foreach (Publisher_Info thisPublisher in Item.Bib_Info.Publishers)
-                    {
-                        if (first_data)
-                        {
-                            messageBuilder.AppendLine("<tr><td>Publisher:</td><td>" + thisPublisher + "</td></tr>\n");
-                            first_data = false;
-                        }
-                        else
-                        {
-                            messageBuilder.AppendLine("<tr><td>&nbsp;</td><td>" + thisPublisher + "</td></tr>\n");
-                        }
+                            // In this case, each individual value gets its own citation html row
+                            foreach (BriefItem_DescTermValue thisValue in briefTerm.Values)
+                            {
+                                // Determine the label
+                                string label = thisField.DisplayTerm;
+                                if (thisField.OverrideDisplayTerm == CitationElement_OverrideDispayTerm_Enum.subterm)
+                                {
+                                    if (!String.IsNullOrEmpty(thisValue.SubTerm))
+                                        label = thisValue.SubTerm;
+                                }
 
-                    }
-                }
-                if (Item.Bib_Info.Origin_Info.Date_Issued.Length > 0)
-                {
-                    messageBuilder.AppendLine("<tr><td>Date:</td><td>" + Item.Bib_Info.Origin_Info.Date_Issued + "</td></tr>\n");
-                }
-                else
-                {
-                    if (Item.Bib_Info.Origin_Info.MARC_DateIssued.Length > 0)
-                    {
-                        messageBuilder.AppendLine("<tr><td>Date:</td><td>" + Item.Bib_Info.Origin_Info.MARC_DateIssued + "</td></tr>\n");
-                    }
-                }
-                if (Item.Bib_Info.Original_Description.Extent.Length > 0)
-                {
-                    messageBuilder.AppendLine("<tr><td>Description:</td><td>" + Item.Bib_Info.Original_Description.Extent + " ( " + Item.Bib_Info.SobekCM_Type + " )</td></tr>\n");
-                }
-                else
-                {
-                    messageBuilder.AppendLine("<tr><td>Description:</td><td>" + Item.Bib_Info.SobekCM_Type_String + "</td></tr>\n");
-                }
-                if (subjects.Count > 0)
-                {
-                    first_data = true;
-                    foreach (string thisSubject in subjects)
-                    {
-                        if (first_data)
-                        {
-                            messageBuilder.AppendLine("<tr><td>Subject:</td><td>" + thisSubject + "</td></tr>\n");
-                            first_data = false;
-                        }
-                        else
-                        {
-                            messageBuilder.AppendLine("<tr><td>&nbsp;</td><td>" + thisSubject + "</td></tr>\n");
+                                if (String.IsNullOrEmpty(thisValue.Authority))
+                                {
+                                    if (String.IsNullOrEmpty(thisValue.Language))
+                                    {
+                                        messageBuilder.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value)));
+                                    }
+                                    else
+                                    {
+                                        messageBuilder.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )"));
+                                    }
+                                }
+                                else
+                                {
+                                    if (String.IsNullOrEmpty(thisValue.Language))
+                                    {
+                                        messageBuilder.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )"));
+                                    }
+                                    else
+                                    {
+                                        messageBuilder.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )"));
+                                    }
+                                }
+
+                            }
                         }
                     }
                 }
 
-                if (Item.Bib_Info.Genres_Count > 0)
-                {
-                    first_data = true;
-                    foreach (Genre_Info thisGenre in Item.Bib_Info.Genres)
-                    {
-                        if (first_data)
-                        {
-                            messageBuilder.AppendLine("<tr><td>Genre:</td><td>" + thisGenre + "</td></tr>\n");
-                            first_data = false;
-                        }
-                        else
-                        {
-                            messageBuilder.AppendLine("<tr><td>&nbsp;</td><td>" + thisGenre + "</td></tr>\n");
-                        }
-                    }
-                }
-
-                if (hierGeo.Count > 0)
-                {
-                    first_data = true;
-                    foreach (string thisSubject in hierGeo)
-                    {
-                        if (first_data)
-                        {
-                            messageBuilder.AppendLine("<tr><td>Spatial Coverage:</td><td>" + thisSubject + "</td></tr>\n");
-                            first_data = false;
-                        }
-                        else
-                        {
-                            messageBuilder.AppendLine("<tr><td>&nbsp;</td><td>" + thisSubject + "</td></tr>\n");
-                        }
-                    }
-                }
-
-                if (Item.Bib_Info.Access_Condition.Text.Length > 0)
-                {
-                    messageBuilder.AppendLine("<tr><td>Rights:</td><td>" + Item.Bib_Info.Access_Condition.Text + "</td></tr>\n");
-                }
                 messageBuilder.AppendLine("</table>");
                 messageBuilder.AppendLine("</td></tr></table>");
 
                 messageBuilder.AppendLine("</span>\n");
 
                 string[] email_recepients = Recepient_List.Split(";,".ToCharArray());
-                string subject = Item.Bib_Info.Main_Title.ToString().Replace("&quot;", "\"");
-                if (Item.Bib_Info.Main_Title.Title.Length > 40)
+                string subject = Item.Title.Replace("&quot;", "\"");
+                if (Item.Title.Length > 40)
                 {
-                    subject = Item.Bib_Info.Main_Title.ToString().Substring(0, 35).Replace("&quot;", "\"") + "...";
+                    subject = Item.Title.Substring(0, 35).Replace("&quot;", "\"") + "...";
                 }
 
                 int error_count = 0;
@@ -335,60 +224,44 @@ namespace SobekCM.Library.Email
             }
         }
 
-        private static bool Text_Send_Email(string Recepient_List, string CcList, string Comments, string User_Name, string SobekCM_Instance_Name, SobekCM_Item Item, string URL, int UserID )
+        private static void Add_Citation_HTML_Rows(string Row_Name, List<string> Values, StringBuilder Results)
+        {
+            // Only add if there is a value
+            if (Values.Count <= 0) return;
+
+            Results.Append("  <tr><td>" + Row_Name.ToUpper().Replace(" ", "_") + ": </td><td>");
+
+            bool first = true;
+            foreach (string thisValue in Values.Where(ThisValue => ThisValue.Length > 0))
+            {
+                if (first)
+                {
+                    Results.Append(thisValue);
+                    first = false;
+                }
+                else
+                {
+                    Results.Append("<br />" + HttpUtility.HtmlEncode(thisValue));
+                }
+            }
+            Results.AppendLine("</td></tr>");
+        }
+
+        private static string Single_Citation_HTML_Row(string Row_Name, string Value)
+        {
+            // Only add if there is a value
+            if (Value.Length > 0)
+            {
+                return "<tr><td>" + Row_Name + ":</td><td>" + HttpUtility.HtmlEncode( Value ) + "</td></tr>" + Environment.NewLine;
+            }
+            return String.Empty;
+        }
+
+        private static bool Text_Send_Email(string Recepient_List, string CcList, string Comments, string User_Name, string SobekCM_Instance_Name, BriefItemInfo Item, string URL, int UserID )
         {
             try
             {
-                // Collect the titles
-                List<string> uniform_titles = new List<string>();
-                List<string> alternative_titles = new List<string>();
-                List<string> translated_titles = new List<string>();
-                List<string> abbreviated_titles = new List<string>();
-                if (Item.Bib_Info.Other_Titles_Count > 0)
-                {
-                    foreach (Title_Info thisTitle in Item.Bib_Info.Other_Titles)
-                    {
-                        switch (thisTitle.Title_Type)
-                        {
-                            case Title_Type_Enum.UNSPECIFIED:
-                            case Title_Type_Enum.Alternative:
-                                alternative_titles.Add(thisTitle.ToString());
-                                break;
-
-                            case Title_Type_Enum.Uniform:
-                                uniform_titles.Add(thisTitle.ToString());
-                                break;
-
-                            case Title_Type_Enum.Translated:
-                                translated_titles.Add(thisTitle.ToString());
-                                break;
-
-                            case Title_Type_Enum.Abbreviated:
-                                abbreviated_titles.Add(thisTitle.ToString());
-                                break;
-                        }
-                    }
-                }
-
-                List<string> subjects = new List<string>();
-                List<string> hierGeo = new List<string>();
-                if (Item.Bib_Info.Subjects_Count > 0)
-                {
-                    foreach (Subject_Info thisSubject in Item.Bib_Info.Subjects)
-                    {
-                        switch (thisSubject.Class_Type)
-                        {
-                            case Subject_Info_Type.Hierarchical_Spatial:
-                                hierGeo.Add(thisSubject.ToString());
-                                break;
-
-                            default:
-                                subjects.Add(thisSubject.ToString());
-                                break;
-                        }
-                    }
-                }
-
+  
                 StringBuilder messageBuilder = new StringBuilder();
 
                 if (Comments.Length > 0)
@@ -402,191 +275,123 @@ namespace SobekCM.Library.Email
                 }
                 messageBuilder.Append("ITEM INFORMATION\n");
                 messageBuilder.Append("------------------------------------------------------\n");
-                messageBuilder.Append("\tURL:\t\t\t" + URL + "\n");
-                messageBuilder.Append("\tTitle:\t\t" + Item.Bib_Info.Main_Title.ToString().Replace("&quot;", "\"") + "\n");
 
-                if (( Item.Bib_Info.hasSeriesTitle ) && ( Item.Bib_Info.SeriesTitle.Title.Length > 0))
-                {
-                    messageBuilder.Append("\tSeries Title:\t" + Item.Bib_Info.SeriesTitle.ToString().Replace("&quot;", "\"") + "\n");
-                }
 
-                bool first_data = true;
-                foreach (string title in uniform_titles)
+                // Step through the citation configuration here
+                CitationSet citationSet = UI_ApplicationCache_Gateway.Configuration.UI.CitationViewer.Get_CitationSet("EMAIL");
+                foreach (CitationFieldSet fieldsSet in citationSet.FieldSets)
                 {
-                    if (first_data)
+                    // Check to see if any of the values indicated in this field set exist
+                    bool foundExistingData = false;
+                    foreach (CitationElement thisField in fieldsSet.Elements)
                     {
-                        messageBuilder.Append("\tUniform Title:\t" + title.Replace("<i>", "").Replace("</i>", "").Replace("&quot;", "\"") + "\n");
-                        first_data = false;
-                    }
-                    else
-                    {
-                        messageBuilder.Append("\t\t\t\t" + title.Replace("<i>", "").Replace("</i>", "").Replace("&quot;", "\"") + "\n");
-                    }
-                }
+                        // Look for a match in the item description
+                        BriefItem_DescriptiveTerm briefTerm = Item.Get_Description(thisField.MetadataTerm);
 
-                first_data = true;
-                foreach (string title in alternative_titles)
-                {
-                    if (first_data)
-                    {
-                        messageBuilder.Append("\tAlternate Title:\t" + title.Replace("<i>", "").Replace("</i>", "").Replace("&quot;", "\"") + "\n");
-                        first_data = false;
-                    }
-                    else
-                    {
-                        messageBuilder.Append("\t\t\t\t" + title.Replace("<i>", "").Replace("</i>", "").Replace("&quot;", "\"") + "\n");
-                    }
-                }
-
-                first_data = true;
-                foreach (string title in translated_titles)
-                {
-                    if (first_data)
-                    {
-                        messageBuilder.Append("\tTranslated Title: " + title.Replace("<i>", "").Replace("</i>", "").Replace("&quot;", "\"") + "\n");
-                        first_data = false;
-                    }
-                    else
-                    {
-                        messageBuilder.Append("\t\t\t\t" + title.Replace("<i>", "").Replace("</i>", "").Replace("&quot;", "\"") + "\n");
-                    }
-                }
-
-                first_data = true;
-                foreach (string title in abbreviated_titles)
-                {
-                    if (first_data)
-                    {
-                        messageBuilder.Append("\tAbbreviated Title:" + title.Replace("<i>", "").Replace("</i>", "").Replace("&quot;", "\"") + "\n");
-                        first_data = false;
-                    }
-                    else
-                    {
-                        messageBuilder.Append("\t\t\t\t" + title.Replace("<i>", "").Replace("</i>", "").Replace("&quot;", "\"") + "\n");
-                    }
-                }
-
-                if ((Item.Bib_Info.hasMainEntityName) && (Item.Bib_Info.Main_Entity_Name.hasData))
-                {
-                    messageBuilder.Append("\tCreator:\t\t" + Item.Bib_Info.Main_Entity_Name.ToString().Replace("<i>", "").Replace("</i>", "").Replace("&quot;", "\"") + "\n");
-                    first_data = false;
-                }
-
-                if (Item.Bib_Info.Names_Count > 0)
-                {
-                    foreach (Name_Info thisName in Item.Bib_Info.Names)
-                    {
-                        if (first_data)
+                        // If no match, just continue
+                        if ((briefTerm != null) && (briefTerm.Values.Count > 0))
                         {
-                            messageBuilder.Append("\tCreator:\t\t" + thisName.ToString().Replace("<i>", "").Replace("</i>", "").Replace("&quot;", "\"") + "\n");
-                            first_data = false;
+                            foundExistingData = true;
+                            break;
+                        }
+                    }
+
+                    // If no data was found to put in this field set, skip it
+                    if (!foundExistingData)
+                        continue;
+
+                    // Step through all the fields in this field set and write them
+                    foreach (CitationElement thisField in fieldsSet.Elements)
+                    {
+                        // Look for a match in the item description
+                        BriefItem_DescriptiveTerm briefTerm = Item.Get_Description(thisField.MetadataTerm);
+
+                        // If no match, just continue
+                        if ((briefTerm == null) || (briefTerm.Values.Count == 0))
+                            continue;
+
+                        // If they can all be listed one after the other do so now
+                        if (!thisField.IndividualFields)
+                        {
+                            List<string> valueArray = new List<string>();
+                            foreach (BriefItem_DescTermValue thisValue in briefTerm.Values)
+                            {
+
+                                if (String.IsNullOrEmpty(thisValue.Authority))
+                                {
+                                    if (String.IsNullOrEmpty(thisValue.Language))
+                                    {
+                                        valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value));
+                                    }
+                                    else
+                                    {
+                                        valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )");
+                                    }
+                                }
+                                else
+                                {
+                                    if (String.IsNullOrEmpty(thisValue.Language))
+                                    {
+                                        valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )");
+                                    }
+                                    else
+                                    {
+                                        valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
+                                    }
+                                }
+
+                            }
+
+                            // Now, add this to the citation HTML
+                            Add_Citation_Text_Rows(thisField.DisplayTerm, valueArray, messageBuilder);
                         }
                         else
                         {
-                            messageBuilder.Append("\t\t\t\t" + thisName.ToString().Replace("<i>", "").Replace("</i>", "").Replace("&quot;", "\"") + "\n");
-                        }
-                    }
-                }
-                if (Item.Bib_Info.Publishers_Count > 0)
-                {
-                    first_data = true;
-                    foreach (Publisher_Info thisPublisher in Item.Bib_Info.Publishers)
-                    {
-                        if (first_data)
-                        {
-                            messageBuilder.Append("\tPublisher:\t\t" + thisPublisher + "\n");
-                            first_data = false;
-                        }
-                        else
-                        {
-                            messageBuilder.Append("\t\t\t\t" + thisPublisher + "\n");
-                        }
+                            // In this case, each individual value gets its own citation html row
+                            foreach (BriefItem_DescTermValue thisValue in briefTerm.Values)
+                            {
+                                // Determine the label
+                                string label = thisField.DisplayTerm;
+                                if (thisField.OverrideDisplayTerm == CitationElement_OverrideDispayTerm_Enum.subterm)
+                                {
+                                    if (!String.IsNullOrEmpty(thisValue.SubTerm))
+                                        label = thisValue.SubTerm;
+                                }
 
-                    }
-                }
-                if (Item.Bib_Info.Origin_Info.Date_Issued.Length > 0)
-                {
-                    messageBuilder.Append("\tDate:\t\t\t" + Item.Bib_Info.Origin_Info.Date_Issued + "\n");
-                }
-                else
-                {
-                    if (Item.Bib_Info.Origin_Info.MARC_DateIssued.Length > 0)
-                    {
-                        messageBuilder.Append("\tDate:\t\t\t" + Item.Bib_Info.Origin_Info.MARC_DateIssued + "\n");
-                    }
-                }
-                if (Item.Bib_Info.Original_Description.Extent.Length > 0)
-                {
-                    messageBuilder.Append("\tDescription:\t" + Item.Bib_Info.Original_Description.Extent + " ( " + Item.Bib_Info.SobekCM_Type_String + " )\n");
-                }
-                else
-                {
-                    messageBuilder.Append("\tDescription:\t" + Item.Bib_Info.SobekCM_Type_String + "\n");
-                }
-                if (subjects.Count > 0)
-                {
-                    first_data = true;
-                    foreach (string thisSubject in subjects)
-                    {
-                        if (first_data)
-                        {
-                            messageBuilder.Append("\tSubject:\t\t" + thisSubject.Replace("<i>", "").Replace("</i>", "") + "\n");
-                            first_data = false;
-                        }
-                        else
-                        {
-                            messageBuilder.Append("\t\t\t\t" + thisSubject.Replace("<i>", "").Replace("</i>", "") + "\n");
+                                if (String.IsNullOrEmpty(thisValue.Authority))
+                                {
+                                    if (String.IsNullOrEmpty(thisValue.Language))
+                                    {
+                                        messageBuilder.Append(Single_Citation_Text_Row(label, HttpUtility.HtmlEncode(thisValue.Value)));
+                                    }
+                                    else
+                                    {
+                                        messageBuilder.Append(Single_Citation_Text_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )"));
+                                    }
+                                }
+                                else
+                                {
+                                    if (String.IsNullOrEmpty(thisValue.Language))
+                                    {
+                                        messageBuilder.Append(Single_Citation_Text_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )"));
+                                    }
+                                    else
+                                    {
+                                        messageBuilder.Append(Single_Citation_Text_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )"));
+                                    }
+                                }
+
+                            }
                         }
                     }
                 }
 
-                if (Item.Bib_Info.Genres_Count > 0)
-                {
-                    first_data = true;
-                    foreach (Genre_Info thisGenre in Item.Bib_Info.Genres)
-                    {
-                        if (first_data)
-                        {
-                            messageBuilder.Append("\tGenre:\t\t" + thisGenre.ToString().Replace("<i>", "").Replace("</i>", "") + "\n");
-                            first_data = false;
-                        }
-                        else
-                        {
-                            messageBuilder.Append("\t\t\t\t" + thisGenre.ToString().Replace("<i>", "").Replace("</i>", "") + "\n");
-                        }
-                    }
-                }
-
-                if (hierGeo.Count > 0)
-                {
-                    first_data = true;
-                    foreach (string thisSubject in hierGeo)
-                    {
-                        if (first_data)
-                        {
-                            messageBuilder.Append("\tSpatial Coverage: " + thisSubject.Replace("<i>", "").Replace("</i>", "") + "\n");
-                            first_data = false;
-                        }
-                        else
-                        {
-                            messageBuilder.Append("\t\t\t\t" + thisSubject.Replace("<i>", "").Replace("</i>", "") + "\n");
-                        }
-                    }
-                }
-
-                if (Item.Bib_Info.Access_Condition.Text.Length > 0)
-                {
-                    messageBuilder.Append("\tRights:\t\t" + Item.Bib_Info.Access_Condition.Text + "\n");
-                }
-
-
-                messageBuilder.Append("</span>\n");
 
                 string[] email_recepients = Recepient_List.Split(";,".ToCharArray());
-                string subject = Item.Bib_Info.Main_Title.ToString().Replace("&quot;", "\"");
-                if (Item.Bib_Info.Main_Title.Title.Length > 40)
+                string subject = Item.Title.Replace("&quot;", "\"");
+                if (Item.Title.Length > 40)
                 {
-                    subject = Item.Bib_Info.Main_Title.ToString().Substring(0, 35).Replace("&quot;", "\"") + "...";
+                    subject = Item.Title.Substring(0, 35).Replace("&quot;", "\"") + "...";
                 }
 
                 int error_count = 0;
@@ -620,6 +425,39 @@ namespace SobekCM.Library.Email
             {
                 return false;
             }
+        }
+
+        private static void Add_Citation_Text_Rows(string Row_Name, List<string> Values, StringBuilder Results)
+        {
+            // Only add if there is a value
+            if (Values.Count <= 0) return;
+
+            Results.Append("\t" + Row_Name.ToUpper().Replace(" ", "_").PadRight(30, ' ') + ":  ");
+
+            bool first = true;
+            foreach (string thisValue in Values.Where(ThisValue => ThisValue.Length > 0))
+            {
+                if (first)
+                {
+                    Results.Append(thisValue);
+                    first = false;
+                }
+                else
+                {
+                    Results.Append(Environment.NewLine + "\t" + String.Empty.PadRight(30, ' ') + "   " + HttpUtility.HtmlEncode(thisValue));
+                }
+            }
+            Results.AppendLine();
+        }
+
+        private static string Single_Citation_Text_Row(string Row_Name, string Value)
+        {
+            // Only add if there is a value
+            if (Value.Length > 0)
+            {
+                return "\t" + Row_Name.ToUpper().Replace(" ", "_").PadRight(30, ' ') + ":  " + HttpUtility.HtmlEncode(Value) + Environment.NewLine;
+            }
+            return String.Empty;
         }
     }
 }

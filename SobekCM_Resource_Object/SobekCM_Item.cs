@@ -903,17 +903,6 @@ namespace SobekCM.Resource_Object
                     }
                 }
 
-                // Set the related image, if they all had thumbnails
-                if (allHaveThumbs)
-                {
-                    bool relatedAlreadyThere = Behaviors.Views.Any(thisView => thisView.View_Type == View_Enum.RELATED_IMAGES);
-
-                    if (!relatedAlreadyThere)
-                    {
-                        Behaviors.Add_View(View_Enum.RELATED_IMAGES);
-                    }
-                }
-
                 // Now, step through each jpeg2000 file in the METS package directory
                 allHaveThumbs = true;
                 textFilesInDir = Directory.GetFiles(Source_Directory, "*.jp2");
@@ -940,17 +929,6 @@ namespace SobekCM.Resource_Object
                     }
                 }
 
-
-                // Set the related image, if they all had thumbnails
-                if (allHaveThumbs)
-                {
-                    bool relatedAlreadyThere2 = Behaviors.Views.Any(thisView => thisView.View_Type == View_Enum.RELATED_IMAGES);
-
-                    if (!relatedAlreadyThere2)
-                    {
-                        Behaviors.Add_View(View_Enum.RELATED_IMAGES);
-                    }
-                }
 
                 //// If there is one thumbnail, assign it
                 //int fileid = 999999;

@@ -789,11 +789,11 @@ namespace SobekCM.Library.MySobekViewer
                     Item_To_Complete.Behaviors.Clear_Views();
                     if (jpeg_added)
                     {
-                        Item_To_Complete.Behaviors.Add_View(View_Enum.JPEG);
+                        Item_To_Complete.Behaviors.Add_View("JPEG");
                     }
                     if (jp2_added)
                     {
-                        Item_To_Complete.Behaviors.Add_View(View_Enum.JPEG2000);
+                        Item_To_Complete.Behaviors.Add_View("JPEG2000");
                     }
                 }
 
@@ -816,9 +816,9 @@ namespace SobekCM.Library.MySobekViewer
 				// If this is a dataset and XML file was uploaded, add some viewers
 				if ((xml_found) && (Item_To_Complete.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Dataset))
 				{
-					Item_To_Complete.Behaviors.Add_View(View_Enum.DATASET_CODEBOOK);
-					Item_To_Complete.Behaviors.Add_View(View_Enum.DATASET_REPORTS);
-					Item_To_Complete.Behaviors.Add_View(View_Enum.DATASET_VIEWDATA);
+					Item_To_Complete.Behaviors.Add_View("DATASET_CODEBOOK");
+					Item_To_Complete.Behaviors.Add_View("DATASET_REPORTS");
+					Item_To_Complete.Behaviors.Add_View("DATASET_VIEWDATA");
 				}
 
                 // Save to the database

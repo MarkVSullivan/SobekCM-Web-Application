@@ -181,53 +181,11 @@ namespace SobekCM.Resource_Object.Behaviors
 			// Were any views specified?
 			if (((views != null) && (views.Count > 0)) || ((item_level_page_views != null) && (item_level_page_views.Count > 0)))
 			{
-				// Remove invalid views (i.e., legacy JPEG and JP2 views if no JPEG and/or JP2 )
-				if (!PackageIncludesImageFiles)
-				{
-					// Remove page image views
-					List<View_Object> deletes = new List<View_Object>();
-					if (views != null)
-					{
-						foreach (View_Object thisViewObject in views)
-						{
-							switch (thisViewObject.View_Type)
-							{
-								case View_Enum.JPEG:
-								case View_Enum.JPEG2000:
-								case View_Enum.TEXT:
-									deletes.Add(thisViewObject);
-									break;
-							}
-						}
-						foreach (View_Object deleteView in deletes)
-							views.Remove(deleteView);
-					}
-
-					// Remove from item_level_page_views
-					deletes.Clear();
-					if (item_level_page_views != null)
-					{
-						foreach (View_Object thisViewObject in item_level_page_views)
-						{
-							switch (thisViewObject.View_Type)
-							{
-								case View_Enum.JPEG:
-								case View_Enum.JPEG2000:
-								case View_Enum.TEXT:
-									deletes.Add(thisViewObject);
-									break;
-							}
-						}
-						foreach (View_Object deleteView in deletes)
-							item_level_page_views.Remove(deleteView);
-					}
-				}
-
 				// Start the behavior section for views
 				BehaviorSec.Write("<METS:behaviorSec ID=\"VIEWS\" LABEL=\"Options available to the user for viewing this item\" >\r\n");
 
 				// Add each view behavior
-				List<View_Enum> views_added = new List<View_Enum>();
+                List<string> views_added = new List<string>();
 				int view_count = 1;
 				if (views != null)
 				{
@@ -577,32 +535,6 @@ namespace SobekCM.Resource_Object.Behaviors
 			get { return views == null ? 0 : views.Count; }
 		}
 
-		/// <summary> Checks to see if the viewer type is in use for this digital resource </summary>
-		/// <param name="ViewerEnum"> Viewer type to check for </param>
-		/// <returns> TRUE if this item has a viewer of that type, otherwise FALSE </returns>
-		public bool Has_Viewer_Type( View_Enum ViewerEnum )
-		{
-			return views != null && views.Any(ThisView => ThisView.View_Type == ViewerEnum);
-		}
-
-		/// <summary> List of page views which are generally accessible for this item </summary>
-		/// <remarks>This is used by the SobekCM web application only. <br /><br />
-		/// You should check the count of page views first using the <see cref="Item_Level_Page_Views_Count"/> before using this property.
-		/// Even if there are no page views, this property creates a readonly collection to pass back out.</remarks>
-		public ReadOnlyCollection<View_Object> Item_Level_Page_Views
-		{
-			get { return item_level_page_views == null ? new ReadOnlyCollection<View_Object>(new List<View_Object>()) : new ReadOnlyCollection<View_Object>(item_level_page_views); }
-		}
-
-		/// <summary> Gets the number of page views associated with this resource </summary>
-		/// <remarks>This is used by the SobekCM web application only. <br /><br />
-		/// This should be used rather than the Count property of the <see cref="Item_Level_Page_Views"/> property.  Even if 
-		/// there are no page views, the Item_Level_Page_Views property creates a readonly collection to pass back out.</remarks>
-		public int Item_Level_Page_Views_Count
-		{
-			get { return item_level_page_views == null ? 0 : item_level_page_views.Count; }
-		}
-
 		/// <summary> Clear all the pre-existing views from this item </summary>
 		public void Clear_Views()
 		{
@@ -623,7 +555,7 @@ namespace SobekCM.Resource_Object.Behaviors
 		/// <summary>Add a new SobekCM View to this resource </summary>
 		/// <param name="View_Type">Standard type of SobekCM View</param>
 		/// <returns>Built view object</returns>
-		public View_Object Add_View(View_Enum View_Type)
+		public View_Object Add_View(string View_Type)
 		{
 			return Add_View(View_Type, String.Empty, String.Empty);
 		}
@@ -633,9 +565,9 @@ namespace SobekCM.Resource_Object.Behaviors
 		/// <param name="Label">Label for this SobekCM View</param>
 		/// <param name="Attributes">Any additional attribures needed for thie SobekCM View</param>
 		/// <returns>Built view object</returns>
-		public View_Object Add_View(View_Enum View_Type, string Label, string Attributes)
+        public View_Object Add_View(string View_Type, string Label, string Attributes)
 		{
-			if (View_Type != View_Enum.None)
+            if (!String.IsNullOrEmpty(View_Type))
 			{
 				if (views == null)
 					views = new List<View_Object>();
@@ -652,9 +584,9 @@ namespace SobekCM.Resource_Object.Behaviors
 		/// <param name="Index">Index where to insert this view</param>
 		/// <param name="View_Type">Standard type of SobekCM View</param>
 		/// <returns>Built view object</returns>
-		public View_Object Insert_View(int Index, View_Enum View_Type)
+        public View_Object Insert_View(int Index, string View_Type)
 		{
-			if (View_Type != View_Enum.None)
+			if ( !String.IsNullOrEmpty(View_Type ))
 			{
 				if (views == null)
 					views = new List<View_Object>();
@@ -672,9 +604,9 @@ namespace SobekCM.Resource_Object.Behaviors
 		/// <param name="Label">Label for this SobekCM View</param>
 		/// <param name="Attributes">Any additional attribures needed for thie SobekCM View</param>
 		/// <returns>Built view object</returns>
-		public View_Object Insert_View(int Index, View_Enum View_Type, string Label, string Attributes)
+		public View_Object Insert_View(int Index, string View_Type, string Label, string Attributes)
 		{
-			if (View_Type != View_Enum.None)
+            if (!String.IsNullOrEmpty(View_Type))
 			{
 				if (views == null)
 					views = new List<View_Object>();
@@ -687,26 +619,27 @@ namespace SobekCM.Resource_Object.Behaviors
 			return null;
 		}
 
-		/// <summary>Add a new SobekCM View to this resource </summary>
-		/// <param name="View_Type">Standard type of SobekCM View</param>
-		/// <param name="Label">Label for this SobekCM View</param>
-		/// <param name="FileName">Name of the file</param>
-		/// <param name="Attributes">Any additional attribures needed for thie SobekCM View</param>
-		/// <returns>Built view object</returns>
-		public View_Object Add_View(View_Enum View_Type, string Label, string FileName, string Attributes)
-		{
-			if (View_Type != View_Enum.None)
-			{
-				if (views == null)
-					views = new List<View_Object>();
 
-				View_Object newView = new View_Object(View_Type, Label, Attributes) {FileName = FileName};
-				views.Add(newView);
-				return newView;
-			}
+	    /// <summary>Add a new SobekCM View to this resource </summary>
+	    /// <param name="View_Type">Standard type of SobekCM View</param>
+	    /// <param name="Label">Label for this SobekCM View</param>
+	    /// <param name="Attributes">Any additional attribures needed for thie SobekCM View</param>
+	    /// <param name="MenuOrder"> order where this sits on the item main menu </param>
+	    /// <returns>Built view object</returns>
+	    public View_Object Add_View(string View_Type, string Label, string Attributes, float MenuOrder, bool Exclude )
+        {
+            if (!String.IsNullOrEmpty(View_Type))
+            {
+                if (views == null)
+                    views = new List<View_Object>();
 
-			return null;
-		}
+                View_Object newView = new View_Object(View_Type, Label, Attributes) { MenuOrder = MenuOrder, Exclude = Exclude };
+                views.Add(newView);
+                return newView;
+            }
+
+            return null;
+        }
 
 		/// <summary> Clear the SobekCM item-level page views linked to this resource </summary>
 		public void Clear_Item_Level_Page_Views()

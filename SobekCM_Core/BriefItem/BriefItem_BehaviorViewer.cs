@@ -19,12 +19,12 @@ namespace SobekCM.Core.BriefItem
 
         /// <summary> Constructor for a new instance of the BriefItem_BehaviorViewer class </summary>
         /// <param name="ViewerType"> Name of this viewer type, from the database </param>
-        /// <param name="Order"> Order of this viewer within the context of other viewers </param>
+        /// <param name="MenuOrder"> Order this displays in the item main menu </param>
         /// <param name="Excluded"> Flag indicates if this viewer is explicitly excluded from this digital resource </param>
-        public BriefItem_BehaviorViewer(string ViewerType, int Order, bool Excluded )
+        public BriefItem_BehaviorViewer(string ViewerType, float MenuOrder, bool Excluded)
         {
             this.ViewerType = ViewerType;
-            this.Order = Order;
+            this.MenuOrder = MenuOrder;
             this.Excluded = Excluded;
         }
 
@@ -34,11 +34,11 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(1)]
         public string ViewerType { get; set; }
 
-        /// <summary> Order of this viewer within the context of other viewers </summary>
+        /// <summary> Order this displays in the item main menu  </summary>
         [DataMember(Name = "order")]
         [XmlAttribute("order")]
         [ProtoMember(2)]
-        public int Order { get; set; }
+        public float MenuOrder { get; set; }
 
         /// <summary> Flag indicates if this viewer is explicitly excluded from this digital resource </summary>
         [DataMember(Name = "excluded")]

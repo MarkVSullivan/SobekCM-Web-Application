@@ -475,7 +475,6 @@
     <Compile Include="HTML\Search_Results_HtmlSubwriter.cs" />
     <Compile Include="HTML\Statistics_HtmlSubwriter.cs" />
     <Compile Include="ItemViewer\ItemViewer_Factory.cs" />
-    <Compile Include="ItemViewer\Item_Nav_Bar_HTML_Factory.cs" />
     <Compile Include="ItemViewer\Viewers\iItemViewer.cs" />
     <Compile Include="MainWriters\Dataset_MainWriter.cs" />
     <Compile Include="MainWriters\abstractMainWriter.cs" />

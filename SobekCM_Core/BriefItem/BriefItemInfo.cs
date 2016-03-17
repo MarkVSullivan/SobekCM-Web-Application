@@ -112,6 +112,15 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(14)]
         public BriefItem_GeoSpatial GeoSpatial { get; set; }
 
+        /// <summary> Data about a brief digital object item that is 
+        /// computed once by the user interface and stored in the user interface
+        /// cache for subsequent needs </summary>
+        /// <remarks> This value is only used by the user interface and is not
+        /// serializable </remarks>
+        [IgnoreDataMember]
+        [XmlIgnore]
+        public BriefItem_UI UI { get; set; }
+
         /// <summary> Constructor for a new instance of the BriefItemInfo class </summary>
         public BriefItemInfo()
         {

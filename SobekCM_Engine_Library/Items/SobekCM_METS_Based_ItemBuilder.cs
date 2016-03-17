@@ -80,7 +80,7 @@ namespace SobekCM.Engine_Library.Items
 
 			// Set some default and add the management view
 			Item_Group_Object.METS_Header.RecordStatus_Enum = METS_Record_Status.BIB_LEVEL;
-			Item_Group_Object.Behaviors.Add_View(View_Enum.MANAGE);
+			Item_Group_Object.Behaviors.Add_View("MANAGE");
 
 			// Pull values from the database
 			Item_Group_Object.Behaviors.GroupTitle = String.Empty;
@@ -105,15 +105,15 @@ namespace SobekCM.Engine_Library.Items
 					// In addition, if there is a latitude or longitude listed, add the Google Maps
 					if ((geoInfo.Point_Count > 0) || (geoInfo.Polygon_Count > 0))
 					{
-						Item_Group_Object.Behaviors.Insert_View(0, View_Enum.GOOGLE_MAP);
+						Item_Group_Object.Behaviors.Insert_View(0, "GOOGLE_MAP");
 					}
 				}
 
-				Item_Group_Object.Behaviors.Insert_View(0, View_Enum.CITATION);
+				Item_Group_Object.Behaviors.Insert_View(0, "CITATION");
 			}
 
 			// If this has more than 1 sibling (this count includes itself), add the multi-volumes viewer
-			Item_Group_Object.Behaviors.Insert_View(0, View_Enum.ALL_VOLUMES, String.Empty, Item_Group_Object.Bib_Info.SobekCM_Type_String);
+			Item_Group_Object.Behaviors.Insert_View(0, "ALL_VOLUMES", String.Empty, Item_Group_Object.Bib_Info.SobekCM_Type_String);
 
 			// Pull the data from the database
 			Item_Group_Object.Behaviors.GroupType = mainItemRow["Type"].ToString();
@@ -606,7 +606,7 @@ namespace SobekCM.Engine_Library.Items
 				Package_To_Finalize.Behaviors.Add_Tickler(thisRow["MetadataValue"].ToString().Trim());
 			}
 
-			// Set the aggregationPermissions in the package to the aggregation links from the database
+			// Set the aggregations in the package to the aggregation links from the database
 			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Load the aggregations from the database info");
 			Package_To_Finalize.Behaviors.Clear_Aggregations();
 			foreach (DataRow thisRow in DatabaseInfo.Tables[1].Rows)
@@ -633,21 +633,6 @@ namespace SobekCM.Engine_Library.Items
                     }
 				}
 			}
-
-			// Step through each page and set the static page count
-			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Set the static page count");
-
-			pageseq = 0;
-			List<Page_TreeNode> pages_encountered = new List<Page_TreeNode>();
-		    if (!Package_To_Finalize.Behaviors.Dark_Flag)
-		    {
-		        foreach (abstract_TreeNode rootNode in Package_To_Finalize.Divisions.Physical_Tree.Roots)
-		        {
-		            recurse_through_nodes(Package_To_Finalize, rootNode, pages_encountered);
-		        }
-		    }
-		    Package_To_Finalize.Web.Static_PageCount = pages_encountered.Count;
-			Package_To_Finalize.Web.Static_Division_Count = divseq;
 
 			// Make sure no icons were retained from the METS file itself
 			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Load the wordmarks/icons from the database info");
@@ -699,28 +684,6 @@ namespace SobekCM.Engine_Library.Items
 			// Make sure no views were retained from the METS file itself
 			Package_To_Finalize.Behaviors.Clear_Views();
 			Package_To_Finalize.Behaviors.Clear_Item_Level_Page_Views();
-
-			// If this has more than 1 sibling (this count includes itself), add the multi-volumes viewer
-			if (Multiple)
-			{
-				Package_To_Finalize.Behaviors.Add_View(View_Enum.ALL_VOLUMES, String.Empty, Package_To_Finalize.Bib_Info.SobekCM_Type_String);
-			}
-
-			// Add the full citation view and the (hidden) tracking view and some other ALWAYS views
-			Package_To_Finalize.Behaviors.Add_View(View_Enum.CITATION);
-			Package_To_Finalize.Behaviors.Add_View(View_Enum.TRACKING);
-            Package_To_Finalize.Behaviors.Add_View(View_Enum.TRACKING_SHEET);
-			Package_To_Finalize.Behaviors.Add_View(View_Enum.GOOGLE_COORDINATE_ENTRY);
-			Package_To_Finalize.Behaviors.Add_View(View_Enum.TEST);
-			Package_To_Finalize.Behaviors.Add_View(View_Enum.MANAGE);
-
-			// Add the full text searchable
-			if ( Package_To_Finalize.Behaviors.Text_Searchable )
-				Package_To_Finalize.Behaviors.Add_View(View_Enum.SEARCH);
-
-			// Is there an embedded video?
-			if (Package_To_Finalize.Behaviors.Embedded_Video.Length > 0)
-				Package_To_Finalize.Behaviors.Add_View(View_Enum.EMBEDDED_VIDEO);
 
 			// If there is no PURL, add one based on how SobekCM operates
 			if (Package_To_Finalize.Bib_Info.Location.PURL.Length == 0)
@@ -791,518 +754,22 @@ namespace SobekCM.Engine_Library.Items
 			if (Package_To_Finalize.Behaviors.Dark_Flag) return;
 
 			// Check to see which views were present from the database, and build the list
-			Dictionary<View_Enum, View_Object> viewsFromDb = new Dictionary<View_Enum, View_Object>();
+            Dictionary<string, View_Object> viewsFromDb = new Dictionary<string, View_Object>();
 			foreach (DataRow viewRow in DatabaseInfo.Tables[4].Rows)
 			{
 				string viewType = viewRow[0].ToString();
 				string attribute = viewRow[1].ToString();
 				string label = viewRow[2].ToString();
+			    float menuOrder = float.Parse(viewRow[3].ToString());
+			    bool exclude = bool.Parse(viewRow[4].ToString());
 
-				View_Enum viewTypeEnum = View_Enum.None;
-				switch (viewType)
-				{
-					case "Dataset Codebook":
-						viewTypeEnum = View_Enum.DATASET_CODEBOOK;
-						break;
-
-					case "Dataset Reports":
-						viewTypeEnum = View_Enum.DATASET_REPORTS;
-						break;
-
-					case "Dataset View Data":
-						viewTypeEnum = View_Enum.DATASET_VIEWDATA;
-						break;
-
-					case "Google Map":
-						viewTypeEnum = View_Enum.GOOGLE_MAP;
-						break;
-
-                    case "Google Map Beta":
-                        viewTypeEnum = View_Enum.GOOGLE_MAP_BETA;
-                        break;
-
-					case "HTML Viewer":
-						viewTypeEnum = View_Enum.HTML;
-						break;
-
-					case "JPEG":
-						viewTypeEnum = View_Enum.JPEG;
-						break;
-
-					case "JPEG/Text Two Up":
-						viewTypeEnum = View_Enum.JPEG_TEXT_TWO_UP;
-						break;
-
-					case "JPEG2000":
-						viewTypeEnum = View_Enum.JPEG2000;
-						break;
-
-					case "Page Turner":
-						viewTypeEnum = View_Enum.PAGE_TURNER;
-						break;
-
-					case "Related Images":
-						viewTypeEnum = View_Enum.RELATED_IMAGES;
-						break;
-
-					case "TEI":
-						viewTypeEnum = View_Enum.TEI;
-						break;
-
-					case "Text":
-						viewTypeEnum = View_Enum.TEXT;
-						break;
-
-					case "TOC":
-						viewTypeEnum = View_Enum.TOC;
-						break;
-				}
-
-				if (viewTypeEnum != View_Enum.None)
-				{
-					viewsFromDb[viewTypeEnum] = new View_Object(viewTypeEnum, label, attribute);
-				}
+                Package_To_Finalize.Behaviors.Add_View(viewType, label, attribute, menuOrder, exclude);
 			}
-
-			// Add the dataset views (later we should do some checking here, but for 
-			// now just add them if the user selected them.
-			if (viewsFromDb.ContainsKey(View_Enum.DATASET_VIEWDATA))
-			{
-				Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.DATASET_VIEWDATA]);
-				viewsFromDb.Remove(View_Enum.DATASET_VIEWDATA);
-			}
-			if (viewsFromDb.ContainsKey(View_Enum.DATASET_CODEBOOK))
-			{
-				Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.DATASET_CODEBOOK]);
-				viewsFromDb.Remove(View_Enum.DATASET_CODEBOOK);
-			}
-			if (viewsFromDb.ContainsKey(View_Enum.DATASET_REPORTS))
-			{
-				Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.DATASET_REPORTS]);
-				viewsFromDb.Remove(View_Enum.DATASET_REPORTS);
-			}
-
-
-			// Add the thumbnail view, if requested and has multiple pages
-			if (Package_To_Finalize.Divisions.Page_Count > 1)
-			{
-			    if (viewsFromDb.ContainsKey(View_Enum.RELATED_IMAGES))
-			    {
-			        Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.RELATED_IMAGES]);
-			        viewsFromDb.Remove(View_Enum.RELATED_IMAGES);
-			    }
-			}
-			else
-			{
-				if (viewsFromDb.ContainsKey(View_Enum.RELATED_IMAGES))
-				{
-					viewsFromDb.Remove(View_Enum.RELATED_IMAGES);
-				}
-			}
-
-            // Always add the QC viewer ( the QC viewer will redirect to upload files if there are NO pages)
-            Package_To_Finalize.Behaviors.Add_View(View_Enum.QUALITY_CONTROL);
-
-			// If this item has more than one division, look for the TOC viewer
-			if ((Package_To_Finalize.Divisions.Has_Multiple_Divisions) && (!Package_To_Finalize.Bib_Info.ImageClass))
-			{
-				if (viewsFromDb.ContainsKey(View_Enum.TOC))
-				{
-					Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.TOC]);
-					viewsFromDb.Remove(View_Enum.TOC);
-				}
-			}
-
-			// In addition, if there is a latitude or longitude listed, look for the Google Maps
-			bool hasCoords = false;
-			GeoSpatial_Information geoInfo = (GeoSpatial_Information) Package_To_Finalize.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY);
-			if (( geoInfo != null ) && ( geoInfo.hasData ))
-			{
-				if ((geoInfo.Point_Count > 0) || (geoInfo.Polygon_Count > 0))
-				{
-					hasCoords = true;
-				}
-			}
-			if (!hasCoords)
-			{
-				List<abstract_TreeNode> pageList = Package_To_Finalize.Divisions.Physical_Tree.Pages_PreOrder;
-				if (pageList.Select(ThisPage => (GeoSpatial_Information) ThisPage.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY)).Where(GeoInfo2 => (GeoInfo2 != null) && (GeoInfo2.hasData)).Any(GeoInfo2 => (GeoInfo2.Point_Count > 0) || (GeoInfo2.Polygon_Count > 0)))
-				{
-					hasCoords = true;
-				}
-			}
-
-			if (hasCoords)
-			{
-				if (viewsFromDb.ContainsKey(View_Enum.GOOGLE_MAP))
-				{
-					Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.GOOGLE_MAP]);
-					viewsFromDb.Remove(View_Enum.GOOGLE_MAP);
-				}
-				else
-				{
-					Package_To_Finalize.Behaviors.Add_View(View_Enum.GOOGLE_MAP);
-				}
-			}
-
-			// Step through each download and make sure it is fully built
-			if (( !Package_To_Finalize.Behaviors.Dark_Flag ) && ( Package_To_Finalize.Divisions.Download_Tree.Has_Files))
-			{
-				string ead_file = String.Empty;
-				int pdf_download = 0;
-			    int video_download = 0;
-				string pdf_download_url = String.Empty;
-				List<abstract_TreeNode> downloadPages = Package_To_Finalize.Divisions.Download_Tree.Pages_PreOrder;
-			    string xsl = String.Empty;
-
-                // Keep track of all the unhandled downloads, which will casue a DOWNLOAD tab to appear
-			    List<abstract_TreeNode> unhandledDownload = new List<abstract_TreeNode>();
-
-                // Step through each download page
-				foreach (Page_TreeNode downloadPage in downloadPages)
-				{
-                    bool download_handled = false;
-
-                    // If this page has only a single file, might be handled by a single viewer
-                    if ((!download_handled) && (downloadPage.Files.Count == 1))
-                    {
-                        string extension = downloadPage.Files[0].File_Extension;
-
-                        // Was this an EAD page?
-                        switch (extension)
-                        {
-                            case "XML":
-                                if (downloadPage.Label == "EAD")
-                                {
-                                    Package_To_Finalize.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.EAD;
-                                    ead_file = downloadPage.Files[0].System_Name;
-                                    download_handled = true;
-                                }
-                                break;
-
-                            case "SWF":
-                                // FLASH files are always handled
-                                string flashlabel = downloadPage.Label;
-                                Package_To_Finalize.Behaviors.Add_View(View_Enum.FLASH, flashlabel, String.Empty, downloadPage.Files[0].System_Name);
-                                download_handled = true;
-                                break;
-
-                            case "PDF":
-                                pdf_download++;
-                                if (pdf_download == 1)
-                                {
-                                    pdf_download_url = downloadPage.Files[0].System_Name;
-                                    download_handled = true;
-                                }
-                                break;
-
-                            case "XSL":
-                                xsl = downloadPage.Files[0].System_Name;
-                                download_handled = true;
-                                break;
-
-                            case "HTML":
-                            case "HTM":
-                                if (viewsFromDb.ContainsKey(View_Enum.HTML))
-                                {
-                                    if (String.Compare(viewsFromDb[View_Enum.HTML].Attributes, downloadPage.Files[0].System_Name, StringComparison.InvariantCultureIgnoreCase) == 0)
-                                    {
-                                        download_handled = true;
-                                    }
-                                }
-                                break;
-
-                            
-                            case "WEBM":
-                            case "OGG":
-                            case "MP4":
-                            //case "AVI":
-                            //case "WMV":
-                            //case "MPG":
-                            //case "MOV":
-                            //case "FLV":
-                            //case "VOB":
-                            //case "WAV":
-                            //case "OGM":
-                            //case "MKV":
-                                video_download++;
-                                download_handled = true;
-                                break;
-                        }
-                    }
-
-                    // Check for video files
-				    if ((!download_handled) && ( downloadPage.Files != null ))
-				    {
-				        foreach (SobekCM_File_Info thisFileInfo in downloadPage.Files)
-				        {
-                            string extension = thisFileInfo.File_Extension;
-
-                            // Was this an EAD page?
-                            switch (extension)
-                            {
-                                case "WEBM":
-                                case "OGG":
-                                case "MP4":
-                                    //case "AVI":
-                                    //case "WMV":
-                                    //case "MPG":
-                                    //case "MOV":
-                                    //case "FLV":
-                                    //case "VOB":
-                                    //case "WAV":
-                                    //case "OGM":
-                                    //case "MKV":
-                                    video_download++;
-                                    download_handled = true;
-                                    break;
-                            }
-
-                            if (download_handled)
-                                break;
-				        }
-				    }
-
-					// Step through each download file
-					if (!download_handled)
-					{
-					    unhandledDownload.Add(downloadPage);
-
-						foreach (SobekCM_File_Info thisFile in downloadPage.Files)
-						{
-							if (thisFile.File_Extension == "SWF")
-							{
-								string flashlabel = downloadPage.Label;
-								Package_To_Finalize.Behaviors.Add_View(View_Enum.FLASH, flashlabel, String.Empty, thisFile.System_Name);
-							}
-
-							if (thisFile.File_Extension == "PDF")
-							{
-                                pdf_download++;
-                                if (pdf_download == 1)
-                                {
-                                    pdf_download_url = thisFile.System_Name;
-                                }
-							}
-
-						}
-					}
-				}
-
-				// Some special code for EAD objects
-				if ((Package_To_Finalize.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.EAD) && (ead_file.Length > 0))
-				{
-					// Now, read this EAD file information 
-					string ead_file_location = Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + Package_To_Finalize.Web.AssocFilePath + ead_file;
-					EAD_File_ReaderWriter reader = new EAD_File_ReaderWriter();
-					string errorMessage;
-					Dictionary<string, object> options = new Dictionary<string, object>();
-                    options["EAD_File_ReaderWriter:XSL_Location"] = Engine_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "default/sobekcm_default.xsl";
-
-					reader.Read_Metadata(ead_file_location, Package_To_Finalize, options, out errorMessage);
-
-					// Clear all existing views
-					Package_To_Finalize.Behaviors.Add_View(View_Enum.EAD_DESCRIPTION);
-
-					// Get the metadata module for EADs
-					EAD_Info eadInfo = Package_To_Finalize.Get_Metadata_Module(GlobalVar.EAD_METADATA_MODULE_KEY) as EAD_Info;
-					if ((eadInfo != null) && (eadInfo.Container_Hierarchy.Containers.Count > 0))
-						Package_To_Finalize.Behaviors.Add_View(View_Enum.EAD_CONTAINER_LIST);
-
-				}
-
-				//string view_type_of = Package_To_Finalize.Behaviors.Views[0].GetType().ToString();
-				//string ufdc_type_of = Package_To_Finalize.Behaviors.Views[0].View_Type.ToString();
-
-
-                if (unhandledDownload.Count > 0 )
-				{
-					Package_To_Finalize.Behaviors.Add_View(View_Enum.DOWNLOADS);
-				}
-
-				if (pdf_download == 1)
-				{
-                    Package_To_Finalize.Behaviors.Add_View(View_Enum.PDF).FileName = pdf_download_url;
-				}
-
-			    if (video_download > 0)
-			    {
-			        Package_To_Finalize.Behaviors.Add_View(View_Enum.VIDEO);
-			    }
-			}
-			else
-			{
-				if (Package_To_Finalize.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Aerial )
-				{
-					Package_To_Finalize.Behaviors.Add_View(View_Enum.DOWNLOADS);
-				}
-			}
-
-			// If there is a RELATED URL with youtube, add that viewer
-			if ((Package_To_Finalize.Bib_Info.hasLocationInformation) && (Package_To_Finalize.Bib_Info.Location.Other_URL.ToLower().IndexOf("www.youtube.com") >= 0))
-			{
-				View_Object newViewObj = new View_Object(View_Enum.YOUTUBE_VIDEO);
-				Package_To_Finalize.Behaviors.Add_View(newViewObj);
-			}
-
-			// Look for the HTML type views next, and possible set some defaults
-            if ((!Package_To_Finalize.Behaviors.Dark_Flag) && viewsFromDb.ContainsKey(View_Enum.HTML))
-			{
-				Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.HTML]);
-				viewsFromDb.Remove(View_Enum.HTML);
-			}
-
-			// Copy the TEI flag
-            if ((!Package_To_Finalize.Behaviors.Dark_Flag) && viewsFromDb.ContainsKey(View_Enum.TEI))
-			{
-				Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.TEI]);
-				viewsFromDb.Remove(View_Enum.TEI);
-			}
-
-			// Look to add any index information here ( such as on SANBORN maps)
-			Map_Info mapInfo = (Map_Info) Package_To_Finalize.Get_Metadata_Module(GlobalVar.SOBEKCM_MAPS_METADATA_MODULE_KEY);
-			if (mapInfo != null)
-			{
-				//// Were there streets?
-				//if (Package_To_Finalize.Map.Streets.Count > 0)
-				//{
-				//    returnValue.Item_Views.Add(new ViewerFetcher.Streets_ViewerFetcher());
-				//}
-
-				//// Were there features?
-				//if (Package_To_Finalize.Map.Features.Count > 0)
-				//{
-				//    returnValue.Item_Views.Add(new ViewerFetcher.Features_ViewerFetcher());
-				//}
-			}
-
-			// Finally, add all the ITEM VIEWS
-            if ((!Package_To_Finalize.Behaviors.Dark_Flag) && (Package_To_Finalize.Web.Pages_By_Sequence != null) && (Package_To_Finalize.Web.Pages_By_Sequence.Count > 0))
-			{
-                // Look for the RELATED IMAGES view next
-                if (viewsFromDb.ContainsKey(View_Enum.RELATED_IMAGES))
-                {
-                    Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.RELATED_IMAGES]);
-                    viewsFromDb.Remove(View_Enum.RELATED_IMAGES);
-                }
-
-                // Look for the PAGE TURNER view next
-                if (viewsFromDb.ContainsKey(View_Enum.PAGE_TURNER))
-                {
-                    Package_To_Finalize.Behaviors.Add_View(viewsFromDb[View_Enum.PAGE_TURNER]);
-                    viewsFromDb.Remove(View_Enum.PAGE_TURNER);
-                }
-
-                // Add the individual PAGE VIEWS
-				foreach (View_Object thisObject in viewsFromDb.Values)
-				{
-					switch (thisObject.View_Type)
-					{
-						case View_Enum.TEXT:
-						case View_Enum.JPEG:
-						case View_Enum.JPEG2000:
-							Package_To_Finalize.Behaviors.Add_Item_Level_Page_View(thisObject);
-							break;
-					}
-				}
-			}
-
-			// Set the default views for this item
-			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Set the default view, if not already assigned");
-			Package_To_Finalize.Behaviors.Default_View = null;
-			Dictionary<string, View_Object> views_by_view_name = new Dictionary<string, View_Object>();
-			foreach (View_Object thisView in Package_To_Finalize.Behaviors.Views)
-			{
-				if (!views_by_view_name.ContainsKey(thisView.View_Type.ToString()))
-					views_by_view_name[thisView.View_Type.ToString()] = thisView;
-			}
-			foreach (View_Object thisView in Package_To_Finalize.Behaviors.Item_Level_Page_Views)
-			{
-				if (!views_by_view_name.ContainsKey(thisView.View_Type.ToString()))
-					views_by_view_name[thisView.View_Type.ToString()] = thisView;
-			}
-
-            //If no viewer priorities have been passed in, add the default one
-		    if (Item_Viewer_Priority == null)
-		    {
-                //TODO: Add default view here if present
-		       // if (views_by_view_name != null)
-		       //     Package_To_Finalize.Behaviors.Default_View =
-		    }
-		    else
-		    {
-		        foreach (string thisViewerType in Item_Viewer_Priority)
-		        {
-		            if (views_by_view_name.ContainsKey(thisViewerType))
-		            {
-		                Package_To_Finalize.Behaviors.Default_View = views_by_view_name[thisViewerType];
-		                break;
-		            }
-		        }
-		    }
 
 			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Done merging the database information with the resource object");
 
 		}
 
-
-		private void recurse_through_nodes( SobekCM_Item ThisPackage, abstract_TreeNode Node, List<Page_TreeNode> PagesEncountered )
-		{
-			if (Node.Page)
-			{
-				Page_TreeNode pageNode = (Page_TreeNode)Node;
-				if ( !PagesEncountered.Contains( pageNode ))
-				{
-					pageseq++;
-
-					// Add each of the files view codes to the list
-					bool page_added = false;
-					foreach (SobekCM_File_Info thisFile in pageNode.Files)
-					{
-						string upper_name = thisFile.System_Name.ToUpper();
-						if ((upper_name.IndexOf("SOUNDFILESONLY") < 0) && ( upper_name.IndexOf("FILMONLY") < 0 ) && ( upper_name.IndexOf("MULTIMEDIA") < 0 ) && ( upper_name.IndexOf("THM.JPG") < 0 ))
-						{
-							if (!page_added)
-							{
-								// Add this to the simple page collection
-								ThisPackage.Web.Add_Pages_By_Sequence(pageNode);
-								PagesEncountered.Add(pageNode);
-								page_added = true;
-							}
-							View_Object thisViewer = thisFile.Get_Viewer();
-							if (thisViewer != null)
-							{
-								string[] codes = thisViewer.Viewer_Codes;
-								if ((codes.Length > 0) && (codes[0].Length > 0))
-								{
-									ThisPackage.Web.Viewer_To_File[pageseq.ToString() + codes[0]] = thisFile;
-								}
-							}
-						}
-
-						// TEST: Special case for text
-						if ((ThisPackage.BibID == "UF00001672") || ( ThisPackage.BibID == "TEST000003"))
-						{
-							if (thisFile.File_Extension.ToLower().IndexOf("jpg") >= 0)
-							{
-								string filename = thisFile.File_Name_Sans_Extension + ".txt";
-								SobekCM_File_Info thisFileInfo = new SobekCM_File_Info(filename);
-								ThisPackage.Web.Viewer_To_File[pageseq.ToString() + "t"] = thisFileInfo;
-							}
-						}
-					}
-				}
-			}
-			else
-			{
-				divseq++;
-				Division_TreeNode divNode = (Division_TreeNode)Node;
-				foreach (abstract_TreeNode childNode in divNode.Nodes)
-				{
-					recurse_through_nodes(ThisPackage, childNode, PagesEncountered);
-				}
-			}
-		}
 
 		#endregion
 	}

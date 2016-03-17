@@ -2670,54 +2670,6 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                         // If we have both an id and title, then add this view
                         if ((view_id.Length > 0) && (view_procedure.Length > 0))
                         {
-                            // Get the view enum
-                            View_Enum thisViewType = View_Enum.None;
-
-                            if (view_procedure_upper.IndexOf("JP2_VIEWER") == 0)
-                            {
-                                thisViewType = View_Enum.JPEG2000;
-                            }
-
-                            if (view_procedure_upper.IndexOf("JPEG_VIEWER") == 0)
-                            {
-                                thisViewType = View_Enum.JPEG;
-                            }
-
-                            if (view_procedure_upper.IndexOf("TEXT_VIEWER") == 0)
-                            {
-                                thisViewType = View_Enum.TEXT;
-                            }
-
-                            if (view_procedure_upper.IndexOf("SANBORN_VIEWER") == 0)
-                            {
-                                thisViewType = View_Enum.SANBORN;
-                            }
-
-                            if (view_procedure_upper.IndexOf("RELATED_IMAGE_VIEWER") == 0)
-                            {
-                                thisViewType = View_Enum.RELATED_IMAGES;
-                            }
-
-                            if (view_procedure_upper.IndexOf("EPC_VIEWER") == 0)
-                            {
-                                thisViewType = View_Enum.EPHEMERAL_CITIES;
-                            }
-
-                            if (view_procedure_upper.IndexOf("STREETS") == 0)
-                            {
-                                thisViewType = View_Enum.STREETS;
-                            }
-
-                            if (view_procedure_upper.IndexOf("FEATURES") == 0)
-                            {
-                                thisViewType = View_Enum.FEATURES;
-                            }
-
-                            if (view_procedure_upper.IndexOf("HTML") == 0)
-                            {
-                                thisViewType = View_Enum.HTML;
-                            }
-
                             // Get any attribute
                             int first_parenthesis = view_procedure.IndexOf("(");
                             int second_parenthesis = view_procedure.IndexOf(")");
@@ -2728,7 +2680,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                             }
 
                             // Add this to the sorted list
-                            views_sorted.Add(view_id, new View_Object(thisViewType, view_label, view_attributes));
+                            views_sorted.Add(view_id, new View_Object(view_procedure_upper, view_label, view_attributes));
 
                             // Clear this data
                             view_id = String.Empty;
@@ -2744,15 +2696,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     for (int i = 0; i < views_sorted.Count; i++)
                     {
                         View_Object tempViewObject = (View_Object) views_sorted.GetByIndex(i);
-                        if ((tempViewObject.View_Type != View_Enum.HTML) || (tempViewObject.Label != "Audio Clips") || (tempViewObject.Attributes != "UF12345678.htm"))
-                            Package.Behaviors.Add_View(tempViewObject);
-                    }
-
-                    // If there were no views, add JPEG and then JP2 as default
-                    if (Package.Behaviors.Views.Count == 0)
-                    {
-                        Package.Behaviors.Add_View(View_Enum.JPEG);
-                        Package.Behaviors.Add_View(View_Enum.JPEG2000);
+                        Package.Behaviors.Add_View(tempViewObject);
                     }
                 }
 

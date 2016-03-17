@@ -396,7 +396,7 @@ namespace SobekCM.Library.MySobekViewer
 					bool jpeg_viewer_already_exists = false;
                     foreach (View_Object thisViewer in currentItem.Behaviors.Views)
 					{
-						if (thisViewer.View_Type == View_Enum.JPEG)
+						if (thisViewer.View_Type == "JPEG")
 						{
 							jpeg_viewer_already_exists = true;
 							break;
@@ -405,7 +405,7 @@ namespace SobekCM.Library.MySobekViewer
 
 					// Add the JPEG view if it did not already exists
 					if ( !jpeg_viewer_already_exists )
-						currentItem.Behaviors.Add_View(View_Enum.JPEG);
+						currentItem.Behaviors.Add_View("JPEG");
 				}
 
 				// If a JPEG2000 file was just added, ensure it exists as a view for this currentItem
@@ -415,7 +415,7 @@ namespace SobekCM.Library.MySobekViewer
 					bool jpg2000_viewer_already_exists = false;
 					foreach (View_Object thisViewer in currentItem.Behaviors.Views)
 					{
-						if (thisViewer.View_Type == View_Enum.JPEG2000 )
+						if (thisViewer.View_Type == "JPEG2000" )
 						{
 							jpg2000_viewer_already_exists = true;
 							break;
@@ -424,7 +424,7 @@ namespace SobekCM.Library.MySobekViewer
 
 					// Add the JPEG2000 view if it did not already exists
 					if (!jpg2000_viewer_already_exists)
-						currentItem.Behaviors.Add_View(View_Enum.JPEG2000);
+                        currentItem.Behaviors.Add_View("JPEG2000");
 				}
 
                 // Determine the total size of the package before saving

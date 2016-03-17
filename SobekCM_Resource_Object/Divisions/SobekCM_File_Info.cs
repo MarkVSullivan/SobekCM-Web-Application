@@ -207,34 +207,6 @@ namespace SobekCM.Resource_Object.Divisions
 
         #endregion
 
-        /// <summary> Gets the view object related to this file type, or NULL </summary>
-        /// <returns> SobekCM view object, or NULL </returns>
-        public View_Object Get_Viewer()
-        {
-            string mimetype = MIME_Type(File_Extension);
-
-            if (String.IsNullOrEmpty(mimetype))
-                return null;
-
-            switch (mimetype)
-            {
-                case "text/plain":
-                    return new View_Object(View_Enum.TEXT, "Text", string.Empty, System_Name);
-
-                case "image/jpeg":
-                    // Special code to exclude thumbnails from the jpegs that
-                    // get an item viewer
-                    if (System_Name.ToLower().IndexOf("thm.jpg") > 0)
-                        return null;
-                    return new View_Object(View_Enum.JPEG, "Page Image", "WIDTH=" + width + ";HEIGHT=" + height, System_Name);
-
-                case "image/jp2":
-                    return new View_Object(View_Enum.JPEG2000, "Zoomable Image", "WIDTH=" + width + ";HEIGHT=" + height, System_Name); //Service_Copy);
-            }
-
-            return null;
-        }
-
         #region Section to compute the MIME TYPE from the extension
 
         /// <summary> Gets the MIME Type of this file </summary>

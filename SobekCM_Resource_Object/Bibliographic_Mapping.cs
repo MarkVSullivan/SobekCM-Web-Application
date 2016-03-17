@@ -1751,27 +1751,7 @@ namespace SobekCM.Resource_Object
                     Package.Bib_Info.Add_Container("Folder", Data, 3);
                     break;
                 case Mapped_Fields.Viewer:
-                    switch (Data.ToUpper().Replace("_"," ").Replace(" ",""))
-                    {
-                        case "JPEG":
-                        case "JPG":
-                            Package.Behaviors.Add_View(View_Enum.JPEG);
-                            break;
-
-                        case "JPEG2000":
-                        case "JP2":
-                            Package.Behaviors.Add_View(View_Enum.JPEG2000);
-                            break;
-
-                        case "PAGETURNER":
-                            Package.Behaviors.Add_View(View_Enum.PAGE_TURNER);
-                            break;
-
-                        case "RELATEDIMAGES":
-                        case "THUMBNAILS":
-                            Package.Behaviors.Add_View(View_Enum.RELATED_IMAGES);
-                            break;
-                    }
+                    Package.Behaviors.Add_View(Data);
                     break;
                 case Mapped_Fields.Visibility:
                     switch (Data.ToUpper())

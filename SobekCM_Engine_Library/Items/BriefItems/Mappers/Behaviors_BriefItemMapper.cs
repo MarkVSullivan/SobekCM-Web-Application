@@ -33,14 +33,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             New.Behaviors.Single_Use = Original.Behaviors.CheckOut_Required;
 
             // Copy over the viewers
-            New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer("CITATION", 1, false));
-            New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer("PDF", 1, false));
-            New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer("JPEG", 1, false));
-            New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer("JPEG2000", 1, false));
-            New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer("RELATED_IMAGES", 1, false));
-            New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer("MANAGE_MENU", 1, false));
-            New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer("MARC", 1, false));
-            New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer("METADATA", 1, false));
+            foreach (View_Object origView in Original.Behaviors.Views)
+            {
+                New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer(origView.View_Type, origView.MenuOrder, origView.Exclude ));
+            }
 
             // Copy over the wordmarks
             if (Original.Behaviors.Wordmark_Count > 0)
