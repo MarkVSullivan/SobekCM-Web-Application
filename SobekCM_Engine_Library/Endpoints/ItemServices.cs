@@ -1127,6 +1127,311 @@ namespace SobekCM.Engine_Library.Endpoints
 
         #endregion
 
+        #region Method to get the usage statistics for an item
+
+        /// <summary> Gets the month-by-month usage for an item </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetItemStatisticsHistory(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Must at least have one URL segment for the BibID
+            if (UrlSegments.Count > 0)
+            {
+                Custom_Tracer tracer = new Custom_Tracer();
+
+                try
+                {
+                    // Get the BibID and VID
+                    string bibid = UrlSegments[0];
+                    string vid = (UrlSegments.Count > 1) ? UrlSegments[1] : "00001";
+
+                    tracer.Add_Trace("ItemServices.GetItemStatisticsHistory", "Requested usage history for " + bibid + ":" + vid);
+
+                    // Look in the cache
+                    tracer.Add_Trace("ItemServices.GetItemStatisticsHistory", "Looking in the cache");
+                    List<Item_Monthly_Usage> returnValue = CachedDataManager.Items.Retrieve_Item_Usage(bibid, vid, tracer);
+                    if (returnValue != null)
+                    {
+                        tracer.Add_Trace("ItemServices.GetItemStatisticsHistory", "Found the usage history in the cache");
+                    }
+                    else
+                    {
+                        // Return the built list of items
+                        tracer.Add_Trace("ItemServices.GetItemStatisticsHistory", "Pull the data from the database");
+                        returnValue = Engine_Database.Get_Item_Statistics_History(bibid, vid, tracer);
+
+                        // Was the item null?
+                        if (returnValue == null)
+                        {
+                            // If this was debug mode, then just write the tracer
+                            if (IsDebug)
+                            {
+                                tracer.Add_Trace("ItemServices.GetItemStatisticsHistory", "NULL value returned from Get_Item_Statistics_History method");
+
+                                Response.ContentType = "text/plain";
+                                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                                Response.Output.WriteLine();
+                                Response.Output.WriteLine(tracer.Text_Trace);
+                            }
+                            return;
+                        }
+
+                        // Store in the cache
+                        tracer.Add_Trace("ItemServices.GetItemStatisticsHistory", "Storing in the cache");
+                        CachedDataManager.Items.Store_Item_Usage(bibid, vid, returnValue, tracer);
+                    }
+
+                    // If this was debug mode, then just write the tracer
+                    if (IsDebug)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+
+                        return;
+                    }
+
+                    // Get the JSON-P callback function
+                    string json_callback = "parseItemUsage";
+                    if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                    {
+                        json_callback = QueryString["callback"];
+                    }
+
+                    // Use the base class to serialize the object according to request protocol
+                    Serialize(returnValue, Response, Protocol, json_callback);
+                }
+                catch (Exception ee)
+                {
+                    if (IsDebug)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("EXCEPTION CAUGHT!");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.Message);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.StackTrace);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                        return;
+                    }
+
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Error completing request");
+                    Response.StatusCode = 500;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Method to get the tracking/workflow/miletson information for an item
+
+        /// <summary> Gets the work history related to an item </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetItemTrackingWorkHistory(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Must at least have one URL segment for the BibID
+            if (UrlSegments.Count > 0)
+            {
+                Custom_Tracer tracer = new Custom_Tracer();
+
+                try
+                {
+                    // Get the BibID and VID
+                    string bibid = UrlSegments[0];
+                    string vid = (UrlSegments.Count > 1) ? UrlSegments[1] : "00001";
+
+                    tracer.Add_Trace("ItemServices.GetItemTrackingWorkHistory", "Requested work history for " + bibid + ":" + vid);
+
+                    // Look in the cache
+                    tracer.Add_Trace("ItemServices.GetItemTrackingWorkHistory", "Looking in the cache");
+                    Item_Tracking_Details returnValue = CachedDataManager.Items.Retrieve_Item_Tracking(bibid, vid, tracer);
+                    if (returnValue != null)
+                    {
+                        tracer.Add_Trace("ItemServices.GetItemTrackingWorkHistory", "Found the work history in the cache");
+                    }
+                    else
+                    {
+                        // Return the built list of items
+                        tracer.Add_Trace("ItemServices.GetItemTrackingWorkHistory", "Pull the data from the database");
+                        returnValue = Engine_Database.Get_Item_Tracking_Work_History(bibid, vid, tracer);
+
+                        // Was the item null?
+                        if (returnValue == null)
+                        {
+                            // If this was debug mode, then just write the tracer
+                            if (IsDebug)
+                            {
+                                tracer.Add_Trace("ItemServices.GetItemTrackingWorkHistory", "NULL value returned from Get_Item_Tracking_Work_History method");
+
+                                Response.ContentType = "text/plain";
+                                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                                Response.Output.WriteLine();
+                                Response.Output.WriteLine(tracer.Text_Trace);
+                            }
+                            return;
+                        }
+
+                        // Store in the cache
+                        tracer.Add_Trace("ItemServices.GetItemTrackingWorkHistory", "Storing in the cache");
+                        CachedDataManager.Items.Store_Item_Tracking(bibid, vid, returnValue, tracer);
+                    }
+
+                    // If this was debug mode, then just write the tracer
+                    if (IsDebug)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+
+                        return;
+                    }
+
+                    // Get the JSON-P callback function
+                    string json_callback = "parseItemTracking";
+                    if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                    {
+                        json_callback = QueryString["callback"];
+                    }
+
+                    // Use the base class to serialize the object according to request protocol
+                    Serialize(returnValue, Response, Protocol, json_callback);
+                }
+                catch (Exception ee)
+                {
+                    if (IsDebug)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("EXCEPTION CAUGHT!");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.Message);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.StackTrace);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                        return;
+                    }
+
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Error completing request");
+                    Response.StatusCode = 500;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Method to get the collection of items under a single title 
+
+        /// <summary> Gets the collection of items under a title</summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetMultipleVolumes(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Must at least have one URL segment for the BibID
+            if (UrlSegments.Count > 0)
+            {
+                Custom_Tracer tracer = new Custom_Tracer();
+
+                try
+                {
+                    // Get the BibID 
+                    string bibid = UrlSegments[0];
+
+                    tracer.Add_Trace("ItemServices.GetMultipleVolumes", "Requested list of items for " + bibid);
+
+                    // Look in the cache
+                    tracer.Add_Trace("ItemServices.GetMultipleVolumes", "Looking in the cache");
+                    List<Item_Hierarchy_Details> itemList = CachedDataManager.Items.Retrieve_Item_List(bibid, tracer);
+                    if (itemList != null)
+                    {
+                        tracer.Add_Trace("ItemServices.GetMultipleVolumes", "Found the list in the cache");
+                    }
+                    else
+                    {
+                        // Return the built list of items
+                        tracer.Add_Trace("ItemServices.GetMultipleVolumes", "Pull the data from the database");
+                        itemList = Engine_Database.Get_Multiple_Volumes(bibid, tracer);
+
+                        // Was the item null?
+                        if (itemList == null)
+                        {
+                            // If this was debug mode, then just write the tracer
+                            if (IsDebug)
+                            {
+                                tracer.Add_Trace("ItemServices.GetMultipleVolumes", "NULL value returned from Get_Multiple_Volumes method");
+
+                                Response.ContentType = "text/plain";
+                                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                                Response.Output.WriteLine();
+                                Response.Output.WriteLine(tracer.Text_Trace);
+                            }
+                            return;
+                        }
+
+                        // Store in the cache
+                        tracer.Add_Trace("ItemServices.GetMultipleVolumes", "Storing in the cache");
+                        CachedDataManager.Items.Store_Item_List(bibid, itemList, tracer);
+                    }
+
+                    // If this was debug mode, then just write the tracer
+                    if (IsDebug)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+
+                        return;
+                    }
+
+                    // Get the JSON-P callback function
+                    string json_callback = "parseItemList";
+                    if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                    {
+                        json_callback = QueryString["callback"];
+                    }
+
+                    // Use the base class to serialize the object according to request protocol
+                    Serialize(itemList, Response, Protocol, json_callback);
+                }
+                catch (Exception ee)
+                {
+                    if (IsDebug)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("EXCEPTION CAUGHT!");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.Message);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.StackTrace);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                        return;
+                    }
+
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Error completing request");
+                    Response.StatusCode = 500;
+                }
+            }
+        }
+
+        #endregion
+
         #region Methods to serve small snippets of HTML to the users, on demand
 
         /// <summary> Gets the item's marc record in object format for serialization/deserialization </summary>

@@ -9,6 +9,7 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -196,7 +197,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             int static_views = 0;
 
             // Pull the item statistics
-            DataSet stats = SobekCM_Database.Get_Item_Statistics_History(BriefItem.BibID, BriefItem.VID, Tracer);
+            DataSet stats = null; //Engine_Database.Get_Item_Statistics_History(BriefItem.BibID, BriefItem.VID, Tracer);
 
             StringBuilder builder = new StringBuilder(2000);
 

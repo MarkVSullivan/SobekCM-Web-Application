@@ -2239,12 +2239,24 @@ namespace SobekCM.Engine_Library.Configuration
                                     newConfig.Enabled = tempValue;
                                 }
                             }
-                            if (ReaderXml.MoveToAttribute("alwaysAdd"))
+                            if (ReaderXml.MoveToAttribute("mgmtViewer"))
                             {
                                 bool tempValue;
                                 if (bool.TryParse(ReaderXml.Value, out tempValue))
                                 {
-                                    newConfig.AlwaysAdd = tempValue;
+                                    newConfig.ManagementViewer = tempValue;
+                                    if (ReaderXml.MoveToAttribute("mgmtOrder"))
+                                    {
+                                        float tempFloatValue;
+                                        if (float.TryParse(ReaderXml.Value, out tempFloatValue))
+                                            newConfig.ManagementOrder = tempFloatValue;
+                                        else
+                                            newConfig.ManagementOrder = 1000;
+                                    }
+                                    else
+                                    {
+                                        newConfig.ManagementOrder = 1000;
+                                    }
                                 }
                             }
                             if (ReaderXml.MoveToAttribute("pageFileExtensions"))

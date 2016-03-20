@@ -533,5 +533,191 @@ namespace SobekCM.Core.MemoryMgmt
         }
 
         #endregion
+
+        #region Methods related to storing and retrieving the list of items under a single title
+
+        /// <summary> Retrieves the list of items within a single title </summary>
+        /// <param name="BibID"> Bibliographic Identifier for the digital resource to retrieve </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Either NULL or the list of items under that title from the cache  </returns>
+        public List<Item_Hierarchy_Details> Retrieve_Item_List(string BibID, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+                return null;
+
+            // Determine the key
+            string key = "ITEM_" + BibID + "_ItemList";
+
+            // See if this is in the local cache first
+            object returnValue = HttpContext.Current.Cache.Get(key);
+            if (returnValue != null)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager_ItemServices.Retrieve_Item_List", "Found list of items within a single title on local cache");
+                }
+
+                return (List<Item_Hierarchy_Details>)returnValue;
+            }
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_ItemServices.Retrieve_Item_List", "List of items within a single title not found in the local cache ");
+            }
+
+            // Since everything failed, just return null
+            return null;
+        }
+
+        /// <summary> Store the MARC record object related to a digital resource on the cache   </summary>
+        /// <param name="BibID"> Bibliographic Identifier for the digital resource to store </param>
+        /// <param name="StoreObject"> List of items under a single title to store for later retrieval </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Store_Item_List(string BibID, List<Item_Hierarchy_Details> StoreObject, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+                return;
+
+            // Determine the key
+            string key = "ITEM_" + BibID + "_ItemList";
+            const int LENGTH_OF_TIME = 5;
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_ItemServices.Store_Item_List", "Adding object '" + key + "' to the local cache with expiration of " + LENGTH_OF_TIME + " minute");
+            }
+
+            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LENGTH_OF_TIME));
+        }
+
+        #endregion
+
+        #region Methods related to storing and retrieving the month-by-month usage for a single item
+
+        /// <summary> Retrieves the usage history related to a digital resource  </summary>
+        /// <param name="BibID"> Bibliographic Identifier for the digital resource to retrieve </param>
+        /// <param name="VID"> Volume Identifier for the digital resource to retrieve </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Either NULL or the usage history from the cache  </returns>
+        public List<Item_Monthly_Usage> Retrieve_Item_Usage(string BibID, string VID, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+                return null;
+
+            // Determine the key
+            string key = "ITEM_" + BibID + "_" + VID + "_Usage";
+
+            // See if this is in the local cache first
+            object returnValue = HttpContext.Current.Cache.Get(key);
+            if (returnValue != null)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager_ItemServices.Retrieve_Item_Usage", "Found item usage on local cache");
+                }
+
+                return (List<Item_Monthly_Usage>)returnValue;
+            }
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_ItemServices.Retrieve_Item_Usage", "Item usage not found in the local cache ");
+            }
+
+            // Since everything failed, just return null
+            return null;
+        }
+
+        /// <summary> Store the usage history related to a digital resource on the cache   </summary>
+        /// <param name="BibID"> Bibliographic Identifier for the digital resource to store </param>
+        /// <param name="VID"> Volume Identifier for the digital resource to store </param>
+        /// <param name="StoreObject"> Usage history for a digital Resource object to store for later retrieval </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Store_Item_Usage(string BibID, string VID, List<Item_Monthly_Usage> StoreObject, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+                return;
+
+            // Determine the key
+            string key = "ITEM_" + BibID + "_" + VID + "_Usage";
+            const int LENGTH_OF_TIME = 5;
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_ItemServices.Store_Item_Usage", "Adding object '" + key + "' to the local cache with expiration of " + LENGTH_OF_TIME + " minute");
+            }
+
+            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LENGTH_OF_TIME));
+        }
+
+        #endregion
+
+        #region Methods related to storing and retrieving the tracking/workflow information for a single item
+
+        /// <summary> Retrieves the tracking/workflow information related to a digital resource  </summary>
+        /// <param name="BibID"> Bibliographic Identifier for the digital resource to retrieve </param>
+        /// <param name="VID"> Volume Identifier for the digital resource to retrieve </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Either NULL or the tracking/workflow information from the cache  </returns>
+        public Item_Tracking_Details Retrieve_Item_Tracking(string BibID, string VID, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+                return null;
+
+            // Determine the key
+            string key = "ITEM_" + BibID + "_" + VID + "_Tracking";
+
+            // See if this is in the local cache first
+            object returnValue = HttpContext.Current.Cache.Get(key);
+            if (returnValue != null)
+            {
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("CachedDataManager_ItemServices.Retrieve_Item_Tracking", "Found tracking/workflow information on local cache");
+                }
+
+                return (Item_Tracking_Details)returnValue;
+            }
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_ItemServices.Retrieve_Item_Tracking", "Tracking/workflow information not found in the local cache ");
+            }
+
+            // Since everything failed, just return null
+            return null;
+        }
+
+        /// <summary> Store the tracking/workflow information related to a digital resource   </summary>
+        /// <param name="BibID"> Bibliographic Identifier for the digital resource to store </param>
+        /// <param name="VID"> Volume Identifier for the digital resource to store </param>
+        /// <param name="StoreObject"> Tracking/workflow information for a digital Resource object to store for later retrieval </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Store_Item_Tracking(string BibID, string VID, Item_Tracking_Details StoreObject, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+                return;
+
+            // Determine the key
+            string key = "ITEM_" + BibID + "_" + VID + "_Tracking";
+            const int LENGTH_OF_TIME = 1;
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_ItemServices.Store_Item_Tracking", "Adding object '" + key + "' to the local cache with expiration of " + LENGTH_OF_TIME + " minute");
+            }
+
+            HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LENGTH_OF_TIME));
+        }
+
+
+        #endregion
+
     }
 }

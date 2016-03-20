@@ -40,18 +40,27 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         public string Assembly { get; set; }
 
         /// <summary> Flag indicates if this should be added to items, regardless of what comes
-        /// back as the viewers from the database.  It also means it should not be unselectable
-        /// in the behaviors screen </summary>
-        [DataMember(Name = "alwaysAdd")]
-        [XmlAttribute("alwaysAdd")]
+        /// back as the viewers from the database, since this is a management view for the item.  
+        /// It also means it should not be unselectable in the behaviors screen </summary>
+        [DataMember(Name = "mgmtViewer")]
+        [XmlAttribute("mgmtViewer")]
         [ProtoMember(5)]
-        public bool AlwaysAdd { get; set; }
+        public bool ManagementViewer { get; set; }
+
+        /// <summary> If this is a management menu option, this sets the order the viewer is added
+        /// to the menu and the priority list of viewers.</summary>
+        /// <remarks> Only the first management viewer would ever  be shown by default, and this 
+        /// is only if there were no non-management views to show.  </remarks>
+        [DataMember(Name = "mgmtOrder")]
+        [XmlAttribute("mgmtOrder")]
+        [ProtoMember(6)]
+        public float ManagementOrder { get; set; }
 
         /// <summary> Name of this viewer, which matches the viewer name from the database and 
         /// in the configuration files as well.  This is actually populate by the configuration information </summary>
         [DataMember(Name = "type")]
         [XmlAttribute("type")]
-        [ProtoMember(6)]
+        [ProtoMember(7)]
         public string ViewerType { get; set; }
 
         /// <summary> If this viewer is tied to certain files existing in the digital resource, this lists all the 
@@ -59,7 +68,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         [DataMember(EmitDefaultValue = false, Name = "fileExtensions")]
         [XmlArray("fileExtensions")]
         [XmlArrayItem("fileExtension", typeof(string))]
-        [ProtoMember(7)]
+        [ProtoMember(8)]
         public string[] FileExtensions { get; set; }
 
         /// <summary> If this viewer is tied to certain page files existing in the digital resource, this lists all the 
@@ -67,20 +76,21 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         [DataMember(EmitDefaultValue = false, Name = "pageFileExtensions")]
         [XmlArray("pageFileExtensions")]
         [XmlArrayItem("fileExtension", typeof(string))]
-        [ProtoMember(8)]
+        [ProtoMember(9)]
         public string[] PageExtensions { get; set; }
 
         /// <summary> List of options related to this viewer, from the configuration </summary>
         [DataMember(EmitDefaultValue = false, Name = "options")]
         [XmlArray("options")]
         [XmlArrayItem("option", typeof(StringKeyValuePair))]
-        [ProtoMember(9)]
+        [ProtoMember(10)]
         public List<StringKeyValuePair> Options { get; set; }
 
         /// <summary> Constructor for a new instance of the <see cref="ItemSubViewerConfig"/> class </summary>
         public ItemSubViewerConfig()
         {
             // Empty constructor for serialzation purposes
+            ManagementViewer = false;
         }
 
         /// <summary> Constructor for a new instance of the <see cref="ItemSubViewerConfig"/> class </summary>
@@ -97,8 +107,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
             this.Class = Class;
             this.Assembly = Assembly;
 
-            AlwaysAdd = true;
-            Enabled = true;
+            ManagementViewer = false;
         }
 
         #region Methods that controls XML serialization

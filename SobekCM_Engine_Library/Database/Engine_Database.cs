@@ -10,6 +10,7 @@ using SobekCM.Core;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Builder;
+using SobekCM.Core.Items;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
 using SobekCM.Core.Settings;
@@ -165,9 +166,222 @@ namespace SobekCM.Engine_Library.Database
 
 		#endregion
 
-		#region Methods to support the restriction by IP addresses
+        #region Helper methods related to item data ( i.e., items in title, usage, tracking, etc.. )
 
-		/// <summary> Gets the list of all the IP ranges for restriction, including each single IP information in those ranges </summary>
+
+        /// <summary> Gets the list of all items within this item group, indicated by BibID </summary>
+        /// <param name="BibID"> Bibliographic identifier for the title of interest </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Strongly typed dataset with information about the title (item group), including volumes, icons, and skins</returns>
+        /// <remarks> This calls the 'SobekCM_Get_Multiple_Volumes' stored procedure </remarks>
+        public static List<Item_Hierarchy_Details> Get_Multiple_Volumes(string BibID, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Get_Multiple_Volumes", "List of volumes for " + BibID + " pulled from database");
+            }
+
+            try
+            {
+                // Open the data reader to step through the data as it comes back
+                EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Multiple_Volumes", new List<EalDbParameter> { new EalDbParameter("@bibid", BibID) });
+
+                // Start the return value
+                List<Item_Hierarchy_Details> returnValue = new List<Item_Hierarchy_Details>();
+
+                // Step through each value
+                while (readerWrapper.Reader.Read())
+				{
+                    // Build this item information
+                    Item_Hierarchy_Details thisItem = new Item_Hierarchy_Details
+                    {
+                        ItemID = readerWrapper.Reader.GetInt32(0), 
+                        Title = readerWrapper.Reader.GetString(1)
+                    };
+
+				    if (!readerWrapper.Reader.IsDBNull(2)) thisItem.Level1_Text = readerWrapper.Reader.GetString(2);
+				    if (!readerWrapper.Reader.IsDBNull(3)) thisItem.Level1_Index = readerWrapper.Reader.GetInt32(3);
+                    if (!readerWrapper.Reader.IsDBNull(4)) thisItem.Level2_Text = readerWrapper.Reader.GetString(4);
+                    if (!readerWrapper.Reader.IsDBNull(5)) thisItem.Level2_Index = readerWrapper.Reader.GetInt32(5);
+                    if (!readerWrapper.Reader.IsDBNull(6)) thisItem.Level3_Text = readerWrapper.Reader.GetString(6);
+                    if (!readerWrapper.Reader.IsDBNull(7)) thisItem.Level3_Index = readerWrapper.Reader.GetInt32(7);
+                    if (!readerWrapper.Reader.IsDBNull(8)) thisItem.Level4_Text = readerWrapper.Reader.GetString(8);
+                    if (!readerWrapper.Reader.IsDBNull(9)) thisItem.Level4_Index = readerWrapper.Reader.GetInt32(9);
+                    if (!readerWrapper.Reader.IsDBNull(10)) thisItem.Level5_Text = readerWrapper.Reader.GetString(10);
+                    if (!readerWrapper.Reader.IsDBNull(11)) thisItem.Level5_Index = readerWrapper.Reader.GetInt32(11);
+                    if (!readerWrapper.Reader.IsDBNull(12)) thisItem.MainThumbnail = readerWrapper.Reader.GetString(12);
+                    if (!readerWrapper.Reader.IsDBNull(13)) thisItem.VID = readerWrapper.Reader.GetString(13);
+                    if (!readerWrapper.Reader.IsDBNull(14)) thisItem.IP_Restriction_Mask = readerWrapper.Reader.GetInt16(14);
+
+                    // Add this item to the list to return
+				    returnValue.Add(thisItem);
+				}
+
+				// Close the reader (which also closes the connection)
+				readerWrapper.Close();
+
+                // Return the fully built object
+                return returnValue;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Get_Multiple_Volumes", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Multiple_Volumes", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Multiple_Volumes", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+        /// <summary> Returns the month-by-month usage statistics details by item and item group </summary>
+        /// <param name="BibID"> Bibliographic identifier for the item group of interest </param>
+        /// <param name="VID"> Volume identifier for the item of interest </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Month-by-month usage statistics for item and item-group </returns>
+        /// <remarks> This calls the 'SobekCM_Get_Item_Statistics' stored procedure  </remarks>
+        public static List<Item_Monthly_Usage> Get_Item_Statistics_History(string BibID, string VID, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Get_Item_Statistics_History", "Pulling history for '" + BibID + "_" + VID + "' from database");
+            }
+
+            try
+            {
+                // Execute this query stored procedure
+                EalDbParameter[] paramList = new EalDbParameter[2];
+                paramList[0] = new EalDbParameter("@BibID", BibID);
+                paramList[1] = new EalDbParameter("@VID", VID);
+
+                // Open the data reader to step through the data as it comes back
+                EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Statistics", paramList);
+
+                // Start the return value
+                List<Item_Monthly_Usage> returnValue = new List<Item_Monthly_Usage>();
+
+                // Step through each value
+                while (readerWrapper.Reader.Read())
+                {
+                    // Build this item information
+                    Item_Monthly_Usage thisItem = new Item_Monthly_Usage
+                    {
+                        Year = readerWrapper.Reader.GetInt32(0), 
+                        Month = readerWrapper.Reader.GetInt32(1), 
+                        Title_Views = readerWrapper.Reader.GetInt32(2), 
+                        Title_Visitors = readerWrapper.Reader.GetInt32(3), 
+                        Views = readerWrapper.Reader.GetInt32(4), 
+                        Visitors = readerWrapper.Reader.GetInt32(5)
+                    };
+
+                    // Add this item to the list to return
+                    returnValue.Add(thisItem);
+                }
+
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
+
+                // Return the fully built object
+                return returnValue;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Statistics_History", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Statistics_History", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Statistics_History", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+
+        /// <summary> Returns list of individual work history events and milestones for a single item </summary>
+        /// <param name="BibID"> Bibliographic identifier for the item group of interest </param>
+        /// <param name="VID"> Volume identifier for the item of interest </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> Month-by-month usage statistics for item and item-group </returns>
+        /// <remarks> This calls the 'Tracking_Get_Work_History' stored procedure  </remarks>
+        public static Item_Tracking_Details Get_Item_Tracking_Work_History(string BibID, string VID, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Get_Item_Tracking_Work_History", "Pulling work history for '" + BibID + "_" + VID + "' from database");
+            }
+
+            try
+            {
+                // Execute this query stored procedure
+                EalDbParameter[] paramList = new EalDbParameter[2];
+                paramList[0] = new EalDbParameter("@BibID", BibID);
+                paramList[1] = new EalDbParameter("@VID", VID);
+
+                // Open the data reader to step through the data as it comes back
+                EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "Tracking_Get_Work_History", paramList);
+
+                // Start the return value
+                Item_Tracking_Details returnValue = new Item_Tracking_Details();
+
+                // Step through each work event
+                while (readerWrapper.Reader.Read())
+                {
+                    // Build this item information
+                    Item_Tracking_Event thisItem = new Item_Tracking_Event
+                    {
+                        WorkflowName = readerWrapper.Reader.GetString(0),
+                        CompletedDate = readerWrapper.Reader.GetDateTime(1),
+                        WorkPerformedBy = readerWrapper.Reader.GetString(2)
+                    };
+
+                    // If there are notes include them
+                    if (!readerWrapper.Reader.IsDBNull(3))
+                        thisItem.Notes = readerWrapper.Reader.GetString(3);
+
+                    // Add this item to the list to return
+                    returnValue.WorkEvents.Add(thisItem);
+                }
+
+                // Go to the milestone table and pull those numbers
+                if ((readerWrapper.Reader.NextResult()) && (readerWrapper.Reader.Read()))
+                {
+                    returnValue.CreateDate = readerWrapper.Reader.GetDateTime(0);
+
+                    if (!readerWrapper.Reader.IsDBNull(1)) returnValue.Milestone_DigitalAcquisition = readerWrapper.Reader.GetDateTime(1);
+                    if (!readerWrapper.Reader.IsDBNull(2)) returnValue.Milestone_ImageProcessing = readerWrapper.Reader.GetDateTime(2);
+                    if (!readerWrapper.Reader.IsDBNull(3)) returnValue.Milestone_QualityControl = readerWrapper.Reader.GetDateTime(3);
+                    if (!readerWrapper.Reader.IsDBNull(4)) returnValue.Milestone_OnlineComplete = readerWrapper.Reader.GetDateTime(4);
+                    if (!readerWrapper.Reader.IsDBNull(5)) returnValue.Material_ReceivedDate = readerWrapper.Reader.GetDateTime(5);
+                    if (!readerWrapper.Reader.IsDBNull(6)) returnValue.Disposition_Date = readerWrapper.Reader.GetDateTime(6);
+                }
+
+                // Close the reader (which also closes the connection)
+                readerWrapper.Close();
+
+                // Return the fully built object
+                return returnValue;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Tracking_Work_History", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Tracking_Work_History", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Tracking_Work_History", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+        #endregion
+
+        #region Methods to support the restriction by IP addresses
+
+        /// <summary> Gets the list of all the IP ranges for restriction, including each single IP information in those ranges </summary>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 		/// <returns> DataTable with all the data about the IP ranges used for restrictions </returns>
 		/// <remarks> This calls the 'SobekCM_Get_All_IP_Restrictions' stored procedure </remarks> 

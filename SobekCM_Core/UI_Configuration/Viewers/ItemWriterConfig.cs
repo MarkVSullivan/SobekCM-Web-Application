@@ -113,8 +113,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 ViewerType = "MARC",
                 ViewerCode = "marc",
                 Class = "SobekCM.Library.ItemViewer.Viewers.Citation_MARC_ItemViewer_Prototyper",
-                Enabled = true,
-                AlwaysAdd = true
+                Enabled = true
             });
 
             Viewers.Add(new ItemSubViewerConfig
@@ -122,8 +121,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 ViewerType = "CITATION",
                 ViewerCode = "citation",
                 Class = "SobekCM.Library.ItemViewer.Viewers.Citation_Standard_ItemViewer_Prototyper",
-                Enabled = true,
-                AlwaysAdd = true
+                Enabled = true
             });
 
             Viewers.Add(new ItemSubViewerConfig
@@ -131,8 +129,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 ViewerType = "DOWNLOADS",
                 ViewerCode = "downloads",
                 Class = "SobekCM.Library.ItemViewer.Viewers.Downloads_ItemViewer_Prototyper",
-                Enabled = true,
-                AlwaysAdd = true
+                Enabled = true
             });
 
             Viewers.Add(new ItemSubViewerConfig
@@ -140,8 +137,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 ViewerType = "EMBEDDED_VIDEO",
                 ViewerCode = "evideo",
                 Class = "SobekCM.Library.ItemViewer.Viewers.EmbeddedVideo_ItemViewer_Prototyper",
-                Enabled = true,
-                AlwaysAdd = true
+                Enabled = true
             });
 
             Viewers.Add(new ItemSubViewerConfig
@@ -150,7 +146,6 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 ViewerCode = "swf",
                 Class = "SobekCM.Library.ItemViewer.Viewers.Flash_ItemViewer_Prototyper",
                 Enabled = true,
-                AlwaysAdd = true,
                 FileExtensions = new string[] { "SWF"}
             });
 
@@ -159,8 +154,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 ViewerType = "GOOGLE_MAP",
                 ViewerCode = "map",
                 Class = "SobekCM.Library.ItemViewer.Viewers.Google_Map_ItemViewer_Prototyper",
-                Enabled = true,
-                AlwaysAdd = true
+                Enabled = true
             });
 
             Viewers.Add(new ItemSubViewerConfig
@@ -169,7 +163,6 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 ViewerCode = "html",
                 Class = "SobekCM.Library.ItemViewer.Viewers.HTML_ItemViewer_Prototyper",
                 Enabled = true,
-                AlwaysAdd = true,
                 FileExtensions = new string[] { "HTML", "HTM" }
             });
 
@@ -179,7 +172,6 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 ViewerCode = "#j",
                 Class = "SobekCM.Library.ItemViewer.Viewers.JPEG_ItemViewer_Prototyper",
                 Enabled = true,
-                AlwaysAdd = true,
                 PageExtensions = new string[] { "JPG", "JPEG" }
             });
 
@@ -189,7 +181,6 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 ViewerCode = "#x",
                 Class = "SobekCM.Library.ItemViewer.Viewers.JPEG2000_ItemViewer_Prototyper",
                 Enabled = true,
-                AlwaysAdd = true,
                 PageExtensions = new string[] { "JP2" }
             });
 
@@ -199,7 +190,8 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 ViewerCode = "manage",
                 Class = "SobekCM.Library.ItemViewer.Viewers.ManageMenu_ItemViewer_Prototyper",
                 Enabled = true,
-                AlwaysAdd = true
+                ManagementViewer = true,
+                ManagementOrder = 1000
             });
 
             Viewers.Add(new ItemSubViewerConfig
@@ -207,8 +199,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 ViewerType = "METADATA",
                 ViewerCode = "metadata",
                 Class = "SobekCM.Library.ItemViewer.Viewers.Metadata_Links_ItemViewer_Prototyper",
-                Enabled = true,
-                AlwaysAdd = true
+                Enabled = true
             });
 
             Viewers.Add(new ItemSubViewerConfig
@@ -216,8 +207,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 ViewerType = "ALL_VOLUMES",
                 ViewerCode = "allvolumes",
                 Class = "SobekCM.Library.ItemViewer.Viewers.MultiVolumes_ItemViewer_Prototyper",
-                Enabled = true,
-                AlwaysAdd = true
+                Enabled = true
             });
 
             Viewers.Add(new ItemSubViewerConfig
@@ -226,7 +216,6 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 ViewerCode = "pdf",
                 Class = "SobekCM.Library.ItemViewer.Viewers.PDF_ItemViewer_Prototyper",
                 Enabled = true,
-                AlwaysAdd = true,
                 FileExtensions = new string[] { "PDF" }
             });
 
@@ -235,8 +224,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 ViewerType = "RELATED_IMAGES",
                 ViewerCode = "thumbs",
                 Class = "SobekCM.Library.ItemViewer.Viewers.Related_Images_ItemViewer_Prototyper",
-                Enabled = true,
-                AlwaysAdd = true
+                Enabled = true
             });
 
             Viewers.Add(new ItemSubViewerConfig
@@ -244,8 +232,7 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 ViewerType = "USAGE",
                 ViewerCode = "usage",
                 Class = "SobekCM.Library.ItemViewer.Viewers.Usage_Stats_ItemViewer_Prototyper",
-                Enabled = true,
-                AlwaysAdd = true
+                Enabled = true
             });
 
             Viewers.Add(new ItemSubViewerConfig
@@ -254,7 +241,6 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 ViewerCode = "video",
                 Class = "SobekCM.Library.ItemViewer.Viewers.Video_ItemViewer_Prototyper",
                 Enabled = true,
-                AlwaysAdd = true,
                 FileExtensions = new string[] { "WEBM", "OGG", "MP4" }
             });
         }

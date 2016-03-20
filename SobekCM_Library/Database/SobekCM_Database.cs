@@ -507,40 +507,7 @@ namespace SobekCM.Library.Database
 			}
 		}
 
-		/// <summary> Returns the month-by-month usage statistics details by item and item group </summary>
-		/// <param name="BibID"> Bibliographic identifier for the item group of interest </param>
-		/// <param name="VID"> Volume identifier for the item of interest </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Month-by-month usage statistics for item and item-group </returns>
-		/// <remarks> This calls the 'SobekCM_Get_Item_Statistics' stored procedure  </remarks>
-		public static DataSet Get_Item_Statistics_History(string BibID, string VID, Custom_Tracer Tracer)
-		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("SobekCM_Database.Get_Item_Statistics_History", "Pulling history for '" + BibID + "_" + VID + "' from database");
-			}
 
-			try
-			{
-				// Execute this query stored procedure
-				EalDbParameter[] paramList = new EalDbParameter[2];
-				paramList[0] = new EalDbParameter("@BibID", BibID);
-				paramList[1] = new EalDbParameter("@VID", VID);
-				DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Item_Statistics", paramList);
-				return tempSet;
-			}
-			catch (Exception ee)
-			{
-				lastException = ee;
-				if (Tracer != null)
-				{
-					Tracer.Add_Trace("SobekCM_Database.Get_Item_Statistics_History", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-					Tracer.Add_Trace("SobekCM_Database.Get_Item_Statistics_History", ee.Message, Custom_Trace_Type_Enum.Error);
-					Tracer.Add_Trace("SobekCM_Database.Get_Item_Statistics_History", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-				}
-				return null;
-			}
-		}
 
 		/// <summary> Gets the current title, item, and page count for each item aggregation in the item aggregation hierarchy </summary>
         /// <param name="Option"> Option tells which items to include ( 0 = completed, 1 = entered with files, 2 = all entered items )</param>
@@ -1021,104 +988,6 @@ namespace SobekCM.Library.Database
 			{
 				lastException = ee;
 				return -1;
-			}
-		}
-
-		#endregion
-
-		#region Method to get the information about an ITEM GROUP
-
-		//// THIS HAS BEEN REPLACED BY ITEM GROUP DETAILS (WHICH IS VERY SIMILAR)
-		///// <summary> Gets the information about a title (item group) by BibID, including volumes, icons, and skins </summary>
-		///// <param name="BibID"> Bibliographic identifier for the title of interest </param>
-		///// <param name="tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		///// <returns> Strongly typed dataset with information about the title (item group), including volumes, icons, and skins</returns>
-		///// <remarks> This calls the 'SobekCM_Get_Multiple_Volumes' stored procedure </remarks>
-		//public static Group_Information Get_Multiple_Volumes(string BibID, Custom_Tracer tracer)
-		//{
-		//    if (tracer != null)
-		//    {
-		//        tracer.Add_Trace("SobekCM_Database.Get_Multiple_Volumes", "List of volumes for " + BibID + " pulled from database");
-		//    }
-
-		//    try
-		//    {
-		//        // Create the connection
-		//        SqlConnection connect = new SqlConnection(connectionString);
-
-		//        // Create the command 
-		//        SqlCommand executeCommand = new SqlCommand("SobekCM_Get_Multiple_Volumes", connect);
-		//        executeCommand.CommandType = CommandType.StoredProcedure;
-		//        executeCommand.Parameters.AddWithValue("@bibid", BibID);
-
-		//        // Create the adapter
-		//        SqlDataAdapter adapter = new SqlDataAdapter(executeCommand);
-
-		//        // Add appropriate table mappings
-		//        adapter.TableMappings.Add("Table", "Group");
-		//        adapter.TableMappings.Add("Table1", "Item");
-		//        adapter.TableMappings.Add("Table2", "Icon");
-
-		//        // Fill the strongly typed dataset
-		//        Group_Information thisGroup = new Group_Information();
-		//        adapter.Fill(thisGroup);
-
-		//        // If there was either no match, or more than one, return null
-		//        if ((thisGroup == null) || (thisGroup.Tables.Count == 0) || (thisGroup.Tables[0] == null) || (thisGroup.Tables[0].Rows.Count == 0))
-		//        {
-		//            return null;
-		//        }
-
-
-		//        // Return the fully built object
-		//        return thisGroup;
-		//    }
-		//    catch (Exception ee)
-		//    {
-		//        last_exception = ee;
-		//        return null;
-		//    }
-		//}
-
-
-		/// <summary> Gets the list of all items within this item group, indicated by BibID </summary>
-		/// <param name="BibID"> Bibliographic identifier for the title of interest </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <returns> Strongly typed dataset with information about the title (item group), including volumes, icons, and skins</returns>
-		/// <remarks> This calls the 'SobekCM_Get_Multiple_Volumes' stored procedure </remarks>
-		public static SobekCM_Items_In_Title Get_Multiple_Volumes(string BibID, Custom_Tracer Tracer)
-		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("SobekCM_Database.Get_Multiple_Volumes", "List of volumes for " + BibID + " pulled from database");
-			}
-
-			try
-			{
-                DataSet valueSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Get_Multiple_Volumes", new List<EalDbParameter> { new EalDbParameter("@bibid", BibID) });
-
-				// If there was either no match, or more than one, return null
-				if ((valueSet.Tables.Count == 0) || (valueSet.Tables[0] == null) || (valueSet.Tables[0].Rows.Count == 0))
-				{
-					return null;
-				}
-
-				// Create the object
-				SobekCM_Items_In_Title returnValue = new SobekCM_Items_In_Title(valueSet.Tables[0]);
-
-				// Return the fully built object
-				return returnValue;
-			}
-			catch (Exception ee)
-			{
-				lastException = ee;
-				if (Tracer != null)
-				{
-					Tracer.Add_Trace("SobekCM_Database.Get_Multiple_Volumes", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
-					Tracer.Add_Trace("SobekCM_Database.Get_Multiple_Volumes", ee.Message, Custom_Trace_Type_Enum.Error);
-					Tracer.Add_Trace("SobekCM_Database.Get_Multiple_Volumes", ee.StackTrace, Custom_Trace_Type_Enum.Error);
-				}
-				return null;
 			}
 		}
 

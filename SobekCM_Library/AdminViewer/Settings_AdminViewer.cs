@@ -3478,7 +3478,7 @@ namespace SobekCM.Library.AdminViewer
                     newRow[3] = viewer.Class + " ( " + viewer.Assembly + " )";
                 else
                     newRow[3] = viewer.Class.Replace("SobekCM.Library.ItemViewer.Viewers.", "");
-                if (viewer.AlwaysAdd)
+                if (viewer.ManagementViewer)
                     newRow[4] = "<img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" />";
                 else
                     newRow[4] = "<img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" />";
