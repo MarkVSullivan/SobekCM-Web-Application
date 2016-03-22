@@ -304,13 +304,6 @@ namespace SobekCM
 					Public_Folder();
 				}
 
-				// Get the item now, so that you can set the collection code, if there was none listed
-                if ((currentMode.Mode == Display_Mode_Enum.Item_Display) || (currentMode.Mode == Display_Mode_Enum.Item_Print) || ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Behaviors) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Permissions)))
-					|| ((currentMode.Mode == Display_Mode_Enum.My_Sobek) && ((currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Behaviors) ||  (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Group_Serial_Hierarchy) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Add_Volume) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_AutoFill_Volumes) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Group_Mass_Update_Items) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.File_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Page_Images_Management) || (currentMode.My_Sobek_Type == My_Sobek_Type_Enum.Delete_Item))))
-				{
-					Display_Item();
-				}
-
 				// Was this a robot?
 				if (currentMode.Request_Completed)
 					return;
@@ -1059,50 +1052,6 @@ namespace SobekCM
 			{
 				currentMode.Error_Message = "Invalid or private bookshelf";
 				currentMode.Mode = Display_Mode_Enum.Error;
-			}
-		}
-
-		#endregion
-
-		#region Block for displaying a single item
-
-		private void Display_Item()
-		{
-			tracer.Add_Trace("SobekCM_Page_Globals.Display_Item", "Retrieving item or group information");
-
-			// Build the SobekCM assistant
-			SobekCM_Assistant assistant = new SobekCM_Assistant();
-
-			// If this is a robot, then get the text from the static page
-			if (currentMode.Is_Robot)
-			{
-				string directory = currentMode.BibID.Substring(0, 2) + "/" + currentMode.BibID.Substring(2, 2) + "/" + currentMode.BibID.Substring(4, 2) + "/" + currentMode.BibID.Substring(6, 2) + "/" + currentMode.BibID.Substring(8);
-				string redirect_dir = "~/data/" + directory + "/" + currentMode.BibID + "_" + currentMode.VID + ".html";
-				HttpContext.Current.RewritePath(redirect_dir, true);
-				currentMode.Request_Completed = true;
-			}
-			else
-			{
-                if (!assistant.Get_Item(currentMode, UI_ApplicationCache_Gateway.Items, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL,
-                                        UI_ApplicationCache_Gateway.Icon_List, UI_ApplicationCache_Gateway.Item_Viewer_Priority, currentUser, tracer, out currentItem, out currentPage, out itemsInTitle))
-				{
-					if ((currentMode.Mode == Display_Mode_Enum.Legacy_URL) || (currentMode.Invalid_Item.HasValue && currentMode.Invalid_Item.Value ))
-					{
-						if (currentMode.Mode != Display_Mode_Enum.Legacy_URL)
-						{
-							currentMode.Mode = Display_Mode_Enum.Error;
-							currentMode.Error_Message = "Invalid Item Requested";
-						}
-					}
-					else
-					{
-						Email_Information("Unable to find metadata for valid item", null);
-						currentMode.Mode = Display_Mode_Enum.Aggregation;
-						currentMode.Aggregation_Type = Aggregation_Type_Enum.Home;
-						UrlWriterHelper.Redirect(currentMode);
-						// return;
-					}
-				}
 			}
 		}
 

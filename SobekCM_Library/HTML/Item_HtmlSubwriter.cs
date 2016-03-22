@@ -68,6 +68,10 @@ namespace SobekCM.Library.HTML
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Item_HtmlSubwriter( RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
+            // Add the trace 
+            if (RequestSpecificValues.Tracer != null)
+                RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Constructor");
+
             showZoomable = (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Servers.JP2ServerUrl));
 
             searchResultsCount = 0;
@@ -356,7 +360,7 @@ namespace SobekCM.Library.HTML
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Add_Controls", "Getting the appropriate item viewer");
             iItemViewerPrototyper prototyper = ItemViewer_Factory.Get_Item_Viewer(currentItem, RequestSpecificValues.Current_Mode.ViewerCode);
             if (prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, !String.IsNullOrEmpty(restriction_message)))
-                pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode);
+                pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer );
 
 
             // If execution should end, do it now
@@ -594,47 +598,50 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("    </tr>");
 
                 // Display the comments and allow change?
-                string internal_comments_normalized = currentItem.Web.Internal_Comments ?? String.Empty;
-                if ((userCanEditItem) || (RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_System_Admin))
+                if (currentItem.Web != null)
                 {
-                    const int ROWS = 1;
-                    const int ACTUAL_COLS = 70;
+                    string internal_comments_normalized = currentItem.Web.Internal_Comments ?? String.Empty;
+                    if ((userCanEditItem) || (RequestSpecificValues.Current_User.Is_Internal_User) || (RequestSpecificValues.Current_User.Is_System_Admin))
+                    {
+                        const int ROWS = 1;
+                        const int ACTUAL_COLS = 70;
 
-                    // Add the internal comments row ( hidden content initially )
-                    Output.WriteLine("    <tr style=\"text-align:center; height:14px;\">");
-                    Output.WriteLine("      <td colspan=\"3\" style=\"text-align:center;\">");
-                    Output.WriteLine("        <table id=\"internal_notes_div\">");
-                    Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
-                    Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
-                    Output.WriteLine("            <td>");
-                    Output.WriteLine("              <textarea rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input sbkIsw_Focusable\">" + HttpUtility.HtmlEncode(internal_comments_normalized) + "</textarea>");
-                    Output.WriteLine("            </td>");
-                    Output.WriteLine("            <td>");
-                    Output.WriteLine("              <button title=\"Save new internal comments\" class=\"internalheader_button\" onclick=\"save_internal_notes(); return false;\">SAVE</button>");
-                    Output.WriteLine("            </td>");
-                    Output.WriteLine("          </tr>");
-                    Output.WriteLine("        </table>");
-                    Output.WriteLine("      </td>");
-                    Output.WriteLine("    </tr>");
-                }
-                else
-                {
-                    const int ROWS = 1;
-                    const int ACTUAL_COLS = 80;
+                        // Add the internal comments row ( hidden content initially )
+                        Output.WriteLine("    <tr style=\"text-align:center; height:14px;\">");
+                        Output.WriteLine("      <td colspan=\"3\" style=\"text-align:center;\">");
+                        Output.WriteLine("        <table id=\"internal_notes_div\">");
+                        Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
+                        Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
+                        Output.WriteLine("            <td>");
+                        Output.WriteLine("              <textarea rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input sbkIsw_Focusable\">" + HttpUtility.HtmlEncode(internal_comments_normalized) + "</textarea>");
+                        Output.WriteLine("            </td>");
+                        Output.WriteLine("            <td>");
+                        Output.WriteLine("              <button title=\"Save new internal comments\" class=\"internalheader_button\" onclick=\"save_internal_notes(); return false;\">SAVE</button>");
+                        Output.WriteLine("            </td>");
+                        Output.WriteLine("          </tr>");
+                        Output.WriteLine("        </table>");
+                        Output.WriteLine("      </td>");
+                        Output.WriteLine("    </tr>");
+                    }
+                    else
+                    {
+                        const int ROWS = 1;
+                        const int ACTUAL_COLS = 80;
 
-                    // Add the internal comments row ( hidden content initially )
-                    Output.WriteLine("    <tr style=\"text-align:center; height:14px;\">");
-                    Output.WriteLine("      <td colspan=\"2\">");
-                    Output.WriteLine("        <table id=\"internal_notes_div\">");
-                    Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
-                    Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
-                    Output.WriteLine("            <td>");
-                    Output.WriteLine("              <textarea readonly=\"readonly\" rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input\" onfocus=\"javascript:textbox_enter('intheader_internal_notes','intheader_comments_input_focused')\" onblur=\"javascript:textbox_leave('intheader_internal_notes','intheader_comments_input')\">" + HttpUtility.HtmlEncode(internal_comments_normalized) + "</textarea>");
-                    Output.WriteLine("            </td>");
-                    Output.WriteLine("          </tr>");
-                    Output.WriteLine("        </table>");
-                    Output.WriteLine("      </td>");
-                    Output.WriteLine("    </tr>");
+                        // Add the internal comments row ( hidden content initially )
+                        Output.WriteLine("    <tr style=\"text-align:center; height:14px;\">");
+                        Output.WriteLine("      <td colspan=\"2\">");
+                        Output.WriteLine("        <table id=\"internal_notes_div\">");
+                        Output.WriteLine("          <tr style=\"text-align:left; height:14px;\">");
+                        Output.WriteLine("            <td class=\"intheader_label\">COMMENTS:</td>");
+                        Output.WriteLine("            <td>");
+                        Output.WriteLine("              <textarea readonly=\"readonly\" rows=\"" + ROWS + "\" cols=\"" + ACTUAL_COLS + "\" name=\"intheader_internal_notes\" id=\"intheader_internal_notes\" class=\"intheader_comments_input\" onfocus=\"javascript:textbox_enter('intheader_internal_notes','intheader_comments_input_focused')\" onblur=\"javascript:textbox_leave('intheader_internal_notes','intheader_comments_input')\">" + HttpUtility.HtmlEncode(internal_comments_normalized) + "</textarea>");
+                        Output.WriteLine("            </td>");
+                        Output.WriteLine("          </tr>");
+                        Output.WriteLine("        </table>");
+                        Output.WriteLine("      </td>");
+                        Output.WriteLine("    </tr>");
+                    }
                 }
             }
             else

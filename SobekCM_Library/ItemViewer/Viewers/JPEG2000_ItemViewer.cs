@@ -89,12 +89,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Fully built and initialized <see cref="JPEG2000_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
-        public iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest)
+        public iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
         {
-            return new JPEG2000_ItemViewer(CurrentItem, CurrentUser, CurrentRequest);
+            return new JPEG2000_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, ViewerCode, FileExtensions);
         }
     }
 
@@ -104,15 +105,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
     public class JPEG2000_ItemViewer : abstractPageFilesItemViewer
     {
         private readonly bool suppressNavigator;
-        private readonly string FileName;
+
+        // information about the file to display
+        private readonly int page;
+        private string filename;
 
         /// <summary> Constructor for a new instance of the JPEG2000_ItemViewer class, used to display JPEG2000s linked to
         /// pages in a digital resource </summary>
         /// <param name="BriefItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
-        public JPEG2000_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest)
+        public JPEG2000_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string ViewerCode, string[] FileExtensions)
         {
+            // Add the trace
+            if (Tracer != null)
+                Tracer.Add_Trace("JPEG2000_ItemViewer.Constructor");
+
             // Save the arguments for use later
             this.BriefItem = BriefItem;
             this.CurrentUser = CurrentUser;
@@ -125,6 +133,59 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 if (UI_ApplicationCache_Gateway.Settings.Get_Additional_Setting("JPEG2000 ItemViewer.Suppress Navigator").ToLower().Trim() != "false")
                     suppressNavigator = true;
             }
+
+            // Determine the page
+            page = 1;
+            if (!String.IsNullOrEmpty(CurrentRequest.ViewerCode))
+            {
+                int tempPageParse;
+                if (Int32.TryParse(CurrentRequest.ViewerCode.Replace(ViewerCode.Replace("#", ""), ""), out tempPageParse))
+                    page = tempPageParse;
+            }
+
+            // Just a quick range check
+            if (page > BriefItem.Images.Count)
+                page = 1;
+
+            // Try to set the file information here
+            if ((!set_file_information(FileExtensions)) && (page != 1))
+            {
+                // If there was an error, just set to the first page
+                page = 1;
+                set_file_information(FileExtensions);
+            }
+
+            // Since this is a paging viewer, set the viewer code
+            if ( String.IsNullOrEmpty(CurrentRequest.ViewerCode))
+                CurrentRequest.ViewerCode = ViewerCode.Replace("#", page.ToString());
+        }
+
+        private bool set_file_information(string[] FileExtensions)
+        {
+            // Find the page information
+            BriefItem_FileGrouping imagePage = BriefItem.Images[page - 1];
+            if (imagePage.Files != null)
+            {
+                // Step through each file in this page
+                foreach (BriefItem_File thisFile in imagePage.Files)
+                {
+                    // Get this file extension
+                    string extension = thisFile.File_Extension.Replace(".", "");
+
+                    // Step through all permissable file extensions
+                    foreach (string thisPossibleFileExtension in FileExtensions)
+                    {
+                        if (String.Compare(extension, thisPossibleFileExtension, StringComparison.OrdinalIgnoreCase) == 0)
+                        {
+                            // Get the JPEG information
+                            filename = thisFile.Name;
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
 
         /// <summary> Gets the collection of special behaviors which this item viewer
@@ -234,9 +295,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //add by Keven for FIU dPanther's separate image server
             if (UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Root != null)
-                Output.WriteLine("   viewer.open(\"" + CurrentRequest.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Root.Replace("\\", "/") + SobekFileSystem.AssociFilePath(BriefItem).Replace("\\", "/") + FileName + ".dzi\");");
+                Output.WriteLine("   viewer.open(\"" + CurrentRequest.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Root.Replace("\\", "/") + SobekFileSystem.AssociFilePath(BriefItem).Replace("\\", "/") + filename + ".dzi\");");
             else
-                Output.WriteLine("   viewer.open(\"" + CurrentRequest.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network.Replace("\\", "/") + SobekFileSystem.AssociFilePath(BriefItem).Replace("\\", "/") + FileName + ".dzi\");");
+                Output.WriteLine("   viewer.open(\"" + CurrentRequest.Base_URL + "iipimage/iipsrv.fcgi?DeepZoom=" + UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network.Replace("\\", "/") + SobekFileSystem.AssociFilePath(BriefItem).Replace("\\", "/") + filename + ".dzi\");");
 
             Output.WriteLine("</script>");
             Output.WriteLine("</td>");

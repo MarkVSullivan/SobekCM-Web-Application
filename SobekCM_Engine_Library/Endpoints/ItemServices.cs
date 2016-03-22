@@ -181,7 +181,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 {
                     // Get the BibID and VID
                     string bibid = UrlSegments[0];
-                    string vid = (UrlSegments.Count > 1) ? UrlSegments[1] : "00001";
+                    string vid = ((UrlSegments.Count > 1) && ( UrlSegments[1].Length > 0 )) ? UrlSegments[1] : "00001";
 
                     tracer.Add_Trace("ItemServices.GetItemBrief", "Requested brief item info for " + bibid + ":" + vid + " using " + Mapping + " mapping");
 

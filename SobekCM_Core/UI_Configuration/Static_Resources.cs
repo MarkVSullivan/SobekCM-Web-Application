@@ -3046,6 +3046,8 @@ namespace SobekCM.Core.UI_Configuration
             Sobekcm_Css = "http://cdn.sobekdigital.com/css/sobekcm/4.10.0/sobekcm.css";
             Sobekcm_Admin_Css = "http://cdn.sobekdigital.com/css/sobekcm-admin/4.10.0/sobekcm_admin.css";
             Sobekcm_Admin_Js = "http://cdn.sobekdigital.com/js/sobekcm-admin/4.10.0/sobekcm_admin.js";
+            Sobekcm_Full_Js = "http://cdn.sobekdigital.com/js/sobekcm-full/4.10.0/sobekcm_full.js";
+            Sobekcm_Item_Css = "http://cdn.sobekdigital.com/css/sobekcm-item/4.10.0/sobekcm_item.css";
 
             return returnValue;
         }

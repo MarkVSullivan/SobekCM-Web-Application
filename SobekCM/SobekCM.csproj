@@ -1018,6 +1018,7 @@
     <Folder Include="default\includes\datatables\1.11.1\scroller\css\" />
     <Folder Include="default\includes\datatables\1.11.1\scroller\images\" />
     <Folder Include="default\includes\datatables\1.11.1\scroller\js\" />
+    <Folder Include="default\js\sobekcm-full\4.10.0\" />
     <Folder Include="winauth\" />
   </ItemGroup>
   <PropertyGroup>

@@ -12,7 +12,8 @@ namespace SobekCM.Core.BriefItem
     /// cache for subsequent needs </summary>
     public class BriefItem_UI
     {
-        private Dictionary<string, string> viewerCodesDictionary;  
+        private Dictionary<string, string> viewerCodesDictionary;
+        private Dictionary<string, string> viewerTypesDictionary;
 
         public List<string> Viewers_By_Priority { get; set; } 
 
@@ -23,9 +24,20 @@ namespace SobekCM.Core.BriefItem
             // Ensure dictionary is not null
             if (viewerCodesDictionary == null)
                 viewerCodesDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (viewerTypesDictionary == null)
+                viewerTypesDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             // Add this viewer code
             viewerCodesDictionary[Code] = ViewerType;
+            viewerTypesDictionary[ViewerType] = ViewerType;
+        }
+
+        /// <summary> Checks to see if a viewer type is already added to this item </summary>
+        /// <param name="ViewerType"> Viewer type to check </param>
+        /// <returns> TRUE if this item contains the viewer type specified, otherwise FALSE </returns>
+        public bool Includes_Viewer_Type(string ViewerType)
+        {
+            return (viewerTypesDictionary != null) && (viewerTypesDictionary.ContainsKey(ViewerType));
         }
 
         /// <summary> Gets the controlle viewer type string, based on the requested viewer code </summary>

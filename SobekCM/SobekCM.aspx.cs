@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.UI;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Library.MainWriters;
@@ -79,7 +80,7 @@ namespace SobekCM
 						((pageGlobals.currentMode.Mode != Display_Mode_Enum.Aggregation) || (pageGlobals.currentMode.Aggregation_Type != Aggregation_Type_Enum.Child_Page_Edit)) &&
 						((pageGlobals.currentMode.Mode != Display_Mode_Enum.Aggregation) || (pageGlobals.currentMode.Aggregation_Type != Aggregation_Type_Enum.Home) || (pageGlobals.currentMode.Home_Type != Home_Type_Enum.Personalized)) &&
 						(pageGlobals.currentMode.Result_Display_Type != Result_Display_Type_Enum.Export) &&
-						((pageGlobals.currentMode.Mode != Display_Mode_Enum.Item_Display) || ((pageGlobals.currentMode.ViewerCode.Length > 0) && (pageGlobals.currentMode.ViewerCode.ToUpper().IndexOf("citation") < 0) && (pageGlobals.currentMode.ViewerCode.ToUpper().IndexOf("allvolumes3") < 0))))
+						((pageGlobals.currentMode.Mode != Display_Mode_Enum.Item_Display) || (( !String.IsNullOrEmpty(pageGlobals.currentMode.ViewerCode)) && (pageGlobals.currentMode.ViewerCode.ToUpper().IndexOf("citation") < 0) && (pageGlobals.currentMode.ViewerCode.ToUpper().IndexOf("allvolumes3") < 0))))
 					{
 						Response.Cache.SetCacheability(HttpCacheability.Private);
 						Response.Cache.SetMaxAge(new TimeSpan(0, UI_ApplicationCache_Gateway.Settings.Servers.Web_Output_Caching_Minutes, 0));
@@ -304,6 +305,9 @@ namespace SobekCM
                 UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL = base_url;
                 UI_ApplicationCache_Gateway.Settings.Servers.Base_URL = base_url;
 		    }
+
+            // Initializee the Sobek file system abstraction
+            SobekFileSystem.Initialize(UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL);
 
             // Ensure the microservices client has read the configuration file
 		    if (!SobekEngineClient.Config_Read_Attempted)

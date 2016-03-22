@@ -75,7 +75,7 @@ namespace SobekCM.Library.ResultsViewer
 
                 // For browses, just point to the title
 				if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) // browse info only
-                    internal_link = base_url + titleResult.BibID + textRedirectStem;
+                    internal_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
 
                 // Start this row
                 string title = firstItemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;");
@@ -133,7 +133,7 @@ namespace SobekCM.Library.ResultsViewer
                 {
                     resultsBldr.AppendLine(
                         "\t\t\t<span class=\"briefResultsTitle\"><a href=\"" +
-                        internal_link + "\">" + firstItemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;") +
+                        internal_link + "\" onclick=\"cancelPropagation(event);\">" + firstItemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;") +
                         "</a></span>");
                 }
 

@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.UI.WebControls;
+using System.Windows.Forms.VisualStyles;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -86,12 +88,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Fully built and initialized <see cref="JPEG_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
-        public iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest)
+        public iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
         {
-            return new JPEG_ItemViewer(CurrentItem, CurrentUser, CurrentRequest);
+            return new JPEG_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, ViewerCode.ToLower(), FileExtensions);
         }
     }
 
@@ -100,17 +103,30 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// <see cref="iItemViewer" /> interface. </remarks>
     public class JPEG_ItemViewer : abstractPageFilesItemViewer
     {
+        // information about the page to display
+        private readonly int page;
         private int width;
         private int height;
         private string filename;
+
+        // properties about linking to the zoomable file
+        private bool includeLinkToZoomable;
+        private readonly string zoomableViewerCode;
 
         /// <summary> Constructor for a new instance of the JPEG_ItemViewer class, used to display JPEGs linked to
         /// pages in a digital resource </summary>
         /// <param name="BriefItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
-        public JPEG_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest)
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="JPEG_ViewerCode"> JPEG viewer code, as determined by configuration files </param>
+        /// <param name="FileExtensions"> File extensions that this viewer allows, as determined by configuration files </param>
+        public JPEG_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string JPEG_ViewerCode, string[] FileExtensions)
         {
+            // Add the trace
+            if ( Tracer != null )
+                Tracer.Add_Trace("JPEG_ItemViewer.Constructor");
+
             // Save the arguments for use later
             this.BriefItem = BriefItem;
             this.CurrentUser = CurrentUser;
@@ -118,6 +134,104 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Set the behavior properties
             Behaviors = EmptyBehaviors;
+
+            // Is the JPEG2000 viewer included in this item?
+            bool zoomableViewerIncluded = BriefItem.UI.Includes_Viewer_Type("JPEG2000");
+            string[] jpeg2000_extensions = null;
+            if (zoomableViewerIncluded)
+            {
+                iItemViewerPrototyper jp2Prototyper = ItemViewer_Factory.Get_Viewer_By_ViewType("JPEG2000");
+                if (jp2Prototyper == null)
+                    zoomableViewerIncluded = false;
+                else
+                {
+                    zoomableViewerCode = jp2Prototyper.ViewerCode;
+                    jpeg2000_extensions = jp2Prototyper.FileExtensions;
+                }
+            }
+
+            // Set some default values
+            width = 500;
+            height = -1;
+            includeLinkToZoomable = false;
+
+            // Determine the page
+            page = 1;
+            if (!String.IsNullOrEmpty(CurrentRequest.ViewerCode))
+            {
+                int tempPageParse;
+                if (Int32.TryParse(CurrentRequest.ViewerCode.Replace(JPEG_ViewerCode.Replace("#",""), ""), out tempPageParse))
+                    page = tempPageParse;
+            }
+
+            // Just a quick range check
+            if (page > BriefItem.Images.Count)
+                page = 1;
+
+            // Try to set the file information here
+            if ((!set_file_information(FileExtensions, zoomableViewerIncluded, jpeg2000_extensions)) && (page != 1))
+            {
+                // If there was an error, just set to the first page
+                page = 1;
+                set_file_information(FileExtensions, zoomableViewerIncluded, jpeg2000_extensions);
+            }
+
+            // Since this is a paging viewer, set the viewer code
+            if (String.IsNullOrEmpty(CurrentRequest.ViewerCode))
+                CurrentRequest.ViewerCode = JPEG_ViewerCode.Replace("#", page.ToString());
+
+        }
+
+        private bool set_file_information(string[] FileExtensions, bool zoomableViewerIncluded, string[] zoomableFileExtensions )
+        {
+            bool returnValue = false;
+            includeLinkToZoomable = false;
+
+            // Find the page information
+            BriefItem_FileGrouping imagePage = BriefItem.Images[page - 1];
+            if (imagePage.Files != null)
+            {
+                // Step through each file in this page
+                foreach (BriefItem_File thisFile in imagePage.Files)
+                {
+                    // Get this file extension
+                    string extension = thisFile.File_Extension.Replace(".","");
+
+                    // Step through all permissable file extensions
+                    foreach( string thisPossibleFileExtension in FileExtensions )
+                    {
+                        if (String.Compare(extension, thisPossibleFileExtension, StringComparison.OrdinalIgnoreCase) == 0)
+                        {
+                            // Get the JPEG information
+                            filename = thisFile.Name;
+                            if (thisFile.Width.HasValue) width = thisFile.Width.Value;
+                            if (thisFile.Height.HasValue) height = thisFile.Height.Value;
+
+                            // if there is no need to look for a JPEG2000 file, done here!
+                            if (!zoomableViewerIncluded) return true;
+                            returnValue = true;
+                        }
+                    }
+
+                    // Also look for the JPEG2000 viewers
+                    if (zoomableViewerIncluded)
+                    {
+                        // Step through all JPEG2000 extensions
+                        foreach (string thisPossibleFileExtension in zoomableFileExtensions)
+                        {
+                            if (String.Compare(extension, thisPossibleFileExtension, StringComparison.OrdinalIgnoreCase) == 0)
+                            {
+                                // Found a jpeg2000
+                                includeLinkToZoomable = true;
+                                break;
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            return returnValue;
         }
 
         /// <summary> Any additional inline style for this viewer that affects the main box around this</summary>
@@ -142,32 +256,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("JPEG_ItemViewer.Write_Main_Viewer_Section", "");
             }
 
-            // Determine if there is a zoomable version of this page
-            bool isZoomable = false;
-            if ((BriefItem.Images != null) && (BriefItem.Images.Count > CurrentRequest.Page - 1))
-            {
-                int currentPageIndex = CurrentRequest.Page.HasValue ? CurrentRequest.Page.Value : 1;
-                foreach (BriefItem_File thisFile in BriefItem.Images[currentPageIndex - 1].Files)
-                {
-                    if (String.Compare(thisFile.File_Extension, ".jp2", StringComparison.OrdinalIgnoreCase) == 0)
-                    {
-                        isZoomable = true;
-                        break;
-                    }
-                }
-            }
-
-            // Now, check to see if the JPEG2000 viewer is included here
-            bool zoomableViewerIncluded = false;
-            foreach (BriefItem_BehaviorViewer viewer in BriefItem.Behaviors.Viewers)
-            {
-                if (String.Compare(viewer.ViewerType, "JPEG2000", StringComparison.OrdinalIgnoreCase) == 0)
-                {
-                    zoomableViewerIncluded = true;
-                    break;
-                }
-            }
-
             string displayFileName = BriefItem.Web.Source_URL + "/" + filename;
 
             // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
@@ -187,10 +275,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
             // Add the HTML for the image
-            if ((isZoomable) && (zoomableViewerIncluded))
+            if (includeLinkToZoomable)
             {
                 string currViewer = CurrentRequest.ViewerCode;
-                CurrentRequest.ViewerCode = CurrentRequest.ViewerCode.ToLower().Replace("j", "") + "x";
+                CurrentRequest.ViewerCode = zoomableViewerCode.Replace("#", page.ToString());
                 string toZoomable = UrlWriterHelper.Redirect_URL(CurrentRequest);
                 CurrentRequest.ViewerCode = currViewer;
                 Output.WriteLine("\t\t<td id=\"sbkJiv_ImageZoomable\">");
