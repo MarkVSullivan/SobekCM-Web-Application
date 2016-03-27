@@ -10,6 +10,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
 using SobekCM.Library.HTML;
+using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -47,6 +48,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 return false;
 
             // (we are going to assume for now all pages include a thumbnail?)
+            if (CurrentItem.Images.Count > 1)
+                return true;
 
             // Finally, return true
             return false;
@@ -78,7 +81,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
         {
-            Item_MenuItem menuItem = new Item_MenuItem("Thumbnails", null, null, CurrentItem.Web.Source_URL + ViewerCode);
+            // Get the URL for this
+            string previous_code = CurrentRequest.ViewerCode;
+            CurrentRequest.ViewerCode = ViewerCode;
+            string url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+            CurrentRequest.ViewerCode = previous_code;
+
+            // Add the item menu information
+            Item_MenuItem menuItem = new Item_MenuItem("Thumbnails", null, null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -289,7 +299,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 //Redirect to the first page of results when the number of thumbnails option is changed by the user
                 string current_viewercode = currentRequest.ViewerCode;
-                UrlWriterHelper.Redirect_URL(currentRequest, "1thumbs");
+                UrlWriterHelper.Redirect_URL(currentRequest, "thumbs");
 
                 //   currentRequest.Thumbnails_Per_Page = -1;
                 //  string current_Page_url = UrlWriterHelper.Redirect_URL(currentRequest, "1thumbs");
@@ -349,7 +359,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             else
             {
                 currentRequest.Size_Of_Thumbnails = 1;
-                Output.Write("\t\t\t<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "1thumbs") + "\" title=\"" + SMALL_THUMBNAILS + "\"><img src=\"" + Static_Resources.Thumbs3_Gif + "\" alt=\"Small\" /></a>");
+                Output.Write("\t\t\t<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "thumbs") + "\" title=\"" + SMALL_THUMBNAILS + "\"><img src=\"" + Static_Resources.Thumbs3_Gif + "\" alt=\"Small\" /></a>");
             }
 
             if (thumbnailSize == 2)
@@ -357,14 +367,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             else
             {
                 currentRequest.Size_Of_Thumbnails = 2;
-                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "1thumbs") + "\" title=\"" + MEDIUM_THUMBNAILS + "\"><img src=\"" + Static_Resources.Thumbs2_Gif + "\" alt=\"Medium\" /></a>");
+                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "thumbs") + "\" title=\"" + MEDIUM_THUMBNAILS + "\"><img src=\"" + Static_Resources.Thumbs2_Gif + "\" alt=\"Medium\" /></a>");
             }
             if (thumbnailSize == 3)
                 Output.Write("<img src=\"" + Static_Resources.Thumbs2_Selected_Gif + "\" alt=\"Large\" />");
             else
             {
                 currentRequest.Size_Of_Thumbnails = 3;
-                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "1thumbs") + "\" title=\"" + LARGE_THUMBNAILS + "\"><img src=\"" + Static_Resources.Thumbs1_Gif + "\" alt=\"Large\" /></a>");
+                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "thumbs") + "\" title=\"" + LARGE_THUMBNAILS + "\"><img src=\"" + Static_Resources.Thumbs1_Gif + "\" alt=\"Large\" /></a>");
             }
             //Reset the current mode
             currentRequest.Size_Of_Thumbnails = -1;
@@ -591,7 +601,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     queryString = (index_queryString < curr_url.Length - 1) ? curr_url.Substring(index_queryString) : String.Empty;
                 }
 
-                return ((PageCount > 1) && (currentRequest.Page > 1)) ? UrlWriterHelper.Redirect_URL(currentRequest, "1thumbs") + queryString : String.Empty;
+                return ((PageCount > 1) && (currentRequest.Page > 1)) ? UrlWriterHelper.Redirect_URL(currentRequest, "thumbs") + queryString : String.Empty;
             }
         }
 

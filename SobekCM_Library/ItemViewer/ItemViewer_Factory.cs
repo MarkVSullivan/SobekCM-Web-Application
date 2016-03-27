@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration;
@@ -25,6 +26,7 @@ namespace SobekCM.Library.ItemViewer
     {
         private static Dictionary<string, iItemViewerPrototyper> viewerCodeToItemViewerPrototyper;
         private static Dictionary<string, iItemViewerPrototyper> viewTypeToItemViewerPrototyper;
+        private static List<ItemSubViewerConfig> mgmtViewerConfigs;
 
         /// <summary> Configure the viewers for a single brief item to match this user interface settings </summary>
         /// <param name="BriefItem"> Brief item to adjust selected viewers </param>
@@ -41,16 +43,6 @@ namespace SobekCM.Library.ItemViewer
             if (BriefItem.UI == null) BriefItem.UI = new BriefItem_UI();
             if (BriefItem.UI.Viewers_By_Priority == null) BriefItem.UI.Viewers_By_Priority = new List<string>();
             if (BriefItem.UI.Viewers_Menu_Order == null) BriefItem.UI.Viewers_Menu_Order = new List<string>();
-
-            //// Step through each viewer included from the database and build lookup dictionary
-            //Dictionary<string, string> dbViews = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            //foreach (BriefItem_BehaviorViewer viewer in BriefItem.Behaviors.Viewers)
-            //{
-            //    dbViews[viewer.ViewerType] = viewer.ViewerType;
-            //}
-
-            //// Add any viewers that should be added
-
 
             // Use a sorted list to build the menu order
             SortedDictionary<float, string> menuOrderSort = new SortedDictionary<float, string>();
@@ -69,13 +61,13 @@ namespace SobekCM.Library.ItemViewer
                 // Get the item prototype object
                 iItemViewerPrototyper protoTyper = viewTypeToItemViewerPrototyper[viewer.ViewerType];
 
-                // Verify this prototyper believes it should be added
-                if (protoTyper.Include_Viewer(BriefItem))
+                // Verify this prototyper is not NULL and believes it should be added
+                if (( protoTyper != null ) && ( protoTyper.Include_Viewer(BriefItem)))
                 {
                     // Add this view to the ordained views
                     BriefItem.UI.Viewers_By_Priority.Add(viewer.ViewerType);
 
-                    // CHeck for collisions on the menu order
+                    // Check for collisions on the menu order
                     float menuOrder = viewer.MenuOrder;
                     while (menuOrderSort.ContainsKey(menuOrder))
                         menuOrder = menuOrder + .001f;
@@ -88,7 +80,41 @@ namespace SobekCM.Library.ItemViewer
                 }
             }
 
-            // Add the viewers back in menu order
+            // Also, add each of the management style viewers, that are not generally stored in the database
+            // but we will still double check it wasn't already added
+            foreach (ItemSubViewerConfig viewerConfig in mgmtViewerConfigs)
+            {
+                // Verify a match in the UI configuration for the actual item viewers
+                if (!viewTypeToItemViewerPrototyper.ContainsKey(viewerConfig.ViewerType))
+                    continue;
+
+                // Is it ALREADY added though? (may be added with EXCLUDE set to true)
+                if (BriefItem.UI.Includes_Viewer_Type(viewerConfig.ViewerType))
+                    continue;
+
+                // Get the item prototype object
+                iItemViewerPrototyper protoTyper = viewTypeToItemViewerPrototyper[viewerConfig.ViewerType];
+
+                // Verify this prototyper is not NULL and believes it should be added
+                if ((protoTyper != null) && (protoTyper.Include_Viewer(BriefItem)))
+                {
+                    // Add this view to the ordained views
+                    BriefItem.UI.Viewers_By_Priority.Add(viewerConfig.ViewerType);
+
+                    // Check for collisions on the menu order
+                    float menuOrder = viewerConfig.ManagementOrder;
+                    while (menuOrderSort.ContainsKey(menuOrder))
+                        menuOrder = menuOrder + .001f;
+
+                    // Also add this to the menu order sorted list
+                    menuOrderSort[menuOrder] = viewerConfig.ViewerType;
+
+                    // Also add this to the dictionary for lookup
+                    BriefItem.UI.Add_Viewer_Code(protoTyper.ViewerCode, protoTyper.ViewerType);
+                }
+            }
+
+            // Add the viewers back in menu order to the menu order portion
             foreach (float thisKey in menuOrderSort.Keys)
             {
                 BriefItem.UI.Viewers_Menu_Order.Add( menuOrderSort[thisKey]);
@@ -106,6 +132,10 @@ namespace SobekCM.Library.ItemViewer
             // Make sure the dictionaries are not null
             if ( viewerCodeToItemViewerPrototyper == null ) viewerCodeToItemViewerPrototyper = new Dictionary<string, iItemViewerPrototyper>(StringComparer.OrdinalIgnoreCase);
             if (viewTypeToItemViewerPrototyper == null) viewTypeToItemViewerPrototyper = new Dictionary<string, iItemViewerPrototyper>(StringComparer.OrdinalIgnoreCase);
+            if (mgmtViewerConfigs == null) mgmtViewerConfigs = new List<ItemSubViewerConfig>();
+
+            // Temporary sorter
+            SortedDictionary<float, ItemSubViewerConfig> mgmtOrder = new SortedDictionary<float, ItemSubViewerConfig>();
 
             // Step through all the potential item viewers prototypes in the dictionary
             foreach (ItemSubViewerConfig thisViewerConfig in UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.Viewers)
@@ -120,11 +150,38 @@ namespace SobekCM.Library.ItemViewer
 
                 // Build the prototyper
                 iItemViewerPrototyper prototyper = configurePrototyper(thisViewerConfig.Assembly, thisViewerConfig.Class);
+                
+                // If this failed to create a prototyper move on
+                if (prototyper == null)
+                    continue;
+
+                // Add any other configuration here
+                if (!String.IsNullOrEmpty(thisViewerConfig.ViewerCode))
+                    prototyper.ViewerCode = thisViewerConfig.ViewerCode;
+                if (( thisViewerConfig.PageExtensions != null ) && ( thisViewerConfig.PageExtensions.Length > 0 ))
+                    prototyper.FileExtensions = thisViewerConfig.PageExtensions;
+                else if ((thisViewerConfig.FileExtensions != null) && (thisViewerConfig.FileExtensions.Length > 0))
+                    prototyper.FileExtensions = thisViewerConfig.FileExtensions;
 
                 // Add this to the dictionaries
                 viewTypeToItemViewerPrototyper[type] = prototyper;
-                viewerCodeToItemViewerPrototyper[code] = prototyper;
+                viewerCodeToItemViewerPrototyper[prototyper.ViewerCode] = prototyper;
+
+                // Was this a management viewer?
+                if (thisViewerConfig.ManagementViewer)
+                {
+                    // Get the order and ensure there are no collisions
+                    float orderValue = thisViewerConfig.ManagementOrder;
+                    while (mgmtOrder.ContainsKey(orderValue))
+                        orderValue += .001f;
+
+                    // Add this to the sort list
+                    mgmtOrder[thisViewerConfig.ManagementOrder] = thisViewerConfig;
+                }
             }
+            
+            // Add the sorted viewers to the sort list, in sorted order
+            mgmtViewerConfigs = mgmtOrder.Values.ToList();
         }
 
         private static iItemViewerPrototyper configurePrototyper( string assembly, string className )

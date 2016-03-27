@@ -9,6 +9,7 @@ using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.HTML;
+using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
@@ -80,7 +81,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
         {
-            Item_MenuItem menuItem = new Item_MenuItem("Page Images", "Zoomable", null, CurrentItem.Web.Source_URL + ViewerCode);
+            // Get the URL for this
+            string previous_code = CurrentRequest.ViewerCode;
+            CurrentRequest.ViewerCode = ViewerCode.Replace("#", "1");
+            string url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+            CurrentRequest.ViewerCode = previous_code;
+
+            // Add the item menu information
+            Item_MenuItem menuItem = new Item_MenuItem("Page Images", "Zoomable", null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -292,6 +300,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             Output.WriteLine("   });");
             Output.WriteLine();
+
 
             //add by Keven for FIU dPanther's separate image server
             if (UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Root != null)

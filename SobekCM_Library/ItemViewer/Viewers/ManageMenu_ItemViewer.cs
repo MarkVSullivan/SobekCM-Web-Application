@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
+using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -82,8 +84,86 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
         {
-            Item_MenuItem menuItem = new Item_MenuItem("MANAGE", null, null, CurrentItem.Web.Source_URL + ViewerCode);
-            MenuItems.Add(menuItem);
+            // Again, ensure access
+            if (!Has_Access(CurrentItem, CurrentUser, false))
+                return;
+
+            // Get the URL for this
+            string previous_code = CurrentRequest.ViewerCode;
+            CurrentRequest.ViewerCode = ViewerCode;
+            string url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+            CurrentRequest.ViewerCode = previous_code;
+            MenuItems.Add(new Item_MenuItem("Manage", "Management Menu", null, url, "manage"));
+
+            bool is_bib_level = (String.Compare(CurrentItem.Type, "BIB_LEVEL", StringComparison.OrdinalIgnoreCase) == 0);
+            if (!is_bib_level)
+            {
+
+                // Add the menu item for editing metadatga
+                CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
+                CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
+                string edit_metadata_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                MenuItems.Add(new Item_MenuItem("Manage", "Edit Metadata", null, edit_metadata_url, "nevermatchthis"));
+
+                // Add the menu item for editing item behaviors
+                CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
+                string edit_behaviors_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                MenuItems.Add(new Item_MenuItem("Manage", "Edit Item Behaviors", null, edit_behaviors_url, "nevermatchthis"));
+
+                // Add the menu item for managing download files
+                CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
+                string manage_downloads = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                MenuItems.Add(new Item_MenuItem("Manage", "Manage Download Files", null, manage_downloads, "nevermatchthis"));
+
+                // Add the menu item for managing pages and divisions
+                if ((CurrentItem.Images == null) || (CurrentItem.Images.Count == 0))
+                {
+                    CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
+                    string page_images_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                    MenuItems.Add(new Item_MenuItem("Manage", "Manage Pages and Divisions", null, page_images_url, "nevermatchthis"));
+                }
+                else
+                {
+                    CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
+                    CurrentRequest.ViewerCode = "qc";
+                    string qc_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                    MenuItems.Add(new Item_MenuItem("Manage", "Manage Pages and Divisions", null, qc_url, "nevermatchthis"));
+                }
+
+                // Add the manage geo-spatial data option
+                CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
+                CurrentRequest.ViewerCode = "mapedit";
+                string mapedit_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                MenuItems.Add(new Item_MenuItem("Manage", "Manage Geo-Spatial Data (beta)", null, mapedit_url, "mapedit"));
+
+                // Add the tracking sheet menu option
+                CurrentRequest.ViewerCode = "ts";
+                string tracking_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                MenuItems.Add(new Item_MenuItem("Manage", "View Tracking Sheet", null, tracking_url, "ts"));
+            }
+            else
+            {
+                // Get all the mySObek URLs
+                CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
+
+                // Add the group behavior edit
+                CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Group_Behaviors;
+                string edit_behaviors_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                MenuItems.Add(new Item_MenuItem("Manage", "Edit Item Group Behaviors", null, edit_behaviors_url, "nevermatchthis"));
+
+                // Add the option to add a new volume
+                CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Group_Add_Volume;
+                string add_volume_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                MenuItems.Add(new Item_MenuItem("Manage", "Add New Volume", null, add_volume_url, "nevermatchthis"));
+
+                // Add the option for group mass update
+                CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Group_Mass_Update_Items;
+                string mass_update_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                MenuItems.Add(new Item_MenuItem("Manage", "Mass Update Item Behaviors", null, mass_update_url, "nevermatchthis"));
+            }
+
+            CurrentRequest.Mode = Display_Mode_Enum.Item_Display;
+            CurrentRequest.ViewerCode = previous_code;
         }
 
         /// <summary> Creates and returns the an instance of the <see cref="ManageMenu_ItemViewer"/> class for showing the
@@ -144,8 +224,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Add the HTML for the image
             Output.WriteLine("<!-- MANAGE MENU ITEM VIEWER OUTPUT -->");
 
-
-            if (BriefItem.Type == "BIBLEVEL" )
+            bool is_bib_level = (String.Compare(BriefItem.Type, "BIB_LEVEL", StringComparison.OrdinalIgnoreCase) == 0);
+            if (!is_bib_level)
             {
                 // Start the citation table
                 Output.WriteLine("  <td align=\"left\"><div class=\"sbkMmiv_ViewerTitle\">Manage this Item</div></td>");

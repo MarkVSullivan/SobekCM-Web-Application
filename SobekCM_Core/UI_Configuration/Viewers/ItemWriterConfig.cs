@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Web.UI.WebControls;
 using System.Xml.Serialization;
 using ProtoBuf;
 
@@ -37,6 +38,11 @@ namespace SobekCM.Core.UI_Configuration.Viewers
         [XmlArrayItem("viewer", typeof(ItemSubViewerConfig))]
         [ProtoMember(3)]
         public List<ItemSubViewerConfig> Viewers { get; set; }
+
+
+        public ClassAssemblyConfig MainMenu { get; set; }
+
+
 
         /// <summary> Constructor for a new instance of the <see cref="ItemWriterConfig"/> class </summary>
         public ItemWriterConfig()
@@ -243,6 +249,19 @@ namespace SobekCM.Core.UI_Configuration.Viewers
                 Enabled = true,
                 FileExtensions = new string[] { "WEBM", "OGG", "MP4" }
             });
+        }
+
+        /// <summary> Sets the main menu provider for this item writer </summary>
+        /// <param name="Class"> Fully qualified (including namespace) name of the class used to display the item main menu </param>
+        /// <param name="Assembly"> Name of the assembly within which this class resides, unless this 
+        /// is one of the default class/assembly included in the core code </param>
+        public void SetMainMenu(string Class, string Assembly)
+        {
+            MainMenu = new ClassAssemblyConfig
+            {
+                Class = Class,
+                Assembly = Assembly
+            };
         }
     }
 }

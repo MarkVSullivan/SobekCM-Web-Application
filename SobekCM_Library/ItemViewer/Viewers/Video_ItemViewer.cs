@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection.Emit;
 using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -70,7 +72,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
         {
-            Item_MenuItem menuItem = new Item_MenuItem("Video", null, null, CurrentItem.Web.Source_URL + ViewerCode);
+            // Get the URL for this
+            string previous_code = CurrentRequest.ViewerCode;
+            CurrentRequest.ViewerCode = ViewerCode;
+            string url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+            CurrentRequest.ViewerCode = previous_code;
+
+            // Add the item menu information
+            Item_MenuItem menuItem = new Item_MenuItem("Video", null, null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 
@@ -85,7 +94,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
         public iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
         {
-            return new Video_ItemViewer(CurrentItem, CurrentUser, CurrentRequest);
+            return new Video_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, FileExtensions);
         }
     }
 
@@ -104,7 +113,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="BriefItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
-        public Video_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest)
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="FileExtensions"> List of file extensions this video viewer should show </param>
+        public Video_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string[] FileExtensions )
         {
             // Save the arguments for use later
             this.BriefItem = BriefItem;
@@ -134,17 +145,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 foreach (BriefItem_File thisFileInfo in downloadPage.Files)
                 {
-                    string extension = thisFileInfo.File_Extension;
-
-                    // Was this a video file?
-                    switch (extension)
+                    string extension = thisFileInfo.File_Extension.Replace(".","");
+                    foreach (string thisPossibleFileExtension in FileExtensions)
                     {
-                        case ".WEBM":
-                        case ".OGG":
-                        case ".MP4":
+                        if (String.Compare(extension, thisPossibleFileExtension, StringComparison.OrdinalIgnoreCase) == 0)
+                        {
                             videoFileNames.Add(thisFileInfo.Name);
                             videoLabels.Add(downloadPage.Label);
-                            break;
+                        }
                     }
                 }
             }
@@ -197,7 +205,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
 
-            string video_url = SobekFileSystem.Resource_Web_Uri(BriefItem) + videoFileNames[video - 1];
+            string video_url = SobekFileSystem.Resource_Web_Uri(BriefItem, videoFileNames[video - 1]);
 
             Output.WriteLine("        <tr>");
             Output.WriteLine("          <td id=\"sbkFiv_MainArea\">");

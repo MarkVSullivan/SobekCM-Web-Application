@@ -2213,13 +2213,17 @@ namespace SobekCM.Engine_Library.Configuration
                 {
                     switch (ReaderXml.Name.ToLower())
                     {
-                        // viewerCode = "#j" 
-                        // assembly = "" 
-                        // class="SobekCM.Library.ItemViewer.Viewers.JPEG_ItemViewer_Prototyper" 
-                        // enabled="true" 
-                        // alwaysAdd="true" 
-                        // pageFileExtensions="JPG|JPEG"
-                        // fileExtensions
+                        case "menuprovider":
+                            string menuassembly = null;
+                            if (ReaderXml.MoveToAttribute("assembly"))
+                                menuassembly = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("class"))
+                            {
+                                string menuclass = ReaderXml.Value.Trim();
+                                if ( !String.IsNullOrEmpty(menuclass))
+                                    Config.Items.SetMainMenu(menuclass, menuassembly);
+                            }
+                            break;
 
                         case "itemviewer":
                             ItemSubViewerConfig newConfig = new ItemSubViewerConfig();

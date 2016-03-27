@@ -2,6 +2,7 @@
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers

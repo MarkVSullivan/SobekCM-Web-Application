@@ -8,6 +8,7 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -78,6 +79,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
         {
+            // Get the label
             string first_label = "FLASH";
             foreach (BriefItem_FileGrouping thisPage in CurrentItem.Downloads)
             {
@@ -92,7 +94,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
             }
 
-            Item_MenuItem menuItem = new Item_MenuItem(first_label, null, null, CurrentItem.Web.Source_URL + ViewerCode);
+            // Get the URL for this
+            string previous_code = CurrentRequest.ViewerCode;
+            CurrentRequest.ViewerCode = ViewerCode;
+            string url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+            CurrentRequest.ViewerCode = previous_code;
+
+            // Add the item menu information
+            Item_MenuItem menuItem = new Item_MenuItem(first_label, null, null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 

@@ -73,6 +73,15 @@ namespace SobekCM.Core.FileSystems
             return rootWebUri + "/" + DigitalResource.BibID.Substring(0, 2) + "/" + DigitalResource.BibID.Substring(2, 2) + "/" + DigitalResource.BibID.Substring(4, 2) + "/" + DigitalResource.BibID.Substring(6, 2) + "/" + DigitalResource.BibID.Substring(8, 2) + "/" + DigitalResource.VID + "/";
         }
 
+        /// <summary> Return the WEB uri for a file within the digital resource </summary>
+        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <param name="FileName"> Name of the resource file </param>
+        /// <returns> URI for the web resource </returns>
+        public string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName)
+        {
+            return Resource_Web_Uri(DigitalResource) + FileName;
+        }
+
         /// <summary> Return a flag if the file specified exists within the digital resource </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <param name="FileName"> Filename to check for</param>

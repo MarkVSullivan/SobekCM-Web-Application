@@ -185,7 +185,9 @@
     <Compile Include="HTML\HeaderFooter_Helper_HtmlSubWriter.cs" />
     <Compile Include="HTML\HtmlSubwriter_Behaviors_Enum.cs" />
     <Compile Include="HTML\MainMenus_Helper_HtmlSubWriter.cs" />
-    <Compile Include="ItemViewer\Item_MenuItem.cs" />
+    <Compile Include="ItemViewer\Menu\Item_MenuItem.cs" />
+    <Compile Include="ItemViewer\Menu\iItemMenuProvider.cs" />
+    <Compile Include="ItemViewer\Menu\StandardItemMenuProvider.cs" />
     <Compile Include="ItemViewer\Viewers\abstractNoPaginationItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\abstractPageFilesItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Citation_MARC_ItemViewer.cs" />

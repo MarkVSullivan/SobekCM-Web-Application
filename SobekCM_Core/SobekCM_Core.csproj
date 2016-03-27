@@ -136,6 +136,7 @@
     <Compile Include="MemoryMgmt\CachedDataManager_ItemServices.cs" />
     <Compile Include="Builder\Builder_Module_Set_Info.cs" />
     <Compile Include="UI_Configuration\Viewers\AggregationWriterConfig.cs" />
+    <Compile Include="UI_Configuration\Viewers\ClassAssemblyConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\ItemSubViewerConfig.cs" />
     <Compile Include="UI_Configuration\MapEditor_Configuration.cs" />
     <Compile Include="Configuration\Engine\Engine_Component.cs" />

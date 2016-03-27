@@ -39,6 +39,15 @@ namespace SobekCM.Core.FileSystems
             return fileSystem.Resource_Web_Uri(DigitalResource);
         }
 
+        /// <summary> Return the WEB uri for a file within the digital resource </summary>
+        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <param name="FileName"> Name of the resource file </param>
+        /// <returns> URI for the web resource </returns>
+        public static string Resource_Web_Uri(BriefItemInfo DigitalResource, string FileName )
+        {
+            return fileSystem.Resource_Web_Uri(DigitalResource, FileName);
+        }
+
         /// <summary> Return the NETWORK uri for a digital resource </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <returns> URI for the network resource </returns>
