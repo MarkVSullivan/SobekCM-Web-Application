@@ -914,12 +914,24 @@ namespace SobekCM.Library.HTML
                 // Show the entire item viewer in a presentation table.  Tried using divs, but continued to have problems
                 // especially with smaller screens
                 Output.WriteLine("<!-- Presentation table to enforce layout -->");
-                Output.WriteLine("<table role=\"presentation\"><tr style=\"vertical-align:top\"><td>");
+                Output.WriteLine("<table role=\"presentation\" id=\"sbkIsw_PresentationTable\">");
+                Output.WriteLine("<tr style=\"vertical-align:top;\">");
+
+                if (pageViewerBehaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Requires_Left_Navigation_Bar) || showToc)
+                {
+                    Output.WriteLine("<td id=\"sbkIsw_LeftnavbarTd_hack\">");
+                    Output.WriteLine("<!-- Begin the left navigational bar -->");
+                    Output.WriteLine("<nav id=\"sbkIsw_Leftnavbar_hack\" role=\"complementary\">");
+                }
+                else
+                {
+                    Output.WriteLine("<td id=\"sbkIsw_LeftnavbarTd\">");
+                    Output.WriteLine("<!-- Begin the left navigational bar -->");
+                    Output.WriteLine("<nav id=\"sbkIsw_Leftnavbar\" role=\"complementary\">");
+                }
+
 
                 // Start the item viewer
-                Output.WriteLine("<!-- Begin the left navigational bar -->");
-
-                Output.WriteLine(pageViewerBehaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_Requires_Left_Navigation_Bar) || showToc ? "<nav id=\"sbkIsw_Leftnavbar_hack\" role=\"complementary\">" : "<nav id=\"sbkIsw_Leftnavbar\" role=\"complementary\">");
 
                 //// Compute the URL options which may be needed
                 //string url_options = currentMode.URL_Options();
@@ -1074,7 +1086,7 @@ namespace SobekCM.Library.HTML
 
             // Begin the document display portion
             Output.WriteLine("<!-- Begin the main item viewing area -->");
-            Output.WriteLine("<section id=\"main-content\" role=\"main\">");
+            Output.WriteLine("<section id=\"main-content\" role=\"main\" class=\"sbkIsw_MainContentSection\">");
             if (behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Item_Subwriter_NonWindowed_Mode))
             {
                 //if (pageViewer != null && pageViewer.Viewer_Height > 0)

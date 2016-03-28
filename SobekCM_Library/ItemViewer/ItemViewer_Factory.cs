@@ -221,8 +221,14 @@ namespace SobekCM.Library.ItemViewer
                 case "SobekCM.Library.ItemViewer.Viewers.Flash_ItemViewer_Prototyper":
                     return new Flash_ItemViewer_Prototyper();
 
+                case "SobekCM.Library.ItemViewer.Viewers.GnuBooks_PageTurner_ItemViewer_Prototyper":
+                    return new GnuBooks_PageTurner_ItemViewer_Prototyper();
+
                 case "SobekCM.Library.ItemViewer.Viewers.Google_Map_ItemViewer_Prototyper":
                     return new Google_Map_ItemViewer_Prototyper();
+
+                case "SobekCM.Library.ItemViewer.Viewers.Google_Coordinate_Entry_ItemViewer_Prototyper":
+                    return new Google_Coordinate_Entry_ItemViewer_Prototyper();
 
                 case "SobekCM.Library.ItemViewer.Viewers.HTML_ItemViewer_Prototyper":
                     return new HTML_ItemViewer_Prototyper();
@@ -245,8 +251,26 @@ namespace SobekCM.Library.ItemViewer
                 case "SobekCM.Library.ItemViewer.Viewers.PDF_ItemViewer_Prototyper":
                     return new PDF_ItemViewer_Prototyper();
 
+                case "SobekCM.Library.ItemViewer.Viewers.QC_ItemViewer_Prototyper":
+                    return new QC_ItemViewer_Prototyper();
+
                 case "SobekCM.Library.ItemViewer.Viewers.Related_Images_ItemViewer_Prototyper":
                     return new Related_Images_ItemViewer_Prototyper();
+                    
+                case "SobekCM.Library.ItemViewer.Viewers.Restricted_ItemViewer_Prototyper":
+                    return new Restricted_ItemViewer_Prototyper();
+
+                case "SobekCM.Library.ItemViewer.Viewers.Text_ItemViewer_Prototyper":
+                    return new Text_ItemViewer_Prototyper();
+
+                case "SobekCM.Library.ItemViewer.Viewers.Text_Serach_ItemViewer_Prototyper":
+                    return new Text_Search_ItemViewer_Prototyper();
+
+                case "SobekCM.Library.ItemViewer.Viewers.TrackingSheet_ItemViewer_Prototyper":
+                    return new TrackingSheet_ItemViewer_Prototyper();
+
+                case "SobekCM.Library.ItemViewer.Viewers.Tracking_ItemViewer_Prototyper":
+                    return new Tracking_ItemViewer_Prototyper();
 
                 case "SobekCM.Library.ItemViewer.Viewers.Usage_Stats_ItemViewer_Prototyper":
                     return new Usage_Stats_ItemViewer_Prototyper();

@@ -1,68 +1,157 @@
-﻿#region Using directives
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
-using SobekCM.Core.Configuration;
+using System.Web.UI.WebControls;
+using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Solr;
+using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
-
-#endregion
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
-    /// <summary> Item viewer displays the search options and any search results for full-text
-    /// searching within a single document </summary>
-    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer_OLD"/> and implements the 
+    /// <summary> Text search item viewer prototyper, which is used to check to see if an item can be full text searched
+    /// and to create the viewer itself if the user selects that option </summary>
+    public class Text_Search_ItemViewer_Prototyper : iItemViewerPrototyper
+    {
+        /// <summary> Constructor for a new instance of the Text_Search_ItemViewer_Prototyper class </summary>
+        public Text_Search_ItemViewer_Prototyper()
+        {
+            ViewerType = "SEARCH";
+            ViewerCode = "search";
+        }
+
+        /// <summary> Name of this viewer, which matches the viewer name from the database and 
+        /// in the configuration files as well.  This is actually populate by the configuration information </summary>
+        public string ViewerType { get; set; }
+
+        /// <summary> Code for this viewer, which can also be set from the configuration information </summary>
+        public string ViewerCode { get; set; }
+
+        /// <summary> If this viewer is tied to certain files existing in the digital resource, this lists all the 
+        /// possible file extensions this supports (from the configuration file usually) </summary>
+        public string[] FileExtensions { get; set; }
+
+        /// <summary> Indicates if the specified item matches the basic requirements for this viewer, or
+        /// if this viewer should be ignored for this item </summary>
+        /// <param name="BriefItem"> Digital resource to examine to see if this viewer really should be included </param>
+        /// <returns> TRUE if this viewer should generally be included with this item, otherwise FALSE </returns>
+        public bool Include_Viewer(BriefItemInfo BriefItem)
+        {
+            // This should always be included (although it won't be accessible or shown to everyone)
+            return BriefItem.Behaviors.;
+        }
+
+        /// <summary> Flag indicates if this viewer should be override on checkout </summary>
+        /// <param name="BriefItem"> Digital resource to examine to see if this viewer should really be overriden </param>
+        /// <returns> TRUE always, since PDFs should never be shown if an item is checked out </returns>
+        public bool Override_On_Checkout(BriefItemInfo BriefItem)
+        {
+            return false;
+        }
+
+        /// <summary> Flag indicates if the current user has access to this viewer for the item </summary>
+        /// <param name="BriefItem"> Digital resource to see if the current user has correct permissions to use this viewer </param>
+        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
+        /// <param name="IpRestricted"> Flag indicates if this item is IP restricted AND if the current user is outside the ranges </param>
+        /// <returns> TRUE if the user has access to use this viewer, otherwise FALSE </returns>
+        public bool Has_Access(BriefItemInfo BriefItem, User_Object CurrentUser, bool IpRestricted)
+        {
+            return !IpRestricted;
+        }
+
+        /// <summary> Gets the menu items related to this viewer that should be included on the main item (digital resource) menu </summary>
+        /// <param name="BriefItem"> Digital resource object, which can be used to ensure if and how this viewer should appear 
+        /// in the main item (digital resource) menu </param>
+        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
+        /// <param name="CurrentRequest"> Information about the current request </param>
+        /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
+        public void Add_Menu_items(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
+        {
+            // Get the URL for this
+            string previous_code = CurrentRequest.ViewerCode;
+            CurrentRequest.ViewerCode = ViewerCode;
+            string url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+            CurrentRequest.ViewerCode = previous_code;
+
+            // Add the item menu information
+            Item_MenuItem menuItem = new Item_MenuItem("Search", null, null, url, ViewerCode);
+            MenuItems.Add(menuItem);
+        }
+
+        /// <summary> Creates and returns the an instance of the <see cref="Text_Search_ItemViewer"/> class for performing full text
+        /// search against a single digital resource during execution of a single HTTP request. </summary>
+        /// <param name="BriefItem"> Digital resource object </param>
+        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
+        /// <param name="CurrentRequest"> Information about the current request </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Fully built and initialized <see cref="Text_Search_ItemViewer"/> object </returns>
+        /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
+        /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
+        public iItemViewer Create_Viewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
+        {
+            return new Text_Search_ItemViewer(BriefItem, CurrentUser, CurrentRequest, Tracer );
+        }
+    }
+
+    /// <summary> Text search item viewer allows the full text of an individual resource to be searched and individual matching pages
+    /// are displayed with page thumbnails </summary>
+    /// <remarks> This class extends the abstract class <see cref="abstractNoPaginationItemViewer"/> and implements the 
     /// <see cref="iItemViewer" /> interface. </remarks>
-    public class Text_Search_ItemViewer : abstractItemViewer_OLD
+    public class Text_Search_ItemViewer : abstractNoPaginationItemViewer
     {
         private Solr_Page_Results results;
 
-        /// <summary> Gets the type of item viewer this object represents </summary>
-        /// <value> This property always returns the enumerational value <see cref="ItemViewer_Type_Enum.Search"/>. </value>
-        public override ItemViewer_Type_Enum ItemViewer_Type
+        /// <summary> Constructor for a new instance of the Text_Search_ItemViewer class, which allows the full text of an 
+        /// individual resource to be searched and individual matching pages are displayed with page thumbnails </summary>
+        /// <param name="BriefItem"> Digital resource object </param>
+        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
+        /// <param name="CurrentRequest"> Information about the current request </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public Text_Search_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer )
         {
-            get { return ItemViewer_Type_Enum.Search; }
-        }
+            Tracer.Add_Trace("Text_Search_ItemViewer.Constructor");
 
-        /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
-        /// <value> This value depends on the current submode being displayed (i.e., MARC, metadata links, etc..) </value>
-        public override int Viewer_Width
-        {
-            get
+            // Save the arguments for use later
+            this.BriefItem = BriefItem;
+            this.CurrentUser = CurrentUser;
+            this.CurrentRequest = CurrentRequest;
+
+            // Set the behavior properties to the empy behaviors ( in the base class )
+            Behaviors = EmptyBehaviors;
+
+            if (!String.IsNullOrWhiteSpace(CurrentRequest.Text_Search))
             {
-                return 750;
+                List<string> terms = new List<string>();
+                List<string> web_fields = new List<string>();
+
+                // Split the terms correctly
+                SobekCM_Assistant.Split_Clean_Search_Terms_Fields(CurrentRequest.Text_Search, "ZZ", Search_Type_Enum.Basic, terms, web_fields, null, Search_Precision_Type_Enum.Contains, '|');
+
+                Tracer.Add_Trace("Text_Search_ItemViewer.Constructor", "Performing Solr/Lucene search");
+
+                int page = CurrentRequest.SubPage.HasValue ? Math.Max(CurrentRequest.SubPage.Value, ((ushort)1)) : 1;
+                results = Solr_Page_Results.Search(BriefItem.BibID, BriefItem.VID, terms, 20, page, false);
+
+                Tracer.Add_Trace("Text_Search_ItemViewer.Constructor", "Completed Solr/Lucene search in " + results.QueryTime + "ms");
             }
         }
 
-        /// <summary> Gets the number of pages for this viewer </summary>
-        /// <value> This is a single page viewer, so this property always returns the value 1</value>
-        public override int PageCount
+        /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
+        /// <value> This always returns the value 'sbkTsiv_Viewer' </value>
+        public override string ViewerBox_CssId
         {
-            get
-            {
-                return 1;
-            }
+            get { return "sbkTsiv_Viewer"; }
         }
 
-        /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
-        /// <value> This is a single page viewer, so this property always returns NONE</value>
-        public override ItemViewer_PageSelector_Type_Enum Page_Selector
-        {
-            get
-            {
-                return ItemViewer_PageSelector_Type_Enum.NONE;
-            }
-        }
-
-        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <summary> Write the item viewer main section as HTML directly to the HTTP output stream </summary>
         /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
@@ -74,26 +163,26 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             string search_this_document = "Search this document";
 
-            if (CurrentMode.Language == Web_Language_Enum.French)
+            if (CurrentRequest.Language == Web_Language_Enum.French)
             {
                 search_this_document = "Rechercher sur ce Document";
             }
 
-            if (CurrentMode.Language == Web_Language_Enum.Spanish)
+            if (CurrentRequest.Language == Web_Language_Enum.Spanish)
             {
                 search_this_document = "Buscar en este Objeto";
             }
 
             // Save the original search string
-            string originalSearchString = CurrentMode.Text_Search;
+            string originalSearchString = CurrentRequest.Text_Search;
 
             Output.WriteLine("       <!-- TEXT SEARCH ITEM VIEWER OUTPUT -->");
 
             // Determine the value without any search
-            string currentSearch = CurrentMode.Text_Search;   
-            CurrentMode.Text_Search = String.Empty;
-            string redirect_url = UrlWriterHelper.Redirect_URL(CurrentMode);
-            CurrentMode.Text_Search = currentSearch;
+            string currentSearch = CurrentRequest.Text_Search;
+            CurrentRequest.Text_Search = String.Empty;
+            string redirect_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+            CurrentRequest.Text_Search = currentSearch;
             string button_text = String.Empty;
 
             // Makee sure the search is not null
@@ -121,7 +210,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 if (results.TotalResults > 20)
                 {
-                    int current_page = CurrentMode.SubPage.HasValue ? Math.Max(CurrentMode.SubPage.Value, ((ushort)1)) : 1;
+                    int current_page = CurrentRequest.SubPage.HasValue ? Math.Max(CurrentRequest.SubPage.Value, ((ushort)1)) : 1;
 
                     string first_page = "First Page";
                     string previous_page = "Previous Page";
@@ -132,7 +221,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     string next_page_text = "Next";
                     string last_page_text = "Last";
 
-                    if (CurrentMode.Language == Web_Language_Enum.Spanish)
+                    if (CurrentRequest.Language == Web_Language_Enum.Spanish)
                     {
                         first_page = "Primera Página";
                         previous_page = "Página Anterior";
@@ -144,7 +233,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         last_page_text = "Último";
                     }
 
-                    if (CurrentMode.Language == Web_Language_Enum.French)
+                    if (CurrentRequest.Language == Web_Language_Enum.French)
                     {
                         first_page = "Première Page";
                         previous_page = "Page Précédente";
@@ -165,10 +254,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     if (current_page > 1)
                     {
                         // Get the URL for the first and previous buttons
-                        CurrentMode.SubPage = 1;
-                        string firstButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);
-                        CurrentMode.SubPage = (ushort)(current_page - 1);
-                        string prevButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);
+                        CurrentRequest.SubPage = 1;
+                        string firstButtonURL = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                        CurrentRequest.SubPage = (ushort)(current_page - 1);
+                        string prevButtonURL = UrlWriterHelper.Redirect_URL(CurrentRequest);
 
                         buttonWriter.AppendLine("              <span class=\"sbkIsw_LeftPaginationButtons\">");
                         buttonWriter.AppendLine("                <button title=\"" + first_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + firstButtonURL + "'; return false;\"><img src=\"" + Static_Resources.Button_First_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
@@ -183,10 +272,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     if (current_page < total_pages)
                     {
                         // Get the URL for the first and previous buttons
-                        CurrentMode.SubPage = (ushort)total_pages;
-                        string lastButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);
-                        CurrentMode.SubPage = (ushort)(current_page + 1);
-                        string nextButtonURL = UrlWriterHelper.Redirect_URL(CurrentMode);
+                        CurrentRequest.SubPage = (ushort)total_pages;
+                        string lastButtonURL = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                        CurrentRequest.SubPage = (ushort)(current_page + 1);
+                        string nextButtonURL = UrlWriterHelper.Redirect_URL(CurrentRequest);
 
                         buttonWriter.AppendLine("              <span class=\"sbkIsw_RightPaginationButtons\">");
                         buttonWriter.AppendLine("                <button title=\"" + next_page + "\" class=\"sbkIsw_RoundButton\" onclick=\"window.location='" + nextButtonURL + "'; return false;\">" + next_page_text + "<img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
@@ -198,7 +287,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     button_text = buttonWriter.ToString();
                     Output.WriteLine(button_text);
-                    CurrentMode.SubPage = (ushort)current_page;
+                    CurrentRequest.SubPage = (ushort)current_page;
                 }
             }
             Output.WriteLine("    </td>");
@@ -219,8 +308,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("    <td id=\"sbkTsv_ResultsArea\">");
                 Output.WriteLine("        <table id=\"sbkTsv_ResultsTable\">");
 
-                string thumbnail_root = CurrentItem.Web.Source_URL;
-                string url_options = UrlWriterHelper.URL_Options(CurrentMode);
+                string thumbnail_root = BriefItem.Web.Source_URL;
+                string url_options = UrlWriterHelper.URL_Options(CurrentRequest);
                 if (url_options.Length > 0)
                 {
                     url_options = url_options + "&search=" + HttpUtility.UrlEncode(originalSearchString);
@@ -251,16 +340,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         if (result.Thumbnail.Length > 0)
                         {
-                            Output.WriteLine("            <td style=\"text-align:left; width: 150px;\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + result.PageOrder + url_options + "\"><img src=\"" + thumbnail_root + "/" + result.Thumbnail + "\" class=\"sbkTsv_Thumbnail\" /></a></td>");
+                            Output.WriteLine("            <td style=\"text-align:left; width: 150px;\"><a href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "/" + result.PageOrder + url_options + "\"><img src=\"" + thumbnail_root + "/" + result.Thumbnail + "\" class=\"sbkTsv_Thumbnail\" /></a></td>");
                         }
                         else
                         {
-                            Output.WriteLine("            <td style=\"text-align:left; width: 150px;\"><a href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + result.PageOrder + url_options + "\"><img src=\"" + Static_Resources.Nothumb_Jpg + "\" class=\"sbkTsv_Thumbnail\" /></a></td>");
+                            Output.WriteLine("            <td style=\"text-align:left; width: 150px;\"><a href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "/" + result.PageOrder + url_options + "\"><img src=\"" + Static_Resources.Nothumb_Jpg + "\" class=\"sbkTsv_Thumbnail\" /></a></td>");
                         }
                     }
 
                     Output.WriteLine("            <td style=\"text-align:left;\">");
-                    Output.WriteLine("              <a class=\"sbkTsv_ResultsLink\" href=\"" + CurrentMode.Base_URL + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + result.PageOrder + url_options + "\">" + result.PageName + "</a>");
+                    Output.WriteLine("              <a class=\"sbkTsv_ResultsLink\" href=\"" + CurrentRequest.Base_URL + BriefItem.BibID + "/" + BriefItem.VID + "/" + result.PageOrder + url_options + "\">" + result.PageName + "</a>");
                     if (result.Snippet.Length > 0)
                     {
                         Output.WriteLine("              <br /><br />");
@@ -316,29 +405,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
-        /// <summary> This provides an opportunity for the viewer to perform any pre-display work
-        /// which is necessary before entering any of the rendering portions </summary>
+        /// <summary> Allows controls to be added directory to a place holder, rather than just writing to the output HTML stream </summary>
+        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <remarks> This method his class pulls any full-text search results for this single item from the Solr/Lucene engine </remarks>
-        public override void Perform_PreDisplay_Work(Custom_Tracer Tracer)
+        /// <remarks> This method does nothing, since nothing is added to the place holder as a control for this item viewer </remarks>
+        public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
-            if (!String.IsNullOrWhiteSpace(CurrentMode.Text_Search))
-            {
-                List<string> terms = new List<string>();
-                List<string> web_fields = new List<string>();
-
-                // Split the terms correctly
-                SobekCM_Assistant.Split_Clean_Search_Terms_Fields(CurrentMode.Text_Search, "ZZ", Search_Type_Enum.Basic, terms, web_fields, null, Search_Precision_Type_Enum.Contains, '|');
-
-                Tracer.Add_Trace("Text_Search_Item_Viewer.Perform_PreDisplay_Work", "Performing Solr/Lucene search");
-
-                int page = CurrentMode.SubPage.HasValue ? Math.Max(CurrentMode.SubPage.Value, ((ushort)1)) : 1;
-                results = Solr_Page_Results.Search(CurrentItem.BibID, CurrentItem.VID, terms, 20, page, false);
-
-                Tracer.Add_Trace("Text_Search_Item_Viewer.Perform_PreDisplay_Work", "Completed Solr/Lucene search in " + results.QueryTime + "ms");
-            }
-
-
+            // Do nothing
         }
 
         /// <summary> Returns the textual explanation of the item-level search </summary>
@@ -351,10 +424,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             List<string> fields = new List<string>();
 
             // If this is basic, do some other preparation
-            string complete_search = CurrentMode.Text_Search;
-            ushort subpage = CurrentMode.SubPage.HasValue ? Math.Max(CurrentMode.SubPage.Value, ((ushort)1)) : ((ushort) 1);
-            CurrentMode.SubPage = 1;
-            Solr_Documents_Searcher.Split_Multi_Terms(CurrentMode.Text_Search, "ZZ", terms, fields);
+            string complete_search = CurrentRequest.Text_Search;
+            ushort subpage = CurrentRequest.SubPage.HasValue ? Math.Max(CurrentRequest.SubPage.Value, ((ushort)1)) : ((ushort)1);
+            CurrentRequest.SubPage = 1;
+            Solr_Documents_Searcher.Split_Multi_Terms(CurrentRequest.Text_Search, "ZZ", terms, fields);
 
             string your_search_language = "Your search within this document for ";
             string and_not_language = " AND NOT ";
@@ -368,7 +441,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string restrict_language = "You can restrict your results by searching for";
 
 
-            if (CurrentMode.Language == Web_Language_Enum.French)
+            if (CurrentRequest.Language == Web_Language_Enum.French)
             {
                 your_search_language = "Votre recherche dans les textes intégrals pour les pages contenant ";
                 and_not_language = " ET PAS ";
@@ -382,7 +455,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 restrict_language = "Vous pouvez limiter votre rechereche en cherchant par";
             }
 
-            if (CurrentMode.Language == Web_Language_Enum.Spanish)
+            if (CurrentRequest.Language == Web_Language_Enum.Spanish)
             {
                 your_search_language = "Su búsqueda dentro de el texto completo por paginas conteniendo ";
                 and_not_language = " Y NO ";
@@ -451,8 +524,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Write the term
                 if (thisTerm[0] == '"')
                 {
-                    CurrentMode.Text_Search = thisTerm;
-                    output.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\">" + thisTerm.Replace("+", " ") + "</a>");
+                    CurrentRequest.Text_Search = thisTerm;
+                    output.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "\">" + thisTerm.Replace("+", " ") + "</a>");
 
                     if (fields[i][0] == '-')
                     {
@@ -469,8 +542,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
                 else
                 {
-                    CurrentMode.Text_Search = thisTerm;
-                    output.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\">'" + thisTerm + "'</a>");
+                    CurrentRequest.Text_Search = thisTerm;
+                    output.Append("<a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "\">'" + thisTerm + "'</a>");
 
                     if (fields[i][0] == '-')
                     {
@@ -499,19 +572,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             if (!allOr)
             {
-                CurrentMode.Text_Search = allOrURL.ToString();
-                output.AppendLine("<br /><br />" + expand_language + " <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\">" + allOrBldr + "</a>.");
+                CurrentRequest.Text_Search = allOrURL.ToString();
+                output.AppendLine("<br /><br />" + expand_language + " <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "\">" + allOrBldr + "</a>.");
             }
 
             if ((!allAnd) && (results.TotalResults > 0))
             {
-                CurrentMode.Text_Search = allAndURL.ToString();
-                output.AppendLine("<br /><br />" + restrict_language + " <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode) + "\">" + allAndBldr + "</a>.");
+                CurrentRequest.Text_Search = allAndURL.ToString();
+                output.AppendLine("<br /><br />" + restrict_language + " <a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest) + "\">" + allAndBldr + "</a>.");
             }
 
             // Restore the original values
-            CurrentMode.Text_Search = complete_search;
-            CurrentMode.SubPage = subpage;
+            CurrentRequest.Text_Search = complete_search;
+            CurrentRequest.SubPage = subpage;
 
             return output.ToString();
         }

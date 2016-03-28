@@ -195,6 +195,8 @@
     <Compile Include="ItemViewer\Viewers\Downloads_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\EmbeddedVideo_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Flash_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\GnuBooks_PageTurner_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\Google_Coordinate_Entry_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Google_Map_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\HTML_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\iItemViewerPrototyper.cs" />
@@ -205,7 +207,13 @@
     <Compile Include="ItemViewer\Viewers\Metadata_Links_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\MultiVolumes_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\PDF_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\QC_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Related_Images_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\Restricted_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\Text_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\Text_Search_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\TrackingSheet_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\Tracking_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Usage_Stats_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Video_ItemViewer.cs" />
     <Compile Include="Localization\baseLocalizationInfo.cs" />

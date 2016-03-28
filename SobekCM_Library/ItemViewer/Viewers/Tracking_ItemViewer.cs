@@ -1,112 +1,152 @@
-﻿#region Using directives
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
-using SobekCM.Core.ApplicationState;
+using System.Threading.Tasks;
+using System.Web.UI.WebControls;
+using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
-using SobekCM.Library.Database;
-using SobekCM.Library.UI;
-using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Divisions;
-using SobekCM.Resource_Object.Tracking;
+using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
-
-#endregion
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
-    /// <summary> Item viewer displays the tracking information for a single digital resource</summary>
-    /// <remarks> This class extends the abstract class <see cref="abstractItemViewer_OLD"/> and implements the 
+    /// <summary> Manage menu item viewer prototyper, which is used to check to see if a user has access to view the tracking (both
+    /// milestone and full work history) for a digital resource, and to create the viewer itself if the user selects that option </summary>
+    public class Tracking_ItemViewer_Prototyper : iItemViewerPrototyper
+    {
+        /// <summary> Constructor for a new instance of the Tracking_ItemViewer_Prototyper class </summary>
+        public Tracking_ItemViewer_Prototyper()
+        {
+            ViewerType = "TRACKING";
+            ViewerCode = "history";
+        }
+
+        /// <summary> Name of this viewer, which matches the viewer name from the database and 
+        /// in the configuration files as well.  This is actually populate by the configuration information </summary>
+        public string ViewerType { get; set; }
+
+        /// <summary> Code for this viewer, which can also be set from the configuration information </summary>
+        public string ViewerCode { get; set; }
+
+        /// <summary> If this viewer is tied to certain files existing in the digital resource, this lists all the 
+        /// possible file extensions this supports (from the configuration file usually) </summary>
+        public string[] FileExtensions { get; set; }
+
+        /// <summary> Indicates if the specified item matches the basic requirements for this viewer, or
+        /// if this viewer should be ignored for this item </summary>
+        /// <param name="CurrentItem"> Digital resource to examine to see if this viewer really should be included </param>
+        /// <returns> TRUE if this viewer should generally be included with this item, otherwise FALSE </returns>
+        public bool Include_Viewer(BriefItemInfo CurrentItem)
+        {
+            // This should always be included (although it won't be accessible or shown to everyone)
+            return true;
+        }
+
+        /// <summary> Flag indicates if this viewer should be override on checkout </summary>
+        /// <param name="CurrentItem"> Digital resource to examine to see if this viewer should really be overriden </param>
+        /// <returns> TRUE always, since PDFs should never be shown if an item is checked out </returns>
+        public bool Override_On_Checkout(BriefItemInfo CurrentItem)
+        {
+            return false;
+        }
+
+        /// <summary> Flag indicates if the current user has access to this viewer for the item </summary>
+        /// <param name="CurrentItem"> Digital resource to see if the current user has correct permissions to use this viewer </param>
+        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
+        /// <param name="IpRestricted"> Flag indicates if this item is IP restricted AND if the current user is outside the ranges </param>
+        /// <returns> TRUE if the user has access to use this viewer, otherwise FALSE </returns>
+        public bool Has_Access(BriefItemInfo CurrentItem, User_Object CurrentUser, bool IpRestricted)
+        {
+            // If there is no user (or they aren't logged in) then obviously, they can't edit this
+            if ((CurrentUser == null) || (!CurrentUser.LoggedOn))
+            {
+                return false;
+            }
+
+            // If INTERNAL, user has access
+            if ((CurrentUser.Is_Host_Admin) || (CurrentUser.Is_System_Admin) || (CurrentUser.Is_Portal_Admin) || (CurrentUser.Is_Internal_User))
+                return true;
+
+            // See if this user can edit this item
+            bool userCanEditItem = CurrentUser.Can_Edit_This_Item(CurrentItem.BibID, CurrentItem.Type, CurrentItem.Behaviors.Source_Institution_Aggregation, CurrentItem.Behaviors.Holding_Location_Aggregation, CurrentItem.Behaviors.Aggregation_Code_List);
+            if (!userCanEditItem)
+            {
+                // Can't edit, so don't show and return FALSE
+                return false;
+            }
+
+            // Apparently it can be shown
+            return true;
+        }
+
+        /// <summary> Gets the menu items related to this viewer that should be included on the main item (digital resource) menu </summary>
+        /// <param name="CurrentItem"> Digital resource object, which can be used to ensure if and how this viewer should appear 
+        /// in the main item (digital resource) menu </param>
+        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
+        /// <param name="CurrentRequest"> Information about the current request </param>
+        /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
+        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
+        {
+            // Do nothing since this is already handed and added to the menu by the MANAGE MENU item viewer and INTERNAL header
+        }
+
+        /// <summary> Creates and returns the an instance of the <see cref="Tracking_ItemViewer"/> class for showing the
+        /// tracking information ( both milestones and workflow history ) for a digital resource during execution of a single HTTP request. </summary>
+        /// <param name="CurrentItem"> Digital resource object </param>
+        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
+        /// <param name="CurrentRequest"> Information about the current request </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Fully built and initialized <see cref="Tracking_ItemViewer"/> object </returns>
+        /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
+        /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
+        public iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
+        {
+            return new Tracking_ItemViewer(CurrentItem, CurrentUser, CurrentRequest);
+        }
+    }
+
+    /// <summary> Item viewer displays the tracking information for a digital resource (both milestones and workflow history) </summary>
+    /// <remarks> This class extends the abstract class <see cref="abstractNoPaginationItemViewer"/> and implements the 
     /// <see cref="iItemViewer" /> interface. </remarks>
-    public class Tracking_ItemViewer : abstractItemViewer_OLD
+    public class Tracking_ItemViewer : abstractNoPaginationItemViewer
     {
         private bool userCanEditItem;
 
-        /// <summary> Constructor for a new instance of the Tracking_ItemViewer class </summary>
-        /// <param name="Translator"> Language support object which handles simple translational duties </param>
-        /// <param name="Code_Manager"> List of valid collection codes, including mapping from the Sobek collections to Greenstone collections</param>
-        /// <param name="User_Can_Edit_Item"> Flag indicates if the current user can edit the citation information </param>
-        public Tracking_ItemViewer(Language_Support_Info Translator, Aggregation_Code_Manager Code_Manager, bool User_Can_Edit_Item)
+        /// <summary> Constructor for a new instance of the Tracking_ItemViewer class, used display
+        /// the tracking information for a digital resource (both milestones and workflow history) </summary>
+        /// <param name="BriefItem"> Digital resource object </param>
+        /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
+        /// <param name="CurrentRequest"> Information about the current request </param>
+        public Tracking_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest)
         {
-            translator = Translator;
-            this.Code_Manager = Code_Manager;
-            userCanEditItem = User_Can_Edit_Item;
-        }
+            // Save the arguments for use later
+            this.BriefItem = BriefItem;
+            this.CurrentUser = CurrentUser;
+            this.CurrentRequest = CurrentRequest;
 
-        /// <summary> Constructor for a new instance of the Tracking_ItemViewer class </summary>
-        public Tracking_ItemViewer()
-        {
+            // Set the behavior properties to the empy behaviors ( in the base class )
+            Behaviors = EmptyBehaviors;
+
             userCanEditItem = false;
-        }
-
-        /// <summary> Gets the type of item viewer this object represents </summary>
-        /// <value> This property always returns the enumerational value <see cref="ItemViewer_Type_Enum.Tracking"/>. </value>
-        public override ItemViewer_Type_Enum ItemViewer_Type
-        {
-            get { return ItemViewer_Type_Enum.Tracking; }
-        }
-
-        /// <summary>List of valid collection codes, including mapping from the Sobek collections to Greenstone collections </summary>
-        public Aggregation_Code_Manager Code_Manager { get; set; }
-
-        /// <summary> Currently logged on user for determining rights over this item </summary>
-        public User_Object Current_User
-        {
-            set
+            if (CurrentUser != null)
             {
-                if (value == null) return;
-                userCanEditItem = value.Can_Edit_This_Item(CurrentItem.BibID, CurrentItem.Bib_Info.SobekCM_Type_String, CurrentItem.Bib_Info.Source.Code, CurrentItem.Bib_Info.HoldingCode, CurrentItem.Behaviors.Aggregation_Code_List);
+                userCanEditItem = CurrentUser.Can_Edit_This_Item(BriefItem.BibID, BriefItem.Type, BriefItem.Behaviors.Source_Institution_Aggregation, BriefItem.Behaviors.Holding_Location_Aggregation, BriefItem.Behaviors.Aggregation_Code_List);
             }
+
         }
 
-        /// <summary> Width for the main viewer section to adjusted to accomodate this viewer</summary>
-        /// <value> This value depends on the current submode being displayed (i.e., MARC, metadata links, etc..) </value>
-        public override int Viewer_Width
+        /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
+        /// <value> This always returns the value 'sbkDiv_Viewer' </value>
+        public override string ViewerBox_CssId
         {
-            get
-            {
-                switch (CurrentMode.ViewerCode)
-                {
-                    //case "tracking":
-                    //case "media":
-                    //case "archive":
-                    //    return 750;
-
-                    case "directory":
-                        return 850;
-
-                    default:
-                        return 750;
-                }
-            }
+            get { return "sbkDiv_Viewer"; }
         }
 
-        /// <summary> Gets the number of pages for this viewer </summary>
-        /// <value> This is a single page viewer, so this property always returns the value 1</value>
-        public override int PageCount
-        {
-            get
-            {
-                return 1;
-            }
-        }
-
-        /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
-        /// <value> This is a single page viewer, so this property always returns NONE</value>
-        public override ItemViewer_PageSelector_Type_Enum Page_Selector
-        {
-            get
-            {
-                return ItemViewer_PageSelector_Type_Enum.NONE;
-            }
-        }
-
-        /// <summary> Stream to which to write the HTML for this subwriter  </summary>
+        /// <summary> Write the item viewer main section as HTML directly to the HTTP output stream </summary>
         /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
@@ -115,10 +155,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 Tracer.Add_Trace("Tracking_ItemViewer.Write_Main_Viewer_Section", "");
             }
-
             // If this is an internal user or can edit this item, ensure the extra information 
             // has been pulled for this item
-            if ((userCanEditItem) || ((CurrentUser != null) && (CurrentUser.LoggedOn) && (CurrentUser.Is_Internal_User)) || (CurrentMode.ViewerCode == "tracking") || (CurrentMode.ViewerCode == "media") || (CurrentMode.ViewerCode == "archive"))
+            if ((userCanEditItem) || ((CurrentUser != null) && (CurrentUser.LoggedOn) && (CurrentUser.Is_Internal_User)) || (CurrentRequest.ViewerCode == "tracking") || (CurrentRequest.ViewerCode == "media") || (CurrentRequest.ViewerCode == "archive"))
             {
                 if (!CurrentItem.Tracking.Tracking_Info_Pulled)
                 {
@@ -129,7 +168,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Determine the citation type
             Tracking_Type citationType = Tracking_Type.Milestones;
-            switch (CurrentMode.ViewerCode)
+            switch (CurrentRequest.ViewerCode)
             {
                 case "tracking":
                     citationType = Tracking_Type.History;
@@ -149,13 +188,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Add the HTML for the image
-            Output.WriteLine("<!-- TRACKING ITEM VIEWER OUTPUT -->" );
+            Output.WriteLine("<!-- TRACKING ITEM VIEWER OUTPUT -->");
 
             // Start the citation table
             Output.WriteLine("  <td align=\"left\"><span class=\"sbkTrk_ViewerTitle\">Tracking Information</span></td>");
             Output.WriteLine("</tr>");
             Output.WriteLine("<tr>");
-            Output.WriteLine("  <td class=\"sbkTrk_MainArea\">" );
+            Output.WriteLine("  <td class=\"sbkTrk_MainArea\">");
 
             // Set the text
             const string MILESTONES_VIEW = "MILESTONES";
@@ -165,20 +204,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
             const string DIRECTORY_VIEW = "DIRECTORY";
 
             // Add the tabs for the different citation information
-            string viewer_code = CurrentMode.ViewerCode;
+            string viewer_code = CurrentRequest.ViewerCode;
             Output.WriteLine("    <div id=\"sbkTrk_ViewSelectRow\">");
-			Output.WriteLine("      <ul class=\"sbk_FauxDownwardTabsList\">");
+            Output.WriteLine("      <ul class=\"sbk_FauxDownwardTabsList\">");
 
             if (CurrentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
             {
-                    if (citationType == Tracking_Type.Milestones)
-                    {
-						Output.WriteLine("        <li class=\"current\">" + MILESTONES_VIEW + "</li>");
-                    }
-                    else
-                    {
-						Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "milestones") + "\">" + MILESTONES_VIEW + "</a></li>");
-                    }
+                if (citationType == Tracking_Type.Milestones)
+                {
+                    Output.WriteLine("        <li class=\"current\">" + MILESTONES_VIEW + "</li>");
+                }
+                else
+                {
+                    Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest, "milestones") + "\">" + MILESTONES_VIEW + "</a></li>");
+                }
 
                 if ((citationType == Tracking_Type.History) || ((CurrentItem.Tracking.hasHistoryInformation)))
                 {
@@ -188,7 +227,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
                     else
                     {
-						Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "tracking") + "\">" + TRACKING_VIEW + "</a></li>");
+                        Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest, "tracking") + "\">" + TRACKING_VIEW + "</a></li>");
                     }
                 }
 
@@ -196,11 +235,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     if (citationType == Tracking_Type.Media)
                     {
-						Output.WriteLine("        <li class=\"current\">" + MEDIA_VIEW + "</li>");
+                        Output.WriteLine("        <li class=\"current\">" + MEDIA_VIEW + "</li>");
                     }
                     else
                     {
-						Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "media") + "\">" + MEDIA_VIEW + "</a></li>");
+                        Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest, "media") + "\">" + MEDIA_VIEW + "</a></li>");
                     }
                 }
 
@@ -208,11 +247,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     if (citationType == Tracking_Type.Archives)
                     {
-						Output.WriteLine("        <li class=\"current\">" + ARCHIVE_VIEW + "</li>");
+                        Output.WriteLine("        <li class=\"current\">" + ARCHIVE_VIEW + "</li>");
                     }
                     else
                     {
-						Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "archive") + "\">" + ARCHIVE_VIEW + "</a></li>");
+                        Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest, "archive") + "\">" + ARCHIVE_VIEW + "</a></li>");
                     }
                 }
 
@@ -220,11 +259,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     if (citationType == Tracking_Type.Directory_List)
                     {
-						Output.WriteLine("        <li class=\"current\">" + DIRECTORY_VIEW + "</li>");
+                        Output.WriteLine("        <li class=\"current\">" + DIRECTORY_VIEW + "</li>");
                     }
                     else
                     {
-						Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentMode, "directory") + "\">" + DIRECTORY_VIEW + "</a></li>");
+                        Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest, "directory") + "\">" + DIRECTORY_VIEW + "</a></li>");
                     }
                 }
             }
@@ -251,11 +290,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     break;
 
                 case Tracking_Type.Directory_List:
-                    Output.WriteLine(Directory_String(Tracer) +  "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->");
+                    Output.WriteLine(Directory_String(Tracer) + "  </td>" + Environment.NewLine + "  <!-- END TRACKING VIEWER OUTPUT -->");
                     break;
             }
 
-            CurrentMode.ViewerCode = viewer_code;
+            CurrentRequest.ViewerCode = viewer_code;
         }
 
         #region Section returns the history tab data
@@ -447,7 +486,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         #endregion
 
-        #region Section returns the directory tab data 
+        #region Section returns the directory tab data
 
         /// <summary> Returns the directory list for this digital resource </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
@@ -472,7 +511,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 SortedList<string, FileInfo> sortedFiles = new SortedList<string, FileInfo>();
                 foreach (FileInfo thisFile in files)
                 {
-                    sortedFiles.Add( thisFile.Name.ToUpper(), thisFile);
+                    sortedFiles.Add(thisFile.Name.ToUpper(), thisFile);
                 }
 
                 // Remove the THUMBS.DB file, if it exists
@@ -534,7 +573,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     string thisFileUpper = thisFile.System_Name.ToUpper();
                                     if (sortedFiles.ContainsKey(thisFileUpper))
                                     {
-                                       // string file = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + CurrentItem.Web.AssocFilePath + thisFile.System_Name;
+                                        // string file = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + CurrentItem.Web.AssocFilePath + thisFile.System_Name;
                                         Add_File_HTML(sortedFiles[thisFileUpper], builder, url, true);
                                         sortedFiles.Remove(thisFileUpper);
                                     }
@@ -824,7 +863,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             result.AppendLine("<tr height=\"20px\" bgcolor=\"#7d90d5\"><td colspan=\"3\"><span style=\"color: White\"><strong> &nbsp; PHYSICAL MATERIAL MILESTONES</strong></span></td></tr>");
             if (CurrentItem.Tracking.Material_Received_Date.HasValue)
             {
-                if ( CurrentItem.Tracking.Material_Rec_Date_Estimated )
+                if (CurrentItem.Tracking.Material_Rec_Date_Estimated)
                     result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Materials Received</td><td>" + CurrentItem.Tracking.Material_Received_Date.Value.ToShortDateString() + " (estimated) </td></tr>");
                 else
                     result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Materials Received</td><td>" + CurrentItem.Tracking.Material_Received_Date.Value.ToShortDateString() + "</td></tr>");
@@ -866,7 +905,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 }
 
-                if (CurrentItem.Tracking.Disposition_Advice > 0 )
+                if (CurrentItem.Tracking.Disposition_Advice > 0)
                 {
                     result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Disposition Advice</td><td>" + CurrentItem.Tracking.Disposition_Advice + "</td></tr>");
                     result.AppendLine("<tr><td></td><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
@@ -904,12 +943,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             result.AppendLine("</table>");
             result.AppendLine("<br />");
             result.AppendLine("<br />");
-                
+
             result.AppendLine("</blockquote>");
             result.AppendLine("</span>");
             result.AppendLine("<br />");
             return result.ToString();
-           
+
         }
 
 
@@ -920,6 +959,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private enum Tracking_Type : byte { Milestones, History, Media, Archives, Directory_List };
 
         #endregion
+
+        /// <summary> Allows controls to be added directory to a place holder, rather than just writing to the output HTML stream </summary>
+        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <remarks> This method does nothing, since nothing is added to the place holder as a control for this item viewer </remarks>
+        public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        {
+            // Do nothing
+        }
     }
 }
-

@@ -76,6 +76,8 @@ textarea.intheader_comments_input  {  FONT-FAMILY: Arial, sans-serif; font-size:
 /** left navigation bar general styles ( Item_HtmlSubwriter ) */
 #sbkIsw_Leftnavbar { background-color: #333333; padding: 0; MARGIN-RIGHT: 5px;  text-align: left; width: 185px; margin-top: 0;  float:left; font-size: 0.80em; box-shadow: 0 0 0 Black; box-shadow: 2px 2px 6px rgba(0,0,0,.2); }
 #sbkIsw_Leftnavbar_hack { background-color: #333333; padding: 0; MARGIN-RIGHT: 5px;  text-align: left; width: 210px; margin-top: 0;  float:left; font-size: 0.80em; box-shadow: 0 0 0 Black; box-shadow: 2px 2px 6px rgba(0,0,0,.2); }
+#sbkIsw_LeftnavbarTd { width: 185px; }
+#sbkIsw_LeftnavbarTd_hack { width: 210px; }
 .sbkIsw_ShowTocRow  {  padding-top: 3px; padding-bottom: 6px; text-align:left;  background-color: #7d90d5;color: white;  text-transform:uppercase; font-weight:bold; font-size: 0.90em; width: 100%; }
 .sbkIsw_ShowTocRow:hover { background-color: #888888; }
 .sbkIsw_ShowTocRow a { text-decoration: none; color: white; }
@@ -100,7 +102,7 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 
 /** main item viewer area and page selection tools ( Item_HtmlSubwriter ) */
 #sbkIsw_DocumentDisplay { background-color: #333333; margin-bottom: 2px; margin-left:auto; margin-right:auto; margin-top: 5px; font-size: 0.8em; box-shadow: 2px 2px 6px rgba(0,0,0,.2); color: white; }
-#sbkIsw_DocumentDisplay2 { background-color: #333333; margin-bottom: 2px; margin-left:10px; margin-right:10px; margin-top: 5px; font-size: 0.8em; box-shadow: 2px 2px 6px rgba(0,0,0,.2); color: white; }
+#sbkIsw_DocumentDisplay2 { background-color: #333333; margin-bottom: 2px; margin-left:auto; margin-right:auto; margin-top: 5px; font-size: 0.8em; box-shadow: 2px 2px 6px rgba(0,0,0,.2); color: white; text-align: center; }
 #sbkIsw_DocumentNonWindowed { font-size: 0.8em; background-color: #333333; color: white; padding: 0; margin: 0; border-collapse: collapse; border: none; }
 #sbkIsw_RestrictedRow { text-align: center;background-color: #cccccc;height: 50px;vertical-align: middle;color: #222222; }
 .sbkIsw_PageNavBar { background-color: #333333; padding: 6px 20px 3px 20px;  HEIGHT: 25px; TEXT-ALIGN: center; color: #ffffff; font-weight: bold;border: 0; }
@@ -118,7 +120,8 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 #sbkIsw_BottomPadding { background:#555555;height: 0; }
 .sbkIsw_RoundButton { background-color: #7d90d5; color: white; text-transform:uppercase; font-weight:bold; border-radius:25px; border: none; padding: 3px 10px 3px 10px; cursor: pointer; font-size: 0.85em; letter-spacing: 0.5px; }
 .sbkIsw_RoundButton:hover { background-color: #888888; -webkit-box-shadow: inset 0 0 9px 6px #6a6f75; box-shadow: inset 0 0 9px 6px #6a6f75; }
-
+.sbkIsw_MainContentSection { margin-left: auto; margin-right: auto; text-align: center; }
+#sbkIsw_PresentationTable { width: 100%; }
 
 #sbkCoiv_Viewer { width:600px; }
 #sbkDcbiv_Viewer { width: 800px; }

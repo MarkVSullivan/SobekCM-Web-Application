@@ -1,8 +1,10 @@
 ﻿#region Using directives
 
 using System;
+using System.Collections.Generic;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.EAD;
+using SobekCM.Core.Items;
 using SobekCM.Core.MARC;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.MicroservicesClient;
@@ -142,6 +144,125 @@ namespace SobekCM.Core.Client
             {
                 Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_MARC_Record", "Store MARC record in the local cache");
                 CachedDataManager.Items.Store_MARC_Record(BibID, VID, returnValue, Tracer);
+            }
+
+            // Return the object
+            return returnValue;
+        }
+
+        /// <summary> Gets the month-by-month usage for an item </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for the digital resource </param>
+        /// <param name="VID"> Volume identifier (VID) for the digital resource </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Fully built month-by-month usage for the item </returns>
+        public List<Item_Monthly_Usage> Get_Item_Statistics_History(string BibID, string VID, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Statistics_History", "Get monthly usage for an item by bibid/vid");
+
+            // Look in the cache
+            if (Config.UseCache)
+            {
+                List<Item_Monthly_Usage> fromCache = CachedDataManager.Items.Retrieve_Item_Usage(BibID, VID, Tracer);
+                if (fromCache != null)
+                {
+                    Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Statistics_History", "Found monthly usage on the local cache");
+                    return fromCache;
+                }
+            }
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Items.GetItemStatisticsHistory", Tracer);
+
+            // Format the URL
+            string url = String.Format(endpoint.URL, BibID, VID);
+
+            // Call out to the endpoint and deserialize the object
+            List<Item_Monthly_Usage> returnValue = Deserialize<List<Item_Monthly_Usage>>(url, endpoint.Protocol, Tracer);
+
+            // Add to the local cache
+            if ((Config.UseCache) && (returnValue != null))
+            {
+                Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Statistics_History", "Store monthly usage on the local cache");
+                CachedDataManager.Items.Store_Item_Usage(BibID, VID, returnValue, Tracer);
+            }
+
+            // Return the object
+            return returnValue;
+        }
+
+        /// <summary> Gets the work history for a single digital resource item </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for the digital resource </param>
+        /// <param name="VID"> Volume identifier (VID) for the digital resource </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Fully built month-by-month usage for the item </returns>
+        public Item_Tracking_Details Get_Item_Tracking_Work_History(string BibID, string VID, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Tracking_Work_History", "Get work history for an item by bibid/vid");
+
+            // Look in the cache
+            if (Config.UseCache)
+            {
+                Item_Tracking_Details fromCache = CachedDataManager.Items.Retrieve_Item_Tracking(BibID, VID, Tracer);
+                if (fromCache != null)
+                {
+                    Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Tracking_Work_History", "Found work history on the local cache");
+                    return fromCache;
+                }
+            }
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Items.GetItemTrackingWorkHistory", Tracer);
+
+            // Format the URL
+            string url = String.Format(endpoint.URL, BibID, VID);
+
+            // Call out to the endpoint and deserialize the object
+            Item_Tracking_Details returnValue = Deserialize<Item_Tracking_Details>(url, endpoint.Protocol, Tracer);
+
+            // Add to the local cache
+            if ((Config.UseCache) && (returnValue != null))
+            {
+                Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Item_Tracking_Work_History", "Store work history on the local cache");
+                CachedDataManager.Items.Store_Item_Tracking(BibID, VID, returnValue, Tracer);
+            }
+
+            // Return the object
+            return returnValue;
+        }
+
+        /// <summary> Gets the list of items (VIDs) under a single title (BibID) </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for the digital resources </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Fully built list of all the items under that bibid </returns>
+        public List<Item_Hierarchy_Details> Get_Multiple_Volumes(string BibID, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Multiple_Volumes", "Get list of items under a single BibID");
+
+            // Look in the cache
+            if (Config.UseCache)
+            {
+                List<Item_Hierarchy_Details> fromCache = CachedDataManager.Items.Retrieve_Item_List(BibID, Tracer);
+                if (fromCache != null)
+                {
+                    Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Multiple_Volumes", "Found list of items on the local cache");
+                    return fromCache;
+                }
+            }
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Items.GetMultipleVolumes", Tracer);
+
+            // Format the URL
+            string url = String.Format(endpoint.URL, BibID);
+
+            // Call out to the endpoint and deserialize the object
+            List<Item_Hierarchy_Details> returnValue = Deserialize<List<Item_Hierarchy_Details>>(url, endpoint.Protocol, Tracer);
+
+            // Add to the local cache
+            if ((Config.UseCache) && (returnValue != null))
+            {
+                Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Get_Multiple_Volumes", "Store list of items on the local cache");
+                CachedDataManager.Items.Store_Item_List(BibID, returnValue, Tracer);
             }
 
             // Return the object
