@@ -75,5 +75,13 @@ namespace SobekCM.Core.FileSystems
             return fileSystem.AssociFilePath(DigitalResource);
         }
 
+        /// <summary> Gets the list of all the files associated with this digital resource </summary>
+        /// <param name="DigitalResource"> The digital resource object  </param>
+        /// <returns> List of the file information for this digital resource, or NULL if this does not exist somehow </returns>
+        public static List<SobekFileSystem_FileInfo> GetFiles(BriefItemInfo DigitalResource)
+        {
+            return fileSystem.GetFiles(DigitalResource);
+        }
+
     }
 }

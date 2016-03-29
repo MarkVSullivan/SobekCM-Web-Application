@@ -12,6 +12,7 @@ using Jil;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.EAD;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.Items;
 using SobekCM.Core.MARC;
 using SobekCM.Core.MemoryMgmt;
@@ -1306,6 +1307,98 @@ namespace SobekCM.Engine_Library.Endpoints
 
                     // Use the base class to serialize the object according to request protocol
                     Serialize(returnValue, Response, Protocol, json_callback);
+                }
+                catch (Exception ee)
+                {
+                    if (IsDebug)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("EXCEPTION CAUGHT!");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.Message);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(ee.StackTrace);
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+                        return;
+                    }
+
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("Error completing request");
+                    Response.StatusCode = 500;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Method to get resource files for an item
+
+        /// <summary> Gets the list of all files related to an item </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetItemFiles(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Must at least have one URL segment for the BibID
+            if (UrlSegments.Count > 1)
+            {
+                Custom_Tracer tracer = new Custom_Tracer();
+
+                try
+                {
+                    // Get the BibID and VID
+                    string bibid = UrlSegments[0];
+                    string vid = UrlSegments[1];
+
+                    tracer.Add_Trace("ItemServices.GetItemFiles", "Requested file list for " + bibid + ":" + vid);
+
+                    // Build the brief item
+                    tracer.Add_Trace("ItemServices.GetItemFiles", "Building the brief item");
+                    BriefItemInfo briefItem = GetBriefItem(bibid, vid, null, tracer);
+
+                    // Was the item null?
+                    if (briefItem == null)
+                    {
+                        // If this was debug mode, then just write the tracer
+                        if (IsDebug)
+                        {
+                            tracer.Add_Trace("ItemServices.GetItemFiles", "NULL value returned from getBriefItem method");
+
+                            Response.ContentType = "text/plain";
+                            Response.Output.WriteLine("DEBUG MODE DETECTED");
+                            Response.Output.WriteLine();
+                            Response.Output.WriteLine(tracer.Text_Trace);
+                        }
+                        return;
+                    }
+
+                    // Look in the cache
+                    tracer.Add_Trace("ItemServices.GetItemFiles", "Requesting files from SobekFileSystem");
+                    List<SobekFileSystem_FileInfo> files = SobekFileSystem.GetFiles(briefItem);
+
+                    // If this was debug mode, then just write the tracer
+                    if (IsDebug)
+                    {
+                        Response.ContentType = "text/plain";
+                        Response.Output.WriteLine("DEBUG MODE DETECTED");
+                        Response.Output.WriteLine();
+                        Response.Output.WriteLine(tracer.Text_Trace);
+
+                        return;
+                    }
+
+                    // Get the JSON-P callback function
+                    string json_callback = "parseItemFiles";
+                    if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                    {
+                        json_callback = QueryString["callback"];
+                    }
+
+                    // Use the base class to serialize the object according to request protocol
+                    Serialize(files, Response, Protocol, json_callback);
                 }
                 catch (Exception ee)
                 {

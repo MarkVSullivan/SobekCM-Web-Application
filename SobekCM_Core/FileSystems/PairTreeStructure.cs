@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Web.Hosting;
@@ -10,9 +11,10 @@ namespace SobekCM.Core.FileSystems
     /// the SObekCM instance uses by default to organize the digital resources </summary>
     public class PairTreeStructure : iFileSystem
     {
-        private string rootNetworkUri;
-        private string rootWebUri;
-        private char pathSeperator;
+        private readonly string rootNetworkUri;
+        private readonly string rootWebUri;
+        private readonly char pathSeperator;
+        private readonly char dirSeperator;
 
         /// <summary> Constructor for a new instance of the <see cref="PairTreeStructure"/> class </summary>
         /// <param name="RootNetworkUri"> Root network location for the digital resource files </param>
@@ -24,6 +26,7 @@ namespace SobekCM.Core.FileSystems
 
             // Set the environmental default
             pathSeperator = Path.PathSeparator;
+            dirSeperator = Path.DirectorySeparatorChar;
         }
 
 
@@ -59,7 +62,7 @@ namespace SobekCM.Core.FileSystems
 
         private string Resource_Network_Uri(string BibID, string VID)
         {
-            return Path.Combine(rootNetworkUri, BibID.Substring(0, 2) + pathSeperator + BibID.Substring(2, 2) + pathSeperator + BibID.Substring(4, 2) + pathSeperator + BibID.Substring(6, 2) + pathSeperator + BibID.Substring(8, 2), VID);
+            return Path.Combine(rootNetworkUri, BibID.Substring(0, 2) + dirSeperator + BibID.Substring(2, 2) + dirSeperator + BibID.Substring(4, 2) + dirSeperator + BibID.Substring(6, 2) + dirSeperator + BibID.Substring(8, 2), VID);
         }
 
         /// <summary> Return the WEB uri for a digital resource </summary>
@@ -108,7 +111,45 @@ namespace SobekCM.Core.FileSystems
         /// <returns> Part of the file path, derived from the BibID and VID </returns>
         public string AssociFilePath(BriefItemInfo DigitalResource)
         {
-            return DigitalResource.BibID.Substring(0, 2) + "/" + DigitalResource.BibID.Substring(2, 2) + "/" + DigitalResource.BibID.Substring(4, 2) + "/" + DigitalResource.BibID.Substring(6, 2) + "/" + DigitalResource.BibID.Substring(8, 2) + "/" + DigitalResource.VID + "/";
+            return DigitalResource.BibID.Substring(0, 2) + dirSeperator + DigitalResource.BibID.Substring(2, 2) + dirSeperator + DigitalResource.BibID.Substring(4, 2) + dirSeperator + DigitalResource.BibID.Substring(6, 2) + dirSeperator + DigitalResource.BibID.Substring(8, 2) + dirSeperator + DigitalResource.VID + dirSeperator;
+        }
+
+        /// <summary> Gets the list of all the files associated with this digital resource </summary>
+        /// <param name="DigitalResource"> The digital resource object  </param>
+        /// <returns> List of the file information for this digital resource, or NULL if this does not exist somehow </returns>
+        public List<SobekFileSystem_FileInfo> GetFiles(BriefItemInfo DigitalResource)
+        {
+            string directory = Resource_Network_Uri(DigitalResource);
+
+            try
+            {
+
+                if (Directory.Exists(directory))
+                {
+                    FileInfo[] files = (new DirectoryInfo(directory)).GetFiles();
+                    List<SobekFileSystem_FileInfo> returnValue = new List<SobekFileSystem_FileInfo>();
+                    foreach (FileInfo thisFile in files)
+                    {
+                        SobekFileSystem_FileInfo returnFile = new SobekFileSystem_FileInfo
+                        {
+                            Name = thisFile.Name, 
+                            LastWriteTime = thisFile.LastWriteTime, 
+                            Extension = thisFile.Extension, 
+                            Length = thisFile.Length
+                        };
+
+                        returnValue.Add(returnFile);
+                    }
+
+                    return returnValue;
+                }
+            }
+            catch (Exception ee)
+            {
+                return null;
+            }
+
+            return null;
         }
 
     }

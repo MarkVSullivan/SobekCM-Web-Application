@@ -48,5 +48,10 @@ namespace SobekCM.Core.FileSystems
         /// <returns> Part of the file path, derived from the BibID and VID </returns>
         string AssociFilePath(BriefItemInfo DigitalResource);
 
+        /// <summary> Gets the list of all the files associated with this digital resource </summary>
+        /// <param name="DigitalResource"> The digital resource object  </param>
+        /// <returns> List of the file information for this digital resource, or NULL if this does not exist somehow </returns>
+        List<SobekFileSystem_FileInfo> GetFiles(BriefItemInfo DigitalResource);
+
     }
 }

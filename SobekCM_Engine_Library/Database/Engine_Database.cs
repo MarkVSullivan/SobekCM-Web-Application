@@ -331,14 +331,14 @@ namespace SobekCM.Engine_Library.Database
                     // Build this item information
                     Item_Tracking_Event thisItem = new Item_Tracking_Event
                     {
-                        WorkflowName = readerWrapper.Reader.GetString(0),
-                        CompletedDate = readerWrapper.Reader.GetDateTime(1),
-                        WorkPerformedBy = readerWrapper.Reader.GetString(2)
+                        WorkflowName = readerWrapper.Reader.GetString(1),
+                        CompletedDate = readerWrapper.Reader.GetString(2),
+                        WorkPerformedBy = readerWrapper.Reader.GetString(3)
                     };
 
                     // If there are notes include them
-                    if (!readerWrapper.Reader.IsDBNull(3))
-                        thisItem.Notes = readerWrapper.Reader.GetString(3);
+                    if (!readerWrapper.Reader.IsDBNull(4))
+                        thisItem.Notes = readerWrapper.Reader.GetString(4);
 
                     // Add this item to the list to return
                     returnValue.WorkEvents.Add(thisItem);

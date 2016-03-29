@@ -83,7 +83,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;
-            CurrentRequest.ViewerCode = ViewerCode;
+            CurrentRequest.ViewerCode = ViewerCode.Replace("#", "");
             string url = UrlWriterHelper.Redirect_URL(CurrentRequest);
             CurrentRequest.ViewerCode = previous_code;
 
@@ -103,7 +103,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
         public iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
         {
-            return new Related_Images_ItemViewer(CurrentItem, CurrentUser, CurrentRequest);
+            return new Related_Images_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, ViewerCode);
         }
     }
 
@@ -111,6 +111,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
     /// <remarks> This class extends the implements the <see cref="iItemViewer" /> interface directly. </remarks>
     public class Related_Images_ItemViewer : iItemViewer
     {
+        private readonly int page;
         private readonly int pageCount;
         private readonly int thumbnailsPerPage;
         private readonly int thumbnailSize;
@@ -126,7 +127,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="BriefItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
-        public Related_Images_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest)
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <param name="ViewerCode"> Viewer code for the related images viewer </param>
+        public Related_Images_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer, string ViewerCode)
         {
             // Save the arguments for use later
             briefItem = BriefItem;
@@ -206,6 +209,19 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Get the number of thumbnails for this item
             pageCount = briefItem.Images != null ? briefItem.Images.Count : 0;
+
+            // Determine the page
+            page = 1;
+            if (!String.IsNullOrEmpty(CurrentRequest.ViewerCode))
+            {
+                int tempPageParse;
+                if (Int32.TryParse(CurrentRequest.ViewerCode.Replace(ViewerCode.Replace("#", ""), ""), out tempPageParse))
+                    page = tempPageParse;
+            }
+
+            // Just a quick range check
+            if (page > pageCount)
+                page = 1;
         }
 
         /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>

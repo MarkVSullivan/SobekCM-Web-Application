@@ -125,6 +125,7 @@
     <Compile Include="FileSystems\iFileSystem.cs" />
     <Compile Include="FileSystems\PairTreeStructure.cs" />
     <Compile Include="FileSystems\SobekFileSystem.cs" />
+    <Compile Include="FileSystems\SobekFileSystem_FileInfo.cs" />
     <Compile Include="Items\Item_Hierarchy_Details.cs" />
     <Compile Include="Items\Item_Monthly_Usage.cs" />
     <Compile Include="Items\Item_Tracking_Details.cs" />

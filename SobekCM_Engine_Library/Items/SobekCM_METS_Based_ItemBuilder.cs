@@ -29,7 +29,7 @@ namespace SobekCM.Engine_Library.Items
 	/// related digital resource object </summary>
 	public class SobekCM_METS_Based_ItemBuilder
 	{
-		private int divseq, pageseq;
+		private int pageseq;
 
 		/// <summary> Builds an item group object, from a METS file </summary>
 		/// <param name="BibID"> Bibliographic identifier for the item group to retrieve </param>
@@ -754,7 +754,6 @@ namespace SobekCM.Engine_Library.Items
 			if (Package_To_Finalize.Behaviors.Dark_Flag) return;
 
 			// Check to see which views were present from the database, and build the list
-            Dictionary<string, View_Object> viewsFromDb = new Dictionary<string, View_Object>();
 			foreach (DataRow viewRow in DatabaseInfo.Tables[4].Rows)
 			{
 				string viewType = viewRow[0].ToString();
@@ -766,9 +765,41 @@ namespace SobekCM.Engine_Library.Items
                 Package_To_Finalize.Behaviors.Add_View(viewType, label, attribute, menuOrder, exclude);
 			}
 
+            // We will continue to set the static page count
+            // Step through each page and set the static page count
+            Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Set the static page count");
+            pageseq = 0;
+            List<Page_TreeNode> pages_encountered = new List<Page_TreeNode>();
+            foreach (abstract_TreeNode rootNode in Package_To_Finalize.Divisions.Physical_Tree.Roots)
+            {
+                recurse_through_nodes( rootNode, pages_encountered);
+            }
+            Package_To_Finalize.Web.Static_PageCount = pages_encountered.Count;
+
 			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Done merging the database information with the resource object");
 
 		}
+
+        private void recurse_through_nodes(abstract_TreeNode Node, List<Page_TreeNode> PagesEncountered)
+        {
+            if (Node.Page)
+            {
+                Page_TreeNode pageNode = (Page_TreeNode)Node;
+                if (!PagesEncountered.Contains(pageNode))
+                {
+                    pageseq++;
+                }
+            }
+            else
+            {
+                Division_TreeNode divNode = (Division_TreeNode)Node;
+                foreach (abstract_TreeNode childNode in divNode.Nodes)
+                {
+                    recurse_through_nodes(childNode, PagesEncountered);
+                }
+            }
+        }
+
 
 
 		#endregion

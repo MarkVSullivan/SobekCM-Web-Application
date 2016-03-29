@@ -137,7 +137,7 @@ namespace SobekCM.Core.Items
         /// <summary> Date the physical version of this material was disposed of, post-digitization </summary>
         [DataMember(Name = "dispositionDate")]
         [XmlIgnore]
-        [ProtoMember(3)]
+        [ProtoMember(8)]
         public DateTime? Disposition_Date { get; set; }
 
         /// <summary> Date the physical version of this material was disposed of, post-digitization (for XML serialization)</summary>

@@ -77,6 +77,14 @@ namespace SobekCM.Core.BriefItem
                     if (viewerCodesDictionary.ContainsKey(builder.ToString()))
                         return viewerCodesDictionary[builder.ToString()];
                 }
+                else
+                {
+                    // Finally, just look for a match for something that SHOULD have STARTED with a number
+                    // This is for some legacy viewers like the thumbnails and QC
+                    if (viewerCodesDictionary.ContainsKey("#" + ViewerCode))
+                        return viewerCodesDictionary["#" + ViewerCode];
+                }
+
             }
 
             // Just return the FIRST viewer then if there was a viewer

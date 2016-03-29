@@ -190,8 +190,10 @@
     <Compile Include="ItemViewer\Menu\StandardItemMenuProvider.cs" />
     <Compile Include="ItemViewer\Viewers\abstractNoPaginationItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\abstractPageFilesItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\UF_Archives_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Citation_MARC_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Citation_Standard_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\Directory_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Downloads_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\EmbeddedVideo_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Flash_ItemViewer.cs" />
@@ -205,6 +207,7 @@
     <Compile Include="ItemViewer\Viewers\ManageMenu_ItemViewer.cs" />
     <Compile Include="AdminViewer\Aggregation_Single_AdminViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Metadata_Links_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\Milestones_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\MultiVolumes_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\PDF_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\QC_ItemViewer.cs" />
@@ -214,6 +217,7 @@
     <Compile Include="ItemViewer\Viewers\Text_Search_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\TrackingSheet_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Tracking_ItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\UF_Media_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Usage_Stats_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Video_ItemViewer.cs" />
     <Compile Include="Localization\baseLocalizationInfo.cs" />

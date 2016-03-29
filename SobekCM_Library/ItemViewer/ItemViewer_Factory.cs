@@ -212,6 +212,9 @@ namespace SobekCM.Library.ItemViewer
                 case "SobekCM.Library.ItemViewer.Viewers.Citation_Standard_ItemViewer_Prototyper":
                     return new Citation_Standard_ItemViewer_Prototyper();
 
+                case "SobekCM.Library.ItemViewer.Viewers.Directory_ItemViewer_Prototyper":
+                    return new Directory_ItemViewer_Prototyper();
+
                 case "SobekCM.Library.ItemViewer.Viewers.Downloads_ItemViewer_Prototyper":
                     return new Downloads_ItemViewer_Prototyper();
 
@@ -245,6 +248,9 @@ namespace SobekCM.Library.ItemViewer
                 case "SobekCM.Library.ItemViewer.Viewers.Metadata_Links_ItemViewer_Prototyper":
                     return new Metadata_Links_ItemViewer_Prototyper();
 
+                case "SobekCM.Library.ItemViewer.Viewers.Milestones_ItemViewer_Prototyper":
+                    return new Milestones_ItemViewer_Prototyper();
+
                 case "SobekCM.Library.ItemViewer.Viewers.MultiVolumes_ItemViewer_Prototyper":
                     return new MultiVolumes_ItemViewer_Prototyper();
 
@@ -277,6 +283,12 @@ namespace SobekCM.Library.ItemViewer
 
                 case "SobekCM.Library.ItemViewer.Viewers.Video_ItemViewer_Prototyper":
                     return new Video_ItemViewer_Prototyper();
+
+                case "SobekCM.Library.ItemViewer.Viewers.UF_Archives_ItemViewer_Prototyper":
+                    return new UF_Archives_ItemViewer_Prototyper();
+
+                case "SobekCM.Library.ItemViewer.Viewers.UF_Media_ItemViewer_Prototyper":
+                    return new UF_Media_ItemViewer_Prototyper();
             }
 
             return null;

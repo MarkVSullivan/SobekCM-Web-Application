@@ -21,7 +21,7 @@ namespace SobekCM.Core.Items
         [DataMember(Name = "date")]
         [XmlAttribute("date")]
         [ProtoMember(2)]
-        public DateTime CompletedDate { get; set; }
+        public string CompletedDate { get; set; }
         
         /// <summary> Personal name, username, or vendor name for the party that performed this work </summary>
         [DataMember(EmitDefaultValue = false, Name = "worker")]
