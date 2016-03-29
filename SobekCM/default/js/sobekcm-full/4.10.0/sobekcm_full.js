@@ -1915,12 +1915,12 @@ function itemwriter_load() {
 	// Get the width and height of the main area
 	var main_view_width = 0;
 	var main_view_height = 0;
-	if ($('#sbkIsw_DocumentDisplay').length == 0) {
-		main_view_width = $('#sbkIsw_DocumentDisplay2').width();
-		main_view_height = $('#sbkIsw_DocumentDisplay2').height();
+	if ($('.sbkIsw_DocumentDisplay').length == 0) {
+		main_view_width = $('.sbkIsw_DocumentDisplay2').width();
+		main_view_height = $('.sbkIsw_DocumentDisplay2').height();
 	} else {
-		main_view_width = $('#sbkIsw_DocumentDisplay').width();
-		main_view_height = $('#sbkIsw_DocumentDisplay').height();
+		main_view_width = $('.sbkIsw_DocumentDisplay').width();
+		main_view_height = $('.sbkIsw_DocumentDisplay').height();
 	}
 
 	// If the viewport is less than 800 wide, make the nav bar tighter

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
@@ -138,8 +139,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public TrackingSheet_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer )
         {
             // Add the trace
-            if (Tracer != null)
-                Tracer.Add_Trace("TrackingSheet_ItemViewer.Constructor");
+            Tracer.Add_Trace("TrackingSheet_ItemViewer.Constructor");
 
             // Save the arguments for use later
             this.BriefItem = BriefItem;
@@ -150,8 +150,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Behaviors = EmptyBehaviors;
 
             //Assign the current resource object to track_item
-            track_item = Current_Object;
-
+            Tracer.Add_Trace("TrackingSheet_ItemViewer.Constructor", "Try to pull this sobek complete item");
+            track_item = SobekEngineClient.Items.Get_Sobek_Item(CurrentRequest.BibID, CurrentRequest.VID, Tracer);
+            if (track_item == null)
+            {
+                Tracer.Add_Trace("TrackingSheet_ItemViewer.Constructor", "Unable to build complete item");
+                CurrentRequest.Mode = Display_Mode_Enum.Error;
+                CurrentRequest.Error_Message = "Invalid Request : Unable to build complete item";
+                return;
+            }
 
             //Get the ItemID for this Item from the database
             itemID = track_item.Web.ItemID;

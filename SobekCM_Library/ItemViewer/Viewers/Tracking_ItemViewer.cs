@@ -7,9 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Library.Database;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.UI;
+using SobekCM.Resource_Object;
+using SobekCM.Resource_Object.Divisions;
+using SobekCM.Resource_Object.Tracking;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -38,28 +44,28 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Indicates if the specified item matches the basic requirements for this viewer, or
         /// if this viewer should be ignored for this item </summary>
-        /// <param name="CurrentItem"> Digital resource to examine to see if this viewer really should be included </param>
+        /// <param name="currentItem"> Digital resource to examine to see if this viewer really should be included </param>
         /// <returns> TRUE if this viewer should generally be included with this item, otherwise FALSE </returns>
-        public bool Include_Viewer(BriefItemInfo CurrentItem)
+        public bool Include_Viewer(BriefItemInfo currentItem)
         {
             // This should always be included (although it won't be accessible or shown to everyone)
             return true;
         }
 
         /// <summary> Flag indicates if this viewer should be override on checkout </summary>
-        /// <param name="CurrentItem"> Digital resource to examine to see if this viewer should really be overriden </param>
+        /// <param name="currentItem"> Digital resource to examine to see if this viewer should really be overriden </param>
         /// <returns> TRUE always, since PDFs should never be shown if an item is checked out </returns>
-        public bool Override_On_Checkout(BriefItemInfo CurrentItem)
+        public bool Override_On_Checkout(BriefItemInfo currentItem)
         {
             return false;
         }
 
         /// <summary> Flag indicates if the current user has access to this viewer for the item </summary>
-        /// <param name="CurrentItem"> Digital resource to see if the current user has correct permissions to use this viewer </param>
+        /// <param name="currentItem"> Digital resource to see if the current user has correct permissions to use this viewer </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="IpRestricted"> Flag indicates if this item is IP restricted AND if the current user is outside the ranges </param>
         /// <returns> TRUE if the user has access to use this viewer, otherwise FALSE </returns>
-        public bool Has_Access(BriefItemInfo CurrentItem, User_Object CurrentUser, bool IpRestricted)
+        public bool Has_Access(BriefItemInfo currentItem, User_Object CurrentUser, bool IpRestricted)
         {
             // If there is no user (or they aren't logged in) then obviously, they can't edit this
             if ((CurrentUser == null) || (!CurrentUser.LoggedOn))
@@ -72,7 +78,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 return true;
 
             // See if this user can edit this item
-            bool userCanEditItem = CurrentUser.Can_Edit_This_Item(CurrentItem.BibID, CurrentItem.Type, CurrentItem.Behaviors.Source_Institution_Aggregation, CurrentItem.Behaviors.Holding_Location_Aggregation, CurrentItem.Behaviors.Aggregation_Code_List);
+            bool userCanEditItem = CurrentUser.Can_Edit_This_Item(currentItem.BibID, currentItem.Type, currentItem.Behaviors.Source_Institution_Aggregation, currentItem.Behaviors.Holding_Location_Aggregation, currentItem.Behaviors.Aggregation_Code_List);
             if (!userCanEditItem)
             {
                 // Can't edit, so don't show and return FALSE
@@ -84,28 +90,28 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Gets the menu items related to this viewer that should be included on the main item (digital resource) menu </summary>
-        /// <param name="CurrentItem"> Digital resource object, which can be used to ensure if and how this viewer should appear 
+        /// <param name="currentItem"> Digital resource object, which can be used to ensure if and how this viewer should appear 
         /// in the main item (digital resource) menu </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
-        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
+        public void Add_Menu_items(BriefItemInfo currentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
         {
             // Do nothing since this is already handed and added to the menu by the MANAGE MENU item viewer and INTERNAL header
         }
 
         /// <summary> Creates and returns the an instance of the <see cref="Tracking_ItemViewer"/> class for showing the
         /// tracking information ( both milestones and workflow history ) for a digital resource during execution of a single HTTP request. </summary>
-        /// <param name="CurrentItem"> Digital resource object </param>
+        /// <param name="currentItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <returns> Fully built and initialized <see cref="Tracking_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
-        public iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
+        public iItemViewer Create_Viewer(BriefItemInfo currentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
         {
-            return new Tracking_ItemViewer(CurrentItem, CurrentUser, CurrentRequest);
+            return new Tracking_ItemViewer(currentItem, CurrentUser, CurrentRequest, Tracer);
         }
     }
 
@@ -115,13 +121,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
     public class Tracking_ItemViewer : abstractNoPaginationItemViewer
     {
         private bool userCanEditItem;
+        private SobekCM_Item currentItem;
 
         /// <summary> Constructor for a new instance of the Tracking_ItemViewer class, used display
         /// the tracking information for a digital resource (both milestones and workflow history) </summary>
         /// <param name="BriefItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
-        public Tracking_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest)
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public Tracking_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer )
         {
             // Save the arguments for use later
             this.BriefItem = BriefItem;
@@ -135,6 +143,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (CurrentUser != null)
             {
                 userCanEditItem = CurrentUser.Can_Edit_This_Item(BriefItem.BibID, BriefItem.Type, BriefItem.Behaviors.Source_Institution_Aggregation, BriefItem.Behaviors.Holding_Location_Aggregation, BriefItem.Behaviors.Aggregation_Code_List);
+            }
+
+
+            // Get the full oibject
+            Tracer.Add_Trace("Tracking_ItemViewer.Constructor", "Try to pull this sobek complete item");
+            currentItem = SobekEngineClient.Items.Get_Sobek_Item(CurrentRequest.BibID, CurrentRequest.VID, Tracer);
+            if (currentItem == null)
+            {
+                Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Unable to build complete item");
+                CurrentRequest.Mode = Display_Mode_Enum.Error;
+                CurrentRequest.Error_Message = "Invalid Request : Unable to build complete item";
+                return;
             }
 
         }
@@ -151,18 +171,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
-            if (Tracer != null)
-            {
-                Tracer.Add_Trace("Tracking_ItemViewer.Write_Main_Viewer_Section", "");
-            }
+            Tracer.Add_Trace("Tracking_ItemViewer.Write_Main_Viewer_Section", "");
+
+
+
             // If this is an internal user or can edit this item, ensure the extra information 
             // has been pulled for this item
             if ((userCanEditItem) || ((CurrentUser != null) && (CurrentUser.LoggedOn) && (CurrentUser.Is_Internal_User)) || (CurrentRequest.ViewerCode == "tracking") || (CurrentRequest.ViewerCode == "media") || (CurrentRequest.ViewerCode == "archive"))
             {
-                if (!CurrentItem.Tracking.Tracking_Info_Pulled)
+                if (!currentItem.Tracking.Tracking_Info_Pulled)
                 {
-                    DataSet data = SobekCM_Database.Tracking_Get_History_Archives(CurrentItem.Web.ItemID, Tracer);
-                    CurrentItem.Tracking.Set_Tracking_Info(data);
+                    DataSet data = SobekCM_Database.Tracking_Get_History_Archives(currentItem.Web.ItemID, Tracer);
+                    currentItem.Tracking.Set_Tracking_Info(data);
                 }
             }
 
@@ -208,7 +228,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("    <div id=\"sbkTrk_ViewSelectRow\">");
             Output.WriteLine("      <ul class=\"sbk_FauxDownwardTabsList\">");
 
-            if (CurrentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
+            if (currentItem.METS_Header.RecordStatus_Enum != METS_Record_Status.BIB_LEVEL)
             {
                 if (citationType == Tracking_Type.Milestones)
                 {
@@ -219,7 +239,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     Output.WriteLine("        <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest, "milestones") + "\">" + MILESTONES_VIEW + "</a></li>");
                 }
 
-                if ((citationType == Tracking_Type.History) || ((CurrentItem.Tracking.hasHistoryInformation)))
+                if ((citationType == Tracking_Type.History) || ((currentItem.Tracking.hasHistoryInformation)))
                 {
                     if (citationType == Tracking_Type.History)
                     {
@@ -231,7 +251,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
                 }
 
-                if ((citationType == Tracking_Type.Media) || ((CurrentItem.Tracking.hasMediaInformation)))
+                if ((citationType == Tracking_Type.Media) || ((currentItem.Tracking.hasMediaInformation)))
                 {
                     if (citationType == Tracking_Type.Media)
                     {
@@ -243,7 +263,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
                 }
 
-                if ((citationType == Tracking_Type.Archives) || ((CurrentItem.Tracking.hasArchiveInformation) && (((CurrentUser != null) && (CurrentUser.LoggedOn) && (CurrentUser.Is_Internal_User)) || (userCanEditItem))))
+                if ((citationType == Tracking_Type.Archives) || ((currentItem.Tracking.hasArchiveInformation) && (((CurrentUser != null) && (CurrentUser.LoggedOn) && (CurrentUser.Is_Internal_User)) || (userCanEditItem))))
                 {
                     if (citationType == Tracking_Type.Archives)
                     {
@@ -310,7 +330,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             StringBuilder builder = new StringBuilder(3000);
-            if (!CurrentItem.Tracking.hasHistoryInformation)
+            if (!currentItem.Tracking.hasHistoryInformation)
             {
                 builder.AppendLine("<br /><br /><br /><center><strong>ITEM HAS NO HISTORY</strong></center><br /><br /><br />");
             }
@@ -326,7 +346,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 builder.AppendLine("    <th><span style=\"color: White\">LOCATION / NOTES</span></th>");
                 builder.AppendLine("  </tr>");
 
-                foreach (Tracking_Progress worklog in CurrentItem.Tracking.Work_History)
+                foreach (Tracking_Progress worklog in currentItem.Tracking.Work_History)
                 {
                     builder.AppendLine("  <tr>");
                     builder.AppendLine("    <td>" + worklog.Workflow_Name + "</td>");
@@ -385,7 +405,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             StringBuilder builder = new StringBuilder(3000);
-            if (!CurrentItem.Tracking.hasMediaInformation)
+            if (!currentItem.Tracking.hasMediaInformation)
             {
                 builder.AppendLine("<br /><br /><br /><center><strong>ITEM IS NOT ARCHIVED TO MEDIA</strong></center><br /><br /><br />");
             }
@@ -402,7 +422,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 builder.AppendLine("    <th><span style=\"color: White\">DATE BURNED</span></th>");
                 builder.AppendLine("  </tr>");
 
-                foreach (Tracking_ArchiveMedia thisRow in CurrentItem.Tracking.Archive_Media)
+                foreach (Tracking_ArchiveMedia thisRow in currentItem.Tracking.Archive_Media)
                 {
                     builder.AppendLine("  <tr>");
                     builder.AppendLine("    <td>" + thisRow.Media_Number + "</td>");
@@ -439,14 +459,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             StringBuilder builder = new StringBuilder(3000);
-            if (!CurrentItem.Tracking.hasArchiveInformation)
+            if (!currentItem.Tracking.hasArchiveInformation)
             {
                 builder.AppendLine("<br /><br /><br /><center><strong>ITEM HAS NO ARCHIVE INFORMATION</strong></center><br /><br /><br />");
             }
             else
             {
                 // Now, pull the list of all archived files
-                DataSet data = SobekCM_Database.Tracking_Get_History_Archives(CurrentItem.Web.ItemID, Tracer);
+                DataSet data = SobekCM_Database.Tracking_Get_History_Archives(currentItem.Web.ItemID, Tracer);
                 DataTable archiveTable = data.Tables[2];
                 DataColumn filenameColumn = archiveTable.Columns["Filename"];
                 DataColumn sizeColumn = archiveTable.Columns["Size"];
@@ -500,8 +520,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             try
             {
-                string directory = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + CurrentItem.Web.AssocFilePath;
-                string url = UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + CurrentItem.Web.AssocFilePath;
+                string directory = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + currentItem.Web.AssocFilePath;
+                string url = UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + currentItem.Web.AssocFilePath;
 
                 FileInfo[] files = (new DirectoryInfo(directory)).GetFiles();
 
@@ -529,7 +549,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
                 // Add all the page images first
-                List<abstract_TreeNode> nodes = CurrentItem.Divisions.Physical_Tree.Pages_PreOrder;
+                List<abstract_TreeNode> nodes = currentItem.Divisions.Physical_Tree.Pages_PreOrder;
                 if ((nodes != null) && (nodes.Count > 0))
                 {
                     builder.AppendLine("<span style=\"font-size:1.4em; color:#888888;\"><b>PAGE FILES</b></span><br />");
@@ -573,7 +593,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     string thisFileUpper = thisFile.System_Name.ToUpper();
                                     if (sortedFiles.ContainsKey(thisFileUpper))
                                     {
-                                        // string file = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + CurrentItem.Web.AssocFilePath + thisFile.System_Name;
+                                        // string file = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + currentItem.Web.AssocFilePath + thisFile.System_Name;
                                         Add_File_HTML(sortedFiles[thisFileUpper], builder, url, true);
                                         sortedFiles.Remove(thisFileUpper);
                                     }
@@ -585,7 +605,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 {
                                     if (sortedFiles.ContainsKey(fileName.ToUpper() + thisFileEnder))
                                     {
-                                        //string file = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + CurrentItem.Web.AssocFilePath + fileName + thisFileEnder.ToLower();
+                                        //string file = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + currentItem.Web.AssocFilePath + fileName + thisFileEnder.ToLower();
                                         Add_File_HTML(sortedFiles[fileName.ToUpper() + thisFileEnder], builder, url, true);
                                         sortedFiles.Remove(fileName.ToUpper() + thisFileEnder);
                                     }
@@ -613,7 +633,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 // Add each metadata file
                 List<string> files_handled = new List<string>();
-                foreach (string thisFile in sortedFiles.Keys.Where(ThisFile => (ThisFile.IndexOf(".METS.BAK") > 0) || (ThisFile.IndexOf(".METS.XML") > 0) || (ThisFile == "DOC.XML") || (ThisFile == "MARC.XML") || (ThisFile == "CITATION_METS.XML") || (ThisFile == CurrentItem.BibID.ToUpper() + "_" + CurrentItem.VID + ".HTML")))
+                foreach (string thisFile in sortedFiles.Keys.Where(ThisFile => (ThisFile.IndexOf(".METS.BAK") > 0) || (ThisFile.IndexOf(".METS.XML") > 0) || (ThisFile == "DOC.XML") || (ThisFile == "MARC.XML") || (ThisFile == "CITATION_METS.XML") || (ThisFile == currentItem.BibID.ToUpper() + "_" + currentItem.VID + ".HTML")))
                 {
                     files_handled.Add(thisFile);
                     Add_File_HTML(sortedFiles[thisFile], builder, url, true);
@@ -756,7 +776,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 case "HTML":
                 case "HTM":
-                    type = fullname.ToUpper() == CurrentItem.BibID.ToUpper() + "_" + CurrentItem.VID + ".HTML" ? "Static citation page" : "HTML Document";
+                    type = fullname.ToUpper() == currentItem.BibID.ToUpper() + "_" + currentItem.VID + ".HTML" ? "Static citation page" : "HTML Document";
                     break;
 
                 case "XML":
@@ -816,9 +836,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             result.AppendLine("<blockquote>");
             result.AppendLine("<table width=\"450px\">");
             result.AppendLine("<tr height=\"20px\" bgcolor=\"#7d90d5\"><td colspan=\"3\"><span style=\"color: White\"><strong> &nbsp; DIGITIZATION MILESTONES</strong></span></td></tr>");
-            if (CurrentItem.Tracking.Digital_Acquisition_Milestone.HasValue)
+            if (currentItem.Tracking.Digital_Acquisition_Milestone.HasValue)
             {
-                result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Digital Acquisition</td><td>" + CurrentItem.Tracking.Digital_Acquisition_Milestone.Value.ToShortDateString() + "</td></tr>");
+                result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Digital Acquisition</td><td>" + currentItem.Tracking.Digital_Acquisition_Milestone.Value.ToShortDateString() + "</td></tr>");
             }
             else
             {
@@ -826,9 +846,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             result.AppendLine("<tr><td></td><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
 
-            if (CurrentItem.Tracking.Image_Processing_Milestone.HasValue)
+            if (currentItem.Tracking.Image_Processing_Milestone.HasValue)
             {
-                result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Post-Acquisition Processing</td><td>" + CurrentItem.Tracking.Image_Processing_Milestone.Value.ToShortDateString() + "</td></tr>");
+                result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Post-Acquisition Processing</td><td>" + currentItem.Tracking.Image_Processing_Milestone.Value.ToShortDateString() + "</td></tr>");
             }
             else
             {
@@ -836,9 +856,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             result.AppendLine("<tr><td></td><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
 
-            if (CurrentItem.Tracking.Quality_Control_Milestone.HasValue)
+            if (currentItem.Tracking.Quality_Control_Milestone.HasValue)
             {
-                result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Quality Control Performed</td><td>" + CurrentItem.Tracking.Quality_Control_Milestone.Value.ToShortDateString() + "</td></tr>");
+                result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Quality Control Performed</td><td>" + currentItem.Tracking.Quality_Control_Milestone.Value.ToShortDateString() + "</td></tr>");
             }
             else
             {
@@ -846,9 +866,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             result.AppendLine("<tr><td></td><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
 
-            if (CurrentItem.Tracking.Online_Complete_Milestone.HasValue)
+            if (currentItem.Tracking.Online_Complete_Milestone.HasValue)
             {
-                result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Online Complete</td><td>" + CurrentItem.Tracking.Online_Complete_Milestone.Value.ToShortDateString() + "</td></tr>");
+                result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Online Complete</td><td>" + currentItem.Tracking.Online_Complete_Milestone.Value.ToShortDateString() + "</td></tr>");
             }
             else
             {
@@ -861,12 +881,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             result.AppendLine("<table width=\"450px\">");
             result.AppendLine("<tr height=\"20px\" bgcolor=\"#7d90d5\"><td colspan=\"3\"><span style=\"color: White\"><strong> &nbsp; PHYSICAL MATERIAL MILESTONES</strong></span></td></tr>");
-            if (CurrentItem.Tracking.Material_Received_Date.HasValue)
+            if (currentItem.Tracking.Material_Received_Date.HasValue)
             {
-                if (CurrentItem.Tracking.Material_Rec_Date_Estimated)
-                    result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Materials Received</td><td>" + CurrentItem.Tracking.Material_Received_Date.Value.ToShortDateString() + " (estimated) </td></tr>");
+                if (currentItem.Tracking.Material_Rec_Date_Estimated)
+                    result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Materials Received</td><td>" + currentItem.Tracking.Material_Received_Date.Value.ToShortDateString() + " (estimated) </td></tr>");
                 else
-                    result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Materials Received</td><td>" + CurrentItem.Tracking.Material_Received_Date.Value.ToShortDateString() + "</td></tr>");
+                    result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Materials Received</td><td>" + currentItem.Tracking.Material_Received_Date.Value.ToShortDateString() + "</td></tr>");
             }
             else
             {
@@ -874,9 +894,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             result.AppendLine("<tr><td></td><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
 
-            if (CurrentItem.Tracking.Disposition_Date.HasValue)
+            if (currentItem.Tracking.Disposition_Date.HasValue)
             {
-                result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Disposition Date</td><td>" + CurrentItem.Tracking.Disposition_Date.Value.ToShortDateString() + "</td></tr>");
+                result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Disposition Date</td><td>" + currentItem.Tracking.Disposition_Date.Value.ToShortDateString() + "</td></tr>");
             }
             else
             {
@@ -884,9 +904,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             result.AppendLine("<tr><td></td><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
 
-            if (CurrentItem.Tracking.Tracking_Box.Length > 0)
+            if (currentItem.Tracking.Tracking_Box.Length > 0)
             {
-                result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Tracking Box</td><td>" + CurrentItem.Tracking.Tracking_Box + "</td></tr>");
+                result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Tracking Box</td><td>" + currentItem.Tracking.Tracking_Box + "</td></tr>");
                 result.AppendLine("<tr><td></td><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
             }
 
@@ -894,20 +914,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
             result.AppendLine("<br />");
             result.AppendLine("<br />");
 
-            if ((CurrentItem.Tracking.Born_Digital) || (CurrentItem.Tracking.Disposition_Advice > 0))
+            if ((currentItem.Tracking.Born_Digital) || (currentItem.Tracking.Disposition_Advice > 0))
             {
                 result.AppendLine("<table width=\"450px\">");
                 result.AppendLine("<tr height=\"20px\" bgcolor=\"#7d90d5\"><td colspan=\"3\"><span style=\"color: White\"><strong> &nbsp; PHYSICAL MATERIAL RELATED FIELDS</strong></span></td></tr>");
-                if (CurrentItem.Tracking.Born_Digital)
+                if (currentItem.Tracking.Born_Digital)
                 {
                     result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Born Digital</td><td>&nbsp;</td></tr>");
                     result.AppendLine("<tr><td></td><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
 
                 }
 
-                if (CurrentItem.Tracking.Disposition_Advice > 0)
+                if (currentItem.Tracking.Disposition_Advice > 0)
                 {
-                    result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Disposition Advice</td><td>" + CurrentItem.Tracking.Disposition_Advice + "</td></tr>");
+                    result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Disposition Advice</td><td>" + currentItem.Tracking.Disposition_Advice + "</td></tr>");
                     result.AppendLine("<tr><td></td><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
                 }
 
@@ -918,7 +938,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             result.AppendLine("<table width=\"450px\">");
             result.AppendLine("<tr height=\"20px\" bgcolor=\"#7d90d5\"><td colspan=\"3\"><span style=\"color: White\"><strong> &nbsp; ARCHIVING MILESTONES</strong></span></td></tr>");
-            if ((!CurrentItem.Tracking.Locally_Archived) && (!CurrentItem.Tracking.Remotely_Archived))
+            if ((!currentItem.Tracking.Locally_Archived) && (!currentItem.Tracking.Remotely_Archived))
             {
                 result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>NOT ARCHIVED</td><td>&nbsp;</td></tr>");
                 result.AppendLine("<tr><td></td><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
@@ -926,14 +946,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
             else
             {
-                if (CurrentItem.Tracking.Locally_Archived)
+                if (currentItem.Tracking.Locally_Archived)
                 {
                     result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Locally Stored on CD or Tape</td><td>&nbsp;</td></tr>");
                     result.AppendLine("<tr><td></td><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");
 
                 }
 
-                if (CurrentItem.Tracking.Remotely_Archived)
+                if (currentItem.Tracking.Remotely_Archived)
                 {
                     result.AppendLine("<tr><td width=\"25px\">&nbsp;</td><td>Archived Remotely (FDA)</td><td>&nbsp;</td></tr>");
                     result.AppendLine("<tr><td></td><td bgcolor=\"#e7e7e7\" colspan=\"2\"></td></tr>");

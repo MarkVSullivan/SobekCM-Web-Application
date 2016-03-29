@@ -134,7 +134,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             if (Tracer != null)
             {
-                Tracer.Add_Trace("Citation_Standard_ItemViewer.Write_Main_Viewer_Section", "Write the citation information directly to the output stream");
+                Tracer.Add_Trace("Metadata_Links_ItemViewer.Write_Main_Viewer_Section", "Write the citation information directly to the output stream");
             }
 
             // Determine if user can edit
@@ -145,7 +145,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Add the HTML for the citation
-            Output.WriteLine("        <!-- CITATION ITEM VIEWER OUTPUT -->");
+            Output.WriteLine("        <!-- METADATA LINKS ITEM VIEWER OUTPUT -->");
             Output.WriteLine("        <td>");
 
             // If this is DARK and the user cannot edit and the flag is not set to show citation, show nothing here

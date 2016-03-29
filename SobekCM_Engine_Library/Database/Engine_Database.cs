@@ -266,15 +266,14 @@ namespace SobekCM.Engine_Library.Database
                 while (readerWrapper.Reader.Read())
                 {
                     // Build this item information
-                    Item_Monthly_Usage thisItem = new Item_Monthly_Usage
-                    {
-                        Year = readerWrapper.Reader.GetInt32(0), 
-                        Month = readerWrapper.Reader.GetInt32(1), 
-                        Title_Views = readerWrapper.Reader.GetInt32(2), 
-                        Title_Visitors = readerWrapper.Reader.GetInt32(3), 
-                        Views = readerWrapper.Reader.GetInt32(4), 
-                        Visitors = readerWrapper.Reader.GetInt32(5)
-                    };
+                    Item_Monthly_Usage thisItem = new Item_Monthly_Usage();
+
+                    thisItem.Year = readerWrapper.Reader.GetInt16(0);
+                    thisItem.Month = readerWrapper.Reader.GetInt16(1);
+                    thisItem.Title_Views = readerWrapper.Reader.GetInt32(2);
+                    thisItem.Title_Visitors = readerWrapper.Reader.GetInt32(3);
+                    thisItem.Views = readerWrapper.Reader.GetInt32(4);
+                    thisItem.Visitors = readerWrapper.Reader.GetInt32(5);
 
                     // Add this item to the list to return
                     returnValue.Add(thisItem);

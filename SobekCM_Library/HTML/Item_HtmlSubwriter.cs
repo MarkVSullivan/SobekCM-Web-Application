@@ -117,7 +117,8 @@ namespace SobekCM.Library.HTML
 
             // Try to get the current item
             currentItem = SobekEngineClient.Items.Get_Item_Brief(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Current_Mode.VID, true, RequestSpecificValues.Tracer);
-            
+            RequestSpecificValues.Current_Mode.VID = currentItem.VID;
+
             // Ensure the UI portion has been configured for this user interface
             ItemViewer_Factory.Configure_Brief_Item_Viewers(currentItem);
 
@@ -1096,14 +1097,18 @@ namespace SobekCM.Library.HTML
             }
             else
             {
-                //if ((pageViewer == null) || (pageViewer.Viewer_Width < 0))
-                //{
-                    Output.WriteLine("<table id=\"sbkIsw_DocumentDisplay2\" >");
-                //}
-                //else
-                //{
-                //    Output.WriteLine("<table id=\"sbkIsw_DocumentDisplay\" style=\"width:" + pageViewer.Viewer_Width + "px;\" >");
-                //}
+                // Start the table
+                Output.Write("<table class=\"sbkIsw_DocumentDisplay2\" ");
+
+                // Was an ID included for this viewer?
+                if ((pageViewer != null) && (!String.IsNullOrEmpty(pageViewer.ViewerBox_CssId)))
+                    Output.Write("id=\"" + pageViewer.ViewerBox_CssId + "\" ");
+
+                // Were there inline styles as well?
+                if ((pageViewer != null) && (!String.IsNullOrEmpty(pageViewer.ViewerBox_InlineStyle)))
+                    Output.Write("style=\"" + pageViewer.ViewerBox_InlineStyle + "\" ");
+
+                Output.WriteLine(">");
 
                 // In this format, add the DARK and RESTRICTED information
                 if (currentItem.Behaviors.Dark_Flag)

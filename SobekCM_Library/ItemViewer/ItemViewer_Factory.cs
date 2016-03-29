@@ -176,7 +176,7 @@ namespace SobekCM.Library.ItemViewer
                         orderValue += .001f;
 
                     // Add this to the sort list
-                    mgmtOrder[thisViewerConfig.ManagementOrder] = thisViewerConfig;
+                    mgmtOrder[orderValue] = thisViewerConfig;
                 }
             }
             
@@ -263,7 +263,7 @@ namespace SobekCM.Library.ItemViewer
                 case "SobekCM.Library.ItemViewer.Viewers.Text_ItemViewer_Prototyper":
                     return new Text_ItemViewer_Prototyper();
 
-                case "SobekCM.Library.ItemViewer.Viewers.Text_Serach_ItemViewer_Prototyper":
+                case "SobekCM.Library.ItemViewer.Viewers.Text_Search_ItemViewer_Prototyper":
                     return new Text_Search_ItemViewer_Prototyper();
 
                 case "SobekCM.Library.ItemViewer.Viewers.TrackingSheet_ItemViewer_Prototyper":

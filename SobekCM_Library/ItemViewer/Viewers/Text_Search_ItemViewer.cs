@@ -46,7 +46,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public bool Include_Viewer(BriefItemInfo BriefItem)
         {
             // This should always be included (although it won't be accessible or shown to everyone)
-            return BriefItem.Behaviors.;
+            return BriefItem.Behaviors.Full_Text_Searchable;
         }
 
         /// <summary> Flag indicates if this viewer should be override on checkout </summary>

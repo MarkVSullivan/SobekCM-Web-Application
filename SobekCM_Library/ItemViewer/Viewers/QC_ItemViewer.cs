@@ -9,14 +9,19 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.FileSystems;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Engine_Library.Items;
 using SobekCM.Library.Database;
+using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
@@ -112,16 +117,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
         public iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
         {
-            return new QC_ItemViewer(CurrentItem, CurrentUser, CurrentRequest);
+            return new QC_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer );
         }
     }
 
     /// <summary> Quality control tool item viewer allows an authenticated user to perform quality control and 
     /// create the structural metadata ( page names and divisions ) for an online digital resource </summary>
-    /// <remarks> This class extends the abstract class <see cref="abstractNoPaginationItemViewer"/> and implements the 
+    /// <remarks> This class implements the 
     /// <see cref="iItemViewer" /> interface. </remarks>
-    public class QC_ItemViewer : abstractNoPaginationItemViewer
+    public class QC_ItemViewer : iItemViewer
     {
+
+        /// <summary> Current digital resource item to display </summary>
+        private BriefItemInfo BriefItem;
+
+        /// <summary> Current navigation information for this individual HTML request </summary>
+        private Navigation_Object CurrentRequest;
+
+        /// <summary> Current user, which can help determine how things should display </summary>
+        private User_Object CurrentUser;
+
+
         private int thumbnailsPerPage;
         private int thumbnailSize;
         private int autonumber_mode_from_form; //Mode 0: autonumber all pages of current div; Mode 1: all pages of document
@@ -165,20 +181,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="BriefItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
-        public QC_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest)
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public QC_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer )
         {
             // Save the arguments for use later
             this.BriefItem = BriefItem;
             this.CurrentUser = CurrentUser;
             this.CurrentRequest = CurrentRequest;
-
-            // Set the behavior properties to the empy behaviors ( in the base class )
-            Behaviors = EmptyBehaviors;
-
-            //Assign the current resource object to qc_item
-            qc_item = Current_Object;
-            //Save to the User's session
-            HttpContext.Current.Session[BriefItem.BibID + "_" + BriefItem.VID + " QC Work"] = qc_item;
 
             // If there is no user, send to the login
             if (CurrentUser == null)
@@ -189,6 +198,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 return;
             }
 
+
             // If the user cannot edit this item, go back
             if (!CurrentUser.Can_Edit_This_Item(BriefItem.BibID, BriefItem.Type, BriefItem.Behaviors.Source_Institution_Aggregation, BriefItem.Behaviors.Holding_Location_Aggregation, BriefItem.Behaviors.Aggregation_Code_List))
             {
@@ -198,13 +208,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             //If there are no pages for this item, redirect to the image upload screen
-            if (qc_item.Web.Static_PageCount == 0)
+            if ((BriefItem.Images == null ) || ( BriefItem.Images.Count == 0 ))
             {
                 CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
                 CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Page_Images_Management;
                 UrlWriterHelper.Redirect(CurrentRequest);
                 return;
             }
+
 
             // Get the links for the METS
             string greenstoneLocation = BriefItem.Web.Source_URL + "/";
@@ -213,7 +224,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
             if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0))
             {
-                complete_mets = CurrentRequest.Base_URL + "files/" + qc_item.BibID + "/" + qc_item.VID + "/" + qc_item.BibID + "_" + qc_item.VID + ".mets.xml";
+                complete_mets = CurrentRequest.Base_URL + "files/" + BriefItem.BibID + "/" + BriefItem.VID + "/" + BriefItem.BibID + "_" + BriefItem.VID + ".mets.xml";
             }
 
 
@@ -221,9 +232,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // If the QC work is already in process, we may find a temporary METS file to read.
 
             // Determine the in process directory for this
-            userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location + "\\" + CurrentUser.UserName.Replace(".", "").Replace("@", "") + "\\qcwork\\" + qc_item.METS_Header.ObjectID;
+            userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location + "\\" + CurrentUser.UserName.Replace(".", "").Replace("@", "") + "\\qcwork\\" + BriefItem.BibID + "_" + BriefItem.VID;
             if (CurrentUser.ShibbID.Trim().Length > 0)
-                userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location + "\\" + CurrentUser.ShibbID + "\\qcwork\\" + qc_item.METS_Header.ObjectID;
+                userInProcessDirectory = UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location + "\\" + CurrentUser.ShibbID + "\\qcwork\\" + BriefItem.BibID + "_" + BriefItem.VID;
 
             // Make the folder for the user in process directory
             if (!Directory.Exists(userInProcessDirectory))
@@ -236,23 +247,36 @@ namespace SobekCM.Library.ItemViewer.Viewers
             qc_item = HttpContext.Current.Session[BriefItem.BibID + "_" + BriefItem.VID + " QC Work"] as SobekCM_Item;
             if (qc_item == null)
             {
+                //// Try to pull the full item
+                //Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Try to pull this sobek complete item");
+                //qc_item = SobekEngineClient.Items.Get_Sobek_Item(BriefItem.BibID, BriefItem.VID, CurrentUser.UserID, Tracer);
+                //if (qc_item == null)
+                //{
+                //    Tracer.Add_Trace("Edit_Item_Behaviors_MySobekViewer.Constructor", "Unable to build complete item");
+                //    CurrentRequest.Mode = Display_Mode_Enum.Error;
+                //    CurrentRequest.Error_Message = "Invalid Request : Unable to build complete item";
+                //    return;
+                //}
+
+                ////Save to the User's session
+                //HttpContext.Current.Session[BriefItem.BibID + "_" + BriefItem.VID + " QC Work"] = qc_item;
 
                 // Is there a temporary METS for this item, which is not expired?
                 if ((File.Exists(metsInProcessFile)) &&
                     (File.GetLastWriteTime(metsInProcessFile).Subtract(DateTime.Now).Hours < 8))
                 {
                     // Read the temporary METS file, and use that to build the qc_item
-                    qc_item = SobekCM_Item_Factory.Get_Item(metsInProcessFile, BriefItem.BibID, BriefItem.VID, null, null, null);
-                    qc_item.Source_Directory = Current_Object.Source_Directory;
+                    qc_item = SobekCM_Item_Factory.Get_Item(metsInProcessFile, BriefItem.BibID, BriefItem.VID, null, null, Tracer);
+                    qc_item.Source_Directory = SobekFileSystem.Resource_Network_Uri(BriefItem);
                 }
                 else
                 {
                     // Just read the normal otherwise ( if we had the ability to deep copy a SobekCM_Item, we could skip this )
-                    qc_item = SobekCM_Item_Factory.Get_Item(Current_Object.BibID, Current_Object.VID, null, null, null);
+                    qc_item = SobekCM_Item_Factory.Get_Item(BriefItem.BibID, BriefItem.VID, null, null, Tracer);
                 }
 
                 // Save to the session, so it is easily available for next time
-                HttpContext.Current.Session[Current_Object.BibID + "_" + Current_Object.VID + " QC Work"] = qc_item;
+                HttpContext.Current.Session[BriefItem.BibID + "_" + BriefItem.VID + " QC Work"] = qc_item;
             }
 
 
@@ -261,6 +285,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 throw new ApplicationException("Unable to retrieve the item for Quality Control in QC_ItemViewer.Constructor");
             }
+
+            // perform pre-display work
+            Perform_PreDisplay_Work(Tracer);
 
             // If there are NO pages, then send this to the upload
             if (qc_item.Divisions.Page_Count == 0)
@@ -399,7 +426,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             //Get the list of associated errors for this item from the database
-            int itemID = Resource_Object.Database.SobekCM_Database.Get_ItemID(Current_Object.BibID, Current_Object.VID);
+            int itemID = Resource_Object.Database.SobekCM_Database.Get_ItemID(BriefItem.BibID, BriefItem.VID);
             Get_QC_Errors(itemID);
 
 
@@ -725,10 +752,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> This provides an opportunity for the viewer to perform any pre-display work
         /// which is necessary before entering any of the rendering portions </summary>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Perform_PreDisplay_Work(Custom_Tracer Tracer)
+        public void Perform_PreDisplay_Work(Custom_Tracer Tracer)
         {
             //Get the item details from the DB
-            Item_Detail = Engine_Database.Get_Item_Information(CurrentItem.BibID, CurrentItem.VID, Tracer);
+            Item_Detail = Engine_Database.Get_Item_Information(BriefItem.BibID, BriefItem.VID, Tracer);
 
             if (Item_Detail != null)
             {
@@ -816,9 +843,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     recurse_through_and_find_child_parent_relationship((Division_TreeNode)rootNode);
                 }
             }
-
-            // Save the qc item as the main current item
-            CurrentItem = qc_item;
         }
 
         private void recurse_through_and_find_child_parent_relationship(Division_TreeNode ParentNode)
@@ -1551,15 +1575,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
         /// <value> This always returns the value 'sbkDiv_Viewer' </value>
-        public override string ViewerBox_CssId
+        public string ViewerBox_CssId
         {
             get { return "sbkDiv_Viewer"; }
         }
 
+        public string ViewerBox_InlineStyle { get; private set; }
+
         /// <summary> Write the item viewer main section as HTML directly to the HTTP output stream </summary>
         /// <param name="Output"> Response stream for the item viewer to write directly to </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
+        public void Write_Main_Viewer_Section(TextWriter Output, Custom_Tracer Tracer)
         {
             if (Tracer != null)
             {
@@ -1771,7 +1797,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Check that the thumbnail exists (TODO:  cache this so it only happens once)
                 if (thumbnail_filename.Length > 0)
                 {
-                    string thumbnail_check = CurrentItem.Source_Directory + "\\" + thumbnail_filename;
+                    string thumbnail_check = qc_item.Source_Directory + "\\" + thumbnail_filename;
                     if (!File.Exists(thumbnail_check))
                     {
                         thumbnail_filename = String.Empty;
@@ -1792,7 +1818,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     //Check that the JPEG image exists
                     if (filename.Length > 0)
                     {
-                        string filename_check = CurrentItem.Source_Directory + "\\" + filename;
+                        string filename_check = qc_item.Source_Directory + "\\" + filename;
                         if (!File.Exists(filename_check))
                         {
                             filename = String.Empty;
@@ -2003,7 +2029,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Add the text box for entering the name of this page
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td class=\"sbkQc_PaginationText\">" + pagination_text + "</td>");
-                Output.WriteLine("      <td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + Server.HtmlEncode(thisPage.Label) + "\" onchange=\"PaginationTextChanged(this.id);\"></input></td>");
+                Output.WriteLine("      <td><input type=\"text\" id=\"textbox" + page_index + "\" name=\"textbox" + page_index + "\" class=\"" + pagination_box + "\" value=\"" + HttpUtility.HtmlEncode(thisPage.Label) + "\" onchange=\"PaginationTextChanged(this.id);\"></input></td>");
                 Output.WriteLine("    </tr>");
 
                 // Was this a new parent?
@@ -2308,7 +2334,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Write any additional values within the HTML Head of the final served page </summary>
         /// <param name="Output"> Output stream currently within the HTML head tags </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        public void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Sobekcm_Qc_Css + "\" /> ");
             Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Jquery_Ui_Css + "\" />");
@@ -2324,7 +2350,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Gets the collection of body attributes to be included 
         /// within the HTML body tag (usually to add events to the body) </summary>
         /// <param name="Body_Attributes"> List of body attributes to be included </param>
-        public override void Add_ViewerSpecific_Body_Attributes(List<Tuple<string, string>> Body_Attributes)
+        public void Add_ViewerSpecific_Body_Attributes(List<Tuple<string, string>> Body_Attributes)
         {
             Body_Attributes.Clear();
             Body_Attributes.Add(new Tuple<string, string>("onload", "qc_set_fullscreen();"));
@@ -2332,11 +2358,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         }
 
+        public void Write_Left_Nav_Menu_Section(TextWriter Output, Custom_Tracer Tracer)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary> Allows controls to be added directory to a place holder, rather than just writing to the output HTML stream </summary>
         /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the bulk of the item viewer's output is displayed</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <remarks> This method does nothing, since nothing is added to the place holder as a control for this item viewer </remarks>
-        public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
+        public void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             // Do nothing
         }
@@ -2346,7 +2377,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Gets the flag that indicates if the page selector should be shown </summary>
         /// <value> This is a single page viewer, so this property always returns NONE</value>
-        public override ItemViewer_PageSelector_Type_Enum Page_Selector
+        public ItemViewer_PageSelector_Type_Enum Page_Selector
         {
             get
             {
@@ -2357,7 +2388,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Gets the number of pages for this viewer </summary>
         /// <remarks> If there are more than 100 related images, then the thumbnails are paged at 60 a page</remarks>
         ///<remarks>Edit: The default number of items per page is 50. If a diferent number is selected by the user, this is fetched from the query string</remarks>
-        public override int PageCount
+        public int PageCount
         {
             get
             {
@@ -2365,9 +2396,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
         }
 
+        public int Current_Page { get; private set; }
+
 
         /// <summary> Gets the url to go to the first page of thumbnails </summary>
-        public override string First_Page_URL
+        public string First_Page_URL
         {
             get
             {
@@ -2388,7 +2421,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Gets the url to go to the preivous page of thumbnails </summary>
-        public override string Previous_Page_URL
+        public string Previous_Page_URL
         {
             get
             {
@@ -2397,7 +2430,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Gets the url to go to the next page of thumbnails </summary>
-        public override string Next_Page_URL
+        public string Next_Page_URL
         {
             get
             {
@@ -2407,7 +2440,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         }
 
         /// <summary> Gets the url to go to the last page of thumbnails </summary>
-        public override string Last_Page_URL
+        public string Last_Page_URL
         {
             get
             {
@@ -2418,7 +2451,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
         /// <summary> Gets the names to show in the Go To combo box </summary>
-        public override string[] Go_To_Names
+        public string[] Go_To_Names
         {
             get
             {
@@ -2441,7 +2474,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// This nav row adds the different thumbnail viewing options(# of thumbnails, size of thumbnails, list of all related item thumbnails)</summary>
         /// <param name="Output"></param>
         /// <param name="Tracer"></param>
-        public override void Write_Top_Additional_Navigation_Row(TextWriter Output, Custom_Tracer Tracer)
+        public void Write_Top_Additional_Navigation_Row(TextWriter Output, Custom_Tracer Tracer)
         {
             //Start building the top nav bar
             Output.WriteLine("\t\t<!-- QUALITY CONTROL VIEWER TOP NAV ROW -->");
@@ -2787,7 +2820,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Gets the collection of special behaviors which this item viewer
         /// requests from the main HTML subwriter. </summary>
-        public override List<HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors
+        public List<HtmlSubwriter_Behaviors_Enum> ItemViewer_Behaviors
         {
             get
             {

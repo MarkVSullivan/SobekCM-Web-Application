@@ -95,6 +95,12 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(13)]
         public List<string> Wordmarks { get; set; }
 
+        /// <summary> Flag indicates if this item is full text searchable </summary>
+        [DataMember(EmitDefaultValue = false, Name = "textSearchable")]
+        [XmlAttribute("textSearchable")]
+        [ProtoMember(14)]
+        public bool Full_Text_Searchable { get; set; }
+
         /// <summary> Constructor for a new instance of the BriefItem_Behaviors class </summary>
         public BriefItem_Behaviors()
         {

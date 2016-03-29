@@ -14,13 +14,13 @@ namespace SobekCM.Core.Items
         [DataMember(Name = "year")]
         [XmlAttribute("year")]
         [ProtoMember(1)]
-        public int Year { get; set; }
+        public short Year { get; set; }
 
         /// <summary> Month for which these statistics apply </summary>
         [DataMember(Name = "month")]
         [XmlAttribute("month")]
         [ProtoMember(2)]
-        public int Month { get; set; }
+        public short Month { get; set; }
 
         /// <summary> Number of views at the title level for this year/month </summary>
         [DataMember(Name = "titleViews")]
@@ -59,7 +59,7 @@ namespace SobekCM.Core.Items
         /// <summary> Constructor for a new instance of the Item_Monthly_Usage class </summary>
         /// <param name="Year"> Year for which these statistics apply </param>
         /// <param name="Month"> Month for which these statistics apply </param>
-        public Item_Monthly_Usage( int Year, int Month )
+        public Item_Monthly_Usage(short Year, short Month)
         {
             this.Year = Year;
             this.Month = Month;

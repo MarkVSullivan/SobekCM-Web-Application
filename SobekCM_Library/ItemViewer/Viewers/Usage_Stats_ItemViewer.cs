@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.Client;
+using SobekCM.Core.Items;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Database;
@@ -195,18 +197,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             int hits = 0;
             int sessions = 0;
-            int jpeg_views = 0;
-            int zoom_views = 0;
-            int thumb_views = 0;
-            int flash_views = 0;
-            int google_map_views = 0;
-            int download_views = 0;
-            int citation_views = 0;
-            int text_search_views = 0;
-            int static_views = 0;
 
             // Pull the item statistics
-            DataSet stats = null; //Engine_Database.Get_Item_Statistics_History(BriefItem.BibID, BriefItem.VID, Tracer);
+            List<Item_Monthly_Usage> stats = SobekEngineClient.Items.Get_Item_Statistics_History(BriefItem.BibID, BriefItem.VID, Tracer);
 
             StringBuilder builder = new StringBuilder(2000);
 
@@ -217,135 +210,47 @@ namespace SobekCM.Library.ItemViewer.Viewers
             builder.AppendLine("      <th style=\"width:120px\">Date</th>");
             builder.AppendLine("      <th style=\"width:90px\">Views</th>");
             builder.AppendLine("      <th style=\"width:90px\">Visits</th>");
-            builder.AppendLine("      <th style=\"width:90px\">JPEG<br />Views</th>");
-            builder.AppendLine("      <th style=\"width:90px\">Zoomable<br />Views</th>");
-            builder.AppendLine("      <th style=\"width:90px\">Citation<br />Views</th>");
-            builder.AppendLine("      <th style=\"width:90px\">Thumbnail<br />Views</th>");
-            builder.AppendLine("      <th style=\"width:90px\">Text<br />Searches</th>");
-            builder.AppendLine("      <th style=\"width:90px\">Flash<br />Views</th>");
-            builder.AppendLine("      <th style=\"width:90px\">Map<br />Views</th>");
-            builder.AppendLine("      <th style=\"width:90px\">Download<br />Views</th>");
-            builder.AppendLine("      <th style=\"width:90px\">Static<br />Views</th>");
             builder.AppendLine("    </tr>");
 
-            const int COLUMNS = 12;
-            string last_year = String.Empty;
+            const int COLUMNS = 3;
+            int last_year = -1;
             if (stats != null)
             {
-                foreach (DataRow thisRow in stats.Tables[1].Rows)
+                foreach (Item_Monthly_Usage thisRow in stats)
                 {
-                    if (thisRow["Year"].ToString() != last_year)
+                    if ( thisRow.Year != last_year)
                     {
-                        builder.AppendLine("    <tr><td class=\"sbkCiv_StatsTableYearRow\" colspan=\"" + COLUMNS + "\">" + thisRow["Year"] + " STATISTICS</td></tr>");
-                        last_year = thisRow["Year"].ToString();
+                        builder.AppendLine("    <tr><td class=\"sbkCiv_StatsTableYearRow\" colspan=\"" + COLUMNS + "\">" + thisRow.Year + " STATISTICS</td></tr>");
+                        last_year = thisRow.Year;
                     }
                     else
                     {
                         builder.AppendLine("    <tr><td class=\"sbkCiv_StatsTableRowSeperator\" colspan=\"" + COLUMNS + "\"></td></tr>");
                     }
                     builder.AppendLine("    <tr>");
-                    builder.AppendLine("      <td style=\"text-align: left\">" + Month_From_Int(Convert.ToInt32(thisRow["Month"])) + " " + thisRow["Year"] + "</td>");
+                    builder.AppendLine("      <td style=\"text-align: left\">" + Month_From_Int(thisRow.Month) + " " + thisRow.Year + "</td>");
 
-                    if (thisRow[5] != DBNull.Value)
+                    if (( !BriefItem.Web.Siblings.HasValue ) || ( BriefItem.Web.Siblings.Value <= 1))
                     {
-                        hits += Convert.ToInt32(thisRow[5]);
-                        builder.AppendLine("      <td>" + thisRow[5] + "</td>");
-                    }
-                    else
-                    {
-                        builder.AppendLine("      <td>0</td>");
-                    }
+                        // Show the views
+                        int total_hits = thisRow.Views + thisRow.Title_Views;
+                        hits += total_hits;
+                        builder.AppendLine("      <td>" + total_hits + "</td>");
 
-                    if (thisRow[6] != DBNull.Value)
-                    {
-                        sessions += Convert.ToInt32(thisRow[6]);
-                        builder.AppendLine("      <td>" + thisRow[6] + "</td>");
+                        // Show the visits
+                        int total_sessions = thisRow.Title_Visitors + thisRow.Visitors;
+                        sessions += total_sessions;
+                        builder.AppendLine("      <td>" + total_sessions + "</td>");
                     }
                     else
                     {
-                        builder.AppendLine("      <td>0</td>");
-                    }
+                        // Show the views
+                        hits += thisRow.Views;
+                        builder.AppendLine("      <td>" + thisRow.Views + "</td>");
 
-                    if (thisRow[7] != DBNull.Value)
-                    {
-                        jpeg_views += Convert.ToInt32(thisRow[10]);
-                        builder.AppendLine("      <td>" + thisRow[7] + "</td>");
-                    }
-                    else
-                    {
-                        builder.AppendLine("      <td>0</td>");
-                    }
-                    if (thisRow[8] != DBNull.Value)
-                    {
-                        zoom_views += Convert.ToInt32(thisRow[8]);
-                        builder.AppendLine("      <td>" + thisRow[8] + "</td>");
-                    }
-                    else
-                    {
-                        builder.AppendLine("      <td>0</td>");
-                    }
-                    if (thisRow[9] != DBNull.Value)
-                    {
-                        citation_views += Convert.ToInt32(thisRow[9]);
-                        builder.AppendLine("      <td>" + thisRow[9] + "</td>");
-                    }
-                    else
-                    {
-                        builder.AppendLine("      <td>0</td>");
-                    }
-                    if (thisRow[10] != DBNull.Value)
-                    {
-                        thumb_views += Convert.ToInt32(thisRow[10]);
-                        builder.AppendLine("      <td>" + thisRow[10] + "</td>");
-                    }
-                    else
-                    {
-                        builder.AppendLine("      <td>0</td>");
-                    }
-                    if (thisRow[11] != DBNull.Value)
-                    {
-                        text_search_views += Convert.ToInt32(thisRow[11]);
-                        builder.AppendLine("      <td>" + thisRow[11] + "</td>");
-                    }
-                    else
-                    {
-                        builder.AppendLine("      <td>0</td>");
-                    }
-                    if (thisRow[12] != DBNull.Value)
-                    {
-                        flash_views += Convert.ToInt32(thisRow[12]);
-                        builder.AppendLine("      <td>" + thisRow[12] + "</td>");
-                    }
-                    else
-                    {
-                        builder.AppendLine("      <td>0</td>");
-                    }
-                    if (thisRow[13] != DBNull.Value)
-                    {
-                        google_map_views += Convert.ToInt32(thisRow[13]);
-                        builder.AppendLine("      <td>" + thisRow[13] + "</td>");
-                    }
-                    else
-                    {
-                        builder.AppendLine("      <td>0</td>");
-                    }
-                    if (thisRow[14] != DBNull.Value)
-                    {
-                        download_views += Convert.ToInt32(thisRow[14]);
-                        builder.AppendLine("      <td>" + thisRow[14] + "</td>");
-                    }
-                    else
-                    {
-                        builder.AppendLine("      <td>0</td>");
-                    }
-                    if (thisRow[15] != DBNull.Value)
-                    {
-                        static_views += Convert.ToInt32(thisRow[15]);
-                        builder.AppendLine("      <td>" + thisRow[15] + "</td>");
-                    }
-                    else
-                    {
-                        builder.AppendLine("      <td>0</td>");
+                        // Show the visits
+                        sessions += thisRow.Visitors;
+                        builder.AppendLine("      <td>" + thisRow.Visitors + "</td>");
                     }
                     builder.AppendLine("    </tr>");
                 }
@@ -355,15 +260,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 builder.AppendLine("      <td style=\"text-align:left\">TOTAL</td>");
                 builder.AppendLine("      <td>" + hits + "</td>");
                 builder.AppendLine("      <td>" + sessions + "</td>");
-                builder.AppendLine("      <td>" + jpeg_views + "</td>");
-                builder.AppendLine("      <td>" + zoom_views + "</td>");
-                builder.AppendLine("      <td>" + citation_views + "</td>");
-                builder.AppendLine("      <td>" + thumb_views + "</td>");
-                builder.AppendLine("      <td>" + text_search_views + "</td>");
-                builder.AppendLine("      <td>" + flash_views + "</td>");
-                builder.AppendLine("      <td>" + google_map_views + "</td>");
-                builder.AppendLine("      <td>" + download_views + "</td>");
-                builder.AppendLine("      <td>" + static_views + "</td>");
                 builder.AppendLine("    </tr>");
                 builder.AppendLine("  </table>");
                 builder.AppendLine("  <br />");

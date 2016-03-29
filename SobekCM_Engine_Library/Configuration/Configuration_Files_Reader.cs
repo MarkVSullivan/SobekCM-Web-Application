@@ -2367,7 +2367,7 @@ namespace SobekCM.Engine_Library.Configuration
                             {
                                 // Pull the attributes, basic info about this field set
                                 string fieldSetId = ReaderXml.Value.Trim();
-                                string defaultHeading = fieldSetId;
+                                string defaultHeading = null;
                                 string order = "append";
                                 string afterid = "";
                                 if (ReaderXml.MoveToAttribute("Heading"))

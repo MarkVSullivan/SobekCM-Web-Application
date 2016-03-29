@@ -32,8 +32,8 @@
 .sbkQc_NamedDivisionText { color: #3c3c3c;text-align: left; }
 
 .sbkQc_Thumbnail_Small { border: 1px solid  #a9a9a9;position: relative;}
-.sbkQc_Thumbnail_Medium { border: 1px solid  #a9a9a9; width: 315px; height: 50%;position: relative;}
-.sbkQc_Thumbnail_Large { border: 1px solid  #a9a9a9; width: 472.5px; height: 75%;position: relative;  }
+.sbkQc_Thumbnail_Medium { border: 1px solid  #a9a9a9; max-width: 315px; position: relative;}
+.sbkQc_Thumbnail_Large { border: 1px solid  #a9a9a9; max-width: 472.5px; position: relative;  }
 .sbkQc_Thumbnail_Full { border: 1px solid  #a9a9a9;position: relative;}
 
 .sbkQc_DivisionBox_Small { border: 1px solid  #a9a9a9;color: #3c3c3c;width: 110px; }

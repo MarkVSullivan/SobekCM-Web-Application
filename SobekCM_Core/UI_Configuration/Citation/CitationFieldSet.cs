@@ -23,7 +23,7 @@ namespace SobekCM.Core.UI_Configuration.Citation
         public string ID { get; set; }
 
         /// <summary> Default heading for this field set </summary>
-        [DataMember(Name = "heading")]
+        [DataMember(Name = "heading", EmitDefaultValue = false)]
         [XmlAttribute("heading")]
         [ProtoMember(2)]
         public string Heading { get; set; }

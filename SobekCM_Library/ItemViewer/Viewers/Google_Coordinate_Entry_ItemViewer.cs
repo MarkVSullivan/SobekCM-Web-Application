@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Settings;
 using SobekCM.Core.UI_Configuration;
@@ -110,7 +112,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
         public iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
         {
-            return new Google_Coordinate_Entry_ItemViewer(CurrentItem, CurrentUser, CurrentRequest);
+            return new Google_Coordinate_Entry_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer );
         }
     }
 
@@ -134,7 +136,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="BriefItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
-        public Google_Coordinate_Entry_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest)
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public Google_Coordinate_Entry_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer )
         {
             // Save the arguments for use later
             this.BriefItem = BriefItem;
@@ -143,7 +146,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             try
             {
-                currentItem = Current_Item;
+
+                // Get the full SobekCM item
+                Tracer.Add_Trace("Google_Coordinate_Entry_ItemViewer.Constructor", "Try to pull this sobek complete item");
+                currentItem = SobekEngineClient.Items.Get_Sobek_Item(CurrentRequest.BibID, CurrentRequest.VID, Tracer);
+                if (currentItem == null)
+                {
+                    Tracer.Add_Trace("Google_Coordinate_Entry_ItemViewer.Constructor", "Unable to build complete item");
+                    CurrentRequest.Mode = Display_Mode_Enum.Error;
+                    CurrentRequest.Error_Message = "Invalid Request : Unable to build complete item";
+                    return;
+                }
 
 
                 //string resource_directory = UI_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + CurrentItem.Web.AssocFilePath;
@@ -1567,6 +1580,29 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public override void Add_Main_Viewer_Section(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             // Do nothing
+        }
+
+        /// <summary> Converts a basic string into an XML-safe string </summary>
+        /// <param name="Element"> Element data to convert </param>
+        /// <returns> Data converted into an XML-safe string</returns>
+        private static string Convert_String_To_XML_Safe(string Element)
+        {
+            if (Element == null)
+                return string.Empty;
+
+            string xml_safe = Element;
+            int i = xml_safe.IndexOf("&");
+            while (i >= 0)
+            {
+                if ((i != xml_safe.IndexOf("&amp;", i)) && (i != xml_safe.IndexOf("&quot;", i)) &&
+                    (i != xml_safe.IndexOf("&gt;", i)) && (i != xml_safe.IndexOf("&lt;", i)))
+                {
+                    xml_safe = xml_safe.Substring(0, i + 1) + "amp;" + xml_safe.Substring(i + 1);
+                }
+
+                i = xml_safe.IndexOf("&", i + 1);
+            }
+            return xml_safe.Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;");
         }
     }
 }
