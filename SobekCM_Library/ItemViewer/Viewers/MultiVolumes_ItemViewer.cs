@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
+using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.Items;
@@ -113,7 +116,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
         public iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
         {
-            return new MultiVolumes_ItemViewer(CurrentItem, CurrentUser, CurrentRequest);
+            return new MultiVolumes_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer);
         }
     }
 
@@ -132,16 +135,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
         // Empty list of behaviors, prevents an empty set from having to be created over and over
         private static readonly List<HtmlSubwriter_Behaviors_Enum> emptyBehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
 
-        /// <summary> Sets the list of all the items within this title to be displayed </summary>
-        public SobekCM_Items_In_Title Item_List { private get; set; }
+        private readonly List<Item_Hierarchy_Details> allVolumes;
 
         /// <summary> Constructor for a new instance of the MultiVolumes_ItemViewer class, used to display
         ///  the volumes (VIDs) that are associated with a single BibID </summary>
         /// <param name="BriefItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
-        public MultiVolumes_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest)
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public MultiVolumes_ItemViewer(BriefItemInfo BriefItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
         {
+            Tracer.Add_Trace("MultiVolumes_ItemViewer.Constructor");
+
             // Save the arguments for use later
             briefItem = BriefItem;
             currentUser = CurrentUser;
@@ -149,13 +154,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Determine the citation type
             viewType = View_Type.Tree;
-            switch (currentRequest.ViewerCode)
+            if (( currentRequest.Remaining_Url_Segments != null ) && ( currentRequest.Remaining_Url_Segments.Length > 0 ))
+                switch (currentRequest.Remaining_Url_Segments[0])
             {
-                case "allvolumes2":
+                case "2":
                     viewType = View_Type.Thumbnail;
                     break;
 
-                case "allvolumes3":
+                case "3":
                     viewType = View_Type.List;
                     break;
             }
@@ -193,12 +199,27 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 issues_type = AERIAL_TEXT;
             }
 
+            // Get the list of other volumes
+            Tracer.Add_Trace("MultiVolumes_ItemViewer.Constructor", "Get the list of items under " + BriefItem.BibID);
+            try
+            {
+                allVolumes = SobekEngineClient.Items.Get_Multiple_Volumes(BriefItem.BibID, Tracer);
+            }
+            catch (Exception ee)
+            {
+                Tracer.Add_Trace("Tracking_ItemViewer.Constructor", "Unable to pull volumes under " + BriefItem.BibID);
+                CurrentRequest.Mode = Display_Mode_Enum.Error;
+                CurrentRequest.Error_Message = "Internal Error : Unable to pull volumes under " + BriefItem.BibID;
+                return;
+            }
+
+
             // If the view type is the thumbnails (where we only show PUBLIC and RESTRICTED items) 
             // need a count of the number of public items
-            thumbnail_count = 1;
+            thumbnail_count = 0;
             if (viewType == View_Type.Thumbnail)
             {
-                thumbnail_count = Item_List.Item_Table.Select("(IP_Restriction_Mask >= 0 ) and ( Dark = 'false')").Length;
+                thumbnail_count = allVolumes.Count(OtherVolume => (OtherVolume.IP_Restriction_Mask >= 0) && (!OtherVolume.Dark));
             }
         }
 
@@ -280,11 +301,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 if (viewType == View_Type.List)
                 {
-                    Write_List(Output, Item_List.Item_Table);
+                    Write_List(Output);
                 }
                 else if (viewType == View_Type.Thumbnail)
                 {
-                    Write_Thumbnails(Output, Item_List.Item_Table);
+                    Write_Thumbnails(Output);
                 }
             }
         }
@@ -317,7 +338,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 // Add the tree view
                 TreeView treeView1 = new TreeView { EnableViewState = false, CssClass = "sbkMviv_Tree" };
-                Build_Tree(treeView1, Item_List.Item_Table);
+                Build_Tree(treeView1);
                 MainPlaceHolder.Controls.Add(treeView1);
             }
 
@@ -378,7 +399,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             get
             {
-                if (Item_List == null)
+                if (allVolumes == null)
                     return 1;
 
                 if (viewType != View_Type.Thumbnail)
@@ -491,8 +512,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Writes the list of volumes associated with the same title as a digital resource to the output stream </summary>
         /// <param name="Output"> HTML output response stream </param>
-        /// <param name="Volumes"> Source datatable with all affiliated volumes </param>
-        protected internal void Write_List(TextWriter Output, DataTable Volumes)
+        protected internal void Write_List(TextWriter Output)
         {
             // Save the current viewer code
             string current_view_code = currentRequest.ViewerCode;
@@ -504,29 +524,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string redirect_url = UrlWriterHelper.Redirect_URL(currentRequest, String.Empty);
             currentRequest.VID = current_vid;
 
-            // Get the column references for speed
-            DataColumn level1_text_column = Volumes.Columns[2];
-            DataColumn level2_text_column = Volumes.Columns[4];
-            DataColumn level3_text_column = Volumes.Columns[6];
-            DataColumn vid_column = Volumes.Columns[13];
-            DataColumn title_column = Volumes.Columns[1];
-            DataColumn restriction_column = Volumes.Columns[14];
-            DataColumn dark_column = Volumes.Columns[16];
-
-            // Make a view
-            DataView vidSorted = new DataView(Volumes) { Sort = "VID ASC" };
-
             // Determine the max depth on this item
             int depth = 1;
-            foreach (DataRowView thisItem in vidSorted)
+            foreach (Item_Hierarchy_Details thisItem in allVolumes)
             {
-                if ((thisItem.Row[level2_text_column].ToString().Length > 0) && (depth < 2))
+                if (( !String.IsNullOrEmpty(thisItem.Level2_Text)) && (depth < 2))
                 {
                     depth = 2;
                 }
-                if ((thisItem.Row[level3_text_column].ToString().Length > 0) && (depth < 3))
+                if ((!String.IsNullOrEmpty(thisItem.Level3_Text)) && (depth < 3))
                 {
                     depth = 3;
+                    break;
                 }
             }
 
@@ -546,10 +555,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("    <th style=\"width:65px;\">ACCESS</th>");
             Output.WriteLine("  </tr>");
 
-            foreach (DataRowView thisItem in vidSorted)
+            foreach (Item_Hierarchy_Details thisItem in allVolumes)
             {
-                int access_int = Convert.ToInt32(thisItem.Row[restriction_column]);
-                bool dark = Convert.ToBoolean(thisItem.Row[dark_column]);
+                int access_int = thisItem.IP_Restriction_Mask;
+                bool dark = thisItem.Dark;
                 if (dark) access_int = -1;
 
                 if (access_int < 0)
@@ -562,22 +571,28 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
 
                 Output.WriteLine("  <tr>");
-                Output.WriteLine("    <td><a href=\"" + redirect_url.Replace("<%VID%>", thisItem.Row[vid_column].ToString()) + "\">" + thisItem.Row[vid_column] + "</a></td>");
-                if (thisItem.Row[level1_text_column].ToString().Length == 0)
+                Output.WriteLine("    <td><a href=\"" + redirect_url.Replace("<%VID%>", thisItem.VID) + "\">" + thisItem.VID + "</a></td>");
+                if ( String.IsNullOrEmpty(thisItem.Level1_Text))
                 {
-                    Output.WriteLine("    <td>" + thisItem.Row[title_column] + "</td>");
+                    Output.WriteLine("    <td>" + HttpUtility.HtmlEncode(thisItem.Title) + "</td>");
                 }
                 else
                 {
-                    Output.WriteLine("    <td>" + thisItem.Row[level1_text_column] + "</td>");
+                    Output.WriteLine("    <td>" + HttpUtility.HtmlEncode(thisItem.Level1_Text) + "</td>");
                 }
                 if (depth > 1)
                 {
-                    Output.WriteLine("    <td>" + thisItem.Row[level2_text_column] + "</td>");
+                    if ( !String.IsNullOrEmpty(thisItem.Level2_Text))
+                        Output.WriteLine("    <td>" + HttpUtility.HtmlEncode(thisItem.Level2_Text) + "</td>");
+                    else
+                        Output.WriteLine("    <td>&nbsp;</td>");
                 }
                 if (depth > 2)
                 {
-                    Output.WriteLine("    <td>" + thisItem.Row[level3_text_column] + "</td>");
+                    if (!String.IsNullOrEmpty(thisItem.Level3_Text))
+                        Output.WriteLine("    <td>" + HttpUtility.HtmlEncode(thisItem.Level3_Text) + "</td>");
+                    else
+                        Output.WriteLine("    <td>&nbsp;</td>");
                 }
 
                 if (access_int < 0)
@@ -605,9 +620,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
         #region Method to add the volume list as thumbnails
 
         /// <summary> Writes the collection of thumbnails for volumes associated with the same title as a digital resource to the output stream </summary>
-        /// <param name="Volumes"> Source datatable with all affiliated volumes </param>
         /// <param name="Output"> HTML output response stream </param>
-        protected internal void Write_Thumbnails(TextWriter Output, DataTable Volumes)
+        protected internal void Write_Thumbnails(TextWriter Output)
         {
             if (currentRequest.SubPage <= 0)
                 currentRequest.SubPage = 1;
@@ -637,75 +651,61 @@ namespace SobekCM.Library.ItemViewer.Viewers
             currentRequest.SubPage = subpage;
             currentRequest.VID = current_vid;
 
-            // Get the data columns for quick access
-            DataColumn level1_text_column = Volumes.Columns[2];
-            DataColumn level2_text_column = Volumes.Columns[4];
-            DataColumn level3_text_column = Volumes.Columns[6];
-            DataColumn vid_column = Volumes.Columns[13];
-            DataColumn title_column = Volumes.Columns[1];
-            DataColumn itemid_column = Volumes.Columns[0];
-            DataColumn main_thumbnail_column = Volumes.Columns[12];
-            DataColumn visibility_column = Volumes.Columns[14];
-
             // Get the rows which match the requirements (either PUBLIC or RESTRICTED)
-            DataRow[] matches = Volumes.Select("(IP_Restriction_Mask >= 0 ) and ( Dark = 'false')");
+            List<Item_Hierarchy_Details> publicItems = allVolumes.Where(ThisItem => (ThisItem.IP_Restriction_Mask >= 0) && (!ThisItem.Dark)).ToList();
 
             // Step through item in the results
             int currenSubPage = currentRequest.SubPage.HasValue ? currentRequest.SubPage.Value : 0;
             int startItemCount = (currenSubPage - 1) * 60;
             int endItemCount = currenSubPage * 60;
-            if (Volumes.Rows.Count < 100)
-                endItemCount = matches.Length;
-            for (int i = startItemCount; (i < endItemCount) && (i < matches.Length); i++)
+            if (publicItems.Count < 100)
+                endItemCount = publicItems.Count;
+            for (int i = startItemCount; (i < endItemCount) && (i < publicItems.Count); i++)
             {
-                DataRow thisItem = matches[i];
+                Item_Hierarchy_Details thisItem = publicItems[i];
 
-                if (Convert.ToInt16(thisItem[visibility_column]) >= 0)
+                string thumbnail_text = thisItem.Title;
+                if (!String.IsNullOrEmpty(thisItem.Level1_Text))
                 {
-                    string thumbnail_text = thisItem[title_column].ToString();
-                    if (thisItem[level1_text_column].ToString().Length > 0)
+                    if (!String.IsNullOrEmpty(thisItem.Level2_Text))
                     {
-                        if (thisItem[level2_text_column].ToString().Length > 0)
+                        if (!String.IsNullOrEmpty(thisItem.Level3_Text))
                         {
-                            if (thisItem[level3_text_column].ToString().Length > 0)
+                            if (newspaper)
                             {
-                                if (newspaper)
-                                {
-                                    thumbnail_text = thisItem[level2_text_column] + " " + thisItem[level3_text_column] + ", " + thisItem[level1_text_column];
-                                }
-                                else
-                                {
-                                    thumbnail_text = thisItem[level1_text_column] + ". " + thisItem[level2_text_column] + ". " + thisItem[level3_text_column];
-                                }
+                                thumbnail_text = thisItem.Level2_Text + " " + thisItem.Level3_Text + ", " + thisItem.Level1_Text;
                             }
                             else
                             {
-                                thumbnail_text = thisItem[level1_text_column] + ". " + thisItem[level2_text_column] + ".";
+                                thumbnail_text = thisItem.Level1_Text + ". " + thisItem.Level2_Text + ". " + thisItem.Level3_Text + ".";
                             }
                         }
                         else
                         {
-                            thumbnail_text = thisItem[level1_text_column] + ".";
+                            thumbnail_text = thisItem.Level1_Text + ". " + thisItem.Level2_Text + ".";
                         }
                     }
-
-                    string vid = thisItem[vid_column].ToString();
-                    string url = redirect_url.Replace("<%VID%>", vid).Replace("&", "&amp;");
-
-                    Output.WriteLine(Convert.ToInt32(thisItem[itemid_column]) == briefItem.Web.ItemID ? "  <table class=\"sbkMviv_Thumbnail\" id=\"sbkMviv_ThumbnailCurrent\" style=\"width:165px\">" : "  <table class=\"sbkMviv_Thumbnail\" style=\"width:165px\">");
-                    Output.WriteLine("    <tr>");
-                    Output.WriteLine("      <td>");
-                    Output.WriteLine("        <a href=\"" + url + "\" title=\"" + thumbnail_text + "\">");
-                    Output.WriteLine("          <img src=\"" + jpeg_base + vid + "/" + thisItem[main_thumbnail_column] + "\" alt=\"MISSING THUMBNAIL\" />");
-                    Output.WriteLine("        </a>");
-                    Output.WriteLine("      </td>");
-                    Output.WriteLine("    </tr>");
-                    Output.WriteLine("    <tr>");
-                    Output.WriteLine("      <td style=\"text-align:center\">" + thumbnail_text + "</td>");
-                    Output.WriteLine("    </tr>");
-                    Output.WriteLine("  </table>");
-                    Output.WriteLine();
+                    else
+                    {
+                        thumbnail_text = thisItem.Level1_Text + ".";
+                    }
                 }
+
+                string url = redirect_url.Replace("<%VID%>", thisItem.VID).Replace("&", "&amp;");
+
+                Output.WriteLine(thisItem.ItemID == briefItem.Web.ItemID ? "  <table class=\"sbkMviv_Thumbnail\" id=\"sbkMviv_ThumbnailCurrent\" style=\"width:165px\">" : "  <table class=\"sbkMviv_Thumbnail\" style=\"width:165px\">");
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + url + "\" title=\"" + thumbnail_text + "\">");
+                Output.WriteLine("          <img src=\"" + jpeg_base + thisItem.VID + "/" + thisItem.MainThumbnail + "\" alt=\"MISSING THUMBNAIL\" />");
+                Output.WriteLine("        </a>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td style=\"text-align:center\">" + thumbnail_text + "</td>");
+                Output.WriteLine("    </tr>");
+                Output.WriteLine("  </table>");
+                Output.WriteLine();
             }
 
             //Close the outer div
@@ -723,8 +723,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
         /// <summary> Populates a tree view control with the hierarchical collection of volumes associated with the same title as a digital resource </summary>
         /// <param name="TreeView1"> Treeview control to populate with the associated volumes </param>
-        /// <param name="Volumes"> Source datatable with all affiliated volumes </param>
-        protected internal void Build_Tree(TreeView TreeView1, DataTable Volumes)
+        protected internal void Build_Tree(TreeView TreeView1)
         {
             const int LINE_TO_LONG = 100;
 
@@ -756,32 +755,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string redirect_url = UrlWriterHelper.Redirect_URL(currentRequest, String.Empty);
             currentRequest.VID = current_vid;
 
-            // Get the data columns for quick access
-            DataColumn level1_text_column = Volumes.Columns[2];
-            DataColumn level2_text_column = Volumes.Columns[4];
-            DataColumn level3_text_column = Volumes.Columns[6];
-            DataColumn level4_text_column = Volumes.Columns[8];
-            DataColumn level5_text_column = Volumes.Columns[10];
-            DataColumn vid_column = Volumes.Columns[13];
-            DataColumn title_column = Volumes.Columns[1];
-            DataColumn itemid_column = Volumes.Columns[0];
-            DataColumn visibility_column = Volumes.Columns[14];
-            DataColumn dark_column = Volumes.Columns[16];
-
-            //DataColumn level1_index_column = Volumes.Columns[3];
-            //DataColumn level2_index_column = Volumes.Columns[5];
-            //DataColumn level3_index_column = Volumes.Columns[7];
-            //DataColumn level4_index_column = Volumes.Columns[9];
-            //DataColumn level5_index_column = Volumes.Columns[11];
-
             // Does this user have special rights on the item?
             bool specialRights = ((currentUser != null) && ((currentUser.Is_System_Admin) || (currentUser.Is_Internal_User) || (currentUser.Can_Edit_This_Item(briefItem.BibID, briefItem.Type, briefItem.Behaviors.Source_Institution_Aggregation, briefItem.Behaviors.Holding_Location_Aggregation, briefItem.Behaviors.Aggregation_Code_List))));
 
-            foreach (DataRow thisItem in Volumes.Rows)
+            foreach (Item_Hierarchy_Details thisItem in allVolumes)
             {
                 // Do not show PRIVATE items in this tree view
-                int access_int = Convert.ToInt32(thisItem[visibility_column]);
-                bool dark = Convert.ToBoolean(thisItem[dark_column]);
+                int access_int = thisItem.IP_Restriction_Mask;
+                bool dark = thisItem.Dark;
                 if (dark) access_int = -1;
                 if ((access_int >= 0) || (specialRights))
                 {
@@ -812,14 +793,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     }
 
                     // Determine the text for all the levels (and nodes)
-                    string level1_text = UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem[level1_text_column].ToString(), currentRequest.Language);
+                    string level1_text = UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem.Level1_Text, currentRequest.Language);
                     string level2_text = String.Empty;
                     string level3_text = String.Empty;
                     string level4_text = String.Empty;
                     string level5_text = String.Empty;
-                    string title = thisItem[title_column].ToString();
-                    string vid = thisItem[vid_column].ToString();
-                    int itemid = Convert.ToInt32(thisItem[itemid_column]);
+                    string title = thisItem.Title;
                     if (level1_text.Length == 0)
                     {
                         TreeNode singleNode = new TreeNode(access_span_start + title + access_string + access_span_end);
@@ -829,7 +808,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             title = title.Substring(0, LINE_TO_LONG) + "...";
                             singleNode.Text = access_span_start + title + access_string + access_span_end;
                         }
-                        if (itemid == briefItem.Web.ItemID)
+                        if (thisItem.ItemID == briefItem.Web.ItemID)
                         {
                             currentSelectedNode = singleNode;
                             singleNode.SelectAction = TreeNodeSelectAction.None;
@@ -838,7 +817,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         }
                         else
                         {
-                            singleNode.NavigateUrl = redirect_url.Replace("<%VID%>", vid);
+                            singleNode.NavigateUrl = redirect_url.Replace("<%VID%>", thisItem.VID);
                         }
                         rootNode.ChildNodes.Add(singleNode);
                     }
@@ -846,17 +825,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // Look at the first level
                     if (level1_text.Length > 0)
                     {
-                        level2_text = UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem[level2_text_column].ToString(), currentRequest.Language);
+                        level2_text = UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem.Level2_Text, currentRequest.Language);
                         if (level2_text.Length == 0)
                         {
                             TreeNode singleNode1 = new TreeNode(access_span_start + level1_text + access_string + access_span_end);
-                            if (thisItem[level1_text_column].ToString().Length > LINE_TO_LONG)
+                            if (thisItem.Level1_Text.Length > LINE_TO_LONG)
                             {
                                 singleNode1.ToolTip = level1_text;
                                 level1_text = level1_text.Substring(0, LINE_TO_LONG) + "...";
                                 singleNode1.Text = access_span_start + level1_text + access_string + access_span_end;
                             }
-                            if (itemid == briefItem.Web.ItemID)
+                            if (thisItem.ItemID == briefItem.Web.ItemID)
                             {
                                 currentSelectedNode = singleNode1;
                                 singleNode1.SelectAction = TreeNodeSelectAction.None;
@@ -865,7 +844,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             }
                             else
                             {
-                                singleNode1.NavigateUrl = redirect_url.Replace("<%VID%>", vid);
+                                singleNode1.NavigateUrl = redirect_url.Replace("<%VID%>", thisItem.VID);
                             }
                             rootNode.ChildNodes.Add(singleNode1);
                         }
@@ -874,10 +853,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             if ((lastNode1 == null) || (lastNodeText1 != level1_text.ToUpper()))
                             {
                                 // Since this is the TOP level, let's look down and see if there are any non-private, non-dark items
-                                string nontranslated = thisItem[level1_text_column].ToString();
-                                int index = Convert.ToInt32(thisItem["Level1_Index"]);
-                                DataRow[] test = Volumes.Select("(IP_Restriction_Mask >= 0 ) and ( Dark = 'false') and ( " + level1_text_column.ColumnName + "='" + nontranslated + "') and ( Level1_Index=" + index + ")");
-                                bool allPrivate = test.Length == 0;
+                                string nontranslated = thisItem.Level1_Text;
+                                bool allPrivate = allVolumes.All(ThisVolume => (thisItem.IP_Restriction_Mask < 0) || (dark) || (String.Compare(ThisVolume.Level1_Text, nontranslated, StringComparison.OrdinalIgnoreCase) != 0) || (thisItem.Level1_Index != ThisVolume.Level1_Index));
 
                                 lastNode1 = new TreeNode(level1_text);
                                 if (level1_text.Length > LINE_TO_LONG)
@@ -910,7 +887,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // Look at the second level
                     if ((level2_text.Length > 0) && (lastNode1 != null))
                     {
-                        level3_text = UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem[level3_text_column].ToString(), currentRequest.Language);
+                        level3_text = UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem.Level3_Text, currentRequest.Language);
                         if (level3_text.Length == 0)
                         {
                             TreeNode singleNode2 = new TreeNode(access_span_start + level2_text + access_string + access_span_end);
@@ -920,7 +897,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 level2_text = level2_text.Substring(0, LINE_TO_LONG) + "...";
                                 singleNode2.Text = access_span_start + level2_text + access_string + access_span_end;
                             }
-                            if (itemid == briefItem.Web.ItemID)
+                            if (thisItem.ItemID == briefItem.Web.ItemID)
                             {
                                 currentSelectedNode = singleNode2;
                                 singleNode2.SelectAction = TreeNodeSelectAction.None;
@@ -928,7 +905,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             }
                             else
                             {
-                                singleNode2.NavigateUrl = redirect_url.Replace("<%VID%>", vid);
+                                singleNode2.NavigateUrl = redirect_url.Replace("<%VID%>", thisItem.VID);
                             }
                             lastNode1.ChildNodes.Add(singleNode2);
                         }
@@ -957,7 +934,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // Look at the third level
                     if ((level3_text.Length > 0) && (lastNode2 != null))
                     {
-                        level4_text = UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem[level4_text_column].ToString(), currentRequest.Language);
+                        level4_text = UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem.Level4_Text, currentRequest.Language);
                         if (level4_text.Length == 0)
                         {
                             TreeNode singleNode3 = new TreeNode(access_span_start + level3_text + access_string + access_span_end);
@@ -973,7 +950,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 singleNode3.Text = level3_text;
                             }
 
-                            if (itemid == briefItem.Web.ItemID)
+                            if (thisItem.ItemID == briefItem.Web.ItemID)
                             {
                                 currentSelectedNode = singleNode3;
                                 singleNode3.SelectAction = TreeNodeSelectAction.None;
@@ -981,7 +958,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             }
                             else
                             {
-                                singleNode3.NavigateUrl = redirect_url.Replace("<%VID%>", vid);
+                                singleNode3.NavigateUrl = redirect_url.Replace("<%VID%>", thisItem.VID);
                             }
 
                             lastNode2.ChildNodes.Add(singleNode3);
@@ -1009,7 +986,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     // Look at the fourth level
                     if ((level4_text.Length > 0) && (lastNode3 != null))
                     {
-                        UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem[level5_text_column].ToString(), currentRequest.Language);
+                        UI_ApplicationCache_Gateway.Translation.Get_Translation(thisItem.Level5_Text, currentRequest.Language);
                         if (level5_text.Length == 0)
                         {
                             TreeNode singleNode4 = new TreeNode(access_span_start + level4_text + access_string + access_span_end);
@@ -1019,7 +996,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 level4_text = level4_text.Substring(0, LINE_TO_LONG) + "...";
                                 singleNode4.Text = access_span_start + level4_text + access_string + access_span_end;
                             }
-                            if (itemid == briefItem.Web.ItemID)
+                            if (thisItem.ItemID == briefItem.Web.ItemID)
                             {
                                 currentSelectedNode = singleNode4;
                                 singleNode4.SelectAction = TreeNodeSelectAction.None;
@@ -1027,7 +1004,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             }
                             else
                             {
-                                singleNode4.NavigateUrl = redirect_url.Replace("<%VID%>", vid);
+                                singleNode4.NavigateUrl = redirect_url.Replace("<%VID%>", thisItem.VID);
                             }
                             lastNode3.ChildNodes.Add(singleNode4);
                         }
@@ -1058,7 +1035,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             level5_text = level5_text.Substring(0, LINE_TO_LONG) + "...";
                             lastNode5.Text = access_span_start + level5_text + access_string + access_span_end;
                         }
-                        if (itemid == briefItem.Web.ItemID)
+                        if (thisItem.ItemID == briefItem.Web.ItemID)
                         {
                             currentSelectedNode = lastNode5;
                             lastNode5.SelectAction = TreeNodeSelectAction.None;
@@ -1066,7 +1043,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         }
                         else
                         {
-                            lastNode5.NavigateUrl = redirect_url.Replace("<%VID%>", vid);
+                            lastNode5.NavigateUrl = redirect_url.Replace("<%VID%>", thisItem.VID);
                         }
                         lastNode4.ChildNodes.Add(lastNode5);
                     }

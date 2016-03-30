@@ -16,7 +16,12 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
         public bool MapToBriefItem(SobekCM_Item Original, BriefItemInfo New)
         {
             if (!String.IsNullOrEmpty(Original.Tracking.Internal_Comments))
+            {
+                if (New.Web == null)
+                    New.Web = new BriefItem_Web();
+
                 New.Web.Internal_Comments = Original.Tracking.Internal_Comments;
+            }
 
             return true;
         }
