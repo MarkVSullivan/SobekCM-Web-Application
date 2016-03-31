@@ -1,15 +1,27 @@
 
 
-alter table SobekCM_Item_Viewers
-add OrderOverride int null;
+if ( NOT EXISTS (select * from sys.columns where Name = N'OrderOverride' and Object_ID = Object_ID(N'SobekCM_Item_Viewers')))
+BEGIN
+	ALTER TABLE SobekCM_Item_Viewers ADD OrderOverride int null;
+END;
 GO
 
-alter table SobekCM_Item_Viewers
-add Exclude bit not null default('false');
+if ( NOT EXISTS (select * from sys.columns where Name = N'Exclude' and Object_ID = Object_ID(N'SobekCM_Item_Viewers')))
+BEGIN
+	ALTER TABLE SobekCM_Item_Viewers ADD Exclude bit not null default('false');
+END;
 GO
 
-alter table SobekCM_Item_Viewer_Types
-add [Order] int not null default(100);
+if ( NOT EXISTS (select * from sys.columns where Name = N'OrderOverride' and Object_ID = Object_ID(N'SobekCM_Item_Viewer_Types')))
+BEGIN
+	ALTER TABLE SobekCM_Item_Viewer_Types ADD [Order] int not null default(100);
+END;
+GO
+
+if ( NOT EXISTS (select * from sys.columns where Name = N'OrderOverride' and Object_ID = Object_ID(N'SobekCM_Item_Viewer_Types')))
+BEGIN
+	ALTER TABLE SobekCM_Item_Viewer_Types ADD [DefaultView] bit not null default('false');
+END;
 GO
 
 update SobekCM_Item_Viewer_Types set ViewType='DATASET_CODEBOOK' where ViewType='Dataset Codebook';
@@ -194,6 +206,3 @@ BEGIN
 END;
 GO
 
-alter table SobekCM_Item_Viewer_Types
-add [DefaultView] bit not null default('false');
-GO
