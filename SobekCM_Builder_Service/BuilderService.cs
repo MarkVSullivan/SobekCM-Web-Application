@@ -41,14 +41,14 @@ namespace SobekCM_Builder_Service
             }
 
 
-            // Try to read the metadata configuration file
+            //// Try to read the metadata configuration file
             string app_start_config = appDataPath + "\\config";
-            if ((Directory.Exists(app_start_config)) && (File.Exists(app_start_config + "\\sobekCM_metadata.config")))
-            {
-                ResourceObjectSettings.MetadataConfig.Read_Metadata_Configuration(app_start_config + "\\sobekCM_metadata.config");
-            }
+            //if ((Directory.Exists(app_start_config)) && (File.Exists(app_start_config + "\\sobekCM_metadata.config")))
+            //{
+            //    ResourceObjectSettings.MetadataConfig.Read_Metadata_Configuration(app_start_config + "\\sobekCM_metadata.config");
+            //}
 
-            // Now, veryify the configuration file exists
+            // Now, verify the configuration file exists
             string config_file = appDataPath + "\\config\\sobekcm.config";
             if (!File.Exists(config_file))
             {

@@ -1,0 +1,114 @@
+Element Name,type (from template xml file),subtype (from template xml file),Class in Sobek_Library C# code,Help URL
+Abstract,abstract,(default),Abstract_Complex_Element,http://sobekrepository.org/help/abstract
+Abstract,abstract,simple,Abstract_Summary_Element,http://sobekrepository.org/help/abstractsimple
+Acquisition Note,acquisition,,Acquisition_Note_Element,http://sobekrepository.org/help/acquisition
+Additional Work Needed,additional work needed,,Additional_Work_Needed_Element,
+Aggregations,aggregations,,Aggregations_Element,
+Attribution Note,attribution,,Attribution_Element,http://sobekrepository.org/help/attribution
+Bibliographic Identifier (BibID),bibid,,BibID_Element,http://sobekrepository.org/help/bibid
+Born Digital Flag,born digital,,Born_Digital_Element,
+Catalog Record Number,catalog record num,,Catalog_Record_Number_Element,
+Classification,classification,,Classification_Element,http://sobekrepository.org/help/classification
+Container,container,,Container_Element,http://sobekrepository.org/help/container
+Contributor,contributor,,Contributor_Element,http://sobekrepository.org/help/contributor
+Coordinates (point),coordinates,,Coordinates_Point_Element,http://sobekrepository.org/help/coordinatepoint
+Creator,creator,simple,Creator_Element,http://sobekrepository.org/help/creatorsimple
+Creator,creator,complex,Creator_Complex_Element,
+Creator,creator,fixed_role,Creator_Fixed_Role_Element,http://sobekrepository.org/help/creatorfixed
+Creator,creator,(default),Name_Form_Element,http://sobekrepository.org/help/creator
+Creation Note,creator notes,,Creator_Notes_Element,http://sobekrepository.org/help/creationnote
+Dark Flag,dark flag,,Dark_Flag_Element,
+Date Published,date,,Date_Element,http://sobekrepository.org/help/pubdate
+Date Copyrighted,date copyrighted,,Date_Copyrighted_Element,http://sobekrepository.org/help/copyrightdate
+Description Standard,description standard,,Description_Standard_Element,
+Disposition Advice,disposition advice,,Disposition_Advice_Element,
+Donor,donor,,Donor_Element,http://sobekrepository.org/help/donor
+EAD,ead,,EAD_Form_Element,http://sobekrepository.org/help/ead
+Edition,edition,,Edition_Element,http://sobekrepository.org/help/edition
+Embedded Video,embedded video,,EmbeddedVideo_Element,http://sobekrepository.org/help/embeddedvideo
+Encoding Level,encoding level,,Encoding_Level_Element,http://sobekrepository.org/help/encodinglevel
+ETD Committee Chair,etd committee chair,,ETD_CommitteeChair_Element,
+ETD Committee Co-Chair,etd committee cochair,,ETD_CommitteeCoChair_Element,
+ETD Committee Member,etd committee member,,ETD_CommitteeMember_Element,
+ETD Degree,etd degree,,ETD_Degree_Element,
+ETD Degree Discipline,etd degree discipline,,ETD_DegreeDiscipline_Element,
+ETD Degree Division,etd degree division,,ETD_DegreeDivision_Element,
+ETD Degree Grantor,etd degree grantor,,ETD_DegreeGrantor_Element,
+ETD Degree Level,etd degree level,,ETD_DegreeLevel_Element,
+ETD Graduation Semester,etd graduation semester,,ETD_GraduationSemester_Element,
+FAST Subject,fast subject,,FAST_Subject_Element,http://sobekrepository.org/help/subjectfast
+Format (Physical Description),format,,Format_Element,http://sobekrepository.org/help/physicaldescription
+Frequency,frequency,,Frequency_Element,http://sobekrepository.org/help/frequency
+Genre,genre,,Genre_Element,http://sobekrepository.org/help/genre
+Group Title,group title,,Group_Title_Element,
+Holding Location,holding,,Holding_Element,http://sobekrepository.org/help/holding
+Identifier,identifier,(default),Identifier_Element,http://sobekrepository.org/help/identifier
+Identifier,identifier,fixed_type,Identifier_Fixed_Type_Element,
+Language,language,(default),Language_Element,http://sobekrepository.org/help/language
+Language,language,select,Language_Select_Element,
+LCCN,lccn,,LCCN_Element,
+Literal,literal,,Literal_Element,
+LOM Aggregation Level,lom aggregation level,,LOM_AggregationLevel_Element,
+LOM Context,lom context,,LOM_Contenxt_Element,
+LOM Difficulty Level,lom difficulty level,,LOM_DifficultyLevel_Element,
+LOM Intended End User Role,lom intended end user role,,LOM_IntendedUser_Element,
+LOM Interactivity Level,lom interactivity level,,LOM_InteractivityLevel_Element,
+LOM Interactivity Type,lom interactivity type,,LOM_InteractivityType_Element,
+LOM Learning Resource Type,lom learning resource type,,LOM_ResourceType_Element,
+LOM Status,lom status,,LOM_Status_Element,
+LOM Typical Age Range,lom typical age range,,LOM_TypicalAgeRange_Element,
+Main Thumbnail,main thumbnail,,Main_Thumbnail_Element,http://sobekrepository.org/help/mainthumbnail
+Manufacturer,manufacturer,(default),Manufacturer_Complex_Element,http://sobekrepository.org/help/manufacturer
+Manufacturer,manufacturer,simple,Manufacturer_Element,http://sobekrepository.org/help/manufacturersimple
+Material Received Date,material received date,,Material_Received_Date,
+Notes,note,(default),Note_Complex_Element,http://sobekrepository.org/help/note
+Notes,note,simple,Note_Element,http://sobekrepository.org/help/notesimple
+OCLC Record Number,oclc record num,,OCLC_Record_Number_Element,
+Related URL,other url,(default),Other_URL_Form_Element,http://sobekrepository.org/help/relatedurl
+Related URL,other url,simple,Other_URL_Element,
+Primary Alternate Identifier,primary identifier,,Primary_Alt_Identifier_Element,
+Project,project,,Projects_Element,
+Publication Status,publication status,,Publication_Status_Element,http://sobekrepository.org/help/pubstatus
+Publication Place,publication place,,Publication_Place_Element,http://sobekrepository.org/help/pubplace
+Publisher,publisher,(default),Publisher_Complex_Element,http://sobekrepository.org/help/publisher
+Publisher,publisher,simple,Publisher_Element,http://sobekrepository.org/help/publishersimple
+Record Origin,record origin,,Record_Origin_Element,http://sobekrepository.org/help/recordorigin
+Record Status,record status,,RecordStatus_Element,http://sobekrepository.org/help/recordstatus
+Related Item,related item,,Related_Item_Form_Element,http://sobekrepository.org/help/relateditem
+Rights Statement,rights,(default),Rights_Element,http://sobekrepository.org/help/rightsmgmt
+Rights Statement,rights,ir,IR_Rights_Element,
+Scale (cartographic),scale,,Scale Element,http://sobekrepository.org/help/scale
+Serial Hierarchy,serial hierarchy,(default),Serial_Hierarchy_Form_Element,http://sobekrepository.org/help/serialhierarchy
+Serial Hierarchy,serial hierarchy,panel,Serial_Hierarchy_Panel_Element,
+Source Institution,source,,Source_Element,http://sobekrepository.org/help/source
+Spatial Coverage,spatial,(default),Hierarchical_Spatial_Form_Element,http://sobekrepository.org/help/spatialform
+Spatial Coverage,spatial,simple,Spatial_Coverage_Element,http://sobekrepository.org/help/spatial
+Subject Keywords,subject,(default),Subject_Keyword_Standard_Form_Element,
+Subject Keywords,subject,scheme,Subject_Scheme_Element,http://sobekrepository.org/help/subject
+Subject Keywords,subject,simple,Subject_Element,http://sobekrepository.org/help/subjectform
+SuDoc Classification,sudoc,,SuDOC_Element,
+Target Audience,target audience,,Target_Audience_Element,http://sobekrepository.org/help/targetaudience
+Temporal Coverage,temporal,(default),Temporal_Complex_Element,http://sobekrepository.org/help/temporal
+Temporal Coverage,temporal,simple,Temporal_Coverage_Element,http://sobekrepository.org/help/temporal
+Tickler,tickler,,Tickler_Element,http://sobekrepository.org/help/tickler
+Title,title,(default),Title_Main_Form_Element,http://sobekrepository.org/help/title
+Title,title,simple,Title_Main_Element,http://sobekrepository.org/help/titlesimple
+Title Other / Alternate,other title,(default),Other_Title_Form_Element,http://sobekrepository.org/help/othertitle
+Title Other / Alternate,other title,simple,Other_Title_Element,http://sobekrepository.org/help/othertitlesimple
+Tracking Box,tracking box,,Tracking_Box_Element,
+Type (Material Type),type,(default),Type_Format_Form_Element,http://sobekrepository.org/help/type
+Type (Material Type),type,ir,IR_Type_Element,http://sobekrepository.org/help/typeir
+Type (Material Type),type,simple,Type_Element,http://sobekrepository.org/help/typesimple
+Volume Identifier (VID),vid,,VID_Element,http://sobekrepository.org/help/vid
+Viewer,viewer,,Viewer_Element,http://sobekrepository.org/help/viewer
+Visibility ,visibility,,Visibility_Element,
+VRA Cultural Context,vra cultural context,,VRA_CulturalContext_Element,
+VRA Inscription,vra inscription,,VRA_Inscription_Element,
+VRA Material Type,vra material,,VRA_Material_Element,
+VRA Measurement,vra measurement,,VRA_Measurement_Element,
+VRA State/Edition,vra state edition,,VRA_StateEdition_Element,
+VRA Style/Period,vra style period,,VRA_StylePeriod_Element,
+VRA Technique,vra technique,,VRA_Technique_Element,
+Web skin,web skin,,Web_Skin_Element,http://sobekrepository.org/help/interface
+Wordmarks,wordmark,,Wordmark_Element,http://sobekrepository.org/help/wordmark
+Zoological Taxonomy,zoological taxonomy,,Zoological_Taxonomy_Form_Element,

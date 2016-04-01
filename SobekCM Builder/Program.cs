@@ -23,12 +23,12 @@ namespace SobekCM.Builder
  
         static void Main(string[] args)
         {
-            // Try to read the metadata configuration file
+            //// Try to read the metadata configuration file
             string app_start_config = Application.StartupPath + "\\config";
-            if ((Directory.Exists(app_start_config)) && (File.Exists(app_start_config + "\\sobekCM_metadata.config")))
-            {
-                ResourceObjectSettings.MetadataConfig.Read_Metadata_Configuration(app_start_config + "\\sobekCM_metadata.config");
-            }
+            //if ((Directory.Exists(app_start_config)) && (File.Exists(app_start_config + "\\sobekCM_metadata.config")))
+            //{
+            //    ResourceObjectSettings.MetadataConfig.Read_Metadata_Configuration(app_start_config + "\\sobekCM_metadata.config");
+            //}
 
 
 	        bool complete_static_rebuild = false;

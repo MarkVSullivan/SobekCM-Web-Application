@@ -696,8 +696,8 @@ namespace SobekCM.Resource_Object.Database
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_New_Item", param_list);
 
                 // Save the item id and VID into the package
-                ThisPackage.Web.ItemID = (int)param_list[87].Value;
-                ThisPackage.VID = param_list[88].Value.ToString();
+                ThisPackage.Web.ItemID = (int)param_list[69].Value;
+                ThisPackage.VID = param_list[70].Value.ToString();
             }
             catch (Exception ee)
             {

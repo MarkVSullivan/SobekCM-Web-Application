@@ -36,22 +36,22 @@ namespace SobekCM.Builder_Library.Modules.Items
                 }
             }
 
-            // Ensure proper views are attached to this item
-            if ((jpeg2000_added) || (jpeg_added))
-            {
-                Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG);
-                if (jpeg_added)
-                {
-                    Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG);
-                    Resource.Metadata.Behaviors.Add_View(View_Enum.RELATED_IMAGES);
-                    if (jpeg2000_added)
-                        Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG2000);
-                }
-                else
-                {
-                    Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG2000);
-                }
-            }
+            //// Ensure proper views are attached to this item
+            //if ((jpeg2000_added) || (jpeg_added))
+            //{
+            //    Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG);
+            //    if (jpeg_added)
+            //    {
+            //        Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG);
+            //        Resource.Metadata.Behaviors.Add_View(View_Enum.RELATED_IMAGES);
+            //        if (jpeg2000_added)
+            //            Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG2000);
+            //    }
+            //    else
+            //    {
+            //        Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG2000);
+            //    }
+            //}
 
             return true;
         }

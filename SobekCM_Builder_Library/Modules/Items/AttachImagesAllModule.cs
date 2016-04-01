@@ -68,24 +68,24 @@ namespace SobekCM.Builder_Library.Modules.Items
                 }
             }
 
-            // Ensure proper views are attached to this item
-            if ((jpeg2000_added) || (jpeg_added))
-            {
-                if (jpeg_added)
-                {
-                    Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG);
-                    if ( jpeg_files > 1 )
-                        Resource.Metadata.Behaviors.Add_View(View_Enum.RELATED_IMAGES);
-                    if ((jpeg_files >= 4) && (Settings.Builder.Add_PageTurner_ItemViewer))
-                        Resource.Metadata.Behaviors.Add_View(View_Enum.PAGE_TURNER);
-                    if (jpeg2000_added)
-                        Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG2000);
-                }
-                else
-                {
-                    Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG2000);
-                }
-            }
+            //// Ensure proper views are attached to this item
+            //if ((jpeg2000_added) || (jpeg_added))
+            //{
+            //    if (jpeg_added)
+            //    {
+            //        Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG);
+            //        if ( jpeg_files > 1 )
+            //            Resource.Metadata.Behaviors.Add_View(View_Enum.RELATED_IMAGES);
+            //        if ((jpeg_files >= 4) && (Settings.Builder.Add_PageTurner_ItemViewer))
+            //            Resource.Metadata.Behaviors.Add_View(View_Enum.PAGE_TURNER);
+            //        if (jpeg2000_added)
+            //            Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG2000);
+            //    }
+            //    else
+            //    {
+            //        Resource.Metadata.Behaviors.Add_View(View_Enum.JPEG2000);
+            //    }
+            //}
 
             // THIS IS A TEMPORARY FIX FOR THUMBNAILS ACCIDENTALLY ADDED
             List<abstract_TreeNode> allPages = Resource.Metadata.Divisions.Physical_Tree.Pages_PreOrder;
