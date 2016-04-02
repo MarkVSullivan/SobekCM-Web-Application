@@ -23,7 +23,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Visibility", "visibility")
         {
             Repeatable = false;
-            Type = Element_Type.Visibility;
 
             items.Add("PRIVATE");
             items.Add("IP RESTRICTED");

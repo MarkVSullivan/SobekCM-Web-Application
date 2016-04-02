@@ -31,8 +31,7 @@ namespace SobekCM.Library.Citation.Elements
             Rows = 3;
             html_element_name = "complex_note";
             Repeatable = true;
-            Type = Element_Type.Note;
-            Display_SubType = "complex";
+
             Title = "Note";
 
             cols = TEXT_AREA_COLUMNS;

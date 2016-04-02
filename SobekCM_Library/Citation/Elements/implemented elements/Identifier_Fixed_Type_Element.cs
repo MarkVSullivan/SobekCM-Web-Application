@@ -24,8 +24,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Identifier", "identifier")
         {
             Repeatable = true;
-            Display_SubType = "fixed_type";
-            Type = Element_Type.Identifier;
         }
 
 

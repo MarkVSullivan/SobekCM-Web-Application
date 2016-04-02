@@ -22,7 +22,6 @@ namespace SobekCM.Library.Citation.Elements.implemented_elements
             : base("Projects", "collection")
         {
             Repeatable = true;
-            Type = Element_Type.Project;
             view_choices_string = String.Empty;
 
             boxes_per_line = 3;

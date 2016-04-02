@@ -25,7 +25,6 @@ namespace SobekCM.Library.Citation.Elements
         {
             second_label = "Authority";
             Repeatable = true;
-            Type = Element_Type.Classification;
 
             Add_Select_Item("", "");            
             Add_Select_Item("CANDOCS", "candocs");

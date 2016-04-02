@@ -25,7 +25,6 @@ namespace SobekCM.Library.Citation.Elements
         public VRA_StylePeriod_Element() : base("Style / Period:", "vra_styleperiod")
         {
             Repeatable = true;
-            Type = Element_Type.VRA_StylePeriod;
         }
 
 

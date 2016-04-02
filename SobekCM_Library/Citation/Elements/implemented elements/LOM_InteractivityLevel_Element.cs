@@ -31,7 +31,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Interactivity Level", "lom_interactlevel")
         {
             Repeatable = false;
-            Type = Element_Type.LOM_Interactivity_Level;
 
             items.Clear();
             items.Add(String.Empty);

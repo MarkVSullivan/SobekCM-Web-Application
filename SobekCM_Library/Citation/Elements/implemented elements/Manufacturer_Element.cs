@@ -24,7 +24,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Manufacturer", "manufacturer")
         {
             Repeatable = true;
-            Type = Element_Type.Manufacturer;
         }
 
 

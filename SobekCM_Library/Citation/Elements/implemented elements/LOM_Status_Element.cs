@@ -30,8 +30,7 @@ namespace SobekCM.Library.Citation.Elements
             : base("Status", "lom_status")
         {
             Repeatable = false;
-            Type = Element_Type.LOM_Status;
-
+ 
             items.Clear();
             items.Add(String.Empty);
             items.Add(level1_text);

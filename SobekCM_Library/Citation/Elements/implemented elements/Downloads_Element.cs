@@ -30,7 +30,6 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = true;
             possible_select_items.Clear();
 
-            Type = Element_Type.Download;
             second_label = "Label";
             
         }

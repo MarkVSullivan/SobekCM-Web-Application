@@ -163,10 +163,23 @@ namespace SobekCM.Engine_Library
                         try
                         {
                             // Create this component object (assumes same assembly for the moment)
+                            
                             Assembly dllAssembly = Assembly.GetExecutingAssembly();
+                            if (!String.IsNullOrEmpty(verbMapping.Component.Assembly))
+                            {
+                                string assembly_name = verbMapping.Component.Assembly;
+                                if (assembly_name.IndexOf(".dll", StringComparison.OrdinalIgnoreCase) < 0)
+                                    assembly_name = assembly_name + ".dll";
+                                dllAssembly = Assembly.LoadFrom(@"C:\GitRepository\SobekCM-Web-Application - Copy\SobekCM\bin\" + assembly_name);
+                            }
+
                             // Type restApiClassType = dllAssembly.GetType(Component.Namespace + "." + Component.Class);
 
-                            Type restApiClassType = dllAssembly.GetType("SobekCM.Engine_Library.Endpoints." + verbMapping.Component.Class);
+                            string className = verbMapping.Component.Class;
+                            if (className.IndexOf(".") < 0)
+                                className = "SobekCM.Engine_Library.Endpoints." + verbMapping.Component.Class;
+                            
+                            Type restApiClassType = dllAssembly.GetType(className);
                             restApiObject = Activator.CreateInstance(restApiClassType);
 
                             // Add this to the dictionary of rest api objects as well

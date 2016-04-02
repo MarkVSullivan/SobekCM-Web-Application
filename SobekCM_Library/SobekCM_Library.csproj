@@ -394,7 +394,6 @@
     <Compile Include="Citation\Elements\implemented elements\Edition_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Format_Element.cs" />
     <Compile Include="Citation\Elements\Element_Factory.cs" />
-    <Compile Include="Citation\Elements\Element_Type.cs" />
     <Compile Include="Citation\Elements\iElement.cs" />
     <Compile Include="Citation\Elements\implemented elements\Language_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Manufacturer_Element.cs" />

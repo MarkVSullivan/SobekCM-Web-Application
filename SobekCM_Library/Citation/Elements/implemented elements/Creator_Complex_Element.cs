@@ -25,8 +25,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Creator", "complex_creator")
         {
             Repeatable = true;
-            Type = Element_Type.Creator;
-            Display_SubType = "complex";
 
             Add_Select_Item("", "");
             Add_Select_Item("Actor", "act");

@@ -22,7 +22,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Edition", "edition")
         {
             Repeatable = false;
-            Type = Element_Type.Edition;
         }
 
 

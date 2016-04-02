@@ -24,7 +24,6 @@ namespace SobekCM.Library.Citation.Elements
 			: base("Graduation Semester", "etd_graduationsemester")
 		{
 			Repeatable = false;
-			Type = Element_Type.ETD_GraduationSemester;
 		}
 
 		/// <summary> Renders the HTML for this element </summary>

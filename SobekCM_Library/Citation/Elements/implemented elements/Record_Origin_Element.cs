@@ -23,7 +23,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Record Origin", "record_origin")
         {
             Repeatable = false;
-            Type = Element_Type.RecordOrigin;
         }
 
 

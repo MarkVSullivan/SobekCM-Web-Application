@@ -24,8 +24,6 @@ namespace SobekCM.Library.Citation.Elements
         public Serial_Hierarchy_Panel_Element()
         {
             Repeatable = false;
-            Type = Element_Type.SerialHierarchy;
-            Display_SubType = "panel";
             Title = "Serial Hierarchy";
             html_element_name = "panel_serial_hierarchy";
 			help_page = "serialhierarchy2";

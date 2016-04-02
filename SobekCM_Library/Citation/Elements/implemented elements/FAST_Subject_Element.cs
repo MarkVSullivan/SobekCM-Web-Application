@@ -30,8 +30,6 @@ namespace SobekCM.Library.Citation.Elements
             Add_Select_Item("Temporal", "temporal");
             Add_Select_Item("Topical", "topic");
 
-
-            Type = Element_Type.FAST_Subject;
             Repeatable = true;
         }
 

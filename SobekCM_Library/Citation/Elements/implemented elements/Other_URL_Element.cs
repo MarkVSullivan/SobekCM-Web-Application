@@ -23,8 +23,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Related URL", "related_url")
         {
             Repeatable = false;
-            Display_SubType = "simple";
-            Type = Element_Type.OtherURL;
         }
 
 

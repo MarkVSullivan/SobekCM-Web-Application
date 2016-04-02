@@ -965,7 +965,6 @@
     <Content Include="config\default\sobekcm_static_resources_local.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="config\user\sobekcm_shibboleth_example.config" />
     <Content Include="config\default\sobekcm_brief_item_mapping.config">
       <SubType>Designer</SubType>
     </Content>
@@ -975,6 +974,8 @@
     <Content Include="config\default\sobekcm_citation.config" />
     <Content Include="config\default\sobekcm_template_elements.config" />
     <Content Include="config\default\sobekcm_viewers.config" />
+    <Content Include="config\default\sobekcm_item_viewers.config" />
+    <Content Include="config\default\sobekcm_aggregation_viewers.config" />
     <None Include="Properties\PublishProfiles\U262189 USF SobekCM local instance.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

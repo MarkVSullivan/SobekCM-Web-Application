@@ -26,7 +26,6 @@ namespace SobekCM.Library.Citation.Elements
         {
             second_label = "Element described";
             Repeatable = true;
-            Type = Element_Type.VRA_Material;
         }
 
                 /// <summary> Renders the HTML for this element </summary>

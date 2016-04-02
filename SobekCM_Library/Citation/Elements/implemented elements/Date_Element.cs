@@ -22,7 +22,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Publication Date", "pub_date")
         {
             Repeatable = false;
-            Type = Element_Type.Date;
         }
 
 

@@ -236,7 +236,7 @@ namespace SobekCM.Library.Citation.Template
                     if ((nodeName == "ELEMENT") && (nodeReader.HasAttributes) && (currentPanel != null))
                     {
                         abstract_Element currentElement = process_element( nodeReader, ThisCompleteTemplate.InputPages.Count );
-                        if (( currentElement != null ) && (( !exclude_divisions ) || ( currentElement.Type != Element_Type.Structure_Map )))
+                        if ( currentElement != null )
                             currentPanel.Add_Element( currentElement );
                     }
                 }
@@ -280,22 +280,22 @@ namespace SobekCM.Library.Citation.Template
             // Set the page number for post back reasons
             newElement.Template_Page = current_page_count;
 
-            // Some special logic here
-            if ((newElement.Type == Element_Type.Type) && ( newElement.Display_SubType == "form" ))
-            {
-                (( Type_Format_Form_Element )newElement).Set_Postback("javascript:__doPostBack('newpagebutton" + current_page_count + "','')");
-            }
+            //// Some special logic here
+            //if ((newElement.Type == Element_Type.Type) && ( newElement.Display_SubType == "form" ))
+            //{
+            //    (( Type_Format_Form_Element )newElement).Set_Postback("javascript:__doPostBack('newpagebutton" + current_page_count + "','')");
+            //}
 
 
-            if ((newElement.Type == Element_Type.Title) && (newElement.Display_SubType == "form"))
-            {
-                complexMainTitleExists = true;
-            }
+            //if ((newElement.Type == Element_Type.Title) && (newElement.Display_SubType == "form"))
+            //{
+            //    complexMainTitleExists = true;
+            //}
 
-            if ((newElement.Type == Element_Type.Note) && (newElement.Display_SubType == "complex"))
-            {
-                ((Note_Complex_Element)newElement).Include_Statement_Responsibility = !complexMainTitleExists;
-            }
+            //if ((newElement.Type == Element_Type.Note) && (newElement.Display_SubType == "complex"))
+            //{
+            //    ((Note_Complex_Element)newElement).Include_Statement_Responsibility = !complexMainTitleExists;
+            //}
 
             // Now, step through all the attributes again
             nodeReader.MoveToFirstAttribute();

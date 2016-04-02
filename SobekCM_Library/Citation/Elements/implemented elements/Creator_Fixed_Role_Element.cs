@@ -25,8 +25,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Creator", "creator")
         {
             Repeatable = true;
-            Display_SubType = "fixed_role";
-            Type = Element_Type.Creator;
 	        help_page = "creatorfixed";
         }
 

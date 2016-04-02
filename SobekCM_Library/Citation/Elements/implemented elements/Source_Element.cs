@@ -30,7 +30,7 @@ namespace SobekCM.Library.Citation.Elements
         {
             Repeatable = false;
             possible_select_items.Add("");
-            Type = Element_Type.Source;
+
             clear_textbox_on_combobox_change = true;
         }
 

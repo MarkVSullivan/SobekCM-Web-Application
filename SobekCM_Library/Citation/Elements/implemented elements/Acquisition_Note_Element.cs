@@ -23,7 +23,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Acquisition", "acquisition")
         {
             Repeatable = false;
-            Type = Element_Type.Acquisition;
         }
 
 

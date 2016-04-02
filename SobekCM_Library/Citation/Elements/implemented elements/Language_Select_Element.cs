@@ -23,7 +23,6 @@ namespace SobekCM.Library.Citation.Elements
         public Language_Select_Element() : base("Language", "language")
         {
             Repeatable = true;
-            Type = Element_Type.Language;
 
             boxes_per_line = 3;
             max_boxes = 3;

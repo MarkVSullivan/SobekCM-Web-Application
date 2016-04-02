@@ -47,6 +47,8 @@ namespace SobekCM.Engine_Library.Endpoints
             Solr_Exception
         }
 
+        private const bool INCLUDE_PRIVATE = false;
+
         /// <summary> Get just the search statistics information for a search or browse </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
@@ -93,7 +95,7 @@ namespace SobekCM.Engine_Library.Endpoints
             tracer.Add_Trace("ResultsServices.Get_Search_Statistics", "Perform the search");
             Search_Results_Statistics resultsStats;
             List<iSearch_Title_Result> resultsPage;
-            ResultsEndpointErrorEnum error = Get_Search_Results(args, aggr, tracer, out resultsStats, out resultsPage);
+            ResultsEndpointErrorEnum error = Get_Search_Results(args, aggr, INCLUDE_PRIVATE, tracer, out resultsStats, out resultsPage);
 
             // Was this in debug mode?
             // If this was debug mode, then just write the tracer
@@ -191,7 +193,7 @@ namespace SobekCM.Engine_Library.Endpoints
             tracer.Add_Trace("ResultsServices.Get_Search_Results_Set", "Perform the search");
             Search_Results_Statistics resultsStats;
             List<iSearch_Title_Result> resultsPage;
-            ResultsEndpointErrorEnum error = Get_Search_Results(args, aggr, tracer, out resultsStats, out resultsPage);
+            ResultsEndpointErrorEnum error = Get_Search_Results(args, aggr, INCLUDE_PRIVATE, tracer, out resultsStats, out resultsPage);
 
             // Map to the results object title / item
             tracer.Add_Trace("ResultsServices.Get_Search_Results_Set", "Map to the results object title / item");
@@ -356,7 +358,7 @@ namespace SobekCM.Engine_Library.Endpoints
             tracer.Add_Trace("ResultsServices.Get_Search_Results_Legacy", "Perform the search");
             Search_Results_Statistics resultsStats;
             List<iSearch_Title_Result> resultsPage;
-            ResultsEndpointErrorEnum error = Get_Search_Results(args, aggr, tracer, out resultsStats, out resultsPage);
+            ResultsEndpointErrorEnum error = Get_Search_Results(args, aggr, INCLUDE_PRIVATE, tracer, out resultsStats, out resultsPage);
 
             // Was this in debug mode?
             // If this was debug mode, then just write the tracer
@@ -574,11 +576,13 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <summary> Performs a search ( or retrieves the search results from the cache ) and outputs the results and search url used  </summary>
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>
         /// <param name="Aggregation_Object"> Object for the current aggregation object, against which this search is performed </param>
+        /// <param name="Include_Private_Items"></param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Complete_Result_Set_Info"> [OUT] Information about the entire set of results </param>
         /// <param name="Paged_Results"> [OUT] List of search results for the requested page of results </param>
         public ResultsEndpointErrorEnum Get_Search_Results(Results_Arguments Current_Mode,
                                        Complete_Item_Aggregation Aggregation_Object, 
+                                        bool Include_Private_Items,
                                        Custom_Tracer Tracer,
                                        out Search_Results_Statistics Complete_Result_Set_Info,
                                        out List<iSearch_Title_Result> Paged_Results)
@@ -886,7 +890,7 @@ namespace SobekCM.Engine_Library.Endpoints
                         try
                         {
                             Search_Results_Statistics recomputed_search_statistics;
-                            Perform_Database_Search(Tracer, terms, web_fields, date1, date2, actualCount, Current_Mode, sort, Aggregation_Object, results_per_page, Current_Mode.Use_Cache, out recomputed_search_statistics, out pagesOfResults, need_search_statistics);
+                            Perform_Database_Search(Tracer, terms, web_fields, date1, date2, actualCount, Current_Mode, sort, Aggregation_Object, results_per_page, Current_Mode.Use_Cache, Include_Private_Items, out recomputed_search_statistics, out pagesOfResults, need_search_statistics);
                             if (need_search_statistics)
                             {
                                 Complete_Result_Set_Info = recomputed_search_statistics;
@@ -1058,7 +1062,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
         }
 
-        private void Perform_Database_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, long Date1, long Date2, int ActualCount, Results_Arguments Current_Mode, int Current_Sort, Complete_Item_Aggregation Aggregation_Object, int Results_Per_Page, bool Potentially_Include_Facets, out Search_Results_Statistics Complete_Result_Set_Info, out List<List<iSearch_Title_Result>> Paged_Results, bool Need_Search_Statistics)
+        private void Perform_Database_Search(Custom_Tracer Tracer, List<string> Terms, List<string> Web_Fields, long Date1, long Date2, int ActualCount, Results_Arguments Current_Mode, int Current_Sort, Complete_Item_Aggregation Aggregation_Object, int Results_Per_Page, bool Potentially_Include_Facets, bool Include_Private_Items, out Search_Results_Statistics Complete_Result_Set_Info, out List<List<iSearch_Title_Result>> Paged_Results, bool Need_Search_Statistics)
         {
             if (Tracer != null)
             {
@@ -1160,7 +1164,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // If this is an exact match, just do the search
             if (Current_Mode.Search_Precision == Search_Precision_Type_Enum.Exact_Match)
             {
-                Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Exact_Search_Paged(db_terms[0], db_fields[0], INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, current_page_index, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
+                Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Exact_Search_Paged(db_terms[0], db_fields[0], Include_Private_Items, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, current_page_index, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
                 if (Need_Search_Statistics)
                     Complete_Result_Set_Info = returnArgs.Statistics;
                 Paged_Results = returnArgs.Paged_Results;
@@ -1217,7 +1221,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
 
 
-                    Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Search_Paged(searchBuilder.ToString(), INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, current_page_index, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
+                    Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Search_Paged(searchBuilder.ToString(), Include_Private_Items, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, current_page_index, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
                     if (Need_Search_Statistics)
                         Complete_Result_Set_Info = returnArgs.Statistics;
                     Paged_Results = returnArgs.Paged_Results;
@@ -1227,7 +1231,7 @@ namespace SobekCM.Engine_Library.Endpoints
                     // Perform search in the database
                     Multiple_Paged_Results_Args returnArgs = Engine_Database.Perform_Metadata_Search_Paged(links[0], db_terms[0], db_fields[0], links[1], db_terms[1], db_fields[1], links[2], db_terms[2], db_fields[2], links[3], db_terms[3],
                                                                                                             db_fields[3], links[4], db_terms[4], db_fields[4], links[5], db_terms[5], db_fields[5], links[6], db_terms[6], db_fields[6], links[7], db_terms[7], db_fields[7], links[8], db_terms[8], db_fields[8],
-                                                                                                            links[9], db_terms[9], db_fields[9], INCLUDE_PRIVATE, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, current_page_index, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
+                                                                                                            links[9], db_terms[9], db_fields[9], Include_Private_Items, Current_Mode.Aggregation, Date1, Date2, Results_Per_Page, current_page_index, Current_Sort, Need_Search_Statistics, facetsList, Need_Search_Statistics, Tracer);
                     if (Need_Search_Statistics)
                         Complete_Result_Set_Info = returnArgs.Statistics;
                     Paged_Results = returnArgs.Paged_Results;

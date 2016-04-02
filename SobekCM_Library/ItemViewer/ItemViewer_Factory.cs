@@ -206,6 +206,9 @@ namespace SobekCM.Library.ItemViewer
             // Return a standard class
             switch (className)
             {
+                case "SobekCM.Library.ItemViewer.Viewers.GIF_ItemViewer_Prototyper":
+                    return new GIF_ItemViewer_Prototyper();
+
                 case "SobekCM.Library.ItemViewer.Viewers.Citation_MARC_ItemViewer_Prototyper":
                     return new Citation_MARC_ItemViewer_Prototyper();
 

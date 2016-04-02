@@ -22,7 +22,6 @@ namespace SobekCM.Library.Citation.Elements
         public Description_Standard_Element() : base("Description Standard", "desc_standard")
         {
             Repeatable = false;
-            Type = Element_Type.DescriptionStandard;
             items.Clear();
             items.Add("(none)");
             items.Add("AACR2");

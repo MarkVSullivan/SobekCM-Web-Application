@@ -25,7 +25,6 @@ namespace SobekCM.Library.Citation.Elements
         public VRA_StateEdition_Element() : base("State / Edition:", "vra_state")
         {
             Repeatable = true;
-            Type = Element_Type.VRA_StateEdition;
         }
 
 

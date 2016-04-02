@@ -24,7 +24,6 @@ namespace SobekCM.Library.Citation.Elements
 			: base("Degree Grantor", "etd_degreegrantor")
 		{
 			Repeatable = false;
-			Type = Element_Type.ETD_DegreeGrantor;
 		}
 
 		/// <summary> Renders the HTML for this element </summary>

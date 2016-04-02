@@ -31,7 +31,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Difficulty Level", "lom_difflevel")
         {
             Repeatable = false;
-            Type = Element_Type.LOM_Difficulty_Level;
 
             items.Clear();
             items.Add(String.Empty);

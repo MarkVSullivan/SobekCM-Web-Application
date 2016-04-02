@@ -25,8 +25,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Contributor", "contributor")
         {
             Repeatable = true;
-            Display_SubType = "simple";
-            Type = Element_Type.Contributor;
         }
 
 

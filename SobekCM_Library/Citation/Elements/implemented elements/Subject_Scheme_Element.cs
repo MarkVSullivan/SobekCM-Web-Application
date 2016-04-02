@@ -27,8 +27,6 @@ namespace SobekCM.Library.Citation.Elements
         {
             second_label = "Scheme";
             Repeatable = true;
-            Display_SubType = "scheme";
-            Type = Element_Type.Subject;
 	        help_page = "subject";
         }
 

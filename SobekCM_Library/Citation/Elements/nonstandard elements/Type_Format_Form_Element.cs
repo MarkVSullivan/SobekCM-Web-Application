@@ -39,8 +39,7 @@ namespace SobekCM.Library.Citation.Elements
             default_values = new List<string>();
 
             Repeatable = false;
-            Type = Element_Type.Type;
-            Display_SubType = "form";
+
 	        help_page = "type";
         }
 

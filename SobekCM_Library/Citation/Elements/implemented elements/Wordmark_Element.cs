@@ -26,7 +26,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Wordmark", "wordmark")
         {
             Repeatable = true;
-            Type = Element_Type.Wordmark;
             view_choices_string = String.Empty;
 
             max_boxes = 5;

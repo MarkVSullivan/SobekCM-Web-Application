@@ -23,7 +23,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Tracking Box", "trackingBox")
         {
             Repeatable = false;
-            Type = Element_Type.Tracking_Box;
         }
 
 

@@ -23,9 +23,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Constructor for a new instance of the Other_Title_Form_Element class </summary>
         public Other_Title_Form_Element()
         {
-            Type = Element_Type.Title_Other;
             Repeatable = true;
-            Display_SubType = "form";
             Title = "Other Titles";
             html_element_name = "form_title_other";
 	        help_page = "othertitle";

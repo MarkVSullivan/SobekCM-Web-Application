@@ -26,8 +26,6 @@ namespace SobekCM.Library.Citation.Elements
         public Serial_Hierarchy_Form_Element()
         {
             Repeatable = false;
-            Type = Element_Type.SerialHierarchy;
-            Display_SubType = "form";
             Title = "Serial Hierarchy";
             html_element_name = "form_serial_hierarchy";
 	        help_page = "serialhierarchy";

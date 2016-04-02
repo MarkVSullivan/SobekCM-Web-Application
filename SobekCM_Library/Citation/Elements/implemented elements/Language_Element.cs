@@ -25,7 +25,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Language", "language")
         {
             Repeatable = true;
-            Type = Element_Type.Language;
 
             max_boxes = -1;
             boxes_per_line = 3;

@@ -28,7 +28,6 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = false;
             possible_select_items.Clear();
             possible_select_items.Add("Group");
-            Type = Element_Type.LOM_Context;
             second_label = String.Empty;
         }
 

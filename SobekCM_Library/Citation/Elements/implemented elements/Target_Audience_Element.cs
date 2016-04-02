@@ -26,7 +26,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Target Audience", "target_audience")
         {
             Repeatable = true;
-            Type = Element_Type.TargetAudience;
 
             max_boxes = -1;
             boxes_per_line = 3;

@@ -36,8 +36,6 @@ namespace SobekCM.Library.Citation.Elements
         public IR_Type_Element()
         {
             Repeatable = false;
-            Type = Element_Type.Type;
-            Display_SubType = "ir";
 
             // Set default title to blank
             restrict_values = false;

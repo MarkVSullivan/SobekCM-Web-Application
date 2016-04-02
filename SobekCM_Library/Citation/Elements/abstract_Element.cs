@@ -50,7 +50,6 @@ namespace SobekCM.Library.Citation.Elements
             Mandatory = false;
             isConstant = false;
             Read_Only = false;
-            Display_SubType = String.Empty;
             Acronym = String.Empty;
             Title = String.Empty;
             Template_Page = -1;
@@ -77,12 +76,6 @@ namespace SobekCM.Library.Citation.Elements
 
         /// <summary> Current title of this element </summary>
         public string Title { get; protected set; }
-
-        /// <summary> Element type for this class </summary>
-        public Element_Type Type { get; protected set; }
-
-        /// <summary> Display subtype for this element </summary>
-        public string Display_SubType { get; protected set; }
 
         /// <summary> Flag indicates if this is being used as a constant field, or if data can be entered by the user </summary>
         public bool isConstant { get; set; }

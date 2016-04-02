@@ -25,7 +25,6 @@ namespace SobekCM.Library.Citation.Elements
         public LOM_ResourceType_Element() : base("Resource Type:", "lom_type")
         {
             Repeatable = true;
-            Type = Element_Type.LOM_Learning_Resource_Type;
         }
 
 

@@ -24,8 +24,6 @@ namespace SobekCM.Library.Citation.Elements
         public Related_Item_Form_Element()
         {
             Repeatable = true;
-            Type = Element_Type.RelatedItem;
-            Display_SubType = "form";
             Title = "Related Item";
             html_element_name = "form_related_item";
 	        help_page = "relateditem";

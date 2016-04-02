@@ -26,8 +26,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Subject Keywords:", "subject")
         {
             Repeatable = true;
-            Display_SubType = "simple";
-            Type = Element_Type.Subject;
 	        help_page = "subject";
         }
 

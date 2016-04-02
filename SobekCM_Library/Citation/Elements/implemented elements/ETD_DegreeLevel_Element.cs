@@ -24,7 +24,6 @@ namespace SobekCM.Library.Citation.Elements
 			: base("Degree Level", "etd_degreelevel")
         {
             Repeatable = false;
-            Type = Element_Type.ETD_DegreeLevel;
 
             items.Clear();
             items.Add(String.Empty);

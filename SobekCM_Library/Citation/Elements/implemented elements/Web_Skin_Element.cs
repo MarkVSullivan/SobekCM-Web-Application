@@ -24,7 +24,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Web Skin", "interface")
         {
             Repeatable = true;
-            Type = Element_Type.Web_Skin;
 
             max_boxes = 10;
             boxes_per_line = 5;

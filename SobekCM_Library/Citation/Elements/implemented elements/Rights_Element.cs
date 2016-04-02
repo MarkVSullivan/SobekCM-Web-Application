@@ -27,7 +27,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Rights Management", "rights_mgmt")
         {
             Repeatable = false;
-            Type = Element_Type.Rights;
             baseURL = String.Empty;
         }
 

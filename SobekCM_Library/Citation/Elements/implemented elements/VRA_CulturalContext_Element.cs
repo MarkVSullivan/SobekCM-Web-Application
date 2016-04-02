@@ -24,8 +24,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Constructor for a new instance of the VRA_CulturalContext_Element class </summary>
         public VRA_CulturalContext_Element() : base("Cultural Context:", "vra_culturalcontext")
         {
-            Repeatable = true;
-            Type = Element_Type.VRA_CulturalContext;
+            Repeatable = true;;
         }
 
 

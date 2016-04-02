@@ -25,8 +25,6 @@ namespace SobekCM.Library.Citation.Elements
         public LOM_TypicalAgeRange_Element() : base("Typical Age Range:", "lom_agerange")
         {
             Repeatable = false;
-            Display_SubType = "simple";
-            Type = Element_Type.LOM_Typical_Age_Range;
         }
 
 

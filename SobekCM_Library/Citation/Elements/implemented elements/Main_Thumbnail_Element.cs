@@ -25,7 +25,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Main Thumbnail", "main_thumbnail")
         {
             Repeatable = false;
-            Type = Element_Type.MainThumbnail;
 
             items.Clear();
         }

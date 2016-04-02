@@ -26,7 +26,6 @@ namespace SobekCM.Library.Citation.Elements
         {
             second_label = "Authority";
             Repeatable = true;
-            Type = Element_Type.Genre;
         }
 
 

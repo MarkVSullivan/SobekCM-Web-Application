@@ -29,7 +29,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Interactivity Type", "lom_interacttype")
         {
             Repeatable = false;
-            Type = Element_Type.LOM_Interactivity_Type;
 
             items.Clear();
             items.Add(String.Empty);

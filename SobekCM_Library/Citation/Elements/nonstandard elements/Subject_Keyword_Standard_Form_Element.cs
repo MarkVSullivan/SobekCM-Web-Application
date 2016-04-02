@@ -25,8 +25,6 @@ namespace SobekCM.Library.Citation.Elements
         public Subject_Keyword_Standard_Form_Element()
         {
             Repeatable = true;
-            Type = Element_Type.Subject;
-            Display_SubType = "form";
             Title = "Subject Keywords";
             html_element_name = "form_subject";
 	        help_page = "subjectform";

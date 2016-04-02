@@ -26,7 +26,6 @@ namespace SobekCM.Library.Citation.Elements
         {
             second_label = "Units";
             Repeatable = true;
-            Type = Element_Type.VRA_Measurement;
         }
 
         /// <summary> Renders the HTML for this element </summary>

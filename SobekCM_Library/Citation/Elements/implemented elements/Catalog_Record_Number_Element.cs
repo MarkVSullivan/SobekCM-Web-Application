@@ -25,7 +25,6 @@ namespace SobekCM.Library.Citation.Elements
         public Catalog_Record_Number_Element() : base("Catalog Number:", "catalognum")
         {
             Repeatable = false;
-            Type = Element_Type.Catalog_Record_Number;
         }
 
 

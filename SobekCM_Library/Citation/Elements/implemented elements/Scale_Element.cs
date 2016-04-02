@@ -26,7 +26,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Scale", "scale")
         {
             Repeatable = false;
-            Type = Element_Type.Scale;
         }
 
 

@@ -25,7 +25,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Aggregation", "collection")
         {
             Repeatable = true;
-            Type = Element_Type.Aggregations;
             view_choices_string = String.Empty;
 
             boxes_per_line = 3;

@@ -22,8 +22,6 @@ namespace SobekCM.Library.Citation.Elements
         public Title_Main_Element() : base("Main Title", "title_main" )
         {
             Repeatable = false;
-            Type = Element_Type.Title;
-            Display_SubType = "simple";
 	        help_page = "titlesimple";
         }
 

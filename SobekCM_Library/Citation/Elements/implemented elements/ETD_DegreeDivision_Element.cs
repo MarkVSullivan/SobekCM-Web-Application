@@ -24,7 +24,6 @@ namespace SobekCM.Library.Citation.Elements
 			: base("Degree Division", "etd_division")
 		{
 			Repeatable = true;
-			Type = Element_Type.ETD_DegreeDivision;
 			view_choices_string = String.Empty;
 
 			boxes_per_line = 3;

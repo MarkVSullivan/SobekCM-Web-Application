@@ -24,9 +24,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Constructor for a new instance of the Name_Form_Element class </summary>
         public Name_Form_Element()
         {
-            Type = Element_Type.Creator;
             Repeatable = true;
-            Display_SubType = "form";
             Title = "Creator";
             html_element_name = "form_creator";
 	        help_page = "creator";

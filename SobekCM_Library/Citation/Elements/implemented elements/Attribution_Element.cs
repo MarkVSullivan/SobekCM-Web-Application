@@ -23,7 +23,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Attribution", "attribution")
         {
             Repeatable = false;
-            Type = Element_Type.Attribution;
         }
 
 

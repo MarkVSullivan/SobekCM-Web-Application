@@ -22,7 +22,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Bibliographic ID", "bibid")
         {
             Repeatable = false;
-            Type = Element_Type.BibID;
         }
 
 

@@ -24,7 +24,6 @@ namespace SobekCM.Library.Citation.Elements
 			: base("Committee Chair", "etd_committeechair")
 		{
 			Repeatable = false;
-			Type = Element_Type.ETD_CommitteeChair;
 		}
 
 		/// <summary> Renders the HTML for this element </summary>

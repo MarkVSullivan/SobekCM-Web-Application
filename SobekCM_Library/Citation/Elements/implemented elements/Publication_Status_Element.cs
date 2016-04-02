@@ -24,8 +24,6 @@ namespace SobekCM.Library.Citation.Elements
         public Publication_Status_Element() : base("Publication Status", "pub_status")
         {
             Repeatable = false;
-
-            Type = Element_Type.Publication_Status;
         }
 
 

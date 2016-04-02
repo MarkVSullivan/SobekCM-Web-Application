@@ -23,8 +23,6 @@ namespace SobekCM.Library.Citation.Elements
         public Zoological_Taxonomy_Form_Element()
         {
             Repeatable = false;
-            Type = Element_Type.Subject;
-            Display_SubType = "form";
             Title = "Taxonomy";
             html_element_name = "form_zootaxon";
             help_page = "zootaxonform";

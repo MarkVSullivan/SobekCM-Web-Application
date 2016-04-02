@@ -25,7 +25,6 @@ namespace SobekCM.Library.Citation.Elements
 		public LCCN_Element() : base("LCCN", "lccn")
         {
             Repeatable = false;
-            Type = Element_Type.LCCN;
         }
 
 

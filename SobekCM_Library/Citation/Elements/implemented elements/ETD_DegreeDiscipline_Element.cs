@@ -23,7 +23,6 @@ namespace SobekCM.Library.Citation.Elements
 		public ETD_DegreeDiscipline_Element() : base("Degree Discipline", "etd_discipline")
 		{
 			Repeatable = true;
-			Type = Element_Type.ETD_DegreeDiscipline;
 			view_choices_string = String.Empty;
 
 			boxes_per_line = 3;

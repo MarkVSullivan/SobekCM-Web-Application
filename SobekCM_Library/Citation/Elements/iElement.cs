@@ -16,12 +16,6 @@ namespace SobekCM.Library.Citation.Elements
 	/// <summary> Interface which all metadata elements must implement  </summary>
 	interface iElement
 	{
-		/// <summary> Element type for this class </summary>
-		Element_Type Type { get; }
-
-		/// <summary> Display subtype for this element </summary>
-		string Display_SubType { get; }
-
 		/// <summary> Flag indicates if this is being used as a constant field, or if data can be entered by the user </summary>
 		bool isConstant { get; set; }
 

@@ -22,7 +22,6 @@ namespace SobekCM.Library.Citation.Elements
         public Encoding_Level_Element() : base("Encoding Level", "encoding_level")
         {
             Repeatable = false;
-            Type = Element_Type.EncodingLevel;
 
             items.Clear();
             items.Add("(none)");

@@ -25,7 +25,6 @@ namespace SobekCM.Library.Citation.Elements
             first_label = "Date";
             second_label = "Notes";
             Repeatable = false;
-            Type = Element_Type.Material_Received_Date;
         }
 
 

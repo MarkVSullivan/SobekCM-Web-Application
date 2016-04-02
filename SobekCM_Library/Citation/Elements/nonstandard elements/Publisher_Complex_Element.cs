@@ -24,8 +24,6 @@ namespace SobekCM.Library.Citation.Elements
         public Publisher_Complex_Element()
         {
             Repeatable = true;
-            Display_SubType = "complex";
-            Type = Element_Type.Publisher;
             Title = "Publisher";
             html_element_name = "complex_publisher";
 	        help_page = "publisher";

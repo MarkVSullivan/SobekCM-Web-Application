@@ -23,8 +23,6 @@ namespace SobekCM.Library.Citation.Elements
         public Other_URL_Form_Element()
         {
             Repeatable = false;
-            Type = Element_Type.OtherURL;
-            Display_SubType = "form";
             Title = "Related URL";
             html_element_name = "form_related_url";
 	        help_page = "relatedurl";

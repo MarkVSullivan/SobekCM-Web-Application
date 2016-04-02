@@ -23,7 +23,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Volume ID", "vid")
         {
             Repeatable = false;
-            Type = Element_Type.VID;
         }
 
 

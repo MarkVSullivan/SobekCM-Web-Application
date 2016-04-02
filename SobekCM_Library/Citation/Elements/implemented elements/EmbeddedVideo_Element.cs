@@ -23,7 +23,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Embedded Video", "embeddedvideo")
         {
             Repeatable = false;
-            Type = Element_Type.Note;
         }
 
         /// <summary> Renders the HTML for this element </summary>

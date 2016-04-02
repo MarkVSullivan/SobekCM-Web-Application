@@ -25,7 +25,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Spatial Coverage", "spatial")
         {
             Repeatable = true;
-            Type = Element_Type.Spatial;
         }
 
 

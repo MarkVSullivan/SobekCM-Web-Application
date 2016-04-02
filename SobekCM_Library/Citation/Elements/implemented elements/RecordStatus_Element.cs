@@ -22,7 +22,6 @@ namespace SobekCM.Library.Citation.Elements
         {
             Repeatable = false;
             Read_Only = true;
-            Type = Element_Type.RecordStatus;
 
             items.Clear();
             items.Add("METADATA UPDATE");

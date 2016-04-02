@@ -30,7 +30,7 @@ namespace SobekCM.Library.Citation.Elements
         public LOM_IntendedUser_Element() : base("Intended User", "lom_intendeduser")
         {
             Repeatable = true;
-            Type = Element_Type.LOM_Intended_End_User_Role;
+
             view_choices_string = String.Empty;
 
             boxes_per_line = 4;

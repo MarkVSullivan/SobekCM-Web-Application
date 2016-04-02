@@ -26,7 +26,6 @@ namespace SobekCM.Library.Citation.Elements
         {
             second_label = "Identifier Type";
             Repeatable = true;
-            Type = Element_Type.Identifier;
         }
 
 

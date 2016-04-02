@@ -22,8 +22,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Group Title", "title_group")
         {
             Repeatable = false;
-            Type = Element_Type.Group_Title;
-            Display_SubType = "simple";
         }
 
         /// <summary> Renders the HTML for this element </summary>

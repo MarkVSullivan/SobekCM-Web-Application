@@ -25,7 +25,6 @@ namespace SobekCM.Library.Citation.Elements
         public OCLC_Record_Number_Element() : base("OCLC Number", "oclcnum")
         {
             Repeatable = false;
-            Type = Element_Type.OCLC_Record_Number;
         }
 
 

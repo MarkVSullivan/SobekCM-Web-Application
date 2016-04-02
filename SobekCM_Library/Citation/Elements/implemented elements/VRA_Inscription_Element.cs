@@ -25,7 +25,6 @@ namespace SobekCM.Library.Citation.Elements
         public VRA_Inscription_Element()  : base("Inscription:", "vra_inscription")
         {
             Repeatable = true;
-            Type = Element_Type.VRA_Inscription;
         }
 
 

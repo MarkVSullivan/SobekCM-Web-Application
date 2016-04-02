@@ -31,7 +31,6 @@ namespace SobekCM.Library.Citation.Elements
             Add_Select_Item("Translated Title", "translated");
             Add_Select_Item("Uniform Title", "uniform");
 
-            Type = Element_Type.Title_Other;
             Repeatable = true;
         }
 

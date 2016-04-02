@@ -23,8 +23,7 @@ namespace SobekCM.Library.Citation.Elements
             : base("Tickler", "tickler")
         {
             Repeatable = true;
-            Type = Element_Type.Tickler;
-
+            
             max_boxes = -1;
             boxes_per_line = 3;
         }

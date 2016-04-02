@@ -28,8 +28,6 @@ namespace SobekCM.Library.Citation.Elements
             first_label = "Latitude";
             second_label = "Longitude";
             Repeatable = true;
-            Display_SubType = "point";
-            Type = Element_Type.Coordinates;
         }
 
 

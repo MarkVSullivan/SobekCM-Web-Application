@@ -23,7 +23,6 @@ namespace SobekCM.Library.Citation.Elements
         public Abstract_Summary_Element() : base("Abstract", "abstract")
         {
             Repeatable = true;
-            Type = Element_Type.Abstract;
         }
 
         /// <summary> Renders the HTML for this element </summary>

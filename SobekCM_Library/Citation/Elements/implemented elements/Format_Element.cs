@@ -22,7 +22,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Physical Description", "physical_description")
         {
             Repeatable = false;
-            Type = Element_Type.Format;
         }
 
 

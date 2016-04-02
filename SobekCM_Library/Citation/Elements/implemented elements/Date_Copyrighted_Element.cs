@@ -22,7 +22,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Copyright Year", "copyright_date")
         {
             Repeatable = false;
-            Type = Element_Type.DateCopyrighted;
         }
 
 

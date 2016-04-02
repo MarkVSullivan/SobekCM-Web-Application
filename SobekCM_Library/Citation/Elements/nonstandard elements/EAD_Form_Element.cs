@@ -22,8 +22,6 @@ namespace SobekCM.Library.Citation.Elements
         public EAD_Form_Element()
         {
             Repeatable = false;
-            Type = Element_Type.EAD;
-            Display_SubType = "form";
             Title = "Related EAD";
             html_element_name = "form_ead";
 	        help_page = "ead";

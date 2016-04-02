@@ -902,7 +902,7 @@ namespace SobekCM.Library.AdminViewer
 			    }
 
 				// Was this tab page already added?
-				if (!settingsByPage.ContainsKey(thisValue.TabPage))
+				if (( thisValue.TabPage != null ) && (!settingsByPage.ContainsKey(thisValue.TabPage)))
 				{
 					// We are going to move 'General.." up to the front, others are in alphabetical order
 					if (thisValue.TabPage.IndexOf("General", StringComparison.OrdinalIgnoreCase) == 0)

@@ -22,7 +22,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("METS Note", "creation_note")
         {
             Repeatable = false;
-            Type = Element_Type.CreatorNotes;
         }
 
 

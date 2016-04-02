@@ -24,7 +24,6 @@ namespace SobekCM.Library.Citation.Elements
 			: base("Degree", "etd_degreeearned")
 		{
 			Repeatable = false;
-			Type = Element_Type.ETD_Degree;
 		}
 
 		/// <summary> Renders the HTML for this element </summary>

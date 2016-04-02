@@ -25,7 +25,7 @@ namespace SobekCM.Library.Citation.Elements
             : base("Frequency", "frequency")
         {
             Repeatable = true;
-            Type = Element_Type.Frequency;
+
             Add_Items(new[] { "", "annual", "biennial", "bimonthly", "biweekly","continuously updated","daily","monthly","other",
                 "quarterly","regular", "semiannual","semimonthly","semiweekly","three times a month","three times a week","three times a year","triennial","weekly" });
 

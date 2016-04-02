@@ -26,8 +26,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Creator", "creator")
         {
             Repeatable = true;
-            Display_SubType = "simple";
-            Type = Element_Type.Creator;
 	        help_page = "creatorsimple";
         }
 

@@ -28,8 +28,6 @@ namespace SobekCM.Library.Citation.Elements
         {
             Rows = 3;
             Repeatable = true;
-            Type = Element_Type.Abstract;
-            Display_SubType = "complex";
             Title = "Abstract";
             cols = TEXT_AREA_COLUMNS;
             colsMozilla = MOZILLA_TEXT_AREA_COLUMNS;

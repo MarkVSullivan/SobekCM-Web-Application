@@ -23,8 +23,6 @@ namespace SobekCM.Library.Citation.Elements
         public Publisher_Element() : base("Publisher", "publisher")
         {
             Repeatable = true;
-            Display_SubType = "complex";
-            Type = Element_Type.Publisher;
         }
 
 

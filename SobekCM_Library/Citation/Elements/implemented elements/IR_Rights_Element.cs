@@ -29,8 +29,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Rights Management", "rights_mgmt")
         {
             Repeatable = false;
-            Type = Element_Type.Rights;
-            Display_SubType = "ir";
             rows = 5;
             baseURL = String.Empty;
 	        help_page = "typeir";

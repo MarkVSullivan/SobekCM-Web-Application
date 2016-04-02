@@ -25,8 +25,6 @@ namespace SobekCM.Library.Citation.Elements
         public Hierarchical_Spatial_Form_Element()
         {
             Repeatable = true;
-            Type = Element_Type.Subject;
-            Display_SubType = "form";
             Title = "Spatial Coverage";
             html_element_name = "form_spatial";
 	        help_page = "spatialform";

@@ -25,8 +25,6 @@ namespace SobekCM.Library.Citation.Elements
         public Temporal_Complex_Element()
         {
             Repeatable = true;
-            Type = Element_Type.Temporal;
-            Display_SubType = "complex";
             Title = "Temporal Coverage";
             html_element_name = "complex_temporal";
 	        help_page = "temporal";

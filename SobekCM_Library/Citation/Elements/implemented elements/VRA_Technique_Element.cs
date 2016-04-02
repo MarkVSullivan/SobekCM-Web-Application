@@ -25,7 +25,6 @@ namespace SobekCM.Library.Citation.Elements
         public VRA_Technique_Element() : base("Technique:", "vra_technique")
         {
             Repeatable = true;
-            Type = Element_Type.VRA_Technique;
         }
 
 

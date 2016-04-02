@@ -27,8 +27,6 @@ namespace SobekCM.Library.Citation.Elements
         public Viewer_Element()
         {
             Repeatable = true;
-            Type = Element_Type.Temporal;
-            Display_SubType = "complex";
             Title = "Viewer";
             html_element_name = "viewer";
         }

@@ -26,8 +26,6 @@ namespace SobekCM.Library.Citation.Elements
         public Title_Main_Form_Element()
         {
             Repeatable = false;
-            Type = Element_Type.Title;
-            Display_SubType = "form";
             Title = "Main Title";
             html_element_name = "form_title_main";
 	        help_page = "title";

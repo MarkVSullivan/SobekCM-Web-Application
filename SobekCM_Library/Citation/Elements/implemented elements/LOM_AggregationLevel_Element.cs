@@ -29,7 +29,6 @@ namespace SobekCM.Library.Citation.Elements
         public LOM_AggregationLevel_Element() : base("Aggregation Level", "lom_aggrlevel")
         {
             Repeatable = false;
-            Type = Element_Type.LOM_Aggregation_Level;
 
             items.Clear();
             items.Add(String.Empty);

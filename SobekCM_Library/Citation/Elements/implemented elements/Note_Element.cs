@@ -25,7 +25,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Note", "note")
         {
             Repeatable = true;
-            Type = Element_Type.Note;
         }
 
         /// <summary> Renders the HTML for this element </summary>

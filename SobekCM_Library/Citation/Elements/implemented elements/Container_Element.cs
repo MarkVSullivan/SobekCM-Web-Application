@@ -33,7 +33,7 @@ namespace SobekCM.Library.Citation.Elements
             possible_select_items.Add("Box");
             possible_select_items.Add("Shelf");
             possible_select_items.Add("Room");
-            Type = Element_Type.Container;
+
             second_label = "Label";
 
         }

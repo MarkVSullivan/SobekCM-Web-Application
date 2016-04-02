@@ -24,7 +24,6 @@ namespace SobekCM.Library.Citation.Elements
         public Type_Element() : base("Resource Type", "type")
         {
             Repeatable = false;
-            Type = Element_Type.Type;
 	        help_page = "typesimple";
         }
 

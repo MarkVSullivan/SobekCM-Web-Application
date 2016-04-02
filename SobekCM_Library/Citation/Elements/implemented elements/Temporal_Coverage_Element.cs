@@ -24,8 +24,6 @@ namespace SobekCM.Library.Citation.Elements
             : base("Temporal Coverage", "temporal")
         {
             Repeatable = true;
-            Type = Element_Type.Temporal;
-            Display_SubType = "simple";
         }
 
 

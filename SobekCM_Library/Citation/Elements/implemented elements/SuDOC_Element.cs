@@ -25,7 +25,6 @@ namespace SobekCM.Library.Citation.Elements
 		public SuDOC_Element() : base("SuDoc Number", "sudoc")
         {
             Repeatable = false;
-            Type = Element_Type.SuDoc;
         }
 
 

@@ -35,7 +35,7 @@ namespace SobekCM.Library.Citation.Elements
             {
                 possible_select_items.Add(thisType.Future);
             }
-            Type = Element_Type.Disposition_Advice;
+
             second_label = "Notes";
         }
 
