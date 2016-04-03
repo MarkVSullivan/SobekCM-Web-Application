@@ -19,6 +19,52 @@ namespace SobekCM.Library.ResultsViewer
     /// <see cref="iResultsViewer" /> interface. </remarks>
     public class Brief_ResultsViewer : abstract_ResultsViewer
     {
+        /// <summary> String literal for html svg for OpenAccess icon</summary>
+        /// The size is different among the current ResultsViewers, so each has its own icon versions, so they can be 
+        /// tweaked individually in the code for each concrete ResultsViewer as development iterates.
+        protected string iconOpenAccess = @"
+<svg xmlns='http://www.w3.org/2000/svg' 
+x='0px' y='0px' viewbox='0 0 1000 1000'  
+width='80px' height='80px'
+xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns:cc='http://creativecommons.org/ns#' xmlns:dc='http://purl.org/dc/elements/1.1/'>
+  <metadata><rdf:RDF><cc:Work rdf:about=''>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource='http://purl.org/dc/dcmitype/StillImage'/>
+    <dc:creator>art designer at PLoS, modified by Wikipedia users Nina, Beao, JakobVoss, and AnonMoos</dc:creator>
+    <dc:description>Open Access logo, converted into svg, designed by PLoS. This version with transparent background.</dc:description>
+    <dc:source>http://commons.wikimedia.org/wiki/File:Open_Access_logo_PLoS_white.svg</dc:source>
+    <dc:license rdf:resource='http://creativecommons.org/publicdomain/zero/1.0/'/>
+    <cc:license rdf:resource='http://creativecommons.org/publicdomain/zero/1.0/'/>
+    <cc:attributionName>art designer at PLoS, modified by Wikipedia users Nina, Beao, JakobVoss, and AnonMoos</cc:attributionName>
+    <cc:attributionURL>http://www.plos.org/</cc:attributionURL>
+  </cc:Work></rdf:RDF></metadata>
+  <rect width='640' height='1000' fill='#ffffff'/>
+  <g stroke='#f68212' stroke-width='104.764' fill='none'>
+    <path d='M111.387,308.135V272.408A209.21,209.214 0 0,1 529.807,272.408V530.834'/>
+    <circle cx='320.004' cy='680.729' r='256.083'/>
+  </g>
+  <circle fill='#f68212' cx='321.01' cy='681.659' r='86.4287'/>
+</svg>
+";
+        /// <summary> String literal for html svg for External (guest paygate) icon</summary>
+
+        protected string iconGuestPays = @"
+<svg id='icon-external' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' 
+width='60px' height='60px'
+x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve'>
+<polygon fill='#008000' points='120.088,16.696 60.256,16.697 60.257,0.095 120.092,0.091 '/>
+<rect x='55.91' y='24.562' 
+ transform='matrix(0.7071 -0.7071 0.7071 0.7071 1.0877 70.8061)' 
+ fill='#008000' width='60.209' height='19.056'/>
+<polygon fill='#008000' points='119.975,0.107 119.996,59.938 103.408,59.95 103.393,0.104 '/>
+<rect x='3' y='23.5' fill='#008000' width='17' height='87'/>
+<rect x='86.49' y='76.059' fill='#008000' width='17' height='36.941'/>
+<rect x='3' y='16.692' fill='#008000' width='40.655' height='17'/>
+<rect x='3' y='96' fill='#008000' width='100.49' height='17'/>
+</svg>
+";
+        
+       
         /// <summary> Constructor for a new instance of the Brief_ResultsViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Brief_ResultsViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
@@ -27,9 +73,12 @@ namespace SobekCM.Library.ResultsViewer
         }
 
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
-        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
+        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm 
+        /// form into which the the bulk of the result viewer's output is displayed</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones 
+        /// in rendering </param>
+        /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the 
+        /// titles and sorted by serial hierarchy </returns>
         public override void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             if (Tracer != null)
@@ -38,9 +87,10 @@ namespace SobekCM.Library.ResultsViewer
             }
 
             // If results are null, or no results, return empty string
-            if ((RequestSpecificValues.Paged_Results == null) || (RequestSpecificValues.Results_Statistics == null) || (RequestSpecificValues.Results_Statistics.Total_Items <= 0))
+            if (  (RequestSpecificValues.Paged_Results == null) 
+               || (RequestSpecificValues.Results_Statistics == null) 
+               || (RequestSpecificValues.Results_Statistics.Total_Items <= 0))
                 return;
-
             const string VARIES_STRING = "<span style=\"color:Gray\">( varies )</span>";
 
             // Get the text search redirect stem and (writer-adjusted) base url 
@@ -49,7 +99,7 @@ namespace SobekCM.Library.ResultsViewer
             if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
                 base_url = RequestSpecificValues.Current_Mode.Base_URL + "l/";
 
-            // Start the results
+            // Start building the html to display the results
             StringBuilder resultsBldr = new StringBuilder(2000);
             resultsBldr.AppendLine("<section class=\"sbkBrv_Results\">");
 
@@ -57,7 +107,42 @@ namespace SobekCM.Library.ResultsViewer
             int current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
             int result_counter = ((current_page - 1) * Results_Per_Page) + 1;
 
-            // Step through all the results
+            // For UFDC IR Elsevier, step through all results, caching entitlement information for each Elsevier 
+            // bibID (starts with "LS"). Compose a string of all Elsevier pii values to save time 
+            // by only using at most one entitlement query for this results page.
+            string elsevier_pii_string = "";
+            Elsevier_Entitlements_Cache e_cache = new Elsevier_Entitlements_Cache();
+            foreach (iSearch_Title_Result titleResult in RequestSpecificValues.Paged_Results)
+            {
+                iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
+                // Display special feature icons for Elsevier Articles, if any.
+                // For produciton replace this next clause with 
+                // APPROACH 1: a call to a new method,
+                // e_cache.bibid_stage(titleResult) - to stage all info (computed external link, OpenAccess bool, pii list,
+                // anything else useful to support truth tests in the main loop below when html is added per title) 
+                // to internal data
+                // and support call to new method cache_stage() (to replace cache_pii_csv_string)
+                // which will also use the entitlement api
+                // APPROACH 2: create a new Elsevier_Title(titleResult) class to do the Link parsing, provide
+                // methods to test whether open access or to return the  computed external link (needed in the next titleResult 
+                // loop).
+                if (titleResult.BibID.IndexOf("LS") == 0)
+                {
+                    string[] parts = firstItemResult.Link.Split("/".ToCharArray());
+                    string pii = "";
+                    if (parts.Length > 2)
+                        pii = parts[parts.Length - 1];
+                    if (elsevier_pii_string.Length > 0)
+                    {
+                        elsevier_pii_string = elsevier_pii_string + ",";
+                    }
+                    elsevier_pii_string += pii;
+                }
+            }
+            // Add any found Elsevier pii values to our entitlement cache.         
+            e_cache.cache_pii_csv_string(elsevier_pii_string);
+            
+            // Step through all the results and build the HTML page
             int current_row = 0;
             foreach (iSearch_Title_Result titleResult in RequestSpecificValues.Paged_Results)
             {
@@ -66,12 +151,48 @@ namespace SobekCM.Library.ResultsViewer
 	            // Always get the first item for things like the main link and thumbnail
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
 
-                // Determine the internal link to the first (possibly only) item
-                string internal_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
+                // Initialize and perhaps change Elsevier info for this bibid
+                bool isElsevier = false;
+                bool isOpenAccess = false;
+                string title_link = "";
+                string internal_citation_link = "";
+                bool entitlement = true;
+                // Parse data members for this Elsevier Title. They are used to display special feature icons for 
+                // Elsevier Articles, if any, and make the Title link go to the external resource, as planned for the
+                // Elsevier Pilot.
+                if (titleResult.BibID.IndexOf("LS") == 0)
+                {
+                    // This is an Elsevier article, so we must check for openAccess and for Elsevier 
+                    // entitlement to decide to show guest icon.
+                    //
+                    // We have stored the article key PII id value in the last part of the link value,
+                    // and an openaccess indicator in the penultimate part
+                    // 
+                    isElsevier = true;
+                    string[] parts = firstItemResult.Link.Split("/".ToCharArray());
+                    string pii = "";
+                    
+                    if (parts.Length > 2 )
+                        pii = parts[parts.Length - 1].Replace("(", "").Replace(")", "").Replace("-", "");
 
-                // For browses, just point to the title
-				if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) // browse info only
-                    internal_link = base_url + titleResult.BibID + textRedirectStem;
+                    //alternate settings: entitlement = e_cache.d_pii_entitlement.TryGetValue(pii, out isEntitled) ? isEntitled : false;
+                    entitlement = e_cache.piis_entitled.Contains(pii) ? true : false;
+                    // Extract the open access indicator
+                    isOpenAccess = (parts[parts.Length - 2] == "oa_true");
+
+                    // Create the 'real' external link from the pii value part
+                    title_link = "http://www.sciencedirect.com/science/article/pii/" + pii;
+                    internal_citation_link = base_url + titleResult.BibID + textRedirectStem;
+               } // if "LS" Bibid for Elsevier Article
+               else // This bib title is not an Elsevier Article
+               {
+                    // Determine the internal link to the first (possibly only) item
+                    title_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
+
+                    // For browses, just point to the title
+                    if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) // browse info only
+                        title_link = base_url + titleResult.BibID + textRedirectStem;
+                }
 
                 // Start this row
                 string title = firstItemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;");
@@ -79,11 +200,12 @@ namespace SobekCM.Library.ResultsViewer
                 {
                     title = titleResult.GroupTitle.Replace("<", "&lt;").Replace(">", "&gt;");
                     resultsBldr.AppendLine("\t<section class=\"sbkBrv_SingleResult\">");
-
                 }
                 else
-                    resultsBldr.AppendLine("\t<section class=\"sbkBrv_SingleResult\" onclick=\"window.location.href='" + internal_link + "';\" >");
-
+                {
+                    resultsBldr.AppendLine("\t<section class=\"sbkBrv_SingleResult\" onclick=\"window.location.href='" 
+                        + title_link + "';\" >");
+                }
 
                 // Add the counter as the first column
                 resultsBldr.AppendLine("\t\t<div class=\"sbkBrv_SingleResultNum\">" + result_counter + "</div>");
@@ -100,50 +222,81 @@ namespace SobekCM.Library.ResultsViewer
                 }
 
                 // Calculate the thumbnail
-                string thumb = titleResult.BibID.Substring(0, 2) + "/" + titleResult.BibID.Substring(2, 2) + "/" +titleResult.BibID.Substring(4, 2) + "/" + titleResult.BibID.Substring(6, 2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" + (firstItemResult.MainThumbnail).Replace("\\", "/").Replace("//", "/");
+                string thumb = titleResult.BibID.Substring(0, 2) + "/" + titleResult.BibID.Substring(2, 2) 
+                    + "/" +titleResult.BibID.Substring(4, 2) + "/" + titleResult.BibID.Substring(6, 2) 
+                    + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" 
+                    + (firstItemResult.MainThumbnail).Replace("\\", "/").Replace("//", "/");
 
                 // Draw the thumbnail 
                 if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
                 {
-                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" + Static_Resources.Nothumb_Jpg + "\" border=\"0px\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a></div>");
+                    resultsBldr.AppendLine("<a href=\"" + title_link + "\"><img src=\"" + Static_Resources.Nothumb_Jpg 
+                        + "\" border=\"0px\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a></div>");
                 }
                 else
                 {
-                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" +UI_ApplicationCache_Gateway.Settings.Image_URL + thumb + "\" class=\"resultsThumbnail\" alt=\"" + title.Replace("\"","") + "\" /></a></div>");
+                    resultsBldr.AppendLine("<a href=\"" + title_link + "\"><img src=\"" 
+                        + UI_ApplicationCache_Gateway.Settings.Image_URL + thumb + "\" class=\"resultsThumbnail\" alt=\"" 
+                        + title.Replace("\"","") + "\" /></a></div>");
                 }
-
 
                 resultsBldr.AppendLine("\t\t<div class=\"sbkBrv_SingleResultDesc\">");
 
                 // If this was access restricted, add that
                 if (restricted_by_ip)
                 {
-                    resultsBldr.AppendLine("\t\t\t<span class=\"RestrictedItemText\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Access Restricted", RequestSpecificValues.Current_Mode.Language) + "</span>");
+                    resultsBldr.AppendLine("\t\t\t<span class=\"RestrictedItemText\">" 
+                        + UI_ApplicationCache_Gateway.Translation.Get_Translation(
+                        "Access Restricted", RequestSpecificValues.Current_Mode.Language) + "</span>");
                 }
 
                 if (multiple_title)
                 {
-                    resultsBldr.AppendLine("\t\t\t<span class=\"briefResultsTitle\"><a href=\"" + internal_link + "\">" + titleResult.GroupTitle.Replace("<", "&lt;").Replace(">", "&gt;") + "</a></span>");
+                    resultsBldr.AppendLine("\t\t\t<span class=\"briefResultsTitle\"><a href=\"" + title_link 
+                        + "\">" + titleResult.GroupTitle.Replace("<", "&lt;").Replace(">", "&gt;") + "</a></span>");
                 }
                 else
                 {
                     resultsBldr.AppendLine(
                         "\t\t\t<span class=\"briefResultsTitle\"><a href=\"" +
-                        internal_link + "\">" + firstItemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;") +
+                        title_link + "\">" + firstItemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;") +
                         "</a></span>");
                 }
 
                 // Add each element to this table
                 resultsBldr.AppendLine("\t\t\t<dl class=\"sbkBrv_SingleResultDescList\">");
-
-
+                if (isElsevier)
+                {
+                    if (isOpenAccess)
+                    {
+                        resultsBldr.AppendLine("\t\t\t\t" + iconOpenAccess + "</br>");
+                    }
+                    else if (!entitlement)
+                    {
+                        // This is an Elsevier article to which user's IP is a 'guest' so not entitled to 
+                        // full-text access, so show special icon.
+                        resultsBldr.AppendLine("\t\t\t\t" + iconGuestPays + "</br>");
+                    }
+                }
 
                 if ((titleResult.Primary_Identifier_Type.Length > 0) && (titleResult.Primary_Identifier.Length > 0))
                 {
-                    resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(titleResult.Primary_Identifier_Type, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + titleResult.Primary_Identifier + "</dd>");
+                    resultsBldr.AppendLine("\t\t\t\t<dt>" 
+                        + UI_ApplicationCache_Gateway.Translation.Get_Translation(titleResult.Primary_Identifier_Type, 
+                          RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" 
+                        + titleResult.Primary_Identifier + "</dd>");
+                }
+                if (isElsevier)
+                {
+                    // Show pair of external and internal citation links, basically same as shown in Table_ResultsViewer
+                    resultsBldr.AppendLine("\t\t\t\t<dt>Links:</dt><dd> ( <a href=\"" + title_link 
+                            + "\">external resource</a> | <a href=\"" 
+                            + internal_citation_link + "\">internal citation</a> )</dd>");
                 }
 
-                if ((RequestSpecificValues.Current_User != null ) && ( RequestSpecificValues.Current_User.LoggedOn ) && ( RequestSpecificValues.Current_User.Is_Internal_User ))
+                if (  ( RequestSpecificValues.Current_User != null ) 
+                   && ( RequestSpecificValues.Current_User.LoggedOn ) 
+                   && ( RequestSpecificValues.Current_User.Is_Internal_User ))
                 {
                     resultsBldr.AppendLine("\t\t\t\t<dt>BibID:</dt><dd>" + titleResult.BibID + "</dd>");
 
@@ -177,7 +330,10 @@ namespace SobekCM.Library.ResultsViewer
 
 					if (value == "*")
 					{
-						resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + HttpUtility.HtmlDecode(VARIES_STRING) + "</dd>");
+						resultsBldr.AppendLine("\t\t\t\t<dt>" 
+                            + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, 
+                              RequestSpecificValues.Current_Mode.Language) 
+                            + ":</dt><dd>" + HttpUtility.HtmlDecode(VARIES_STRING) + "</dd>");
 					}
 					else if ( value.Trim().Length > 0 )
 					{
@@ -192,7 +348,8 @@ namespace SobekCM.Library.ResultsViewer
 								{
 									if (!value_found)
 									{
-										resultsBldr.Append("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt>");
+										resultsBldr.Append("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(
+                                            display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt>");
 										value_found = true;
 									}
 									resultsBldr.Append("<dd>" + HttpUtility.HtmlDecode(thisValue) + "</dd>");
@@ -206,7 +363,9 @@ namespace SobekCM.Library.ResultsViewer
 						}
 						else
 						{
-							resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + HttpUtility.HtmlDecode(value) + "</dd>");
+							resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(
+                                display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" 
+                                + HttpUtility.HtmlDecode(value) + "</dd>");
 						}
 					}
 				}
@@ -215,7 +374,9 @@ namespace SobekCM.Library.ResultsViewer
 
                 if (titleResult.Snippet.Length > 0)
                 {
-                    resultsBldr.AppendLine("\t\t\t<div class=\"sbkBrv_SearchResultSnippet\">&ldquo;..." + titleResult.Snippet.Replace("<em>", "<span class=\"texthighlight\">").Replace ("</em>", "</span>") + "...&rdquo;</div>");
+                    resultsBldr.AppendLine("\t\t\t<div class=\"sbkBrv_SearchResultSnippet\">&ldquo;..." 
+                        + titleResult.Snippet.Replace("<em>", "<span class=\"texthighlight\">").Replace ("</em>", "</span>") 
+                        + "...&rdquo;</div>");
                 }
                 
                 // Add children, if there are some
@@ -223,7 +384,7 @@ namespace SobekCM.Library.ResultsViewer
                 {
                     // Add this to the place holder
                     Literal thisLiteral = new Literal
-                                              { Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>") };
+                        { Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>") };
                     MainPlaceHolder.Controls.Add(thisLiteral);
                     resultsBldr.Remove(0, resultsBldr.Length);
 
@@ -245,7 +406,7 @@ namespace SobekCM.Library.ResultsViewer
 
             // Add this to the HTML page
             Literal mainLiteral = new Literal
-                                      { Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>") };
+                { Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>") };
             MainPlaceHolder.Controls.Add(mainLiteral);
         }
     }
