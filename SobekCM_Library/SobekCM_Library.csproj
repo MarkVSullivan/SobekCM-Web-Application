@@ -344,6 +344,7 @@
     <Compile Include="MainWriters\DataProvider_MainWriter.cs" />
     <Compile Include="MySobekViewer\Edit_Item_Permissions_MySobekViewer.cs" />
     <Compile Include="RequestCache.cs" />
+    <Compile Include="ResultsViewer\Elsevier_Entitlements_Cache.cs" />
     <Compile Include="ResultsViewer\Google_Map_ResultsViewer_Beta.cs" />
     <Compile Include="Settings\Static_Resources.cs" />
     <Compile Include="UI\UI_ApplicationCache_Gateway.cs" />
