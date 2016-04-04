@@ -134,36 +134,21 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve' transform='scale(0.5)
 
             resultsBldr.AppendLine("\t<tr><td bgcolor=\"#e7e7e7\" colspan=\"4\"></td></tr>");
 
-            // For UFDC IR Elsevier, step through all results, caching entitlement information for each Elsevier 
-            // bibID (starts with "LS"). Compose a string of all Elsevier pii values to save time 
-            // by only using at most Entitlement API query by calling e_cache.cache_pii_csv_string() for this results page.
-            string elsevier_pii_string = "";
-            Elsevier_Entitlements_Cache e_cache = new Elsevier_Entitlements_Cache();
+            // For UFDC IR Elsevier, first loop through all result firstItem bibs, setting up information 
+            // for each Elsevier bibID (starts with "LS"). Note. All Elsevier bibs use only vid 00001.
+            Elsevier_Entitlements_Cache e_cache = new Elsevier_Entitlements_Cache("LS", "");
             foreach (iSearch_Title_Result titleResult in RequestSpecificValues.Paged_Results)
             {
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
-                // Display special feature icons for Elsevier Articles, if any
-                if (titleResult.BibID.IndexOf("LS") == 0)
-                {
-                    string[] parts = firstItemResult.Link.Split("/".ToCharArray());
-                    string pii = "";
-                    if (parts.Length > 2)
-                        pii = parts[parts.Length - 1];
-                    if (elsevier_pii_string.Length > 0)
-                    {
-                        elsevier_pii_string = elsevier_pii_string + ",";
-                    }
-                    elsevier_pii_string += pii;
-                }
+                e_cache.Add_Article(titleResult.BibID, firstItemResult.Link);
             }
-            // If we found any Elsevier pii values, make an Elsevier Entitlment API query 
-            // via e_cache.cache_pii_csv_string() to add entitled pii list to the e_cache.
-            if (elsevier_pii_string.Length > 0)
-            {
-                e_cache.cache_pii_csv_string(elsevier_pii_string);
-            }
-            // End Elsevier Entitlement Caching section
+            // Call this after the foreach to more quickly query all entitlements info at once.
+            // This saves several valuable seconds versus doing one entitlement api 
+            // call per Elsevier article. 
+            e_cache.update_from_entitlements_api();
+            Elsevier_Article elsevier_article;
 
+            // end Elsevier setup for 'preview' results loop.
             // Set the counter for these results from the page 
             int page = RequestSpecificValues.Current_Mode.Page.HasValue ? Math.Max(RequestSpecificValues.Current_Mode.Page.Value, ((ushort)1)) : 1;
             int result_counter = ((page - 1) * Results_Per_Page) + 1;
@@ -176,44 +161,7 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve' transform='scale(0.5)
 
                 // Always get the first item for things like the main link and thumbnail
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
-                /*
-                // Elsevier code region to detect and treat display of Elsevier articles
-                string title_link = "";
-                bool entitlement = true;
-                bool isOpenAccess = false;
-                bool isElsevier = false;
-                if (titleResult.BibID.IndexOf("LS") == 0)
-                {
-                    // This is an Elsevier article, so we must check for openAccess and for Elsevier 
-                    // entitlement to decide whether to show guest icon.
-                    //
-                    // Parse the article key PII id value in the last part of the Link value,
-                    // and an openaccess indicator in the penultimate part.
-                    // 
-                    isElsevier = true;
-                    string[] parts = firstItemResult.Link.Split("/".ToCharArray());
-                    string pii = "";
-                    
-                    if (parts.Length > 2 )
-                        pii = parts[parts.Length - 1].Replace("(", "").Replace(")", "").Replace("-", "");
-
-                    entitlement = e_cache.piis_entitled.Contains(pii) ? true : false;
-                    // Detect OpenAccess article (encoded in the Link (from METS result_url) in the database for now.
-                    isOpenAccess = (parts[parts.Length - 2] == "oa_true");
-
-                    // Set the title_link as the external link for this Elsevier article from the pii value part
-                    title_link = "http://www.sciencedirect.com/science/article/pii/" + pii;
-               } // if "LS" Bibid for Elsevier Article
-               else // This bib title is not an Elsevier Article
-               {
-                    // For title link, use the internal link to the first (possibly only) item
-                    title_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
-
-                    // For browses, just point to the title
-                    if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) // browse info only
-                        title_link = base_url + titleResult.BibID + textRedirectStem;
-                }
-                */
+                
                 //// Is this restricted?
                 //bool restricted_by_ip = false;
                 //if ((titleResult.Item_Count == 1) && (firstItemResult.IP_Restriction_Mask > 0))
@@ -253,39 +201,32 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve' transform='scale(0.5)
                 if ( !multiple_title )
                 {              
                     // Elsevier code region to detect and treat display of Elsevier articles
-                    string title_link = "";
-                    bool entitlement = true;
-                    bool isOpenAccess = false;
-                    bool isElsevier = false;
                     string pii = "";
 
-                    if (titleResult.BibID.IndexOf("LS") == 0)
-                    {
-                        // This is an Elsevier article, so we must check for openAccess and for Elsevier 
-                        // entitlement to decide whether to show guest icon.
-                        //
-                        // Parse the article key PII id value in the last part of the Link value,
-                        // and an openaccess indicator in the penultimate part.
-                        // 
-                        isElsevier = true;
-                        string[] parts = firstItemResult.Link.Split("/".ToCharArray());
- 
-                        if (parts.Length > 2)
-                            pii = parts[parts.Length - 1].Replace("(", "").Replace(")", "").Replace("-", "");
+                    // Always get the first item for things like the main link and thumbnail
+                    // iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
+                    string title_link = "";
+                    //string internal_citation_link = "";
 
-                        entitlement = e_cache.piis_entitled.Contains(pii) ? true : false;
-                        // Detect OpenAccess article (encoded in the Link (from METS result_url) in the database for now.
-                        isOpenAccess = (parts[parts.Length - 2] == "oa_true");
-                    }
+                    // Set Elsevier indicators to manage html construction.
+                    bool isElsevier = e_cache.d_bib_article.TryGetValue(titleResult.BibID, out elsevier_article);
+                    // Initialize Elsevier indicators for this bibid
+                    bool isOpenAccess = false;
+                    bool entitlement = true;
 
                     // Show Title Column 
                     if (isElsevier)
                     {
-                        // Elsevier articles do not have multiple titles, so this clause treats all Elsevier article results.
-                        // 
-                        // Create the title_link as the external link with sciencedirect url base 
+                        // Elsevier articles do not have multiple titles, so this clause treats all Elsevier 
+                        // article results.
+                        // The title_link is the external link with sciencedirect url base 
                         // and pii from the pii value part.
-                        title_link = "http://www.sciencedirect.com/science/article/pii/" + pii;
+                        title_link = elsevier_article.title_url;
+                        entitlement = elsevier_article.is_entitled;
+                        isOpenAccess = elsevier_article.is_open_access;
+                        title_link = elsevier_article.title_url;
+                        // internal_citation_link = base_url + titleResult.BibID + textRedirectStem;
+                        internal_link = base_url + titleResult.BibID + textRedirectStem;
 
                         // For Elsevier Article, title_link is the external resource, but for non-Elseveir title links to internal url.
                         // So for  Elsevier, also show separate internal citation link.
@@ -293,7 +234,7 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve' transform='scale(0.5)
                             + " (<a href=\"" + title_link 
                             + "\">external resource</a> | <a href=\"" + internal_link + "\">internal citation</a>)</td>");
                         //resultsBldr.AppendLine("\t\t<td><a href=\"" + title_link + "\">" + firstItemResult.Title + "</a></td>");
-                    } // "LS" Elsevier BibID
+                    } // this is an Elsevier BibID
                     else if (firstItemResult.Link.Length > 0)
                     {
                         // This is a non-Elsevier article that has a METS related url, aka an external link aka link in the database.

@@ -103,7 +103,6 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve'  transform='scale(0.5
             //Add the necessary JavaScript, CSS files
             resultsBldr.AppendLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Thumb_Results_Js + "\"></script>");
 
-
             // Start this table
             resultsBldr.AppendLine("<table align=\"center\" width=\"100%\" cellspacing=\"15px\">");
             resultsBldr.AppendLine("\t<tr>");
@@ -114,33 +113,21 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve'  transform='scale(0.5
             resultsBldr.AppendLine("\t</tr>");
             resultsBldr.AppendLine("\t<tr valign=\"top\">");
 
-            // For UFDC IR Elsevier, pre-step through all results, caching entitlement information for each Elsevier 
-            // bibID (starts with "LS") keyed by pii value. Compose a string of all Elsevier pii values to save time 
-            // by only using at most one entitlement query for this results page.
-            string elsevier_pii_string = "";
-            Elsevier_Entitlements_Cache e_cache = new Elsevier_Entitlements_Cache();
+            // For UFDC IR Elsevier, first loop through all result firstItem bibs, setting up information 
+            // for each Elsevier bibID (starts with "LS"). Note. All Elsevier bibs use only vid 00001.
+            Elsevier_Entitlements_Cache e_cache = new Elsevier_Entitlements_Cache("LS", "");
             foreach (iSearch_Title_Result titleResult in RequestSpecificValues.Paged_Results)
             {
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
-                // Display special feature icons for Elsevier Articles, if any
-                if (titleResult.BibID.IndexOf("LS") == 0)
-                {
-                    string[] parts = firstItemResult.Link.Split("/".ToCharArray());
-                    string pii = "";
-                    if (parts.Length > 2)
-                        pii = parts[parts.Length - 1];
-                    if (elsevier_pii_string.Length > 0)
-                    {
-                        elsevier_pii_string = elsevier_pii_string + ",";
-                    }
-                    elsevier_pii_string += pii;
-                }
+                e_cache.Add_Article(titleResult.BibID, firstItemResult.Link);
             }
-            // If we found any elsevier pii values, update the entitlement cache with them.
-            if (elsevier_pii_string.Length > 0)
-            {
-                e_cache.cache_pii_csv_string(elsevier_pii_string);
-            }
+            // Call this after the foreach to more quickly query all entitlements info at once.
+            // This saves several valuable seconds versus doing one entitlement api 
+            // call per Elsevier article. 
+            e_cache.update_from_entitlements_api();
+            Elsevier_Article elsevier_article;
+ 
+            // end Elsevier setup for 'preview' results loop.
 
             // Step through all the results
             int col = 0;
@@ -164,51 +151,32 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve'  transform='scale(0.5
                 // Always get the first item for things like the main link and thumbnail
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
                 string title_link = "";
-                string internal_link = "";
+                string internal_citation_link = "";
 
-                // Initialize and perhaps change Elsevier info for this bibid
-                bool isElsevier = false;
+                // Set Elsevier indicators to manage html construction.
+                bool isElsevier = e_cache.d_bib_article.TryGetValue(titleResult.BibID, out elsevier_article);
+                // Initialize Elsevier indicators for this bibid
                 bool isOpenAccess = false;
                 bool entitlement = true;
-                if (titleResult.BibID.IndexOf("LS") == 0)
+
+                if (isElsevier)
                 {
-                    // This is an Elsevier article, so we must check for openAccess and for Elsevier 
-                    // entitlement to decide to show guest icon.
-                    //
-                    // Parse data members for this Elsevier Title. They are used to display special feature icons for 
-                    // Elsevier Articles, if any, and make the Title link go to the external resource, as planned for the
-                    // Elsevier Pilot.
-
-                    // We have stored the article key PII id value in the last part of the link value,
-                    // and an openaccess indicator in the penultimate part
-                    // 
-                    isElsevier = true;
-                    string[] parts = firstItemResult.Link.Split("/".ToCharArray());
-                    string pii = "";
-
-                    if (parts.Length > 2)
-                        pii = parts[parts.Length - 1].Replace("(", "").Replace(")", "").Replace("-", "");
-
-                    //alternate settings: entitlement = e_cache.d_pii_entitlement.TryGetValue(pii, out isEntitled) ? isEntitled : false;
-                    entitlement = e_cache.piis_entitled.Contains(pii) ? true : false;
-                    // Extract the open access indicator
-                    isOpenAccess = (parts[parts.Length - 2] == "oa_true");
-
-                    // Create the 'real' external link from the pii value part
-                    title_link = "http://www.sciencedirect.com/science/article/pii/" + pii;
-                    internal_link = base_url + titleResult.BibID + textRedirectStem;
-                } // if "LS" Bibid for Elsevier Article
-                else 
+                    entitlement = elsevier_article.is_entitled;
+                    isOpenAccess = elsevier_article.is_open_access;
+                    title_link = elsevier_article.title_url;
+                    internal_citation_link = base_url + titleResult.BibID + textRedirectStem;
+                }
+                else
                 {
                     // This not an Elsevier article. Determine the internal link to the first (possibly only) item
-                    internal_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
+                    internal_citation_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
 
                     // For browses, just point to the title
                     if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation)
                        && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info))
-                        internal_link = base_url + titleResult.BibID + textRedirectStem;
+                        internal_citation_link = base_url + titleResult.BibID + textRedirectStem;
 
-                    title_link = internal_link;
+                    title_link = internal_citation_link;
                 }
 
                 // Set href to the title link 
@@ -294,7 +262,7 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve'  transform='scale(0.5
                         + titleResult.BibID.Substring(2, 2) + "/" + titleResult.BibID.Substring(4, 2) + "/"
                         + titleResult.BibID.Substring(6, 2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/"
                         + (firstItemResult.MainThumbnail).Replace("\\", "/").Replace("//", "/");
-                    resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan" + title_count + "\"><a href=\"" + internal_link
+                    resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan" + title_count + "\"><a href=\"" + internal_citation_link
                         + "\"><img id=\"sbkThumbnailImg" + title_count + "\"src=\"" + thumb + "\" alt=\"" + title.Replace("\"", "")
                         + "\" /></a></span></td></tr>");
                 }
@@ -309,7 +277,7 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve'  transform='scale(0.5
 
                 if (multiple_title)
                 {
-                    //<a href=\"" + internal_link + "\">
+                    //<a href=\"" + internal_citation_link + "\">
                     resultsBldr.AppendLine("\t\t\t\t<tr style=\"height:40px;\" valign=\"middle\"><td colspan=\"3\"><span class=\"qtip_BriefTitle\" style=\"color: #a5a5a5;font-weight: bold;font-size:13px;\">" + titleResult.GroupTitle.Replace("<", "&lt;").Replace(">", "&gt;") + "</span> &nbsp; </td></tr>");
                     resultsBldr.AppendLine("<tr><td colspan=\"100%\"><br/></td></tr>");
                 }
