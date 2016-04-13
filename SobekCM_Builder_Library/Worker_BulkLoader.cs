@@ -677,8 +677,14 @@ namespace SobekCM.Builder_Library
                 }
 
                 // Save these collections to mark them for search index building
-                Add_Delete_Info_To_PostProcess_Lists(deleteResource.BibID, deleteResource.VID, deleteResource.Metadata.Behaviors.Aggregation_Code_List);
-
+                try
+                {
+                    Add_Delete_Info_To_PostProcess_Lists(deleteResource.BibID, deleteResource.VID, deleteResource.Metadata.Behaviors.Aggregation_Code_List);
+                }
+                catch
+                {
+                    // pass
+                }
                 if (itemTable.Select("BibID='" + deleteResource.BibID + "' and VID='" + deleteResource.VID + "'").Length > 0)
                 {
                     // Do all the item processing per instance config
