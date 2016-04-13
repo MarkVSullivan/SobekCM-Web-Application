@@ -143,8 +143,11 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve'>
 
                if (isElsevier)
                {
-                   //
-                   isElsevier = true;
+                   // Workaround for builder errors while deleting obsolete Elsevier articles. Do not show results for them.
+                   if (elsevier_article.is_obsolete == true)
+                   {
+                       continue;
+                   }
                    entitlement = elsevier_article.is_entitled;
                    isOpenAccess = elsevier_article.is_open_access;
                    title_link = elsevier_article.title_url;

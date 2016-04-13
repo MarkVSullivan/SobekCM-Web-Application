@@ -41,8 +41,9 @@ xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns:cc='http://creativ
   <g stroke='#f68212' stroke-width='104.764' fill='none' transform='scale(0.5)'>
     <path d='M111.387,308.135V272.408A209.21,209.214 0 0,1 529.807,272.408V530.834'/>
     <circle cx='320.004' cy='680.729' r='256.083'/>
-  </g>
-  <circle fill='#f68212' cx='321.01' cy='681.659' r='86.4287'/>
+  
+  <circle fill='#f68212' cx='321.01' cy='681.659' r='56.4287'/>
+</g>
 </svg>
 ";
         /// <summary> String literal for html svg for External (guest paygate) icon</summary>
@@ -217,6 +218,12 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve' transform='scale(0.5)
                     // Show Title Column 
                     if (isElsevier)
                     {
+                        // Workaround for builder error failures to delete obsolete Elsevier articles. Do not show results for them.
+                        if (elsevier_article.is_obsolete == true)
+                        {
+                            continue;
+                        }
+
                         // Elsevier articles do not have multiple titles, so this clause treats all Elsevier 
                         // article results.
                         // The title_link is the external link with sciencedirect url base 

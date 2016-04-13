@@ -23,6 +23,7 @@ namespace SobekCM.Library.ResultsViewer
         public string pii = "";
         public string title_url;
         public bool is_open_access = false;
+        public bool is_obsolete = false;
 
         // Member is_entitled should be updated by an Elsevier Entitlement reponse;
         public bool is_entitled = false;
@@ -34,6 +35,15 @@ namespace SobekCM.Library.ResultsViewer
         {
             bibid = bibid_string;
             db_item_link = db_item_link_string;
+            // workaround for builder failure to delete obsolete records.
+            if (bibid_string.IndexOf("LS005") != 0)
+            {
+                is_obsolete = true;
+            }
+            else
+            {
+                is_obsolete = false;
+            }
             
             // Parse the pii and is_open_access values from the item_link_string
             // Expected db_item_link_string format: anything/pii_value?[oac=t]
