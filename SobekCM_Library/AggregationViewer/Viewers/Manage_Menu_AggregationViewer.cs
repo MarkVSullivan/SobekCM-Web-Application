@@ -4,6 +4,8 @@ using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Tools;
 
 #endregion
@@ -58,7 +60,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Gets the URL for the icon related to this aggregational viewer task </summary>
         public override string Viewer_Icon
         {
-            get { return Static_Resources.Manage_Collection_Img; }
+            get { return Static_Resources_Gateway.Manage_Collection_Img; }
         }
 
         /// <summary> Add the HTML to be displayed in the search box </summary>
@@ -130,7 +132,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Add the link for the private and dark items
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
-            Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + private_url + "\"><img src=\"" + Static_Resources.Private_Items_Img_Large + "\" /></a></td>");
+            Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + private_url + "\"><img src=\"" + Static_Resources_Gateway.Private_Items_Img_Large + "\" /></a></td>");
             Output.WriteLine("      <td>");
             Output.WriteLine("        <a href=\"" + private_url + "\">View Private and Dark Items</a>");
             Output.WriteLine("        <div class=\"sbkMmav_Desc\">View the private and dark items which are a part of this collection, along with the last milestone information for each item.</div>");
@@ -141,7 +143,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Add the link for the item count
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
-            Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + item_count_url + "\"><img src=\"" + Static_Resources.Item_Count_Img_Large + "\" /></a></td>");
+            Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + item_count_url + "\"><img src=\"" + Static_Resources_Gateway.Item_Count_Img_Large + "\" /></a></td>");
             Output.WriteLine("      <td>");
             Output.WriteLine("        <a href=\"" + item_count_url + "\">View Item Count in Collection</a>");
             Output.WriteLine("        <div class=\"sbkMmav_Desc\">View the total item count within this collection, as well as a count of how many items are in currently in process within each major milestone.</div>");
@@ -152,7 +154,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Add the link for the usage stats
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
-            Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + usage_stats_url + "\"><img src=\"" + Static_Resources.Usage_Img_Large + "\" /></a></td>");
+            Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + usage_stats_url + "\"><img src=\"" + Static_Resources_Gateway.Usage_Img_Large + "\" /></a></td>");
             Output.WriteLine("      <td>");
             Output.WriteLine("        <a href=\"" + usage_stats_url + "\">View History of Collection Use</a>");
             Output.WriteLine("        <div class=\"sbkMmav_Desc\">View ths usage statistics for this collection, and for all items within this collection.</div>");
@@ -165,7 +167,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             {
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + browseby_url + "\"><img src=\"" + Static_Resources.Metadata_Browse_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + browseby_url + "\"><img src=\"" + Static_Resources_Gateway.Metadata_Browse_Img_Large + "\" /></a></td>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a href=\"" + browseby_url + "\">View Metadata Browses</a>");
                 Output.WriteLine("        <div class=\"sbkMmav_Desc\">View public and/or administrative metadata browses with the complete list of all metadata in the searchable metadata fields for this collection.</div>");
@@ -182,7 +184,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 // Add the link for the work log history
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + history_url + "\"><img src=\"" + Static_Resources.View_Work_Log_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + history_url + "\"><img src=\"" + Static_Resources_Gateway.View_Work_Log_Img_Large + "\" /></a></td>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a href=\"" + history_url + "\">View Collection Change Log</a>");
                 Output.WriteLine("        <div class=\"sbkMmav_Desc\">View the change log for this collection and the design files under this collection.  This does not include the history of digital reources loaded into this collection.</div>");
@@ -193,7 +195,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 // Add the link for the user permissions
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + permissions_url + "\"><img src=\"" + Static_Resources.User_Permission_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + permissions_url + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img_Large + "\" /></a></td>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a href=\"" + permissions_url + "\">View User Permissions</a>");
                 Output.WriteLine("        <div class=\"sbkMmav_Desc\">View special user permissions granted to users over this collection.  This includes permissions assigned individually, as well as permissions assigned through user groups.</div>");
@@ -204,7 +206,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
 
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + admin_url + "\"><img src=\"" + Static_Resources.Admin_View_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + admin_url + "\"><img src=\"" + Static_Resources_Gateway.Admin_View_Img_Large + "\" /></a></td>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a href=\"" + admin_url + "\">Collection Administration</a>");
                 Output.WriteLine("        <div class=\"sbkMmav_Desc\">Perform administrative duties against this collection, changing the appearance, facets, results types, and much more.</div>");

@@ -8,6 +8,8 @@ using System.Text;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -44,7 +46,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             StringBuilder scriptBuilder = new StringBuilder(10000);
 
             scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?sensor=false\"></script>");
-            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Keydragzoom_Packed_Js + "\"></script>");
+            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Keydragzoom_Packed_Js + "\"></script>");
             scriptBuilder.AppendLine("<script type=\"text/javascript\">");
             scriptBuilder.AppendLine("  //<![CDATA[");
             scriptBuilder.AppendLine("  // Global values");
@@ -85,7 +87,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 scriptBuilder.AppendLine("    // Create the custom icon / marker image");
                 scriptBuilder.AppendLine("    var iconSize = new google.maps.Size(11, 11);");
                 scriptBuilder.AppendLine("    var iconAnchor = new google.maps.Point(5, 5);");
-                scriptBuilder.AppendLine("    var pointer_image = '" + Static_Resources.Map_Point_Png + "';");
+                scriptBuilder.AppendLine("    var pointer_image = '" + Static_Resources_Gateway.Map_Point_Png + "';");
                 scriptBuilder.AppendLine("    custom_icon = new google.maps.MarkerImage(pointer_image, iconSize, null, iconAnchor);");
 
                 scriptBuilder.AppendLine();
@@ -217,7 +219,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 string thumb = UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + groupThumbnail.Replace("\\", "/").Replace("//", "/");
                 if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
                 {
-                    thumb = Static_Resources.Nothumb_Jpg;
+                    thumb = Static_Resources_Gateway.Nothumb_Jpg;
                 }
 
 				contentBuilder.Append("<td><table class=\"sbkMbav_Thumb\" >");

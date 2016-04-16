@@ -15,8 +15,10 @@ using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.SiteMap;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.SiteMap;
 using SobekCM.Library.UI;
 using SobekCM.Library.WebContentViewer;
@@ -475,7 +477,7 @@ namespace SobekCM.Library.HTML
 
                 // Add the title
                 Output.WriteLine("<div class=\"sbkAdm_TitleDiv sbkAdm_TitleDivBorder\">");
-                Output.WriteLine("  <img id=\"sbkAdm_TitleDivImg\" src=\"" + Static_Resources.Warning_Img + "\" alt=\"\" />");
+                Output.WriteLine("  <img id=\"sbkAdm_TitleDivImg\" src=\"" + Static_Resources_Gateway.Warning_Img + "\" alt=\"\" />");
                 Output.WriteLine("  <h1>Page Not Found</h1>");
                 Output.WriteLine("</div>");
                 Output.WriteLine();
@@ -502,7 +504,7 @@ namespace SobekCM.Library.HTML
 
                     Output.WriteLine("    <tr>");
                     Output.WriteLine("      <td>&nbsp;</td>");
-                    Output.WriteLine("      <td><a href=\"" + add_collection_url + "\"><img src=\"" + Static_Resources.Wizard_Img_Large + "\" /></a></td>");
+                    Output.WriteLine("      <td><a href=\"" + add_collection_url + "\"><img src=\"" + Static_Resources_Gateway.Wizard_Img_Large + "\" /></a></td>");
                     Output.WriteLine("      <td>");
                     Output.WriteLine("        <a href=\"" + add_collection_url + "\">Add New Collection</a>");
                     Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + String.Format(ADD_COLLECTION_WIZARD_BRIEF, RequestSpecificValues.Current_Mode.Info_Browse_Mode) + "</div>");
@@ -523,7 +525,7 @@ namespace SobekCM.Library.HTML
                         string add_new_item_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                         Output.WriteLine("    <tr>");
                         Output.WriteLine("      <td>&nbsp;</td>");
-                        Output.WriteLine("      <td><a href=\"" + add_new_item_url + "\"><img src=\"" + Static_Resources.New_Item_Img_Large + "\" /></a></td>");
+                        Output.WriteLine("      <td><a href=\"" + add_new_item_url + "\"><img src=\"" + Static_Resources_Gateway.New_Item_Img_Large + "\" /></a></td>");
                         Output.WriteLine("      <td>");
                         Output.WriteLine("        <a href=\"" + add_new_item_url + "\">Add New Item</a>");
                         Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + String.Format(ADD_NEW_ITEM_BRIEF, RequestSpecificValues.Current_Mode.Info_Browse_Mode.ToUpper()) + "</div>");
@@ -550,7 +552,7 @@ namespace SobekCM.Library.HTML
 
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td>&nbsp;</td>");
-                Output.WriteLine("      <td><a href=\"" + add_webcontent_url + "\"><img src=\"" + Static_Resources.WebContent_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td><a href=\"" + add_webcontent_url + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Img_Large + "\" /></a></td>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a href=\"" + add_webcontent_url + "\">Add New Web Content Page</a>");
                 Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + ADD_WEB_CONTENT_BRIEF + "</div>");
@@ -572,7 +574,7 @@ namespace SobekCM.Library.HTML
 
                     Output.WriteLine("    <tr>");
                     Output.WriteLine("      <td>&nbsp;</td>");
-                    Output.WriteLine("      <td><a href=\"" + alias_url + "\"><img src=\"" + Static_Resources.Aliases_Img_Large + "\" /></a></td>");
+                    Output.WriteLine("      <td><a href=\"" + alias_url + "\"><img src=\"" + Static_Resources_Gateway.Aliases_Img_Large + "\" /></a></td>");
                     Output.WriteLine("      <td>");
                     Output.WriteLine("        <a href=\"" + alias_url + "\">Add New Aggregation Alias</a>");
                     Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + ALIASES_BRIEF + "</div>");
@@ -855,7 +857,7 @@ namespace SobekCM.Library.HTML
                 string url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
                 RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Display;
 
-                Output.WriteLine("<div id=\"sbkWchs_EditableLink\"><a href=\"" + url + "\" title=\"Edit this page\"><img src=\"" + Static_Resources.Edit_Gif + "\" alt=\"\" />edit content</a></div>");
+                Output.WriteLine("<div id=\"sbkWchs_EditableLink\"><a href=\"" + url + "\" title=\"Edit this page\"><img src=\"" + Static_Resources_Gateway.Edit_Gif + "\" alt=\"\" />edit content</a></div>");
             }
             Output.WriteLine("</div>");
 
@@ -952,9 +954,9 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("<div id=\"sbkAghsw_HomeEditButtons\">");
             RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Display;
-            Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+            Output.WriteLine("  <button title=\"Do not apply changes\" class=\"roundbutton\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
             RequestSpecificValues.Current_Mode.WebContent_Type = WebContent_Type_Enum.Edit;
-            Output.WriteLine("  <button title=\"Save changes to this web content page text\" class=\"roundbutton\" type=\"submit\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); }\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("  <button title=\"Save changes to this web content page text\" class=\"roundbutton\" type=\"submit\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); }\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("</div>");
             Output.WriteLine("</form>");
             Output.WriteLine("<br /><br /><br />");
@@ -1014,12 +1016,12 @@ namespace SobekCM.Library.HTML
             // If this is an admin and the page was not present, give some options
             if (adminMissingScreen)
             {
-                Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Admin_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+                Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Admin_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
             }
             else
             {
                 // Write the style sheet to use 
-                Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Metadata_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+                Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
             }
 
             // Include the interface's style sheet if it has one
@@ -1091,7 +1093,7 @@ namespace SobekCM.Library.HTML
             // If this has a viewer than it is a special, non-public view, add the admin CSS
             if (viewer != null)
             {
-                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Sobekcm_Admin_Css + "\" /> ");
+                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Sobekcm_Admin_Css + "\" /> ");
             }
         }
 
@@ -1164,7 +1166,7 @@ namespace SobekCM.Library.HTML
 
                 // Add the HELP icon next
                 Output.WriteLine("      <td style=\"text-align:left; width:30px;\">");
-                Output.WriteLine("        <span id=\"sbk_InternalHeader_Help\"><a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/aggrheader\" title=\"Help regarding this header\" ><img src=\"" + Static_Resources.Help_Button_Darkgray_Jpg + "\" alt=\"?\" title=\"Help regarding this header\" /></a></span>");
+                Output.WriteLine("        <span id=\"sbk_InternalHeader_Help\"><a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "help/aggrheader\" title=\"Help regarding this header\" ><img src=\"" + Static_Resources_Gateway.Help_Button_Darkgray_Jpg + "\" alt=\"?\" title=\"Help regarding this header\" /></a></span>");
                 Output.WriteLine("      </td>");
 
                 Write_Internal_Header_Search_Box(Output);

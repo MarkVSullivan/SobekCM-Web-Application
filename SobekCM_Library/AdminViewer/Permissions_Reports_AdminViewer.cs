@@ -8,6 +8,8 @@ using System.Web;
 using System.Web.Caching;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
@@ -71,7 +73,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Gets the URL for the icon related to this administrative task </summary>
         public override string Viewer_Icon
         {
-            get { return Static_Resources.User_Permission_Img; }
+            get { return Static_Resources_Gateway.User_Permission_Img; }
         }
 
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of any form) </summary>
@@ -91,7 +93,7 @@ namespace SobekCM.Library.AdminViewer
         public override void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("<!-- Permissions_Reports_AdminViewer.Write_ItemNavForm_Closing -->");
-            Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
             int page = 1;
             string submode = "a";

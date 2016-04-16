@@ -15,6 +15,8 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -715,7 +717,7 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Internal_HtmlSubwriter.add_aggregations_tree_html", "Rendering HTML");
 
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jstree_Js + "\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jstree_Js + "\"></script>");
 
             // Get the hierarchy
             Aggregation_Hierarchy hierarchy = SobekEngineClient.Aggregations.Get_Aggregation_Hierarchy(Tracer);
@@ -1363,13 +1365,13 @@ namespace SobekCM.Library.HTML
 
             if (RequestSpecificValues.Current_Mode.Internal_Type == Internal_Type_Enum.Aggregations_List)
             {
-                Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Datatables_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Datatables_Js + "\" ></script>");
+                Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Datatables_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Datatables_Js + "\" ></script>");
             }
 
             if (RequestSpecificValues.Current_Mode.Internal_Type == Internal_Type_Enum.Aggregations_Tree)
             {
-                Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + Static_Resources.Jstree_Css + "\" />");
+                Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + Static_Resources_Gateway.Jstree_Css + "\" />");
             }
 
         }

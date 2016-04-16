@@ -14,6 +14,7 @@ using SobekCM.Core.Configuration.OAIPMH;
 using SobekCM.Core.Settings;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.Citation;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.UI_Configuration.TemplateElements;
 using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Core.Users;
@@ -259,6 +260,32 @@ namespace SobekCM.Engine_Library.Configuration
                                 read_template_elements_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
 
+                            case "static_resources":
+                                string base_url = Settings.Servers.Base_URL;
+                                bool read_section = false;
+                                if (readerXml.MoveToAttribute("code"))
+                                {
+                                    string code = readerXml.Value;
+                                    if ((code == "*") || (String.Compare(Settings.Servers.Static_Resources_Config_File, code, StringComparison.OrdinalIgnoreCase) == 0))
+                                        read_section = true;
+                                    readerXml.MoveToElement();
+                                }
+                                if (readerXml.MoveToAttribute("baseUrl"))
+                                {
+                                    base_url = readerXml.Value;
+                                    readerXml.MoveToElement();
+                                }
+                                if (read_section)
+                                {
+                                    ConfigObj.Source.Add_Log("        Parsing active STATIC RESOURCES subtree");
+                                    read_static_resource_details(readerXml.ReadSubtree(), ConfigObj, base_url);
+                                }
+                                else
+                                {
+                                    ConfigObj.Source.Add_Log("        Skipping inactive STATIC RESOURCES subtree");
+                                }
+                                break;
+
                         }
                     }
                 }
@@ -285,6 +312,53 @@ namespace SobekCM.Engine_Library.Configuration
 
             return true;
         }
+
+        #region Section reads all the static resource informatino
+
+        /// <summary> Read the indicated configuration file for these default static resources </summary>
+        private static void read_static_resource_details(XmlReader ReaderXml, InstanceWide_Configuration Config, string Base_URL)
+        {
+            // Get the configuration object
+            StaticResources_Configuration config = Config.UI.StaticResources;
+
+            try
+            {
+                while (ReaderXml.Read())
+                {
+                    if (ReaderXml.NodeType == XmlNodeType.Element)
+                    {
+                        switch (ReaderXml.Name.ToLower())
+                        {
+                            case "file":
+                                string key = (ReaderXml.MoveToAttribute("key")) ? ReaderXml.Value.Trim() : null;
+                                string source = (ReaderXml.MoveToAttribute("source")) ? ReaderXml.Value.Trim() : null;
+                                if ((!String.IsNullOrEmpty(key)) && (!String.IsNullOrEmpty(source))) config.Add_File(key.ToLower(), source.Replace("[%BASEURL%]", Base_URL));
+                                break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                Config.Source.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_static_resource_details");
+                Config.Source.Add_Log(ee.Message);
+                Config.Source.Add_Log(ee.StackTrace);
+
+                Config.Source.ErrorEncountered = true;
+            }
+
+
+            // Some override values for testing
+            config.Sobekcm_Css = "http://cdn.sobekdigital.com/css/sobekcm/4.10.0/sobekcm.css";
+            config.Sobekcm_Admin_Css = "http://cdn.sobekdigital.com/css/sobekcm-admin/4.10.0/sobekcm_admin.css";
+            config.Sobekcm_Admin_Js = "http://cdn.sobekdigital.com/js/sobekcm-admin/4.10.0/sobekcm_admin.js";
+            config.Sobekcm_Full_Js = "http://cdn.sobekdigital.com/js/sobekcm-full/4.10.0/sobekcm_full.js";
+            config.Sobekcm_Item_Css = "http://cdn.sobekdigital.com/css/sobekcm-item/4.10.0/sobekcm_item.css";
+            config.Sobekcm_Qc_Css = "http://cdn.sobekdigital.com/css/sobekcm-qc/4.10.0/sobekcm_qc.css";
+        }
+
+
+        #endregion
 
         #region Section reads all the Shibboleth information
 

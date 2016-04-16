@@ -6,6 +6,8 @@ using System.Web;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -172,7 +174,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Gets the URL for the icon related to this administrative task </summary>
         public override string Viewer_Icon
         {
-            get { return Static_Resources.WebContent_Usage_Img; }
+            get { return Static_Resources_Gateway.WebContent_Usage_Img; }
         }
 
 
@@ -195,7 +197,7 @@ namespace SobekCM.Library.AdminViewer
             Tracer.Add_Trace("WebContent_Usage_AdminViewer.Write_ItemNavForm_Closing", "");
 
             Output.WriteLine("<!-- WebContent_Usage_AdminViewer.Write_ItemNavForm_Closing -->");
-            Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
             string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
             
@@ -371,7 +373,7 @@ namespace SobekCM.Library.AdminViewer
 
                 Output.WriteLine("    </select>");
                 Output.WriteLine("    &nbsp; &nbsp;");
-                Output.WriteLine("    <button title=\"Select Range\" class=\"roundbutton\" onclick=\"date_jump_sobekcm('" + goUrl + "'); return false;\">GO <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Select Range\" class=\"roundbutton\" onclick=\"date_jump_sobekcm('" + goUrl + "'); return false;\">GO <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
                 Output.WriteLine("  </div>");
 
 

@@ -22,10 +22,12 @@ using SobekCM.Core.Search;
 using SobekCM.Core.Settings;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.Citation;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.UI_Configuration.TemplateElements;
 using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -493,8 +495,6 @@ namespace SobekCM.Library.AdminViewer
 						// Assign this to be used by the system
 						UI_ApplicationCache_Gateway.ResetSettings();
 
-						// Also, reset the source for static files, as thatmay have changed
-						Static_Resources.Config_Read_Attempted = false;
 
 						// Get all the settings again 
 						build_setting_objects_for_display();
@@ -524,7 +524,7 @@ namespace SobekCM.Library.AdminViewer
 		/// <summary> Gets the URL for the icon related to this administrative task </summary>
 		public override string Viewer_Icon
 		{
-			get { return Static_Resources.Settings_Img; }
+			get { return Static_Resources_Gateway.Settings_Img; }
 		}
 
 
@@ -569,7 +569,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine();
 
 			Output.WriteLine("<!-- Settings_AdminViewer.Write_ItemNavForm_Closing -->");
-			Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
+			Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 			Output.WriteLine();
 
 
@@ -762,12 +762,12 @@ namespace SobekCM.Library.AdminViewer
 			if (RequestSpecificValues.Current_User.Is_System_Admin)
 			{
 
-				Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "my/admin'; return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-				Output.WriteLine("    <button title=\"Save changes\" class=\"sbkAdm_RoundButton\" onclick=\"admin_settings_save(); return false;\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+				Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "my/admin'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+				Output.WriteLine("    <button title=\"Save changes\" class=\"sbkAdm_RoundButton\" onclick=\"admin_settings_save(); return false;\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 			}
 			else
 			{
-				Output.WriteLine("    <button class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "my/admin'; return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK</button> &nbsp; &nbsp; ");
+				Output.WriteLine("    <button class=\"sbkAdm_RoundButton\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "my/admin'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK</button> &nbsp; &nbsp; ");
 			}
 			Output.WriteLine("  </div>");
 			Output.WriteLine();
@@ -1191,7 +1191,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("                  </td>");
 			Output.WriteLine("                  <td>");
 			if (!String.IsNullOrEmpty(Value.Help))
-				Output.WriteLine("                    <img  class=\"sbkSeav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + Value.Help.Replace("'", "").Replace("\"", "").Replace("\n", "\\n") + "');\"  title=\"" + Value.Help.Replace("'", "").Replace("\"", "").Replace("\n", "\\n") + "\" />");
+				Output.WriteLine("                    <img  class=\"sbkSeav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + Value.Help.Replace("'", "").Replace("\"", "").Replace("\n", "\\n") + "');\"  title=\"" + Value.Help.Replace("'", "").Replace("\"", "").Replace("\n", "\\n") + "\" />");
 			Output.WriteLine("                  </td>");
 			Output.WriteLine("                </tr>");
 			Output.WriteLine("              </table>");
@@ -2138,15 +2138,15 @@ namespace SobekCM.Library.AdminViewer
 
                 // Add checkmark for can read
                 if (metadataReader.canRead)
-                    Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                    Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" /></td>");
                 else
-                    Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+                    Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" /></td>");
 
                 // Add checkmark for can write
                 if (metadataReader.canWrite)
-                    Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                    Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" /></td>");
                 else
-                    Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+                    Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" /></td>");
 
                 // Add the class, and optionally assembly
                 string class_name_full = metadataReader.Code_Class;
@@ -2321,9 +2321,9 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <tr>");
 
             if (Config.isActive)
-                Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" /></td>");
             else
-                Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+                Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" /></td>");
 
        //     Output.WriteLine("      <td>" + config.ID + "</td>");
             Output.WriteLine("      <td>" + Config.Label + "</td>");
@@ -2641,9 +2641,9 @@ namespace SobekCM.Library.AdminViewer
                 {
                     Output.WriteLine("    <tr>");
                     if (thisModule.Enabled)
-                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" /></td>");
                     else
-                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" /></td>");
 
 
                     if (!String.IsNullOrEmpty(thisModule.Assembly))
@@ -2671,9 +2671,9 @@ namespace SobekCM.Library.AdminViewer
                     {
                         Output.WriteLine("    <tr>");
                         if (thisModule.Enabled)
-                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" /></td>");
                         else
-                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" /></td>");
 
 
                         if (!String.IsNullOrEmpty(thisModule.Assembly))
@@ -3049,9 +3049,9 @@ namespace SobekCM.Library.AdminViewer
 
                     // Enabled flag
                     if (thisMapping.Enabled)
-                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" /></td>");
                     else
-                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" /></td>");
 
                     // Prefix
                     Output.WriteLine("      <td>" + thisMapping.Prefix + "</td>");
@@ -3122,14 +3122,14 @@ namespace SobekCM.Library.AdminViewer
                         Output.WriteLine("      <td></td>");
 
                     if (thisDivision.isActive)
-                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" /></td>");
                     else
-                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" /></td>");
 
                     if (thisDivision.isNameable)
-                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" /></td>");
                     else
-                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+                        Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" /></td>");
 
                     Output.WriteLine("    </tr>");
                 }
@@ -3166,14 +3166,14 @@ namespace SobekCM.Library.AdminViewer
                             Output.WriteLine("      <td></td>");
 
                         if (thisDivision.isActive)
-                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" /></td>");
                         else
-                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" /></td>");
 
                         if (thisDivision.isNameable)
-                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" /></td>");
                         else
-                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+                            Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" /></td>");
 
                         Output.WriteLine("    </tr>");
                     }
@@ -3469,9 +3469,9 @@ namespace SobekCM.Library.AdminViewer
             {
                 DataRow newRow = tempTable.NewRow();
                 if (viewer.Enabled)
-                    newRow[0] = "<img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" />";
+                    newRow[0] = "<img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" />";
                 else
-                    newRow[0] = "<img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" />";
+                    newRow[0] = "<img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" />";
                 newRow[1] = viewer.ViewerType;
                 newRow[2] = viewer.ViewerCode;
                 if (!String.IsNullOrEmpty(viewer.Assembly))
@@ -3479,9 +3479,9 @@ namespace SobekCM.Library.AdminViewer
                 else
                     newRow[3] = viewer.Class.Replace("SobekCM.Library.ItemViewer.Viewers.", "");
                 if (viewer.ManagementViewer)
-                    newRow[4] = "<img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" />";
+                    newRow[4] = "<img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" />";
                 else
-                    newRow[4] = "<img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" />";
+                    newRow[4] = "<img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" />";
                 StringBuilder extensionsBldr = new StringBuilder();
                 if ((viewer.FileExtensions != null) && ( viewer.FileExtensions.Length > 0 ))
                 {

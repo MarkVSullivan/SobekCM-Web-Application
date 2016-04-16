@@ -2,7 +2,9 @@
 using System.IO;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.WebContent;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.WebContentViewer.Viewers
@@ -34,7 +36,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
         /// <summary> Gets the URL for the icon related to this web content viewer task </summary>
         public override string Viewer_Icon
         {
-            get { return Static_Resources.Manage_Collection_Img; }
+            get { return Static_Resources_Gateway.Manage_Collection_Img; }
         }
 
         /// <summary> Add the HTML to be displayed </summary>
@@ -90,7 +92,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
             // Add the link for viewing this
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
-            Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + view_url + "\"><img src=\"" + Static_Resources.WebContent_Img_Large + "\" /></a></td>");
+            Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + view_url + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Img_Large + "\" /></a></td>");
             Output.WriteLine("      <td>");
             Output.WriteLine("        <a href=\"" + view_url + "\">View " + type2 + "</a>");
             Output.WriteLine("        <div class=\"sbkMmav_Desc\">View this web content page or global redirect, as it will be viewed by public, non-authenticated users.</div>");
@@ -101,7 +103,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
             // Add the link for editing this
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
-            Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + edit_url + "\"><img src=\"" + Static_Resources.Edit_Metadata_Icon_Png + "\" /></a></td>");
+            Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + edit_url + "\"><img src=\"" + Static_Resources_Gateway.Edit_Metadata_Icon_Png + "\" /></a></td>");
             Output.WriteLine("      <td>");
             Output.WriteLine("        <a href=\"" + edit_url + "\">Edit " + type2 + "</a>");
             Output.WriteLine("        <div class=\"sbkMmav_Desc\">Edit the information including the redirect URL, title, subjects, and keywords, and control the general appearance of the page and bulk upload images and documents.</div>");
@@ -113,7 +115,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
             // Add the link for the usage stats
             Output.WriteLine("    <tr>");
             Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
-            Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + usage_stats_url + "\"><img src=\"" + Static_Resources.Usage_Img_Large + "\" /></a></td>");
+            Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + usage_stats_url + "\"><img src=\"" + Static_Resources_Gateway.Usage_Img_Large + "\" /></a></td>");
             Output.WriteLine("      <td>");
             Output.WriteLine("        <a href=\"" + usage_stats_url + "\">View History of Use</a>");
             Output.WriteLine("        <div class=\"sbkMmav_Desc\">View ths usage statistics for this web content page or global redirect.</div>");
@@ -128,7 +130,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 // Add the link for the work log history
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + history_url + "\"><img src=\"" + Static_Resources.View_Work_Log_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + history_url + "\"><img src=\"" + Static_Resources_Gateway.View_Work_Log_Img_Large + "\" /></a></td>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a href=\"" + history_url + "\">View Change Log</a>");
                 Output.WriteLine("        <div class=\"sbkMmav_Desc\">View the change log for this web content page or global redirect and the design files under this collection.</div>");
@@ -139,7 +141,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 // Add the link for the user permissions
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + permissions_url + "\"><img src=\"" + Static_Resources.User_Permission_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + permissions_url + "\"><img src=\"" + Static_Resources_Gateway.User_Permission_Img_Large + "\" /></a></td>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a href=\"" + permissions_url + "\">View User Permissions</a>");
                 Output.WriteLine("        <div class=\"sbkMmav_Desc\">View special user permissions granted to users over this web content page or global redirect.  This includes permissions assigned individually, as well as permissions assigned through user groups.</div>");
@@ -150,7 +152,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 // Add the link to delete this web page
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + delete_url + "\"><img src=\"" + Static_Resources.Delete_Item_Icon_Png + "\" /></a></td>");
+                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + delete_url + "\"><img src=\"" + Static_Resources_Gateway.Delete_Item_Icon_Png + "\" /></a></td>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a href=\"" + delete_url + "\">Delete " + type2 + "</a>");
                 Output.WriteLine("        <div class=\"sbkMmav_Desc\">Delete this web content page or global redirect from the system entirely.</div>");
@@ -161,7 +163,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 // Add the link to administer
                 Output.WriteLine("    <tr>");
                 Output.WriteLine("      <td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + admin_url + "\"><img src=\"" + Static_Resources.Admin_View_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td style=\"width:60px\"><a href=\"" + admin_url + "\"><img src=\"" + Static_Resources_Gateway.Admin_View_Img_Large + "\" /></a></td>");
                 Output.WriteLine("      <td>");
                 Output.WriteLine("        <a href=\"" + admin_url + "\">Web Content Administration</a>");
                 Output.WriteLine("        <div class=\"sbkMmav_Desc\">Perform administrative duties against this web content page or global redirect, changing the appearance, viewing the child list, and managing files related to this page.</div>");

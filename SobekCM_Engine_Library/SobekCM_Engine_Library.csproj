@@ -71,6 +71,7 @@
     <Compile Include="Client\SobekEngineClient_WebSkinEndpoints.cs" />
     <Compile Include="Configuration\Configuration_Files_Reader.cs" />
     <Compile Include="Configuration\ContactForm_Configuration_Reader.cs" />
+    <Compile Include="Configuration\Static_Resources_Gateway.cs" />
     <Compile Include="Email\Email_Helper.cs" />
     <Compile Include="Endpoints\AdministrativeServices.cs" />
     <Compile Include="Endpoints\AggregationServices.cs" />

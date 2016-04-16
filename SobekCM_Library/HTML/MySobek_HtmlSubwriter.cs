@@ -11,6 +11,8 @@ using SobekCM.Core.Items;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.MainWriters;
@@ -139,7 +141,7 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
 
-            Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Mysobek_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Mysobek_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
 
             // If there was a viewer, add based on behaviors and flags
             if (mySobekViewer != null)
@@ -147,22 +149,22 @@ namespace SobekCM.Library.HTML
                 // Add the uploader libraries if editing an item
                 if (mySobekViewer.Upload_File_Possible)
                 {
-                    Output.WriteLine("  <script src=\"" + Static_Resources.Jquery_Uploadifive_Js + "\" type=\"text/javascript\"></script>");
-                    Output.WriteLine("  <script src=\"" + Static_Resources.Jquery_Uploadify_Js + "\" type=\"text/javascript\"></script>");
+                    Output.WriteLine("  <script src=\"" + Static_Resources_Gateway.Jquery_Uploadifive_Js + "\" type=\"text/javascript\"></script>");
+                    Output.WriteLine("  <script src=\"" + Static_Resources_Gateway.Jquery_Uploadify_Js + "\" type=\"text/javascript\"></script>");
 
-                    Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Uploadifive_Css + "\">");
-                    Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Uploadify_Css + "\">");
+                    Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Uploadifive_Css + "\">");
+                    Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Uploadify_Css + "\">");
                 }
 
                 if (mySobekViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter))
                 {
-                    Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+                    Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
                 }
 
                 if ((mySobekViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables)))
                 {
-                    Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Datatables_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
-                    Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Datatables_Js + "\" ></script>");
+                    Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Datatables_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+                    Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Datatables_Js + "\" ></script>");
                 }
 
                 // Allow the admin viewer to also write into the header
@@ -210,7 +212,7 @@ namespace SobekCM.Library.HTML
 				RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Aggregation;
 				RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
 				RequestSpecificValues.Current_Mode.Home_Type = Home_Type_Enum.List;
-                Output.WriteLine("\t\t<li id=\"sbkUsm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources.Home_Png + "\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a></li>");
+                Output.WriteLine("\t\t<li id=\"sbkUsm_Home\" class=\"sbkMenu_Home\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" class=\"sbkMenu_NoPadding\"><img src=\"" + Static_Resources_Gateway.Home_Png + "\" /> <div class=\"sbkMenu_HomeText\">" + sobek_home_text + "</div></a></li>");
 				Output.WriteLine("\t</ul></div>");
 
 				Output.WriteLine("<!-- Initialize the main user menu -->");

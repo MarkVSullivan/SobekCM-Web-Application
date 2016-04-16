@@ -11,7 +11,9 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Tools;
 
@@ -827,12 +829,12 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("Track_Item_MySobekViewer.Write_HTML", "Do nothing");
 
             //Include the js files
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Color_2_1_1_Js + "\"></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Timers_Js + "\"></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Track_Item_Js + "\" ></script>");
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Jquery_Ui_Css + "\" />");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Timeentry_Js + "\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Color_2_1_1_Js + "\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Timers_Js + "\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Track_Item_Js + "\" ></script>");
+            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Jquery_Ui_Css + "\" />");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Timeentry_Js + "\"></script>");
         }
 
 
@@ -846,11 +848,11 @@ namespace SobekCM.Library.MySobekViewer
 
             StringBuilder builder = new StringBuilder(2000);
             builder.AppendLine("<!-- Track_Item_MySobekViewer.Add_Controls -->");
-            builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Sobekcm_Mysobek_Css + "\" /> ");
-            builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Sobekcm_Admin_Css + "\" /> ");
+            builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Sobekcm_Mysobek_Css + "\" /> ");
+            builder.AppendLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Sobekcm_Admin_Css + "\" /> ");
 
-            builder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
-            builder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Color_2_1_1_Js + "\"></script>");
+            builder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+            builder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Color_2_1_1_Js + "\"></script>");
 
             //Set the JavaScript global page value based on the currently selected tab
             builder.AppendLine("<script type=\"text/javascript\">");

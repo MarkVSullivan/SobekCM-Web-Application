@@ -5,7 +5,9 @@ using SobekCM.Core.Client;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.WebContent;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.WebContentViewer.Viewers
@@ -142,7 +144,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 Output.WriteLine("  <p>Enter DELETE in the textbox below and select GO to complete this deletion.</p>");
                 Output.WriteLine("  <div id=\"sbkWchs_DeleteVerifyDiv\">");
                 Output.WriteLine("    <input class=\"sbkDimv_input sbk_Focusable\" name=\"admin_delete_confirm\" id=\"admin_delete_confirm\" type=\"text\" value=\"\" /> &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Confirm delete of this page\" class=\"roundbutton\" onclick=\"delete_item(); return false;\">CONFIRM <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Confirm delete of this page\" class=\"roundbutton\" onclick=\"delete_item(); return false;\">CONFIRM <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("  </div>");
             }
 

@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.UI_Configuration.Citation;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.UI_Configuration.TemplateElements;
 using SobekCM.Core.UI_Configuration.Viewers;
 
@@ -49,6 +50,11 @@ namespace SobekCM.Core.UI_Configuration
         [ProtoMember(5)]
         public MapEditor_Configuration MapEditor { get; set; }
 
+        /// <summary> Static resource file information for this instance </summary>
+        /// <remarks> This is set to be ignored since it is serialized separately </remarks>
+        [IgnoreDataMember]
+        public StaticResources_Configuration StaticResources { get; set; }
+
 
         /// <summary> Constructor for a new instance of the <see cref="InstanceWide_UI_Configuration"/> class </summary>
         public InstanceWide_UI_Configuration()
@@ -57,6 +63,7 @@ namespace SobekCM.Core.UI_Configuration
             TemplateElements = new TemplateElementsConfig();
             WriterViewers = new WriterViewerConfig();
             MapEditor = new MapEditor_Configuration();
+            StaticResources = new StaticResources_Configuration();
         }
     }
 }

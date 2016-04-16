@@ -9,6 +9,8 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.MainWriters;
@@ -313,7 +315,7 @@ namespace SobekCM.Library.HTML
 
             Output.WriteLine("  <meta name=\"robots\" content=\"index, nofollow\" />");
 
-            Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Admin_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Admin_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
 
             // If there was a viewer, add based on behaviors and flags
             if (adminViewer != null)
@@ -321,22 +323,22 @@ namespace SobekCM.Library.HTML
                 // Add the uploader libraries if editing an item
                 if (adminViewer.Upload_File_Possible)
                 {
-                    Output.WriteLine("  <script src=\"" + Static_Resources.Jquery_Uploadifive_Js + "\" type=\"text/javascript\"></script>");
-                    Output.WriteLine("  <script src=\"" + Static_Resources.Jquery_Uploadify_Js + "\" type=\"text/javascript\"></script>");
+                    Output.WriteLine("  <script src=\"" + Static_Resources_Gateway.Jquery_Uploadifive_Js + "\" type=\"text/javascript\"></script>");
+                    Output.WriteLine("  <script src=\"" + Static_Resources_Gateway.Jquery_Uploadify_Js + "\" type=\"text/javascript\"></script>");
 
-                    Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Uploadifive_Css + "\">");
-                    Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Uploadify_Css + "\">");
+                    Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Uploadifive_Css + "\">");
+                    Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Uploadify_Css + "\">");
                 }
 
                 if (adminViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.MySobek_Subwriter_Mimic_Item_Subwriter))
                 {
-                    Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+                    Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
                 }
 
                 if ((adminViewer.Viewer_Behaviors.Contains(HtmlSubwriter_Behaviors_Enum.Use_Jquery_DataTables)))
                 {
-                    Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Datatables_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
-                    Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Datatables_Js + "\" ></script>");
+                    Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Datatables_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+                    Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Datatables_Js + "\" ></script>");
                 }
 
                 // Allow the admin viewer to also write into the header

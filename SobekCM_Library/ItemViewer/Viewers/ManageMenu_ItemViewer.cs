@@ -5,7 +5,9 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
 
@@ -245,7 +247,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 string url = UrlWriterHelper.Redirect_URL(CurrentRequest);
                 Output.WriteLine("\t\t\t\t<tr>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Edit_Metadata_Icon_Png + "\" /></a></td>");
+                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Edit_Metadata_Icon_Png + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
                 Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Edit Item Metadata</a>");
                 Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Edit the information about this item which appears in the citation/description.  This is basic information about the original item and this digital manifestation.</div>");
@@ -260,7 +262,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 url = UrlWriterHelper.Redirect_URL(CurrentRequest);
                 Output.WriteLine("\t\t\t\t<tr>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Edit_Behaviors_Icon_Png + "\" /></a></td>");
+                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Edit_Behaviors_Icon_Png + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
                 Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Edit Item Behaviors</a>");
                 Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Change the way this item behaves in this library, including which aggregations it appears under, the wordmarks to the left, and which viewer types are publicly accessible.</div>");
@@ -274,7 +276,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 url = UrlWriterHelper.Redirect_URL(CurrentRequest);
                 Output.WriteLine("\t\t\t\t<tr>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Qc_Button_Img_Large + "\" /></a></td>");
+                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Qc_Button_Img_Large + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
                 Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Manage Pages and Divisions (Quality Control)</a>");
                 Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Reorder page images, name pages, assign divisions, and delete and add new page images to this item.</div>");
@@ -289,7 +291,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 url = UrlWriterHelper.Redirect_URL(CurrentRequest);
                 Output.WriteLine("\t\t\t\t<tr>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.View_Work_Log_Img_Large + "\" /></a></td>");
+                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.View_Work_Log_Img_Large + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
                 Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">View Work History</a>");
                 Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">View the history of all work performed on this item.  From this view, you can also see any digitization milestones and digital resource file information.</div>");
@@ -304,7 +306,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 url = UrlWriterHelper.Redirect_URL(CurrentRequest);
                 Output.WriteLine("\t\t\t\t<tr>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.File_Management_Icon_Png + "\" /></a></td>");
+                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.File_Management_Icon_Png + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
                 Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Manage Download Files</a>");
                 Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Upload new files for download or remove existing files that are attached to this item for download.  This generally includes everything except for the page images.</div>");
@@ -318,7 +320,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 url = UrlWriterHelper.Redirect_URL(CurrentRequest);
                 Output.WriteLine("\t\t\t\t<tr>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Add_Geospatial_Img + "\" /></a></td>");
+                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Add_Geospatial_Img + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
                 Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Manage Geo-Spatial Data (beta)</a>");
                 Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Add geo-spatial information for this item.  This can be as simple as a location for a photograph or can be an overlay for a map.  Points, lines, and polygons of interest can also be drawn.</div>");
@@ -333,7 +335,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 url = UrlWriterHelper.Redirect_URL(CurrentRequest);
                 Output.WriteLine("\t\t\t\t<tr>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Track2_Gif + "\" /></a></td>");
+                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Track2_Gif + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
                 Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">View Tracking Sheet</a>");
                 Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">This can be used for printing the tracking sheet for this item, which can be used as part of the built-in digitization workflow.</div>");
@@ -351,7 +353,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 url = UrlWriterHelper.Redirect_URL(CurrentRequest);
                 Output.WriteLine("\t\t\t\t<tr>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Edit_Behaviors_Icon_Png + "\" /></a></td>");
+                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Edit_Behaviors_Icon_Png + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
                 Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Edit Item Group Behaviors</a>");
                 Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Set the title under which all of these items appear in search results and set the web skins under which all these items should appear.</div>");
@@ -366,7 +368,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 url = UrlWriterHelper.Redirect_URL(CurrentRequest);
                 Output.WriteLine("\t\t\t\t<tr>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Add_Volume_Img + "\" /></a></td>");
+                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Add_Volume_Img + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
                 Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Add New Volume</a>");
                 Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Add a new, related volume to this item group.<br /><br /></div>");
@@ -383,7 +385,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     url = UrlWriterHelper.Redirect_URL(CurrentRequest);
                     Output.WriteLine("\t\t\t\t<tr>");
                     Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                    Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Mass_Update_Icon_Png + "\" /></a></td>");
+                    Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Mass_Update_Icon_Png + "\" /></a></td>");
                     Output.WriteLine("\t\t\t\t\t<td>");
                     Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Mass Update Item Behaviors</a>");
                     Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">This allows item-level behaviors to be set for all items within this item group, including which aggregations it appears under, the wordmarks to the left, and which viewer types are publicly accessible.</div>");
@@ -416,7 +418,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 string url = UrlWriterHelper.Redirect_URL(CurrentRequest);
                 Output.WriteLine("\t\t\t\t<tr>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Edit_Behaviors_Icon_Png + "\" /></a></td>");
+                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Edit_Behaviors_Icon_Png + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
                 Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Edit Item Group Behaviors</a>");
                 Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Set the title under which all of these items appear in search results and set the web skins under which all these items should appear.</div>");
@@ -431,7 +433,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 url = UrlWriterHelper.Redirect_URL(CurrentRequest);
                 Output.WriteLine("\t\t\t\t<tr>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Add_Volume_Img + "\" /></a></td>");
+                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Add_Volume_Img + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
                 Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Add New Volume</a>");
                 Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Add a new, related volume to this item group.<br /><br /></div>");
@@ -446,7 +448,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 url = UrlWriterHelper.Redirect_URL(CurrentRequest);
                 Output.WriteLine("\t\t\t\t<tr>");
                 Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources.Mass_Update_Icon_Png + "\" /></a></td>");
+                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Mass_Update_Icon_Png + "\" /></a></td>");
                 Output.WriteLine("\t\t\t\t\t<td>");
                 Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Mass Update Item Behaviors</a>");
                 Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">This allows item-level behaviors to be set for all items within this item group, including which aggregations it appears under, the wordmarks to the left, and which viewer types are publicly accessible.</div>");

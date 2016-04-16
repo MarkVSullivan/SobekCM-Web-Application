@@ -14,6 +14,8 @@ using SobekCM.Core.Client;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.HTML;
@@ -591,7 +593,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             Tracer.Add_Trace("File_Management_MySobekViewer.Write_HTML", "Add instructions");
 
-            Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
 
 			// Write the top currentItem mimic html portion
 			Write_Item_Type_Top(Output, currentItem);
@@ -628,7 +630,7 @@ namespace SobekCM.Library.MySobekViewer
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"action\" name=\"action\" value=\"\" />");
             Output.WriteLine("<input type=\"hidden\" id=\"phase\" name=\"phase\" value=\"\" />");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Metadata_Js + "\" ></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" ></script>");
 
             Output.WriteLine("<hr />");
             Output.WriteLine("<br />");
@@ -751,7 +753,7 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("New_Group_And_Item_MySobekViewer.add_upload_controls", String.Empty);
 
             StringBuilder filesBuilder = new StringBuilder(2000);
-            filesBuilder.AppendLine("<script src=\"" + Static_Resources.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
+            filesBuilder.AppendLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
             filesBuilder.AppendLine("Add a new page image for this package:");
             filesBuilder.AppendLine("<blockquote>");
 
@@ -766,7 +768,7 @@ namespace SobekCM.Library.MySobekViewer
                 AllowedFileExtensions = UI_ApplicationCache_Gateway.Settings.Resources.Upload_Image_Types, 
                 SubmitWhenQueueCompletes = true, 
                 RemoveCompleted = true, 
-                Swf = Static_Resources.Uploadify_Swf, 
+                Swf = Static_Resources_Gateway.Uploadify_Swf, 
                 RevertToFlashVersion = true
 			};
             PlaceHolder.Controls.Add(uploadControl);

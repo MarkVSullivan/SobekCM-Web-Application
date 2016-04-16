@@ -22,9 +22,11 @@ using SobekCM.Core.Results;
 using SobekCM.Core.SiteMap;
 using SobekCM.Core.Skins;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Engine_Library.Navigation;
@@ -281,9 +283,6 @@ namespace SobekCM
 					if ((currentMode.Mode == Display_Mode_Enum.Administrative) && (currentMode.Admin_Type == Admin_Type_Enum.Reset))
 					{
 						Reset_Memory();
-
-                        // Also re-read the configuration file for static resources
-                        Static_Resources.Config_Read_Attempted = false;
 
 						// Since this reset, send to the admin, memory management portion
 						currentMode.Mode = Display_Mode_Enum.Internal;

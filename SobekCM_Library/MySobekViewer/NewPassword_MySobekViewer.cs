@@ -9,7 +9,9 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -154,7 +156,7 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             StringBuilder literalBuilder = new StringBuilder(1000);
-            literalBuilder.AppendLine("<script src=\"" + Static_Resources.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
+            literalBuilder.AppendLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
             literalBuilder.AppendLine("<div class=\"SobekHomeText\" >");
             literalBuilder.AppendLine("<br />");
             literalBuilder.AppendLine("<blockquote>");

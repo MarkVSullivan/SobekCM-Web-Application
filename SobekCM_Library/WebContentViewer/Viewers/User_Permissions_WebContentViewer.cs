@@ -6,7 +6,9 @@ using System.Web;
 using System.Web.Caching;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.WebContent;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Tools;
 
@@ -39,7 +41,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
         /// <summary> Gets the URL for the icon related to this web content viewer task </summary>
         public override string Viewer_Icon
         {
-            get { return Static_Resources.User_Permission_Img; }
+            get { return Static_Resources_Gateway.User_Permission_Img; }
         }
 
         /// <summary> Add the HTML to be displayed </summary>

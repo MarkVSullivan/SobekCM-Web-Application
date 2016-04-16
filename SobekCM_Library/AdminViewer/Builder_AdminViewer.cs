@@ -11,6 +11,8 @@ using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -117,7 +119,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Gets the URL for the icon related to this administrative task </summary>
         public override string Viewer_Icon
         {
-            get { return Static_Resources.Gears_Img; }
+            get { return Static_Resources_Gateway.Gears_Img; }
         }
 
         /// <summary> Write any additional values within the HTML Head of the
@@ -131,8 +133,8 @@ namespace SobekCM.Library.AdminViewer
             // Add the code for the calendar pop-up if it may be required
             if (page == 2)
             {
-                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + Static_Resources.Jsdatepick_Ltr_Css + "\" />");
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jsdatepick_Min_1_3_Js + "\"></script>");
+                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" media=\"all\" href=\"" + Static_Resources_Gateway.Jsdatepick_Ltr_Css + "\" />");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jsdatepick_Min_1_3_Js + "\"></script>");
             }
 
             return false;
@@ -159,7 +161,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<!-- Builder_AdminViewer.Write_ItemNavForm_Closing -->");
 
             Output.WriteLine("<!-- WebContent_Mgmt_AdminViewer.Write_ItemNavForm_Closing -->");
-            Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Add_New;
             string wizard_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
@@ -268,7 +270,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("<!-- Hidden field to keep the newly requested status -->");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_builder_tosave\" name=\"admin_builder_tosave\" value=\"\" />");
-            Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 
             // Start to show the text 
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
@@ -319,7 +321,7 @@ namespace SobekCM.Library.AdminViewer
 
 		            Output.WriteLine("        </select>");
 		            Output.WriteLine("      </td>");
-					Output.WriteLine("      <td><button title=\"Set new builder status\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_builder_status();\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td>");
+					Output.WriteLine("      <td><button title=\"Set new builder status\" class=\"sbkAdm_RoundButton\" onclick=\"return save_new_builder_status();\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button></td>");
 		            Output.WriteLine("    </tr>");
 	            }
 	            Output.WriteLine("  </table>");
@@ -456,7 +458,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 Output.WriteLine("        <td><input type=\"text\" name=\"date1input\" id=\"date1input\" class=\"sbkShw_smallinput_initial  sbkAdmin_Focusable\" value=\"mm/dd/yyyy\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
             }
-            Output.WriteLine("        <td style=\"width:50px;\"><img src=\"" + Static_Resources.Calendar_Button_Img + "\" title=\"Show a calendar to select this date\"  onclick=\"return false;\" name=\"calendar1img\" ID=\"calendar1img\" class=\"calendar_button\" /></td>");
+            Output.WriteLine("        <td style=\"width:50px;\"><img src=\"" + Static_Resources_Gateway.Calendar_Button_Img + "\" title=\"Show a calendar to select this date\"  onclick=\"return false;\" name=\"calendar1img\" ID=\"calendar1img\" class=\"calendar_button\" /></td>");
             Output.WriteLine("        <td>To:</td>");
             if (date2.HasValue)
             {
@@ -466,7 +468,7 @@ namespace SobekCM.Library.AdminViewer
             {
                 Output.WriteLine("        <td><input type=\"text\" name=\"date2input\" id=\"date2input\" class=\"sbkShw_smallinput_initial sbkAdmin_Focusable\" value=\"mm/dd/yyyy\" onblur=\"textbox_leave_default_value(this, 'sbkShw_smallinput','mm/dd/yyyy');\" /></td>");
             }
-            Output.WriteLine("        <td><img src=\"" + Static_Resources.Calendar_Button_Img + "\" title=\"Show a calendar to select this date\" onclick=\"return false;\" name=\"calendar2img\" ID=\"calendar2img\" class=\"calendar_button\" /></td>");
+            Output.WriteLine("        <td><img src=\"" + Static_Resources_Gateway.Calendar_Button_Img + "\" title=\"Show a calendar to select this date\" onclick=\"return false;\" name=\"calendar2img\" ID=\"calendar2img\" class=\"calendar_button\" /></td>");
             Output.WriteLine("      </tr>");
 
             // Add the filter by bibid/vid
@@ -484,7 +486,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("      <tr>");
             Output.WriteLine("        <td colspan=\"6\" id=\"sbkBav_LogFilterInstructions\">To change the dates shown or set a filter, choose your dates above and hit the GO button.</td>");
             Output.WriteLine("        <td>");
-            Output.WriteLine("          <button title=\"Select Range\" class=\"roundbutton\" onclick=\"builder_log_filter_change('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
+            Output.WriteLine("          <button title=\"Select Range\" class=\"roundbutton\" onclick=\"builder_log_filter_change('" + redirect_url + "'); return false;\">GO <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class\"roundbutton_img_right\" alt=\"\" /></button>");
             Output.WriteLine("        </td>");
             Output.WriteLine("      </tr>");
             Output.WriteLine("    </table>");
@@ -594,9 +596,9 @@ namespace SobekCM.Library.AdminViewer
             {
                 Output.WriteLine("      <tr>");
                 if (schedTask.Enabled)
-                    Output.WriteLine("        <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+                    Output.WriteLine("        <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" /></td>");
                 else
-                    Output.WriteLine("        <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"no\" /></td>");
+                    Output.WriteLine("        <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" /></td>");
 
                 Output.WriteLine("        <td>" + HttpUtility.HtmlEncode(schedTask.Description) + "</td>");
                 Output.WriteLine("        <td>" + schedTask.DaysOfWeek + "</td>");

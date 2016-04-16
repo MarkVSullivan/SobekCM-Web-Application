@@ -12,7 +12,9 @@ using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Settings;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
@@ -605,22 +607,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 //loading blanket
                 Output.WriteLine("  ");
-                Output.WriteLine(" <div id=\"mapedit_blanket_loading\"><div>Loading...<br/><br/><img src=\"" + Static_Resources.Ajax_Loader_Img + "\"></div></div> ");
+                Output.WriteLine(" <div id=\"mapedit_blanket_loading\"><div>Loading...<br/><br/><img src=\"" + Static_Resources_Gateway.Ajax_Loader_Img + "\"></div></div> ");
                 Output.WriteLine("  ");
 
                 //standard css
-                Output.WriteLine(" <link rel=\"stylesheet\" href=\"" + Static_Resources.Jquery_Ui_Css + "\"/> ");
-                Output.WriteLine(" <link rel=\"stylesheet\" href=\"" + Static_Resources.Jquery_Searchbox_Css + "\"/> ");
+                Output.WriteLine(" <link rel=\"stylesheet\" href=\"" + Static_Resources_Gateway.Jquery_Ui_Css + "\"/> ");
+                Output.WriteLine(" <link rel=\"stylesheet\" href=\"" + Static_Resources_Gateway.Jquery_Searchbox_Css + "\"/> ");
 
                 //custom css
-                Output.WriteLine(" <link rel=\"stylesheet\" href=\"" + Static_Resources.Sobekcm_Mapeditor_Css + "\"/> ");
+                Output.WriteLine(" <link rel=\"stylesheet\" href=\"" + Static_Resources_Gateway.Sobekcm_Mapeditor_Css + "\"/> ");
 
                 //standard js files
-                Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Ui_1_10_3_Custom_Js + "\"></script> ");
-                Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Migrate_1_1_1_Js + "\"></script> ");
-                Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Rotate_Js + "\"></script> ");
-                Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Knob_Js + "\"></script> ");
-                Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Json_2_4_Js + "\"></script> ");
+                Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script> ");
+                Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Migrate_1_1_1_Js + "\"></script> ");
+                Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Rotate_Js + "\"></script> ");
+                Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Knob_Js + "\"></script> ");
+                Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Json_2_4_Js + "\"></script> ");
                 Output.WriteLine(" <script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&libraries=drawing\"></script> ");
                 Output.WriteLine(" <script type=\"text/javascript\" src=\"" + CurrentRequest.Base_URL + "default/scripts/mapeditor/gmaps-infobox.js\"></script> ");
 
@@ -1532,8 +1534,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 #endregion
 
                 //custom js files (load order does matter)
-                Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Map_Editor_Js + "\"></script> ");
-                Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources.Gmaps_MarkerwithLabel_Js + "\"></script> "); //must load after custom
+                Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Map_Editor_Js + "\"></script> ");
+                Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Gmaps_MarkerwithLabel_Js + "\"></script> "); //must load after custom
 
                 //end of custom content
                 Output.WriteLine("</td>");

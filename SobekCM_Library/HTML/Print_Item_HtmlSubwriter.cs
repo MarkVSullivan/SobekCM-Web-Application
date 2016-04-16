@@ -9,7 +9,9 @@ using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
@@ -343,10 +345,10 @@ namespace SobekCM.Library.HTML
             Output.WriteLine("  <meta name=\"robots\" content=\"noindex, nofollow\" />");
 
             // Write the style sheet to use 
-            Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
  
             // Write the style sheet to use 
-            Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Print_Css + "\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
+            Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Print_Css + "\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
         }
 
         /// <summary> Gets the collection of special behaviors which this subwriter

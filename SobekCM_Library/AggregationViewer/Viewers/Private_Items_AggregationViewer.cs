@@ -8,7 +8,9 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -144,7 +146,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Gets the URL for the icon related to this aggregational viewer task </summary>
         public override string Viewer_Icon
         {
-            get { return Static_Resources.Private_Items_Img; }
+            get { return Static_Resources_Gateway.Private_Items_Img; }
         }
 
         /// <summary> Add the HTML to be displayed in the search box </summary>
@@ -330,10 +332,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 if (current_page > 1)
                 {
                     RequestSpecificValues.Current_Mode.Page = 1;
-                    Output.WriteLine("    &nbsp; &nbsp; &nbsp; <button title=\"" + first_page + "\" class=\"roundbutton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"><img src=\"" + Static_Resources.Button_First_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> " + first_page + " </button>&nbsp;");
+                    Output.WriteLine("    &nbsp; &nbsp; &nbsp; <button title=\"" + first_page + "\" class=\"roundbutton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_First_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> " + first_page + " </button>&nbsp;");
 
                     RequestSpecificValues.Current_Mode.Page = (ushort)(current_page - 1);
-                    Output.WriteLine("    <button title=\"" + previous_page + "\" class=\"roundbutton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> " + previous_page + " </button>");
+                    Output.WriteLine("    <button title=\"" + previous_page + "\" class=\"roundbutton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" /> " + previous_page + " </button>");
                 }
                 else
                 {
@@ -355,10 +357,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 if (current_page < pages)
                 {
                     RequestSpecificValues.Current_Mode.Page = (ushort)(current_page + 1);
-                    Output.WriteLine("    <button title=\"" + next_page + "\" class=\"roundbutton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"> " + next_page + " <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+                    Output.WriteLine("    <button title=\"" + next_page + "\" class=\"roundbutton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"> " + next_page + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
 
                     RequestSpecificValues.Current_Mode.Page = pages;
-                    Output.WriteLine("    <button title=\"" + last_page + "\" class=\"roundbutton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"> " + last_page + " <img src=\"" + Static_Resources.Button_Last_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                    Output.WriteLine("    <button title=\"" + last_page + "\" class=\"roundbutton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "'; return false;\"> " + last_page + " <img src=\"" + Static_Resources_Gateway.Button_Last_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                 }
                 else
                 {

@@ -15,6 +15,8 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -452,7 +454,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Gets the URL for the icon related to this administrative task </summary>
         public override string Viewer_Icon
         {
-            get { return Static_Resources.Wizard_Img; }
+            get { return Static_Resources_Gateway.Wizard_Img; }
         }
 
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area (outside of the forms)</summary>
@@ -471,14 +473,14 @@ namespace SobekCM.Library.AdminViewer
         {
             Tracer.Add_Trace("Add_Collection_AdminViewer.Write_ItemNavForm_Opening", "Add the majority of the HTML before the placeholder");
 
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
 
             // Add the hidden field
             Output.WriteLine("<!-- Hidden field is used for postbacks to indicate what to save and reset -->");
             Output.WriteLine("<input type=\"hidden\" id=\"admin_wizard_save\" name=\"admin_wizard_save\" value=\"\" />");
             Output.WriteLine();
 
-            Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
+            Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
             Output.WriteLine("<div id=\"sbkAcw_PageContainer\">");
 
             // Display any action/error message
@@ -505,31 +507,31 @@ namespace SobekCM.Library.AdminViewer
 
             if (page <= 1)
             {
-                Output.WriteLine("    <button title=\"Cancel this new collection\" class=\"sbkAdm_RoundButton\" onclick=\"return new_wizard_edit_page('z');\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Cancel this new collection\" class=\"sbkAdm_RoundButton\" onclick=\"return new_wizard_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
             }
             else if ( page < 5 )
             {
-                Output.WriteLine("    <button title=\"Back to the previous page of the add new collection wizard\" class=\"sbkAdm_RoundButton\" onclick=\"return new_wizard_edit_page('" + page_to_char(page -1 ) + "');\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK</button> &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Back to the previous page of the add new collection wizard\" class=\"sbkAdm_RoundButton\" onclick=\"return new_wizard_edit_page('" + page_to_char(page -1 ) + "');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK</button> &nbsp; &nbsp; ");
             }
 
             if (page < 4)
             {
-                Output.WriteLine("    <button title=\"Next page of the add new collection wizard\" class=\"sbkAdm_RoundButton\" onclick=\"new_wizard_edit_page('" + page_to_char(page + 1) + "');\">NEXT <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Next page of the add new collection wizard\" class=\"sbkAdm_RoundButton\" onclick=\"new_wizard_edit_page('" + page_to_char(page + 1) + "');\">NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
             }
             else if ( page == 4 )
             {
-                Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"new_wizard_edit_page('save');\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"new_wizard_edit_page('save');\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
             }
             else if (page == 5)
             {
-                Output.WriteLine("    <button title=\"View your new item aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"new_wizard_edit_page(" + page_to_char(page + 1) + ");\">VIEW NEW COLLECTION <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("    <button title=\"View your new item aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"new_wizard_edit_page(" + page_to_char(page + 1) + ");\">VIEW NEW COLLECTION <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
             }
 
             Output.WriteLine("  </div>");
             Output.WriteLine();
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
 
-            Output.WriteLine("     <img id=\"sbkAdm_TitleDivImg\" src=\"" + Static_Resources.Wizard_Img + "\" alt=\"\" />");
+            Output.WriteLine("     <img id=\"sbkAdm_TitleDivImg\" src=\"" + Static_Resources_Gateway.Wizard_Img + "\" alt=\"\" />");
             Output.WriteLine("    <h1>Add New Collection Wizard</h1>");
             Output.WriteLine("  </div>");
             Output.WriteLine();

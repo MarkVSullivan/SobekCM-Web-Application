@@ -8,7 +8,9 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
 
@@ -181,8 +183,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Get the google map API
             mapBuilder.AppendLine("<script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?sensor=false\"></script>");
-            mapBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Map_Search_Js + "\"></script>");
-            mapBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Map_Tool_Js + "\"></script>");
+            mapBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Map_Search_Js + "\"></script>");
+            mapBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Map_Tool_Js + "\"></script>");
 
             // Set some values for the map key
             string search_type = "geographic";

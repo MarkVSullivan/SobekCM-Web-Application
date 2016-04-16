@@ -8,7 +8,9 @@ using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
@@ -305,8 +307,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("\t\t<!-- RELATED IMAGES VIEWER TOP NAV ROW -->");
 
             //Include the js files
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
-            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Color_2_1_1_Js + "\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+            Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Color_2_1_1_Js + "\"></script>");
             Output.WriteLine("<table style=\"width: 100%\">");
             Output.WriteLine("\t<tr>");
 
@@ -371,26 +373,26 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Get the icons for the thumbnail sizes
             Output.WriteLine("\t\t<td id=\"sbkRi_Thumbnailsizeselect\">");
             if (thumbnailSize == 1)
-                Output.Write("\t\t\t<img src=\"" + Static_Resources.Thumbs3_Selected_Gif + "\" alt=\"Small\" />");
+                Output.Write("\t\t\t<img src=\"" + Static_Resources_Gateway.Thumbs3_Selected_Gif + "\" alt=\"Small\" />");
             else
             {
                 currentRequest.Size_Of_Thumbnails = 1;
-                Output.Write("\t\t\t<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "thumbs") + "\" title=\"" + SMALL_THUMBNAILS + "\"><img src=\"" + Static_Resources.Thumbs3_Gif + "\" alt=\"Small\" /></a>");
+                Output.Write("\t\t\t<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "thumbs") + "\" title=\"" + SMALL_THUMBNAILS + "\"><img src=\"" + Static_Resources_Gateway.Thumbs3_Gif + "\" alt=\"Small\" /></a>");
             }
 
             if (thumbnailSize == 2)
-                Output.Write("<img src=\"" + Static_Resources.Thumbs2_Selected_Gif + "\" alt=\"Medium\" />");
+                Output.Write("<img src=\"" + Static_Resources_Gateway.Thumbs2_Selected_Gif + "\" alt=\"Medium\" />");
             else
             {
                 currentRequest.Size_Of_Thumbnails = 2;
-                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "thumbs") + "\" title=\"" + MEDIUM_THUMBNAILS + "\"><img src=\"" + Static_Resources.Thumbs2_Gif + "\" alt=\"Medium\" /></a>");
+                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "thumbs") + "\" title=\"" + MEDIUM_THUMBNAILS + "\"><img src=\"" + Static_Resources_Gateway.Thumbs2_Gif + "\" alt=\"Medium\" /></a>");
             }
             if (thumbnailSize == 3)
-                Output.Write("<img src=\"" + Static_Resources.Thumbs2_Selected_Gif + "\" alt=\"Large\" />");
+                Output.Write("<img src=\"" + Static_Resources_Gateway.Thumbs2_Selected_Gif + "\" alt=\"Large\" />");
             else
             {
                 currentRequest.Size_Of_Thumbnails = 3;
-                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "thumbs") + "\" title=\"" + LARGE_THUMBNAILS + "\"><img src=\"" + Static_Resources.Thumbs1_Gif + "\" alt=\"Large\" /></a>");
+                Output.Write("<a href=\"" + UrlWriterHelper.Redirect_URL(currentRequest, "thumbs") + "\" title=\"" + LARGE_THUMBNAILS + "\"><img src=\"" + Static_Resources_Gateway.Thumbs1_Gif + "\" alt=\"Large\" /></a>");
             }
             //Reset the current mode
             currentRequest.Size_Of_Thumbnails = -1;

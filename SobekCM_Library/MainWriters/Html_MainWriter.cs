@@ -10,7 +10,9 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Skins;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Email;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
@@ -527,13 +529,13 @@ namespace SobekCM.Library.MainWriters
             }
 
             // Write the style sheet to use 
-            Output.WriteLine("  <link href=\"" + Static_Resources.Sobekcm_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
 
 			// Always add jQuery library (changed as of 7/8/2013)
             if ((RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Item_Display) || (RequestSpecificValues.Current_Mode.ViewerCode != "pageturner"))
             {
-                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_1_10_2_Js + "\"></script>");
-				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Full_Js + "\"></script>");
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_1_10_2_Js + "\"></script>");
+				Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Full_Js + "\"></script>");
 			}
 
 			// Special code for the menus, if this is not IE
@@ -550,7 +552,7 @@ namespace SobekCM.Library.MainWriters
 			else
 			{
 				Output.WriteLine("  <!--[if lt IE 9]>");
-				Output.WriteLine("    <script src=\"" + Static_Resources.Html5shiv_Js + "\"></script>");
+				Output.WriteLine("    <script src=\"" + Static_Resources_Gateway.Html5shiv_Js + "\"></script>");
 				Output.WriteLine("  <![endif]-->");
 			}
 
@@ -573,7 +575,7 @@ namespace SobekCM.Library.MainWriters
             }
 
             // Add a printer friendly CSS
-            Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + Static_Resources.Print_Css + "\" type=\"text/css\" media=\"print\" /> ");
+            Output.WriteLine("  <link rel=\"stylesheet\" href=\"" + Static_Resources_Gateway.Print_Css + "\" type=\"text/css\" media=\"print\" /> ");
 
             // Add the apple touch icon
             Output.WriteLine("  <link rel=\"apple-touch-icon\" href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + RequestSpecificValues.Current_Mode.Skin + "/iphone-icon.png\" />");

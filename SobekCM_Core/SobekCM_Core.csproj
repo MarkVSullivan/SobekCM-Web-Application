@@ -136,6 +136,7 @@
     <Compile Include="MemoryMgmt\CachedDataManager_BuilderServices.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_ItemServices.cs" />
     <Compile Include="Builder\Builder_Module_Set_Info.cs" />
+    <Compile Include="UI_Configuration\StaticResources\StaticResources_Configuration.cs" />
     <Compile Include="UI_Configuration\Viewers\AggregationWriterConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\ClassAssemblyConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\ItemSubViewerConfig.cs" />
@@ -234,7 +235,6 @@
     <Compile Include="UI_Configuration\Viewers\WebContentWriterConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\WriterViewerConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\SingleSubViewerConfig.cs" />
-    <Compile Include="UI_Configuration\Static_Resources.cs" />
     <Compile Include="UI_Configuration\TemplateElements\TemplateElementConfig.cs" />
     <Compile Include="UI_Configuration\TemplateElements\TemplateElementsConfig.cs" />
     <Compile Include="Users\Public_User_Folder.cs" />

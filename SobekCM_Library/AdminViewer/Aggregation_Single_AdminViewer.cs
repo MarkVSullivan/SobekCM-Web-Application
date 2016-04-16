@@ -16,9 +16,11 @@ using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Search;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Aggregations;
 using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -397,7 +399,7 @@ namespace SobekCM.Library.AdminViewer
 
 			Output.WriteLine("<!-- Users_AdminViewer.Write_ItemNavForm_Closing -->");
 
-			Output.WriteLine("<script src=\"" + Static_Resources.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
+			Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
 			Output.WriteLine();
 
 			Output.WriteLine("<div id=\"sbkSaav_PageContainer\">");
@@ -408,9 +410,9 @@ namespace SobekCM.Library.AdminViewer
 				string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
 				RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
 				Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
-				Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('z');\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+				Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
                 Output.WriteLine("    <button title=\"Save changes to this item Aggregation\" class=\"sbkAdm_RoundButton\" onclick=\"return save_aggr_edits(false);\"> SAVE </button> &nbsp; &nbsp; ");
-				Output.WriteLine("    <button title=\"Save changes to this item Aggregation and exit the admin screens\" class=\"sbkAdm_RoundButton\" onclick=\"return save_aggr_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+				Output.WriteLine("    <button title=\"Save changes to this item Aggregation and exit the admin screens\" class=\"sbkAdm_RoundButton\" onclick=\"return save_aggr_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 				Output.WriteLine("  </div>");
 				Output.WriteLine();
 				RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
@@ -418,12 +420,12 @@ namespace SobekCM.Library.AdminViewer
 			else if (page == 13)
 			{
 				Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
-				Output.WriteLine("    <button title=\"Close this child page details and return to main admin pages\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('g');\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK </button>"); 
+				Output.WriteLine("    <button title=\"Close this child page details and return to main admin pages\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('g');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> BACK </button>"); 
 				Output.WriteLine("  </div>");
 			}
 
             Output.WriteLine("  <div class=\"sbkAdm_TitleDiv\" style=\"padding-left:20px\">");
-            Output.WriteLine("    <img id=\"sbkAdm_TitleDivImg\" src=\"" + Static_Resources.Admin_View_Img + "\" alt=\"\" />");
+            Output.WriteLine("    <img id=\"sbkAdm_TitleDivImg\" src=\"" + Static_Resources_Gateway.Admin_View_Img + "\" alt=\"\" />");
             Output.WriteLine("    <h1>Collection Administration : " + itemAggregation.Code.ToUpper() + "</h1>");
             Output.WriteLine("  </div>");
             Output.WriteLine();
@@ -688,7 +690,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_name\">Name (full):</label></td>");
 			Output.WriteLine("    <td>");
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSaav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_name\" id=\"admin_aggr_name\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(itemAggregation.Name) + "\" /></td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + LONG_NAME_HELP + "');\"  title=\"" + LONG_NAME_HELP + "\" /></td></tr></table>");
+			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + LONG_NAME_HELP + "');\"  title=\"" + LONG_NAME_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
@@ -698,7 +700,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_shortname\">Name (short):</label></td>");
 			Output.WriteLine("    <td>");
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSaav_medium_input sbkAdmin_Focusable\" name=\"admin_aggr_shortname\" id=\"admin_aggr_shortname\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(itemAggregation.ShortName) + "\" /></td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + SHORT_NAME_HELP + "');\"  title=\"" + SHORT_NAME_HELP + "\" /></td></tr></table>");
+			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + SHORT_NAME_HELP + "');\"  title=\"" + SHORT_NAME_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
@@ -708,7 +710,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <td class=\"sbkSaav_TableLabel2\"><label for=\"admin_aggr_desc\">Description:</label></td>");
 			Output.WriteLine("    <td>");
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable2\"><tr style=\"vertical-align:top\"><td><textarea class=\"sbkSaav_large_textbox sbkAdmin_Focusable\" rows=\"6\" name=\"admin_aggr_desc\" id=\"admin_aggr_desc\">" + HttpUtility.HtmlEncode(itemAggregation.Description) + "</textarea></td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + DESCRIPTION_HELP + "');\"  title=\"" + DESCRIPTION_HELP + "\" /></td></tr></table>");
+			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + DESCRIPTION_HELP + "');\"  title=\"" + DESCRIPTION_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
@@ -718,7 +720,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_email\">Contact Email:</label></td>");
 			Output.WriteLine("    <td>");
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSaav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_email\" id=\"admin_aggr_email\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(itemAggregation.Contact_Email) + "\" /></td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + EMAIL_HELP + "');\"  title=\"" + EMAIL_HELP + "\" /></td></tr></table>");
+			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + EMAIL_HELP + "');\"  title=\"" + EMAIL_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
@@ -730,7 +732,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.WriteLine("    <td class=\"sbkSaav_TableLabel\"><label for=\"admin_aggr_link\">External Link:</label></td>");
 				Output.WriteLine("    <td>");
 				Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td><input class=\"sbkSaav_large_input sbkAdmin_Focusable\" name=\"admin_aggr_link\" id=\"admin_aggr_link\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(itemAggregation.External_Link) + "\" /></td>");
-				Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + LINK_HELP + "');\"  title=\"" + LINK_HELP + "\" /></td></tr></table>");
+				Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + LINK_HELP + "');\"  title=\"" + LINK_HELP + "\" /></td></tr></table>");
 				Output.WriteLine("     </td>");
 				Output.WriteLine("  </tr>");
 			}
@@ -749,7 +751,7 @@ namespace SobekCM.Library.AdminViewer
 			   ? "          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isactive\" id=\"admin_aggr_isactive\" checked=\"checked\" /> <label for=\"admin_aggr_isactive\">Active?</label> "
 			   : "          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_isactive\" id=\"admin_aggr_isactive\" /> <label for=\"admin_aggr_isactive\">Active?</label> ");
 			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + ACTIVE_HELP + "');\"  title=\"" + ACTIVE_HELP + "\" /></td></tr></table>");
+			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + ACTIVE_HELP + "');\"  title=\"" + ACTIVE_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
@@ -761,7 +763,7 @@ namespace SobekCM.Library.AdminViewer
 						   ? "          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" checked=\"checked\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page?</label> "
 						   : "          <input class=\"sbkSaav_checkbox\" type=\"checkbox\" name=\"admin_aggr_ishidden\" id=\"admin_aggr_ishidden\" /> <label for=\"admin_aggr_ishidden\">Show in parent collection home page (and tree view)?</label> ");
 			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + HIDDEN_HELP + "');\"  title=\"" + HIDDEN_HELP + "\" /></td></tr></table>");
+			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + HIDDEN_HELP + "');\"  title=\"" + HIDDEN_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
@@ -775,7 +777,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("       <table class=\"sbkSaav_InnerTable\">");
 			Output.WriteLine("         <tr>");
 			Output.WriteLine("           <td class=\"sbkSaav_UploadInstr\">To change, browse to a 50x50 pixel GIF file, and then select UPLOAD</td>");
-			Output.WriteLine("           <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + COLLECTION_BUTTON_HELP + "');\"  title=\"" + COLLECTION_BUTTON_HELP + "\" /></td>");
+			Output.WriteLine("           <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + COLLECTION_BUTTON_HELP + "');\"  title=\"" + COLLECTION_BUTTON_HELP + "\" /></td>");
 			Output.WriteLine("         </tr>");
 			Output.WriteLine("         <tr>");
 			Output.WriteLine("           <td colspan=\"2\">");
@@ -822,7 +824,7 @@ namespace SobekCM.Library.AdminViewer
 				}
 				Output.WriteLine("          </select>");
 				Output.WriteLine("        </td>");
-				Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + THEMATIC_HELP + "');\"  title=\"" + THEMATIC_HELP + "\" /></td></tr></table>");
+				Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + THEMATIC_HELP + "');\"  title=\"" + THEMATIC_HELP + "\" /></td></tr></table>");
 				Output.WriteLine("     </td>");
 				Output.WriteLine("  </tr>");
 			}
@@ -1068,7 +1070,7 @@ namespace SobekCM.Library.AdminViewer
 	                Output.WriteLine("<br />");
 	        }
 	        Output.WriteLine("        </td>");
-	        Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + WEB_SKIN_HELP + "');\"  title=\"" + WEB_SKIN_HELP + "\" /></td></tr></table>");
+	        Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + WEB_SKIN_HELP + "');\"  title=\"" + WEB_SKIN_HELP + "\" /></td></tr></table>");
 	        Output.WriteLine("     </td>");
 	        Output.WriteLine("  </tr>");
 
@@ -1093,7 +1095,7 @@ namespace SobekCM.Library.AdminViewer
 	            Output.WriteLine("          <td style=\"padding-right:10px;\"><button title=\"Disable this aggregation-level stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return aggr_edit_disable_css();\">DISABLE</button></td>");
 	            Output.WriteLine("          <td><button title=\"Edit this aggregation-level stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('y');\">EDIT</button></td>");
 	        }
-	        Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + CSS_HELP + "');\"  title=\"" + CSS_HELP + "\" /></td>");
+	        Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + CSS_HELP + "');\"  title=\"" + CSS_HELP + "\" /></td>");
 	        Output.WriteLine("        </tr>");
 	        Output.WriteLine("      </table>");
 	        Output.WriteLine("    </td>");
@@ -1239,7 +1241,7 @@ namespace SobekCM.Library.AdminViewer
 	        Output.WriteLine("</select>");
 	        Output.WriteLine("        </td>");
 	        Output.WriteLine("        <td style=\"padding-left:20px\"><button title=\"Add new home page\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_add_home();\">ADD</button></td>");
-	        Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + NEW_HOME_PAGE_HELP + "');\"  title=\"" + NEW_HOME_PAGE_HELP + "\" /></td></tr></table>");
+	        Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + NEW_HOME_PAGE_HELP + "');\"  title=\"" + NEW_HOME_PAGE_HELP + "\" /></td></tr></table>");
 	        Output.WriteLine("     </td>");
 	        Output.WriteLine("  </tr>");
 
@@ -1424,7 +1426,7 @@ namespace SobekCM.Library.AdminViewer
 	            }
 	            Output.WriteLine();
 	            Output.WriteLine("          </td>");
-	            Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + NEW_BANNER_HELP + "');\"  title=\"" + NEW_BANNER_HELP + "\" /></td>");
+	            Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + NEW_BANNER_HELP + "');\"  title=\"" + NEW_BANNER_HELP + "\" /></td>");
 	            Output.WriteLine("        <tr>");
 	            Output.WriteLine("        <tr>");
 	            Output.WriteLine("          <td>Banner Type:</td>");
@@ -1534,7 +1536,7 @@ namespace SobekCM.Library.AdminViewer
 	        Output.WriteLine("       <table class=\"sbkSaav_InnerTable\">");
 	        Output.WriteLine("         <tr>");
 	        Output.WriteLine("           <td class=\"sbkSaav_UploadInstr\">To upload, browse to a GIF, PNG, JPEG, or BMP file, and then select UPLOAD</td>");
-	        Output.WriteLine("           <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + UPLOAD_BANNER_HELP + "');\"  title=\"" + UPLOAD_BANNER_HELP + "\" /></td>");
+	        Output.WriteLine("           <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + UPLOAD_BANNER_HELP + "');\"  title=\"" + UPLOAD_BANNER_HELP + "\" /></td>");
 	        Output.WriteLine("         </tr>");
 	        Output.WriteLine("         <tr>");
 	        Output.WriteLine("           <td colspan=\"2\">");
@@ -1855,7 +1857,7 @@ namespace SobekCM.Library.AdminViewer
 			if (( itemAggregation.Display_Options.IndexOf("B") >= 0 ) || (itemAggregation.Display_Options.IndexOf("D") >= 0 ))
 				Output.Write(" checked=\"checked\"");
             Output.WriteLine(" /> <label for=\"admin_aggr_basicsearch\">Basic Search</label></div>");
-            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Basic_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources_Gateway.Search_Basic_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
 			Output.WriteLine("    </td>");
 			Output.WriteLine("  </tr>");
 
@@ -1868,7 +1870,7 @@ namespace SobekCM.Library.AdminViewer
 			if (itemAggregation.Display_Options.IndexOf("Y") >= 0)
 				Output.Write(" checked=\"checked\"");
             Output.WriteLine(" /> <label for=\"admin_aggr_basicsearch_years\">Basic Search<br /> &nbsp; &nbsp; &nbsp; &nbsp; (with Year Range)</label></div>");
-            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Basic_Year_Range_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources_Gateway.Search_Basic_Year_Range_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
@@ -1880,7 +1882,7 @@ namespace SobekCM.Library.AdminViewer
             if (itemAggregation.Display_Options.IndexOf("W") >= 0)
                 Output.Write(" checked=\"checked\"");
             Output.WriteLine(" /> <label for=\"admin_aggr_basicsearch_mimetype\">Basic search<br /> &nbsp; &nbsp; &nbsp; &nbsp; (with mime-type filter)</label></div>");
-            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Basic_MimeType_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources_Gateway.Search_Basic_MimeType_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
@@ -1892,7 +1894,7 @@ namespace SobekCM.Library.AdminViewer
             if (itemAggregation.Display_Options.IndexOf("E") >= 0)
                 Output.Write(" checked=\"checked\"");
             Output.WriteLine(" /> <label for=\"admin_aggr_basicsearch_fulltext\">Basic search<br /> &nbsp; &nbsp; &nbsp; &nbsp; (with full text option)</label></div>");
-            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Basic_With_FullText_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources_Gateway.Search_Basic_With_FullText_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
@@ -1918,7 +1920,7 @@ namespace SobekCM.Library.AdminViewer
 			if (itemAggregation.Display_Options.IndexOf("A") >= 0)
 				Output.Write(" checked=\"checked\"");
             Output.WriteLine(" /> <label for=\"admin_aggr_advsearch\">Advanced Search</label></div></div>");
-            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Advanced_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources_Gateway.Search_Advanced_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
@@ -1930,7 +1932,7 @@ namespace SobekCM.Library.AdminViewer
 			if (itemAggregation.Display_Options.IndexOf("Z") >= 0)
 				Output.Write(" checked=\"checked\"");
             Output.WriteLine(" /> <label for=\"admin_aggr_advsearch_years\">Advanced Search<br /> &nbsp; &nbsp; &nbsp; &nbsp; (with Year Range)</label></div>");
-            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Advanced_Year_Range_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources_Gateway.Search_Advanced_Year_Range_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
@@ -1942,7 +1944,7 @@ namespace SobekCM.Library.AdminViewer
             if (itemAggregation.Display_Options.IndexOf("X") >= 0)
                 Output.Write(" checked=\"checked\"");
             Output.WriteLine(" /> <label for=\"admin_aggr_advsearch_mimetype\">Advanced Search<br /> &nbsp; &nbsp; &nbsp; &nbsp; (with mime-type filter)</label></div>");
-            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Advanced_MimeType_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources_Gateway.Search_Advanced_MimeType_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
@@ -1955,7 +1957,7 @@ namespace SobekCM.Library.AdminViewer
 			if (itemAggregation.Display_Options.IndexOf("F") >= 0)
 				Output.Write(" checked=\"checked\"");
             Output.WriteLine(" /> <label for=\"admin_aggr_textsearch\">Full Text Search</label></div>");
-            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Full_Text_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources_Gateway.Search_Full_Text_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
@@ -1967,7 +1969,7 @@ namespace SobekCM.Library.AdminViewer
             if (itemAggregation.Display_Options.IndexOf("C") >= 0)
                 Output.Write(" checked=\"checked\"");
             Output.WriteLine(" /> <label for=\"admin_aggr_dloctextsearch\">Full Text Search<br /> &nbsp; &nbsp; &nbsp; &nbsp; (w/ newspaper exclusion option)</label></div>");
-            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Full_Text_Exlude_Newspapers_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources_Gateway.Search_Full_Text_Exlude_Newspapers_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
@@ -1979,7 +1981,7 @@ namespace SobekCM.Library.AdminViewer
 			if (itemAggregation.Display_Options.IndexOf("N") >= 0)
 				Output.Write(" checked=\"checked\"");
             Output.WriteLine(" /> <label for=\"admin_aggr_newspsearch\">Newspaper Search</label></div>");
-            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Newspaper_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("      <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources_Gateway.Search_Newspaper_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
@@ -1991,7 +1993,7 @@ namespace SobekCM.Library.AdminViewer
 			if (itemAggregation.Display_Options.IndexOf("M") >= 0)
 				Output.Write(" checked=\"checked\"");
 			Output.WriteLine(" /> <label for=\"admin_aggr_mapsearch\">Map Search</label></div>");
-            Output.WriteLine("       <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources.Search_Map_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
+            Output.WriteLine("       <img class=\"sbkSaav_SearchImg\" src=\"" + Static_Resources_Gateway.Search_Map_Img + "\" onclick=\"expand_contract_search_img(this);\"  title=\"Click to expand or reduce this image.\" />");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
@@ -2024,7 +2026,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.Write(" checked=\"checked\"");
 			Output.WriteLine(" /> <label for=\"admin_aggr_allitems\">Include All / New Item Browses</label>");
 			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + ALL_ITEMS_HELP + "');\"  title=\"" + ALL_ITEMS_HELP + "\" /></td></tr></table>");
+			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + ALL_ITEMS_HELP + "');\"  title=\"" + ALL_ITEMS_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
@@ -2038,7 +2040,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.Write(" checked=\"checked\"");
 			Output.WriteLine(" /> <label for=\"admin_aggr_mapbrowse\">Include Map Browse</label>");
 			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + MAP_BROWSE_HELP + "');\"  title=\"" + MAP_BROWSE_HELP + "\" /></td></tr></table>");
+			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + MAP_BROWSE_HELP + "');\"  title=\"" + MAP_BROWSE_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
@@ -2165,7 +2167,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("            </select>");
 			Output.WriteLine("          </td>");
-            Output.WriteLine("          <td style=\"text-align:left;\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + MAP_SEARCH_BOUNDING_HELP + "');\"  title=\"" + MAP_SEARCH_BOUNDING_HELP + "\" /></td>");
+            Output.WriteLine("          <td style=\"text-align:left;\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + MAP_SEARCH_BOUNDING_HELP + "');\"  title=\"" + MAP_SEARCH_BOUNDING_HELP + "\" /></td>");
 		    Output.WriteLine("        </tr>");
             if (search_area_value == -1)
                 Output.WriteLine("        <tr id=\"admin_aggr_mapsearch_custom_row\">");
@@ -2297,7 +2299,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("            </select>");
             Output.WriteLine("          </td>");
-            Output.WriteLine("          <td style=\"text-align:left;\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + MAP_SEARCH_BOUNDING_HELP + "');\"  title=\"" + MAP_SEARCH_BOUNDING_HELP + "\" /></td>");
+            Output.WriteLine("          <td style=\"text-align:left;\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + MAP_SEARCH_BOUNDING_HELP + "');\"  title=\"" + MAP_SEARCH_BOUNDING_HELP + "\" /></td>");
             Output.WriteLine("        </tr>");
             if ( search_area_value == -1)
                 Output.WriteLine("        <tr id=\"admin_aggr_mapbrowse_custom_row\">");
@@ -2439,7 +2441,7 @@ namespace SobekCM.Library.AdminViewer
 			
 			
 			Output.WriteLine("          </td>");
-			Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + FACETS_HELP + "');\"  title=\"" + FACETS_HELP + "\" /></td>");
+			Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + FACETS_HELP + "');\"  title=\"" + FACETS_HELP + "\" /></td>");
 			Output.WriteLine("         </tr>");
 			Output.WriteLine("       </table>");
 			Output.WriteLine("     </td>");
@@ -2453,7 +2455,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
 			Result_Writer_Helper(Output, "admin_aggr_default_view", "( NO DEFAULT )", itemAggregation.Default_Result_View, "sbkSaav_SelectSingle");
 			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + DEFAULT_VIEW_HELP + "');\"  title=\"" + DEFAULT_VIEW_HELP + "\" /></td></tr></table>");
+			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + DEFAULT_VIEW_HELP + "');\"  title=\"" + DEFAULT_VIEW_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
@@ -2483,7 +2485,7 @@ namespace SobekCM.Library.AdminViewer
 				}
 			}
 			Output.WriteLine("          </td>");
-			Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + RESULTS_VIEWS_HELP + "');\"  title=\"" + RESULTS_VIEWS_HELP + "\" /></td>");
+			Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + RESULTS_VIEWS_HELP + "');\"  title=\"" + RESULTS_VIEWS_HELP + "\" /></td>");
 			Output.WriteLine("         </tr>");
 			Output.WriteLine("       </table>");
 			Output.WriteLine("     </td>");
@@ -2652,7 +2654,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr><td>");
 			BrowseBy_Writer_Helper(Output, "admin_aggr_default_browseby", "( NO DEFAULT )", default_browse_by, otherBrowseBys.ToArray(), "sbkSaav_SelectSingle");
 			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + DEFAULT_HELP + "');\"  title=\"" + DEFAULT_HELP + "\" /></td></tr></table>");
+			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + DEFAULT_HELP + "');\"  title=\"" + DEFAULT_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
@@ -2691,7 +2693,7 @@ namespace SobekCM.Library.AdminViewer
 				}
 			}
 			Output.WriteLine("          </td>");
-			Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + METADATA_BROWSES_HELP + "');\"  title=\"" + METADATA_BROWSES_HELP + "\" /></td>");
+			Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + METADATA_BROWSES_HELP + "');\"  title=\"" + METADATA_BROWSES_HELP + "\" /></td>");
 			Output.WriteLine("         </tr>");
 			Output.WriteLine("       </table>");
 			Output.WriteLine("     </td>");
@@ -2714,7 +2716,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine(" />");
 			Output.WriteLine("           <label for=\"admin_aggr_oai_flag\">Include in OAI-PMH as a set?</label>");
 			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + OAI_FLAG_HELP + "');\"  title=\"" + OAI_FLAG_HELP + "\" /></td></tr></table>");
+			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + OAI_FLAG_HELP + "');\"  title=\"" + OAI_FLAG_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
@@ -2724,7 +2726,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("    <td class=\"sbkSaav_TableLabel\" colspan=\"2\">");
 			Output.WriteLine("      <table class=\"sbkSaav_InnerTable\"><tr>");
 			Output.WriteLine("        <td><label for=\"admin_aggr_oai_metadata\">Additional dublin core metadata to include in OAI-PMH set list:</label></td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + OAI_METADATA_HELP + "');\"  title=\"" + OAI_METADATA_HELP + "\" /></td></tr></table>");
+			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + OAI_METADATA_HELP + "');\"  title=\"" + OAI_METADATA_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
@@ -3185,14 +3187,14 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("        <tr>");
 			Output.WriteLine("          <td style=\"width:120px;\"><label for=\"admin_aggr_code\">Code:</label></td>");
 			Output.WriteLine("          <td style=\"width:165px\"><input class=\"sbkSaav_NewChildCode sbkAdmin_Focusable\" name=\"admin_aggr_code\" id=\"admin_aggr_code\" type=\"text\" value=\"" + ( childPageCode ?? String.Empty ) + "\" /></td>");
-			Output.WriteLine("          <td colspan=\"2\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + CODE_HELP + "');\"  title=\"" + CODE_HELP + "\" /></td>");
+			Output.WriteLine("          <td colspan=\"2\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + CODE_HELP + "');\"  title=\"" + CODE_HELP + "\" /></td>");
 			Output.WriteLine("        </tr>");
 
 			// Add the default language label
 			Output.WriteLine("        <tr>");
 			Output.WriteLine("          <td><label for=\"admin_aggr_label\">Title (default):</label></td>");
 			Output.WriteLine("          <td colspan=\"2\"><input class=\"sbkSaav_SubLargeInput sbkAdmin_Focusable\" name=\"admin_aggr_label\" id=\"admin_aggr_label\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(childPageLabel ?? String.Empty) + "\" /></td>");
-			Output.WriteLine("          <td style=\"width:30px\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + LABEL_HELP + "');\"  title=\"" + LABEL_HELP + "\" /></td>");
+			Output.WriteLine("          <td style=\"width:30px\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + LABEL_HELP + "');\"  title=\"" + LABEL_HELP + "\" /></td>");
 			Output.WriteLine("        </tr>");
 
 			// Add the visibility line
@@ -3217,7 +3219,7 @@ namespace SobekCM.Library.AdminViewer
 				Output.Write("<option value=\"none\">None</option>");
 
 			Output.WriteLine("</select></td>");
-			Output.WriteLine("          <td colspan=\"2\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + VISIBILITY_HELP + "');\"  title=\"" + VISIBILITY_HELP + "\" /></td>");
+			Output.WriteLine("          <td colspan=\"2\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + VISIBILITY_HELP + "');\"  title=\"" + VISIBILITY_HELP + "\" /></td>");
 			Output.WriteLine("        </tr>");
 
 			// Add line for parent code
@@ -3242,7 +3244,7 @@ namespace SobekCM.Library.AdminViewer
 
 			}
 			Output.WriteLine("</select></td>");
-			Output.WriteLine("          <td colspan=\"2\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + PARENT_HELP + "');\"  title=\"" + PARENT_HELP + "\" /></td>");
+			Output.WriteLine("          <td colspan=\"2\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + PARENT_HELP + "');\"  title=\"" + PARENT_HELP + "\" /></td>");
 			Output.WriteLine("        </tr>");
 
 			// Add line for button
@@ -3381,15 +3383,15 @@ namespace SobekCM.Library.AdminViewer
                         Output.WriteLine("          <td>" + relatedAggr.Name + "</td>");
 
 	                    if (relatedAggr.Active)
-	                        Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"YES\" /></td>");
+	                        Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"YES\" /></td>");
 	                    else
-                            Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"NO\" /></td>");
+                            Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"NO\" /></td>");
 
 
                         if (!relatedAggr.Hidden)
-                            Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + Static_Resources.Checkmark2_Png + "\" alt=\"YES\" /></td>");
+                            Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"YES\" /></td>");
                         else
-                            Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + Static_Resources.Checkmark_Png + "\" alt=\"NO\" /></td>");
+                            Output.WriteLine("          <td style=\"text-align: center\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"NO\" /></td>");
 
 	                    
 	                    Output.WriteLine("        </tr>");
@@ -3480,7 +3482,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("       <table class=\"sbkSaav_InnerTable\">");
             Output.WriteLine("         <tr>");
             Output.WriteLine("           <td class=\"sbkSaav_UploadInstr\">To upload one or more images or documents press SELECT FILES, browse to the file, and then select UPLOAD</td>");
-            Output.WriteLine("           <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + UPLOAD_BANNER_HELP + "');\"  title=\"" + UPLOAD_BANNER_HELP + "\" /></td>");
+            Output.WriteLine("           <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + UPLOAD_BANNER_HELP + "');\"  title=\"" + UPLOAD_BANNER_HELP + "\" /></td>");
             Output.WriteLine("         </tr>");
             Output.WriteLine("         <tr>");
             Output.WriteLine("           <td colspan=\"2\">");
@@ -3590,58 +3592,58 @@ namespace SobekCM.Library.AdminViewer
                         if (String.IsNullOrEmpty(extension))
                             continue;
 
-                        string thisDocFileImage = Static_Resources.File_TXT_Img;
+                        string thisDocFileImage = Static_Resources_Gateway.File_TXT_Img;
                         switch (extension.ToUpper().Replace(".", ""))
                         {
                             case "AI":
-                                thisDocFileImage = Static_Resources.File_AI_Img;
+                                thisDocFileImage = Static_Resources_Gateway.File_AI_Img;
                                 break;
 
                             case "DOC":
                             case "DOCX":
-                                thisDocFileImage = Static_Resources.File_Word_Img;
+                                thisDocFileImage = Static_Resources_Gateway.File_Word_Img;
                                 break;
 
                             case "EPS":
-                                thisDocFileImage = Static_Resources.File_EPS_Img;
+                                thisDocFileImage = Static_Resources_Gateway.File_EPS_Img;
                                 break;
 
                             case "KML":
-                                thisDocFileImage = Static_Resources.File_KML_Img;
+                                thisDocFileImage = Static_Resources_Gateway.File_KML_Img;
                                 break;
 
                             case "PDF":
-                                thisDocFileImage = Static_Resources.File_PDF_Img;
+                                thisDocFileImage = Static_Resources_Gateway.File_PDF_Img;
                                 break;
 
                             case "PSD":
-                                thisDocFileImage = Static_Resources.File_PSD_Img;
+                                thisDocFileImage = Static_Resources_Gateway.File_PSD_Img;
                                 break;
 
                             case "PUB":
-                                thisDocFileImage = Static_Resources.File_PUB_Img;
+                                thisDocFileImage = Static_Resources_Gateway.File_PUB_Img;
                                 break;
 
                             case "TXT":
-                                thisDocFileImage = Static_Resources.File_TXT_Img;
+                                thisDocFileImage = Static_Resources_Gateway.File_TXT_Img;
                                 break;
 
                             case "VSD":
                             case "VSDX":
-                                thisDocFileImage = Static_Resources.File_VSD_Img;
+                                thisDocFileImage = Static_Resources_Gateway.File_VSD_Img;
                                 break;
 
                             case "XLS":
                             case "XLSX":
-                                thisDocFileImage = Static_Resources.File_Excel_Img;
+                                thisDocFileImage = Static_Resources_Gateway.File_Excel_Img;
                                 break;
 
                             case "XML":
-                                thisDocFileImage = Static_Resources.File_XML_Img;
+                                thisDocFileImage = Static_Resources_Gateway.File_XML_Img;
                                 break;
 
                             case "ZIP":
-                                thisDocFileImage = Static_Resources.File_ZIP_Img;
+                                thisDocFileImage = Static_Resources_Gateway.File_ZIP_Img;
                                 break;
                         }
                         Output.Write("      <td>");
@@ -3767,8 +3769,8 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\" style=\"height:60px\">");
 			Output.WriteLine("    <td>&nbsp;</td>");
 			Output.WriteLine("    <td style=\"text-align:right; padding-right: 100px\">");
-			Output.WriteLine("      <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('e');\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
-			Output.WriteLine("      <button title=\"Save changes to this stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return save_css_edits();\">SAVE <img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+			Output.WriteLine("      <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_aggr_edit_page('e');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+			Output.WriteLine("      <button title=\"Save changes to this stylesheet\" class=\"sbkAdm_RoundButton\" onclick=\"return save_css_edits();\">SAVE <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
 			Output.WriteLine("    </td>");
 			Output.WriteLine("  </tr>");
 
@@ -3899,7 +3901,7 @@ namespace SobekCM.Library.AdminViewer
 
 			Output.WriteLine("</select>");
 			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + VISIBILITY_HELP + "');\"  title=\"" + VISIBILITY_HELP + "\" /></td></tr></table>");
+			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + VISIBILITY_HELP + "');\"  title=\"" + VISIBILITY_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
@@ -3976,7 +3978,7 @@ namespace SobekCM.Library.AdminViewer
 			}
 			Output.WriteLine("</select>");
 			Output.WriteLine("        </td>");
-			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + PARENT_HELP + "');\"  title=\"" + PARENT_HELP + "\" /></td></tr></table>");
+			Output.WriteLine("        <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + PARENT_HELP + "');\"  title=\"" + PARENT_HELP + "\" /></td></tr></table>");
 			Output.WriteLine("     </td>");
 			Output.WriteLine("  </tr>");
 
@@ -4097,14 +4099,14 @@ namespace SobekCM.Library.AdminViewer
 			}
 			Output.WriteLine();
 			Output.WriteLine("          </td>");
-			Output.WriteLine("          <td style=\"width:145px\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + NEW_VERSION_LANGUAGE_HELP + "');\"  title=\"" + NEW_VERSION_LANGUAGE_HELP + "\" /></td>");
+			Output.WriteLine("          <td style=\"width:145px\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + NEW_VERSION_LANGUAGE_HELP + "');\"  title=\"" + NEW_VERSION_LANGUAGE_HELP + "\" /></td>");
 			Output.WriteLine("          <td></td>");
 			Output.WriteLine("        </tr>");
 
 			Output.WriteLine("        <tr>");
 			Output.WriteLine("          <td><label for=\"admin_aggr_new_version_label\">Title:</label></td>");
 			Output.WriteLine("          <td colspan=\"2\"><input class=\"sbkSaav_medium_input sbkAdmin_Focusable\" name=\"admin_aggr_new_version_label\" id=\"admin_aggr_new_version_label\" type=\"text\" value=\"\" /></td>");
-			Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + NEW_VERSION_TITLE_HELP + "');\"  title=\"" + NEW_VERSION_TITLE_HELP + "\" /></td>");
+			Output.WriteLine("          <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + NEW_VERSION_TITLE_HELP + "');\"  title=\"" + NEW_VERSION_TITLE_HELP + "\" /></td>");
 			Output.WriteLine("        </tr>");
 
 			Output.WriteLine("        <tr>");
@@ -4130,7 +4132,7 @@ namespace SobekCM.Library.AdminViewer
 
 		    Output.WriteLine("</select>");
 			Output.WriteLine("          </td>");
-			Output.WriteLine("          <td colspan=\"2\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + NEW_VERSION_COPY_HELP + "');\"  title=\"" + NEW_VERSION_COPY_HELP + "\" /></td>");
+			Output.WriteLine("          <td colspan=\"2\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + NEW_VERSION_COPY_HELP + "');\"  title=\"" + NEW_VERSION_COPY_HELP + "\" /></td>");
 			Output.WriteLine("        </tr>");
 			Output.WriteLine("      </table>");
 			Output.WriteLine("    </td>");

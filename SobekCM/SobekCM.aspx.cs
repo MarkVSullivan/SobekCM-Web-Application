@@ -9,6 +9,8 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -327,51 +329,6 @@ namespace SobekCM
                 // Get the base URL
                 string path = Server.MapPath("config/default/sobekcm_microservices.config");
                 SobekEngineClient.Read_Config_File(path, UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL);
-		    }
-
-            // Also, ensure the static resource locations have been read
-		    if (!Static_Resources.Config_Read_Attempted)
-		    {
-		        try
-		        {
-#if DEBUG
-                    string base_url = Request.Url.AbsoluteUri.ToLower().Replace("sobekcm.aspx", "");
-                    if (base_url.IndexOf("?") > 0)
-                        base_url = base_url.Substring(0, base_url.IndexOf("?"));
-
-                    if (base_url.IndexOf("localhost:") > 0)
-                    {
-                        UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL = base_url;
-                    }
-#endif
-
-		            // Try to read the static resources configuration file
-		            string static_config_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "\\config\\default\\sobekcm_static_resources_" + UI_ApplicationCache_Gateway.Settings.Servers.Static_Resources_Config_File.Replace(" ", "_") + ".config";
-		            if (File.Exists(static_config_file))
-		            {
-		                Static_Resources.Read_Config(static_config_file, UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL + "default");
-		            }
-		            else if (File.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "\\config\\default\\sobekcm_static_resources_cdn.config"))
-		            {
-                        Static_Resources.Read_Config(UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "\\config\\default\\sobekcm_static_resources_cdn.config", UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL + "default");
-		            }
-
-                    // Look for the user override settings file 
-                    string user_config_file = UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "\\config\\user\\sobekcm_static_resources.config";
-		            if (File.Exists(user_config_file))
-		            {
-                        Static_Resources.Read_Config(user_config_file, UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL + "default");
-		            }
-		        }
-		        catch
-		        {
-		            // Do nothing in the catch.. there are suitable defaults in this case
-		        }
-		        finally
-		        {
-                    Static_Resources.Config_Read_Attempted = true;
-		        }
-
 		    }
 
 

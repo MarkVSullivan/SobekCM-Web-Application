@@ -8,6 +8,8 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
@@ -58,7 +60,7 @@ namespace SobekCM.Library.ResultsViewer
             StringBuilder resultsBldr = new StringBuilder(5000);
 
             //Add the necessary JavaScript, CSS files
-            resultsBldr.AppendLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Thumb_Results_Js + "\"></script>");
+            resultsBldr.AppendLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Thumb_Results_Js + "\"></script>");
 
 
             // Start this table
@@ -171,7 +173,7 @@ namespace SobekCM.Library.ResultsViewer
                 // Add the thumbnail
                 if ((firstItemResult.MainThumbnail.ToUpper().IndexOf(".JPG") < 0) && (firstItemResult.MainThumbnail.ToUpper().IndexOf(".GIF") < 0))
                 {
-                    resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan"+title_count+"\"><a href=\"" + internal_link + "\"><img id=\"sbkThumbnailImg" + title_count + "\" src=\"" + Static_Resources.Nothumb_Jpg + "\" alt=\"MISSING THUMBNAIL\" /></a></span></td></tr>");
+                    resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan"+title_count+"\"><a href=\"" + internal_link + "\"><img id=\"sbkThumbnailImg" + title_count + "\" src=\"" + Static_Resources_Gateway.Nothumb_Jpg + "\" alt=\"MISSING THUMBNAIL\" /></a></span></td></tr>");
                 }
                 else
                 {

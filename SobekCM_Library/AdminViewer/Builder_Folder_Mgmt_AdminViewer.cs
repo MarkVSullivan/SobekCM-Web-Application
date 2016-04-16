@@ -6,6 +6,8 @@ using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
@@ -57,7 +59,7 @@ namespace SobekCM.Library.AdminViewer
         /// <summary> Gets the URL for the icon related to this administrative task </summary>
         public override string Viewer_Icon
         {
-            get { return Static_Resources.Gears_Img; }
+            get { return Static_Resources_Gateway.Gears_Img; }
         }
 
         /// <summary> Add the HTML to be displayed in the main SobekCM viewer area </summary>
@@ -96,28 +98,28 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("  <tr>");
             Output.WriteLine("    <td id=\"sbkBfmav_DisplayTable_LabelCol\"><label for=\"admin_folder_name\">Descriptive Name:</label></td>");
             Output.WriteLine("    <td id=\"sbkBfmav_DisplayTable_EntryCol\"><input class=\"sbkBfmav_DescNameBox sbkAdmin_Focusable\" name=\"admin_folder_name\" id=\"admin_folder_name\" type=\"text\" value=\"" + (sourceFolder.Folder_Name ?? String.Empty) + "\" /></td>");
-            Output.WriteLine("    <td colspan=\"2\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + NAME_HELP + "');\"  title=\"" + NAME_HELP + "\" /></td>");
+            Output.WriteLine("    <td colspan=\"2\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + NAME_HELP + "');\"  title=\"" + NAME_HELP + "\" /></td>");
             Output.WriteLine("  </tr>");
 
             // Add the network folder
             Output.WriteLine("  <tr>");
             Output.WriteLine("    <td><label for=\"admin_folder_network\">Inbound Folder:</label></td>");
             Output.WriteLine("    <td colspan=\"2\"><input class=\"sbkBfmav_NetworkInput sbkAdmin_Focusable\" name=\"admin_folder_network\" id=\"admin_folder_network\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(sourceFolder.Inbound_Folder ?? String.Empty) + "\" /></td>");
-            Output.WriteLine("    <td id=\"sbkBfmav_DisplayTable_LastCol\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + INBOUND_HELP + "');\"  title=\"" + INBOUND_HELP + "\" /></td>");
+            Output.WriteLine("    <td id=\"sbkBfmav_DisplayTable_LastCol\"><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + INBOUND_HELP + "');\"  title=\"" + INBOUND_HELP + "\" /></td>");
             Output.WriteLine("  </tr>");
 
             // Add the processing folder
             Output.WriteLine("  <tr>");
             Output.WriteLine("    <td><label for=\"admin_folder_processing\">Processing Folder:</label></td>");
             Output.WriteLine("    <td colspan=\"2\"><input class=\"sbkBfmav_NetworkInput sbkAdmin_Focusable\" name=\"admin_folder_processing\" id=\"admin_folder_processing\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(sourceFolder.Processing_Folder ?? String.Empty) + "\" /></td>");
-            Output.WriteLine("    <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + PROCESSING_HELP + "');\"  title=\"" + PROCESSING_HELP + "\" /></td>");
+            Output.WriteLine("    <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + PROCESSING_HELP + "');\"  title=\"" + PROCESSING_HELP + "\" /></td>");
             Output.WriteLine("  </tr>");
 
             // Add the error folder
             Output.WriteLine("  <tr>");
             Output.WriteLine("    <td><label for=\"admin_folder_error\">Failures Folder:</label></td>");
             Output.WriteLine("    <td colspan=\"2\"><input class=\"sbkBfmav_NetworkInput sbkAdmin_Focusable\" name=\"admin_folder_error\" id=\"admin_folder_error\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(sourceFolder.Failures_Folder ?? String.Empty) + "\" /></td>");
-            Output.WriteLine("    <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + FAILURES_HELP + "');\"  title=\"" + FAILURES_HELP + "\" /></td>");
+            Output.WriteLine("    <td><img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + FAILURES_HELP + "');\"  title=\"" + FAILURES_HELP + "\" /></td>");
             Output.WriteLine("  </tr>");
 
             // Add the folder options title and first folder option ( checksum validation )
@@ -126,7 +128,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td colspan=\"3\" style=\"vertical-align: middle\">");
             Output.WriteLine("      <input class=\"sbkBfmav_FolderOptionCheckbox sbkAdmin_Focusable\" name=\"admin_folder_checksum\" id=\"admin_folder_checksum\" type=\"checkbox\" " + (sourceFolder.Perform_Checksum ? "checked=\"checked\" " : String.Empty) + " />");
             Output.WriteLine("      <label for=\"admin_folder_checksum\">Perform checksum validation against any checksums in the METS files</label>");
-            Output.WriteLine("      <img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + CHECKSUM_HELP + "');\"  title=\"" + CHECKSUM_HELP + "\" />");
+            Output.WriteLine("      <img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + CHECKSUM_HELP + "');\"  title=\"" + CHECKSUM_HELP + "\" />");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
@@ -136,7 +138,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td colspan=\"3\" style=\"vertical-align: middle\">");
             Output.WriteLine("      <input class=\"sbkBfmav_FolderOptionCheckbox sbkAdmin_Focusable\" name=\"admin_folder_archive_tiff\" id=\"admin_folder_archive_tiff\" type=\"checkbox\" " + (sourceFolder.Archive_TIFFs ? "checked=\"checked\" " : String.Empty) + " />");
             Output.WriteLine("      <label for=\"admin_folder_archive_tiff\">Copy all TIFF files to the archiving directory</label>");
-            Output.WriteLine("      <img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + ARCHIVE_TIFF_HELP + "');\"  title=\"" + ARCHIVE_TIFF_HELP + "\" />");
+            Output.WriteLine("      <img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + ARCHIVE_TIFF_HELP + "');\"  title=\"" + ARCHIVE_TIFF_HELP + "\" />");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
@@ -146,7 +148,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td colspan=\"3\" style=\"vertical-align: middle\">");
             Output.WriteLine("      <input class=\"sbkBfmav_FolderOptionCheckbox sbkAdmin_Focusable\" name=\"admin_folder_archive_all\" id=\"admin_folder_archive_all\" type=\"checkbox\" " + (sourceFolder.Archive_All_Files ? "checked=\"checked\" " : String.Empty) + " />");
             Output.WriteLine("      <label for=\"admin_folder_archive_all\">Copy all incoming files to the archiving directory</label>");
-            Output.WriteLine("      <img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + ARCHIVE_ALL_HELP + "');\"  title=\"" + ARCHIVE_ALL_HELP + "\" />");
+            Output.WriteLine("      <img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + ARCHIVE_ALL_HELP + "');\"  title=\"" + ARCHIVE_ALL_HELP + "\" />");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
@@ -156,7 +158,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td colspan=\"3\" style=\"vertical-align: middle\">");
             Output.WriteLine("      <input class=\"sbkBfmav_FolderOptionCheckbox sbkAdmin_Focusable\" name=\"admin_folder_allow_delete\" id=\"admin_folder_allow_delete\" type=\"checkbox\" " + (sourceFolder.Allow_Deletes ? "checked=\"checked\" " : String.Empty) + " />");
             Output.WriteLine("      <label for=\"admin_folder_allow_delete\">Allow METS files with a RecordStatus of DELETE in this folder</label>");
-            Output.WriteLine("      <img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + DELETE_HELP + "');\"  title=\"" + DELETE_HELP + "\" />");
+            Output.WriteLine("      <img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + DELETE_HELP + "');\"  title=\"" + DELETE_HELP + "\" />");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
@@ -166,7 +168,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td colspan=\"3\" style=\"vertical-align: middle\">");
             Output.WriteLine("      <input class=\"sbkBfmav_FolderOptionCheckbox sbkAdmin_Focusable\" name=\"admin_folder_no_metadata\" id=\"admin_folder_no_metadata\" type=\"checkbox\" " + (sourceFolder.Allow_Folders_No_Metadata ? "checked=\"checked\" " : String.Empty) + " />");
             Output.WriteLine("      <label for=\"admin_folder_no_metadata\">Allow resource files in appropriately names folders without METS files</label>");
-            Output.WriteLine("      <img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + NO_METADATA_HELP + "');\"  title=\"" + NO_METADATA_HELP + "\" />");
+            Output.WriteLine("      <img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + NO_METADATA_HELP + "');\"  title=\"" + NO_METADATA_HELP + "\" />");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 
@@ -176,7 +178,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("    <td colspan=\"3\" style=\"vertical-align: middle\">");
             Output.WriteLine("      <input class=\"sbkBfmav_FolderOptionCheckbox sbkAdmin_Focusable\" name=\"admin_folder_bibrestrict\" id=\"admin_folder_bibrestrict\" type=\"checkbox\" " + ((String.IsNullOrWhiteSpace(sourceFolder.BibID_Roots_Restrictions) ? String.Empty : "checked=\"checked\" ")) + " />");
             Output.WriteLine("      <label for=\"admin_folder_bibrestrict\">Restrict incoming packages to certain BibID roots.</label>");
-            Output.WriteLine("      <img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources.Help_Button_Jpg + "\" onclick=\"alert('" + BIB_RESTRICT_HELP + "');\"  title=\"" + BIB_RESTRICT_HELP + "\" />");
+            Output.WriteLine("      <img class=\"sbkSaav_HelpButton\" src=\"" + Static_Resources_Gateway.Help_Button_Jpg + "\" onclick=\"alert('" + BIB_RESTRICT_HELP + "');\"  title=\"" + BIB_RESTRICT_HELP + "\" />");
             Output.WriteLine("    </td>");
             Output.WriteLine("  </tr>");
 

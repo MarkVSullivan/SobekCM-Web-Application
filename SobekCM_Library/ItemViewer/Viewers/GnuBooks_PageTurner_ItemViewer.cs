@@ -8,7 +8,9 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.HTML;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
@@ -317,10 +319,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <remarks> By default this does nothing, but can be overwritten by all the individual item viewers </remarks>
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources.Sobekcm_Bookturner_Css + "\" /> ");
-            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_1_2_6_Min_Js + "\"></script> ");
-            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Easing_1_3_Js + "\"></script> ");
-            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Bookturner_Js + "\"></script>    ");
+            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + Static_Resources_Gateway.Sobekcm_Bookturner_Css + "\" /> ");
+            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_1_2_6_Min_Js + "\"></script> ");
+            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Easing_1_3_Js + "\"></script> ");
+            Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Bookturner_Js + "\"></script>    ");
         }
 
 

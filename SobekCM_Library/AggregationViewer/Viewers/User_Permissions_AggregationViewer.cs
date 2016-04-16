@@ -7,6 +7,8 @@ using System.IO;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
@@ -78,7 +80,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Gets the URL for the icon related to this aggregational viewer task </summary>
         public override string Viewer_Icon
         {
-            get { return Static_Resources.User_Permission_Img; }
+            get { return Static_Resources_Gateway.User_Permission_Img; }
         }
 
         /// <summary> Add the HTML to be displayed in the search box </summary>

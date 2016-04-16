@@ -15,6 +15,8 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
 using SobekCM.Library.ResultsViewer;
@@ -684,9 +686,9 @@ namespace SobekCM.Library.HTML
                         {
                             buttons_builder.Append("<div class=\"sbkPrsw_LeftButtons\">");
                             RequestSpecificValues.Current_Mode.Page = 1;
-                            buttons_builder.Append("<button title=\"" + first_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\"><img src=\"" + Static_Resources.Button_First_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
+                            buttons_builder.Append("<button title=\"" + first_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_First_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" />" + first_page_text + "</button>&nbsp;");
                             RequestSpecificValues.Current_Mode.Page = (ushort)(current_page - 1);
-                            buttons_builder.Append("<button title=\"" + previous_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\"><img src=\"" + Static_Resources.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
+                            buttons_builder.Append("<button title=\"" + previous_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"roundbutton_img_left\" alt=\"\" />" + previous_page_text + "</button>");
                             buttons_builder.Append("</div>");
                             LEFT_BUTTONS = buttons_builder.ToString();
                             buttons_builder.Clear();
@@ -702,11 +704,11 @@ namespace SobekCM.Library.HTML
                         {
                             buttons_builder.Append("<div class=\"sbkPrsw_RightButtons\">");
                             RequestSpecificValues.Current_Mode.Page = (ushort)(current_page + 1);
-                            buttons_builder.Append("<button title=\"" + next_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\">" + next_page_text + "<img src=\"" + Static_Resources.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
+                            buttons_builder.Append("<button title=\"" + next_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\">" + next_page_text + "<img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>&nbsp;");
                             RequestSpecificValues.Current_Mode.Page = (ushort)(resultWriter.Total_Results / RESULTS_PER_PAGE);
                             if (resultWriter.Total_Results % RESULTS_PER_PAGE > 0)
                                 RequestSpecificValues.Current_Mode.Page = (ushort)(RequestSpecificValues.Current_Mode.Page + 1);
-                            buttons_builder.Append("<button title=\"" + last_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\">" + last_page_text + "<img src=\"" + Static_Resources.Button_Last_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
+                            buttons_builder.Append("<button title=\"" + last_page + "\" class=\"sbkPrsw_RoundButton\" onclick=\"window.location='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "'; return false;\">" + last_page_text + "<img src=\"" + Static_Resources_Gateway.Button_Last_Arrow_Png + "\" class=\"roundbutton_img_right\" alt=\"\" /></button>");
                             buttons_builder.Append("</div>");
                             RIGHT_BUTTONS = buttons_builder.ToString();
                         }
@@ -746,12 +748,12 @@ namespace SobekCM.Library.HTML
                 {
                     if (resultView == Result_Display_Type_Enum.Map)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources.Geo_Blue_Png + "\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources_Gateway.Geo_Blue_Png + "\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
                         RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Map;
-                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + Static_Resources.Geo_Blue_Png + "\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + Static_Resources_Gateway.Geo_Blue_Png + "\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
 
@@ -772,12 +774,12 @@ namespace SobekCM.Library.HTML
                 {
                     if (resultView == Result_Display_Type_Enum.Brief)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources.Brief_Blue_Img + "\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources_Gateway.Brief_Blue_Img + "\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
                         RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
-                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + brief_view + "\"><img src=\"" + Static_Resources.Brief_Blue_Img + "\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + brief_view + "\"><img src=\"" + Static_Resources_Gateway.Brief_Blue_Img + "\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
 
@@ -785,12 +787,12 @@ namespace SobekCM.Library.HTML
                 {
                     if (resultView == Result_Display_Type_Enum.Table)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources.Table_Blue_Png + "\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources_Gateway.Table_Blue_Png + "\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
                         RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Table;
-                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + table_view + "\"><img src=\"" + Static_Resources.Table_Blue_Png + "\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + table_view + "\"><img src=\"" + Static_Resources_Gateway.Table_Blue_Png + "\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
 
@@ -798,12 +800,12 @@ namespace SobekCM.Library.HTML
                 {
                     if (resultView == Result_Display_Type_Enum.Thumbnails)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources.Thumb_Blue_Png + "\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources_Gateway.Thumb_Blue_Png + "\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
                         RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
-                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + thumbnail_view + "\"><img src=\"" + Static_Resources.Thumb_Blue_Png + "\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + thumbnail_view + "\"><img src=\"" + Static_Resources_Gateway.Thumb_Blue_Png + "\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
                 RequestSpecificValues.Current_Mode.Result_Display_Type = resultView;
@@ -869,7 +871,7 @@ namespace SobekCM.Library.HTML
                 // Add the scripts needed
                 if (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.My_Sobek)
                 {
-                    Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
+                    Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Custom_Js + "\"></script>");
                     Output.WriteLine();
                 }
 
@@ -952,20 +954,20 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("<!-- Share form -->");
                     Output.WriteLine("<div class=\"share_popup_div\" id=\"share_form\" style=\"display:none;\">");
 
-                    Output.WriteLine("<a href=\"http://www.facebook.com/share.php?u=" + share_url + "&amp;t=" + title + "\" target=\"FACEBOOK_WINDOW\" onmouseover=\"facebook_share.src='" + Static_Resources.Facebook_Share_H_Gif + "'\" onfocus=\"facebook_share.src='" + Static_Resources.Facebook_Share_H_Gif + "'\" onmouseout=\"facebook_share.src='" + Static_Resources.Facebook_Share_Gif + "'\" onblur=\"facebook_share.src='" + Static_Resources.Facebook_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"facebook_share\" name=\"facebook_share\" src=\"" + Static_Resources.Facebook_Share_Gif + "\" alt=\"FACEBOOK\" /></a>");
-                    Output.WriteLine("<a href=\"http://buzz.yahoo.com/buzz?targetUrl=" + share_url + "&amp;headline=" + title + "\" target=\"YAHOOBUZZ_WINDOW\" onmouseover=\"yahoobuzz_share.src='" + Static_Resources.Yahoobuzz_Share_H_Gif + "'\" onfocus=\"yahoobuzz_share.src='" + Static_Resources.Yahoobuzz_Share_H_Gif + "'\" onmouseout=\"yahoobuzz_share.src='" + Static_Resources.Yahoobuzz_Share_Gif + "'\" onblur=\"yahoobuzz_share.src='" + Static_Resources.Yahoobuzz_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoobuzz_share\" name=\"yahoobuzz_share\" src=\"" + Static_Resources.Yahoobuzz_Share_Gif + "\" alt=\"YAHOO BUZZ\" /></a>");
+                    Output.WriteLine("<a href=\"http://www.facebook.com/share.php?u=" + share_url + "&amp;t=" + title + "\" target=\"FACEBOOK_WINDOW\" onmouseover=\"facebook_share.src='" + Static_Resources_Gateway.Facebook_Share_H_Gif + "'\" onfocus=\"facebook_share.src='" + Static_Resources_Gateway.Facebook_Share_H_Gif + "'\" onmouseout=\"facebook_share.src='" + Static_Resources_Gateway.Facebook_Share_Gif + "'\" onblur=\"facebook_share.src='" + Static_Resources_Gateway.Facebook_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"facebook_share\" name=\"facebook_share\" src=\"" + Static_Resources_Gateway.Facebook_Share_Gif + "\" alt=\"FACEBOOK\" /></a>");
+                    Output.WriteLine("<a href=\"http://buzz.yahoo.com/buzz?targetUrl=" + share_url + "&amp;headline=" + title + "\" target=\"YAHOOBUZZ_WINDOW\" onmouseover=\"yahoobuzz_share.src='" + Static_Resources_Gateway.Yahoobuzz_Share_H_Gif + "'\" onfocus=\"yahoobuzz_share.src='" + Static_Resources_Gateway.Yahoobuzz_Share_H_Gif + "'\" onmouseout=\"yahoobuzz_share.src='" + Static_Resources_Gateway.Yahoobuzz_Share_Gif + "'\" onblur=\"yahoobuzz_share.src='" + Static_Resources_Gateway.Yahoobuzz_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoobuzz_share\" name=\"yahoobuzz_share\" src=\"" + Static_Resources_Gateway.Yahoobuzz_Share_Gif + "\" alt=\"YAHOO BUZZ\" /></a>");
                     Output.WriteLine("<br />");
 
-                    Output.WriteLine("<a href=\"http://twitter.com/home?status=Currently reading " + share_url + "\" target=\"TWITTER_WINDOW\" onmouseover=\"twitter_share.src='" + Static_Resources.Twitter_Share_H_Gif + "'\" onfocus=\"twitter_share.src='" + Static_Resources.Twitter_Share_H_Gif + "'\" onmouseout=\"twitter_share.src='" + Static_Resources.Twitter_Share_Gif + "'\" onblur=\"twitter_share.src='" + Static_Resources.Twitter_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"twitter_share\" name=\"twitter_share\" src=\"" + Static_Resources.Twitter_Share_Gif + "\" alt=\"TWITTER\" /></a>");
-                    Output.WriteLine("<a href=\"http://www.google.com/bookmarks/mark?op=add&amp;bkmk=" + share_url + "&amp;title=" + title + "\" target=\"GOOGLE_WINDOW\" onmouseover=\"google_share.src='" + Static_Resources.Google_Share_H_Gif + "'\" onfocus=\"google_share.src='" + Static_Resources.Google_Share_H_Gif + "'\" onmouseout=\"google_share.src='" + Static_Resources.Google_Share_Gif + "'\" onblur=\"google_share.src='" + Static_Resources.Google_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"google_share\" name=\"google_share\" src=\"" + Static_Resources.Google_Share_Gif + "\" alt=\"GOOGLE SHARE\" /></a>");
+                    Output.WriteLine("<a href=\"http://twitter.com/home?status=Currently reading " + share_url + "\" target=\"TWITTER_WINDOW\" onmouseover=\"twitter_share.src='" + Static_Resources_Gateway.Twitter_Share_H_Gif + "'\" onfocus=\"twitter_share.src='" + Static_Resources_Gateway.Twitter_Share_H_Gif + "'\" onmouseout=\"twitter_share.src='" + Static_Resources_Gateway.Twitter_Share_Gif + "'\" onblur=\"twitter_share.src='" + Static_Resources_Gateway.Twitter_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"twitter_share\" name=\"twitter_share\" src=\"" + Static_Resources_Gateway.Twitter_Share_Gif + "\" alt=\"TWITTER\" /></a>");
+                    Output.WriteLine("<a href=\"http://www.google.com/bookmarks/mark?op=add&amp;bkmk=" + share_url + "&amp;title=" + title + "\" target=\"GOOGLE_WINDOW\" onmouseover=\"google_share.src='" + Static_Resources_Gateway.Google_Share_H_Gif + "'\" onfocus=\"google_share.src='" + Static_Resources_Gateway.Google_Share_H_Gif + "'\" onmouseout=\"google_share.src='" + Static_Resources_Gateway.Google_Share_Gif + "'\" onblur=\"google_share.src='" + Static_Resources_Gateway.Google_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"google_share\" name=\"google_share\" src=\"" + Static_Resources_Gateway.Google_Share_Gif + "\" alt=\"GOOGLE SHARE\" /></a>");
                     Output.WriteLine("<br />");
 
-                    Output.WriteLine("<a href=\"http://www.stumbleupon.com/submit?url=" + share_url + "&amp;title=" + title + "\" target=\"STUMBLEUPON_WINDOW\" onmouseover=\"stumbleupon_share.src='" + Static_Resources.Stumbleupon_Share_H_Gif + "'\" onfocus=\"stumbleupon_share.src='" + Static_Resources.Stumbleupon_Share_H_Gif + "'\" onmouseout=\"stumbleupon_share.src='" + Static_Resources.Stumbleupon_Share_Gif + "'\" onblur=\"stumbleupon_share.src='" + Static_Resources.Stumbleupon_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"stumbleupon_share\" name=\"stumbleupon_share\" src=\"" + Static_Resources.Stumbleupon_Share_Gif + "\" alt=\"STUMBLEUPON\" /></a>");
-                    Output.WriteLine("<a href=\"http://myweb.yahoo.com/myresults/bookmarklet?t=" + title + "&amp;u=" + share_url + "\" target=\"YAHOO_WINDOW\" onmouseover=\"yahoo_share.src='" + Static_Resources.Yahoo_Share_H_Gif + "'\" onfocus=\"yahoo_share.src='" + Static_Resources.Yahoo_Share_H_Gif + "'\" onmouseout=\"yahoo_share.src='" + Static_Resources.Yahoo_Share_Gif + "'\" onblur=\"yahoo_share.src='" + Static_Resources.Yahoo_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoo_share\" name=\"yahoo_share\" src=\"" + Static_Resources.Yahoo_Share_Gif + "\" alt=\"YAHOO SHARE\" /></a>");
+                    Output.WriteLine("<a href=\"http://www.stumbleupon.com/submit?url=" + share_url + "&amp;title=" + title + "\" target=\"STUMBLEUPON_WINDOW\" onmouseover=\"stumbleupon_share.src='" + Static_Resources_Gateway.Stumbleupon_Share_H_Gif + "'\" onfocus=\"stumbleupon_share.src='" + Static_Resources_Gateway.Stumbleupon_Share_H_Gif + "'\" onmouseout=\"stumbleupon_share.src='" + Static_Resources_Gateway.Stumbleupon_Share_Gif + "'\" onblur=\"stumbleupon_share.src='" + Static_Resources_Gateway.Stumbleupon_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"stumbleupon_share\" name=\"stumbleupon_share\" src=\"" + Static_Resources_Gateway.Stumbleupon_Share_Gif + "\" alt=\"STUMBLEUPON\" /></a>");
+                    Output.WriteLine("<a href=\"http://myweb.yahoo.com/myresults/bookmarklet?t=" + title + "&amp;u=" + share_url + "\" target=\"YAHOO_WINDOW\" onmouseover=\"yahoo_share.src='" + Static_Resources_Gateway.Yahoo_Share_H_Gif + "'\" onfocus=\"yahoo_share.src='" + Static_Resources_Gateway.Yahoo_Share_H_Gif + "'\" onmouseout=\"yahoo_share.src='" + Static_Resources_Gateway.Yahoo_Share_Gif + "'\" onblur=\"yahoo_share.src='" + Static_Resources_Gateway.Yahoo_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"yahoo_share\" name=\"yahoo_share\" src=\"" + Static_Resources_Gateway.Yahoo_Share_Gif + "\" alt=\"YAHOO SHARE\" /></a>");
                     Output.WriteLine("<br />");
 
-                    Output.WriteLine("<a href=\"http://digg.com/submit?phase=2&amp;url=" + share_url + "&amp;title=" + title + "\" target=\"DIGG_WINDOW\" onmouseover=\"digg_share.src='" + Static_Resources.Digg_Share_H_Gif + "'\" onfocus=\"digg_share.src='" + Static_Resources.Digg_Share_H_Gif + "'\" onmouseout=\"digg_share.src='" + Static_Resources.Digg_Share_Gif + "'\" onblur=\"digg_share.src='" + Static_Resources.Digg_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"digg_share\" name=\"digg_share\" src=\"" + Static_Resources.Digg_Share_Gif + "\" alt=\"DIGG\" /></a>");
-                    Output.WriteLine("<a onmouseover=\"favorites_share.src='" + Static_Resources.Favorites_Share_H_Gif + "'\" onfocus=\"favorites_share.src='" + Static_Resources.Favorites_Share_H_Gif + "'\" onmouseout=\"favorites_share.src='" + Static_Resources.Favorites_Share_Gif + "'\" onblur=\"favorites_share.src='" + Static_Resources.Favorites_Share_Gif + "'\" onclick=\"javascript:add_to_favorites();\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"favorites_share\" name=\"favorites_share\" src=\"" + Static_Resources.Favorites_Share_Gif + "\" alt=\"MY FAVORITES\" /></a>");
+                    Output.WriteLine("<a href=\"http://digg.com/submit?phase=2&amp;url=" + share_url + "&amp;title=" + title + "\" target=\"DIGG_WINDOW\" onmouseover=\"digg_share.src='" + Static_Resources_Gateway.Digg_Share_H_Gif + "'\" onfocus=\"digg_share.src='" + Static_Resources_Gateway.Digg_Share_H_Gif + "'\" onmouseout=\"digg_share.src='" + Static_Resources_Gateway.Digg_Share_Gif + "'\" onblur=\"digg_share.src='" + Static_Resources_Gateway.Digg_Share_Gif + "'\" onclick=\"\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"digg_share\" name=\"digg_share\" src=\"" + Static_Resources_Gateway.Digg_Share_Gif + "\" alt=\"DIGG\" /></a>");
+                    Output.WriteLine("<a onmouseover=\"favorites_share.src='" + Static_Resources_Gateway.Favorites_Share_H_Gif + "'\" onfocus=\"favorites_share.src='" + Static_Resources_Gateway.Favorites_Share_H_Gif + "'\" onmouseout=\"favorites_share.src='" + Static_Resources_Gateway.Favorites_Share_Gif + "'\" onblur=\"favorites_share.src='" + Static_Resources_Gateway.Favorites_Share_Gif + "'\" onclick=\"javascript:add_to_favorites();\"><img class=\"ResultSavePrintButtons\" border=\"0px\" id=\"favorites_share\" name=\"favorites_share\" src=\"" + Static_Resources_Gateway.Favorites_Share_Gif + "\" alt=\"MY FAVORITES\" /></a>");
                     Output.WriteLine("<br />");
 
                     Output.WriteLine("</div>");
@@ -1075,12 +1077,12 @@ namespace SobekCM.Library.HTML
                 {
                     if (resultView == Result_Display_Type_Enum.Map)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources.Geo_Blue_Png + "\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources_Gateway.Geo_Blue_Png + "\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
                         RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Map;
-                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + Static_Resources.Geo_Blue_Png + "\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + map_view + "\"><img src=\"" + Static_Resources_Gateway.Geo_Blue_Png + "\" alt=\"MAP\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
 
@@ -1088,12 +1090,12 @@ namespace SobekCM.Library.HTML
                 {
                     if (resultView == Result_Display_Type_Enum.Brief)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources.Brief_Blue_Img + "\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources_Gateway.Brief_Blue_Img + "\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
                         RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
-                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + brief_view + "\"><img src=\"" + Static_Resources.Brief_Blue_Img + "\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + brief_view + "\"><img src=\"" + Static_Resources_Gateway.Brief_Blue_Img + "\" alt=\"BRIEF\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
 
@@ -1101,12 +1103,12 @@ namespace SobekCM.Library.HTML
                 {
                     if (resultView == Result_Display_Type_Enum.Table)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources.Table_Blue_Png + "\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources_Gateway.Table_Blue_Png + "\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
                         RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Table;
-                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + table_view + "\"><img src=\"" + Static_Resources.Table_Blue_Png + "\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + table_view + "\"><img src=\"" + Static_Resources_Gateway.Table_Blue_Png + "\" alt=\"TABLE\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
 
@@ -1114,12 +1116,12 @@ namespace SobekCM.Library.HTML
                 {
                     if (resultView == Result_Display_Type_Enum.Thumbnails)
                     {
-                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources.Thumb_Blue_Png + "\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
+                        iconBuilder.AppendLine("      <img src=\"" + Static_Resources_Gateway.Thumb_Blue_Png + "\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButtonCurrent\"/>");
                     }
                     else
                     {
                         RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Thumbnails;
-                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + thumbnail_view + "\"><img src=\"" + Static_Resources.Thumb_Blue_Png + "\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButton\"/></a>");
+                        iconBuilder.AppendLine("      <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode).Replace("&", "&amp;") + "\" title=\"" + thumbnail_view + "\"><img src=\"" + Static_Resources_Gateway.Thumb_Blue_Png + "\" alt=\"THUMB\" class=\"sbkPrsw_ViewIconButton\"/></a>");
                     }
                 }
                 RequestSpecificValues.Current_Mode.Result_Display_Type = resultView;
@@ -1417,7 +1419,7 @@ namespace SobekCM.Library.HTML
 								}
 
 
-								Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Click to remove this search term\"><img src=\"" + Static_Resources.Removeicon_Gif + "\" id=\"removesearchterm" + term_counter + "\" class=\"sbkPrsw_RemoveSearchTerm\" /></a></div>");
+								Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" title=\"Click to remove this search term\"><img src=\"" + Static_Resources_Gateway.Removeicon_Gif + "\" id=\"removesearchterm" + term_counter + "\" class=\"sbkPrsw_RemoveSearchTerm\" /></a></div>");
 							}
 						}
 

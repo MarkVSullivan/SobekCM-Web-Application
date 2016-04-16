@@ -3,8 +3,10 @@ using System.IO;
 using SobekCM.Core.Client;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.WebContent;
 using SobekCM.Core.WebContent.Single;
+using SobekCM.Engine_Library.Configuration;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.WebContentViewer.Viewers
@@ -35,7 +37,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
         /// <summary> Gets the URL for the icon related to this web content viewer task </summary>
         public override string Viewer_Icon
         {
-            get { return Static_Resources.Usage_Img; }
+            get { return Static_Resources_Gateway.Usage_Img; }
         }
 
         /// <summary> Add the HTML to be displayed </summary>
