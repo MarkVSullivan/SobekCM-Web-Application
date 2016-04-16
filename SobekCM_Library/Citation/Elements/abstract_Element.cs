@@ -1,6 +1,7 @@
 #region Using directives
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -86,6 +87,9 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Flag indicating this is mandatory </summary>
         public bool Mandatory { get; set; }
 
+        /// <summary> Options dictionary allows template elements to register certain options or information
+        /// which may be used by other template elements </summary>
+        public virtual Dictionary<string, string> Options { get; set; }
 
         /// <summary> Reads from the template XML format </summary>
         /// <param name="xmlReader"> Current template xml configuration reader </param>

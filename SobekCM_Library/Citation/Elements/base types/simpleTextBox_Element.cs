@@ -31,6 +31,7 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Protected field holds any html to insert as the view choices option after the boxes </summary>
         protected string view_choices_string;
 
+
         /// <summary> Constructor for a new instance of the simpleTextBox_Element class </summary>
         /// <param name="Title"> Title for this element </param>
         /// <param name="Html_Element_Name"> Name for the html components and styles for this element </param>

@@ -12,6 +12,7 @@ using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
+using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 
 #endregion
@@ -22,32 +23,26 @@ namespace SobekCM.Library.Citation.Elements
     /// <remarks> This class extends the <see cref="comboBox_TextBox_Element"/> class. </remarks>
     public class Source_Element : comboBox_TextBox_Element
     {
-        private Dictionary<string, string> codeToNameDictionary;
+        private readonly Dictionary<string, string> codeToNameDictionary;
 
         /// <summary> Constructor for a new instance of the Source_Element class </summary>
-        public Source_Element()
-            : base("Source Institution", "source")
+        public Source_Element() : base("Source Institution", "source")
         {
             Repeatable = false;
             possible_select_items.Add("");
 
             clear_textbox_on_combobox_change = true;
-        }
 
-        /// <summary> Sets the list of all valid codes for this element from the main aggregation table </summary>
-        /// <param name="CodeManager"> Code manager with list of all aggregationPermissions </param>
-        internal void Add_Codes(Aggregation_Code_Manager CodeManager)
-        {
+            // Get the codes to display in the source
             codeToNameDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-            if (possible_select_items.Count <= 2)
+            if (UI_ApplicationCache_Gateway.Aggregations != null )
             {
                 SortedList<string, string> tempItemList = new SortedList<string, string>();
-                foreach (string thisType in CodeManager.All_Types)
+                foreach (string thisType in UI_ApplicationCache_Gateway.Aggregations.All_Types)
                 {
                     if (thisType.IndexOf("Institution") >= 0)
                     {
-                        ReadOnlyCollection<Item_Aggregation_Related_Aggregations> matchingAggr = CodeManager.Aggregations_By_Type(thisType);
+                        ReadOnlyCollection<Item_Aggregation_Related_Aggregations> matchingAggr = UI_ApplicationCache_Gateway.Aggregations.Aggregations_By_Type(thisType);
                         foreach (Item_Aggregation_Related_Aggregations thisAggr in matchingAggr)
                         {
                             if (thisAggr.Code.Length > 1)
@@ -82,8 +77,6 @@ namespace SobekCM.Library.Citation.Elements
                         Add_Code_Statement_Link(thisKey, codeToNameDictionary[thisKey]);
                     }
                 }
-
-
             }
         }
 

@@ -2559,7 +2559,7 @@ namespace SobekCM.Engine_Library.Configuration
                             case "templateelement":
 
                                 // Build the new template element info
-                                TemplateElement newElement = new TemplateElement();
+                                TemplateElementConfig newElement = new TemplateElementConfig();
                                 if (ReaderXml.MoveToAttribute("type"))
                                     newElement.Type = ReaderXml.Value.Trim().ToLower();
                                 if (ReaderXml.MoveToAttribute("subtype"))

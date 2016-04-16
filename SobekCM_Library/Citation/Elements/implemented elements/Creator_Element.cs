@@ -29,10 +29,6 @@ namespace SobekCM.Library.Citation.Elements
 	        help_page = "creatorsimple";
         }
 
-        /// <summary> Sets the flag that the contributor is included in this element, so 
-        /// they should be omitted here </summary>
-        public bool Contributor_Included { private get; set; }
-
         /// <summary> Renders the HTML for this element </summary>
         /// <param name="Output"> Textwriter to write the HTML for this element </param>
         /// <param name="Bib"> Object to populate this element from </param>
@@ -80,9 +76,9 @@ namespace SobekCM.Library.Citation.Elements
             foreach (Name_Info thisName in Bib.Bib_Info.Names)
             {
                 bool include = true;
-                if (Contributor_Included)
+                if ((Options.ContainsKey("contributor_included")) && (String.Compare(Options["contributor_included"], "true", StringComparison.OrdinalIgnoreCase) == 0))
                 {
-                    if (thisName.Roles.Any(thisRole => thisRole.Role.ToLower() == "contributor"))
+                    if (thisName.Roles.Any(ThisRole => ThisRole.Role.ToLower() == "contributor"))
                     {
                         include = false;
                     }

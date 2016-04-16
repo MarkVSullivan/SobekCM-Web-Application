@@ -235,7 +235,7 @@
     <Compile Include="UI_Configuration\Viewers\WriterViewerConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\SingleSubViewerConfig.cs" />
     <Compile Include="UI_Configuration\Static_Resources.cs" />
-    <Compile Include="UI_Configuration\TemplateElements\TemplateElement.cs" />
+    <Compile Include="UI_Configuration\TemplateElements\TemplateElementConfig.cs" />
     <Compile Include="UI_Configuration\TemplateElements\TemplateElementsConfig.cs" />
     <Compile Include="Users\Public_User_Folder.cs" />
     <Compile Include="Users\User_Permissioned_Aggregation.cs" />

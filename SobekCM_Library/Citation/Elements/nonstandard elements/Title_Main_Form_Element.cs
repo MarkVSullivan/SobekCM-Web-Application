@@ -33,6 +33,20 @@ namespace SobekCM.Library.Citation.Elements
 
         #region iElement Members
 
+        /// <summary> Options dictionary allows template elements to register certain options or information
+        /// which may be used by other template elements </summary>
+        /// <remarks> This adds a special flag to indicate there is a seperate contributor element ( title_form_included = true ) </remarks>
+        public override Dictionary<string, string> Options
+        {
+            get { return base.Options; }
+            set
+            {
+                base.Options = value;
+
+                Options["title_form_included"] = "true";
+            }
+        }
+
         /// <summary> Renders the HTML for this element </summary>
         /// <param name="Output"> Textwriter to write the HTML for this element </param>
         /// <param name="Bib"> Object to populate this element from </param>

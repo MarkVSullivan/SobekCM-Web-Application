@@ -3407,7 +3407,7 @@ namespace SobekCM.Library.AdminViewer
             tempTable.Columns.Add("Type");
             tempTable.Columns.Add("Subtype");
             tempTable.Columns.Add("Class");
-            foreach (TemplateElement element in UI_ApplicationCache_Gateway.Configuration.UI.TemplateElements.Elements)
+            foreach (TemplateElementConfig element in UI_ApplicationCache_Gateway.Configuration.UI.TemplateElements.Elements)
             {
                 DataRow newRow = tempTable.NewRow();
                 newRow[0] = element.Type;

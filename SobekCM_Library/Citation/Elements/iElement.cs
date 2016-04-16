@@ -1,5 +1,6 @@
 #region Using directives
 
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -16,7 +17,7 @@ namespace SobekCM.Library.Citation.Elements
 	/// <summary> Interface which all metadata elements must implement  </summary>
 	interface iElement
 	{
-		/// <summary> Flag indicates if this is being used as a constant field, or if data can be entered by the user </summary>
+        /// <summary> Flag indicates if this is being used as a constant field, or if data can be entered by the user </summary>
 		bool isConstant { get; set; }
 
 		/// <summary> Flag indicating this allows repeatability </summary>
@@ -30,6 +31,10 @@ namespace SobekCM.Library.Citation.Elements
 
 		/// <summary> Title of this element in the current language </summary>
 	    string Title { get; }
+
+        /// <summary> Options dictionary allows template elements to register certain options or information
+        /// which may be used by other template elements </summary>
+	    Dictionary<string, string> Options { get; set; }
 
 	    /// <summary> Reads from the template XML format </summary>
         /// <param name="xmlReader"> Current template xml configuration reader </param>

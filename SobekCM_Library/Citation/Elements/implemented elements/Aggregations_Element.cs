@@ -7,9 +7,9 @@ using System.Text;
 using System.Web;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
+using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 
 #endregion
@@ -29,23 +29,12 @@ namespace SobekCM.Library.Citation.Elements
 
             boxes_per_line = 3;
             max_boxes = 9;
-        }
 
-        /// <summary> Sets the base url for the current request </summary>
-        /// <param name="Base_URL"> Current Base URL for this request </param>
-        public override void  Set_Base_URL(string Base_URL)
-        {
-            view_choices_string = "<a href=\"" + Base_URL + "l/internal/colls<%?URLOPTS%>\" title=\"View all collections\" target=\"_COLLECTIONLIST\"><img src=\"" + Base_URL + "design/skins/<%WEBSKIN%>/buttons/magnify.jpg\" /></a>";
-        }
-
-        /// <summary> Sets the list of all valid codes for this element from the main aggregation table </summary>
-        /// <param name="codeManager"> Code manager with list of all aggregationPermissions </param>
-        internal void Add_Codes(Aggregation_Code_Manager codeManager)
-        {
-            if (items.Count == 0)
+            // Get the codes for the aggregation 
+            if ((items.Count == 0) && ( UI_ApplicationCache_Gateway.Aggregations != null ))
             {
                 SortedList<string, string> tempItemList = new SortedList<string, string>();
-                List<Item_Aggregation_Related_Aggregations> subcollections = codeManager.All_Aggregations;
+                List<Item_Aggregation_Related_Aggregations> subcollections = UI_ApplicationCache_Gateway.Aggregations.All_Aggregations;
                 foreach (Item_Aggregation_Related_Aggregations thisAggr in subcollections)
                 {
                     if (!tempItemList.ContainsKey(thisAggr.Code))
@@ -61,6 +50,12 @@ namespace SobekCM.Library.Citation.Elements
             }
         }
 
+        /// <summary> Sets the base url for the current request </summary>
+        /// <param name="Base_URL"> Current Base URL for this request </param>
+        public override void  Set_Base_URL(string Base_URL)
+        {
+            view_choices_string = "<a href=\"" + Base_URL + "l/internal/colls<%?URLOPTS%>\" title=\"View all collections\" target=\"_COLLECTIONLIST\"><img src=\"" + Base_URL + "design/skins/<%WEBSKIN%>/buttons/magnify.jpg\" /></a>";
+        }
 
         /// <summary> Renders the HTML for this element </summary>
         /// <param name="Output"> Textwriter to write the HTML for this element </param>
@@ -78,23 +73,23 @@ namespace SobekCM.Library.Citation.Elements
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Select the collections to which this item should belong";
+                const string DEFAULT_ACRONYM = "Select the collections to which this item should belong";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.Spanish:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     case Web_Language_Enum.French:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
 
                     default:
-                        Acronym = defaultAcronym;
+                        Acronym = DEFAULT_ACRONYM;
                         break;
                 }
             }

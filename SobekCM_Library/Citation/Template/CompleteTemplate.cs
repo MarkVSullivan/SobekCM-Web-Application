@@ -47,6 +47,10 @@ namespace SobekCM.Library.Citation.Template
         private readonly List<abstract_Element> constants;
         private readonly List<Template_Page> templatePages;
 
+        /// <summary> Options dictionary allows template elements to register certain options or information
+        /// which may be used by other template elements </summary>
+        private Dictionary<string, string> options;
+
         #region Constructors
 
         /// <summary> Constructor for a new instance of the CompleteTemplate class </summary>
@@ -69,6 +73,8 @@ namespace SobekCM.Library.Citation.Template
             Upload_Mandatory = true;
             Default_Visibility = 0;
             Email_Upon_Receipt = String.Empty;
+
+            options = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary> Constructor for a new instance of the CompleteTemplate class </summary>
@@ -92,6 +98,8 @@ namespace SobekCM.Library.Citation.Template
             Upload_Mandatory = true;
             Default_Visibility = 0;
             Email_Upon_Receipt = String.Empty;
+
+            options = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
 
         #endregion
@@ -194,15 +202,10 @@ namespace SobekCM.Library.Citation.Template
         /// creator/contributor ). </summary>
         public void Build_Final_Adjustment_And_Checks()
         {
-            Creator_Element simpleCreator = null;
-
-            // Go through each of the elements and prepare to save
+            // Go through each of the elements and add the options dictionary used for cross-element communication via flags
             foreach (abstract_Element thisElement in templatePages.SelectMany(ThisPage => ThisPage.Panels.SelectMany(ThisPanel => ThisPanel.Elements)))
             {
-                if ((thisElement.Type == Element_Type.Creator) && (thisElement.Display_SubType == "simple"))
-                    simpleCreator = (Creator_Element)thisElement;
-                if ((thisElement.Type == Element_Type.Contributor) && (simpleCreator != null))
-                    simpleCreator.Contributor_Included = true;
+                thisElement.Options = options;
             }
         }
 
@@ -407,22 +410,6 @@ namespace SobekCM.Library.Citation.Template
         internal void Add_Constant(abstract_Element NewConstant)
         {
             constants.Add(NewConstant);
-        }
-
-        /// <summary> Method adds aggregation codes to the pertinent element objects ( i.e., collections, subcollecctions, etc.. ) </summary>
-        /// <param name="CodeManager"> Code manager object with aggregation codes </param>
-        internal void Add_Codes(Aggregation_Code_Manager CodeManager)
-        {
-            // Go through each of the elements and prepare to save
-            foreach (abstract_Element thisElement in templatePages.SelectMany(ThisPage => ThisPage.Panels.SelectMany(ThisPanel => ThisPanel.Elements)))
-            {
-                if (thisElement.Type == Element_Type.Aggregations)
-                    ((Aggregations_Element)thisElement).Add_Codes(CodeManager);
-                if ( thisElement.Type == Element_Type.Source )
-                    ((Source_Element)thisElement).Add_Codes(CodeManager);
-                if (thisElement.Type == Element_Type.Holding)
-                    ((Holding_Element)thisElement).Add_Codes(CodeManager);
-            }
         }
     }
 }

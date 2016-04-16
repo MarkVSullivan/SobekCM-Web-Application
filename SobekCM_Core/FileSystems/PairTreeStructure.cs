@@ -59,12 +59,6 @@ namespace SobekCM.Core.FileSystems
             return File.ReadAllText(fullFilePath);
         }
 
-
-        private string Resource_Network_Uri(string BibID, string VID)
-        {
-            return Path.Combine(rootNetworkUri, BibID.Substring(0, 2) + dirSeperator + BibID.Substring(2, 2) + dirSeperator + BibID.Substring(4, 2) + dirSeperator + BibID.Substring(6, 2) + dirSeperator + BibID.Substring(8, 2), VID);
-        }
-
         /// <summary> Return the WEB uri for a digital resource </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <returns> URI for the web resource </returns>
@@ -103,6 +97,37 @@ namespace SobekCM.Core.FileSystems
         public string Resource_Network_Uri(BriefItemInfo DigitalResource)
         {
             return Resource_Network_Uri(DigitalResource.BibID, DigitalResource.VID);
+        }
+
+        /// <summary> Return the NETWORK uri for a digital resource </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <returns> URI for the network resource </returns>
+        /// <remarks> This makes some presumptions on the type of system in the background </remarks>
+        public string Resource_Network_Uri(string BibID, string VID)
+        {
+            return Path.Combine(rootNetworkUri, BibID.Substring(0, 2) + dirSeperator + BibID.Substring(2, 2) + dirSeperator + BibID.Substring(4, 2) + dirSeperator + BibID.Substring(6, 2) + dirSeperator + BibID.Substring(8, 2), VID);
+        }
+
+        /// <summary> Return the NETWORK uri for a single file in the digital resource </summary>
+        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <param name="FileName"> Filename to get network URI for</param>
+        /// <returns> URI for the network resource </returns>
+        /// <remarks> This makes some presumptions on the type of system in the background </remarks>
+        public string Resource_Network_Uri(BriefItemInfo DigitalResource, string FileName)
+        {
+            return Path.Combine(Resource_Network_Uri(DigitalResource), FileName);
+        }
+
+        /// <summary> Return the NETWORK uri for a single file in the digital resource </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Filename to get network URI for</param>
+        /// <returns> URI for the network resource </returns>
+        /// <remarks> This makes some presumptions on the type of system in the background </remarks>
+        public string Resource_Network_Uri(string BibID, string VID, string FileName)
+        {
+            return Path.Combine(Resource_Network_Uri(BibID, VID), FileName);
         }
 
         /// <summary> [TEMPORARY] Get the associated file path (which is essentially the part of the 

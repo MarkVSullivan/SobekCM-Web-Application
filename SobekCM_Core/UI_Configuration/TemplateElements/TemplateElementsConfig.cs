@@ -13,19 +13,19 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
     [XmlRoot("TemplateElementsConfig")]
     public class TemplateElementsConfig
     {
-        private Dictionary<string, TemplateElement> elementDictionary;
+        private Dictionary<string, TemplateElementConfig> elementDictionary;
 
             /// <summary> Collection of all the template elements </summary>
         [DataMember(Name = "elements", EmitDefaultValue = false)]
         [XmlArray("elements")]
-        [XmlArrayItem("element", typeof(TemplateElement))]
+        [XmlArrayItem("element", typeof(TemplateElementConfig))]
         [ProtoMember(1)]
-        public List<TemplateElement> Elements { get; set; }
+        public List<TemplateElementConfig> Elements { get; set; }
 
         /// <summary> Constructor for a new instance of the <see cref="TemplateElementsConfig"/> class </summary>
         public TemplateElementsConfig()
         {
-            Elements = new List<TemplateElement>();
+            Elements = new List<TemplateElementConfig>();
 
             set_defaults();
         }
@@ -162,8 +162,8 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
         ///  to select this metadata template element </param>
         /// <param name="Class"> Fully qualified (including namespace) name of the class used 
         /// for this template element </param>
-        /// <returns> Built and added <see cref="TemplateElement" /> object </returns>
-        public TemplateElement Add_Element(string Type, string Subtype, string Class)
+        /// <returns> Built and added <see cref="TemplateElementConfig" /> object </returns>
+        public TemplateElementConfig Add_Element(string Type, string Subtype, string Class)
         {
             return Add_Element(Type, Subtype, Class, null);
         }
@@ -177,17 +177,17 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
         /// for this template element </param>
         /// <param name="Assembly"> Name of the assembly within which this class resides, unless this
         /// is one of the default elements included in the core code </param>
-        /// <returns> Built and added <see cref="TemplateElement" /> object </returns>
-        public TemplateElement Add_Element(string Type, string Subtype, string Class, string Assembly)
+        /// <returns> Built and added <see cref="TemplateElementConfig" /> object </returns>
+        public TemplateElementConfig Add_Element(string Type, string Subtype, string Class, string Assembly)
         {
             // Ensure the dictionary is built
             if (elementDictionary == null)
-                elementDictionary = new Dictionary<string, TemplateElement>(StringComparer.OrdinalIgnoreCase);
+                elementDictionary = new Dictionary<string, TemplateElementConfig>(StringComparer.OrdinalIgnoreCase);
 
             // Does the element dictionary match the current elements list?
             if (elementDictionary.Count != Elements.Count)
             {
-                foreach (TemplateElement existing in Elements)
+                foreach (TemplateElementConfig existing in Elements)
                 {
                     if (!String.IsNullOrEmpty(existing.Subtype))
                         elementDictionary[existing.Type + "|" + existing.Subtype] = existing;
@@ -205,7 +205,7 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
             if (elementDictionary.ContainsKey(key))
             {
                 // Already exists
-                TemplateElement existing = elementDictionary[key];
+                TemplateElementConfig existing = elementDictionary[key];
                 existing.Type = Type;
                 existing.Subtype = Subtype;
                 existing.Assembly = Assembly;
@@ -215,7 +215,7 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
 
 
             // New, so add it
-            TemplateElement newElement = new TemplateElement
+            TemplateElementConfig newElement = new TemplateElementConfig
             {
                 Type = Type,
                 Subtype = Subtype,
@@ -231,16 +231,16 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
         }
 
         /// <summary> Add a new metadata template element configuration to this class </summary>
-        public void Add_Element(TemplateElement NewElement )
+        public void Add_Element(TemplateElementConfig NewElement )
         {
             // Ensure the dictionary is built
             if (elementDictionary == null)
-                elementDictionary = new Dictionary<string, TemplateElement>(StringComparer.OrdinalIgnoreCase);
+                elementDictionary = new Dictionary<string, TemplateElementConfig>(StringComparer.OrdinalIgnoreCase);
 
             // Does the element dictionary match the current elements list?
             if (elementDictionary.Count != Elements.Count)
             {
-                foreach (TemplateElement existing in Elements)
+                foreach (TemplateElementConfig existing in Elements)
                 {
                     if (!String.IsNullOrEmpty(existing.Subtype))
                         elementDictionary[existing.Type + "|" + existing.Subtype] = existing;
@@ -266,6 +266,21 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
             Elements.Add(NewElement);
             elementDictionary[key] = NewElement;
 
+        }
+
+        /// <summary> Get the configuration information for a possible template element </summary>
+        /// <param name="Type"> Type for the element to retrieve </param>
+        /// <param name="SubType"> Subtype for the element to retrieve </param>
+        /// <returns> The template element configuration information, or NULL if there was no match </returns>
+        public TemplateElementConfig Get_Element_Configuration(string Type, string SubType)
+        {
+            // Determine the lookup key
+            string key = Type.Trim();
+            if (!String.IsNullOrWhiteSpace(SubType))
+                key = key + "|" + SubType.Trim();
+
+            // Return the value from the dictionary (will naturally return NULL if there is no match)
+            return elementDictionary[key];
         }
     }
 }

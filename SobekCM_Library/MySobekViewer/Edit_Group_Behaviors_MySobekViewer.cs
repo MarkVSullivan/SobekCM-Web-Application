@@ -117,9 +117,6 @@ namespace SobekCM.Library.MySobekViewer
                    reader.Read_XML(UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "templates\\default\\standard\\" + TEMPLATE_CODE + ".xml", completeTemplate, true);
                }
 
-               // Add the current codes to this CompleteTemplate
-               completeTemplate.Add_Codes(UI_ApplicationCache_Gateway.Aggregations);
-
                // Save this into the cache
                Template_MemoryMgmt_Utility.Store_Template(TEMPLATE_CODE, completeTemplate, RequestSpecificValues.Tracer);
            }

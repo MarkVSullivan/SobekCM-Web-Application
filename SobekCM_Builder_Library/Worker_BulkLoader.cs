@@ -117,6 +117,12 @@ namespace SobekCM.Builder_Library
         public bool Perform_BulkLoader( bool Verbose )
         {
 
+            // Run the usage stats module first
+            CalculateUsageStatisticsModule statsModule2 = new CalculateUsageStatisticsModule();
+            statsModule2.Process += module_Process;
+            statsModule2.Error += module_Error;
+            statsModule2.DoWork(settings);
+
             verbose = Verbose;
             finalmessage = String.Empty;
             stillPendingItems = false;

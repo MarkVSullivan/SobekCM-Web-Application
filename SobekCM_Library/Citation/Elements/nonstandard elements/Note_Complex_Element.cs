@@ -8,7 +8,6 @@ using System.Text;
 using System.Web;
 using System.Xml;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Users;
 using SobekCM.Resource_Object;
@@ -36,19 +35,19 @@ namespace SobekCM.Library.Citation.Elements
 
             cols = TEXT_AREA_COLUMNS;
             colsMozilla = MOZILLA_TEXT_AREA_COLUMNS;
-            Include_Statement_Responsibility = true;
-            Include_Acquisition_Note = true;
+            //Include_Statement_Responsibility = true;
+            //Include_Acquisition_Note = true;
 
 	        help_page = "note";
         }
 
-        /// <summary> Flag indicates whether to include the statement of responsibility in the list of notes </summary>
-        /// <remarks> If the full title form element is used in this template, the statement of responsibility will be found there </remarks>
-        public bool Include_Statement_Responsibility { get; set; }
+        ///// <summary> Flag indicates whether to include the statement of responsibility in the list of notes </summary>
+        ///// <remarks> If the full title form element is used in this template, the statement of responsibility will be found there </remarks>
+        //public bool Include_Statement_Responsibility { get; set; }
 
-        /// <summary> Flag indicates whether to include the include_acquisition_note in the list of notes </summary>
-        /// <remarks> If the Acquisition Note element is in the constants, it should not show here (it should be uneditable) </remarks>
-        public bool Include_Acquisition_Note { get; set; }
+        ///// <summary> Flag indicates whether to include the include_acquisition_note in the list of notes </summary>
+        ///// <remarks> If the Acquisition Note element is in the constants, it should not show here (it should be uneditable) </remarks>
+        //public bool Include_Acquisition_Note { get; set; }
 
         /// <summary> Gets and sets the number of lines for this text box </summary>
         protected int Rows { get; set; }
@@ -68,6 +67,9 @@ namespace SobekCM.Library.Citation.Elements
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
         public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
+            // Check for the complex form title, which includes statement of responsibility
+            bool include_statement_responsibility = ((Options.ContainsKey("title_form_included")) && (String.Compare(Options["title_form_included"], "true", StringComparison.OrdinalIgnoreCase) == 0));
+
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
@@ -120,7 +122,7 @@ namespace SobekCM.Library.Citation.Elements
             int notes_count = 0;
             if (Bib.Bib_Info.Notes_Count > 0)
             {
-                notes_count += Bib.Bib_Info.Notes.Count(ThisNote => ((ThisNote.Note_Type != Note_Type_Enum.StatementOfResponsibility) || (Include_Statement_Responsibility)) && (ThisNote.Note_Type != Note_Type_Enum.DefaultType));
+                notes_count += Bib.Bib_Info.Notes.Count(ThisNote => ((ThisNote.Note_Type != Note_Type_Enum.StatementOfResponsibility) || (include_statement_responsibility)) && (ThisNote.Note_Type != Note_Type_Enum.DefaultType));
             }
 
             if (notes_count == 0)
@@ -151,7 +153,7 @@ namespace SobekCM.Library.Citation.Elements
                 Output.WriteLine("                  <option value=\"581\">Publications</option>");
                 Output.WriteLine("                  <option value=\"pubstatus\">Publication Status</option>");
                 Output.WriteLine("                  <option value=\"506\">Restriction</option>");
-                if (Include_Statement_Responsibility)
+                if (include_statement_responsibility)
                 {
                     Output.WriteLine("                  <option value=\"245\">Statement of Responsibility</option>");
                 }
@@ -169,7 +171,7 @@ namespace SobekCM.Library.Citation.Elements
                 int i = 1;
                 foreach (Note_Info thisNote in Bib.Bib_Info.Notes)
                 {
-                    if (((thisNote.Note_Type != Note_Type_Enum.StatementOfResponsibility) || (Include_Statement_Responsibility)) &&
+                    if (((thisNote.Note_Type != Note_Type_Enum.StatementOfResponsibility) || (include_statement_responsibility)) &&
                         ( thisNote.Note_Type != Note_Type_Enum.DefaultType ))
                     {
                         string note_display_label = String.Empty;
@@ -306,7 +308,7 @@ namespace SobekCM.Library.Citation.Elements
                                              ? "                  <option value=\"506\" selected=\"selected\">Restriction</option>"
                                              : "                  <option value=\"506\">Restriction</option>");
 
-                        if (Include_Statement_Responsibility)
+                        if (include_statement_responsibility)
                         {
                             Output.WriteLine(thisNote.Note_Type == Note_Type_Enum.StatementOfResponsibility
                                                  ? "                  <option value=\"245\" selected=\"selected\">Statement of Responsibility</option>"
@@ -384,7 +386,10 @@ namespace SobekCM.Library.Citation.Elements
         /// <remarks> This clears any preexisting note that is not a statement of responsibility  </remarks>
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
-            if ( Include_Statement_Responsibility )
+            // Check for the complex form title, which includes statement of responsibility
+            bool include_statement_responsibility = ((Options.ContainsKey("title_form_included")) && (String.Compare(Options["title_form_included"], "true", StringComparison.OrdinalIgnoreCase) == 0));
+
+            if (include_statement_responsibility)
             {
                 Bib.Bib_Info.Clear_Notes();    
             }

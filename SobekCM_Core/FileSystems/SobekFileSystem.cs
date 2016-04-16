@@ -54,7 +54,38 @@ namespace SobekCM.Core.FileSystems
         /// <remarks> This makes some presumptions on the type of system in the background </remarks>
         public static string Resource_Network_Uri(BriefItemInfo DigitalResource)
         {
-            return fileSystem.Resource_Web_Uri(DigitalResource);
+            return fileSystem.Resource_Network_Uri(DigitalResource);
+        }
+
+        /// <summary> Return the NETWORK uri for a digital resource </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <returns> URI for the network resource </returns>
+        /// <remarks> This makes some presumptions on the type of system in the background </remarks>
+        public static string Resource_Network_Uri(string BibID, string VID)
+        {
+            return fileSystem.Resource_Network_Uri(BibID, VID);
+        }
+
+        /// <summary> Return the NETWORK uri for a single file in the digital resource </summary>
+        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <param name="FileName"> Filename to get network URI for</param>
+        /// <returns> URI for the network resource </returns>
+        /// <remarks> This makes some presumptions on the type of system in the background </remarks>
+        public static string Resource_Network_Uri(BriefItemInfo DigitalResource, string FileName)
+        {
+            return fileSystem.Resource_Network_Uri(DigitalResource, FileName);
+        }
+
+        /// <summary> Return the NETWORK uri for a single file in the digital resource </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Filename to get network URI for</param>
+        /// <returns> URI for the network resource </returns>
+        /// <remarks> This makes some presumptions on the type of system in the background </remarks>
+        public static string Resource_Network_Uri(string BibID, string VID, string FileName)
+        {
+            return fileSystem.Resource_Network_Uri(BibID, VID, FileName);
         }
 
         /// <summary> Return a flag if the file specified exists within the digital resource </summary>

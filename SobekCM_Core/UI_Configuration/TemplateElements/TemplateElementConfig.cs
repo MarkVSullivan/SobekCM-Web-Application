@@ -9,7 +9,7 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
     /// configuration file and an assembly/class to use </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("TemplateElement")]
-    public class TemplateElement
+    public class TemplateElementConfig
     {
         /// <summary> Gets the 'type' value used in the template configuration files
         ///  to select this metadata template element </summary>
@@ -63,28 +63,28 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
         [ProtoMember(7)]
         public string HelpUri { get; set; }
 
-        /// <summary> Constructor for a new instance of the <see cref="TemplateElement"/> class </summary>
-        public TemplateElement()
+        /// <summary> Constructor for a new instance of the <see cref="TemplateElementConfig"/> class </summary>
+        public TemplateElementConfig()
         {
             // Do nothing - used for serialization purposes
         }
 
 
-        /// <summary> Constructor for a new instance of the <see cref="TemplateElement"/> class </summary>
+        /// <summary> Constructor for a new instance of the <see cref="TemplateElementConfig"/> class </summary>
         /// <param name="Type"> The 'type' value used in the template configuration files
         ///  to select this metadata template element </param>
         /// <param name="Subtype"> The 'subtype' value used in the template configuration files
         ///  to select this metadata template element </param>
         /// <param name="Class"> Fully qualified (including namespace) name of the class used 
         /// for this template element </param>
-        public TemplateElement(string Type, string Subtype, string Class)
+        public TemplateElementConfig(string Type, string Subtype, string Class)
         {
             this.Type = Type;
             this.Subtype = Subtype;
             this.Class = Class;
         }
 
-        /// <summary> Constructor for a new instance of the <see cref="TemplateElement"/> class </summary>
+        /// <summary> Constructor for a new instance of the <see cref="TemplateElementConfig"/> class </summary>
         /// <param name="Type"> The 'type' value used in the template configuration files
         ///  to select this metadata template element </param>
         /// <param name="Subtype"> The 'subtype' value used in the template configuration files
@@ -93,7 +93,7 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
         /// for this template element </param>
         /// <param name="Assembly"> Name of the assembly within which this class resides, unless this
         /// is one of the default elements included in the core code </param>
-        public TemplateElement(string Type, string Subtype, string Class, string Assembly)
+        public TemplateElementConfig(string Type, string Subtype, string Class, string Assembly)
         {
             this.Type = Type;
             this.Subtype = Subtype;

@@ -29,8 +29,6 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Protected field holds all the possible, selectable values </summary>
         protected List<string> items;
 
-        private string onChange;
-
         /// <summary> Constructor for a new instance of the Type_Format_Form_Element class </summary>
         public Type_Format_Form_Element()
             : base("Resource Type", "type_format_form")
@@ -41,13 +39,6 @@ namespace SobekCM.Library.Citation.Elements
             Repeatable = false;
 
 	        help_page = "type";
-        }
-
-        /// <summary> Sets the postback javascript, if the combo box requires a post back onChange </summary>
-        /// <param name="postback_call"> Javascript call to perform onChange </param>
-        public void Set_Postback(string postback_call)
-        {
-            onChange = postback_call;
         }
 
         /// <summary> Renders the HTML for this element </summary>
@@ -63,6 +54,8 @@ namespace SobekCM.Library.Citation.Elements
         /// <remarks> This element appends a popup form to the popup_form_builder</remarks>
         public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
         {
+            string onChange = "javascript:__doPostBack('newpagebutton1','')";
+
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {

@@ -42,6 +42,28 @@ namespace SobekCM.Core.FileSystems
         /// <remarks> This makes some presumptions on the type of system in the background </remarks>
         string Resource_Network_Uri(BriefItemInfo DigitalResource);
 
+        /// <summary> Return the NETWORK uri for a digital resource </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <returns> URI for the network resource </returns>
+        /// <remarks> This makes some presumptions on the type of system in the background </remarks>
+        string Resource_Network_Uri(string BibID, string VID);
+
+        /// <summary> Return the NETWORK uri for a single file in the digital resource </summary>
+        /// <param name="DigitalResource"> The digital resource object </param>
+        /// <param name="FileName"> Filename to get network URI for</param>
+        /// <returns> URI for the network resource </returns>
+        /// <remarks> This makes some presumptions on the type of system in the background </remarks>
+        string Resource_Network_Uri(BriefItemInfo DigitalResource, string FileName);
+
+        /// <summary> Return the NETWORK uri for a single file in the digital resource </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <param name="FileName"> Filename to get network URI for</param>
+        /// <returns> URI for the network resource </returns>
+        /// <remarks> This makes some presumptions on the type of system in the background </remarks>
+        string Resource_Network_Uri(string BibID, string VID, string FileName);
+
         /// <summary> [TEMPORARY] Get the associated file path (which is essentially the part of the 
         /// path that appears UNDER the root imaging spot </summary>
         /// <param name="DigitalResource"> The digital resource object </param>

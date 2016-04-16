@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Web;
 using SobekCM.Core.ApplicationState;
@@ -21,10 +22,23 @@ namespace SobekCM.Library.Citation.Elements
     public class Contributor_Element : simpleTextBox_Element
     {
         /// <summary> Constructor for a new instance of the Contributor_Element class </summary>
-        public Contributor_Element()
-            : base("Contributor", "contributor")
+        public Contributor_Element() : base("Contributor", "contributor")
         {
             Repeatable = true;
+        }
+
+        /// <summary> Options dictionary allows template elements to register certain options or information
+        /// which may be used by other template elements </summary>
+        /// <remarks> This adds a special flag to indicate there is a seperate contributor element ( contributor_included = true ) </remarks>
+        public override Dictionary<string, string> Options
+        {
+            get { return base.Options; }
+            set
+            {
+                base.Options = value;
+
+                Options["contributor_included"] = "true";
+            }
         }
 
 
