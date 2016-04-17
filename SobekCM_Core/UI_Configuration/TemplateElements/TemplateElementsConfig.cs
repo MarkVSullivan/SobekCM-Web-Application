@@ -279,8 +279,16 @@ namespace SobekCM.Core.UI_Configuration.TemplateElements
             if (!String.IsNullOrWhiteSpace(SubType))
                 key = key + "|" + SubType.Trim();
 
-            // Return the value from the dictionary (will naturally return NULL if there is no match)
-            return elementDictionary[key];
+            // Return the value from the dictionary 
+            if ( elementDictionary.ContainsKey(key))
+                return elementDictionary[key];
+
+            // If no match, look for the default (i.e., no subtype)
+            if (!String.IsNullOrWhiteSpace(SubType))
+                if (elementDictionary.ContainsKey(Type.Trim()))
+                    return elementDictionary[Type.Trim()];
+
+            return null;
         }
     }
 }

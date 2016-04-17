@@ -172,6 +172,7 @@ namespace SobekCM.Library.MySobekViewer
                     Template_XML_Reader reader = new Template_XML_Reader();
                     completeTemplate = new CompleteTemplate();
                     reader.Read_XML(user_template, completeTemplate, true);
+                    if ( completeTemplate != null ) completeTemplate.Build_Final_Adjustment_And_Checks();
 
                     // Save this into the cache
                     Template_MemoryMgmt_Utility.Store_Template(template_code, completeTemplate, RequestSpecificValues.Tracer);

@@ -376,7 +376,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t\t</tr>");
                 Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
 
-                if ((BriefItem.Web.Siblings.HasValue) && (BriefItem.Web.Siblings > 1))
+                if (( BriefItem.Web != null ) && (BriefItem.Web.Siblings.HasValue) && (BriefItem.Web.Siblings > 1))
                 {
                     // Add ability to mass update all items for this group
                     CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;

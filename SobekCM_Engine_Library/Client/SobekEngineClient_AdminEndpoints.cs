@@ -9,6 +9,7 @@ using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Settings;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.Citation;
+using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.UI_Configuration.TemplateElements;
 using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Resource_Object.Configuration;
@@ -208,6 +209,21 @@ namespace SobekCM.Core.Client
 
             // Call out to the endpoint and return the deserialized object
             return Deserialize<List<string>>(endpoint.URL, endpoint.Protocol, Tracer);
+        }
+
+        /// <summary> Gets the static resources ( mostly links to images, javascript, css, etc.. ), read from the configuration files </summary>
+        /// <param name="Tracer"></param>
+        /// <returns> Fully built static resources configuration object </returns>
+        public StaticResources_Configuration Get_Static_Resources_Configuration(Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_AdminServices.Get_Static_Resources_Configuration");
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Configuration.Static_Resources", Tracer);
+
+            // Call out to the endpoint and return the deserialized object
+            return Deserialize<StaticResources_Configuration>(endpoint.URL, endpoint.Protocol, Tracer);
         }
 
         /// <summary> Gets the citation (UI) configuration information, read from the configuration files </summary>

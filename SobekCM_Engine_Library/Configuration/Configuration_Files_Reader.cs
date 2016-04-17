@@ -269,6 +269,10 @@ namespace SobekCM.Engine_Library.Configuration
                                     if ((code == "*") || (String.Compare(Settings.Servers.Static_Resources_Config_File, code, StringComparison.OrdinalIgnoreCase) == 0))
                                         read_section = true;
                                     readerXml.MoveToElement();
+
+                                    // Savethe code though, if it wasn't an asterisk
+                                    if (( code != "*") && ( !ConfigObj.UI.StaticResources.Static_Resource_Codes.Contains(code.ToLower())))
+                                        ConfigObj.UI.StaticResources.Static_Resource_Codes.Add(code.ToLower());
                                 }
                                 if (readerXml.MoveToAttribute("baseUrl"))
                                 {

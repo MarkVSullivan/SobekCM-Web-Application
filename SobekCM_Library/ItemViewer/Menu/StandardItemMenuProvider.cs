@@ -85,7 +85,7 @@ namespace SobekCM.Library.ItemViewer.Menu
 
                 Output.WriteLine("\t<div id=\"menu-right-actions\">");
 
-                if (CurrentItem.Web.ItemID > 0)
+                if (( CurrentItem.Web != null ) && ( CurrentItem.Web.ItemID > 0))
                 {
                     Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"print_form_open();\"><img src=\"" + Static_Resources_Gateway.Printer_Png + "\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
                 }
@@ -100,7 +100,7 @@ namespace SobekCM.Library.ItemViewer.Menu
                     Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"email_form_open();\"><img src=\"" + Static_Resources_Gateway.Email_Png + "\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
 
 
-                    if (CurrentItem.Web.ItemID > 0)
+                    if ((CurrentItem.Web != null) && (CurrentItem.Web.ItemID > 0))
                     {
                         if (CurrentUser.Is_In_Bookshelf(CurrentItem.BibID, CurrentItem.VID))
                         {
@@ -116,7 +116,7 @@ namespace SobekCM.Library.ItemViewer.Menu
                 {
                     Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='" + logOnUrl + "';return false;\"><img src=\"" + Static_Resources_Gateway.Email_Png + "\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
 
-                    if (CurrentItem.Web.ItemID > 0)
+                    if ((CurrentItem.Web != null) && (CurrentItem.Web.ItemID > 0))
                         Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='" + logOnUrl + "';return false;\"><img src=\"" + Static_Resources_Gateway.Plussign_Png + "\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
                 }
 

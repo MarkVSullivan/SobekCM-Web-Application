@@ -521,6 +521,25 @@ namespace SobekCM.Engine_Library.Endpoints
             Serialize(Engine_ApplicationCache_Gateway.Configuration.Source.ReadingLog, Response, Protocol, json_callback);
         }
 
+        /// <summary> Gets the UI static resources configuration object </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void GetConfigurationStaticResources(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Get the JSON-P callback function
+            string json_callback = "parseStaticResourcesConfig";
+            if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+            {
+                json_callback = QueryString["callback"];
+            }
+
+            // Use the base class to serialize the object according to request protocol
+            Serialize(Engine_ApplicationCache_Gateway.Configuration.UI.StaticResources, Response, Protocol, json_callback);
+        }
+
         #endregion
     }
 }

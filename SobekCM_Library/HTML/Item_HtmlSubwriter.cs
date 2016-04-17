@@ -858,7 +858,7 @@ namespace SobekCM.Library.HTML
 
                     // Add the link if there is one  
                     // Links_BriefItemMapper
-                    if (!String.IsNullOrEmpty(currentItem.Web.Title_Box_Additional_Link))
+                    if ((currentItem.Web != null ) && ( !String.IsNullOrEmpty(currentItem.Web.Title_Box_Additional_Link)))
                     {
                         // Get the translated TYPE
                         string type = UI_ApplicationCache_Gateway.Translation.Get_Translation((currentItem.Web.Title_Box_Additional_Link_Type ?? "Related Link"), RequestSpecificValues.Current_Mode.Language);

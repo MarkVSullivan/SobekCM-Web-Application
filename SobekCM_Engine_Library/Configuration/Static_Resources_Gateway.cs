@@ -3,7 +3,9 @@
 using System;
 using System.IO;
 using System.Xml;
+using SobekCM.Core.Client;
 using SobekCM.Core.UI_Configuration.StaticResources;
+using SobekCM.Tools;
 
 #endregion
 
@@ -18,9 +20,9 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> Static constructor for the Static_Resources class </summary>
         static Static_Resources_Gateway()
         {
-            // 
-
- 
+            // Get the static resource configuration from the engine 
+            Custom_Tracer tracer = new Custom_Tracer();
+            config = SobekEngineClient.Admin.Get_Static_Resources_Configuration(tracer);
         }
 
         /// <summary> URL for the default resource '16px-feed-icon.svg.png' file ( http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png by default)</summary>

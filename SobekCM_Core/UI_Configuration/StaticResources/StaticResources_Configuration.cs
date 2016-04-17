@@ -2441,175 +2441,175 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         /// <summary> URL for the default resource 'users.png' file ( http://cdn.sobekrepository.org/images/misc/Users.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(343)]
+        [ProtoMember(344)]
         public string Users_Img_Small { get; set; }
 
         /// <summary> URL for the default resource 'users_lg.png' file ( http://cdn.sobekrepository.org/images/misc/Users_lg.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(344)]
+        [ProtoMember(345)]
         public string Users_Img_Large { get; set; }
 
         /// <summary> URL for the default resource 'icon_permission.png' file ( http://cdn.sobekrepository.org/images/misc/icon_permission.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(345)]
+        [ProtoMember(346)]
         public string User_Permission_Img { get; set; }
 
         /// <summary> URL for the default resource 'user_permissions_lg.png' file ( http://cdn.sobekrepository.org/images/misc/user_permissions_lg.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(346)]
+        [ProtoMember(347)]
         public string User_Permission_Img_Large { get; set; }
 
         /// <summary> URL for the default resource 'view.ico' file ( http://cdn.sobekrepository.org/images/qc/View.ico by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(347)]
+        [ProtoMember(348)]
         public string View_Ico { get; set; }
 
         /// <summary> URL for the default resource 'view_work_log.png' file ( http://cdn.sobekrepository.org/images/misc/view_work_log.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(348)]
+        [ProtoMember(349)]
         public string View_Work_Log_Img { get; set; }
 
         /// <summary> URL for the default resource 'view_work_log_icon.png' file ( http://cdn.sobekrepository.org/images/misc/view_work_log_icon.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(349)]
+        [ProtoMember(350)]
         public string View_Work_Log_Img_Large { get; set; }
 
         /// <summary> URL for the default resource 'warning.png' file ( http://cdn.sobekrepository.org/images/misc/warnging.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(350)]
+        [ProtoMember(351)]
         public string Warning_Img { get; set; }
 
         /// <summary> URL for the default resource 'web_content_medium.png' file ( http://cdn.sobekrepository.org/images/misc/web_content_medium.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(351)]
+        [ProtoMember(352)]
         public string WebContent_Img { get; set; }
 
         /// <summary> URL for the default resource 'web_content_small.png' file ( http://cdn.sobekrepository.org/images/misc/web_content_small.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(352)]
+        [ProtoMember(353)]
         public string WebContent_Img_Small { get; set; }
 
         /// <summary> URL for the default resource 'web_content_large.png' file ( http://cdn.sobekrepository.org/images/misc/web_content_large.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(353)]
+        [ProtoMember(354)]
         public string WebContent_Img_Large { get; set; }
 
         /// <summary> URL for the default resource 'webcontent_history.png' file ( http://cdn.sobekrepository.org/images/misc/webcontent_history.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(354)]
+        [ProtoMember(355)]
         public string WebContent_History_Img { get; set; }
 
         /// <summary> URL for the default resource 'webcontent_history_small.png' file ( http://cdn.sobekrepository.org/images/misc/webcontent_history_small.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(355)]
+        [ProtoMember(356)]
         public string WebContent_History_Img_Small { get; set; }
 
         /// <summary> URL for the default resource 'webcontent_history_large.png' file ( http://cdn.sobekrepository.org/images/misc/webcontent_history_large.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(356)]
+        [ProtoMember(357)]
         public string WebContent_History_Img_Large { get; set; }
 
         /// <summary> URL for the default resource 'webcontent_usage.png' file ( http://cdn.sobekrepository.org/images/misc/webcontent_usage.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(357)]
+        [ProtoMember(358)]
         public string WebContent_Usage_Img { get; set; }
 
         /// <summary> URL for the default resource 'webcontent_usage_small.png' file ( http://cdn.sobekrepository.org/images/misc/webcontent_usage_small.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(358)]
+        [ProtoMember(359)]
         public string WebContent_Usage_Img_Small { get; set; }
 
         /// <summary> URL for the default resource 'webcontent_usage_large.png' file ( http://cdn.sobekrepository.org/images/misc/webcontent_usage_large.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(359)]
+        [ProtoMember(360)]
         public string WebContent_Usage_Img_Large { get; set; }
 
         /// <summary> URL for the default resource 'wizard.png' file ( http://cdn.sobekrepository.org/images/misc/wizard.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(360)]
+        [ProtoMember(361)]
         public string Wizard_Img { get; set; }
 
         /// <summary> URL for the default resource 'wizard_lg.png' file ( http://cdn.sobekrepository.org/images/misc/wizard_lg.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(361)]
+        [ProtoMember(362)]
         public string Wizard_Img_Large { get; set; }
 
         /// <summary> URL for the default resource 'wordmarks.png' file ( http://cdn.sobekrepository.org/images/misc/wordmarks.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(362)]
+        [ProtoMember(363)]
         public string Wordmarks_Img { get; set; }
 
         /// <summary> URL for the default resource 'wordmarks_small.png' file ( http://cdn.sobekrepository.org/images/misc/wordmarks_small.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(363)]
+        [ProtoMember(364)]
         public string Wordmarks_Img_Small { get; set; }
 
         /// <summary> URL for the default resource 'wordmarks_large.png' file ( http://cdn.sobekrepository.org/images/misc/wordmarks_large.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(364)]
+        [ProtoMember(365)]
         public string Wordmarks_Img_Large { get; set; }
 
         /// <summary> URL for the default resource 'yahoo_share.gif' file ( http://cdn.sobekrepository.org/images/misc/yahoo_share.gif by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(365)]
+        [ProtoMember(366)]
         public string Yahoo_Share_Gif { get; set; }
 
         /// <summary> URL for the default resource 'yahoo_share_h.gif' file ( http://cdn.sobekrepository.org/images/misc/yahoo_share_h.gif by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(366)]
+        [ProtoMember(367)]
         public string Yahoo_Share_H_Gif { get; set; }
 
         /// <summary> URL for the default resource 'yahoobuzz_share.gif' file ( http://cdn.sobekrepository.org/images/misc/yahoobuzz_share.gif by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(367)]
+        [ProtoMember(368)]
         public string Yahoobuzz_Share_Gif { get; set; }
 
         /// <summary> URL for the default resource 'yahoobuzz_share_h.gif' file ( http://cdn.sobekrepository.org/images/misc/yahoobuzz_share_h.gif by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(368)]
+        [ProtoMember(369)]
         public string Yahoobuzz_Share_H_Gif { get; set; }
 
         /// <summary> URL for the default resource 'zoom_tool.cur' file ( http://cdn.sobekrepository.org/images/misc/zoom_tool.cur by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(369)]
+        [ProtoMember(370)]
         public string Zoom_Tool_Cur { get; set; }
 
         /// <summary> URL for the default resource 'zoomin.png' file ( http://cdn.sobekrepository.org/images/bookturner/zoomin.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(370)]
+        [ProtoMember(371)]
         public string Zoomin_Png { get; set; }
 
         /// <summary> URL for the default resource 'zoomout.png' file ( http://cdn.sobekrepository.org/images/bookturner/zoomout.png by default)</summary>
         [DataMember]
         [XmlElement]
-        [ProtoMember(371)]
+        [ProtoMember(372)]
         public string Zoomout_Png { get; set; }
 
         #region Helper method for adding a static resource reference
