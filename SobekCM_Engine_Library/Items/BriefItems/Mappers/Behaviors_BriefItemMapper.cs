@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
@@ -50,6 +51,18 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 }
             }
 
+            // Copy over the citation set, if it exists
+            if ( !String.IsNullOrEmpty(Original.Behaviors.CitationSet))
+                New.Behaviors.CitationSet = Original.Behaviors.CitationSet;
+
+            // Copy over all the loose settings, if they exist
+            if ((Original.Behaviors.Settings != null) && (Original.Behaviors.Settings.Count > 0))
+            {
+                foreach (Tuple<string, string> setting in Original.Behaviors.Settings)
+                {
+                    New.Behaviors.Add_Setting(setting.Item1, setting.Item2);
+                }
+            }
 
             return true;
         }

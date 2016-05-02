@@ -9,10 +9,12 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Xml.Serialization;
 using ProtoBuf;
+using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Skins;
+using SobekCM.Tools;
 
 #endregion
 
@@ -1077,9 +1079,77 @@ namespace SobekCM.Core.Aggregations
 
 		#endregion
 
-		#region Method to write the Aggregation XML Configuration File
+        #region Methods to support the key/value pair of loose settings
 
-	    /// <summary> Write the XML configuration file for this item aggregation </summary>
+        /// <summary> Key/value pairs of setting values that can be used to store additional
+        /// behavior/setting information for an aggregation/collection </summary>
+        [DataMember(EmitDefaultValue = false, Name = "settings")]
+        [XmlArray("settings")]
+        [XmlArrayItem("setting", typeof(string))]
+        [ProtoMember(45)]
+        public List<StringKeyValuePair> Settings { get; private set; }
+
+        [XmlIgnore]
+        [IgnoreDataMember]
+        private Dictionary<string, StringKeyValuePair> settingLookupDictionary; 
+
+        /// <summary> Add a key/value pair setting to this aggregation </summary>
+        /// <param name="Key"> Key for this setting </param>
+        /// <param name="Value"> Value for this setting </param>
+        /// <remarks> If a value already exists for the provided key, the value will be changed
+        /// to the new value provided to this method. </remarks>
+        public void Add_Setting(string Key, string Value)
+        {
+            // Look for existing key that matches
+
+            // Ensure the list is defined
+            if (Settings == null) Settings = new List<StringKeyValuePair>();
+
+            // Ensure the dictionary was built
+            if (settingLookupDictionary == null) settingLookupDictionary = new Dictionary<string, StringKeyValuePair>(StringComparer.OrdinalIgnoreCase);
+            if (settingLookupDictionary.Count != Settings.Count)
+            {
+                foreach (StringKeyValuePair setting in Settings)
+                    settingLookupDictionary[setting.Key] = setting;
+            }
+
+            // Does this key already exist?
+            if (settingLookupDictionary.ContainsKey(Key))
+                settingLookupDictionary[Key].Value = Value;
+            else
+            {
+                StringKeyValuePair newValue = new StringKeyValuePair(Key, Value);
+                Settings.Add(newValue);
+                settingLookupDictionary[Key] = newValue;
+            }
+        }
+
+        /// <summary> Gets a setting value, by key </summary>
+        /// <param name="Key"> Key to look for a match from the settings key/value pairs </param>
+        /// <returns> Either the setting value, if it exists, or NULL </returns>
+        public string Get_Setting(string Key)
+        {
+            // If the list is undefined, return NULL
+            if ((Settings == null) || (Settings.Count == 0))
+                return null;
+
+            // Ensure the dictionary was built
+            if (settingLookupDictionary == null) settingLookupDictionary = new Dictionary<string, StringKeyValuePair>(StringComparer.OrdinalIgnoreCase);
+            if (settingLookupDictionary.Count != Settings.Count)
+            {
+                foreach (StringKeyValuePair setting in Settings)
+                    settingLookupDictionary[setting.Key] = setting;
+            }
+
+            // Does this key exist?
+            return settingLookupDictionary.ContainsKey(Key) ? settingLookupDictionary[Key].Value : null;
+        }
+
+        #endregion
+
+        #region Method to write the Aggregation XML Configuration File
+
+        /// <summary> Write the XML configuration file for this item aggregation </summary>
 	    /// <param name = "Directory"> Directory within which to write this XML configuration file </param>
 	    /// <returns>TRUE if successful, otherwise FALSE </returns>
 	    public bool Write_Configuration_File(string Directory)
@@ -1408,6 +1478,7 @@ namespace SobekCM.Core.Aggregations
 	    }
 
 	    #endregion
+
 
 	}
 }
