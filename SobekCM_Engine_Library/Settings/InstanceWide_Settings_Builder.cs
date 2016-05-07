@@ -256,6 +256,26 @@ namespace SobekCM.Engine_Library.Settings
                 // Also, load all the buidler information
                 if (SettingsObject.Builder == null) SettingsObject.Builder = new Builder_Settings();
                 Builder_Settings_Builder.Refresh(SettingsObject.Builder, SobekCM_Settings, true, 4);
+
+                // Finally, add all the item viewer config from the database
+                if (SobekCM_Settings.Tables.Count >= 8)
+                {
+                    // Get the data and add each viewer for each row
+                    foreach (DataRow thisRow in SobekCM_Settings.Tables[7].Rows)
+                    {
+                        // Pull the data out of the row
+                        int viewerId = Int32.Parse(thisRow[0].ToString());
+                        string viewerType = thisRow[1].ToString();
+                        int viewerOrder = Int32.Parse(thisRow[2].ToString());
+                        bool viewerDefault = bool.Parse(thisRow[3].ToString());
+                        decimal viewerMenuOrder = decimal.Parse(thisRow[4].ToString());
+
+                        // Add the viewer
+                        SettingsObject.DbItemViewers.Add_ViewerType(viewerId, viewerType, viewerOrder, viewerDefault, viewerMenuOrder );
+                    }
+                }
+
+
                 return true;
             }
             catch

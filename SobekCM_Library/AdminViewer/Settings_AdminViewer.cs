@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -20,6 +21,7 @@ using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Search;
 using SobekCM.Core.Settings;
+using SobekCM.Core.Settings.DbItemViewers;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Core.UI_Configuration.StaticResources;
@@ -3457,31 +3459,38 @@ namespace SobekCM.Library.AdminViewer
                 Output.WriteLine("  <h3>Item Writer - " + UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.Class.Replace("SobekCM.Library.ItemViewer.Viewers.", "") + "</h3>");
             }
 
+            // This is a little complicated since we are adding from TWO sources.. the database
+            // settings list and the configuration which points to the classes in the UI
+            Dictionary<string, string> viewerAdded = new Dictionary<string, string>( StringComparer.OrdinalIgnoreCase );
+
             // Create the data table
             DataTable tempTable = new DataTable();
-            tempTable.Columns.Add("Enabled");
-            tempTable.Columns.Add("ViewerType");
-            tempTable.Columns.Add("ViewerCode");
-            tempTable.Columns.Add("Class");
-            tempTable.Columns.Add("AlwaysAdd");
-            tempTable.Columns.Add("Extensions");
+            DataColumn enabledCol = tempTable.Columns.Add("Enabled?");
+            DataColumn defaultCol = tempTable.Columns.Add("Default?");
+            DataColumn alwaysAddCol = tempTable.Columns.Add("AlwaysAdd");
+            DataColumn typeCol = tempTable.Columns.Add("ViewerType");
+            DataColumn codeCol = tempTable.Columns.Add("ViewerCode");
+            DataColumn orderCol = tempTable.Columns.Add("Order");
+            DataColumn menuOrderCol = tempTable.Columns.Add("MenuOrder");
+            DataColumn classCol = tempTable.Columns.Add("Class");
+            DataColumn extensionsCol = tempTable.Columns.Add("Extensions");
             foreach (ItemSubViewerConfig viewer in UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.Viewers)
             {
                 DataRow newRow = tempTable.NewRow();
                 if (viewer.Enabled)
-                    newRow[0] = "<img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" />";
+                    newRow[enabledCol] = "<img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" />";
                 else
-                    newRow[0] = "<img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" />";
-                newRow[1] = viewer.ViewerType;
-                newRow[2] = viewer.ViewerCode;
+                    newRow[enabledCol] = "<img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" />";
+                newRow[typeCol] = viewer.ViewerType;
+                newRow[codeCol] = viewer.ViewerCode;
                 if (!String.IsNullOrEmpty(viewer.Assembly))
-                    newRow[3] = viewer.Class + " ( " + viewer.Assembly + " )";
+                    newRow[classCol] = viewer.Class + " ( " + viewer.Assembly + " )";
                 else
-                    newRow[3] = viewer.Class.Replace("SobekCM.Library.ItemViewer.Viewers.", "");
+                    newRow[classCol] = viewer.Class.Replace("SobekCM.Library.ItemViewer.Viewers.", "");
                 if (viewer.ManagementViewer)
-                    newRow[4] = "<img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" />";
+                    newRow[alwaysAddCol] = "<img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" />";
                 else
-                    newRow[4] = "<img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" />";
+                    newRow[alwaysAddCol] = "<img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" />";
                 StringBuilder extensionsBldr = new StringBuilder();
                 if ((viewer.FileExtensions != null) && ( viewer.FileExtensions.Length > 0 ))
                 {
@@ -3503,7 +3512,60 @@ namespace SobekCM.Library.AdminViewer
                             extensionsBldr.Append(thisExtension);
                     }
                 }
-                newRow[5] = extensionsBldr.ToString();
+                newRow[extensionsCol] = extensionsBldr.ToString();
+
+                // Is there information on this viewer in the database?
+                DbItemViewerType dbType = UI_ApplicationCache_Gateway.Settings.DbItemViewers.Get_ViewerType(viewer.ViewerType);
+                if (dbType != null)
+                {
+                    // Set the default column
+                    if (dbType.DefaultView)
+                        newRow[defaultCol] = "<img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" />";
+                    else
+                        newRow[defaultCol] = "<img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" />";
+
+
+                    // Set the order column and menu order
+                    newRow[orderCol] = dbType.Order;
+                    newRow[menuOrderCol] = dbType.MenuOrder;
+                }
+
+                // Since this was added, add it to the dictionary to avoid being double added
+                viewerAdded[viewer.ViewerType] = viewer.ViewerType;
+
+                // Add this row to the growing table
+                tempTable.Rows.Add(newRow);
+            }
+
+            // Step through all the data from the database about viewers
+            foreach (DbItemViewerType dbType in UI_ApplicationCache_Gateway.Settings.DbItemViewers.ViewerTypes)
+            {
+                // Was this already added?
+                if (viewerAdded.ContainsKey(dbType.ViewType))
+                    continue;
+
+                // Not added, so add a new row
+                DataRow newRow = tempTable.NewRow();
+
+                // Set some empty or default rows
+                newRow[codeCol] = String.Empty;
+                newRow[typeCol] = dbType.ViewType; 
+                newRow[enabledCol] = "-";
+                newRow[alwaysAddCol] = "-";
+                newRow[classCol] = "<span style=\"color:#999999;font-style:italic\">not implemented</span>";
+                newRow[extensionsCol] = String.Empty;
+                
+                // Set the default column
+                if (dbType.DefaultView)
+                    newRow[defaultCol] = "<img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" />";
+                else
+                    newRow[defaultCol] = "<img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" />";
+
+                // Set the order column and menu order
+                newRow[orderCol] = dbType.Order;
+                newRow[menuOrderCol] = dbType.MenuOrder;
+
+                // Add this row to the growing table
                 tempTable.Rows.Add(newRow);
             }
 
@@ -3515,20 +3577,28 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("      <th id=\"sbkSeav_UiViewersTable_EnabledCol\">Enabled?</th>");
             Output.WriteLine("      <th id=\"sbkSeav_UiViewersTable_TypeCol\">Viewer Type</th>");
             Output.WriteLine("      <th id=\"sbkSeav_UiViewersTable_CodeCol\">Viewer Code</th>");
-            Output.WriteLine("      <th id=\"sbkSeav_UiViewersTable_ClassCol\">Class</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_UiViewersTable_DefaultCol\">Default<br />View?</th>");
             Output.WriteLine("      <th id=\"sbkSeav_UiViewersTable_AlwaysAddCol\">Always<br />Add?</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_UiViewersTable_OrderCol\">View<br />Order</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_UiViewersTable_MenuOrderCol\">Menu<br />Order</th>");
+            Output.WriteLine("      <th id=\"sbkSeav_UiViewersTable_ClassCol\">Class</th>");
             Output.WriteLine("      <th id=\"sbkSeav_UiViewersTable_ExtensionsCol\">Extensions</th>");
             Output.WriteLine("    </tr>");
 
             foreach (DataRowView thisRow in sortMetadata)
             {
+                DataRow sourceRow = thisRow.Row;
+
                 Output.WriteLine("    <tr>");
-                Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\">" + thisRow[0] + "</td>");
-                Output.WriteLine("      <td>" + thisRow[1] + "</td>");
-                Output.WriteLine("      <td>" + thisRow[2] + "</td>");
-                Output.WriteLine("      <td>" + thisRow[3] + "</td>");
-                Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\">" + thisRow[4] + "</td>");
-                Output.WriteLine("      <td>" + thisRow[5] + "</td>");
+                Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\">" + sourceRow[enabledCol] + "</td>");
+                Output.WriteLine("      <td>" + sourceRow[typeCol] + "</td>");
+                Output.WriteLine("      <td>" + sourceRow[codeCol] + "</td>");
+                Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\">" + sourceRow[defaultCol] + "</td>");
+                Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\">" + sourceRow[alwaysAddCol] + "</td>");
+                Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\">" + sourceRow[orderCol] + "</td>");
+                Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\">" + sourceRow[menuOrderCol] + "</td>");
+                Output.WriteLine("      <td>" + sourceRow[classCol] + "</td>");
+                Output.WriteLine("      <td>" + sourceRow[extensionsCol] + "</td>");
                 Output.WriteLine("    </tr>");
             }
 

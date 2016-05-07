@@ -1,6 +1,9 @@
 ﻿#region Using directives
 
 using System;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
+using ProtoBuf;
 
 #endregion
 
@@ -30,17 +33,34 @@ namespace SobekCM.Core.MicroservicesClient
     }
 
     /// <summary> Defines a single endpoint for a microservices client </summary>
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("MicroserviceEndpoint")]
     public class MicroservicesClient_Endpoint
     {
         /// <summary> Complete URL for this microservices endpoint </summary>
-        public string URL { get; internal set; }
+        [DataMember(Name = "url")]
+        [XmlAttribute("url")]
+        [ProtoMember(1)]
+        public string URL { get; set; }
 
         /// <summary> Protocol to use when connecting to this endpoint, via the URL </summary>
-        public readonly Microservice_Endpoint_Protocol_Enum Protocol;
+        [DataMember(Name = "protocol")]
+        [XmlAttribute("protocol")]
+        [ProtoMember(2)]
+        public Microservice_Endpoint_Protocol_Enum Protocol { get; set; }
 
         /// <summary> Lookup key associated with this endpoint </summary>
-        public readonly string Key;
+        [DataMember(Name = "key")]
+        [XmlAttribute("key")]
+        [ProtoMember(3)]
+        public string Key { get; set; }
 
+        /// <summary> Constructor for a new instance of the MicroservicesClient_Endpoint class </summary>
+        /// <remarks> Empty constructor, primarily for serialization purposes </remarks>
+        public MicroservicesClient_Endpoint()
+        {
+            // Empty constructor
+        }
         /// <summary> Constructor for a new instance of the MicroservicesClient_Endpoint class </summary>
         /// <param name="URL"> Complete URL for this microservices endpoint </param>
         /// <param name="Protocol"> Protocol to use when connecting to this endpoint, via the URL </param>
