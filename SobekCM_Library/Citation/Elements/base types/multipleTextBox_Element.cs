@@ -31,6 +31,9 @@ namespace SobekCM.Library.Citation.Elements
         /// <summary> Protected field holds any html to insert as the view choices option after the boxes </summary>
         protected string view_choices_string;
 
+        /// <summary> Protected field holds the label field from the template file </summary>
+        protected string label_from_template_file;
+
         /// <summary> Constructor for a new instance of the multipleTextBox_Element class </summary>
         /// <param name="Title"> Title for this element </param>
         /// <param name="Html_Element_Name"> Name for the html components and styles for this element </param>
@@ -39,6 +42,7 @@ namespace SobekCM.Library.Citation.Elements
             base.Title = Title;
             html_element_name = Html_Element_Name;
             view_choices_string = String.Empty;
+            label_from_template_file = String.Empty;
 
             default_values = new List<string>();
         }
@@ -75,20 +79,26 @@ namespace SobekCM.Library.Citation.Elements
                 return;
             }
 
+            // Get the label to show
+            string label_to_show = Title.Replace(":", "");
+            if (label_from_template_file.Length > 0)
+                label_to_show = label_from_template_file;
 
             string id_name = html_element_name.Replace("_", "");
 
-            Output.WriteLine("  <!-- " + Title + " Element -->");
+            Output.WriteLine("  <!-- " + label_to_show + " Element -->");
             Output.WriteLine("  <tr>");
             Output.WriteLine("    <td style=\"width:" + LEFT_MARGIN + "px\">&nbsp;</td>");
 
+
+
             if (Acronym.Length > 0)
             {
-                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(label_to_show, CurrentLanguage) + ":</acronym></a></td>");
             }
             else
             {
-                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
+                Output.WriteLine("    <td class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(label_to_show, CurrentLanguage) + ":</a></td>");
             }
 
 
@@ -161,22 +171,27 @@ namespace SobekCM.Library.Citation.Elements
         {
             string id_name = html_element_name.Replace("_", "");
 
-            Output.WriteLine("  <!-- " + Title + " Element -->");
+            // Get the label to show
+            string label_to_show = Title.Replace(":", "");
+            if (label_from_template_file.Length > 0)
+                label_to_show = label_from_template_file;
+
+            Output.WriteLine("  <!-- " + label_to_show + " Element -->");
             Output.WriteLine("  <tr align=\"left\">");
             Output.WriteLine("    <td width=\"" + LEFT_MARGIN + "px\">&nbsp;</td>");
             if (Read_Only)
             {
-                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</b></td>");
+                Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\">" + Translator.Get_Translation(label_to_show, CurrentLanguage) + ":</b></td>");
             }
             else
             {
                 if (Acronym.Length > 0)
                 {
-                    Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</acronym></a></td>");
+                    Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\"><acronym title=\"" + Acronym + "\">" + Translator.Get_Translation(label_to_show, CurrentLanguage) + ":</acronym></a></td>");
                 }
                 else
                 {
-                    Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(Title, CurrentLanguage) + ":</a></td>");
+                    Output.WriteLine("    <td valign=\"top\" class=\"metadata_label\"><a href=\"" + Help_URL(Skin_Code, Base_URL) + "\" target=\"_" + html_element_name.ToUpper() + "\">" + Translator.Get_Translation(label_to_show, CurrentLanguage) + ":</a></td>");
                 }
             }
 
@@ -231,7 +246,12 @@ namespace SobekCM.Library.Citation.Elements
                 {
                     XMLReader.Read();
                     default_values.Add(XMLReader.Value.Trim());
-                    return;
+                }
+
+                if ((XMLReader.NodeType == XmlNodeType.Element) && (XMLReader.Name.ToLower() == "label"))
+                {
+                    XMLReader.Read();
+                    label_from_template_file = XMLReader.Value.Trim();
                 }
             }
         }
