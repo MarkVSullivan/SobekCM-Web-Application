@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
+using SobekCM.Tools;
 
 namespace SobekCM.Core.BriefItem
 {
@@ -101,11 +102,82 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(14)]
         public bool Full_Text_Searchable { get; set; }
 
+        /// <summary> Allows a specific citation set for this item to be set, possibly
+        /// overriding the system default to customize the description appearance </summary>
+        [DataMember(EmitDefaultValue = false, Name = "citationSet")]
+        [XmlAttribute("citationSet")]
+        [ProtoMember(15)]
+        public string CitationSet { get; set; }
+
+        /// <summary> Key/value pairs of setting values that can be used to store additional
+        /// behavior/setting information for a digital resource </summary>
+        [DataMember(EmitDefaultValue = false, Name = "settings")]
+        [XmlArray("settings")]
+        [XmlArrayItem("setting", typeof(string))]
+        [ProtoMember(16)]
+        public List<StringKeyValuePair> Settings { get; private set; }
+
+        [XmlIgnore]
+        [IgnoreDataMember]
+        private Dictionary<string, StringKeyValuePair> settingLookupDictionary; 
+
         /// <summary> Constructor for a new instance of the BriefItem_Behaviors class </summary>
         public BriefItem_Behaviors()
         {
             Viewers = new List<BriefItem_BehaviorViewer>();
             viewerTypeToConfig = new Dictionary<string, BriefItem_BehaviorViewer>();
+        }
+
+        /// <summary> Add a key/value pair setting to this item </summary>
+        /// <param name="Key"> Key for this setting </param>
+        /// <param name="Value"> Value for this setting </param>
+        /// <remarks> If a value already exists for the provided key, the value will be changed
+        /// to the new value provided to this method. </remarks>
+        public void Add_Setting(string Key, string Value)
+        {
+            // Look for existing key that matches
+
+            // Ensure the list is defined
+            if (Settings == null) Settings = new List<StringKeyValuePair>();
+
+            // Ensure the dictionary was built
+            if (settingLookupDictionary == null) settingLookupDictionary = new Dictionary<string, StringKeyValuePair>(StringComparer.OrdinalIgnoreCase);
+            if (settingLookupDictionary.Count != Settings.Count)
+            {
+                foreach (StringKeyValuePair setting in Settings)
+                    settingLookupDictionary[setting.Key] = setting;
+            }
+
+            // Does this key already exist?
+            if (settingLookupDictionary.ContainsKey(Key))
+                settingLookupDictionary[Key].Value = Value;
+            else
+            {
+                StringKeyValuePair newValue = new StringKeyValuePair(Key, Value);
+                Settings.Add(newValue);
+                settingLookupDictionary[Key] = newValue;
+            }
+        }
+
+        /// <summary> Gets a setting value, by key </summary>
+        /// <param name="Key"> Key to look for a match from the settings key/value pairs </param>
+        /// <returns> Either the setting value, if it exists, or NULL </returns>
+        public string Get_Setting(string Key)
+        {
+            // If the list is undefined, return NULL
+            if ((Settings == null) || (Settings.Count == 0))
+                return null;
+
+            // Ensure the dictionary was built
+            if (settingLookupDictionary == null) settingLookupDictionary = new Dictionary<string, StringKeyValuePair>(StringComparer.OrdinalIgnoreCase);
+            if (settingLookupDictionary.Count != Settings.Count)
+            {
+                foreach (StringKeyValuePair setting in Settings)
+                    settingLookupDictionary[setting.Key] = setting;
+            }
+
+            // Does this key exist?
+            return settingLookupDictionary.ContainsKey(Key) ? settingLookupDictionary[Key].Value : null;
         }
 
         /// <summary> Gets information about a single viewer for this digital resource </summary>

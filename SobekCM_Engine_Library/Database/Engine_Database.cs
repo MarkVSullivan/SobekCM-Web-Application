@@ -3130,6 +3130,15 @@ namespace SobekCM.Engine_Library.Database
 
 			    }
 
+                // Add any setting key/value pairs from the database
+			    if (tempSet.Tables[5].Rows.Count > 0)
+			    {
+			        foreach (DataRow settingRow in tempSet.Tables[5].Rows)
+			        {
+			            aggrInfo.Add_Setting(settingRow["Setting_Key"].ToString(), settingRow["Setting_Value"].ToString());
+			        }
+			    }
+
 				// Return the built argument set
 				return aggrInfo;
 			}

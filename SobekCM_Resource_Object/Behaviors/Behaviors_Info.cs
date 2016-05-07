@@ -26,17 +26,14 @@ namespace SobekCM.Resource_Object.Behaviors
 		private List<Aggregation_Info> aggregations;
 		private List<string> ticklers;
 		private List<View_Object> views;
-		private View_Object defaultView;
-		private List<string> webskins;
+	    private List<string> webskins;
 		private List<Wordmark_Info> wordmarks;
 		private readonly Identifier_Info primaryIdentifier;
-		private List<Descriptive_Tag> tags;    
+		private List<Descriptive_Tag> tags;
 
-		private bool can_be_described;
-		private Nullable<bool> checkOutRequired;
+	    private Nullable<bool> checkOutRequired;
 		private Nullable<bool> dark_flag;
-		private bool exposeFullTextForHarvesting;
-		private Nullable<short> ip_restricted;
+	    private Nullable<short> ip_restricted;
 		private string mainThumbnail;
 		private string notifyEmail;
 		private bool textSearchable;
@@ -49,8 +46,7 @@ namespace SobekCM.Resource_Object.Behaviors
 
 		private List<View_Object> item_level_page_views;
 		private Main_Page_Info mainPage;
-		private bool suppressEndeca;
-		private Serial_Info serialInfo;
+	    private Serial_Info serialInfo;
 
 		
 		/// <summary> Constructor for a new instance of the Behaviors_Info class </summary>
@@ -59,11 +55,12 @@ namespace SobekCM.Resource_Object.Behaviors
 			textSearchable = false;
 			checkOutRequired = false;
 			ip_restricted = 0;
-			suppressEndeca = true;
-			can_be_described = false;
+			Suppress_Endeca = true;
+			Can_Be_Described = false;
 			dark_flag = false;
-			exposeFullTextForHarvesting = true;
+			Expose_Full_Text_For_Harvesting = true;
 			primaryIdentifier = new Identifier_Info();
+		    Settings = new List<Tuple<string, string>>();
 		}
 
 		/// <summary> Flag indicates if this item should be displayed Left-to-Right, rather than the
@@ -512,14 +509,10 @@ namespace SobekCM.Resource_Object.Behaviors
 
 		#region Views properties and methods
 
-		/// <summary> Gets and sets the default view for this item </summary>
-		public View_Object Default_View
-		{
-			get { return defaultView; }
-			set { defaultView = value; }
-		}
+	    /// <summary> Gets and sets the default view for this item </summary>
+	    public View_Object Default_View { get; set; }
 
-		/// <summary> Gets the collection of SobekCM views associated with this resource </summary>
+	    /// <summary> Gets the collection of SobekCM views associated with this resource </summary>
 		/// <remarks> You should check the count of views first using the <see cref="Views_Count"/> before using this property.
 		/// Even if there are no views, this property creates a readonly collection to pass back out.</remarks>
 		public ReadOnlyCollection<View_Object> Views
@@ -763,17 +756,15 @@ namespace SobekCM.Resource_Object.Behaviors
 
 		#endregion
 
+
+
 		#region Simple properties
 
-		/// <summary> Flag indicates if the full text should be included in the static
-		/// files generated for search engine indexing robots </summary>
-		public bool Expose_Full_Text_For_Harvesting
-		{
-			get { return exposeFullTextForHarvesting; }
-			set { exposeFullTextForHarvesting = value; }
-		}
+	    /// <summary> Flag indicates if the full text should be included in the static
+	    /// files generated for search engine indexing robots </summary>
+	    public bool Expose_Full_Text_For_Harvesting { get; set; }
 
-		/// <summary> Gets or sets the notification email for this record </summary>
+	    /// <summary> Gets or sets the notification email for this record </summary>
 		public string NotifyEmail
 		{
 			get { return notifyEmail ?? String.Empty; }
@@ -787,22 +778,14 @@ namespace SobekCM.Resource_Object.Behaviors
 			set { mainThumbnail = value; }
 		}
 
-		/// <summary> Flag determines if this item should be suppressed in the Endeca feed of digital resources </summary>
-		public bool Suppress_Endeca
-		{
-			get { return suppressEndeca; }
-			set { suppressEndeca = value; }
-		}
+	    /// <summary> Flag determines if this item should be suppressed in the Endeca feed of digital resources </summary>
+	    public bool Suppress_Endeca { get; set; }
 
-		/// <summary> Flag determines if this item can be described online by logged in users </summary>
-		/// <remarks> This value is set based on the values for all the item aggregations to which this item belongs </remarks>
-		public bool Can_Be_Described
-		{
-			get { return can_be_described; }
-			set { can_be_described = value; }
-		}
+	    /// <summary> Flag determines if this item can be described online by logged in users </summary>
+	    /// <remarks> This value is set based on the values for all the item aggregations to which this item belongs </remarks>
+	    public bool Can_Be_Described { get; set; }
 
-		/// <summary> Flag determines if this item is publicly accessible or only accessible to internal users </summary>
+	    /// <summary> Flag determines if this item is publicly accessible or only accessible to internal users </summary>
 		public bool Publicly_Accessible
 		{
 			get { return (ip_restricted >= 0); }
@@ -919,6 +902,14 @@ namespace SobekCM.Resource_Object.Behaviors
 			get { return embeddedVideo ?? String.Empty; }
 			set { embeddedVideo = value; }
 		}
+
+        /// <summary> Allows a specific citation set for this item to be set, possibly
+        /// overriding the system default to customize the description appearance </summary>
+        public string CitationSet { get; set; }
+
+        /// <summary> Key/value pairs of setting values that can be used to store additional
+        /// behavior/setting information for a digital resource </summary>
+        public List<Tuple<string, string>> Settings { get; private set; }
 
 		#endregion
 

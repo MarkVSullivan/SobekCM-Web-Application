@@ -444,6 +444,8 @@ namespace SobekCM.Engine_Library.Items
 		            if (mainItemRow["Tracking_Box"] != DBNull.Value)
 		                Package_To_Finalize.Tracking.Tracking_Box = mainItemRow["Tracking_Box"].ToString();
 		        }
+		        if (mainItemRow["CitationSet"] != DBNull.Value)
+		            Package_To_Finalize.Behaviors.CitationSet = mainItemRow["CitationSet"].ToString();
 
 		        // Set more of the sobekcm web portions in the item 
 		        Package_To_Finalize.Web.Set_BibID_VID(Package_To_Finalize.BibID, Package_To_Finalize.VID);
@@ -678,6 +680,12 @@ namespace SobekCM.Engine_Library.Items
 			{
 				Package_To_Finalize.Behaviors.Add_Web_Skin(skinRow[0].ToString().ToUpper());
 			}
+
+            // Add the key/value settings
+		    foreach (DataRow settingRow in DatabaseInfo.Tables[7].Rows)
+		    {
+		        Package_To_Finalize.Behaviors.Settings.Add(new Tuple<string, string>(settingRow["Setting_Key"].ToString(), settingRow["Setting_Value"].ToString()));
+		    }
 
 			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Set the views from a combination of the METS and the database info");
 

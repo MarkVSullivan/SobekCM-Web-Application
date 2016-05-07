@@ -512,6 +512,15 @@ namespace SobekCM.Engine_Library.Aggregations
                 }
             }
 
+            // Copy all the setting values
+	        if ((CompAggr.Settings != null) && (CompAggr.Settings.Count > 0))
+	        {
+	            foreach (StringKeyValuePair setting in CompAggr.Settings)
+	            {
+	                returnValue.Add_Setting(setting.Key, setting.Value );
+	            }
+	        }
+
             // Copy over any web skin limitations
             if ((CompAggr.Web_Skins != null) && (CompAggr.Web_Skins.Count > 0))
             {
