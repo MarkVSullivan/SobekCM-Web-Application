@@ -18,52 +18,6 @@ namespace SobekCM.Library.ResultsViewer
     /// <see cref="iResultsViewer" /> interface. </remarks>
     public class Table_ResultsViewer : abstract_ResultsViewer
     {
-        /// <summary> String literal for html svg for OpenAccess icon</summary>
-        /// The size is different among the current ResultsViewers, so each has its own icon versions, so they can be 
-        /// tweaked individually in the code for each concrete ResultsViewer as development iterates.
-        protected string iconOpenAccess = @"
-<svg xmlns='http://www.w3.org/2000/svg' 
-x='0px' y='0px' viewbox='0 0 1000 1000'  
-width='80px' height='80px'
-xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns:cc='http://creativecommons.org/ns#' xmlns:dc='http://purl.org/dc/elements/1.1/'>
-  <metadata><rdf:RDF><cc:Work rdf:about=''>
-    <dc:format>image/svg+xml</dc:format>
-    <dc:type rdf:resource='http://purl.org/dc/dcmitype/StillImage'/>
-    <dc:creator>art designer at PLoS, modified by Wikipedia users Nina, Beao, JakobVoss, and AnonMoos</dc:creator>
-    <dc:description>Open Access logo, converted into svg, designed by PLoS. This version with transparent background.</dc:description>
-    <dc:source>http://commons.wikimedia.org/wiki/File:Open_Access_logo_PLoS_white.svg</dc:source>
-    <dc:license rdf:resource='http://creativecommons.org/publicdomain/zero/1.0/'/>
-    <cc:license rdf:resource='http://creativecommons.org/publicdomain/zero/1.0/'/>
-    <cc:attributionName>art designer at PLoS, modified by Wikipedia users Nina, Beao, JakobVoss, and AnonMoos</cc:attributionName>
-    <cc:attributionURL>http://www.plos.org/</cc:attributionURL>
-  </cc:Work></rdf:RDF></metadata>
-  <rect width='640' height='1000' fill='#ffffff'/>
-  <g stroke='#f68212' stroke-width='104.764' fill='none' transform='scale(0.5)'>
-    <path d='M111.387,308.135V272.408A209.21,209.214 0 0,1 529.807,272.408V530.834'/>
-    <circle cx='320.004' cy='680.729' r='256.083'/>
-  
-  <circle fill='#f68212' cx='321.01' cy='681.659' r='56.4287'/>
-</g>
-</svg>
-";
-        /// <summary> String literal for html svg for External (guest paygate) icon</summary>
-        /// TODO: might try using a clipPath later to crop off a too-wide bottom margin on this image... 
-        protected string iconGuestPays = @"
-<svg id='icon-external' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' 
-width='60px' height='60px'
-x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve' transform='scale(0.5)'>
-<polygon fill='#008000' points='120.088,16.696 60.256,16.697 60.257,0.095 120.092,0.091 '/>
-<rect x='55.91' y='24.562' 
- transform='matrix(0.7071 -0.7071 0.7071 0.7071 1.0877 70.8061)' 
- fill='#008000' width='60.209' height='19.056'/>
-<polygon fill='#008000' points='119.975,0.107 119.996,59.938 103.408,59.95 103.393,0.104 '/>
-<rect x='3' y='23.5' fill='#008000' width='17' height='87'/>
-<rect x='86.49' y='76.059' fill='#008000' width='17' height='36.941'/>
-<rect x='3' y='16.692' fill='#008000' width='40.655' height='17'/>
-<rect x='3' y='96' fill='#008000' width='100.49' height='17'/>
-</svg>
-";    
-
         /// <summary> Constructor for a new instance of the Table_ResultsViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Table_ResultsViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
@@ -146,8 +100,11 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve' transform='scale(0.5)
             // Call this after the foreach to more quickly query all entitlements info at once.
             // This saves several valuable seconds versus doing one entitlement api 
             // call per Elsevier article. 
-            e_cache.update_from_entitlements_api();
+            // e_cache.update_from_entitlements_api();
             Elsevier_Article elsevier_article;
+            // Add html and javascript for Elsevier results
+            resultsBldr.AppendLine(Elsevier_Entitlements_Cache.svg_access_symbols);
+            resultsBldr.AppendLine(Elsevier_Entitlements_Cache.javascript_cors_entitlement);
 
             // end Elsevier setup for 'preview' results loop.
             // Set the counter for these results from the page 
@@ -259,16 +216,23 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve' transform='scale(0.5)
                     if (isOpenAccess) // Show OpenAccess Icon
                     {
                         // Show OpenAccess Icon. 
-                        resultsBldr.AppendLine("<td>" + iconOpenAccess + "</td>");
+                        // resultsBldr.AppendLine("<td>" + e_cache.iconOpenAccess + "</td>");
+                        resultsBldr.AppendLine("<td>"
+                            + "<svg height='30px' width='20px'><use xlink:href=#access-open /></svg>"
+                            + "</td>");
+
                     }
                     else if (!entitlement)
                     {
-                        // Show external icon
-                        resultsBldr.AppendLine("<td>" + iconGuestPays + "</td>");
+                        // Show 'check access' message because a non-entitled user may desire other access options
+                        resultsBldr.AppendLine("<td " 
+                           + "id='" + elsevier_article.pii + "' class='elsevier_access'" 
+                           + " type='message' >" 
+                           + "Check Access</td>");
                     }
                     else
                     {
-                        //No icon 
+                        // Default is OK access, so display no message.
                         resultsBldr.AppendLine("<td></td>");
                     }
                     // PubDate

@@ -19,52 +19,6 @@ namespace SobekCM.Library.ResultsViewer
     /// <see cref="iResultsViewer" /> interface. </remarks>
     public class Brief_ResultsViewer : abstract_ResultsViewer
     {
-        /// <summary> String literal for html svg for OpenAccess icon</summary>
-        /// The size is different among the current ResultsViewers, so each has its own icon versions, so they can be 
-        /// tweaked individually in the code for each concrete ResultsViewer as development iterates.
-        protected string iconOpenAccess = @"
-<svg xmlns='http://www.w3.org/2000/svg' 
-x='0px' y='0px' viewbox='0 0 1000 1000'  
-width='80px' height='80px'
-xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns:cc='http://creativecommons.org/ns#' xmlns:dc='http://purl.org/dc/elements/1.1/'>
-  <metadata><rdf:RDF><cc:Work rdf:about=''>
-    <dc:format>image/svg+xml</dc:format>
-    <dc:type rdf:resource='http://purl.org/dc/dcmitype/StillImage'/>
-    <dc:creator>art designer at PLoS, modified by Wikipedia users Nina, Beao, JakobVoss, and AnonMoos</dc:creator>
-    <dc:description>Open Access logo, converted into svg, designed by PLoS. This version with transparent background.</dc:description>
-    <dc:source>http://commons.wikimedia.org/wiki/File:Open_Access_logo_PLoS_white.svg</dc:source>
-    <dc:license rdf:resource='http://creativecommons.org/publicdomain/zero/1.0/'/>
-    <cc:license rdf:resource='http://creativecommons.org/publicdomain/zero/1.0/'/>
-    <cc:attributionName>art designer at PLoS, modified by Wikipedia users Nina, Beao, JakobVoss, and AnonMoos</cc:attributionName>
-    <cc:attributionURL>http://www.plos.org/</cc:attributionURL>
-  </cc:Work></rdf:RDF></metadata>
-  <rect width='640' height='1000' fill='#ffffff'/>
-  <g stroke='#f68212' stroke-width='104.764' fill='none'>
-    <path d='M111.387,308.135V272.408A209.21,209.214 0 0,1 529.807,272.408V530.834'/>
-    <circle cx='320.004' cy='680.729' r='256.083'/>
-  </g>
-  <circle fill='#f68212' cx='321.01' cy='681.659' r='86.4287'/>
-</svg>
-";
-        /// <summary> String literal for html svg for External (guest paygate) icon</summary>
-
-        protected string iconGuestPays = @"
-<svg id='icon-external' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' 
-width='60px' height='60px'
-x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve'>
-<polygon fill='#008000' points='120.088,16.696 60.256,16.697 60.257,0.095 120.092,0.091 '/>
-<rect x='55.91' y='24.562' 
- transform='matrix(0.7071 -0.7071 0.7071 0.7071 1.0877 70.8061)' 
- fill='#008000' width='60.209' height='19.056'/>
-<polygon fill='#008000' points='119.975,0.107 119.996,59.938 103.408,59.95 103.393,0.104 '/>
-<rect x='3' y='23.5' fill='#008000' width='17' height='87'/>
-<rect x='86.49' y='76.059' fill='#008000' width='17' height='36.941'/>
-<rect x='3' y='16.692' fill='#008000' width='40.655' height='17'/>
-<rect x='3' y='96' fill='#008000' width='100.49' height='17'/>
-</svg>
-";
-        
-       
         /// <summary> Constructor for a new instance of the Brief_ResultsViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Brief_ResultsViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
@@ -116,12 +70,17 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve'>
                 // Add_Article silently ignores bibs that do not start with "LS" 
                 e_cache.Add_Article(titleResult.BibID, firstItemResult.Link);
             }
-            // Call this after the foreach to more quickly query all entitlements info at once.
+            // Call e_cache.update_from_entitlements_api() after the foreach to more 
+            // query all entitlements info at once, until javascript CORS approach is working.
             // This saves several valuable seconds versus doing one entitlement api 
             // call per Elsevier article. 
-            e_cache.update_from_entitlements_api();
+            // e_cache.update_from_entitlements_api();
 
             Elsevier_Article elsevier_article;
+            // Add html and javascript for Elsevier results
+            resultsBldr.AppendLine(Elsevier_Entitlements_Cache.svg_access_symbols);
+            resultsBldr.AppendLine(Elsevier_Entitlements_Cache.javascript_cors_entitlement);
+
             // end Elsevier setup for 'preview' results loop.
 
             // Step through all the results and build the HTML page
@@ -197,19 +156,51 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve'>
                     + (firstItemResult.MainThumbnail).Replace("\\", "/").Replace("//", "/");
 
                 // Draw the thumbnail 
-                if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
+                if (isElsevier)
+                {
+                    // Elsevier Published Journal Article Generic Image
+                    //resultsBldr.AppendLine("<table width='150px'>");
+                    resultsBldr.AppendLine(""
+                        // + "<tr><td>"
+                        // + "<span id=\"sbkThumbnailSpan" + title_count + "\">"
+                        + "<a href=\""
+                        + title_link + "\"\n><img"
+                        // + " id=\"sbkThumbnailImg" + title_count + "\""
+                        + " src=\"http://localhost:52468/design/aggregations/ielsevier/images/thumb150_189.png\"\n"
+                        + " alt=\"Elsevier Journal Article\" /></a>\n"
+                        // + "</span>"
+                        // + "</td></tr>"
+                        );
+                    if (!elsevier_article.is_open_access)
+                    {
+                        // SVG has image supplied by Elsevier for Message about user access to this article.
+                        // Class elsevier_access and attribute pii are used by e_cache's javascript 
+                        // to adjust access messages by client-requested entitlements via CORS feedback 
+                        // on user article access permission.
+                        resultsBldr.AppendLine(""
+                            //+ "<tr><td>"
+                            + "<svg viewbox='0 0 150 60' "
+                            + "id='" + elsevier_article.pii + "' class='elsevier_access'> "
+                            + "<use xlink:href='#access-check'/> </svg>"
+                            // + "</td></tr>"
+                            );
+                    }
+                    // resultsBldr.AppendLine("</table>");
+                }
+
+                else if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
                 {
                     resultsBldr.AppendLine("<a href=\"" + title_link + "\"><img src=\"" + Static_Resources.Nothumb_Jpg 
-                        + "\" border=\"0px\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a></div>");
+                        + "\" border=\"0px\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a>");
                 }
                 else
                 {
                     resultsBldr.AppendLine("<a href=\"" + title_link + "\"><img src=\"" 
                         + UI_ApplicationCache_Gateway.Settings.Image_URL + thumb + "\" class=\"resultsThumbnail\" alt=\"" 
-                        + title.Replace("\"","") + "\" /></a></div>");
+                        + title.Replace("\"","") + "\" /></a>");
                 }
 
-                resultsBldr.AppendLine("\t\t<div class=\"sbkBrv_SingleResultDesc\">");
+                resultsBldr.AppendLine("</div>\t\t<div class=\"sbkBrv_SingleResultDesc\">");
 
                 // If this was access restricted, add that
                 if (restricted_by_ip)
@@ -238,14 +229,19 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve'>
                 {
                     if (isOpenAccess)
                     {
-                        resultsBldr.AppendLine("\t\t\t\t" + iconOpenAccess + "</br>");
+                        //resultsBldr.AppendLine("\t\t\t\t" 
+                        //  + "<svg height='30px' width='20px'><use xlink:href=#access-open /></svg>"
+                        //  +  "</br>");
+                        resultsBldr.AppendLine(e_cache.iconOpenAccess + "</br>");
                     }
+                    /* retire this to let javascript cors on client handle this
                     else if (!entitlement)
                     {
                         // This is an Elsevier article to which user's IP is a 'guest' so not entitled to 
                         // full-text access, so show special icon.
-                        resultsBldr.AppendLine("\t\t\t\t" + iconGuestPays + "</br>");
+                        resultsBldr.AppendLine("\t\t\t\t" + e_cache.iconGuestPays + "</br>");
                     }
+                    */
                 }
 
                 if ((titleResult.Primary_Identifier_Type.Length > 0) && (titleResult.Primary_Identifier.Length > 0))

@@ -20,49 +20,6 @@ namespace SobekCM.Library.ResultsViewer
     public class Thumbnail_ResultsViewer : abstract_ResultsViewer
     {
 
-        protected string iconOpenAccess = @"
-<svg xmlns='http://www.w3.org/2000/svg' 
-x='0px' y='0px' viewbox='0 0 1000 1000'  
-width='80px' height='80px'
-xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#' xmlns:cc='http://creativecommons.org/ns#' xmlns:dc='http://purl.org/dc/elements/1.1/'>
-  <metadata><rdf:RDF><cc:Work rdf:about=''>
-    <dc:format>image/svg+xml</dc:format>
-    <dc:type rdf:resource='http://purl.org/dc/dcmitype/StillImage'/>
-    <dc:creator>art designer at PLoS, modified by Wikipedia users Nina, Beao, JakobVoss, and AnonMoos</dc:creator>
-    <dc:description>Open Access logo, converted into svg, designed by PLoS. This version with transparent background.</dc:description>
-    <dc:source>http://commons.wikimedia.org/wiki/File:Open_Access_logo_PLoS_white.svg</dc:source>
-    <dc:license rdf:resource='http://creativecommons.org/publicdomain/zero/1.0/'/>
-    <cc:license rdf:resource='http://creativecommons.org/publicdomain/zero/1.0/'/>
-    <cc:attributionName>art designer at PLoS, modified by Wikipedia users Nina, Beao, JakobVoss, and AnonMoos</cc:attributionName>
-    <cc:attributionURL>http://www.plos.org/</cc:attributionURL>
-  </cc:Work></rdf:RDF></metadata>
-  <rect width='640' height='1000' fill='#ffffff'/>
-  <g stroke='#f68212' stroke-width='104.764' fill='none' transform='scale(0.5)'>
-    <path d='M111.387,308.135V272.408A209.21,209.214 0 0,1 529.807,272.408V530.834'/>
-    <circle cx='320.004' cy='680.729' r='256.083'/>
-  
-  <circle fill='#f68212' cx='321.01' cy='681.659' r='56.4287'/>
-</g>
-</svg>
-";
-        /// <summary> String literal for html svg for External (guest paygate) icon</summary>
-
-        protected string iconGuestPays = @"
-<svg id='icon-external' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' 
-width='60px' height='60px'
-x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve'  transform='scale(0.5)'>
-<polygon fill='#008000' points='120.088,16.696 60.256,16.697 60.257,0.095 120.092,0.091 '/>
-<rect x='55.91' y='24.562' 
- transform='matrix(0.7071 -0.7071 0.7071 0.7071 1.0877 70.8061)' 
- fill='#008000' width='60.209' height='19.056'/>
-<polygon fill='#008000' points='119.975,0.107 119.996,59.938 103.408,59.95 103.393,0.104 '/>
-<rect x='3' y='23.5' fill='#008000' width='17' height='87'/>
-<rect x='86.49' y='76.059' fill='#008000' width='17' height='36.941'/>
-<rect x='3' y='16.692' fill='#008000' width='40.655' height='17'/>
-<rect x='3' y='96' fill='#008000' width='100.49' height='17'/>
-</svg>
-";
-
         /// <summary> Constructor for a new instance of the Thumbnail_ResultsViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public Thumbnail_ResultsViewer(RequestCache RequestSpecificValues ) : base(RequestSpecificValues)
@@ -103,7 +60,7 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve'  transform='scale(0.5
 
             //Add the necessary JavaScript, CSS files
             resultsBldr.AppendLine("  <script type=\"text/javascript\" src=\"" + Static_Resources.Sobekcm_Thumb_Results_Js + "\"></script>");
-
+            
             // Start this table
             resultsBldr.AppendLine("<table align=\"center\" width=\"100%\" cellspacing=\"15px\">");
             resultsBldr.AppendLine("\t<tr>");
@@ -122,11 +79,17 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve'  transform='scale(0.5
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
                 e_cache.Add_Article(titleResult.BibID, firstItemResult.Link);
             }
-            // Call this after the foreach to more quickly query all entitlements info at once.
+            // Until CORS is tested OK, 
+            // Call e_cache.update_from_entitlements_api()
+            // after the foreach to more quickly query all entitlements info at once.
             // This saves several valuable seconds versus doing one entitlement api 
             // call per Elsevier article. 
-            e_cache.update_from_entitlements_api();
+            // e_cache.update_from_entitlements_api();
+
             Elsevier_Article elsevier_article;
+            // Add html and javascript for Elsevier results
+            resultsBldr.AppendLine(Elsevier_Entitlements_Cache.svg_access_symbols);
+            resultsBldr.AppendLine(Elsevier_Entitlements_Cache.javascript_cors_entitlement);
  
             // end Elsevier setup for 'preview' results loop.
 
@@ -256,16 +219,44 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve'  transform='scale(0.5
                 }
 
                 // Add the thumbnail
-                if ((firstItemResult.MainThumbnail.ToUpper().IndexOf(".JPG") < 0)
+                if (isElsevier) 
+                {
+                    // Elsevier Published Journal Article Generic Image
+                   resultsBldr.AppendLine("<tr><td>" 
+                       // + "<span id=\"sbkThumbnailSpan" + title_count + "\">"
+                       + "<a href=\"" 
+                       + title_link  + "\"\n><img" 
+                       + " id=\"sbkThumbnailImg" + title_count + "\""
+                       + " src=\"http://localhost:52468/design/aggregations/ielsevier/images/thumb150_189.png\"\n"
+                       + " alt=\"Elsevier Journal Article\" /></a>\n" 
+                       // + "</span>"
+                       + "</td></tr>");
+                   if (!elsevier_article.is_open_access)
+                   {
+                       // SVG has image supplied by Elsevier for Message about user access to this article.
+                       // Class elsevier_access and attribute pii are used by e_cache's javascript 
+                       // to adjust access messages by client-requested entitlements via CORS feedback 
+                       // on user article access permission.
+                       resultsBldr.AppendLine("<tr><td>"
+                           + "<svg viewbox='0 0 150 60' "
+                           + "id='" + elsevier_article.pii + "' class='elsevier_access'> "
+                           + "<use xlink:href='#access-check'/> </svg>"
+                           + "</td></tr>");
+                   }
+                }
+                else if ((firstItemResult.MainThumbnail.ToUpper().IndexOf(".JPG") < 0)
                    && (firstItemResult.MainThumbnail.ToUpper().IndexOf(".GIF") < 0))
                 {
-                    resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan" + title_count + "\"><a href=\"" + title_link
-                        + "\"><img id=\"sbkThumbnailImg" + title_count + "\" src=\"" + Static_Resources.Nothumb_Jpg
+                    resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan" + title_count 
+                        + "\"><a href=\"" + title_link
+                        + "\"><img id=\"sbkThumbnailImg" + title_count + "\" src=\"" 
+                        + Static_Resources.Nothumb_Jpg
                         + "\" alt=\"MISSING THUMBNAIL\" /></a></span></td></tr>");
                 }
                 else
                 {
-                    string thumb = UI_ApplicationCache_Gateway.Settings.Image_URL + titleResult.BibID.Substring(0, 2) + "/"
+                    string thumb = UI_ApplicationCache_Gateway.Settings.Image_URL 
+                        + titleResult.BibID.Substring(0, 2) + "/"
                         + titleResult.BibID.Substring(2, 2) + "/" + titleResult.BibID.Substring(4, 2) + "/"
                         + titleResult.BibID.Substring(6, 2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/"
                         + (firstItemResult.MainThumbnail).Replace("\\", "/").Replace("//", "/");
@@ -375,36 +366,12 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve'  transform='scale(0.5
                 }
 
                 resultsBldr.AppendLine("\t\t\t</table>");
-
-                // End this row
-                //           resultsBldr.AppendLine("\t\t<br />");
-
-                //// Add children, if there are some
-                //if (multiple_title)
-                //{
-                //    // Add this to the place holder
-                //    Literal thisLiteral = new Literal
-                //                              { Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>") };
-                //    MainPlaceHolder.Controls.Add(thisLiteral);
-                //    resultsBldr.Remove(0, resultsBldr.Length);
-
-                //    Add_Issue_Tree(MainPlaceHolder, titleResult, current_row, textRedirectStem, base_url);
-                //}
-
-                //resultsBldr.AppendLine("\t\t</td>");
-                //resultsBldr.AppendLine("\t</tr>");
-
-                // Add a horizontal line
-                //       resultsBldr.AppendLine("\t<tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
-
-
-
-                // End this table
-                //           resultsBldr.AppendLine("</table>");
                 resultsBldr.AppendLine("</div></td></tr>");
 
-
                 #endregion
+
+                // For Elsevier not-open access, add class elsevier_access
+
                 // Add the title
                 resultsBldr.AppendLine("<tr><td align=\"center\"><span class=\"SobekThumbnailText\">" + title);
                 // End the title's cell and row
@@ -415,16 +382,17 @@ x='0px' y='0px' viewBox='0 0 130 130' xml:space='preserve'  transform='scale(0.5
                 {
                     if (isOpenAccess)
                     {
-                        resultsBldr.AppendLine("<tr><td>" + iconOpenAccess + "</td></tr>");
+                        resultsBldr.AppendLine("<tr><td>" + e_cache.iconOpenAccess + "</td></tr>");
                     }
+                    /* retire this after CORS javascript is working OK
                     else if (!entitlement)
                     {
                         // This is an Elsevier article to which user's IP is a 'guest' so not entitled to 
                         // full-text access, so show special icon.
-                        resultsBldr.AppendLine("<tr><td>" + iconGuestPays + "</td></tr>");
+                        resultsBldr.AppendLine("<tr><td>" + e_cache.iconGuestPays + "</td></tr>");
                     }
+                    */
                 }
-
 
                 // If this was access restricted, add that
                 if (restricted_by_ip)
