@@ -179,12 +179,13 @@ namespace SobekCM.Library.ResultsViewer
                         // to adjust access messages by client-requested entitlements via CORS feedback 
                         // on user article access permission.
                         resultsBldr.AppendLine(""
-                            //+ "<tr><td>"
-                            + "<svg viewbox='0 0 150 60' "
-                            + "id='" + elsevier_article.pii + "' class='elsevier_access'> "
-                            + "<use xlink:href='#access-check'/> </svg>"
-                            // + "</td></tr>"
-                            );
+                           + " <img width='150' height='60'"
+                           + " src='http://ufdcimages.uflib.ufl.edu/LS/00/00/00/00/access_check.png'"
+                           + " alt=\"Elsevier Check Access\""
+                           + " id='" + elsevier_article.pii + "' class='elsevier_access'"
+                           + "/>" 
+                           // + "</td></tr>"
+                           ); 
                     }
                     // resultsBldr.AppendLine("</table>");
                 }

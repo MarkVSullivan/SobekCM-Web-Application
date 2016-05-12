@@ -420,7 +420,11 @@ function makeCorsRequest() {
                 document.getElementById(pii).innerHTML = '';
             } else {
                 // This is the brief or thumbnail viewer which uses an svg image as an access message.
-                document.getElementById(pii).innerHTML = '<use xlink:href=#access-public />';
+                // document.getElementById(pii).innerHTML = '<use xlink:href=#access-public />';
+
+                document.getElementById(pii).setAttribute('src'
+                 ,'http://ufdcimages.uflib.ufl.edu/LS/00/00/00/00/access_ok.png');
+                document.getElementById(pii).alt = 'Elsevier Allow Access';
             }
         }
     }
