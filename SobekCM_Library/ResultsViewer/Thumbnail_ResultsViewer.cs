@@ -87,10 +87,10 @@ namespace SobekCM.Library.ResultsViewer
             // e_cache.update_from_entitlements_api();
 
             Elsevier_Article elsevier_article;
-            // Add html and javascript for Elsevier results
-            resultsBldr.AppendLine(Elsevier_Entitlements_Cache.svg_access_symbols);
-            resultsBldr.AppendLine(Elsevier_Entitlements_Cache.javascript_cors_entitlement);
- 
+            if (e_cache.d_bib_article.Count > 0)
+            {   // Add html or javascript for Elsevier results
+                resultsBldr.AppendLine(Elsevier_Entitlements_Cache.javascript_cors_entitlement);
+            } 
             // end Elsevier setup for 'preview' results loop.
 
             // Step through all the results
@@ -232,20 +232,29 @@ namespace SobekCM.Library.ResultsViewer
                        + "</td></tr>");
                    if (!elsevier_article.is_open_access)
                    {
-                       // SVG has image supplied by Elsevier for Message about user access to this article.
-                       // Class elsevier_access and attribute pii are used by e_cache's javascript 
+                       // Use image supplied by Elsevier for Message about user access to this article.
+                       // CSS Class 'elsevier_access' and attribute pii are used by e_cache's javascript 
                        // to adjust access messages by client-requested entitlements via CORS feedback 
                        // on user article access permission.
-                       
+
                        resultsBldr.AppendLine("<tr><td>"
                            + " <img width='150' height='60'"
                            + " src='http://ufdcimages.uflib.ufl.edu/LS/00/00/00/00/access_check.png'"
                            + " alt=\"Elsevier Check Access\""
                            + " id='" + elsevier_article.pii + "' class='elsevier_access'"
-                           + "/>" 
-                           + "</td></tr>"); 
+                           + "/>"
+                           + "</td></tr>");
+                   } else { // Open Access - we must not use CSS class elsevier_access here.
+                       resultsBldr.AppendLine("<tr><td>"
+                           + " <img width='160' height='60'"
+                           + " src='http://ufdcimages.uflib.ufl.edu/LS/00/00/00/00/PublisherVersion_OpenAccess.png'"
+                           + " alt='Elsevier Open Access'"
+                           + " id='" + elsevier_article.pii + "'"
+                           + "/>"
+                           + "</td></tr>" 
+                           );
                    }
-                }
+                } // end if isElsevier
                 else if ((firstItemResult.MainThumbnail.ToUpper().IndexOf(".JPG") < 0)
                    && (firstItemResult.MainThumbnail.ToUpper().IndexOf(".GIF") < 0))
                 {
@@ -372,29 +381,10 @@ namespace SobekCM.Library.ResultsViewer
 
                 #endregion
 
-                // For Elsevier not-open access, add class elsevier_access
-
                 // Add the title
                 resultsBldr.AppendLine("<tr><td align=\"center\"><span class=\"SobekThumbnailText\">" + title);
                 // End the title's cell and row
                 resultsBldr.AppendLine("</span></td></tr>");
-
-                // Add an Elsevier-Pilot-inspired icon if applicable
-                if (isElsevier)
-                {
-                    if (isOpenAccess)
-                    {
-                        resultsBldr.AppendLine("<tr><td>" + e_cache.iconOpenAccess + "</td></tr>");
-                    }
-                    /* retire this after CORS javascript is working OK
-                    else if (!entitlement)
-                    {
-                        // This is an Elsevier article to which user's IP is a 'guest' so not entitled to 
-                        // full-text access, so show special icon.
-                        resultsBldr.AppendLine("<tr><td>" + e_cache.iconGuestPays + "</td></tr>");
-                    }
-                    */
-                }
 
                 // If this was access restricted, add that
                 if (restricted_by_ip)

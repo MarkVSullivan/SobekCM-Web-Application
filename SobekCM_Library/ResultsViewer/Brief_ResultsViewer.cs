@@ -70,17 +70,13 @@ namespace SobekCM.Library.ResultsViewer
                 // Add_Article silently ignores bibs that do not start with "LS" 
                 e_cache.Add_Article(titleResult.BibID, firstItemResult.Link);
             }
-            // Call e_cache.update_from_entitlements_api() after the foreach to more 
-            // query all entitlements info at once, until javascript CORS approach is working.
-            // This saves several valuable seconds versus doing one entitlement api 
-            // call per Elsevier article. 
-            // e_cache.update_from_entitlements_api();
 
             Elsevier_Article elsevier_article;
-            // Add html and javascript for Elsevier results
-            resultsBldr.AppendLine(Elsevier_Entitlements_Cache.svg_access_symbols);
-            resultsBldr.AppendLine(Elsevier_Entitlements_Cache.javascript_cors_entitlement);
-
+            if (e_cache.d_bib_article.Count > 0)
+            {   // Add html or javascript for Elsevier results
+                // resultsBldr.AppendLine(Elsevier_Entitlements_Cache.svg_access_symbols);
+                resultsBldr.AppendLine(Elsevier_Entitlements_Cache.javascript_cors_entitlement);
+            }
             // end Elsevier setup for 'preview' results loop.
 
             // Step through all the results and build the HTML page
@@ -161,16 +157,10 @@ namespace SobekCM.Library.ResultsViewer
                     // Elsevier Published Journal Article Generic Image
                     //resultsBldr.AppendLine("<table width='150px'>");
                     resultsBldr.AppendLine(""
-                        // + "<tr><td>"
-                        // + "<span id=\"sbkThumbnailSpan" + title_count + "\">"
                         + "<a href=\""
                         + title_link + "\"\n><img"
-                        // + " id=\"sbkThumbnailImg" + title_count + "\""
-                        // + " src=\"http://localhost:52468/design/aggregations/ielsevier/images/thumb150_189.png\"\n"
                         + " src=\"http://ufdcimages.uflib.ufl.edu/LS/00/00/00/00/thumb150_189.png\"\n"              
-                        + " alt=\"Elsevier Journal Article\" /></a>\n"
-                        // + "</span>"
-                        // + "</td></tr>"
+                        + " alt=\"Elsevier Journal Article\" />\n"
                         );
                     if (!elsevier_article.is_open_access)
                     {
@@ -179,17 +169,25 @@ namespace SobekCM.Library.ResultsViewer
                         // to adjust access messages by client-requested entitlements via CORS feedback 
                         // on user article access permission.
                         resultsBldr.AppendLine(""
-                           + " <img width='150' height='60'"
+                           + " <img width='160' height='60'"
                            + " src='http://ufdcimages.uflib.ufl.edu/LS/00/00/00/00/access_check.png'"
                            + " alt=\"Elsevier Check Access\""
                            + " id='" + elsevier_article.pii + "' class='elsevier_access'"
                            + "/>" 
-                           // + "</td></tr>"
                            ); 
+                    } else { // Open Access article
+                        // Use Elsevier "thumbnail caption image"  for Open Access.
+                        // This is not class 'elsevier_access' so this image will remain unchanged as needed.
+                        resultsBldr.AppendLine("</br>"
+                           + " <img width='160' height='60'"
+                           + " src='http://ufdcimages.uflib.ufl.edu/LS/00/00/00/00/PublisherVersion_OpenAccess.png'"
+                           + " alt='Elsevier Open Access'"
+                           + " id='" + elsevier_article.pii +"'"
+                           + "/>" 
+                           );
                     }
-                    // resultsBldr.AppendLine("</table>");
+                    resultsBldr.AppendLine("</a>");
                 }
-
                 else if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
                 {
                     resultsBldr.AppendLine("<a href=\"" + title_link + "\"><img src=\"" + Static_Resources.Nothumb_Jpg 
@@ -227,24 +225,6 @@ namespace SobekCM.Library.ResultsViewer
 
                 // Add each element to this table
                 resultsBldr.AppendLine("\t\t\t<dl class=\"sbkBrv_SingleResultDescList\">");
-                if (isElsevier)
-                {
-                    if (isOpenAccess)
-                    {
-                        //resultsBldr.AppendLine("\t\t\t\t" 
-                        //  + "<svg height='30px' width='20px'><use xlink:href=#access-open /></svg>"
-                        //  +  "</br>");
-                        resultsBldr.AppendLine(e_cache.iconOpenAccess + "</br>");
-                    }
-                    /* retire this to let javascript cors on client handle this
-                    else if (!entitlement)
-                    {
-                        // This is an Elsevier article to which user's IP is a 'guest' so not entitled to 
-                        // full-text access, so show special icon.
-                        resultsBldr.AppendLine("\t\t\t\t" + e_cache.iconGuestPays + "</br>");
-                    }
-                    */
-                }
 
                 if ((titleResult.Primary_Identifier_Type.Length > 0) && (titleResult.Primary_Identifier.Length > 0))
                 {

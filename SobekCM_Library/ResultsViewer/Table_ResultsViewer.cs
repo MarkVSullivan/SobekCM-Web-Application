@@ -97,16 +97,13 @@ namespace SobekCM.Library.ResultsViewer
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
                 e_cache.Add_Article(titleResult.BibID, firstItemResult.Link);
             }
-            // Call this after the foreach to more quickly query all entitlements info at once.
-            // This saves several valuable seconds versus doing one entitlement api 
-            // call per Elsevier article. 
-            // e_cache.update_from_entitlements_api();
             Elsevier_Article elsevier_article;
-            // Add html and javascript for Elsevier results
-            resultsBldr.AppendLine(Elsevier_Entitlements_Cache.svg_access_symbols);
-            resultsBldr.AppendLine(Elsevier_Entitlements_Cache.javascript_cors_entitlement);
-
+            if (e_cache.d_bib_article.Count > 0)
+            {   // Add html or javascript for Elsevier results
+                resultsBldr.AppendLine(Elsevier_Entitlements_Cache.javascript_cors_entitlement);
+            } 
             // end Elsevier setup for 'preview' results loop.
+
             // Set the counter for these results from the page 
             int page = RequestSpecificValues.Current_Mode.Page.HasValue ? Math.Max(RequestSpecificValues.Current_Mode.Page.Value, ((ushort)1)) : 1;
             int result_counter = ((page - 1) * Results_Per_Page) + 1;
@@ -150,10 +147,6 @@ namespace SobekCM.Library.ResultsViewer
 
                 // Add the counter as the first column
                 resultsBldr.AppendLine("\t\t<td>" + result_counter + "</td>");
-
-                // For some articles an external site requires some user feat (for example, a payment or a sign-up, or to
-                // agree to a license provision, etc) to see the full-text content, so in cell_external_feat we set an html
-                string cell_external_feat = "";                    
 
                 // Add differently depending on the child row count
                 if ( !multiple_title )
@@ -217,10 +210,7 @@ namespace SobekCM.Library.ResultsViewer
                     {
                         // Show OpenAccess Icon. 
                         // resultsBldr.AppendLine("<td>" + e_cache.iconOpenAccess + "</td>");
-                        resultsBldr.AppendLine("<td>"
-                            + "<svg height='30px' width='20px'><use xlink:href=#access-open /></svg>"
-                            + "</td>");
-
+                        resultsBldr.AppendLine("<td>Open</br>Access</td>");
                     }
                     else if (!entitlement)
                     {
