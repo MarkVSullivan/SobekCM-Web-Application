@@ -31,6 +31,8 @@ namespace SobekCM.Engine_Library.Settings
 
                 Set_NonScheduled_Modules(SettingsObject, SobekCM_Settings.Tables[1 + DataTableOffset], setid_to_modules, IncludeModuleDescriptions);
 
+               // Set_Scheduled_Modules();
+
                 // Link the folders to the builder module sets
                 foreach (KeyValuePair<int, List<Builder_Module_Setting>> module in setid_to_modules)
                 {
