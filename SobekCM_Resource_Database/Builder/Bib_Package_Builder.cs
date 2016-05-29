@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Database;
@@ -13,7 +14,7 @@ using SobekCM.Resource_Object.Divisions;
 
 #endregion
 
-namespace SobekCM.Resource_Object.Builder
+namespace SobekCM_Resource_Database.Builder
 {
     /// <summary> Creates a bibliographic package from a variety of locations </summary>
     /// <remarks> Object created by Mark V Sullivan (2006) for University of Florida's Digital Library Center.</remarks>
@@ -64,7 +65,7 @@ namespace SobekCM.Resource_Object.Builder
 
             if (sobekItems == null)
             {
-                sobekItems = SobekCM_Database.Current_SobekCM_Items(SobekCM_Base_URL);
+                sobekItems = SobekCM_Item_Database.Current_SobekCM_Items(SobekCM_Base_URL);
                 if (sobekItems != null)
                 {
                     try
@@ -189,7 +190,7 @@ namespace SobekCM.Resource_Object.Builder
                 string package_resource_link = sobekItems.Package_Resource_Link(BIBID, Volumeid.Replace("VID", ""));
                 if (package_resource_link.Length > 0)
                 {
-                    string mets = SobekCM_Database.Download_METS(package_resource_link, BIBID, Volumeid.Replace("VID", ""));
+                    string mets = SobekCM_Item_Database.Download_METS(package_resource_link, BIBID, Volumeid.Replace("VID", ""));
                     if (mets.Length > 0)
                     {
                         // Get the new METS file name

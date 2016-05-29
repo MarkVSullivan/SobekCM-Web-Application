@@ -18,6 +18,7 @@ using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Tools;
+using SobekCM_Resource_Database;
 
 #endregion
 
@@ -185,7 +186,7 @@ namespace SobekCM.Library.MySobekViewer
                             ipRestrictionMask = checked_mask;
 
                         // Save this to the database
-                        if (SobekCM_Database.Set_Item_Visibility(currentItem.Web.ItemID, ipRestrictionMask, isDark, embargoDate, RequestSpecificValues.Current_User.UserName))
+                        if (SobekCM_Item_Database.Set_Item_Visibility(currentItem.Web.ItemID, ipRestrictionMask, isDark, embargoDate, RequestSpecificValues.Current_User.UserName))
                         {
                             // Update the web.config
                             Resource_Web_Config_Writer.Update_Web_Config(currentItem.Source_Directory, currentItem.Behaviors.Dark_Flag, ipRestrictionMask, currentItem.Behaviors.Main_Thumbnail);

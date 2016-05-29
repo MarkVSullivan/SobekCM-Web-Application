@@ -19,6 +19,7 @@ using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Tools;
+using SobekCM_Resource_Database;
 
 #endregion
 
@@ -152,15 +153,15 @@ namespace SobekCM.Library.MySobekViewer
                 completeTemplate.Save_To_Bib(currentItem, RequestSpecificValues.Current_User, 1);
 
                 // Save the behaviors
-                SobekCM_Database.Save_Behaviors(currentItem, currentItem.Behaviors.Text_Searchable, false, false);
+                SobekCM_Item_Database.Save_Behaviors(currentItem, currentItem.Behaviors.Text_Searchable, false, false);
 
                 // Save the serial hierarchy as well (sort of a behavior)
-                SobekCM_Database.Save_Serial_Hierarchy_Information(currentItem, currentItem.Web.GroupID, currentItem.Web.ItemID);
+                SobekCM_Item_Database.Save_Serial_Hierarchy_Information(currentItem, currentItem.Web.GroupID, currentItem.Web.ItemID);
 
                 // Did the tracking box change?
                 if (currentItem.Tracking.Tracking_Box != oldTrackingBox)
                 {
-                    SobekCM_Database.Create_Full_Citation_Value(currentItem.Web.ItemID);
+                    SobekCM_Item_Database.Create_Full_Citation_Value(currentItem.Web.ItemID);
                 }
 
                 // Remoe from the caches (to replace the other)

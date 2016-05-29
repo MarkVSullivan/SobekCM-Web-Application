@@ -29,6 +29,7 @@ using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
+using SobekCM_Resource_Database;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -428,7 +429,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             //Get the list of associated errors for this item from the database
-            int itemID = Resource_Object.Database.SobekCM_Database.Get_ItemID(BriefItem.BibID, BriefItem.VID);
+            int itemID = SobekCM_Item_Database.Get_ItemID(BriefItem.BibID, BriefItem.VID);
             Get_QC_Errors(itemID);
 
 
@@ -561,7 +562,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     if (qc_errors_dictionary.ContainsKey(ItemID + AffectedPageFilename))
                     {
                         //Delete the previous error for this file from the database
-                        Resource_Object.Database.SobekCM_Database.Delete_QC_Error(ItemID, AffectedPageFilename);
+                        SobekCM_Item_Database.Delete_QC_Error(ItemID, AffectedPageFilename);
 
                         //Also remove any previous entry from the session dictionary
                         qc_errors_dictionary.Remove(ItemID + AffectedPageFilename);
@@ -640,7 +641,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             if (qc_errors_dictionary.ContainsKey(ItemID + AffectedPageFilename))
             {
                 //Delete the previous error for this file from the database
-                Resource_Object.Database.SobekCM_Database.Delete_QC_Error(ItemID, AffectedPageFilename);
+                SobekCM_Item_Database.Delete_QC_Error(ItemID, AffectedPageFilename);
 
                 //Also remove any previous entry from the session dictionary
                 qc_errors_dictionary.Remove(ItemID + AffectedPageFilename);
@@ -649,7 +650,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Now save this error to the DB, and update the dictionary
             if (ErrorCode != "11" && ErrorCode != "0")
             {
-                thisError.Error_ID = Resource_Object.Database.SobekCM_Database.Save_QC_Error(ItemID, AffectedPageFilename, thisError.ErrorCode, thisError.Description, thisError.isVolumeError);
+                thisError.Error_ID = SobekCM_Item_Database.Save_QC_Error(ItemID, AffectedPageFilename, thisError.ErrorCode, thisError.Description, thisError.isVolumeError);
                 if (qc_errors_dictionary == null)
                     qc_errors_dictionary = new Dictionary<string, QC_Error>();
 
@@ -666,7 +667,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         public void Get_QC_Errors(int ThisItemID)
         {
             //Get the DataTable of all page errors for this item from the database
-            qc_errors_table = Resource_Object.Database.SobekCM_Database.Get_QC_Errors_For_Item(ThisItemID);
+            qc_errors_table = SobekCM_Item_Database.Get_QC_Errors_For_Item(ThisItemID);
             QC_Error thisError = new QC_Error();
 
             if (HttpContext.Current.Session["QC_Errors"] == null)
@@ -1532,7 +1533,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
 
             //Save changes to the DB
-            Resource_Object.Database.SobekCM_Database.QC_Update_Item_Info(qc_item.BibID, qc_item.VID, CurrentUser.UserName, hidden_main_thumbnail + "thm.jpg", hidden_main_thumbnail + ".jpg", pages_count, files_count, size, notes);
+            SobekCM_Item_Database.QC_Update_Item_Info(qc_item.BibID, qc_item.VID, CurrentUser.UserName, hidden_main_thumbnail + "thm.jpg", hidden_main_thumbnail + ".jpg", pages_count, files_count, size, notes);
 
             // Clear the updated item from the session
             HttpContext.Current.Session[qc_item.BibID + "_" + qc_item.VID + " QC Work"] = null;
@@ -1867,7 +1868,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 string image_url = image_by_pageindex[page_index];
                 string filename_sans_extension = file_sans_by_pageindex[page_index];
                 string filenameToDisplay = filename_sans_extension;
-                int itemID = Resource_Object.Database.SobekCM_Database.Get_ItemID(BriefItem.BibID, BriefItem.VID);
+                int itemID = SobekCM_Item_Database.Get_ItemID(BriefItem.BibID, BriefItem.VID);
                 string url = UrlWriterHelper.Redirect_URL(CurrentRequest).Replace("&", "&amp;").Replace("\"", "&quot;");
 
                 QC_Error thisError = new QC_Error();

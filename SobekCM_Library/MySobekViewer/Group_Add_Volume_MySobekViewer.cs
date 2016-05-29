@@ -25,6 +25,7 @@ using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Tools;
+using SobekCM_Resource_Database;
 
 #endregion
 
@@ -387,7 +388,7 @@ namespace SobekCM.Library.MySobekViewer
 
             // Save to the database
             Item_To_Complete.Web.File_Root = Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8, 2);
-            SobekCM_Database.Save_New_Digital_Resource(Item_To_Complete, false, false, RequestSpecificValues.Current_User.UserName, String.Empty, -1);
+            SobekCM_Item_Database.Save_New_Digital_Resource(Item_To_Complete, false, false, RequestSpecificValues.Current_User.UserName, String.Empty, -1);
 
             // Assign the file root and assoc file path
             Item_To_Complete.Web.AssocFilePath = Item_To_Complete.Web.File_Root + "\\" + Item_To_Complete.VID + "\\";

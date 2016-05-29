@@ -19,6 +19,7 @@ using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Tools;
+using SobekCM_Resource_Database;
 
 #endregion
 
@@ -142,7 +143,7 @@ namespace SobekCM.Library.MySobekViewer
                 completeTemplate.Save_To_Bib(item, RequestSpecificValues.Current_User, 1);
 
                 // Save the behaviors
-                SobekCM_Database.Save_Behaviors(item, false, true, false );
+                SobekCM_Item_Database.Save_Behaviors(item, false, true, false );
 
                 // Store on the caches (to replace the other)
                 CachedDataManager.Items.Remove_Digital_Resource_Objects(item.BibID, RequestSpecificValues.Tracer);

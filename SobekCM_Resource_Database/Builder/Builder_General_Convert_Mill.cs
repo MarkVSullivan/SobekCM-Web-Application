@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 #endregion
 
-namespace SobekCM.Resource_Object.Builder
+namespace SobekCM_Resource_Database.Builder
 {
     /// <summary> Enum specified the roman numerals </summary>
     internal enum RomanNumeralsEnum

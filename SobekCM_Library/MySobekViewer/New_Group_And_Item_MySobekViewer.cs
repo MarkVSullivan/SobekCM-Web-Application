@@ -37,6 +37,7 @@ using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Resource_Object.Utilities;
 using SobekCM.Tools;
+using SobekCM_Resource_Database;
 using Image = System.Drawing.Image;
 
 #endregion
@@ -823,7 +824,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Save to the database
                 try
                 {
-                    Resource_Object.Database.SobekCM_Database.Save_New_Digital_Resource(Item_To_Complete, false, true, RequestSpecificValues.Current_User.UserName, String.Empty, RequestSpecificValues.Current_User.UserID);                    
+                    SobekCM_Item_Database.Save_New_Digital_Resource(Item_To_Complete, false, true, RequestSpecificValues.Current_User.UserName, String.Empty, RequestSpecificValues.Current_User.UserID);                    
                 }
                 catch (Exception ee)
                 {

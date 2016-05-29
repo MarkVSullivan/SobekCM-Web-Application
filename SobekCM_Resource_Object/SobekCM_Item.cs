@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Configuration;
@@ -3410,6 +3411,41 @@ namespace SobekCM.Resource_Object
             }
 
             return level > 1;
+        }
+
+        #endregion
+
+        #region Method checks to see if a string is in valid BIbID or VId format
+
+        /// <summary> Gets the length of the bib id </summary>
+        private const int Bib_Length = 10;
+
+        /// <summary> Gest the lenght of the vids </summary>
+        private const int Vids_Length = 5;
+
+
+        /// <summary> Gets a flag indicating if the provided string appears to be in bib id format </summary>
+        /// <param name="TestString"> string to check for bib id format </param>
+        /// <returns> TRUE if this string appears to be in bib id format, otherwise FALSE </returns>
+        public static bool is_bibid_format(string TestString)
+        {
+            // Must be 10 characters long to start with
+            if (TestString.Length != Bib_Length)
+                return false;
+
+            // Use regular expressions to check format
+            Regex myReg = new Regex("[A-Z]{2}[A-Z|0-9]{4}[0-9]{4}");
+            return myReg.IsMatch(TestString.ToUpper());
+        }
+
+        /// <summary> Static method to set if a string is a vid VIDS format</summary>
+        /// <param name="TestString"> string to check for vid VIDS format</param>
+        /// <returns>TRUE if this string appears to be in VID format, otherwise FALSE</returns>
+        public static bool is_vids_format(string TestString)
+        {
+            if (TestString.Length != Vids_Length)
+                return false;
+            return Regex.Match(TestString.ToUpper(), @"^[0-9]{5}$").Success;
         }
 
         #endregion

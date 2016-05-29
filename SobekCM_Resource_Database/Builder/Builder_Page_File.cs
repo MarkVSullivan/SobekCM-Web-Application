@@ -7,7 +7,7 @@ using SobekCM.Resource_Object.Divisions;
 
 #endregion
 
-namespace SobekCM.Resource_Object.Builder
+namespace SobekCM_Resource_Database.Builder
 {
     /// <summary> Creates a file object for a page in a bibliographic package </summary>
     /// <remarks> Object created by Mark V Sullivan (2006) for University of Florida's Digital Library Center.</remarks>

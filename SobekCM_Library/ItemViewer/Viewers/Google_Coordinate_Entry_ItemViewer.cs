@@ -24,6 +24,7 @@ using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.GeoSpatial;
 using SobekCM.Tools;
+using SobekCM_Resource_Database;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
@@ -278,7 +279,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 //add the new point 
                                 resourceGeoInfo.Add_Point(newPoint);
                                 //save to db
-                                SobekCM_Database.Save_Digital_Resource(currentItem, options);
+                                SobekCM_Item_Database.Save_Digital_Resource(currentItem, options);
                                 break;
                             #endregion
                             #region overlay
@@ -376,7 +377,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 //add the pagegeo obj
                                 pages[arrayId].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, pageGeo);
                                 //save to db
-                                SobekCM_Database.Save_Digital_Resource(currentItem, options);
+                                SobekCM_Item_Database.Save_Digital_Resource(currentItem, options);
                                 break;
                             #endregion
                         }
@@ -392,7 +393,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                     //clear nonpoipoints
                                     resourceGeoInfo.Clear_NonPOIPoints();
                                     //save to db
-                                    SobekCM_Database.Save_Digital_Resource(currentItem, options);
+                                    SobekCM_Item_Database.Save_Digital_Resource(currentItem, options);
                                     break;
                                 #endregion
                                 #region overlay
@@ -429,7 +430,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         pages[arrayId].Add_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY, pageGeo);
 
                                         //save to db
-                                        SobekCM_Database.Save_Digital_Resource(currentItem, options);
+                                        SobekCM_Item_Database.Save_Digital_Resource(currentItem, options);
                                     }
                                     catch (Exception)
                                     {

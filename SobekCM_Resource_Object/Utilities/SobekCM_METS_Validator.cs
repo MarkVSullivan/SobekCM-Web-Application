@@ -91,13 +91,13 @@ namespace SobekCM.Resource_Object.Utilities
             packageDirName = packageDir;
 
             // check the BibID is in the right format
-            if (SobekCM_Database.is_bibid_format(thisBibPackage.Bib_Info.BibID) == false)
+            if (SobekCM_Item.is_bibid_format(thisBibPackage.Bib_Info.BibID) == false)
             {
                 validationErrors.Append("Invalid BibID" + "\n");
                 returnVal = false;
             }
             // check the VID is in the right format
-            if (SobekCM_Database.is_vids_format(thisBibPackage.Bib_Info.VID) == false)
+            if (SobekCM_Item.is_vids_format(thisBibPackage.Bib_Info.VID) == false)
             {
                 validationErrors.Append("Invalid VID" + "\n");
                 returnVal = false;

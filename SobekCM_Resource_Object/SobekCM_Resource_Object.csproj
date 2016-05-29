@@ -154,7 +154,6 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Builder\Bib_Package_Builder.cs" />
     <Compile Include="Configuration\ResourceObjectSettings.cs" />
     <Compile Include="Database\DataSets\SobekCM_All_Items.cs">
       <SubType>Component</SubType>
@@ -321,18 +320,6 @@
     </Compile>
     <Compile Include="Bib_Info\MODS_Info\TypeOfResource_Info.cs" />
     <Compile Include="XML_Writing_Base_Type.cs" />
-    <Compile Include="Builder\Builder_General_Convert_Mill.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Builder\Builder_Page_File.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Builder\Builder_Page_File_Collection.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Builder\Builder_SplitFileName.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Divisions\abstract_TreeNode.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -399,9 +386,6 @@
     <Compile Include="Utilities\SobekCM_Item_Validator.cs" />
     <Compile Include="Utilities\SobekCM_METS_Finder.cs" />
     <Compile Include="MARC_HTML_Writer.cs" />
-    <Compile Include="Database\SobekCM_Database.cs">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -421,10 +405,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj">
-      <Project>{b481ce6e-05fd-4336-9524-64d057aab107}</Project>
-      <Name>EngineAgnosticLayerDbAccess</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SobekCM_Tools\SobekCM_Tools.csproj">
       <Project>{a511ce4c-7bd6-4446-bca8-ab71f7aa8078}</Project>
       <Name>SobekCM_Tools</Name>

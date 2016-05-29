@@ -10,6 +10,7 @@ using SobekCM.Engine_Library.Database;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
+using SobekCM_Resource_Database;
 
 #endregion
 
@@ -77,7 +78,7 @@ namespace SobekCM.Engine_Library.Items
             bool successful_save = true;
             try
             {
-                SobekCM_Database.Save_Digital_Resource(Item, options, DateTime.Now, true);
+                SobekCM_Item_Database.Save_Digital_Resource(Item, options, DateTime.Now, true);
             }
             catch
             {
@@ -117,7 +118,7 @@ namespace SobekCM.Engine_Library.Items
             // If this was not able to be saved in the database, try it again
             if (!successful_save)
             {
-                SobekCM_Database.Save_Digital_Resource(Item, options, DateTime.Now, false);
+                SobekCM_Item_Database.Save_Digital_Resource(Item, options, DateTime.Now, false);
             }
 
             // Make sure the progress has been added to this Item's work log

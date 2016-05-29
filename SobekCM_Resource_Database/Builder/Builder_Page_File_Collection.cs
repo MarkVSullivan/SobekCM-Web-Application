@@ -5,7 +5,7 @@ using System.Collections;
 
 #endregion
 
-namespace SobekCM.Resource_Object.Builder
+namespace SobekCM_Resource_Database.Builder
 {
     /// <summary>
     /// Summary description for Page_File_Collection.

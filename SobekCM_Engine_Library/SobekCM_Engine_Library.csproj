@@ -167,6 +167,10 @@
       <Project>{849C78A5-C60B-4FAF-9EFB-943753F64E56}</Project>
       <Name>SobekCM_Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SobekCM_Resource_Database\SobekCM_Resource_Database.csproj">
+      <Project>{3d35e1a0-0126-45d2-b663-49ba144a3537}</Project>
+      <Name>SobekCM_Resource_Database</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj">
       <Project>{395c2621-ce19-41e0-aa1a-abdb37f6e815}</Project>
       <Name>SobekCM_Resource_Object</Name>

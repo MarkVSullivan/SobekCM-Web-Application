@@ -17,6 +17,7 @@ using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.OAI.Writer;
+using SobekCM_Resource_Database;
 
 #endregion
 
@@ -75,7 +76,7 @@ namespace SobekCM.Engine_Library.Settings
 
             // Set the connection string to the database
             Engine_Database.Connection_String = returnValue.Database_Connections[0].Connection_String;
-            SobekCM_Database.Connection_String = returnValue.Database_Connections[0].Connection_String;
+            SobekCM_Item_Database.Connection_String = returnValue.Database_Connections[0].Connection_String;
 
             // Get the settings
             DataSet sobekCMSettings = Engine_Database.Get_Settings_Complete(false, null);

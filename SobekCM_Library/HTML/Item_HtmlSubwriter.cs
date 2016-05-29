@@ -30,6 +30,7 @@ using SobekCM.Library.ItemViewer.Viewers;
 using SobekCM.Library.UI;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Tools;
+using SobekCM_Resource_Database;
 
 #endregion
 
@@ -368,7 +369,7 @@ namespace SobekCM.Library.HTML
                     if (internalHeaderAction == "save_comments")
                     {
                         string new_comments = HttpContext.Current.Request.Form["intheader_internal_notes"].Trim();
-                        if (Resource_Object.Database.SobekCM_Database.Save_Item_Internal_Comments(currentItem.Web.ItemID, new_comments))
+                        if (SobekCM_Item_Database.Save_Item_Internal_Comments(currentItem.Web.ItemID, new_comments))
                             currentItem.Web.Internal_Comments = new_comments;
                     }
                 }

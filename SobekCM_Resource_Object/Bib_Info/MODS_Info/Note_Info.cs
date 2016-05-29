@@ -471,7 +471,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             Result.Write(To_MODS());
         }
 
-        internal Note_Info Clone()
+        public Note_Info Clone()
         {
             return new Note_Info(note, note_type, displayLabel);
         }

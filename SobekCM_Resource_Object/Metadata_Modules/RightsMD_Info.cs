@@ -3,8 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using EngineAgnosticLayerDbAccess;
-using SobekCM.Resource_Object.Database;
+using System.Data.SqlClient;
 
 #endregion
 
@@ -170,19 +169,54 @@ namespace SobekCM.Resource_Object.Metadata_Modules
 
             try
             {
-                // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[4];
-                param_list[0] = new EalDbParameter("@ItemID", ItemID);
-                param_list[1] = new EalDbParameter("@Original_AccessCode", Access_Code_String);
+                // Create the SQL connection
+                using (SqlConnection sqlConnect = new SqlConnection(DB_ConnectionString))
+                {
+                    try
+                    {
+                        sqlConnect.Open();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ApplicationException("Unable to open connection to the database." + Environment.NewLine + ex.Message, ex);
+                    }
 
-                if ( Has_Embargo_End )
-                    param_list[2] = new EalDbParameter("@EmbargoEnd", Embargo_End);
-                else
-                    param_list[2] = new EalDbParameter("@EmbargoEnd", DBNull.Value);
-                param_list[3] = new EalDbParameter("@UMI", umi);
+                    // Create the SQL command
+                    SqlCommand sqlCommand = new SqlCommand("SobekCM_RightsMD_Save_Access_Embargo_UMI", sqlConnect)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
 
-                // Execute this query stored procedure
-				EalDbAccess.ExecuteNonQuery(SobekCM_Database.DatabaseType, DB_ConnectionString, CommandType.StoredProcedure, "SobekCM_RightsMD_Save_Access_Embargo_UMI", param_list);
+                    // Copy all the parameters to this adapter
+                    sqlCommand.Parameters.AddWithValue("@ItemID", ItemID);
+                    sqlCommand.Parameters.AddWithValue("@Original_AccessCode", Access_Code_String);
+                    if (Has_Embargo_End)
+                        sqlCommand.Parameters.AddWithValue("@EmbargoEnd", Embargo_End);
+                    else
+                        sqlCommand.Parameters.AddWithValue("@EmbargoEnd", DBNull.Value);
+                    sqlCommand.Parameters.AddWithValue("@UMI", umi);
+
+                    // Run the command itself
+                    try
+                    {
+                        sqlCommand.ExecuteNonQuery();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ApplicationException("Error executing non-query command." + Environment.NewLine + ex.Message, ex);
+                    }
+
+                    // Close the connection (not technical necessary since we put the connection in the
+                    // scope of the using brackets.. it would dispose itself anyway)
+                    try
+                    {
+                        sqlConnect.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new ApplicationException("Unable to close connection to the database." + Environment.NewLine + ex.Message, ex);
+                    }
+                }
 
                 return true;
             }

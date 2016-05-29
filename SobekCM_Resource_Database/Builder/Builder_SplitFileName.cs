@@ -6,7 +6,7 @@ using System.Text;
 
 #endregion
 
-namespace SobekCM.Resource_Object.Builder
+namespace SobekCM_Resource_Database.Builder
 {
     /// <summary> Class is used to split a file name for sorting and ranging </summary>
     internal class Builder_SplitFileName

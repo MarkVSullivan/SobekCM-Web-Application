@@ -16,6 +16,7 @@ using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
 using SobekCM.Tools;
+using SobekCM_Resource_Database;
 
 #endregion
 
@@ -247,7 +248,7 @@ namespace SobekCM.Library.MySobekViewer
                         VID = hidden_VID;
                         try
                         {
-                            itemID = Resource_Object.Database.SobekCM_Database.Get_ItemID(BibID, VID);
+                            itemID = SobekCM_Item_Database.Get_ItemID(BibID, VID);
                             Get_Bib_VID_from_ItemID(itemID);
                         }
                         catch

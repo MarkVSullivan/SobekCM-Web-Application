@@ -24,6 +24,7 @@ using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Tools;
+using SobekCM_Resource_Database;
 
 #endregion
 
@@ -324,8 +325,8 @@ namespace SobekCM.Library.MySobekViewer
                 // Save to the database
                 try
                 {
-                    SobekCM_Database.Save_Digital_Resource( Item_To_Complete, options  );
-                    SobekCM_Database.Save_Behaviors(Item_To_Complete, Item_To_Complete.Behaviors.Text_Searchable, false, false);
+                    SobekCM_Item_Database.Save_Digital_Resource( Item_To_Complete, options  );
+                    SobekCM_Item_Database.Save_Behaviors(Item_To_Complete, Item_To_Complete.Behaviors.Text_Searchable, false, false);
                 }
                 catch (Exception ee)
                 {
