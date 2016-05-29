@@ -1109,8 +1109,8 @@ namespace SobekCM.Library.MySobekViewer
                     Output.WriteLine("<blockquote>You must read and accept the below permissions to continue.<br /><br />");
                     Output.WriteLine(completeTemplate.Permissions_Agreement.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("[%BASEURL%]", RequestSpecificValues.Current_Mode.Base_URL).Replace("[%SYSTEMNAME%]", RequestSpecificValues.Current_Mode.Instance_Name));
                //     Output.WriteLine("<p>Please review the <a href=\"?g=ufirg&amp;m=hitauthor_faq#policies&amp;n=gs\">Policies</A> if you have any questions or please contact us with any questions prior to submitting files. </p>\n");
-                    Output.WriteLine("<table style=\"width:700px\">");
-                    Output.WriteLine("  <tr style=\"text-align:right\">");
+                    Output.WriteLine("<table id=\"sbkNgi_GrantPermissionsAgreeSubTable\">");
+                    Output.WriteLine("  <tr>");
                     Output.WriteLine("    <td>You must read and accept the above permissions agreement to continue. &nbsp; &nbsp; </td>");
                     Output.WriteLine("    <td>");
 					Output.WriteLine("        <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
