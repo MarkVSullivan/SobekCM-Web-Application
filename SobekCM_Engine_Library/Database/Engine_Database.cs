@@ -163,6 +163,46 @@ namespace SobekCM.Engine_Library.Database
 			}
 		}
 
+        /// <summary> Gets the current list of item viewers, from the database </summary>
+        /// <param name="BibID"> Bibliographic identifier for the volume to retrieve the item viewers for </param>
+        /// <param name="Vid"> Volume identifier for the volume to retrieve the item viewers for </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <returns> DataSet with detailed information about this item from the database </returns>
+        /// <remarks> This calls the 'SobekCM_Get_Item_Viewers' stored procedure </remarks> 
+        public static DataSet Get_Item_Viewers(string BibID, string Vid, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Get_Item_Viewers", "");
+            }
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[2];
+                parameters[0] = new EalDbParameter("@BibID", BibID);
+                parameters[1] = new EalDbParameter("@VID", Vid);
+
+                // Define a temporary dataset
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Viewers", parameters);
+
+
+
+                // Return the first table from the returned dataset
+                return tempSet;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Viewers", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Viewers", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Get_Item_Viewers", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
 
 		#endregion
 

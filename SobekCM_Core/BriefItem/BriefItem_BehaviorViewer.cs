@@ -45,5 +45,11 @@ namespace SobekCM.Core.BriefItem
         [XmlAttribute("excluded")]
         [ProtoMember(3)]
         public bool Excluded { get; set; }
+
+        /// <summary> Attributes related to this viewer for the digital resource </summary>
+        [DataMember(Name = "attributes")]
+        [XmlAttribute("attributes")]
+        [ProtoMember(4)]
+        public string Attributes { get; set; }
     }
 }

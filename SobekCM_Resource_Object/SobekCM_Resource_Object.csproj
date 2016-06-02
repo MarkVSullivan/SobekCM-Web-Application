@@ -159,12 +159,21 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Event_Delegates.cs" />
+    <Compile Include="GenericXml\Mapping\GenericXmlMappingPath.cs" />
+    <Compile Include="GenericXml\Mapping\GenericXmlMappingSet.cs" />
+    <Compile Include="GenericXml\Mapping\PathMappingInstructions.cs" />
+    <Compile Include="GenericXml\Reader\GenericXmlNode.cs" />
+    <Compile Include="GenericXml\Reader\GenericXmlPath.cs" />
+    <Compile Include="GenericXml\Reader\GenericXmlPathValue.cs" />
+    <Compile Include="GenericXml\Reader\GenericXmlReader.cs" />
     <Compile Include="Generic_Reader.cs" />
     <Compile Include="Configuration\Additional_Metadata_Module_Config.cs" />
     <Compile Include="Configuration\Metadata_Configuration.cs" />
     <Compile Include="Configuration\Metadata_File_ReaderWriter_Config.cs" />
     <Compile Include="Configuration\METS_Section_ReaderWriter_Config.cs" />
     <Compile Include="Configuration\METS_Writing_Profile.cs" />
+    <Compile Include="Mapping\iBibliographicMapping.cs" />
+    <Compile Include="Mapping\Standard_Bibliographic_Mapping.cs" />
     <Compile Include="Metadata_File_ReaderWriters\MARC\ErrorHandling\MARC_Record_Parsing_Error.cs" />
     <Compile Include="Metadata_File_ReaderWriters\MARC\ErrorHandling\MARC_Record_Parsing_Warning.cs" />
     <Compile Include="Metadata_File_ReaderWriters\MARC\MARC_Field.cs" />

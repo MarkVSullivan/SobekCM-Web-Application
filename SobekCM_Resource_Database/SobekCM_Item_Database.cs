@@ -2641,24 +2641,6 @@ namespace SobekCM_Resource_Database
         /// <param name="Icon3_Name">Name of the third icon</param>
         /// <param name="Icon4_Name">Name of the fourth icon</param>
         /// <param name="Icon5_Name">Name of the fifth icon</param>
-        /// <param name="Viewer1_Type"> Primary key for the first viewer type in the SobekCM database </param>
-        /// <param name="Viewer1_Label"> Label to be displayed for the first viewer of this item </param>
-        /// <param name="Viewer1_Attributes"> Optional attributes for the first viewer of this item </param>
-        /// <param name="Viewer2_Type"> Primary key for the second viewer type in the SobekCM database </param>
-        /// <param name="Viewer2_Label"> Label to be displayed for the second viewer of this item </param>
-        /// <param name="Viewer2_Attributes"> Optional attributes for the second viewer of this item </param>
-        /// <param name="Viewer3_Type"> Primary key for the third viewer type in the SobekCM database </param>
-        /// <param name="Viewer3_Label"> Label to be displayed for the third viewer of this item </param>
-        /// <param name="Viewer3_Attributes"> Optional attributes for the third viewer of this item </param>
-        /// <param name="Viewer4_Type"> Primary key for the fourth viewer type in the SobekCM database </param>
-        /// <param name="Viewer4_Label"> Label to be displayed for the fourth viewer of this item </param>
-        /// <param name="Viewer4_Attributes"> Optional attributes for the fourth viewer of this item </param>
-        /// <param name="Viewer5_Type"> Primary key for the fifth viewer type in the SobekCM database </param>
-        /// <param name="Viewer5_Label"> Label to be displayed for the fifth viewer of this item </param>
-        /// <param name="Viewer5_Attributes"> Optional attributes for the fifth viewer of this item </param>
-        /// <param name="Viewer6_Type"> Primary key for the sixth viewer type in the SobekCM database </param>
-        /// <param name="Viewer6_Label"> Label to be displayed for the sixth viewer of this item </param>
-        /// <param name="Viewer6_Attributes"> Optional attributes for the sixth viewer of this item </param>
         /// <param name="Left_To_Right"> Flag indicates this item is read from Left-to-Right, rather than standard Right-to-Left</param>
         /// <param name="CitationSet"> Citation set to use when displaying this item</param>
         /// <remarks> This method calls the stored procedure 'SobekCM_Save_Item_Behaviors'. </remarks>
@@ -2815,7 +2797,46 @@ namespace SobekCM_Resource_Database
             catch (Exception ee)
             {
                 // Pass this exception onto the method to handle it
-                exception_caught("SobekCM_Save_Item_Behaviors", ee);
+                exception_caught("SobekCM_Add_Item_Viewers", ee);
+                return false;
+            }
+        }
+
+        /// <summary> Remove (and exclude) item viewers linked to an item </summary>
+        /// <param name="ItemID">Item ID to associate these icons and downlaods with</param>
+        /// <param name="Viewer1_Type"> Primary key for the first viewer type in the SobekCM database </param>
+        /// <param name="Viewer2_Type"> Primary key for the second viewer type in the SobekCM database </param>
+        /// <param name="Viewer3_Type"> Primary key for the third viewer type in the SobekCM database </param>
+        /// <param name="Viewer4_Type"> Primary key for the fourth viewer type in the SobekCM database </param>
+        /// <param name="Viewer5_Type"> Primary key for the fifth viewer type in the SobekCM database </param>
+        /// <param name="Viewer6_Type"> Primary key for the sixth viewer type in the SobekCM database </param>
+        /// <remarks> This method calls the stored procedure 'SobekCM_Remove_Item_Viewers'. </remarks>
+        /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
+        /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
+        protected static bool Save_Item_Remove_Viewers(int ItemID, int Viewer1_Type, int Viewer2_Type, int Viewer3_Type, 
+            int Viewer4_Type, int Viewer5_Type, int Viewer6_Type)
+        {
+            try
+            {
+                // Build the parameter list
+                EalDbParameter[] param_list = new EalDbParameter[7];
+                param_list[0] = new EalDbParameter("@ItemID", ItemID);
+                param_list[1] = new EalDbParameter("@Viewer1_TypeID", Viewer1_Type);
+                param_list[2] = new EalDbParameter("@Viewer2_TypeID", Viewer2_Type);
+                param_list[3] = new EalDbParameter("@Viewer3_TypeID", Viewer3_Type);
+                param_list[4] = new EalDbParameter("@Viewer4_TypeID", Viewer4_Type);
+                param_list[5] = new EalDbParameter("@Viewer5_TypeID", Viewer5_Type);
+                param_list[6] = new EalDbParameter("@Viewer6_TypeID", Viewer6_Type);
+
+                // Execute this non-query stored procedure
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Remove_Item_Viewers", param_list);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                // Pass this exception onto the method to handle it
+                exception_caught("SobekCM_Remove_Item_Viewers", ee);
                 return false;
             }
         }
