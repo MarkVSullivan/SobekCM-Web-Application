@@ -1853,7 +1853,8 @@ namespace SobekCM_Resource_Database
 
                         // Compare the label and attribute.. is there a change there?
                         if ((String.Compare(thisView.Attributes, currentView.Attributes, StringComparison.Ordinal) != 0) ||
-                            (String.Compare(thisView.Label, currentView.Label, StringComparison.Ordinal) != 0))
+                            (String.Compare(thisView.Label, currentView.Label, StringComparison.Ordinal) != 0) ||
+                            (currentView.Exclude))
                         {
                             // Even though this existed, since the label or attribute are different, this 
                             // view will be sent to the 'add view' method

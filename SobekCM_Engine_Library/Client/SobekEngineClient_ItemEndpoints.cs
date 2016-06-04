@@ -269,6 +269,30 @@ namespace SobekCM.Core.Client
             return returnValue;
         }
 
+        /// <summary> Clears the engine cache of all items related to a particular digital resource </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for the digital resources </param>
+        /// <param name="VID"> Volume identifier (VID) for the digital resource </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public void Clear_Item_Cache(string BibID, string VID, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Clear_Item_Cache", "Clear item cache for " + BibID + ":" + VID );
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Items.ClearCache", Tracer);
+
+            // Format the URL
+            string url = String.Format(endpoint.URL, BibID, VID);
+
+            // Call out to the endpoint and deserialize the object
+            string returnValue = Deserialize<string>(url, endpoint.Protocol, Tracer);
+
+            // Add the message to the trace
+            Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Clear_Item_Cache", "Response: " + returnValue );
+        }
+
+
+
         public SobekCM_Item Get_Sobek_Item(string BibID, string VID, Custom_Tracer Tracer)
         {
             ItemServices srvcs = new ItemServices();

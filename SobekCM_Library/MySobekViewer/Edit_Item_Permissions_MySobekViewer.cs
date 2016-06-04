@@ -194,6 +194,9 @@ namespace SobekCM.Library.MySobekViewer
                             // Remove the cached item
                             CachedDataManager.Items.Remove_Digital_Resource_Object(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
 
+                            // Also clear the engine
+                            SobekEngineClient.Items.Clear_Item_Cache(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
+
                             // Also clear any searches or browses ( in the future could refine this to only remove those
                             // that are impacted by this save... but this is good enough for now )
                             CachedDataManager.Clear_Search_Results_Browses();

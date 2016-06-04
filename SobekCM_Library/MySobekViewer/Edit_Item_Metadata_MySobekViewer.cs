@@ -228,6 +228,9 @@ namespace SobekCM.Library.MySobekViewer
 			        {
 				        CachedDataManager.Items.Remove_Digital_Resource_Object(RequestSpecificValues.Current_User.UserID, currentItem.BibID, currentItem.VID, null);
 
+                        // Also clear the engine
+                        SobekEngineClient.Items.Clear_Item_Cache(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
+
 				        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
 				        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
 			        }
@@ -612,6 +615,11 @@ namespace SobekCM.Library.MySobekViewer
             {
                 string error_message;
                 SobekCM_Item_Updater.Update_Item(currentItem, RequestSpecificValues.Current_User, out error_message);
+
+                CachedDataManager.Items.Remove_Digital_Resource_Object(RequestSpecificValues.Current_User.UserID, currentItem.BibID, currentItem.VID, null);
+
+                // Also clear the engine
+                SobekEngineClient.Items.Clear_Item_Cache(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
 
                 // Forward to the display item again
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;

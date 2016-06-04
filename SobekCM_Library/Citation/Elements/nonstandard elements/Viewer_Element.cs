@@ -104,7 +104,7 @@ namespace SobekCM.Library.Citation.Elements
             List<View_Object> views = new List<View_Object>();
             if (Bib.Behaviors.Views_Count > 0)
             {
-                views.AddRange(Bib.Behaviors.Views);
+                views.AddRange(Bib.Behaviors.Views.Where(ThisView => !ThisView.Exclude));
             }
 
             if (views.Count == 0 )
@@ -272,7 +272,9 @@ namespace SobekCM.Library.Citation.Elements
                     if (typeToViewObjectDictionary.ContainsKey(type))
                     {
                         // View already exists
-                        Bib.Behaviors.Add_View(typeToViewObjectDictionary[type]);
+                        View_Object addBackView = typeToViewObjectDictionary[type].Copy();
+                        addBackView.Exclude = false;
+                        Bib.Behaviors.Add_View(addBackView);
                     }
                     else
                     {

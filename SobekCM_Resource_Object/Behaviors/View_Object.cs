@@ -61,6 +61,12 @@ namespace SobekCM.Resource_Object.Behaviors
         /// <summary> Flag indicates this viewers is explicitly excluded from this item </summary>
         public bool Exclude { get; set; }
 
+        /// <summary> Make a copy of this view object and return it </summary>
+        /// <returns> Shallow copy of this view object </returns>
+        public View_Object Copy()
+        {
+            return new View_Object {Label = Label, View_Type = View_Type, Exclude = Exclude, MenuOrder = MenuOrder, Attributes = Attributes};
+        }
 
         #region IEquatable<View_Object> Members
 

@@ -170,6 +170,9 @@ namespace SobekCM.Library.MySobekViewer
                 // Also remove the list of volumes, since this may have changed
                 CachedDataManager.Items.Remove_Items_In_Title(currentItem.BibID, RequestSpecificValues.Tracer);
 
+                // Also clear the engine
+                SobekEngineClient.Items.Clear_Item_Cache(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
+
                 // Forward
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
