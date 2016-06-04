@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -56,7 +57,7 @@ namespace SobekCM_Resource_Database
                 parameters[1] = new EalDbParameter("@vid", Resource.VID);
 
                 // Define a temporary dataset
-                DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Get_Minimum_Item_Information", parameters);
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Get_Minimum_Item_Information", parameters);
 
                 // If there was no data for this collection and entry point, return null (an ERROR occurred)
                 if ((tempSet.Tables.Count == 0) || (tempSet.Tables[0] == null) || (tempSet.Tables[0].Rows.Count == 0))
@@ -111,7 +112,7 @@ namespace SobekCM_Resource_Database
                         }
                     }
 
-                    Wordmark_Info newIcon = new Wordmark_Info { HTML = html, Link = link, Title = name, Code = code };
+                    Wordmark_Info newIcon = new Wordmark_Info {HTML = html, Link = link, Title = name, Code = code};
                     Resource.Behaviors.Add_Wordmark(newIcon);
                 }
 
@@ -180,7 +181,7 @@ namespace SobekCM_Resource_Database
 
                 if (subject.Class_Type == Subject_Info_Type.Standard)
                 {
-                    Subject_Info_Standard standardSubject = (Subject_Info_Standard)subject;
+                    Subject_Info_Standard standardSubject = (Subject_Info_Standard) subject;
                     string subjectText = standardSubject.ToString(false);
                     if (subjectsDisplayBuilder.Length > 0)
                         subjectsDisplayBuilder.Append("|");
@@ -690,13 +691,13 @@ namespace SobekCM_Resource_Database
 
                 param_list[i] = new EalDbParameter("@ItemID", -1);
                 param_list[i++].Direction = ParameterDirection.InputOutput;
-                param_list[i] = new EalDbParameter("@New_VID", "00000") { Direction = ParameterDirection.InputOutput };
+                param_list[i] = new EalDbParameter("@New_VID", "00000") {Direction = ParameterDirection.InputOutput};
 
                 // Execute this non-query stored procedure
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_New_Item", param_list);
 
                 // Save the item id and VID into the package
-                ThisPackage.Web.ItemID = (int)param_list[69].Value;
+                ThisPackage.Web.ItemID = (int) param_list[69].Value;
                 ThisPackage.VID = param_list[70].Value.ToString();
             }
             catch (Exception ee)
@@ -770,7 +771,8 @@ namespace SobekCM_Resource_Database
 
             //for each page
             List<abstract_TreeNode> pages = ThisPackage.Divisions.Physical_Tree.Pages_PreOrder;
-            foreach (abstract_TreeNode t in pages) {
+            foreach (abstract_TreeNode t in pages)
+            {
                 //GeoSpatial_Information geoInfo = pages[i].Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
                 //string error_message;
                 //Save_Item_Metadata(geoInfo);
@@ -1531,7 +1533,7 @@ namespace SobekCM_Resource_Database
             {
                 if (subject.Class_Type == Subject_Info_Type.Standard)
                 {
-                    Subject_Info_Standard standardSubject = (Subject_Info_Standard)subject;
+                    Subject_Info_Standard standardSubject = (Subject_Info_Standard) subject;
                     string subjectText = standardSubject.ToString(false);
                     if (subjectsDisplayBuilder.Length > 0)
                         subjectsDisplayBuilder.Append("|");
@@ -1696,7 +1698,7 @@ namespace SobekCM_Resource_Database
         /// <param name="TextFlag"> Flag indicates if this item has text files </param>
         /// <param name="Mass_Update_Mode"> Flag indicates if this is a mass-update mode, in which case all items within a single item group will be updated </param>
         /// <param name="Minimal_Mode"> Flag indicates if this is just additive with new viewers and setting the text flag</param>
-        public static void Save_Behaviors(SobekCM_Item ThisPackage, bool TextFlag, bool Mass_Update_Mode, bool Minimal_Mode )
+        public static void Save_Behaviors(SobekCM_Item ThisPackage, bool TextFlag, bool Mass_Update_Mode, bool Minimal_Mode)
         {
             // Get the source and holding codes
             string source_code = ThisPackage.Bib_Info.Source.Code;
@@ -1736,179 +1738,6 @@ namespace SobekCM_Resource_Database
             while (aggregationCodes.Count < 8)
                 aggregationCodes.Add(String.Empty);
 
-            // Collect the behavior information
-            List<int> view_type_ids = new List<int>();
-            List<string> view_labels = new List<string>();
-            List<string> view_attributes = new List<string>();
-            //foreach (View_Object thisView in ThisPackage.Behaviors.Item_Level_Page_Views)
-            //{
-            //    switch (thisView.View_Type)
-            //    {
-            //        case View_Enum.JPEG:
-            //            if (!view_type_ids.Contains(1))
-            //            {
-            //                view_type_ids.Add(1);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.JPEG_TEXT_TWO_UP:
-            //            if (!view_type_ids.Contains(14))
-            //            {
-            //                view_type_ids.Add(14);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.JPEG2000:
-            //            if (!view_type_ids.Contains(2))
-            //            {
-            //                view_type_ids.Add(2);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.TEXT:
-            //            if (!view_type_ids.Contains(3))
-            //            {
-            //                view_type_ids.Add(3);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-            //    }
-            //}
-
-            //foreach (View_Object thisView in ThisPackage.Behaviors.Views)
-            //{
-            //    switch (thisView.View_Type)
-            //    {
-            //        case View_Enum.DATASET_CODEBOOK:
-            //            if (!view_type_ids.Contains(11))
-            //            {
-            //                view_type_ids.Add(11);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.DATASET_REPORTS:
-            //            if (!view_type_ids.Contains(12))
-            //            {
-            //                view_type_ids.Add(12);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.DATASET_VIEWDATA:
-            //            if (!view_type_ids.Contains(13))
-            //            {
-            //                view_type_ids.Add(13);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.GOOGLE_MAP:
-            //            if (!view_type_ids.Contains(5))
-            //            {
-            //                view_type_ids.Add(5);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.GOOGLE_MAP_BETA:
-            //            if (!view_type_ids.Contains(5))
-            //            {
-            //                view_type_ids.Add(5);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.HTML:
-            //            view_type_ids.Add(6);
-            //            view_labels.Add(thisView.Label);
-            //            view_attributes.Add(thisView.Attributes);
-            //            break;
-
-            //        case View_Enum.JPEG:
-            //            if (!view_type_ids.Contains(1))
-            //            {
-            //                view_type_ids.Add(1);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.JPEG_TEXT_TWO_UP:
-            //            if (!view_type_ids.Contains(14))
-            //            {
-            //                view_type_ids.Add(14);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.JPEG2000:
-            //            if (!view_type_ids.Contains(2))
-            //            {
-            //                view_type_ids.Add(2);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.PAGE_TURNER:
-            //            if (!view_type_ids.Contains(4))
-            //            {
-            //                view_type_ids.Add(4);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.RELATED_IMAGES:
-            //            view_type_ids.Add(8);
-            //            view_labels.Add(String.Empty);
-            //            view_attributes.Add(String.Empty);
-            //            break;
-
-            //        case View_Enum.TEI:
-            //            view_type_ids.Add(10);
-            //            view_labels.Add(String.Empty);
-            //            view_attributes.Add(String.Empty);
-            //            break;
-
-            //        case View_Enum.TEXT:
-            //            if (!view_type_ids.Contains(3))
-            //            {
-            //                view_type_ids.Add(3);
-            //                view_labels.Add(String.Empty);
-            //                view_attributes.Add(String.Empty);
-            //            }
-            //            break;
-
-            //        case View_Enum.TOC:
-            //            view_type_ids.Add(9);
-            //            view_labels.Add(String.Empty);
-            //            view_attributes.Add(String.Empty);
-            //            break;
-            //    }
-            //}
-
-            while (view_type_ids.Count < 6)
-            {
-                view_type_ids.Add(0);
-                view_labels.Add(String.Empty);
-                view_attributes.Add(String.Empty);
-            }
-
             // Determine flags for restriction and dark
             bool darkFlag = ThisPackage.Behaviors.Dark_Flag;
             bool darkFlag_Null = ThisPackage.Behaviors.Dark_Flag_Is_Null;
@@ -1917,56 +1746,189 @@ namespace SobekCM_Resource_Database
 
             if (Mass_Update_Mode)
             {
+                // Siunce this is a mass update, no viewer analysis is really needed here.. Just collect them all to add
+                // Collect the behavior information
+                List<string> view_types = new List<string>();
+                List<string> view_labels = new List<string>();
+                List<string> view_attributes = new List<string>();
+
+                foreach (View_Object thisView in ThisPackage.Behaviors.Views)
+                {
+                    if (!view_types.Contains(thisView.View_Type))
+                    {
+                        view_types.Add(thisView.View_Type);
+                        view_labels.Add(thisView.Label);
+                        view_attributes.Add(thisView.Attributes);
+                    }
+                }
+
+                // Fill up the views to the required six
+                while (view_types.Count < 6)
+                {
+                    view_types.Add(String.Empty);
+                    view_labels.Add(String.Empty);
+                    view_attributes.Add(String.Empty);
+                }
+
+                // Update the behaviors of all items within the single group ( by groupid )
                 Mass_Update_Item_Behaviors(ThisPackage.Web.GroupID, ipRestrictNull, ip_restrict,
                     ThisPackage.Behaviors.CheckOut_Required_Is_Null, ThisPackage.Behaviors.CheckOut_Required,
                     darkFlag_Null, darkFlag,
                     ThisPackage.Tracking.Born_Digital_Is_Null, ThisPackage.Tracking.Born_Digital,
                     aggregationCodes[0], aggregationCodes[1], aggregationCodes[2], aggregationCodes[3], aggregationCodes[4], aggregationCodes[5], aggregationCodes[6],
                     aggregationCodes[7], holding_code, source_code, icon1_name, icon2_name, icon3_name, icon4_name, icon5_name,
-                    view_type_ids[0], view_labels[0], view_attributes[0],
-                    view_type_ids[1], view_labels[1], view_attributes[1],
-                    view_type_ids[2], view_labels[2], view_attributes[2],
-                    view_type_ids[3], view_labels[3], view_attributes[3],
-                    view_type_ids[4], view_labels[4], view_attributes[4],
-                    view_type_ids[5], view_labels[5], view_attributes[5]);
+                    view_types[0], view_labels[0], view_attributes[0],
+                    view_types[1], view_labels[1], view_attributes[1],
+                    view_types[2], view_labels[2], view_attributes[2],
+                    view_types[3], view_labels[3], view_attributes[3],
+                    view_types[4], view_labels[4], view_attributes[4],
+                    view_types[5], view_labels[5], view_attributes[5]);
             }
             else
             {
+                // Minimal mode just adds the text flag now
                 if (Minimal_Mode)
                 {
                     Save_Item_Behaviors_Minimal(ThisPackage.Web.ItemID, TextFlag);
+                }
+                else
+                {
+                    // Save all the main behaviors
+                    Save_Item_Behaviors(ThisPackage.Web.ItemID, TextFlag, ThisPackage.Behaviors.Main_Thumbnail,
+                        ThisPackage.Behaviors.Main_Thumbnail.Replace("thm", ""), ip_restrict,
+                        ThisPackage.Behaviors.CheckOut_Required, darkFlag, ThisPackage.Tracking.Born_Digital, ThisPackage.Tracking.Disposition_Advice, ThisPackage.Tracking.Disposition_Advice_Notes,
+                        ThisPackage.Tracking.Material_Received_Date, ThisPackage.Tracking.Material_Rec_Date_Estimated, ThisPackage.Tracking.Tracking_Box, aggregationCodes[0], aggregationCodes[1], aggregationCodes[2], aggregationCodes[3], aggregationCodes[4], aggregationCodes[5], aggregationCodes[6],
+                        aggregationCodes[7], holding_code, source_code, icon1_name, icon2_name, icon3_name, icon4_name, icon5_name, ThisPackage.Behaviors.Left_To_Right, ThisPackage.Behaviors.CitationSet);
 
+                    // Also, save the ticklers
+                    string tickler1 = String.Empty;
+                    string tickler2 = String.Empty;
+                    string tickler3 = String.Empty;
+                    string tickler4 = String.Empty;
+                    string tickler5 = String.Empty;
 
-                    return;
+                    if (ThisPackage.Behaviors.Ticklers_Count > 0)
+                        tickler1 = ThisPackage.Behaviors.Ticklers[0];
+                    if (ThisPackage.Behaviors.Ticklers_Count > 1)
+                        tickler2 = ThisPackage.Behaviors.Ticklers[1];
+                    if (ThisPackage.Behaviors.Ticklers_Count > 2)
+                        tickler3 = ThisPackage.Behaviors.Ticklers[2];
+                    if (ThisPackage.Behaviors.Ticklers_Count > 3)
+                        tickler4 = ThisPackage.Behaviors.Ticklers[3];
+                    if (ThisPackage.Behaviors.Ticklers_Count > 4)
+                        tickler5 = ThisPackage.Behaviors.Ticklers[4];
+
+                    Save_Item_Ticklers(ThisPackage.Web.ItemID, tickler1, tickler2, tickler3, tickler4, tickler5);
                 }
 
-                Save_Item_Behaviors(ThisPackage.Web.ItemID, TextFlag, ThisPackage.Behaviors.Main_Thumbnail,
-                    ThisPackage.Behaviors.Main_Thumbnail.Replace("thm", ""), ip_restrict,
-                    ThisPackage.Behaviors.CheckOut_Required, darkFlag, ThisPackage.Tracking.Born_Digital, ThisPackage.Tracking.Disposition_Advice, ThisPackage.Tracking.Disposition_Advice_Notes,
-                    ThisPackage.Tracking.Material_Received_Date, ThisPackage.Tracking.Material_Rec_Date_Estimated, ThisPackage.Tracking.Tracking_Box, aggregationCodes[0], aggregationCodes[1], aggregationCodes[2], aggregationCodes[3], aggregationCodes[4], aggregationCodes[5], aggregationCodes[6],
-                    aggregationCodes[7], holding_code, source_code, icon1_name, icon2_name, icon3_name, icon4_name, icon5_name, ThisPackage.Behaviors.Left_To_Right, ThisPackage.Behaviors.CitationSet);
+                // Determine which viewers to add or remove from this single item
+                List<View_Object> currentViews = Get_Current_Item_Viewers(ThisPackage.BibID, ThisPackage.VID);
+                List<View_Object> removeViews = new List<View_Object>();
+                List<View_Object> addViews = new List<View_Object>();
+
+                // Use a found flag to determine which current viewers are NOT present in the new list
+                // booleans start with a default value of 'false', so need to initialize
+                bool[] foundFlag = new bool[currentViews.Count];
+
+                // Use a dictionary for quick lookup in current views
+                Dictionary<string, int> currentViewTypeToIndex = new Dictionary<string, int>( StringComparer.OrdinalIgnoreCase);
+                for (int i = 0; i < currentViews.Count; i++)
+                {
+                    currentViewTypeToIndex[currentViews[i].View_Type] = i;
+                }
+
+                // Now, step through all the views in the object to save
+                foreach (View_Object thisView in ThisPackage.Behaviors.Views)
+                {
+                    // If this view is present only as an exclusion, skip it.  
+                    // If it is removing an existing view, that will be handled in the next FOR anyway
+                    if (thisView.Exclude) continue;
+
+                    // Does this view already exists?
+                    if (currentViewTypeToIndex.ContainsKey(thisView.View_Type))
+                    {
+                        // Get the index
+                        int viewIndex = currentViewTypeToIndex[thisView.View_Type];
+                        View_Object currentView = currentViews[viewIndex];
+
+                        // Compare the label and attribute.. is there a change there?
+                        if ((String.Compare(thisView.Attributes, currentView.Attributes, StringComparison.Ordinal) != 0) ||
+                            (String.Compare(thisView.Label, currentView.Label, StringComparison.Ordinal) != 0))
+                        {
+                            // Even though this existed, since the label or attribute are different, this 
+                            // view will be sent to the 'add view' method
+                            addViews.Add(thisView);
+                        }
+
+                        // This existing view was handled already
+                        foundFlag[viewIndex] = true;
+                    }
+                    else
+                    {
+                        // This is a new view type, so it will be added, assuming it is not an exclusion
+                        addViews.Add(thisView);
+                    }
+                }
+
+                // Look for views to remove from the database
+                for (int i = 0; i < foundFlag.Length; i++)
+                {
+                    // If this view was not found in the object to save, it should be excluded
+                    // or removed from the database
+                    if (!foundFlag[i])
+                    {
+                        // If this view is just an exclusion view, then no need to 'remove it'
+                        if ( !currentViews[i].Exclude )
+                            removeViews.Add(currentViews[i]);
+                    }
+                }
+
+                // With the two lists in hand, now add any new views
+                int add_start_index = 0;
+                while (addViews.Count > add_start_index)
+                {
+                    // Add the next six views
+                    Save_Item_Add_Viewers(ThisPackage.Web.ItemID,
+                        (addViews.Count > add_start_index ? addViews[add_start_index].View_Type : String.Empty),
+                        (addViews.Count > add_start_index ? addViews[add_start_index].Label : String.Empty),
+                        (addViews.Count > add_start_index ? addViews[add_start_index].Attributes : String.Empty),
+                        (addViews.Count > add_start_index + 1 ? addViews[add_start_index + 1].View_Type : String.Empty),
+                        (addViews.Count > add_start_index + 1 ? addViews[add_start_index + 1].Label : String.Empty),
+                        (addViews.Count > add_start_index + 1 ? addViews[add_start_index + 1].Attributes : String.Empty),
+                        (addViews.Count > add_start_index + 2 ? addViews[add_start_index + 2].View_Type : String.Empty),
+                        (addViews.Count > add_start_index + 2 ? addViews[add_start_index + 2].Label : String.Empty),
+                        (addViews.Count > add_start_index + 2 ? addViews[add_start_index + 2].Attributes : String.Empty),
+                        (addViews.Count > add_start_index + 3 ? addViews[add_start_index + 3].View_Type : String.Empty),
+                        (addViews.Count > add_start_index + 3 ? addViews[add_start_index + 3].Label : String.Empty),
+                        (addViews.Count > add_start_index + 3 ? addViews[add_start_index + 3].Attributes : String.Empty),
+                        (addViews.Count > add_start_index + 4 ? addViews[add_start_index + 4].View_Type : String.Empty),
+                        (addViews.Count > add_start_index + 4 ? addViews[add_start_index + 4].Label : String.Empty),
+                        (addViews.Count > add_start_index + 4 ? addViews[add_start_index + 4].Attributes : String.Empty),
+                        (addViews.Count > add_start_index + 5 ? addViews[add_start_index + 5].View_Type : String.Empty),
+                        (addViews.Count > add_start_index + 5 ? addViews[add_start_index + 5].Label : String.Empty),
+                        (addViews.Count > add_start_index + 5 ? addViews[add_start_index + 5].Attributes : String.Empty));
+
+                    // Handled these six adds
+                    add_start_index += 6;
+                }
+
+                // Also handle any removes
+                int remove_start_index = 0;
+                while (removeViews.Count > remove_start_index)
+                {
+                    // Remove the next six views
+                    Save_Item_Remove_Viewers(ThisPackage.Web.ItemID,
+                        (removeViews.Count > remove_start_index ? removeViews[remove_start_index].View_Type : String.Empty),
+                        (removeViews.Count > remove_start_index + 1 ? removeViews[remove_start_index + 1].View_Type : String.Empty),
+                        (removeViews.Count > remove_start_index + 2 ? removeViews[remove_start_index + 2].View_Type : String.Empty),
+                        (removeViews.Count > remove_start_index + 3 ? removeViews[remove_start_index + 3].View_Type : String.Empty),
+                        (removeViews.Count > remove_start_index + 4 ? removeViews[remove_start_index + 4].View_Type : String.Empty),
+                        (removeViews.Count > remove_start_index + 5 ? removeViews[remove_start_index + 5].View_Type : String.Empty));
+
+                    // Handled these six removes
+                    remove_start_index += 6;
+                }
             }
-
-            // Also, save the ticlers
-            string tickler1 = String.Empty;
-            string tickler2 = String.Empty;
-            string tickler3 = String.Empty;
-            string tickler4 = String.Empty;
-            string tickler5 = String.Empty;
-
-            if (ThisPackage.Behaviors.Ticklers_Count > 0)
-                tickler1 = ThisPackage.Behaviors.Ticklers[0];
-            if (ThisPackage.Behaviors.Ticklers_Count > 1)
-                tickler2 = ThisPackage.Behaviors.Ticklers[1];
-            if (ThisPackage.Behaviors.Ticklers_Count > 2)
-                tickler3 = ThisPackage.Behaviors.Ticklers[2];
-            if (ThisPackage.Behaviors.Ticklers_Count > 3)
-                tickler4 = ThisPackage.Behaviors.Ticklers[3];
-            if (ThisPackage.Behaviors.Ticklers_Count > 4)
-                tickler5 = ThisPackage.Behaviors.Ticklers[4];
-
-            Save_Item_Ticklers(ThisPackage.Web.ItemID, tickler1, tickler2, tickler3, tickler4, tickler5);
-
         }
 
         /// <summary> Saves the serial hierarchy information for a single item </summary>
@@ -2113,7 +2075,7 @@ namespace SobekCM_Resource_Database
             }
             if ((source_code.Length > 2) && (source_code.ToUpper().IndexOf("II") == 0))
                 source_code = source_code.Substring(1);
-           
+
             for (int aggNum = 0; aggNum < ThisPackage.Behaviors.Aggregation_Code_List.Count; aggNum++)
             {
                 metadataTerms.Add(new KeyValuePair<string, string>("Aggregation", ThisPackage.Behaviors.Aggregation_Code_List[aggNum]));
@@ -2121,7 +2083,7 @@ namespace SobekCM_Resource_Database
 
 
             // Just add blanks in at the end to get this to an increment of ten
-            while ((metadataTerms.Count % 10) != 0)
+            while ((metadataTerms.Count%10) != 0)
             {
                 metadataTerms.Add(new KeyValuePair<string, string>(String.Empty, String.Empty));
             }
@@ -2225,15 +2187,15 @@ namespace SobekCM_Resource_Database
                 param_list[11] = new EalDbParameter("@Update_Existing", Update_Existing);
                 param_list[12] = new EalDbParameter("@PrimaryIdentifierType", Primary_Identifier_Type);
                 param_list[13] = new EalDbParameter("@PrimaryIdentifier", Primary_Identifier);
-                param_list[14] = new EalDbParameter("@GroupID", -1) { Direction = ParameterDirection.InputOutput };
-                param_list[15] = new EalDbParameter("@New_BibID", "0000000000") { Direction = ParameterDirection.InputOutput };
-                param_list[16] = new EalDbParameter("@New_Group", false) { Direction = ParameterDirection.InputOutput };
+                param_list[14] = new EalDbParameter("@GroupID", -1) {Direction = ParameterDirection.InputOutput};
+                param_list[15] = new EalDbParameter("@New_BibID", "0000000000") {Direction = ParameterDirection.InputOutput};
+                param_list[16] = new EalDbParameter("@New_Group", false) {Direction = ParameterDirection.InputOutput};
 
                 // Execute this non-query stored procedure
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Group", param_list);
 
                 // Get the values to return
-                int groupid = (int)param_list[14].Value;
+                int groupid = (int) param_list[14].Value;
                 string bibid = param_list[15].Value.ToString();
                 bool is_new = Convert.ToBoolean(param_list[16].Value);
 
@@ -2443,16 +2405,16 @@ namespace SobekCM_Resource_Database
                 param_list[24] = new EalDbParameter("@Subjects_Display", Subjects_Display);
                 param_list[25] = new EalDbParameter("@Donor", Donor);
                 param_list[26] = new EalDbParameter("@Publisher", Publisher);
-                param_list[27] = new EalDbParameter("@ItemID", -1) { Direction = ParameterDirection.InputOutput };
-                param_list[28] = new EalDbParameter("@Existing", false) { Direction = ParameterDirection.InputOutput };
-                param_list[29] = new EalDbParameter("@New_VID", "00000") { Direction = ParameterDirection.InputOutput };
+                param_list[27] = new EalDbParameter("@ItemID", -1) {Direction = ParameterDirection.InputOutput};
+                param_list[28] = new EalDbParameter("@Existing", false) {Direction = ParameterDirection.InputOutput};
+                param_list[29] = new EalDbParameter("@New_VID", "00000") {Direction = ParameterDirection.InputOutput};
 
                 // Execute this non-query stored procedure
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item", param_list);
 
                 // Return the value
-                int itemID = (int)param_list[27].Value;
-                bool existing = (bool)param_list[28].Value;
+                int itemID = (int) param_list[27].Value;
+                bool existing = (bool) param_list[28].Value;
                 string new_vid = param_list[29].Value.ToString();
                 return new Save_Item_Args(itemID, existing, new_vid);
             }
@@ -2612,6 +2574,52 @@ namespace SobekCM_Resource_Database
             }
         }
 
+        private static List<View_Object> Get_Current_Item_Viewers(string BibID, string VID )
+        {
+            // Build the parameters list
+            List<EalDbParameter> parameters = new List<EalDbParameter>
+	        {
+	            new EalDbParameter("@bibid", BibID), 
+                new EalDbParameter("@vid", VID)
+	        };
+
+            // Create the database agnostic reader
+            EalDbReaderWrapper readerWrapper = EalDbAccess.ExecuteDataReader(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Item_Viewers", parameters);
+
+            // Pull out the database reader
+            DbDataReader reader = readerWrapper.Reader;
+
+            //Build the return list
+            List<View_Object> returnValue = new List<View_Object>();
+
+            // Get all the main title values first
+            while (reader.Read())
+            {
+                string viewType = reader.GetString(0);
+                string attributes = reader.GetString(1);
+                string label = reader.GetString(2);
+                double menuOrder = reader.GetDouble(3);
+                bool exclude = reader.GetBoolean(4);
+
+                // Create new database title object for this
+                View_Object result = new View_Object
+                {
+                    View_Type = viewType,
+                    Attributes = attributes,
+                    Label = label,
+                    MenuOrder = (float) menuOrder,
+                    Exclude = exclude
+                };
+
+                returnValue.Add(result);
+            }
+
+            // Close the reader (which also closes the connection)
+            readerWrapper.Close();
+
+            return returnValue;
+        }
+
         /// <summary> Saves the behaviors for a single item in a SobekCM digital library </summary>
         /// <param name="ItemID">Item ID to associate these icons and downlaods with</param>
         /// <param name="TextSearchable"> Flag indicates if this item is text searchable </param>
@@ -2658,7 +2666,7 @@ namespace SobekCM_Resource_Database
             try
             {
                 // Build the parameter list
-                EalDbParameter[] param_list = new EalDbParameter[29];
+                EalDbParameter[] param_list = new EalDbParameter[30];
                 param_list[0] = new EalDbParameter("@ItemID", ItemID);
                 param_list[1] = new EalDbParameter("@TextSearchable", TextSearchable);
                 param_list[2] = new EalDbParameter("@MainThumbnail", MainThumbnail);
@@ -2693,8 +2701,9 @@ namespace SobekCM_Resource_Database
                 param_list[24] = new EalDbParameter("@Icon2_Name", Icon2_Name);
                 param_list[25] = new EalDbParameter("@Icon3_Name", Icon3_Name);
                 param_list[26] = new EalDbParameter("@Icon4_Name", Icon4_Name);
-                param_list[27] = new EalDbParameter("@Left_To_Right", Left_To_Right);
-                param_list[28] = new EalDbParameter("@CitationSet", Left_To_Right);
+                param_list[27] = new EalDbParameter("@Icon5_Name", Icon4_Name);
+                param_list[28] = new EalDbParameter("@Left_To_Right", Left_To_Right);
+                param_list[29] = new EalDbParameter("@CitationSet", Left_To_Right);
 
                 // Execute this non-query stored procedure
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Behaviors", param_list);
@@ -2708,6 +2717,8 @@ namespace SobekCM_Resource_Database
                 return false;
             }
         }
+
+
 
         /// <summary> Saves the minimal behaviors for a single item in a SobekCM digital library </summary>
         /// <param name="ItemID">Item ID to associate these icons and downlaods with</param>
@@ -2739,53 +2750,53 @@ namespace SobekCM_Resource_Database
 
         /// <summary> Add, or update existing, item viewers linked to an item </summary>
         /// <param name="ItemID">Item ID to associate these icons and downlaods with</param>
-        /// <param name="Viewer1_Type"> Primary key for the first viewer type in the SobekCM database </param>
+        /// <param name="Viewer1_Type"> Viewer type code for the first viewer type in the SobekCM database </param>
         /// <param name="Viewer1_Label"> Label to be displayed for the first viewer of this item </param>
         /// <param name="Viewer1_Attributes"> Optional attributes for the first viewer of this item </param>
-        /// <param name="Viewer2_Type"> Primary key for the second viewer type in the SobekCM database </param>
+        /// <param name="Viewer2_Type"> Viewer type code for the second viewer type in the SobekCM database </param>
         /// <param name="Viewer2_Label"> Label to be displayed for the second viewer of this item </param>
         /// <param name="Viewer2_Attributes"> Optional attributes for the second viewer of this item </param>
-        /// <param name="Viewer3_Type"> Primary key for the third viewer type in the SobekCM database </param>
+        /// <param name="Viewer3_Type"> Viewer type code for the third viewer type in the SobekCM database </param>
         /// <param name="Viewer3_Label"> Label to be displayed for the third viewer of this item </param>
         /// <param name="Viewer3_Attributes"> Optional attributes for the third viewer of this item </param>
-        /// <param name="Viewer4_Type"> Primary key for the fourth viewer type in the SobekCM database </param>
+        /// <param name="Viewer4_Type"> Viewer type code for the fourth viewer type in the SobekCM database </param>
         /// <param name="Viewer4_Label"> Label to be displayed for the fourth viewer of this item </param>
         /// <param name="Viewer4_Attributes"> Optional attributes for the fourth viewer of this item </param>
-        /// <param name="Viewer5_Type"> Primary key for the fifth viewer type in the SobekCM database </param>
+        /// <param name="Viewer5_Type"> Viewer type code for the fifth viewer type in the SobekCM database </param>
         /// <param name="Viewer5_Label"> Label to be displayed for the fifth viewer of this item </param>
         /// <param name="Viewer5_Attributes"> Optional attributes for the fifth viewer of this item </param>
-        /// <param name="Viewer6_Type"> Primary key for the sixth viewer type in the SobekCM database </param>
+        /// <param name="Viewer6_Type"> Viewer type code for the sixth viewer type in the SobekCM database </param>
         /// <param name="Viewer6_Label"> Label to be displayed for the sixth viewer of this item </param>
         /// <param name="Viewer6_Attributes"> Optional attributes for the sixth viewer of this item </param>
         /// <remarks> This method calls the stored procedure 'SobekCM_Add_Item_Viewers'. </remarks>
         /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
         /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
-        protected static bool Save_Item_Add_Viewers(int ItemID, 
-            int Viewer1_Type, string Viewer1_Label, string Viewer1_Attributes, int Viewer2_Type, string Viewer2_Label, string Viewer2_Attributes,
-            int Viewer3_Type, string Viewer3_Label, string Viewer3_Attributes, int Viewer4_Type, string Viewer4_Label, string Viewer4_Attributes,
-            int Viewer5_Type, string Viewer5_Label, string Viewer5_Attributes, int Viewer6_Type, string Viewer6_Label, string Viewer6_Attributes)
+        protected static bool Save_Item_Add_Viewers(int ItemID,
+            string Viewer1_Type, string Viewer1_Label, string Viewer1_Attributes, string Viewer2_Type, string Viewer2_Label, string Viewer2_Attributes,
+            string Viewer3_Type, string Viewer3_Label, string Viewer3_Attributes, string Viewer4_Type, string Viewer4_Label, string Viewer4_Attributes,
+            string Viewer5_Type, string Viewer5_Label, string Viewer5_Attributes, string Viewer6_Type, string Viewer6_Label, string Viewer6_Attributes)
         {
             try
             {
                 // Build the parameter list
                 EalDbParameter[] param_list = new EalDbParameter[19];
                 param_list[0] = new EalDbParameter("@ItemID", ItemID);
-                param_list[1] = new EalDbParameter("@Viewer1_TypeID", Viewer1_Type);
+                param_list[1] = new EalDbParameter("@Viewer1_Type", Viewer1_Type);
                 param_list[2] = new EalDbParameter("@Viewer1_Label", Viewer1_Label);
                 param_list[3] = new EalDbParameter("@Viewer1_Attribute", Viewer1_Attributes);
-                param_list[4] = new EalDbParameter("@Viewer2_TypeID", Viewer2_Type);
+                param_list[4] = new EalDbParameter("@Viewer2_Type", Viewer2_Type);
                 param_list[5] = new EalDbParameter("@Viewer2_Label", Viewer2_Label);
                 param_list[6] = new EalDbParameter("@Viewer2_Attribute", Viewer2_Attributes);
-                param_list[7] = new EalDbParameter("@Viewer3_TypeID", Viewer3_Type);
+                param_list[7] = new EalDbParameter("@Viewer3_Type", Viewer3_Type);
                 param_list[8] = new EalDbParameter("@Viewer3_Label", Viewer3_Label);
                 param_list[9] = new EalDbParameter("@Viewer3_Attribute", Viewer3_Attributes);
-                param_list[10] = new EalDbParameter("@Viewer4_TypeID", Viewer4_Type);
+                param_list[10] = new EalDbParameter("@Viewer4_Type", Viewer4_Type);
                 param_list[11] = new EalDbParameter("@Viewer4_Label", Viewer4_Label);
                 param_list[12] = new EalDbParameter("@Viewer4_Attribute", Viewer4_Attributes);
-                param_list[13] = new EalDbParameter("@Viewer5_TypeID", Viewer5_Type);
+                param_list[13] = new EalDbParameter("@Viewer5_Type", Viewer5_Type);
                 param_list[14] = new EalDbParameter("@Viewer5_Label", Viewer5_Label);
                 param_list[15] = new EalDbParameter("@Viewer5_Attribute", Viewer5_Attributes);
-                param_list[16] = new EalDbParameter("@Viewer6_TypeID", Viewer6_Type);
+                param_list[16] = new EalDbParameter("@Viewer6_Type", Viewer6_Type);
                 param_list[17] = new EalDbParameter("@Viewer6_Label", Viewer6_Label);
                 param_list[18] = new EalDbParameter("@Viewer6_Attribute", Viewer6_Attributes);
 
@@ -2804,29 +2815,29 @@ namespace SobekCM_Resource_Database
 
         /// <summary> Remove (and exclude) item viewers linked to an item </summary>
         /// <param name="ItemID">Item ID to associate these icons and downlaods with</param>
-        /// <param name="Viewer1_Type"> Primary key for the first viewer type in the SobekCM database </param>
-        /// <param name="Viewer2_Type"> Primary key for the second viewer type in the SobekCM database </param>
-        /// <param name="Viewer3_Type"> Primary key for the third viewer type in the SobekCM database </param>
-        /// <param name="Viewer4_Type"> Primary key for the fourth viewer type in the SobekCM database </param>
-        /// <param name="Viewer5_Type"> Primary key for the fifth viewer type in the SobekCM database </param>
-        /// <param name="Viewer6_Type"> Primary key for the sixth viewer type in the SobekCM database </param>
+        /// <param name="Viewer1_Type"> Viewer type code for the first viewer type in the SobekCM database to exlude </param>
+        /// <param name="Viewer2_Type"> Viewer type code for the second viewer type in the SobekCM database to exlude </param>
+        /// <param name="Viewer3_Type"> Viewer type code for the third viewer type in the SobekCM database to exlude </param>
+        /// <param name="Viewer4_Type"> Viewer type code for the fourth viewer type in the SobekCM database to exlude </param>
+        /// <param name="Viewer5_Type"> Viewer type code for the fifth viewer type in the SobekCM database to exlude </param>
+        /// <param name="Viewer6_Type"> Viewer type code for the sixth viewer type in the SobekCM database to exlude </param>
         /// <remarks> This method calls the stored procedure 'SobekCM_Remove_Item_Viewers'. </remarks>
         /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
         /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
-        protected static bool Save_Item_Remove_Viewers(int ItemID, int Viewer1_Type, int Viewer2_Type, int Viewer3_Type, 
-            int Viewer4_Type, int Viewer5_Type, int Viewer6_Type)
+        protected static bool Save_Item_Remove_Viewers(int ItemID, string Viewer1_Type, string Viewer2_Type, string Viewer3_Type,
+            string Viewer4_Type, string Viewer5_Type, string Viewer6_Type)
         {
             try
             {
                 // Build the parameter list
                 EalDbParameter[] param_list = new EalDbParameter[7];
                 param_list[0] = new EalDbParameter("@ItemID", ItemID);
-                param_list[1] = new EalDbParameter("@Viewer1_TypeID", Viewer1_Type);
-                param_list[2] = new EalDbParameter("@Viewer2_TypeID", Viewer2_Type);
-                param_list[3] = new EalDbParameter("@Viewer3_TypeID", Viewer3_Type);
-                param_list[4] = new EalDbParameter("@Viewer4_TypeID", Viewer4_Type);
-                param_list[5] = new EalDbParameter("@Viewer5_TypeID", Viewer5_Type);
-                param_list[6] = new EalDbParameter("@Viewer6_TypeID", Viewer6_Type);
+                param_list[1] = new EalDbParameter("@Viewer1_Type", Viewer1_Type);
+                param_list[2] = new EalDbParameter("@Viewer2_Type", Viewer2_Type);
+                param_list[3] = new EalDbParameter("@Viewer3_Type", Viewer3_Type);
+                param_list[4] = new EalDbParameter("@Viewer4_Type", Viewer4_Type);
+                param_list[5] = new EalDbParameter("@Viewer5_Type", Viewer5_Type);
+                param_list[6] = new EalDbParameter("@Viewer6_Type", Viewer6_Type);
 
                 // Execute this non-query stored procedure
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Remove_Item_Viewers", param_list);
@@ -2978,9 +2989,9 @@ namespace SobekCM_Resource_Database
             string AggregationCode3, string AggregationCode4, string AggregationCode5, string AggregationCode6,
             string AggregationCode7, string AggregationCode8, string HoldingCode, string SourceCode,
             string Icon1_Name, string Icon2_Name, string Icon3_Name, string Icon4_Name, string Icon5_Name,
-            int Viewer1_Type, string Viewer1_Label, string Viewer1_Attributes, int Viewer2_Type, string Viewer2_Label, string Viewer2_Attributes,
-            int Viewer3_Type, string Viewer3_Label, string Viewer3_Attributes, int Viewer4_Type, string Viewer4_Label, string Viewer4_Attributes,
-            int Viewer5_Type, string Viewer5_Label, string Viewer5_Attributes, int Viewer6_Type, string Viewer6_Label, string Viewer6_Attributes)
+            string Viewer1_Type, string Viewer1_Label, string Viewer1_Attributes, string Viewer2_Type, string Viewer2_Label, string Viewer2_Attributes,
+            string Viewer3_Type, string Viewer3_Label, string Viewer3_Attributes, string Viewer4_Type, string Viewer4_Label, string Viewer4_Attributes,
+            string Viewer5_Type, string Viewer5_Label, string Viewer5_Attributes, string Viewer6_Type, string Viewer6_Label, string Viewer6_Attributes)
         {
             try
             {
@@ -3023,22 +3034,22 @@ namespace SobekCM_Resource_Database
                 param_list[17] = new EalDbParameter("@Icon3_Name", Icon3_Name);
                 param_list[18] = new EalDbParameter("@Icon4_Name", Icon4_Name);
                 param_list[19] = new EalDbParameter("@Icon5_Name", Icon5_Name);
-                param_list[20] = new EalDbParameter("@Viewer1_TypeID", Viewer1_Type);
+                param_list[20] = new EalDbParameter("@Viewer1_Type", Viewer1_Type);
                 param_list[21] = new EalDbParameter("@Viewer1_Label", Viewer1_Label);
                 param_list[22] = new EalDbParameter("@Viewer1_Attribute", Viewer1_Attributes);
-                param_list[23] = new EalDbParameter("@Viewer2_TypeID", Viewer2_Type);
+                param_list[23] = new EalDbParameter("@Viewer2_Type", Viewer2_Type);
                 param_list[24] = new EalDbParameter("@Viewer2_Label", Viewer2_Label);
                 param_list[25] = new EalDbParameter("@Viewer2_Attribute", Viewer2_Attributes);
-                param_list[26] = new EalDbParameter("@Viewer3_TypeID", Viewer3_Type);
+                param_list[26] = new EalDbParameter("@Viewer3_Type", Viewer3_Type);
                 param_list[27] = new EalDbParameter("@Viewer3_Label", Viewer3_Label);
                 param_list[28] = new EalDbParameter("@Viewer3_Attribute", Viewer3_Attributes);
-                param_list[29] = new EalDbParameter("@Viewer4_TypeID", Viewer4_Type);
+                param_list[29] = new EalDbParameter("@Viewer4_Type", Viewer4_Type);
                 param_list[30] = new EalDbParameter("@Viewer4_Label", Viewer4_Label);
                 param_list[31] = new EalDbParameter("@Viewer4_Attribute", Viewer4_Attributes);
-                param_list[32] = new EalDbParameter("@Viewer5_TypeID", Viewer5_Type);
+                param_list[32] = new EalDbParameter("@Viewer5_Type", Viewer5_Type);
                 param_list[33] = new EalDbParameter("@Viewer5_Label", Viewer5_Label);
                 param_list[34] = new EalDbParameter("@Viewer5_Attribute", Viewer5_Attributes);
-                param_list[35] = new EalDbParameter("@Viewer6_TypeID", Viewer6_Type);
+                param_list[35] = new EalDbParameter("@Viewer6_Type", Viewer6_Type);
                 param_list[36] = new EalDbParameter("@Viewer6_Label", Viewer6_Label);
                 param_list[37] = new EalDbParameter("@Viewer6_Attribute", Viewer6_Attributes);
 

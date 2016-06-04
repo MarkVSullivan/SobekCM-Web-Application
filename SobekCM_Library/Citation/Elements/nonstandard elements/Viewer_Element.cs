@@ -241,47 +241,68 @@ namespace SobekCM.Library.Citation.Elements
         /// <remarks> This clears any preexisting item level views and item level page views </remarks>
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
-            // Clear the viewers
-            //Bib.Behaviors.Clear_Views();
-           // Bib.Behaviors.Clear_Item_Level_Page_Views();
+
         }
 
         /// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
         /// <param name="Bib"> Object into which to save the user's data, entered into the html rendered by this element </param>
         public override void Save_To_Bib(SobekCM_Item Bib)
         {
-            return;
+            // Build a dictionary of the current views
+            Dictionary<string, View_Object> typeToViewObjectDictionary = new Dictionary<string,View_Object>(StringComparer.OrdinalIgnoreCase);
+            foreach (View_Object thisView in Bib.Behaviors.Views)
+            {
+                typeToViewObjectDictionary[thisView.View_Type] = thisView;
+            }
+
+            // Clear the viewers
+            Bib.Behaviors.Clear_Views();
+
             // Save each view
             string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf("viewer_type") == 0)
                 {
+                    // Get the viewer type
                     string key = thisKey.Replace("viewer_type", "");
-                    string file_key = "viewer_file" + key;
-                    string label_key = "viewer_label" + key;
-
                     string type = HttpContext.Current.Request.Form[thisKey].Trim();
-                    string file = String.Empty;
-                    string label = String.Empty;
 
-                    // Get the details information for html and html map
-                    if (type == "HTML")
+                    // Did this type already exist?
+                    if (typeToViewObjectDictionary.ContainsKey(type))
                     {
-                        if (HttpContext.Current.Request.Form[file_key] != null)
-                        {
-                            file = HttpContext.Current.Request.Form[file_key].Trim();
-                        }
-                        if (HttpContext.Current.Request.Form[label_key] != null)
-                        {
-                            label = HttpContext.Current.Request.Form[label_key].Trim();
-                        }
+                        // View already exists
+                        Bib.Behaviors.Add_View(typeToViewObjectDictionary[type]);
+                    }
+                    else
+                    {
+                        string file_key = "viewer_file" + key;
+                        string label_key = "viewer_label" + key;
+                        string file = String.Empty;
+                        string label = String.Empty;
+
+                        // A new view type, so add this view
+                        Bib.Behaviors.Add_View(type, label, file);
                     }
 
-                    // Add this view
-                    Bib.Behaviors.Add_View(type, label, file);
+                    //// Get the details information for html and html map
+                    //if (type == "HTML")
+                    //{
+                    //    if (HttpContext.Current.Request.Form[file_key] != null)
+                    //    {
+                    //        file = HttpContext.Current.Request.Form[file_key].Trim();
+                    //    }
+                    //    if (HttpContext.Current.Request.Form[label_key] != null)
+                    //    {
+                    //        label = HttpContext.Current.Request.Form[label_key].Trim();
+                    //    }
+                    //}
+
+
                 }
             }
+
+            typeToViewObjectDictionary.Clear();
         }
 
         #endregion

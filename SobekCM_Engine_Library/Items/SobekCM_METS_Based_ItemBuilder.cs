@@ -691,7 +691,6 @@ namespace SobekCM.Engine_Library.Items
 
 			// Make sure no views were retained from the METS file itself
 			Package_To_Finalize.Behaviors.Clear_Views();
-			Package_To_Finalize.Behaviors.Clear_Item_Level_Page_Views();
 
 			// If there is no PURL, add one based on how SobekCM operates
 			if (Package_To_Finalize.Bib_Info.Location.PURL.Length == 0)

@@ -12,8 +12,13 @@ namespace SobekCM.Resource_Object.Behaviors
     public class View_Object : IEquatable<View_Object>
     {
         private string attributes;
-        private string filename;
         private string label;
+
+        /// <summary> Constructor for a new instance of the View_Object class </summary>
+        public View_Object()
+        {
+            // Empty constructor
+        }
 
         /// <summary> Constructor for a new instance of the View_Object class </summary>
         /// <param name="View_Type">Standard type of SobekCM View</param>

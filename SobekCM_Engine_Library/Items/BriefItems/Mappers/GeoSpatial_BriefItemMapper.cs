@@ -32,6 +32,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             // If there was geo-spatial data here, add it to the new item
             if ((geoInfo != null) && (geoInfo.hasData) && ((geoInfo.Point_Count > 0) || (geoInfo.Polygon_Count > 0)))
             {
+                // Ensure the brief item has a geospatial object
+                if (New.GeoSpatial == null) 
+                    New.GeoSpatial = new BriefItem_GeoSpatial();
+
                 // Add each point first into the description
                 ReadOnlyCollection<Coordinate_Point> origPoints = geoInfo.Points;
                 foreach ( Coordinate_Point thisPoint in origPoints )

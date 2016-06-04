@@ -44,7 +44,6 @@ namespace SobekCM.Resource_Object.Behaviors
 		private string groupType;
 		private string guid;
 
-		private List<View_Object> item_level_page_views;
 		private Main_Page_Info mainPage;
 	    private Serial_Info serialInfo;
 
@@ -176,7 +175,7 @@ namespace SobekCM.Resource_Object.Behaviors
 		internal void Add_BehaviorSec_METS(TextWriter BehaviorSec, bool PackageIncludesImageFiles)
 		{
 			// Were any views specified?
-			if (((views != null) && (views.Count > 0)) || ((item_level_page_views != null) && (item_level_page_views.Count > 0)))
+			if ((views != null) && (views.Count > 0))
 			{
 				// Start the behavior section for views
 				BehaviorSec.Write("<METS:behaviorSec ID=\"VIEWS\" LABEL=\"Options available to the user for viewing this item\" >\r\n");
@@ -187,20 +186,6 @@ namespace SobekCM.Resource_Object.Behaviors
 				if (views != null)
 				{
 					foreach (View_Object thisView in views)
-					{
-						if (!views_added.Contains(thisView.View_Type))
-						{
-							// Add this METS data
-							thisView.Add_METS(BehaviorSec, view_count++);
-							views_added.Add(thisView.View_Type);
-						}
-					}
-				}
-
-				// Add each item level page view
-				if (item_level_page_views != null)
-				{
-					foreach (View_Object thisView in item_level_page_views)
 					{
 						if (!views_added.Contains(thisView.View_Type))
 						{
@@ -634,21 +619,21 @@ namespace SobekCM.Resource_Object.Behaviors
             return null;
         }
 
-		/// <summary> Clear the SobekCM item-level page views linked to this resource </summary>
-		public void Clear_Item_Level_Page_Views()
-		{
-			if (item_level_page_views != null)
-				item_level_page_views.Clear();
-		}
+        ///// <summary> Clear the SobekCM item-level page views linked to this resource </summary>
+        //public void Clear_Item_Level_Page_Views()
+        //{
+        //    if (item_level_page_views != null)
+        //        item_level_page_views.Clear();
+        //}
 
-		/// <summary>Add a new SobekCM item-level page view to this resource </summary>
-		/// <param name="New_View">SobekCM View object</param>
-		public void Add_Item_Level_Page_View(View_Object New_View)
-		{
-			if (item_level_page_views == null)
-				item_level_page_views = new List<View_Object>();
-			item_level_page_views.Add(New_View);
-		}
+        ///// <summary>Add a new SobekCM item-level page view to this resource </summary>
+        ///// <param name="New_View">SobekCM View object</param>
+        //public void Add_Item_Level_Page_View(View_Object New_View)
+        //{
+        //    if (item_level_page_views == null)
+        //        item_level_page_views = new List<View_Object>();
+        //    item_level_page_views.Add(New_View);
+        //}
 
 		#endregion
 
