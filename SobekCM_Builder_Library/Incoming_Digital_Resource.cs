@@ -12,6 +12,7 @@ using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Resource_Object.Divisions;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
+using SobekCM_Resource_Database;
 
 #endregion
 
@@ -346,7 +347,7 @@ namespace SobekCM.Builder_Library
 
                 // Set the file root again
                 Metadata.Web.File_Root = fileRoot;
-                SobekCM_Database.Save_Digital_Resource(Metadata, options, createTime, existed);
+                SobekCM_Item_Database.Save_Digital_Resource(Metadata, options, createTime, existed);
 
                 // Save the behaviors if this is a new item
                 if (!existed)
@@ -358,12 +359,12 @@ namespace SobekCM.Builder_Library
                         Metadata.Behaviors.Clear_Web_Skins();
 
                     // Now, save the behaviors for this item
-                    SobekCM_Database.Save_Behaviors(Metadata, Metadata.Behaviors.Text_Searchable, false, false);
+                    SobekCM_Item_Database.Save_Behaviors(Metadata, Metadata.Behaviors.Text_Searchable, false, false);
                 }
                 else
                 {
                     // Now, save the MINIMAL behaviors for this item
-                    SobekCM_Database.Save_Behaviors(Metadata, Metadata.Behaviors.Text_Searchable, false, true);
+                    SobekCM_Item_Database.Save_Behaviors(Metadata, Metadata.Behaviors.Text_Searchable, false, true);
                 }
 
                 //// Set the suppress endeca flag

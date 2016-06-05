@@ -21,6 +21,7 @@ using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Settings;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Tools.Logs;
+using SobekCM_Resource_Database;
 
 #endregion
 
@@ -359,7 +360,7 @@ namespace SobekCM.Builder_Library
             CachedDataManager.Settings.Disabled = true;
 
             Engine_Database.Connection_String = dbInstance.Connection_String;
-            SobekCM_Database.Connection_String = dbInstance.Connection_String;
+            SobekCM_Item_Database.Connection_String = dbInstance.Connection_String;
             Library.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
 
             // Reload all the other data

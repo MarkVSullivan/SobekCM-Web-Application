@@ -14,6 +14,7 @@ using SobekCM.Engine_Library.Database;
 using SobekCM.Library;
 using SobekCM.Resource_Object.Database;
 using SobekCM.Tools.Logs;
+using SobekCM_Resource_Database;
 
 #endregion
 
@@ -43,7 +44,7 @@ namespace SobekCM.Builder_Library
             logFileDirectory = LogFileDirectory;
 
             // Assign the database connection strings
-            SobekCM_Database.Connection_String = Engine_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
+            SobekCM_Item_Database.Connection_String = Engine_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
             Library.Database.SobekCM_Database.Connection_String = Engine_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
 
             // Save the list of instances
@@ -168,7 +169,7 @@ namespace SobekCM.Builder_Library
 	        {
 		        if ((!aborted) && (dbConfig.Is_Active) && (dbConfig.Can_Abort))
 		        {
-			        SobekCM_Database.Connection_String = dbConfig.Connection_String;
+                    SobekCM_Item_Database.Connection_String = dbConfig.Connection_String;
 			        Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
 
 			        // Check that this should not be skipped or aborted
@@ -206,7 +207,7 @@ namespace SobekCM.Builder_Library
 					{
 						Console.WriteLine("Setting previous abort flag message in " + dbConfig.Name);
 						preloader_logger.AddNonError("Setting previous abort flag message in " + dbConfig.Name);
-						SobekCM_Database.Connection_String = dbConfig.Connection_String;
+                        SobekCM_Item_Database.Connection_String = dbConfig.Connection_String;
 						Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
 						Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", abort_message, String.Empty);
 
@@ -239,7 +240,7 @@ namespace SobekCM.Builder_Library
 				else
 				{
 					activeInstanceFound = true;
-					SobekCM_Database.Connection_String = dbConfig.Connection_String;
+                    SobekCM_Item_Database.Connection_String = dbConfig.Connection_String;
 					Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
 
                     // At this point warn on mossing the Ghostscript and ImageMagick, to get it into each instances database logs
@@ -298,7 +299,7 @@ namespace SobekCM.Builder_Library
 
 						// Set the database connection strings
 					    Engine_Database.Connection_String = dbInstance.Connection_String;
-						SobekCM_Database.Connection_String = dbInstance.Connection_String;
+                        SobekCM_Item_Database.Connection_String = dbInstance.Connection_String;
 						Library.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
 
 						// Look for abort
@@ -400,7 +401,7 @@ namespace SobekCM.Builder_Library
 				        Database_Instance_Configuration dbInstance = instances[i];
 
 				        // Set the database flag
-				        SobekCM_Database.Connection_String = dbInstance.Connection_String;
+                        SobekCM_Item_Database.Connection_String = dbInstance.Connection_String;
 			            Library.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
 
 				        // Pull the abort/pause flag
@@ -427,7 +428,7 @@ namespace SobekCM.Builder_Library
 					{
 						Console.WriteLine("Setting abort flag message in " + dbConfig.Name);
 						preloader_logger.AddNonError("Setting abort flag message in " + dbConfig.Name);
-						SobekCM_Database.Connection_String = dbConfig.Connection_String;
+                        SobekCM_Item_Database.Connection_String = dbConfig.Connection_String;
 						Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
 						Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Building ABORTED per request from database key", String.Empty);
 
@@ -535,7 +536,7 @@ namespace SobekCM.Builder_Library
 			        }
 			        else
 			        {
-				        SobekCM_Database.Connection_String = dbConfig.Connection_String;
+                        SobekCM_Item_Database.Connection_String = dbConfig.Connection_String;
 			            Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
                         Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig, (instances.Count > 1), logFileDirectory);
 						newLoader.Perform_BulkLoader(Verbose);

@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Database;
+using SobekCM_Resource_Database;
 
 #endregion
 
@@ -75,7 +76,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
                     newItem.VID = "00001";
 
                     // Save this item, for the necessary bibid
-                    SobekCM_Database.Save_New_Digital_Resource(newItem, false, false, "Builder", "Created BibID folder from '" + thisSubDirName + "'", -1);
+                    SobekCM_Item_Database.Save_New_Digital_Resource(newItem, false, false, "Builder", "Created BibID folder from '" + thisSubDirName + "'", -1);
 
                     string newFolderName = newItem.BibID + "_" + newItem.VID;
                     string newFolder = Path.Combine(BuilderFolder.Inbound_Folder, newFolderName);
