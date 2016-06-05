@@ -57,8 +57,8 @@ namespace SobekCM.Library.AdminViewer
 	/// </ul></remarks>
 	public class Settings_AdminViewer : abstract_AdminViewer
 	{
-		private readonly string actionMessage;
-		private readonly StringBuilder errorBuilder;
+		private string actionMessage;
+		private StringBuilder errorBuilder;
 
 		private bool isValid;
 	  
@@ -434,82 +434,117 @@ namespace SobekCM.Library.AdminViewer
 				}
 
 				string action_value = form["admin_settings_action"];
-				if ((action_value == "save") && (RequestSpecificValues.Current_User.Is_System_Admin))
-				{
-					// If this was read-only, really shouldn't do anything here
-					if (readonlyMode)
-						return;
-
-					// First, create the setting lookup by ID, and the list of IDs to look for
-					List<short> settingIds = new List<short>();
-					Dictionary<short, Admin_Setting_Value> settingsObjsById = new Dictionary<short, Admin_Setting_Value>();
-					foreach (Admin_Setting_Value value in currSettings.Settings)
-					{
-						// If this is readonly, will not prepare to update
-						if ((!Is_Value_ReadOnly(value, readonlyMode, limitedRightsMode )) && ( !value.Hidden ))
-						{
-							settingIds.Add(value.SettingID);
-							settingsObjsById[value.SettingID] = value;
-						}
-					}
-
-					// Now, step through and get the values for each of these
-					List<Simple_Setting> newValues = new List<Simple_Setting>();
-					foreach (short id in settingIds)
-					{
-						// Get the setting information
-						Admin_Setting_Value thisValue = settingsObjsById[id];
-
-						if (form["setting" + id] != null)
-						{
-							newValues.Add(new Simple_Setting(thisValue.Key, form["setting" + id], thisValue.SettingID));
-						}
-						else
-						{
-							newValues.Add(new Simple_Setting(thisValue.Key, String.Empty, thisValue.SettingID));
-						}
-					}
-
-					// Now, validate all this
-					errorBuilder = new StringBuilder();
-					isValid = true;
-					validate_update_entered_data(newValues);
-
-					// Now, assign the values from the simple settings back to the main settings
-					// object.  This is to allow for the validation process to make small changes
-					// to the values the user entered, like different starts or endings
-					foreach (Simple_Setting thisSetting in newValues)
-					{
-						settingsObjsById[thisSetting.SettingID].Value = thisSetting.Value;
-					}
-
-					if ( isValid )
-					{
-						// Try to save each setting
-						//errors += newSettings.Keys.Count(ThisKey => !SobekCM_Database.Set_Setting(ThisKey, newSettings[ThisKey]));
-
-						// Prepare the action message
-					   // if (errors > 0)
-					   //     actionMessage = "Save completed, but with " + errors + " errors.";
-					   // else
-							actionMessage = "Settings saved";
-
-						// Assign this to be used by the system
-						UI_ApplicationCache_Gateway.ResetSettings();
-
-
-						// Get all the settings again 
-						build_setting_objects_for_display();
-					}
-					else
-					{
-						actionMessage = errorBuilder.ToString().Replace("\n", "<br />");
-					}
-				}
+			    if ((action_value == "save") && (RequestSpecificValues.Current_User.Is_System_Admin))
+			    {
+    			    save_setting_values(RequestSpecificValues, mainMode );
+			    }
 			}
 		}
 
-		private static bool Is_Value_ReadOnly(Admin_Setting_Value Value, bool ReadOnlyMode, bool LimitedRightsMode )
+	    private void save_setting_values(RequestCache RequestSpecificValues, Settings_Mode_Enum MainMode)
+	    {
+	        List<Admin_Setting_Value> pageSettings = null;
+
+	        // Determine which page of settings to save
+	        if (MainMode == Settings_Mode_Enum.Settings)
+	        {
+	            // Get the tab page index
+	            int tabPage = -1;
+	            if ((RequestSpecificValues.Current_Mode.Remaining_Url_Segments != null) && (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 1))
+	            {
+	                if (!Int32.TryParse(RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1], out tabPage))
+	                    tabPage = -1;
+	            }
+
+	            // Only try to save if it is valid
+	            if ((tabPage >= 1) && (tabPage <= tabPageNames.Count))
+	            {
+	                // Get the tab page settings
+	                string tabPageNameKey = tabPageNames.Keys[tabPage - 1];
+	                string tabPageName = tabPageNames[tabPageNameKey];
+	                pageSettings = settingsByPage[tabPageName];
+	            }
+	        }
+
+	        // Pretty simple if this is the builder setting page
+	        if (MainMode == Settings_Mode_Enum.Builder)
+	            pageSettings = builderSettings;
+
+	        // If no settings found for this .. just return
+	        if (pageSettings == null)
+	            return;
+
+	        // Get the collection of values posted back from user
+	        NameValueCollection form = HttpContext.Current.Request.Form;
+
+	        // First, create the setting lookup by ID, and the list of IDs to look for
+	        List<short> settingIds = new List<short>();
+	        Dictionary<short, Admin_Setting_Value> settingsObjsById = new Dictionary<short, Admin_Setting_Value>();
+	        foreach (Admin_Setting_Value value in pageSettings)
+	        {
+	            // If this is readonly, will not prepare to update
+	            if ((!Is_Value_ReadOnly(value, readonlyMode, limitedRightsMode)) && (!value.Hidden))
+	            {
+	                settingIds.Add(value.SettingID);
+	                settingsObjsById[value.SettingID] = value;
+	            }
+	        }
+
+	        // Now, step through and get the values for each of these
+	        List<Simple_Setting> newValues = new List<Simple_Setting>();
+	        foreach (short id in settingIds)
+	        {
+	            // Get the setting information
+	            Admin_Setting_Value thisValue = settingsObjsById[id];
+
+	            if (form["setting" + id] != null)
+	            {
+	                newValues.Add(new Simple_Setting(thisValue.Key, form["setting" + id], thisValue.SettingID));
+	            }
+	            else
+	            {
+	                newValues.Add(new Simple_Setting(thisValue.Key, String.Empty, thisValue.SettingID));
+	            }
+	        }
+
+	        // Now, validate all this
+	        errorBuilder = new StringBuilder();
+	        isValid = true;
+	        validate_update_entered_data(newValues);
+
+	        // Now, assign the values from the simple settings back to the main settings
+	        // object.  This is to allow for the validation process to make small changes
+	        // to the values the user entered, like different starts or endings
+	        foreach (Simple_Setting thisSetting in newValues)
+	        {
+	            settingsObjsById[thisSetting.SettingID].Value = thisSetting.Value;
+	        }
+
+	        if (isValid)
+	        {
+	            // Try to save each setting
+	            int errors = newValues.Count(NewSetting => !SobekCM_Database.Set_Setting(NewSetting.Key, NewSetting.Value));
+
+	            // Prepare the action message
+	            if (errors > 0)
+	                actionMessage = "Save completed, but with " + errors + " errors.";
+	            else
+	                actionMessage = "Settings saved";
+
+	            // Assign this to be used by the system
+	            UI_ApplicationCache_Gateway.ResetSettings();
+
+
+	            // Get all the settings again 
+	            build_setting_objects_for_display();
+	        }
+	        else
+	        {
+	            actionMessage = errorBuilder.ToString().Replace("\n", "<br />");
+	        }
+	    }
+
+	    private static bool Is_Value_ReadOnly(Admin_Setting_Value Value, bool ReadOnlyMode, bool LimitedRightsMode )
 		{
 		   return ((ReadOnlyMode) || (Value.Reserved > 2) || ((LimitedRightsMode) && (Value.Reserved != 0)));
 		}
