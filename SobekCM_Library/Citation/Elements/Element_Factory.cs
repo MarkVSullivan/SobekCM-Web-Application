@@ -28,7 +28,7 @@ namespace SobekCM.Library.Citation.Elements
         public static abstract_Element getElement(string Type, string SubType)
         {
             // Do a lookup for the basic configuration
-            TemplateElementConfig config = UI_ApplicationCache_Gateway.Configuration.UI.TemplateElements.Get_Element_Configuration(Type, SubType);
+            TemplateElementConfig config = UI_ApplicationCache_Gateway.Configuration.UI.TemplateElements.Get_Element_Configuration(Type.Replace("_", " "), SubType);
 
             // If this was null, there is no match in this system
             if (config == null)
@@ -61,6 +61,8 @@ namespace SobekCM.Library.Citation.Elements
                         return new Born_Digital_Element();
                     case "SobekCM.Library.Citation.Elements.Catalog_Record_Number_Element":
                         return new Catalog_Record_Number_Element();
+                    case "SobekCM.Library.Citation.Elements.CitationSet_Element":
+                        return new CitationSet_Element();
                     case "SobekCM.Library.Citation.Elements.Classification_Element":
                         return new Classification_Element();
                     case "SobekCM.Library.Citation.Elements.Container_Element":

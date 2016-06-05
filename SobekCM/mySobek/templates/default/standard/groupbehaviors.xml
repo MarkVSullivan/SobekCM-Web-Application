@@ -20,10 +20,10 @@
 			<name language="eng">Behaviors</name>
 			<panel>
 				<name>Item Group Information</name>
-				<element type="Bib" mandatory="true" readonly="true" />
-				<element type="GroupTitle" mandatory="true" repeatable="false" />
-				<element type="PrimaryIdentifier" mandatory="false" repeatable="false" />
-				<element type="WebSkin" />
+				<element type="BibId" mandatory="true" readonly="true" />
+				<element type="Group_Title" mandatory="true" repeatable="false" />
+				<element type="Primary_Identifier" mandatory="false" repeatable="false" />
+				<element type="Web_Skin" />
 			</panel>
 		</page>
 	</inputs>

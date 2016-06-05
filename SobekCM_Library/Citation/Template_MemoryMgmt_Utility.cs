@@ -11,6 +11,8 @@ using SobekCM.Tools;
 namespace SobekCM.Library.Citation
 {
     /// <summary> Memory management utility for storing and retrieving metadata templates </summary>
+    /// <remarks> Since the complete template object sits entirely in the UI library portion, this cannot be combined
+    /// with the memory management portion that sits in the Core library, without moving the template stuff into the Core library.</remarks>
     public static class Template_MemoryMgmt_Utility
     {
         #region Static methods relating to storing and retrieving templates (for online submission and editing)
@@ -30,8 +32,8 @@ namespace SobekCM.Library.Citation
             string key = "TEMPLATE_" + Template_Code;
 
             // Try to get this object
-            object returnValue = HttpContext.Current.Cache.Get(key);
-            return (returnValue != null) ? (CompleteTemplate)returnValue : null;
+            CompleteTemplate returnValue = HttpContext.Current.Cache.Get(key) as CompleteTemplate;
+            return returnValue; 
         }
 
         /// <summary> Stores the template ( for online submission and editing ) to the cache or caching server </summary>

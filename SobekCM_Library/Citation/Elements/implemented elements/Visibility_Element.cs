@@ -19,8 +19,7 @@ namespace SobekCM.Library.Citation.Elements
     public class Visibility_Element : comboBox_Element
     {
         /// <summary> Constructor for a new instance of the Visibility_Element class </summary>
-        public Visibility_Element()
-            : base("Visibility", "visibility")
+        public Visibility_Element() : base("Visibility", "visibility")
         {
             Repeatable = false;
 

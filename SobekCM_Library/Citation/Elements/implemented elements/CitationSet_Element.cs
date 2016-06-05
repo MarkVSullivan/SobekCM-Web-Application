@@ -1,32 +1,36 @@
-﻿#region Using directives
-
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Web;
 using SobekCM.Core.ApplicationState;
-using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Localization;
+using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Core.Users;
+using SobekCM.Library.UI;
 using SobekCM.Resource_Object;
-using SobekCM.Resource_Object.Bib_Info;
-
-#endregion
 
 namespace SobekCM.Library.Citation.Elements
 {
-    /// <summary> Element allows simple entry of the creator(s) name for an item </summary>
-    /// <remarks> This class extends the <see cref="simpleTextBox_Element"/> class. </remarks>
-    public class Creator_Element : simpleTextBox_Element
+    /// <summary> Element allows user to select the citation set that this item should appear under </summary>
+    /// <remarks> This class extends the <see cref="comboBox_Element"/> class. </remarks>
+    public class CitationSet_Element : comboBox_Element
     {
-        /// <summary> Constructor for a new instance of the Creator_Element class </summary>
-        public Creator_Element()
-            : base("Creator", "creator")
+        /// <summary> Constructor for a new instance of the CitationSet_Element class </summary>
+        public CitationSet_Element() : base("Citation Set", "citation")
         {
-            Repeatable = true;
-	        help_page = "creatorsimple";
+            Repeatable = false;
+
+            items.Add("");
+
+            string defaultSet = UI_ApplicationCache_Gateway.Configuration.UI.CitationViewer.DefaultCitationSet;
+            if (!String.IsNullOrEmpty(defaultSet))
+                items.Add(defaultSet);
+
+            foreach (CitationSet citationSet in UI_ApplicationCache_Gateway.Configuration.UI.CitationViewer.CitationSets)
+            {
+                if (( String.IsNullOrEmpty(defaultSet)) || ( String.Compare(defaultSet, citationSet.Name, StringComparison.OrdinalIgnoreCase ) != 0 ))
+                    items.Add(citationSet.Name);
+            }
         }
 
         /// <summary> Renders the HTML for this element </summary>
@@ -40,12 +44,12 @@ namespace SobekCM.Library.Citation.Elements
         /// <param name="Translator"> Language support object which handles simple translational duties </param>
         /// <param name="Base_URL"> Base URL for the current request </param>
         /// <remarks> This simple element does not append any popup form to the popup_form_builder</remarks>
-        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL )
+        public override void Render_Template_HTML(TextWriter Output, SobekCM_Item Bib, string Skin_Code, bool IsMozilla, StringBuilder PopupFormBuilder, User_Object Current_User, Web_Language_Enum CurrentLanguage, Language_Support_Info Translator, string Base_URL)
         {
             // Check that an acronym exists
             if (Acronym.Length == 0)
             {
-                const string defaultAcronym = "Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name].";
+                const string defaultAcronym = "Select the citation set under which this should appear.  This can affect the way the description or citation appears for this item.";
                 switch (CurrentLanguage)
                 {
                     case Web_Language_Enum.English:
@@ -66,43 +70,18 @@ namespace SobekCM.Library.Citation.Elements
                 }
             }
 
-            List<string> instanceValues = new List<string>();
-            if (( Bib.Bib_Info.hasMainEntityName ) && ( Bib.Bib_Info.Main_Entity_Name.ToString().Length > 0))
-            {
-                string main_name_as_string = Bib.Bib_Info.Main_Entity_Name.ToString();
-                if ((main_name_as_string != "unknown") && (main_name_as_string.Length > 0))
-                    instanceValues.Add(main_name_as_string);
-            }
-            foreach (Name_Info thisName in Bib.Bib_Info.Names)
-            {
-                bool include = true;
-                if (( Options != null) && (Options.ContainsKey("contributor_included")) && (String.Compare(Options["contributor_included"], "true", StringComparison.OrdinalIgnoreCase) == 0))
-                {
-                    if (thisName.Roles.Any(ThisRole => ThisRole.Role.ToLower() == "contributor"))
-                    {
-                        include = false;
-                    }
-                }
-                if (include)
-                {
-                    string name_as_string = thisName.ToString();
-                    if ((name_as_string != "unknown") && (name_as_string.Length > 0))
-                        instanceValues.Add(name_as_string);
-                }
-            }
+            string value = Bib.Behaviors.CitationSet;
 
-            render_helper(Output, instanceValues, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL);
+            render_helper(Output, value, Skin_Code, Current_User, CurrentLanguage, Translator, Base_URL, false);
         }
 
         /// <summary> Prepares the bib object for the save, by clearing any existing data in this element's related field(s) </summary>
         /// <param name="Bib"> Existing digital resource object which may already have values for this element's data field(s) </param>
         /// <param name="Current_User"> Current user, who's rights may impact the way an element is rendered </param>
-        /// <remarks> This clears the main entity name and any other names associated with the digital resource </remarks>
+        /// <remarks> This does nothing since there is only one citation set value </remarks>
         public override void Prepare_For_Save(SobekCM_Item Bib, User_Object Current_User)
         {
-            if ( Bib.Bib_Info.hasMainEntityName )
-               Bib.Bib_Info.Main_Entity_Name.Clear();
-            Bib.Bib_Info.Clear_Names();
+            // Do nothing since there is only one citation set value
         }
 
         /// <summary> Saves the data rendered by this element to the provided bibliographic object during postback </summary>
@@ -112,13 +91,15 @@ namespace SobekCM.Library.Citation.Elements
             string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
             foreach (string thisKey in getKeys)
             {
-                if (thisKey.IndexOf( html_element_name ) == 0)
+                if (thisKey.IndexOf(html_element_name.Replace("_", "")) != 0) continue;
+
+                string type_value = HttpContext.Current.Request.Form[thisKey];
+                if (type_value.IndexOf("Select") < 0)
                 {
-                    string name = HttpContext.Current.Request.Form[thisKey];
-                    if ( !String.IsNullOrWhiteSpace(name))
-                        Bib.Bib_Info.Add_Named_Entity(new Name_Info(name, ""));
+                    Bib.Behaviors.CitationSet = type_value;
                 }
-            }  
+                return;
+            }
         }
     }
 }

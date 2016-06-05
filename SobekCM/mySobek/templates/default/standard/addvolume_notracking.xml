@@ -20,11 +20,11 @@
 			<name language="eng">Volume Information</name>
 			<panel>
 				<name>New Volume Information</name>
-				<element type="Bib" mandatory="true" readonly="true" />
+				<element type="BibId" mandatory="true" readonly="true" />
 				<element type="Visibility" />			
 				<element type="Title" subtype="simple" />
 				<element type="Date" />
-				<element type="SerialHierarchy" subtype="panel" />
+				<element type="Serial Hierarchy" subtype="panel" />
 			</panel>
 		</page>
 	</inputs>

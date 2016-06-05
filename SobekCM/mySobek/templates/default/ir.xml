@@ -32,7 +32,7 @@
 					</element_data>
 				</element>
 				<element type="Creator" subtype="simple" acronym="Enter each person or group which created this material. Personal names should be entered as [Family Name], [Given Name]." repeatable="true"/>
-				<element type="PublicationStatus" acronym="Select the best option to describe this item">
+				<element type="Publication Status" acronym="Select the best option to describe this item">
 					<element_data>
 						<value>In Press</value>
 						<options>In Press, Published, Unpublished</options>
@@ -45,7 +45,7 @@
 						<label>Publisher's URL</label>
 					</element_data>
 				</element>
-				<element type="PublicationPlace" repeatable="true" acronym="Enter the geographical location(s) of the publisher(s) of your material."/>
+				<element type="Publication Place" repeatable="true" acronym="Enter the geographical location(s) of the publisher(s) of your material."/>
 				<element type="Date" acronym="Enter the year in which your material was published.  If your material has not been published, enter the current year or leave the field blank."/>
 			</panel>
 			<panel>

@@ -27,7 +27,7 @@
       <panel>
         <name>Basic Information</name>
         <element type="Title" subtype="form" mandatory="true" acronym="Enter the title of your chapter, article, report, or other material here." />
-        <element type="OtherTitle" subtype="form" mandatory="false" acronym="Enter the any additional titles for your material here." />
+        <element type="Other Title" subtype="form" mandatory="false" acronym="Enter the any additional titles for your material here." />
         <element type="Type" subtype="form" mandatory="true" acronym="Select the type which best categorizes this material." >
           <element_data>
             <options>Aerial, Archival, Artifact, Audio, Book, Dataset, Map, Newspaper, Photograph, Serial, Video</options>
@@ -46,7 +46,7 @@
         <element type="Publisher" repeatable="true" subtype="complex" acronym="Enter the name(s) of the publisher(s) of the larger body of work.  If your work is currently unpublished, you may enter your name as the publisher or leave the field blank.  If you are adding administrative material (newsletters, handbooks, etc.) on behalf of a department within the university, enter the name of your department as the publisher." />
         <element type="Manufacturer" repeatable="true" subtype="complex" />
         <element type="Date" acronym="Enter the year in which your material was published.  If your material has not been published, enter the current year or leave the field blank." />
-        <element type="DateCopyrighted" />
+        <element type="Date Copyrighted" />
         <element type="Edition" />
       </panel>
     </page>
@@ -64,7 +64,7 @@
         <element type="Temporal" subtype="complex" />
         <element type="Spatial" repeatable="true" />
         <element type="Coordinates" repeatable="true" />
-        <element type="TargetAudience" />
+        <element type="Target Audience" />
       </panel>
       <panel>
         <name language="eng">Notes</name>
@@ -80,7 +80,7 @@
 		</panel>
       <panel>
         <name language="eng">Internal Record</name>
-        <element type="EncodingLevel" />
+        <element type="Encoding Level" />
         <element type="Source" subtype="complex" />
         <element type="Holding" subtype="complex" />
         <element type="Rights" />
@@ -89,15 +89,15 @@
         <name language="eng">External Records</name>
         <element type="Identifier" subtype="complex" repeatable="true" />
 		<element type="Classification" repeatable="true" />
-        <element type="SerialHierarchy" />
+        <element type="Serial Hierarchy" />
         <element type="EAD" />
         <element type="Container" />
-        <element type="OtherURL" />
-        <element type="RelatedItem" repeatable="true" />
+        <element type="Other URL" />
+        <element type="Related Item" repeatable="true" />
       </panel>
     </page>
-		<page>
-			<name language="eng">Other</name>
+    <page>
+      <name language="eng">Other</name>
 			<panel>
 				<name language="eng">Learning Object Metadata (IEEE-LOM)</name>
 				<element type="LOM_Aggregation_Level" />
@@ -112,31 +112,31 @@
 			</panel>
 			<panel>
 				<name language="eng">Thesis / Dissertation Metadata (ETD)</name>
-				<element type="ETD_CommitteeChair" />
-				<element type="ETD_CommitteeCoChair" />
-				<element type="ETD_CommitteeMember" />
+				<element type="ETD_Committee_Chair" />
+				<element type="ETD_Committee_CoChair" />
+				<element type="ETD_Committee_Member" />
 				<element type="ETD_Degree" />
-				<element type="ETD_DegreeDiscipline" />
-				<element type="ETD_DegreeDivision" />
-				<element type="ETD_DegreeGrantor" />
-				<element type="ETD_DegreeLevel" />
-				<element type="ETD_GraduationSemester" />
+				<element type="ETD_Degree_Discipline" />
+				<element type="ETD_Degree_Division" />
+				<element type="ETD_Degree_Grantor" />
+				<element type="ETD_Degree_Level" />
+				<element type="ETD_Graduation_Semester" />
 			</panel>
-			<panel>
-				<name language="eng">Visual Resource Metadata (VRACore)</name>
-				<element type="VRA_CulturalContext" />
-				<element type="VRA_Inscription" />
-				<element type="VRA_Materials" />
-				<element type="VRA_Measurements" />
-				<element type="VRA_StateEdition" />
-				<element type="VRA_StylePeriod" />
-				<element type="VRA_Technique" />
-			</panel>
+      <panel>
+        <name language="eng">Visual Resource Metadata (VRACore)</name>
+        <element type="VRA_Cultural_Context" />
+        <element type="VRA_Inscription" />
+        <element type="VRA_Material" />
+        <element type="VRA_Measurement" />
+        <element type="VRA_State_Edition" />
+        <element type="VRA_Style_Period" />
+        <element type="VRA_Technique" />
+       </panel>
       <panel>
         <name language="eng">Zoological Taxonomic Information (DarwinCore) </name>
         <element type="Zoological_Taxonomy" />
        </panel>
-		</page>
+    </page>
 	</inputs>
 
 </input_template>

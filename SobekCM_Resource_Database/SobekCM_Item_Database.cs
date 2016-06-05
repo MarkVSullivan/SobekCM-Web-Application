@@ -717,11 +717,33 @@ namespace SobekCM_Resource_Database
             // Save any additional metadat present in the item
             Save_Item_Metadata_Information(ThisPackage);
 
-            //// Save coordinates, if there are some
-            //if (thisPackage.Bib_Info.hasCoordinateInformation)
-            //{
-            //    Save_Coordinates_Footprint(thisPackage, thisPackage.Behaviors.ItemID);
-            //}
+            // Step through all the metadata modules and allow the modules to save to the database
+            if (ThisPackage.Metadata_Modules != null)
+            {
+                foreach (iMetadata_Module thisModule in ThisPackage.Metadata_Modules)
+                {
+                    string error_message;
+                    thisModule.Save_Additional_Info_To_Database(ThisPackage.Web.ItemID, connectionString, ThisPackage, out error_message);
+                }
+            }
+
+            //for each page
+            List<abstract_TreeNode> pages = ThisPackage.Divisions.Physical_Tree.Pages_PreOrder;
+            foreach (abstract_TreeNode t in pages)
+            {
+                //Step through all the metadata modules and allow the modules to save to the database
+                if (t.Metadata_Modules != null)
+                {
+                    foreach (iMetadata_Module thisModule in t.Metadata_Modules)
+                    {
+                        string error_message;
+                        thisModule.Save_Additional_Info_To_Database(ThisPackage.Web.ItemID, connectionString, ThisPackage, out error_message);
+                    }
+                }
+            }
+
+            // Finally, have the database build the full citation based on each metadata element
+            Create_Full_Citation_Value(ThisPackage.Web.ItemID);
 
             return true;
 
@@ -2704,7 +2726,7 @@ namespace SobekCM_Resource_Database
                 param_list[26] = new EalDbParameter("@Icon4_Name", Icon4_Name);
                 param_list[27] = new EalDbParameter("@Icon5_Name", Icon4_Name);
                 param_list[28] = new EalDbParameter("@Left_To_Right", Left_To_Right);
-                param_list[29] = new EalDbParameter("@CitationSet", Left_To_Right);
+                param_list[29] = new EalDbParameter("@CitationSet", CitationSet);
 
                 // Execute this non-query stored procedure
                 EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Save_Item_Behaviors", param_list);

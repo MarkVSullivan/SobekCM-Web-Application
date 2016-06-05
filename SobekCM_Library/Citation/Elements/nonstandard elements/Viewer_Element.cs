@@ -112,7 +112,7 @@ namespace SobekCM.Library.Citation.Elements
                 const int i = 1;
 
                 // Add the view types select
-                Output.Write("<select name=\"" + id_name + "_type" + i + "\" id=\"" + id_name + "_type" + i + "\" class=\"" + html_element_name + "_type\" onchange=\"viewer_type_changed('" + id_name + "_type" + i + "');\">");
+                Output.Write("<select name=\"" + id_name + "_type" + i + "\" id=\"" + id_name + "_type" + i + "\" class=\"" + html_element_name + "_type\" >");
                 Output.Write("<option value=\"\" selected=\"selected\">&nbsp;</option>");
 
                 foreach (string systemViewer in systemViewers)
@@ -122,21 +122,22 @@ namespace SobekCM.Library.Citation.Elements
 
                 Output.Write("</select>"); 
 
-                // Add the file sublabel
-                Output.Write("<span id=\"" + id_name + "_details" + i + "\" style=\"display:none\">");
+                //// Add the file sublabel
+                //Output.Write("<span id=\"" + id_name + "_details" + i + "\" style=\"display:none\">");
 
-                Output.Write("<span class=\"metadata_sublabel\">File:</span>");
+                //Output.Write("<span class=\"metadata_sublabel\">File:</span>");
 
-                // Add the file select
-                Output.Write("<select name=\"" + id_name + "_file" + i + "\" id=\"" + id_name + "_file" + i + "\" class=\"" + html_element_name + "_file\">");
-                Output.Write("<option value=\"\" selected=\"selected\">&nbsp;</option>");
-                Output.Write("</select>");
+                //// Add the file select
+                //Output.Write("<select name=\"" + id_name + "_file" + i + "\" id=\"" + id_name + "_file" + i + "\" class=\"" + html_element_name + "_file\">");
+                //Output.Write("<option value=\"\" selected=\"selected\">&nbsp;</option>");
+                //Output.Write("</select>");
 
-                // Add the label sublabel
-                Output.Write("<span class=\"metadata_sublabel\">Label:</span>");
+                //// Add the label sublabel
+                //Output.Write("<span class=\"metadata_sublabel\">Label:</span>");
                 
-                // Add the label input
-                Output.WriteLine("<input name=\"" + id_name + "_label" + i + "\" id=\"" + id_name + "_label" + i + "\" class=\"" + html_element_name + "_label_input sbk_Focusable\" type=\"text\" value=\"\" /></span>");
+                //// Add the label input
+                //Output.WriteLine("<input name=\"" + id_name + "_label" + i + "\" id=\"" + id_name + "_label" + i + "\" class=\"" + html_element_name + "_label_input sbk_Focusable\" type=\"text\" value=\"\" /></span>");
+
                 Output.WriteLine("            </div>");
             }
             else
@@ -145,7 +146,7 @@ namespace SobekCM.Library.Citation.Elements
                 foreach (View_Object thisView in views)
                 {
                     // Add the view types select
-                    Output.Write("<select name=\"" + id_name + "_type" + viewCount + "\" id=\"" + id_name + "_type" + viewCount + "\" class=\"" + html_element_name + "_type\" onchange=\"viewer_type_changed('" + id_name + "_type" + viewCount + "');\">");
+                    Output.Write("<select name=\"" + id_name + "_type" + viewCount + "\" id=\"" + id_name + "_type" + viewCount + "\" class=\"" + html_element_name + "_type\" >");
                     Output.Write("<option value=\"\" selected=\"selected\">&nbsp;</option>");
 
                     foreach (string systemViewer in systemViewers)
@@ -157,29 +158,29 @@ namespace SobekCM.Library.Citation.Elements
                     }
                     Output.Write("</select>");
 
-                    // Add the file sublabel
-                    Output.Write("<span id=\"" + id_name + "_details" + viewCount + "\" style=\"display:none\">");
-                    Output.Write("<span class=\"metadata_sublabel\">File:</span>");
+                    //// Add the file sublabel
+                    //Output.Write("<span id=\"" + id_name + "_details" + viewCount + "\" style=\"display:none\">");
+                    //Output.Write("<span class=\"metadata_sublabel\">File:</span>");
 
-                    // Add the file select
-                    Output.Write("<select name=\"" + id_name + "_file" + viewCount + "\" id=\"" + id_name + "_file" + viewCount + "\" class=\"" + html_element_name + "_file\">");
+                    //// Add the file select
+                    //Output.Write("<select name=\"" + id_name + "_file" + viewCount + "\" id=\"" + id_name + "_file" + viewCount + "\" class=\"" + html_element_name + "_file\">");
 
-                    if (thisView.Attributes.Length > 0)
-                    {
-                        Output.Write("<option value=\"\">&nbsp;</option>");
-                        Output.Write("<option value=\"" + thisView.Attributes + "\" selected=\"selected\">" + thisView.Attributes + "</option>");
-                    }
-                    else
-                    {
-                        Output.Write("<option value=\"\" selected=\"selected\">&nbsp;</option>");
-                    }
-                    Output.Write("</select>");
+                    //if (thisView.Attributes.Length > 0)
+                    //{
+                    //    Output.Write("<option value=\"\">&nbsp;</option>");
+                    //    Output.Write("<option value=\"" + thisView.Attributes + "\" selected=\"selected\">" + thisView.Attributes + "</option>");
+                    //}
+                    //else
+                    //{
+                    //    Output.Write("<option value=\"\" selected=\"selected\">&nbsp;</option>");
+                    //}
+                    //Output.Write("</select>");
 
-                    // Add the label sublabel
-                    Output.Write("<span class=\"metadata_sublabel\">Label:</span>");
+                    //// Add the label sublabel
+                    //Output.Write("<span class=\"metadata_sublabel\">Label:</span>");
 
-                    // Add the label input
-                    Output.Write("<input name=\"" + id_name + "_label" + viewCount + "\" id=\"" + id_name + "_label" + viewCount + "\" class=\"" + html_element_name + "_label_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisView.Label) + "\" /></span>");
+                    //// Add the label input
+                    //Output.Write("<input name=\"" + id_name + "_label" + viewCount + "\" id=\"" + id_name + "_label" + viewCount + "\" class=\"" + html_element_name + "_label_input sbk_Focusable\" type=\"text\" value=\"" + HttpUtility.HtmlEncode(thisView.Label) + "\" /></span>");
 
                     Output.WriteLine("<br />");
 
@@ -188,7 +189,7 @@ namespace SobekCM.Library.Citation.Elements
 
                 // Add an empty viewer line as well
                 // Add the view types select
-                Output.Write("<select name=\"" + id_name + "_type" + viewCount + "\" id=\"" + id_name + "_type" + viewCount + "\" class=\"" + html_element_name + "_type\" onchange=\"viewer_type_changed('" + id_name + "_type" + viewCount + "');\">");
+                Output.Write("<select name=\"" + id_name + "_type" + viewCount + "\" id=\"" + id_name + "_type" + viewCount + "\" class=\"" + html_element_name + "_type\" >");
                 Output.Write("<option value=\"\" selected=\"selected\">&nbsp;</option>");
 
                 foreach (string systemViewer in systemViewers)
@@ -197,22 +198,22 @@ namespace SobekCM.Library.Citation.Elements
                 }
                 Output.Write("</select>");
 
-                // Add the file sublabel
-                Output.Write("<span id=\"" + id_name + "_details" + viewCount + "\" style=\"display:none\">");
-                Output.Write("<span class=\"metadata_sublabel\">File:</span>");
+                //// Add the file sublabel
+                //Output.Write("<span id=\"" + id_name + "_details" + viewCount + "\" style=\"display:none\">");
+                //Output.Write("<span class=\"metadata_sublabel\">File:</span>");
 
-                // Add the file select
-                Output.Write("<select name=\"" + id_name + "_file" + viewCount + "\" id=\"" + id_name + "_file" + viewCount + "\" class=\"" + html_element_name + "_file\">");
+                //// Add the file select
+                //Output.Write("<select name=\"" + id_name + "_file" + viewCount + "\" id=\"" + id_name + "_file" + viewCount + "\" class=\"" + html_element_name + "_file\">");
 
-                Output.Write("<option value=\"\" selected=\"selected\">&nbsp;</option>");
+                //Output.Write("<option value=\"\" selected=\"selected\">&nbsp;</option>");
                 
-                Output.Write("</select>");
+                //Output.Write("</select>");
 
-                // Add the label sublabel
-                Output.Write("<span class=\"metadata_sublabel\">Label:</span>");
+                //// Add the label sublabel
+                //Output.Write("<span class=\"metadata_sublabel\">Label:</span>");
 
-                // Add the label input
-                Output.Write("<input name=\"" + id_name + "_label" + viewCount + "\" id=\"" + id_name + "_label" + viewCount + "\" class=\"" + html_element_name + "_label_input sbk_Focusable\" type=\"text\" value=\"\" /></span>");
+                //// Add the label input
+                //Output.Write("<input name=\"" + id_name + "_label" + viewCount + "\" id=\"" + id_name + "_label" + viewCount + "\" class=\"" + html_element_name + "_label_input sbk_Focusable\" type=\"text\" value=\"\" /></span>");
 
 
                 Output.WriteLine("</div>");
@@ -260,13 +261,18 @@ namespace SobekCM.Library.Citation.Elements
 
             // Save each view
             string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+            Dictionary<string, string> addedViewTypes = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
             foreach (string thisKey in getKeys)
             {
                 if (thisKey.IndexOf("viewer_type") == 0)
                 {
                     // Get the viewer type
-                    string key = thisKey.Replace("viewer_type", "");
+                    //string key = thisKey.Replace("viewer_type", "");
                     string type = HttpContext.Current.Request.Form[thisKey].Trim();
+
+                    // Ensure no other view of this type already exists
+                    if (addedViewTypes.ContainsKey(type))
+                        continue;
 
                     // Did this type already exist?
                     if (typeToViewObjectDictionary.ContainsKey(type))
@@ -278,14 +284,18 @@ namespace SobekCM.Library.Citation.Elements
                     }
                     else
                     {
-                        string file_key = "viewer_file" + key;
-                        string label_key = "viewer_label" + key;
+                        //string file_key = "viewer_file" + key;
+                        //string label_key = "viewer_label" + key;
                         string file = String.Empty;
                         string label = String.Empty;
 
                         // A new view type, so add this view
                         Bib.Behaviors.Add_View(type, label, file);
                     }
+
+                    // Since this was added back, put it in the dictionary to avoid multiple views being added 
+                    // of the same type
+                    addedViewTypes[type] = type;
 
                     //// Get the details information for html and html map
                     //if (type == "HTML")

@@ -20,7 +20,7 @@
 			<name language="eng">Behaviors</name>
 			<panel>
 				<name>Basic Information</name>
-				<element type="Bib" mandatory="true" readonly="true" />
+				<element type="BibId" mandatory="true" readonly="true" />
 			</panel>
 			<panel>
 				<name>Membership</name>
@@ -30,7 +30,7 @@
 			</panel>
 			<panel>
 				<name language="eng">Wordmarks for web page</name>
-				<element type="Icon" repeatable="true" />
+				<element type="Wordmark" repeatable="true" />
 			</panel>
 			<panel>
 				<name>Viewers for this resource</name>

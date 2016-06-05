@@ -12,17 +12,12 @@ namespace SobekCM.Library.Citation.Template
     /// <summary> Reader for the CompleteTemplate XML configuration file which stores the information about a single metadata CompleteTemplate </summary>
     public class Template_XML_Reader
     {
-        private bool complexMainTitleExists;
-
         /// <summary> Reads the CompleteTemplate XML configuration file specified into a CompleteTemplate object </summary>
         /// <param name="XML_File"> Filename of the CompleteTemplate XML configuraiton file to read  </param>
         /// <param name="ThisCompleteTemplate"> CompleteTemplate object to populate form the configuration file </param>
         /// <param name="exclude_divisions"> Flag indicates whether to include the structure map, if included in the CompleteTemplate file </param>
         public void Read_XML( string XML_File, CompleteTemplate ThisCompleteTemplate, bool exclude_divisions )
         {
-            // Set some default for this read
-            complexMainTitleExists = false;
-
             // Load this MXF File
             XmlDocument templateXml = new XmlDocument();
             templateXml.Load( XML_File );
@@ -41,6 +36,10 @@ namespace SobekCM.Library.Citation.Template
 
             // Process any constant sectoin
             process_constants( nodeReader, ThisCompleteTemplate );
+
+            // Do any final processing
+            ThisCompleteTemplate.Build_Final_Adjustment_And_Checks();
+
         }
 
         private void process_template_header( XmlNodeReader nodeReader, CompleteTemplate ThisCompleteTemplate )
@@ -236,8 +235,10 @@ namespace SobekCM.Library.Citation.Template
                     if ((nodeName == "ELEMENT") && (nodeReader.HasAttributes) && (currentPanel != null))
                     {
                         abstract_Element currentElement = process_element( nodeReader, ThisCompleteTemplate.InputPages.Count );
-                        if ( currentElement != null )
-                            currentPanel.Add_Element( currentElement );
+                        if (currentElement != null)
+                        {
+                            currentPanel.Add_Element(currentElement);
+                        }
                     }
                 }
             }

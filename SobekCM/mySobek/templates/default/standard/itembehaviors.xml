@@ -21,12 +21,12 @@
 			<panel>
 				<name>Basic Information</name>
 				<element type="Aggregations" />
-				<element type="Icon" repeatable="true" />
-				<element type="SerialHierarchy" subtype="panel" />
+				<element type="Wordmark" repeatable="true" />
+				<element type="Serial_Hierarchy" subtype="panel" />
 				<element type="Viewer"  repeatable="true" />
-				<element type="Thumbnail" repeatable="false" />
 				<element type="Tickler" />
 				<element type="Dark_Flag" />
+				<element type="Citation_Set" />
 			</panel>
 			<panel>
 				<name>Physical Material</name>

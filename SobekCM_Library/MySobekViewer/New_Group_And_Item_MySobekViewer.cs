@@ -420,10 +420,17 @@ namespace SobekCM.Library.MySobekViewer
 
 						if (HttpContext.Current.Request.Form["setNewDefaultCheckBox"] != null )
 						{
+                            // Set the default metadata preference first
 							string prefProject = HttpContext.Current.Request.Form["prefProject"];
+                            if ( !String.IsNullOrEmpty(prefProject))
+                                RequestSpecificValues.Current_User.Set_Current_Default_Metadata(prefProject.Trim());
+
+                            // Set the template code next
 							string prefTemplate = HttpContext.Current.Request.Form["prefTemplate"];
-							RequestSpecificValues.Current_User.Set_Default_Template(prefTemplate.Trim());
-							RequestSpecificValues.Current_User.Set_Current_Default_Metadata(prefProject.Trim());
+                            if ( !String.IsNullOrEmpty(prefTemplate))
+    							RequestSpecificValues.Current_User.Set_Default_Template(prefTemplate.Trim());
+							
+                            // Save the user preferences
                             SobekCM_Database.Save_User(RequestSpecificValues.Current_User, String.Empty, RequestSpecificValues.Current_User.Authentication_Type, RequestSpecificValues.Tracer);
 						}
                     }

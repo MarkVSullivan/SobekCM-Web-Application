@@ -123,6 +123,7 @@
     <Compile Include="Citation\Elements\implemented elements\Additional_Work_Needed_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Born_Digital_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Catalog_Record_Number_Element.cs" />
+    <Compile Include="Citation\Elements\implemented elements\CitationSet_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Classification_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Contributor_Element.cs" />
     <Compile Include="Citation\Elements\implemented elements\Dark_Flag_Element.cs" />
