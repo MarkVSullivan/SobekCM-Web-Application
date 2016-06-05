@@ -409,8 +409,10 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Admin_Js + "\" type=\"text/javascript\"></script>");
             Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
-            if (actionMessage.Length > 0)
+            // Add the action message, if there is one
+            if ( !String.IsNullOrEmpty(actionMessage))
             {
+                // If this is an error, show it differently
                 if (actionMessage.IndexOf("Error", StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
                     Output.WriteLine("  <br />");

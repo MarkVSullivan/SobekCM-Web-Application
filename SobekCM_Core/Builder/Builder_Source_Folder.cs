@@ -116,5 +116,27 @@ namespace SobekCM.Core.Builder
         [XmlAttribute("id")]
         [ProtoMember(13)]
         public int IncomingFolderID { get; set; }
+
+        /// <summary> Return a shallow copy of this builder source folder </summary>
+        /// <returns> Shallow copy of this builder source folder </returns>
+        public Builder_Source_Folder Copy()
+        {
+            return new Builder_Source_Folder
+            {
+                Allow_Deletes = Allow_Deletes, 
+                Allow_Folders_No_Metadata = Allow_Folders_No_Metadata, 
+                Allow_Metadata_Updates = Allow_Metadata_Updates, 
+                Archive_All_Files = Archive_All_Files, 
+                Archive_TIFFs = Archive_TIFFs, 
+                BibID_Roots_Restrictions = BibID_Roots_Restrictions, 
+                Builder_Module_Set = Builder_Module_Set, 
+                Failures_Folder = Failures_Folder, 
+                Folder_Name = Folder_Name, 
+                Inbound_Folder = Inbound_Folder, 
+                IncomingFolderID = IncomingFolderID, 
+                Perform_Checksum = Perform_Checksum, 
+                Processing_Folder = Processing_Folder
+            };
+        }
     }
 }

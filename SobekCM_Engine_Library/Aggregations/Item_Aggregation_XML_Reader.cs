@@ -233,17 +233,21 @@ namespace SobekCM.Engine_Library.Aggregations
                         case "HI:WEBSKINS":
                             NodeReader.Read();
                             string webskins = NodeReader.Value;
-                            string[] splitter = webskins.Split(",".ToCharArray());
-                            foreach (string thisSplitter in splitter)
+                            if (!String.IsNullOrEmpty(webskins))
                             {
-                                if ( thisSplitter.Length > 0 )
-                                    HierarchyObject.Add_Web_Skin(thisSplitter.ToLower());
+                                string[] splitter = webskins.Split(",".ToCharArray());
+                                foreach (string thisSplitter in splitter)
+                                {
+                                    if (thisSplitter.Length > 0)
+                                        HierarchyObject.Add_Web_Skin(thisSplitter.ToLower());
+                                }
                             }
                             break;
 
 						case "HI:CSS":
 							NodeReader.Read();
-							HierarchyObject.CSS_File = NodeReader.Value.Trim();
+                            if ( !String.IsNullOrEmpty(NodeReader.Value ))
+    							HierarchyObject.CSS_File = NodeReader.Value.Trim();
 							break;
 
 						case "HI:CUSTOMHOME":
@@ -255,11 +259,14 @@ namespace SobekCM.Engine_Library.Aggregations
                         case "HI:FACETS":
                             NodeReader.Read();
                             string facets = NodeReader.Value;
-                            string[] splitter2 = facets.Split(",".ToCharArray());
-                            HierarchyObject.Clear_Facets();
-                            foreach (string thisSplitter2 in splitter2)
+                            if (!String.IsNullOrEmpty(facets))
                             {
+                                string[] splitter2 = facets.Split(",".ToCharArray());
+                                HierarchyObject.Clear_Facets();
+                                foreach (string thisSplitter2 in splitter2)
+                                {
                                     HierarchyObject.Add_Facet(Convert.ToInt16(thisSplitter2));
+                                }
                             }
                             break;
 

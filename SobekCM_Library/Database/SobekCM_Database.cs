@@ -6425,6 +6425,108 @@ namespace SobekCM.Library.Database
 
         #endregion
 
+        #region Methods used to edit or delete incoming builder folders
+
+	    /// <summary> Deletes an existing builder incoming folder from the table </summary>
+	    /// <param name="FolderID"> Primary key for the builder incoming folder to delete </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+	    /// <returns> TRUE if successful, otherwise FALSE </returns>
+	    /// <remarks> This calls the 'SobekCM_Builder_Incoming_Folder_Delete' stored procedure </remarks> 
+	    public static bool Builder_Folder_Delete(int FolderID, Custom_Tracer Tracer )
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Builder_Folder_Delete", String.Empty);
+            }
+
+            try
+            {
+                // Build the parameter list
+                EalDbParameter[] paramList = new EalDbParameter[1];
+                paramList[0] = new EalDbParameter("@IncomingFolderId", FolderID);
+
+                // Execute this query stored procedure
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Incoming_Folder_Delete", paramList);
+
+                // Succesful, so return true
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Builder_Folder_Delete", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Builder_Folder_Delete", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Builder_Folder_Delete", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+	    /// <summary> Edits an existing builder incoming folder or adds a new folder </summary>
+	    /// <param name="FolderID"> Primary key for the builder incoming folder to delete </param>
+	    /// <param name="Folder_Name"></param>
+	    /// <param name="Network_Folder"></param>
+	    /// <param name="Error_Folder"></param>
+	    /// <param name="Processing_Folder"></param>
+	    /// <param name="Perform_Checksum"></param>
+	    /// <param name="Archive_TIFF"></param>
+	    /// <param name="Archive_All_Files"></param>
+	    /// <param name="Allow_Deletes"></param>
+	    /// <param name="Allow_Folders_No_Metadata"></param>
+	    /// <param name="BibID_Roots_Restrictions"></param>
+	    /// <param name="ModuleSetID"></param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+	    /// <returns> TRUE if successful, otherwise FALSE </returns>
+	    /// <remarks> This calls the 'SobekCM_Builder_Incoming_Folder_Edit' stored procedure </remarks> 
+        public static bool Builder_Folder_Edit(int FolderID, string Folder_Name, string Network_Folder, string Error_Folder, string Processing_Folder,
+            bool Perform_Checksum, bool Archive_TIFF, bool Archive_All_Files, bool Allow_Deletes, bool Allow_Folders_No_Metadata,
+            string BibID_Roots_Restrictions, int ModuleSetID, Custom_Tracer Tracer )
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekCM_Database.Builder_Folder_Edit", String.Empty);
+            }
+
+            try
+            {
+                // Build the parameter list
+                EalDbParameter[] paramList = new EalDbParameter[12];
+                paramList[0] = new EalDbParameter("@IncomingFolderId", FolderID);
+                paramList[1] = new EalDbParameter("@NetworkFolder", Network_Folder);
+                paramList[2] = new EalDbParameter("@ErrorFolder", Error_Folder);
+                paramList[3] = new EalDbParameter("@ProcessingFolder", Processing_Folder);
+                paramList[4] = new EalDbParameter("@Perform_Checksum_Validation", Perform_Checksum);
+                paramList[5] = new EalDbParameter("@Archive_TIFF", Archive_TIFF);
+                paramList[6] = new EalDbParameter("@Archive_All_Files", Archive_All_Files);
+                paramList[7] = new EalDbParameter("@Allow_Deletes", Allow_Deletes);
+                paramList[8] = new EalDbParameter("@Allow_Folders_No_Metadata", Allow_Folders_No_Metadata);
+                paramList[9] = new EalDbParameter("@FolderName", Folder_Name);
+                paramList[10] = new EalDbParameter("@BibID_Roots_Restrictions", BibID_Roots_Restrictions ?? String.Empty );
+                paramList[11] = new EalDbParameter("@ModuleSetID", ( ModuleSetID  > 0 ) ? ModuleSetID : 10);
+
+                // Execute this query stored procedure
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Builder_Incoming_Folder_Edit", paramList);
+
+                // Succesful, so return true
+                return true;
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("SobekCM_Database.Builder_Folder_Edit", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Builder_Folder_Edit", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("SobekCM_Database.Builder_Folder_Edit", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+        #endregion
+
     }
 
 }
