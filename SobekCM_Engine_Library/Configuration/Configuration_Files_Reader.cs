@@ -2585,8 +2585,8 @@ namespace SobekCM.Engine_Library.Configuration
                         case "sectionwriter":
                             if (currElement != null)
                             {
-                                string assembly = (ReaderXml.MoveToAttribute("Assembly")) ? ReaderXml.Value.Trim() : null;
-                                string writer_class = (ReaderXml.MoveToAttribute("Assembly")) ? ReaderXml.Value.Trim() : null;
+                                string assembly = (ReaderXml.MoveToAttribute("assembly")) ? ReaderXml.Value.Trim() : null;
+                                string writer_class = (ReaderXml.MoveToAttribute("class")) ? ReaderXml.Value.Trim() : null;
                                 if (!String.IsNullOrEmpty(writer_class))
                                 {
                                     currElement.SectionWriter = new SectionWriter(assembly, writer_class);

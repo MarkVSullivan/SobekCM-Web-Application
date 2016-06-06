@@ -193,6 +193,18 @@ namespace SobekCM.Core.BriefItem
             }
         }
 
+        /// <summary> Add a fully built descriptive element, by term </summary>
+        /// <param name="TermObject"> Fully built descriptive term element, as employed by the SobekCM system </param>
+        public void Add_Description(BriefItem_DescriptiveTerm TermObject )
+        {
+            // Was a value, so look to add it
+            if (!descriptionTermLookup.ContainsKey(TermObject.Term))
+            {
+                descriptionTermLookup.Add(TermObject.Term, TermObject);
+                Description.Add(TermObject);
+            }
+        }
+
         /// <summary> Checks the description and returns any descriptions linked to the provided term </summary>
         /// <param name="Term"> Key for this term </param>
         /// <returns> Either the information about values matching that term, or NULL </returns>

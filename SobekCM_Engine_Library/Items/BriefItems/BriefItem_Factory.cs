@@ -139,6 +139,10 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                         thisModule = new GeoSpatial_BriefItemMapper();
                         break;
 
+                    case "SobekCM.Engine_Library.Items.BriefItems.Mappers.Hierarchical_Spatial_BriefItemMapper":
+                        thisModule = new Hierarchical_Spatial_BriefItemMapper();
+                        break;
+
                     case "SobekCM.Engine_Library.Items.BriefItems.Mappers.Holding_Location_BriefItemMapper":
                         thisModule = new Holding_Location_BriefItemMapper();
                         break;

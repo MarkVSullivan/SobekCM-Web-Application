@@ -58,5 +58,18 @@ namespace SobekCM.Core.BriefItem
             Values.Add(newValue);
             return newValue;
         }
+
+        /// <summary> Adds this new value to this citation element </summary>
+        /// <param name="Value"> Value as a simple string </param>
+        /// <param name="SubTerm"> Sub-term (or display label), which may be associated with this value (optional) </param>
+        public BriefItem_DescTermValue Add_Value(string Value, string SubTerm)
+        {
+            if (Values == null)
+                Values = new List<BriefItem_DescTermValue>();
+
+            BriefItem_DescTermValue newValue = new BriefItem_DescTermValue(Value) {SubTerm = SubTerm};
+            Values.Add(newValue);
+            return newValue;
+        }
     }
 }

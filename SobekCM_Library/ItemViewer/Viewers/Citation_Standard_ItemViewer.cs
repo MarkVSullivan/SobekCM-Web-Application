@@ -10,6 +10,7 @@ using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Core.Users;
+using SobekCM.Library.Citation.SectionWriter;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -309,14 +310,30 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 bool foundExistingData = false;
                 foreach (CitationElement thisField in fieldsSet.Elements)
                 {
-                    // Look for a match in the item description
-                    BriefItem_DescriptiveTerm briefTerm = BriefItem.Get_Description(thisField.MetadataTerm);
-
-                    // If no match, just continue
-                    if ((briefTerm != null) && (briefTerm.Values.Count > 0))
+                    // Was this a custom writer?
+                    if ((thisField.SectionWriter != null) && (!String.IsNullOrWhiteSpace(thisField.SectionWriter.Class_Name)))
                     {
-                        foundExistingData = true;
-                        break;
+                        // Try to get the section writer
+                        iCitationSectionWriter sectionWriter = SectionWriter_Factory.GetSectionWriter(thisField.SectionWriter.Assembly, thisField.SectionWriter.Class_Name);
+
+                        // If it was found and there is data, then we found some
+                        if ((sectionWriter != null) && (sectionWriter.Has_Data_To_Write(thisField, BriefItem)))
+                        {
+                            foundExistingData = true;
+                            break;
+                        }
+                    }
+                    else // Not a custom writer
+                    {
+                        // Look for a match in the item description
+                        BriefItem_DescriptiveTerm briefTerm = BriefItem.Get_Description(thisField.MetadataTerm);
+
+                        // If no match, just continue
+                        if ((briefTerm != null) && (briefTerm.Values.Count > 0))
+                        {
+                            foundExistingData = true;
+                            break;
+                        }
                     }
                 }
 
@@ -325,7 +342,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     continue;
 
                 // Start this section
-                result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_" + fieldsSet.ID.Replace(" ","_") + "Section\" >");
+                result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_" + fieldsSet.ID.Replace(" ", "_") + "Section\" >");
                 if (!String.IsNullOrEmpty(fieldsSet.Heading))
                 {
                     result.AppendLine(INDENT + "<h2>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(fieldsSet.Heading, CurrentRequest.Language) + "</h2>");
@@ -335,247 +352,263 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 // Step through all the fields in this field set and write them
                 foreach (CitationElement thisField in fieldsSet.Elements)
                 {
-                    // Look for a match in the item description
-                    BriefItem_DescriptiveTerm briefTerm = BriefItem.Get_Description(thisField.MetadataTerm);
-
-                    // If no match, just continue
-                    if ((briefTerm == null) || ( briefTerm.Values.Count == 0 ))
-                        continue;
-
-                    // If they can all be listed one after the other do so now
-                    if (!thisField.IndividualFields)
+                    // Was this a custom writer?
+                    if ((thisField.SectionWriter != null) && (!String.IsNullOrWhiteSpace(thisField.SectionWriter.Class_Name)))
                     {
-                        List<string> valueArray = new List<string>();
-                        foreach (BriefItem_DescTermValue thisValue in briefTerm.Values)
+                        // Try to get the section writer
+                        iCitationSectionWriter sectionWriter = SectionWriter_Factory.GetSectionWriter(thisField.SectionWriter.Assembly, thisField.SectionWriter.Class_Name);
+
+                        // If it was found and there is data, then we found some
+                        if ((sectionWriter != null) && (sectionWriter.Has_Data_To_Write(thisField, BriefItem)))
                         {
-                            if (!String.IsNullOrEmpty(thisField.SearchCode))
-                            {
-                                if ( String.IsNullOrEmpty(thisField.ItemProp ))
-                                {
-                                    if (String.IsNullOrEmpty(thisValue.Authority))
-                                    {
-                                        if (String.IsNullOrEmpty(thisValue.Language))
-                                        {
-                                            valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end);
-                                        }
-                                        else
-                                        {
-                                            valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (String.IsNullOrEmpty(thisValue.Language))
-                                        {
-                                            valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )");
-                                        }
-                                        else
-                                        {
-                                            valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
-                                        }
-                                    }
-                                    
-                                }
-                                else
-                                {
-                                    if (String.IsNullOrEmpty(thisValue.Authority))
-                                    {
-                                        if (String.IsNullOrEmpty(thisValue.Language))
-                                        {
-                                            valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + "</span>");
-                                        }
-                                        else
-                                        {
-                                            valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )" + "</span>");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (String.IsNullOrEmpty(thisValue.Language))
-                                        {
-                                            valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )" + "</span>");
-                                        }
-                                        else
-                                        {
-                                            valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>");
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if ( String.IsNullOrEmpty(thisField.ItemProp ))
-                                {
-                                    if (String.IsNullOrEmpty(thisValue.Authority))
-                                    {
-                                        if (String.IsNullOrEmpty(thisValue.Language))
-                                        {
-                                            valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value));
-                                        }
-                                        else
-                                        {
-                                            valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (String.IsNullOrEmpty(thisValue.Language))
-                                        {
-                                            valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )");
-                                        }
-                                        else
-                                        {
-                                            valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
-                                        }
-                                    }
-                                    
-                                }
-                                else
-                                {
-                                    if (String.IsNullOrEmpty(thisValue.Authority))
-                                    {
-                                        if (String.IsNullOrEmpty(thisValue.Language))
-                                        {
-                                            valueArray.Add( "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + "</span>");
-                                        }
-                                        else
-                                        {
-                                            valueArray.Add( "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )" + "</span>");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (String.IsNullOrEmpty(thisValue.Language))
-                                        {
-                                            valueArray.Add( "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )" + "</span>");
-                                        }
-                                        else
-                                        {
-                                            valueArray.Add( "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>");
-                                        }
-                                    }
-                                }
-                            }
+                            sectionWriter.Write_Citation_Section(thisField, result, BriefItem, width, search_link, search_link_end, Tracer);
                         }
-
-                        // Now, add this to the citation HTML
-                        Add_Citation_HTML_Rows(thisField.DisplayTerm, valueArray, INDENT, result);
                     }
-                    else
+                    else // Not a custom writer
                     {
-                        // In this case, each individual value gets its own citation html row
-                        foreach (BriefItem_DescTermValue thisValue in briefTerm.Values)
+
+                        // Look for a match in the item description
+                        BriefItem_DescriptiveTerm briefTerm = BriefItem.Get_Description(thisField.MetadataTerm);
+
+                        // If no match, just continue
+                        if ((briefTerm == null) || (briefTerm.Values.Count == 0))
+                            continue;
+
+                        // If they can all be listed one after the other do so now
+                        if (!thisField.IndividualFields)
                         {
-                            // Determine the label
-                            string label = thisField.DisplayTerm;
-                            if (thisField.OverrideDisplayTerm == CitationElement_OverrideDispayTerm_Enum.subterm)
+                            List<string> valueArray = new List<string>();
+                            foreach (BriefItem_DescTermValue thisValue in briefTerm.Values)
                             {
-                                if (!String.IsNullOrEmpty(thisValue.SubTerm))
-                                    label = thisValue.SubTerm;
+                                if (!String.IsNullOrEmpty(thisField.SearchCode))
+                                {
+                                    if (String.IsNullOrEmpty(thisField.ItemProp))
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Authority))
+                                        {
+                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            {
+                                                valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end);
+                                            }
+                                            else
+                                            {
+                                                valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            {
+                                                valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )");
+                                            }
+                                            else
+                                            {
+                                                valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
+                                            }
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Authority))
+                                        {
+                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            {
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + "</span>");
+                                            }
+                                            else
+                                            {
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )" + "</span>");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            {
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )" + "</span>");
+                                            }
+                                            else
+                                            {
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>");
+                                            }
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (String.IsNullOrEmpty(thisField.ItemProp))
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Authority))
+                                        {
+                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            {
+                                                valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value));
+                                            }
+                                            else
+                                            {
+                                                valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            {
+                                                valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )");
+                                            }
+                                            else
+                                            {
+                                                valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
+                                            }
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        if (String.IsNullOrEmpty(thisValue.Authority))
+                                        {
+                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            {
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + "</span>");
+                                            }
+                                            else
+                                            {
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )" + "</span>");
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            {
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )" + "</span>");
+                                            }
+                                            else
+                                            {
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>");
+                                            }
+                                        }
+                                    }
+                                }
                             }
 
-                            if (!String.IsNullOrEmpty(thisField.SearchCode))
+                            // Now, add this to the citation HTML
+                            Add_Citation_HTML_Rows(thisField.DisplayTerm, valueArray, INDENT, result);
+                        }
+                        else
+                        {
+                            // In this case, each individual value gets its own citation html row
+                            foreach (BriefItem_DescTermValue thisValue in briefTerm.Values)
                             {
-                                if (String.IsNullOrEmpty(thisField.ItemProp))
+                                // Determine the label
+                                string label = thisField.DisplayTerm;
+                                if (thisField.OverrideDisplayTerm == CitationElement_OverrideDispayTerm_Enum.subterm)
                                 {
-                                    if (String.IsNullOrEmpty(thisValue.Authority))
+                                    if (!String.IsNullOrEmpty(thisValue.SubTerm))
+                                        label = thisValue.SubTerm;
+                                }
+
+                                if (!String.IsNullOrEmpty(thisField.SearchCode))
+                                {
+                                    if (String.IsNullOrEmpty(thisField.ItemProp))
                                     {
-                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        if (String.IsNullOrEmpty(thisValue.Authority))
                                         {
-                                            result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end, INDENT));
+                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            {
+                                                result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end, INDENT));
+                                            }
+                                            else
+                                            {
+                                                result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )", INDENT));
+                                            }
                                         }
                                         else
                                         {
-                                            result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )", INDENT));
+                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            {
+                                                result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )", INDENT));
+                                            }
+                                            else
+                                            {
+                                                result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )", INDENT));
+                                            }
                                         }
                                     }
                                     else
                                     {
-                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        if (String.IsNullOrEmpty(thisValue.Authority))
                                         {
-                                            result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )", INDENT));
+                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            {
+                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + "</span>", INDENT));
+                                            }
+                                            else
+                                            {
+                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )" + "</span>", INDENT));
+                                            }
                                         }
                                         else
                                         {
-                                            result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )", INDENT));
+                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            {
+                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )" + "</span>", INDENT));
+                                            }
+                                            else
+                                            {
+                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>", INDENT));
+                                            }
                                         }
                                     }
                                 }
                                 else
                                 {
-                                    if (String.IsNullOrEmpty(thisValue.Authority))
+                                    if (String.IsNullOrEmpty(thisField.ItemProp))
                                     {
-                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        if (String.IsNullOrEmpty(thisValue.Authority))
                                         {
-                                            result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + "</span>", INDENT));
+                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            {
+                                                result.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value), INDENT));
+                                            }
+                                            else
+                                            {
+                                                result.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )", INDENT));
+                                            }
                                         }
                                         else
                                         {
-                                            result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )" + "</span>", INDENT));
+                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            {
+                                                result.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )", INDENT));
+                                            }
+                                            else
+                                            {
+                                                result.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )", INDENT));
+                                            }
                                         }
                                     }
                                     else
                                     {
-                                        if (String.IsNullOrEmpty(thisValue.Language))
+                                        if (String.IsNullOrEmpty(thisValue.Authority))
                                         {
-                                            result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )" + "</span>", INDENT));
+                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            {
+                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + "</span>", INDENT));
+                                            }
+                                            else
+                                            {
+                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )" + "</span>", INDENT));
+                                            }
                                         }
                                         else
                                         {
-                                            result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>", INDENT));
-                                        }
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (String.IsNullOrEmpty(thisField.ItemProp))
-                                {
-                                    if (String.IsNullOrEmpty(thisValue.Authority))
-                                    {
-                                        if (String.IsNullOrEmpty(thisValue.Language))
-                                        {
-                                            result.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value), INDENT));
-                                        }
-                                        else
-                                        {
-                                            result.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )", INDENT));
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (String.IsNullOrEmpty(thisValue.Language))
-                                        {
-                                            result.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )", INDENT));
-                                        }
-                                        else
-                                        {
-                                            result.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )", INDENT));
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    if (String.IsNullOrEmpty(thisValue.Authority))
-                                    {
-                                        if (String.IsNullOrEmpty(thisValue.Language))
-                                        {
-                                            result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + "</span>", INDENT));
-                                        }
-                                        else
-                                        {
-                                            result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )" + "</span>", INDENT));
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (String.IsNullOrEmpty(thisValue.Language))
-                                        {
-                                            result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )" + "</span>", INDENT));
-                                        }
-                                        else
-                                        {
-                                            result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>", INDENT));
+                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            {
+                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )" + "</span>", INDENT));
+                                            }
+                                            else
+                                            {
+                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>", INDENT));
+                                            }
                                         }
                                     }
                                 }

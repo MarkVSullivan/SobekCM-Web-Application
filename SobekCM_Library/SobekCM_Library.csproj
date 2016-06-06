@@ -177,6 +177,7 @@
     <Compile Include="Citation\SectionWriter\Coordinates_SectionWriter.cs" />
     <Compile Include="Citation\SectionWriter\iCitationSectionWriter.cs" />
     <Compile Include="Citation\SectionWriter\Rights_SectionWriter.cs" />
+    <Compile Include="Citation\SectionWriter\SectionWriter_Factory.cs" />
     <Compile Include="Citation\SectionWriter\SpatialCoverage_SectionWriter.cs" />
     <Compile Include="Citation\SectionWriter\UserTags_SectionWriter.cs" />
     <Compile Include="Citation\Template_MemoryMgmt_Utility.cs" />
