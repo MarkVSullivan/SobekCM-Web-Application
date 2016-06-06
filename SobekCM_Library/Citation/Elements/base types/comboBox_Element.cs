@@ -97,7 +97,7 @@ namespace SobekCM.Library.Citation.Elements
         {
             string id_name = html_element_name.Replace("_", "");
 
-            if ((instance_value.Length == 0) && (default_values.Count > 0))
+            if (( String.IsNullOrWhiteSpace(instance_value)) && (default_values.Count > 0))
             {
                 instance_value = default_values[0];
             }
@@ -155,7 +155,7 @@ namespace SobekCM.Library.Citation.Elements
                     Output.WriteLine("                <option value=\"" + thisOption + "\">" + thisOption + "</option>");
                 }
             }
-            if ((instance_value.Length > 0) && (!restrict_values) && (!found_option))
+            if (( !String.IsNullOrWhiteSpace(instance_value)) && (!restrict_values) && (!found_option))
             {
                 Output.WriteLine("                <option selected=\"selected=\" value=\"" + instance_value + "\">" + instance_value + "</option>");
             }

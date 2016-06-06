@@ -38,7 +38,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             // Copy over the viewers
             foreach (View_Object origView in Original.Behaviors.Views)
             {
-                New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer(origView.View_Type, origView.MenuOrder, origView.Exclude ));
+                New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer(origView.View_Type, origView.MenuOrder, origView.Exclude, origView.Label ));
             }
 
             // Copy over the wordmarks

@@ -184,8 +184,11 @@ namespace SobekCM.Library.MySobekViewer
                                     HttpContext.Current.Session.Remove(thisKey);
                                 }
 
-                                // Also clear the currentItem from the cache
-                                CachedDataManager.Items.Remove_Digital_Resource_Object(currentItem.BibID, currentItem.VID, null);
+                                // Remoe from the caches (to replace the other)
+                                CachedDataManager.Items.Remove_Digital_Resource_Object(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
+
+                                // Also clear the engine
+                                SobekEngineClient.Items.Clear_Item_Cache(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
 
                                 // Redirect to the currentItem
                                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;

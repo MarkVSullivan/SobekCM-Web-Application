@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
@@ -41,7 +42,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> TRUE if this viewer should generally be included with this item, otherwise FALSE </returns>
         public bool Include_Viewer(BriefItemInfo CurrentItem)
         {
-            return !String.IsNullOrEmpty(CurrentItem.Behaviors.Embedded_Video);
+            return FileExtensions.Any(Extension => CurrentItem.Web.Contains_File_Extension(Extension));
         }
 
         /// <summary> Flag indicates if this viewer should be override on checkout </summary>
@@ -70,19 +71,35 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
         public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
         {
-            string first_label = "HTML";
-            foreach (BriefItem_FileGrouping thisPage in CurrentItem.Downloads)
+            // Start with an empty label
+            string first_label = String.Empty;
+
+            // First, look at the viewer information from the database
+            BriefItem_BehaviorViewer thisViewer = CurrentItem.Behaviors.Get_Viewer("HTML");
+            if (!String.IsNullOrWhiteSpace(thisViewer.Label))
+                first_label = thisViewer.Label;
+
+            // Next, look for a page name in the METS
+            if (String.IsNullOrEmpty(first_label))
             {
-                // Look for a HTML file on each page
-                foreach (BriefItem_File thisFile in thisPage.Files)
+                foreach (BriefItem_FileGrouping thisPage in CurrentItem.Downloads)
                 {
-                    if (thisFile.File_Extension.IndexOf(".HTM", StringComparison.OrdinalIgnoreCase) == 0)
+                    // Look for a HTML file on each page
+                    foreach (BriefItem_File thisFile in thisPage.Files)
                     {
-                        first_label = thisPage.Label;
-                        break;
+                        if (thisFile.File_Extension.IndexOf(".HTM", StringComparison.OrdinalIgnoreCase) == 0)
+                        {
+                            if (!String.IsNullOrWhiteSpace(thisPage.Label))
+                                first_label = thisPage.Label;
+                            break;
+                        }
                     }
                 }
             }
+
+            // Finally, just default to HTML otherwise
+            if (String.IsNullOrEmpty(first_label))
+                first_label = "HTML";
 
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;

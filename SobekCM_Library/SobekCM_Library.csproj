@@ -190,6 +190,7 @@
     <Compile Include="ItemViewer\Menu\Item_MenuItem.cs" />
     <Compile Include="ItemViewer\Menu\iItemMenuProvider.cs" />
     <Compile Include="ItemViewer\Menu\StandardItemMenuProvider.cs" />
+    <Compile Include="ItemViewer\Viewers\abstractItemViewerPrototyper.cs" />
     <Compile Include="ItemViewer\Viewers\abstractNoPaginationItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\abstractPageFilesItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\UF_Archives_ItemViewer.cs" />

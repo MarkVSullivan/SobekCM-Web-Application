@@ -4,20 +4,18 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.UI.WebControls;
-using System.Windows.Forms.VisualStyles;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Library.ItemViewer.Menu;
-using SobekCM.Library.UI;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
 {
     /// <summary> JPEG viewer prototyper, which is used to check to see if a (non-thumbnail) JPEG file exists, 
     /// to create the link in the main menu, and to create the viewer itself if the user selects that option </summary>
-    public class JPEG_ItemViewer_Prototyper : iItemViewerPrototyper
+    public class JPEG_ItemViewer_Prototyper : abstractItemViewerPrototyper
     {
         /// <summary> Constructor for a new instance of the JPEG_ItemViewer_Prototyper class </summary>
         public JPEG_ItemViewer_Prototyper()
@@ -27,22 +25,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             FileExtensions = new string[] { "JPG" };
         }
 
-        /// <summary> Name of this viewer, which matches the viewer name from the database and 
-        /// in the configuration files as well.  This is actually populate by the configuration information </summary>
-        public string ViewerType { get; set; }
-
-        /// <summary> Code for this viewer, which can also be set from the configuration information </summary>
-        public string ViewerCode { get; set; }
-
-        /// <summary> If this viewer is tied to certain files existing in the digital resource, this lists all the 
-        /// possible file extensions this supports (from the configuration file usually) </summary>
-        public string[] FileExtensions { get; set; }
-
         /// <summary> Indicates if the specified item matches the basic requirements for this viewer, or
         /// if this viewer should be ignored for this item </summary>
         /// <param name="CurrentItem"> Digital resource to examine to see if this viewer really should be included </param>
         /// <returns> TRUE if this viewer should generally be included with this item, otherwise FALSE </returns>
-        public bool Include_Viewer(BriefItemInfo CurrentItem)
+        public override bool Include_Viewer(BriefItemInfo CurrentItem)
         {
             // Check to see if there are any PDF files attached, but allow the configuration 
             // to actually rule which files are necessary to be shown ( i.e., maybe 'PDFA' will be an extension
@@ -58,7 +45,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Flag indicates if this viewer should be override on checkout </summary>
         /// <param name="CurrentItem"> Digital resource to examine to see if this viewer should really be overriden </param>
         /// <returns> TRUE always, since PDFs should never be shown if an item is checked out </returns>
-        public bool Override_On_Checkout(BriefItemInfo CurrentItem)
+        public override bool Override_On_Checkout(BriefItemInfo CurrentItem)
         {
             return true;
         }
@@ -68,7 +55,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="IpRestricted"> Flag indicates if this item is IP restricted AND if the current user is outside the ranges </param>
         /// <returns> TRUE if the user has access to use this viewer, otherwise FALSE </returns>
-        public bool Has_Access(BriefItemInfo CurrentItem, User_Object CurrentUser, bool IpRestricted)
+        public override bool Has_Access(BriefItemInfo CurrentItem, User_Object CurrentUser, bool IpRestricted)
         {
             return !IpRestricted;
         }
@@ -79,7 +66,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
-        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
+        public override void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
         {
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;
@@ -101,7 +88,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> Fully built and initialized <see cref="JPEG_ItemViewer"/> object </returns>
         /// <remarks> This method is called whenever a request requires the actual viewer to be created to render the HTML for
         /// the digital resource requested.  The created viewer is then destroyed at the end of the request </remarks>
-        public iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
+        public override iItemViewer Create_Viewer(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, Custom_Tracer Tracer)
         {
             return new JPEG_ItemViewer(CurrentItem, CurrentUser, CurrentRequest, Tracer, ViewerCode.ToLower(), FileExtensions);
         }

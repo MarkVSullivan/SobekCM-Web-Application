@@ -279,6 +279,7 @@ update SobekCM_Item_Viewer_Types set DefaultView=1 where ViewType='ALL_VOLUMES';
 update SobekCM_Item_Viewer_Types set DefaultView=1 where ViewType='RELATED_IMAGES';
 update SobekCM_Item_Viewer_Types set DefaultView=1 where ViewType='JPEG';
 update SobekCM_Item_Viewer_Types set DefaultView=1 where ViewType='JPEG2000';
+update SobekCM_Item_Viewer_Types set DefaultView=1 where ViewType='GOOGLE_MAP';
 GO
 
 -- Add default views to all items in this library

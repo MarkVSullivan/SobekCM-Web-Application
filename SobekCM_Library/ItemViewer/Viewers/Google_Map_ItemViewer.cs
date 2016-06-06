@@ -385,19 +385,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             mapBuilder.AppendLine("</script>");
         }
 
-        /// <summary> Writes the google map script to display the spatial coordinates and zoom correctly upon page load </summary>
-        /// <param name="Output"> Output stream to write the script to </param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public void Add_Google_Map_Scripts(TextWriter Output, Custom_Tracer Tracer)
-        {
-            if (CurrentRequest.ViewerCode == "mapsearch")
-                googleItemSearch = true;
-
-            Tracer.Add_Trace("goole_map_itemviewer.Write_HTML", "Adding google map instructions as script");
-
-            Output.WriteLine(mapBuilder.ToString());
-        }
-
         /// <summary> Gets the collection of body attributes to be included 
         /// within the HTML body tag (usually to add events to the body) </summary>
         /// <param name="Body_Attributes"> List of body attributes to be included </param>
@@ -651,6 +638,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("        <tr>");
             Output.WriteLine("          <td class=\"SobekCitationDisplay\">");
             Output.WriteLine("            <div id=\"sbkGmiv_MapDiv\"></div>");
+            Output.WriteLine();
+
+            Tracer.Add_Trace("goole_map_itemviewer.Write_HTML", "Adding google map instructions as script");
+            Output.WriteLine(mapBuilder.ToString());
+            Output.WriteLine();
+
             Output.WriteLine("          </td>");
             Output.WriteLine("        <!-- END GOOGLE MAP VIEWER OUTPUT -->");
         }
