@@ -90,6 +90,9 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Preferred citation note </summary>
         PreferredCitation,
 
+        /// <summary>  Provenance information </summary>
+        Provenance,
+
         /// <summary> Publications note </summary>
         Publications,
 
@@ -590,6 +593,9 @@ namespace SobekCM.Resource_Object.Bib_Info
                     case Note_Type_Enum.Action:
                         return "Action";
 
+                    case Note_Type_Enum.Provenance:
+                        return "Provenance";
+
                     default:
                         return String.Empty;
                 }
@@ -707,6 +713,9 @@ namespace SobekCM.Resource_Object.Bib_Info
 
                     case Note_Type_Enum.Action:
                         return "action";
+
+                    case Note_Type_Enum.Provenance:
+                        return "provenance";
 
                     default:
                         return String.Empty;
@@ -856,6 +865,10 @@ namespace SobekCM.Resource_Object.Bib_Info
 
                     case "action":
                         Note_Type = Note_Type_Enum.Action;
+                        break;
+
+                    case "provenance":
+                        Note_Type = Note_Type_Enum.Provenance;
                         break;
 
                     default:

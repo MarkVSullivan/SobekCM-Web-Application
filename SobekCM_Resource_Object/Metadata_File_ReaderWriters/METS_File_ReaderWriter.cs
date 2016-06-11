@@ -2402,12 +2402,12 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                 {
                         // if EndElement, move up tree
                     case XmlNodeType.EndElement:
-                        if (R.Name == "METS:structMap")
+                        if ((R.Name == "METS:structMap") || ( R.Name == "structMap" ))
                         {
                             return;
                         }
 
-                        if (R.Name == "METS:div")
+                        if ((R.Name == "METS:div") || (R.Name == "div"))
                         {
                             // If there are more than one parent on the "parent stack" pop one off
                             if (parentNodes.Count > 0)
@@ -2419,7 +2419,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                     case XmlNodeType.Element:
 
                         // Is this the beginning of a structure map
-                        if (R.Name == "METS:structMap")
+                        if ((R.Name == "METS:structMap") || (R.Name == "structMap"))
                         {
                             thisDivTree = Package.Divisions.Physical_Tree;
                             if (R.MoveToAttribute("TYPE"))
@@ -2430,7 +2430,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                         }
 
                         // Is this a new division?
-                        if ((R.Name == "METS:div") && (R.HasAttributes))
+                        if (((R.Name == "METS:div") || ( R.Name == "div" )) && (R.HasAttributes))
                         {
                             // Since this is a new division, get all the possible attribute values or set to empty string
                             string dmdid = (R.MoveToAttribute("DMDID") ? R.Value : String.Empty);
@@ -2534,7 +2534,7 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                         }
 
                         // Is this a new file pointer applying to the last division?
-                        if ((R.Name == "METS:fptr") && (R.MoveToAttribute("FILEID")))
+                        if (((R.Name == "METS:fptr") || (R.Name == "fptr")) && (R.MoveToAttribute("FILEID")))
                         {
                             // Get this file id
                             string fileID = R.Value;
@@ -2575,7 +2575,40 @@ namespace SobekCM.Resource_Object.Metadata_File_ReaderWriters
                                 }
                             }
                         }
+
+                        // Is this a new METS pointer, often seen when importing from DSpace
+                        if ((R.Name == "METS:mptr") || (R.Name == "mptr")) 
+                        {
+                            // Get the parent label
+                            string parentLabel = String.Empty;
+
+                            // Look for a parent node (should be one)
+                            if (parentNodes.Count > 0)
+                            {
+                                abstract_TreeNode pageParentNode = parentNodes.Peek();
+                                parentLabel = pageParentNode.Label;
+                            }
+                            else if (Package.Divisions.Outer_Division_Count > 0)
+                            {
+                                parentLabel = Package.Divisions.Outer_Divisions[Package.Divisions.Outer_Division_Count - 1].Label;
+                            }
+
+                            if ((!String.IsNullOrEmpty(parentLabel)) && (String.Compare(parentLabel, "Parent of this DSpace Object", StringComparison.OrdinalIgnoreCase) == 0))
+                            {
+                                // Is this a HANDLE reference?
+                                string locType = (R.MoveToAttribute("LOCTYPE") ? R.Value : String.Empty).ToUpper();
+                                string href = (R.MoveToAttribute("xlink:href") ? R.Value : String.Empty);
+
+                                // If this has a handle href, make that the aggregation
+                                if ((locType == "HANDLE") && (href.Length > 0))
+                                {
+                                    Package.Behaviors.Add_Aggregation(href);
+                                }
+                            }
+                        }
+
                         break;
+
                 } // end switch
             } while (R.Read());
         }

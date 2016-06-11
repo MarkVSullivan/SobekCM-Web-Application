@@ -47,12 +47,33 @@ namespace SobekCM.Resource_Object.Bib_Info
             }
 
             // The code may be appearing in the text portion
-            if ((language_iso_code.Length == 0) && (language_text.Length == 3))
+            if ((language_iso_code.Length == 0) && ((language_text.Length == 3) || ((language_text.Length > 3) && ((language_text[2] == '-') || (language_text[3] == '-')))))
             {
-                string possible_text = Get_Language_By_Code(language_text);
+                string possible_code = language_text;
+                if ((language_text.Length > 3) && ((language_text[2] == '-') || (language_text[3] == '-')))
+                    possible_code = language_text.Split("-".ToCharArray())[0];
+
+                string possible_text = Get_Language_By_Code(possible_code);
                 if (possible_text.Length > 0)
                 {
-                    language_iso_code = language_text;
+                    if (language_text.IndexOf("-") < 0)
+                        language_iso_code = language_text;
+                    else
+                        language_rfc_code = language_text;
+                    language_text = possible_text;
+                }
+            }
+            else if ((language_iso_code.Length == 0) && (language_text.Length > 3) && ((language_text[2] == '_') || (language_text[3] == '_')))
+            {
+                string possible_code = language_text.Split("_".ToCharArray())[0];
+
+                string possible_text = Get_Language_By_Code(possible_code);
+                if (possible_text.Length > 0)
+                {
+                    if (language_text.IndexOf("_") < 0)
+                        language_iso_code = language_text;
+                    else
+                        language_rfc_code = language_text.Replace("_","-");
                     language_text = possible_text;
                 }
             }
@@ -533,6 +554,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Dinka";
                     break;
                 case "DIV":
+                case "DV":
                     text = "Divehi";
                     break;
                 case "DOI":
@@ -548,12 +570,15 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Dutch, Middle (ca. 1050-1350)";
                     break;
                 case "DUT":
+                case "NL":
+                case "NLD":
                     text = "Dutch";
                     break;
                 case "DYU":
                     text = "Dyula";
                     break;
                 case "DZO":
+                case "DZ":
                     text = "Dzongkha";
                     break;
                 case "EFI":
@@ -569,12 +594,14 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Elamite";
                     break;
                 case "ENG":
+                case "EN":
                     text = "English";
                     break;
                 case "ENM":
                     text = "English, Middle (1100-1500)";
                     break;
                 case "EPO":
+                case "EO":
                     text = "Esperanto";
                     break;
                 case "ESK":
@@ -584,12 +611,14 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Esperanto";
                     break;
                 case "EST":
+                case "ET":
                     text = "Estonian";
                     break;
                 case "ETH":
                     text = "Ethiopic";
                     break;
                 case "EWE":
+                case "EE":
                     text = "Ewe";
                     break;
                 case "EWO":
@@ -599,6 +628,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Fang";
                     break;
                 case "FAO":
+                case "FO":
                     text = "Faroese";
                     break;
                 case "FAR":
@@ -608,9 +638,11 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Fanti";
                     break;
                 case "FIJ":
+                case "FJ":
                     text = "Fijian";
                     break;
                 case "FIN":
+                case "FI":
                     text = "Finnish";
                     break;
                 case "FIU":
@@ -620,6 +652,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Fon";
                     break;
                 case "FRE":
+                case "FR":
                     text = "French";
                     break;
                 case "FRI":
@@ -632,10 +665,12 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "French, Old (ca. 842-1400)";
                     break;
                 case "FRY":
+                case "FY":
                     text = "Frisian";
                     break;
                 case "FUL":
-                    text = "Fula";
+                case "FF":
+                    text = "Fula";  // Fulah?
                     break;
                 case "FUR":
                     text = "Friulian";
@@ -662,9 +697,13 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Germanic (Other)";
                     break;
                 case "GEO":
+                case "KA":
+                case "KAT":
                     text = "Georgian";
                     break;
                 case "GER":
+                case "DE":
+                case "DEU":
                     text = "German";
                     break;
                 case "GEZ":
@@ -674,15 +713,19 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Gilbertese";
                     break;
                 case "GLA":
+                case "GD":
                     text = "Scottish Gaelic";
                     break;
                 case "GLE":
+                case "GA":
                     text = "Irish";
                     break;
                 case "GLG":
+                case "GL":
                     text = "Galician";
                     break;
                 case "GLV":
+                case "GV":
                     text = "Manx";
                     break;
                 case "GMH":
@@ -707,9 +750,12 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Greek, Ancient (to 1453)";
                     break;
                 case "GRE":
+                case "ELL":
+                case "EL":
                     text = "Greek, Modern (1453- )";
                     break;
                 case "GRN":
+                case "GN":
                     text = "Guarani";
                     break;
                 case "GUA":
@@ -725,18 +771,22 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Haida";
                     break;
                 case "HAT":
+                case "HT":
                     text = "Haitian French Creole";
                     break;
                 case "HAU":
+                case "HA":
                     text = "Hausa";
                     break;
                 case "HAW":
                     text = "Hawaiian";
                     break;
                 case "HEB":
+                case "HE":
                     text = "Hebrew";
                     break;
                 case "HER":
+                case "HZ":
                     text = "Herero";
                     break;
                 case "HIL":
@@ -746,6 +796,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Himachali";
                     break;
                 case "HIN":
+                case "HI":
                     text = "Hindi";
                     break;
                 case "HIT":
@@ -755,9 +806,11 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Hmong";
                     break;
                 case "HMO":
+                case "HO":
                     text = "Hiri Motu";
                     break;
                 case "HUN":
+                case "HU":
                     text = "Hungarian";
                     break;
                 case "HUP":
@@ -767,36 +820,44 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Iban";
                     break;
                 case "IBO":
+                case "IG":
                     text = "Igbo";
                     break;
                 case "ICE":
+                case "IS":
                     text = "Icelandic";
                     break;
                 case "IDO":
+                case "IO":
                     text = "Ido";
                     break;
                 case "III":
+                case "II":
                     text = "Sichuan Yi";
                     break;
                 case "IJO":
                     text = "Ijo";
                     break;
                 case "IKU":
+                case "IU":
                     text = "Inuktitut";
                     break;
                 case "ILE":
-                    text = "Interlingue";
+                case "IE":
+                    text = "Interlingue"; // Also Occidental?
                     break;
                 case "ILO":
                     text = "Iloko";
                     break;
                 case "INA":
+                case "IA":
                     text = "Interlingua (International Auxiliary Language Association";
                     break;
                 case "INC":
                     text = "Indic (Other)";
                     break;
                 case "IND":
+                case "ID":
                     text = "Indonesian";
                     break;
                 case "INE":
@@ -809,6 +870,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Interlingua (International Auxiliary Language Association)";
                     break;
                 case "IPK":
+                case "IK":
                     text = "Inupiaq";
                     break;
                 case "IRA":
@@ -821,12 +883,15 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Iroquoian (Other)";
                     break;
                 case "ITA":
+                case "IT":
                     text = "Italian";
                     break;
                 case "JAV":
+                case "JV":
                     text = "Javanese";
                     break;
                 case "JPN":
+                case "JA":
                     text = "Japanese";
                     break;
                 case "JPR":
@@ -845,27 +910,32 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Kachin";
                     break;
                 case "KAL":
+                case "KL":
                     text = "Kalâtdlisut";
                     break;
                 case "KAM":
                     text = "Kamba";
                     break;
                 case "KAN":
+                case "KN":
                     text = "Kannada";
                     break;
                 case "KAR":
                     text = "Karen";
                     break;
                 case "KAS":
+                case "KS":
                     text = "Kashmiri";
                     break;
                 case "KAU":
+                case "KR":
                     text = "Kanuri";
                     break;
                 case "KAW":
                     text = "Kawi";
                     break;
                 case "KAZ":
+                case "KK":
                     text = "Kazakh";
                     break;
                 case "KBD":
@@ -878,18 +948,22 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Khoisan (Other)";
                     break;
                 case "KHM":
+                case "KM":
                     text = "Khmer";
                     break;
                 case "KHO":
                     text = "Khotanese";
                     break;
                 case "KIK":
+                case "KI":
                     text = "Kikuyu";
                     break;
                 case "KIN":
+                case "RW":
                     text = "Kinyarwanda";
                     break;
                 case "KIR":
+                case "KY":
                     text = "Kyrgyz";
                     break;
                 case "KMB":
@@ -899,12 +973,15 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Konkani";
                     break;
                 case "KOM":
+                case "KV":
                     text = "Komi";
                     break;
                 case "KON":
+                case "KG":
                     text = "Kongo";
                     break;
                 case "KOR":
+                case "KO":
                     text = "Korean";
                     break;
                 case "KOS":
@@ -920,12 +997,14 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Kurukh";
                     break;
                 case "KUA":
+                case "KJ":
                     text = "Kuanyama";
                     break;
                 case "KUM":
                     text = "Kumyk";
                     break;
                 case "KUR":
+                case "KU":
                     text = "Kurdish";
                     break;
                 case "KUS":
@@ -947,27 +1026,33 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Occitan (post-1500)";
                     break;
                 case "LAO":
+                case "LO":
                     text = "Lao";
                     break;
                 case "LAP":
                     text = "Sami";
                     break;
                 case "LAT":
+                case "LA":
                     text = "Latin";
                     break;
                 case "LAV":
+                case "LV":
                     text = "Latvian";
                     break;
                 case "LEZ":
                     text = "Lezgian";
                     break;
                 case "LIM":
+                case "LI":
                     text = "Limburgish";
                     break;
                 case "LIN":
+                case "LN":
                     text = "Lingala";
                     break;
                 case "LIT":
+                case "LT":
                     text = "Lithuanian";
                     break;
                 case "LOL":
@@ -983,9 +1068,11 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Luba-Lulua";
                     break;
                 case "LUB":
+                case "LU":
                     text = "Luba-Katanga";
                     break;
                 case "LUG":
+                case "LG":
                     text = "Ganda";
                     break;
                 case "LUI":
@@ -1001,6 +1088,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Lushai";
                     break;
                 case "MAC":
+                case "MK":
                     text = "Macedonian";
                     break;
                 case "MAD":
@@ -1010,6 +1098,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Magahi";
                     break;
                 case "MAH":
+                case "MH":
                     text = "Marshallese";
                     break;
                 case "MAI":
@@ -1019,18 +1108,21 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Makasar";
                     break;
                 case "MAL":
+                case "ML":
                     text = "Malayalam";
                     break;
                 case "MAN":
                     text = "Mandingo";
                     break;
                 case "MAO":
+                case "MI":
                     text = "Maori";
                     break;
                 case "MAP":
                     text = "Austronesian (Other)";
                     break;
                 case "MAR":
+                case "MR":
                     text = "Marathi";
                     break;
                 case "MAS":
@@ -1040,6 +1132,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Manx";
                     break;
                 case "MAY":
+                case "MS":
                     text = "Malay";
                     break;
                 case "MDR":
@@ -1067,9 +1160,11 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Malagasy";
                     break;
                 case "MLG":
+                case "MG":
                     text = "Malagasy";
                     break;
                 case "MLT":
+                case "MT":
                     text = "Maltese";
                     break;
                 case "MNC":
@@ -1088,6 +1183,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Moldavian";
                     break;
                 case "MON":
+                case "MN":
                     text = "Mongolian";
                     break;
                 case "MOS":
@@ -1118,24 +1214,30 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Neapolitan Italian";
                     break;
                 case "NAU":
+                case "NA":
                     text = "Nauru";
                     break;
                 case "NAV":
+                case "NV":
                     text = "Navajo";
                     break;
                 case "NBL":
-                    text = "Ndebele (South Africa)";
+                case "NR":
+                    text = "Ndebele (South Africa)"; // South Ndebele
                     break;
                 case "NDE":
-                    text = "Ndebele (Zimbabwe)";
+                case "ND":
+                    text = "Ndebele (Zimbabwe)"; // North Ndebele
                     break;
                 case "NDO":
+                case "NG":
                     text = "Ndonga";
                     break;
                 case "NDS":
                     text = "Low German";
                     break;
                 case "NEP":
+                case "NE":
                     text = "Nepali";
                     break;
                 case "NEW":
@@ -1151,9 +1253,11 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Niuean";
                     break;
                 case "NNO":
+                case "NN":
                     text = "Norwegian (Nynorsk)";
                     break;
                 case "NOB":
+                case "NB":
                     text = "Norwegian (Bokmål)";
                     break;
                 case "NOG":
@@ -1163,6 +1267,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Old Norse";
                     break;
                 case "NOR":
+                case "NO":
                     text = "Norwegian";
                     break;
                 case "NSO":
@@ -1172,7 +1277,8 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Nubian languages";
                     break;
                 case "NYA":
-                    text = "Nyanja";
+                case "NY":
+                    text = "Nyanja"; // Chichewa, Chewa
                     break;
                 case "NYM":
                     text = "Nyamwezi";
@@ -1187,21 +1293,26 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Nzima";
                     break;
                 case "OCI":
+                case "OC":
                     text = "Occitan (post-1500)";
                     break;
                 case "OJI":
+                case "OJ":
                     text = "Ojibwa";
                     break;
                 case "ORI":
+                case "OR":
                     text = "Oriya";
                     break;
                 case "ORM":
+                case "OM":
                     text = "Oromo";
                     break;
                 case "OSA":
                     text = "Osage";
                     break;
                 case "OSS":
+                case "OS":
                     text = "Ossetic";
                     break;
                 case "OTA":
@@ -1223,6 +1334,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Pampanga";
                     break;
                 case "PAN":
+                case "PA":
                     text = "Panjabi";
                     break;
                 case "PAP":
@@ -1235,6 +1347,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Old Persian (ca. 600-400 B.C.)";
                     break;
                 case "PER":
+                case "FA":
                     text = "Persian";
                     break;
                 case "PHI":
@@ -1244,15 +1357,18 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Phoenician";
                     break;
                 case "PLI":
+                case "PI":
                     text = "Pali";
                     break;
                 case "POL":
+                case "PL":
                     text = "Polish";
                     break;
                 case "PON":
                     text = "Ponape";
                     break;
                 case "POR":
+                case "PT":
                     text = "Portuguese";
                     break;
                 case "PRA":
@@ -1262,9 +1378,11 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Provençal (to 1500)";
                     break;
                 case "PUS":
+                case "PS":
                     text = "Pushto";
                     break;
                 case "QUE":
+                case "QU":
                     text = "Quechua";
                     break;
                 case "RAJ":
@@ -1280,24 +1398,28 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Romance (Other)";
                     break;
                 case "ROH":
-                    text = "Raeto-Romance";
+                case "RM":
+                    text = "Raeto-Romance"; // Romancsh
                     break;
                 case "ROM":
                     text = "Romani";
                     break;
                 case "RUM":
+                case "RO":
                     text = "Romanian";
                     break;
                 case "RUN":
                     text = "Rundi";
                     break;
                 case "RUS":
+                case "RU":
                     text = "Russian";
                     break;
                 case "SAD":
                     text = "Sandawe";
                     break;
                 case "SAG":
+                case "SG":
                     text = "Sango (Ubangi Creole)";
                     break;
                 case "SAH":
@@ -1313,6 +1435,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Samaritan Aramaic";
                     break;
                 case "SAN":
+                case "SA":
                     text = "Sanskrit";
                     break;
                 case "SAO":
@@ -1355,6 +1478,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Sidamo";
                     break;
                 case "SIN":
+                case "SI":
                     text = "Sinhalese";
                     break;
                 case "SIO":
@@ -1367,15 +1491,19 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Slavic (Other)";
                     break;
                 case "SLO":
+                case "SK":
+                case "SLK":
                     text = "Slovak";
                     break;
                 case "SLV":
+                case "SL":
                     text = "Slovenian";
                     break;
                 case "SMA":
                     text = "Southern Sami";
                     break;
                 case "SME":
+                case "SE":
                     text = "Northern Sami";
                     break;
                 case "SMI":
@@ -1388,15 +1516,18 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Inari Sami";
                     break;
                 case "SMO":
+                case "SM":
                     text = "Samoan";
                     break;
                 case "SMS":
                     text = "Skolt Sami";
                     break;
                 case "SNA":
+                case "SN":
                     text = "Shona";
                     break;
                 case "SND":
+                case "SD":
                     text = "Sindhi";
                     break;
                 case "SNH":
@@ -1409,18 +1540,22 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Sogdian";
                     break;
                 case "SOM":
+                case "SO":
                     text = "Somali";
                     break;
                 case "SON":
                     text = "Songhai";
                     break;
                 case "SOT":
+                case "ST":
                     text = "Sotho";
                     break;
                 case "SPA":
+                case "ES":
                     text = "Spanish";
                     break;
                 case "SRD":
+                case "SC":
                     text = "Sardinian";
                     break;
                 case "SRR":
@@ -1433,12 +1568,14 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Sotho";
                     break;
                 case "SSW":
-                    text = "Swazi";
+                case "SS":
+                    text = "Swazi";  // Swati
                     break;
                 case "SUK":
                     text = "Sukuma";
                     break;
                 case "SUN":
+                case "SU":
                     text = "Sundanese";
                     break;
                 case "SUS":
@@ -1448,9 +1585,11 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Sumerian";
                     break;
                 case "SWA":
+                case "SW":
                     text = "Swahili";
                     break;
                 case "SWE":
+                case "SV":
                     text = "Swedish";
                     break;
                 case "SWZ":
@@ -1463,6 +1602,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Tagalog";
                     break;
                 case "TAH":
+                case "TY":
                     text = "Tahitian";
                     break;
                 case "TAI":
@@ -1472,15 +1612,18 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Tajik";
                     break;
                 case "TAM":
+                case "TA":
                     text = "Tamil";
                     break;
                 case "TAR":
+                case "TT":
                     text = "Tatar";
                     break;
                 case "TAT":
                     text = "Tatar";
                     break;
                 case "TEL":
+                case "TE":
                     text = "Telugu";
                     break;
                 case "TEM":
@@ -1493,12 +1636,15 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Tetum";
                     break;
                 case "TGK":
+                case "TG":
                     text = "Tajik";
                     break;
                 case "TGL":
+                case "TL":
                     text = "Tagalog";
                     break;
                 case "THA":
+                case "TH":
                     text = "Thai";
                     break;
                 case "TIB":
@@ -1510,6 +1656,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Tigré";
                     break;
                 case "TIR":
+                case "TI":
                     text = "Tigrinya";
                     break;
                 case "TIV":
@@ -1525,6 +1672,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Tamashek";
                     break;
                 case "TOG":
+                case "TO":
                     text = "Tonga (Nyasa)";
                     break;
                 case "TON":
@@ -1540,15 +1688,18 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Tsimshian";
                     break;
                 case "TSN":
+                case "TN":
                     text = "Tswana";
                     break;
                 case "TSO":
+                case "TS":
                     text = "Tsonga";
                     break;
                 case "TSW":
                     text = "Tswana";
                     break;
                 case "TUK":
+                case "TK":
                     text = "Turkmen";
                     break;
                 case "TUM":
@@ -1558,6 +1709,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Tupi languages";
                     break;
                 case "TUR":
+                case "TR":
                     text = "Turkish";
                     break;
                 case "TUT":
@@ -1567,6 +1719,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Tuvaluan";
                     break;
                 case "TWI":
+                case "TW":
                     text = "Twi";
                     break;
                 case "TYV":
@@ -1579,9 +1732,11 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Ugaritic";
                     break;
                 case "UIG":
+                case "UG":
                     text = "Uighur";
                     break;
                 case "UKR":
+                case "UK":
                     text = "Ukrainian";
                     break;
                 case "UMB":
@@ -1591,21 +1746,26 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Undetermined";
                     break;
                 case "URD":
+                case "UR":
                     text = "Urdu";
                     break;
                 case "UZB":
+                case "UZ": 
                     text = "Uzbek";
                     break;
                 case "VAI":
                     text = "Vai";
                     break;
                 case "VEN":
+                case "VE":
                     text = "Venda";
                     break;
                 case "VIE":
+                case "VI":
                     text = "Vietnamese";
                     break;
                 case "VOL":
+                case "VO":
                     text = "Volapük";
                     break;
                 case "VOT":
@@ -1632,15 +1792,18 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Sorbian languages";
                     break;
                 case "WLN":
+                case "WA":
                     text = "Walloon";
                     break;
                 case "WOL":
+                case "WO":
                     text = "Wolof";
                     break;
                 case "XAL":
                     text = "Kalmyk";
                     break;
                 case "XHO":
+                case "SH":
                     text = "Xhosa";
                     break;
                 case "YAO":
@@ -1650,9 +1813,11 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Yapese";
                     break;
                 case "YID":
+                case "YI":
                     text = "Yiddish";
                     break;
                 case "YOR":
+                case "YO":
                     text = "Yoruba";
                     break;
                 case "YPK":
@@ -1665,12 +1830,14 @@ namespace SobekCM.Resource_Object.Bib_Info
                     text = "Zenaga";
                     break;
                 case "ZHA":
+                case "ZA":
                     text = "Zhuang";
                     break;
                 case "ZND":
                     text = "Zande";
                     break;
                 case "ZUL":
+                case "ZU":
                     text = "Zulu";
                     break;
                 case "ZUN":
