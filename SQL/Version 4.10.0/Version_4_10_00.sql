@@ -1,5 +1,41 @@
 
 
+/****** Object:  Index [IX_SobekCM_Item_Viewer_Types_ViewType]    Script Date: 6/4/2016 12:33:10 PM ******/
+if ( not exists ( SELECT 1 FROM sys.indexes WHERE name='IX_SobekCM_Item_Viewer_Types_ViewType' AND object_id = OBJECT_ID('SobekCM_Item_Viewer_Types')))
+begin
+	CREATE NONCLUSTERED INDEX [IX_SobekCM_Item_Viewer_Types_ViewType] ON [dbo].[SobekCM_Item_Viewer_Types]
+	(
+		[ViewType] ASC
+	)
+	INCLUDE ( 	[ItemViewTypeID]) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+end;
+GO
+
+
+
+IF (NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'SobekCM_Item_Settings'))
+BEGIN
+	CREATE TABLE [dbo].[SobekCM_Item_Settings](
+		[ItemSettingID] [bigint] IDENTITY(1,1) NOT NULL,
+		[ItemID] [int] NOT NULL,
+		[Setting_Key] [nvarchar](255) NOT NULL,
+		[Setting_Value] [nvarchar](max) NOT NULL,
+	 CONSTRAINT [PK_SobekCM_Item_Settings] PRIMARY KEY CLUSTERED 
+	(
+		[ItemSettingID] ASC
+	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+	) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY];
+
+	ALTER TABLE [dbo].[SobekCM_Item_Settings]  WITH CHECK ADD  CONSTRAINT [FK_Item_Settings_Item] FOREIGN KEY([ItemID])
+	REFERENCES [dbo].[SobekCM_Item] ([ItemID]);
+END;
+GO
+
+if ( NOT EXISTS (select * from sys.columns where Name = N'CitationSet' and Object_ID = Object_ID(N'SobekCM_Item')))
+BEGIN
+	ALTER TABLE SobekCM_Item ADD CitationSet varchar(50) null;
+END;
+GO
 
 IF (NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'SobekCM_Extension'))
 BEGIN
@@ -1014,7 +1050,6 @@ begin
 end;
 GO
 
-
 -- Add a new incoming folder for the builder/bulk loader, or edit
 -- an existing incoming folder (by incoming folder id)
 ALTER PROCEDURE [dbo].[SobekCM_Builder_Incoming_Folder_Edit]
@@ -1029,10 +1064,13 @@ ALTER PROCEDURE [dbo].[SobekCM_Builder_Incoming_Folder_Edit]
 	@Allow_Folders_No_Metadata bit,
 	@FolderName nvarchar(150),
 	@BibID_Roots_Restrictions varchar(255),
-	@ModuleSetID int,
-	@NewID int output
+	@ModuleSetID int
 AS 
 BEGIN
+
+	-- Keep the last network folder value
+	declare @lastFolder varchar(255);
+	set @lastFolder = '';
 
 	-- Is this a new incoming folder?
 	if (( select COUNT(*) from SobekCM_Builder_Incoming_Folders where IncomingFolderId=@IncomingFolderId ) = 0 )
@@ -1040,12 +1078,13 @@ BEGIN
 		-- Insert new incoming folder
 		insert into SobekCM_Builder_Incoming_Folders ( NetworkFolder, ErrorFolder, ProcessingFolder, Perform_Checksum_Validation, Archive_TIFF, Archive_All_Files, Allow_Deletes, Allow_Folders_No_Metadata, FolderName, Allow_Metadata_Updates, BibID_Roots_Restrictions, ModuleSetID )
 		values ( @NetworkFolder, @ErrorFolder, @ProcessingFolder, @Perform_Checksum_Validation, @Archive_TIFF, @Archive_All_Files, @Allow_Deletes, @Allow_Folders_No_Metadata, @FolderName, 'true', @BibID_Roots_Restrictions, @ModuleSetID );
-		
-		-- Save the new id
-		set @NewID = @@Identity;
 	end
 	else
 	begin
+
+		-- Since it exists, get the old network folder
+		set @lastFolder = ( select NetworkFolder from SobekCM_Builder_Incoming_Folders where IncomingFolderId=@IncomingFolderId );
+
 		-- update existing incoming folder
 		update SobekCM_Builder_Incoming_Folders
 		set NetworkFolder=@NetworkFolder, ErrorFolder=@ErrorFolder, ProcessingFolder=@ProcessingFolder, 
@@ -1054,9 +1093,32 @@ BEGIN
 			Allow_Folders_No_Metadata=@Allow_Folders_No_Metadata, FolderName=@FolderName,
 			BibID_Roots_Restrictions=@BibID_Roots_Restrictions, ModuleSetID=@ModuleSetID
 		where IncomingFolderId = @IncomingFolderId;
+	end;
 		
-		-- Just return the same id
-		set @NewID = @IncomingFolderId;	
+	-- If this is the only folder, and there is no main builder folder, set that one
+	if ( ( select count(*) from SObekCM_Builder_Incoming_Folders ) = 1 )
+	begin
+		-- Is there a valid Main Builder Folder setting?
+		if ( not exists ( select 1 from SobekCM_Settings where Setting_Key = 'Main Builder Input Folder' ))
+		begin
+			-- There was no match
+			insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help  )
+			values ( 'Main Builder Input Folder', @NetworkFolder, 'Builder', 'Builder Settings', 0, 0, 'This is the network location to the SobekCM Builder''s main incoming folder.\n\nThis is used by the SMaRT tool when doing bulk imports from spreadsheet or MARC records.' );
+		end
+		else if ( not exists ( select 1 from SobekCM_Settings where Setting_Key = 'Main Builder Input Folder' and len(coalesce(Setting_Value,'')) > 0 ))
+		begin
+			-- One existed, but apparently it had no value
+			update SobekCM_Settings
+			set Setting_Value = @NetworkFolder
+			where Setting_Key = 'Main Builder Input Folder';
+		end
+		else if ( exists ( select 1 from SobekCM_Settings where Setting_Key = 'Main Builder Input Folder' and Setting_Value=@lastFolder ))
+		begin
+			-- One existed, pointed at the OLD network folder, so change it
+			update SobekCM_Settings
+			set Setting_Value = @NetworkFolder
+			where Setting_Key = 'Main Builder Input Folder';
+		end;
 	end;
 END;
 GO
@@ -1141,6 +1203,7 @@ end;
 GO
 
 
+
 -- Gets the list of all system-wide settings from the database, including the full list of all
 -- metadata search fields, possible workflows, and all disposition data
 ALTER PROCEDURE [dbo].[SobekCM_Get_Settings]
@@ -1180,7 +1243,7 @@ begin
 
 	-- Always return all the incoming folders
 	select IncomingFolderId, NetworkFolder, ErrorFolder, ProcessingFolder, Perform_Checksum_Validation, Archive_TIFF, Archive_All_Files,
-		   Allow_Deletes, Allow_Folders_No_Metadata, Allow_Metadata_Updates, FolderName, BibID_Roots_Restrictions,
+		   Allow_Deletes, Allow_Folders_No_Metadata, Allow_Metadata_Updates, FolderName, Can_Move_To_Content_Folder, BibID_Roots_Restrictions,
 		   F.ModuleSetID, S.SetName
 	from SobekCM_Builder_Incoming_Folders F left outer join 
 	     SobekCM_Builder_Module_Set S on F.ModuleSetID=S.ModuleSetID;
@@ -1211,9 +1274,13 @@ begin
 	where T.TypeAbbrev = 'SCHD'
 	order by TypeAbbrev, S.SetOrder, M.[Order];
 
+	-- Return all the item viewer config information
+	select ItemViewTypeID, ViewType, [Order], DefaultView, MenuOrder
+	from SobekCM_item_Viewer_Types
+	order by ViewType;
+
 end;
 GO
-
 
 -- Pull any additional item details before showing this item
 ALTER PROCEDURE [dbo].[SobekCM_Get_Item_Statistics]
@@ -1283,8 +1350,6 @@ END
 GO
 
 
-
-
 -- Pull any additional item details before showing this item
 ALTER PROCEDURE [dbo].[SobekCM_Get_Item_Details2]
 	@BibID varchar(10),
@@ -1330,7 +1395,8 @@ BEGIN
 				I.Disposition_Advice, I.Material_Received_Date, I.Material_Recd_Date_Estimated, I.Tracking_Box, I.Disposition_Advice_Notes, 
 				I.Left_To_Right, I.Disposition_Notes, G.Track_By_Month, G.Large_Format, G.Never_Overlay_Record, I.CreateDate, I.SortDate, 
 				G.Primary_Identifier_Type, G.Primary_Identifier, G.[Type] as GroupType, coalesce(I.MainThumbnail,'') as MainThumbnail,
-				T.EmbargoEnd, coalesce(T.UMI,'') as UMI, T.Original_EmbargoEnd, coalesce(T.Original_AccessCode,'') as Original_AccessCode
+				T.EmbargoEnd, coalesce(T.UMI,'') as UMI, T.Original_EmbargoEnd, coalesce(T.Original_AccessCode,'') as Original_AccessCode,
+				I.CitationSet
 			from SobekCM_Item as I inner join
 				 SobekCM_Item_Group as G on G.GroupID=I.GroupID left outer join
 				 Tracking_Item as T on T.ItemID=I.ItemID
@@ -1365,6 +1431,11 @@ BEGIN
 			  and ( L.WebSkinID = S.WebSkinID )
 			  and ( I.ItemID = @ItemID )
 			order by L.Sequence;
+
+			-- Return all of the key/value pairs of settings
+			select Setting_Key, Setting_Value
+			from SobekCM_Item_Settings 
+			where ItemID=@ItemID;
 		end;		
 	end
 	else
@@ -1447,7 +1518,6 @@ END;
 GO
 
 
-
 -- Saves all the main data for a new item in a SobekCM library, 
 -- including the serial hierarchy, behaviors, tracking, and basic item information
 -- Written by Mark Sullivan ( January 2011 )
@@ -1457,7 +1527,7 @@ ALTER PROCEDURE [dbo].[SobekCM_Save_New_Item]
 	@PageCount int,
 	@FileCount int,
 	@Title nvarchar(500),
-	@SortTitle nvarchar(500), --NEW
+	@SortTitle nvarchar(500), 
 	@AccessMethod int,
 	@Link varchar(500),
 	@CreateDate datetime,
@@ -1702,16 +1772,17 @@ begin transaction
 			-- Add the link to this holding code ( and any legitimate parent aggregations )
 			exec SobekCM_Save_Item_Item_Aggregation_Link @ItemID, @SourceCode;
 		end;
-		
-		-- Clear the links to all existing viewers
-		delete from SobekCM_Item_Viewers where ItemID=@ItemID;
 
-		-- Add all the default views
-		insert into SobekCM_Item_Viewers ( ItemID, ItemViewTypeID, Attribute, Label )
-		select @ItemID, ItemViewTypeID, '', ''
-		from SobekCM_Item_Viewer_Types
-		where DefaultView = 'true';
+		-- Just in case somehow some viewers existed
+		delete from SobekCM_Item_Viewers 
+		where ItemID=@itemid;
 		
+		-- Copy over all the default viewer information
+		insert into SobekCM_Item_Viewers ( ItemID, ItemViewTypeID, Attribute, Label, Exclude )
+		select @itemid, ItemViewTypeID, '', '', 'false' 
+		from SobekCM_Item_Viewer_Types
+		where ( DefaultView = 'true' );
+
 		-- Add the workhistory for this item being loaded
 		if ( @Online_Submit = 'true' )
 		begin
@@ -1769,6 +1840,904 @@ commit transaction;
 GO
 
 
+-- Gets all of the information about a single item aggregation
+ALTER PROCEDURE [dbo].[SobekCM_Get_Item_Aggregation]
+	@code varchar(20)
+AS
+begin
+
+	-- No need to perform any locks here
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+
+	-- Create the temporary table
+	create table #TEMP_CHILDREN_BUILDER (AggregationID int, Code varchar(20), ParentCode varchar(20), Name varchar(255), [Type] varchar(50), ShortName varchar(100), isActive bit, Hidden bit, HierarchyLevel int );
+	
+	-- Get the aggregation id
+	declare @aggregationid int
+	set @aggregationid = coalesce((select AggregationID from SobekCM_Item_Aggregation AS C where C.Code = @code and Deleted=0), -1 );
+	
+	-- Return information about this aggregation
+	select AggregationID, Code, [Name], coalesce(ShortName,[Name]) AS ShortName, [Type], isActive, Hidden, HasNewItems,
+	   ContactEmail, DefaultInterface, [Description], Map_Display, Map_Search, OAI_Flag, OAI_Metadata, DisplayOptions, LastItemAdded, 
+	   Can_Browse_Items, Items_Can_Be_Described, External_Link, T.ThematicHeadingID, LanguageVariants, ThemeName
+	from SobekCM_Item_Aggregation AS C left outer join
+	     SobekCM_Thematic_Heading as T on C.ThematicHeadingID=T.ThematicHeadingID 
+	where C.AggregationID = @aggregationid;
+
+	-- Drive down through the children in the item aggregation hierarchy (first level below)
+	insert into #TEMP_CHILDREN_BUILDER ( AggregationID, Code, ParentCode, Name, [Type], ShortName, isActive, Hidden, HierarchyLevel )
+	select C.AggregationID, C.Code, ParentCode=@code, C.[Name], C.[Type], coalesce(C.ShortName,C.[Name]) AS ShortName, C.isActive, C.Hidden, -1
+	from SobekCM_Item_Aggregation AS P INNER JOIN
+		 SobekCM_Item_Aggregation_Hierarchy AS H ON H.ParentID = P.AggregationID INNER JOIN
+		 SobekCM_Item_Aggregation AS C ON H.ChildID = C.AggregationID 
+	where ( P.AggregationID = @aggregationid )
+	  and ( C.Deleted = 'false' );
+	
+	-- Now, try to find any children to this ( second level below )
+	insert into #TEMP_CHILDREN_BUILDER ( AggregationID, Code, ParentCode, Name, [Type], ShortName, isActive, Hidden, HierarchyLevel )
+	select C.AggregationID, C.Code, P.Code, C.[Name], C.[Type], coalesce(C.ShortName,C.[Name]) AS ShortName, C.isActive, C.Hidden, -2
+	from #TEMP_CHILDREN_BUILDER AS P INNER JOIN
+			SobekCM_Item_Aggregation_Hierarchy AS H ON H.ParentID = P.AggregationID INNER JOIN
+			SobekCM_Item_Aggregation AS C ON H.ChildID = C.AggregationID 
+	where ( HierarchyLevel = -1 )
+	  and ( C.Deleted = 'false' );
+
+	-- Now, try to find any children to this ( third level below )
+	insert into #TEMP_CHILDREN_BUILDER ( AggregationID, Code, ParentCode, Name, [Type], ShortName, isActive, Hidden, HierarchyLevel )
+	select C.AggregationID, C.Code, P.Code, C.[Name], C.[Type], coalesce(C.ShortName,C.[Name]) AS ShortName, C.isActive, C.Hidden, -3
+	from #TEMP_CHILDREN_BUILDER AS P INNER JOIN
+			SobekCM_Item_Aggregation_Hierarchy AS H ON H.ParentID = P.AggregationID INNER JOIN
+			SobekCM_Item_Aggregation AS C ON H.ChildID = C.AggregationID 
+	where ( HierarchyLevel = -2 )
+	  and ( C.Deleted = 'false' );
+
+	-- Now, try to find any children to this ( fourth level below )
+	insert into #TEMP_CHILDREN_BUILDER ( AggregationID, Code, ParentCode, Name, [Type], ShortName, isActive, Hidden, HierarchyLevel )
+	select C.AggregationID, C.Code, P.Code, C.[Name], C.[Type], coalesce(C.ShortName,C.[Name]) AS ShortName, C.isActive, C.Hidden, -4
+	from #TEMP_CHILDREN_BUILDER AS P INNER JOIN
+			SobekCM_Item_Aggregation_Hierarchy AS H ON H.ParentID = P.AggregationID INNER JOIN
+			SobekCM_Item_Aggregation AS C ON H.ChildID = C.AggregationID 
+	where ( HierarchyLevel = -3 )
+	  and ( C.Deleted = 'false' );
+
+	-- Return all the children
+	select Code, ParentCode, [Name], [ShortName], [Type], HierarchyLevel, isActive, Hidden
+	from #TEMP_CHILDREN_BUILDER
+	order by HierarchyLevel, Code ASC;
+	
+	-- drop the temporary tables
+	drop table #TEMP_CHILDREN_BUILDER;
+
+	-- Return all the metadata ids for metadata types which have values 
+	select T.MetadataTypeID, T.canFacetBrowse, T.DisplayTerm, T.SobekCode, T.SolrCode
+	into #TEMP_METADATA
+	from SobekCM_Metadata_Types T
+	where ( LEN(T.SobekCode) > 0 )
+	  and exists ( select * from SobekCM_Item_Aggregation_Metadata_Link L where L.AggregationID=@aggregationid and L.MetadataTypeID=T.MetadataTypeID and L.Metadata_Count > 0 );
+
+	if (( select count(*) from #TEMP_METADATA ) > 0 )
+	begin
+		select * from #TEMP_METADATA order by DisplayTerm ASC;
+	end
+	else
+	begin
+		select MetadataTypeID, canFacetBrowse, DisplayTerm, SobekCode, SolrCode
+		from SobekCM_Metadata_Types 
+		where DefaultAdvancedSearch = 'true'
+		order by DisplayTerm ASC;
+	end;
+			
+	-- Return all the parents 
+	select Code, [Name], [ShortName], [Type], isActive
+	from SobekCM_Item_Aggregation A, SobekCM_Item_Aggregation_Hierarchy H
+	where A.AggregationID = H.ParentID 
+	  and H.ChildID = @aggregationid
+	  and A.Deleted = 'false';
+
+	-- Return the max/min of latitude and longitude - spatial footprint to cover all items with coordinate info
+	select Min(F.Point_Latitude) as Min_Latitude, Max(F.Point_Latitude) as Max_Latitude, Min(F.Point_Longitude) as Min_Longitude, Max(F.Point_Longitude) as Max_Longitude
+	from SobekCM_Item I, SobekCM_Item_Aggregation_Item_Link L, SobekCM_Item_Footprint F
+	where ( I.ItemID = L.ItemID  )
+	  and ( L.AggregationID = @aggregationid )
+	  and ( F.ItemID = I.ItemID )
+	  and ( F.Point_Latitude is not null )
+	  and ( F.Point_Longitude is not null )
+	  and ( I.Dark = 'false' );
+
+	-- Return all of the key/value pairs of settings
+	select Setting_Key, Setting_Value
+	from SobekCM_Item_Aggregation_Settings 
+	where AggregationID=@aggregationid;
+
+end;
+GO
+
+
+-- Saves the behavior information about an item in this library
+-- Written by Mark Sullivan 
+ALTER PROCEDURE [dbo].[SobekCM_Save_Item_Behaviors]
+	@ItemID int,
+	@TextSearchable bit,
+	@MainThumbnail varchar(100),
+	@MainJPEG varchar(100),
+	@IP_Restriction_Mask smallint,
+	@CheckoutRequired bit,
+	@Dark_Flag bit,
+	@Born_Digital bit,
+	@Disposition_Advice int,
+	@Disposition_Advice_Notes varchar(150),
+	@Material_Received_Date datetime,
+	@Material_Recd_Date_Estimated bit,
+	@Tracking_Box varchar(25),
+	@AggregationCode1 varchar(20),
+	@AggregationCode2 varchar(20),
+	@AggregationCode3 varchar(20),
+	@AggregationCode4 varchar(20),
+	@AggregationCode5 varchar(20),
+	@AggregationCode6 varchar(20),
+	@AggregationCode7 varchar(20),
+	@AggregationCode8 varchar(20),
+	@HoldingCode varchar(20),
+	@SourceCode varchar(20),
+	@Icon1_Name varchar(50),
+	@Icon2_Name varchar(50),
+	@Icon3_Name varchar(50),
+	@Icon4_Name varchar(50),
+	@Icon5_Name varchar(50),
+	@Left_To_Right bit,
+	@CitationSet varchar(50)
+AS
+begin transaction
+
+	--Update the main item
+	update SobekCM_Item
+	set TextSearchable = @TextSearchable, Deleted = 0, MainThumbnail=@MainThumbnail,
+		MainJPEG=@MainJPEG, CheckoutRequired=@CheckoutRequired, IP_Restriction_Mask=@IP_Restriction_Mask,
+		Dark=@Dark_Flag, Born_Digital=@Born_Digital, Disposition_Advice=@Disposition_Advice,
+		Material_Received_Date=@Material_Received_Date, Material_Recd_Date_Estimated=@Material_Recd_Date_Estimated,
+		Tracking_Box=@Tracking_Box, Disposition_Advice_Notes = @Disposition_Advice_Notes, Left_To_Right=@Left_To_Right,
+		CitationSet=@CitationSet
+	where ( ItemID = @ItemID )
+
+	-- Clear the links to all existing icons
+	delete from SobekCM_Item_Icons where ItemID=@ItemID
+	
+	-- Add the first icon to this object  (this requires the icons have been pre-established )
+	declare @IconID int
+	if ( len( isnull( @Icon1_Name, '' )) > 0 ) 
+	begin
+		-- Get the Icon ID for this icon
+		select @IconID = IconID from SobekCM_Icon where Icon_Name = @Icon1_Name
+
+		-- Tie this item to this icon
+		if ( ISNULL(@IconID,-1) > 0 )
+		begin
+			insert into SobekCM_Item_Icons ( ItemID, IconID, [Sequence] )
+			values ( @ItemID, @IconID, 1 )
+		end
+	end
+
+	-- Add the second icon to this object  (this requires the icons have been pre-established )
+	if ( len( isnull( @Icon2_Name, '' )) > 0 ) 
+	begin
+		-- Get the Icon ID for this icon
+		select @IconID = IconID from SobekCM_Icon where Icon_Name = @Icon2_Name
+
+		-- Tie this item to this icon
+		if ( ISNULL(@IconID,-1) > 0 )
+		begin
+			insert into SobekCM_Item_Icons ( ItemID, IconID, [Sequence] )
+			values ( @ItemID, @IconID, 2 )
+		end
+	end
+
+	-- Add the third icon to this object  (this requires the icons have been pre-established )
+	if ( len( isnull( @Icon3_Name, '' )) > 0 ) 
+	begin
+		-- Get the Icon ID for this icon
+		select @IconID = IconID from SobekCM_Icon where Icon_Name = @Icon3_Name
+
+		-- Tie this item to this icon
+		if ( ISNULL(@IconID,-1) > 0 )
+		begin
+			insert into SobekCM_Item_Icons ( ItemID, IconID, [Sequence] )
+			values ( @ItemID, @IconID, 3 )
+		end
+	end
+
+	-- Add the fourth icon to this object  (this requires the icons have been pre-established )
+	if ( len( isnull( @Icon4_Name, '' )) > 0 ) 
+	begin
+		-- Get the Icon ID for this icon
+		select @IconID = IconID from SobekCM_Icon where Icon_Name = @Icon4_Name
+		
+		-- Tie this item to this icon
+		if ( ISNULL(@IconID,-1) > 0 )
+		begin
+			insert into SobekCM_Item_Icons ( ItemID, IconID, [Sequence] )
+			values ( @ItemID, @IconID, 4 )
+		end
+	end
+
+	-- Add the fifth icon to this object  (this requires the icons have been pre-established )
+	if ( len( isnull( @Icon5_Name, '' )) > 0 ) 
+	begin
+		-- Get the Icon ID for this icon
+		select @IconID = IconID from SobekCM_Icon where Icon_Name = @Icon5_Name
+
+		-- Tie this item to this icon
+		if ( ISNULL(@IconID,-1) > 0 )
+		begin
+			insert into SobekCM_Item_Icons ( ItemID, IconID, [Sequence] )
+			values ( @ItemID, @IconID, 5 )
+		end
+	end
+
+	-- Clear all links to aggregations
+	delete from SobekCM_Item_Aggregation_Item_Link where ItemID = @ItemID
+
+	-- Add all of the aggregations
+	exec SobekCM_Save_Item_Item_Aggregation_Link @ItemID, @AggregationCode1
+	exec SobekCM_Save_Item_Item_Aggregation_Link @ItemID, @AggregationCode2
+	exec SobekCM_Save_Item_Item_Aggregation_Link @ItemID, @AggregationCode3
+	exec SobekCM_Save_Item_Item_Aggregation_Link @ItemID, @AggregationCode4
+	exec SobekCM_Save_Item_Item_Aggregation_Link @ItemID, @AggregationCode5
+	exec SobekCM_Save_Item_Item_Aggregation_Link @ItemID, @AggregationCode6
+	exec SobekCM_Save_Item_Item_Aggregation_Link @ItemID, @AggregationCode7
+	exec SobekCM_Save_Item_Item_Aggregation_Link @ItemID, @AggregationCode8
+	
+	-- Create one string of all the aggregation codes
+	declare @aggregationCodes varchar(100)
+	set @aggregationCodes = rtrim(isnull(@AggregationCode1,'') + ' ' + isnull(@AggregationCode2,'') + ' ' + isnull(@AggregationCode3,'') + ' ' + isnull(@AggregationCode4,'') + ' ' + isnull(@AggregationCode5,'') + ' ' + isnull(@AggregationCode6,'') + ' ' + isnull(@AggregationCode7,'') + ' ' + isnull(@AggregationCode8,''))
+	
+	-- Update matching items to have the aggregation codes value
+	update SobekCM_Item set AggregationCodes = @aggregationCodes where ItemID=@ItemID
+
+	-- Check for Holding Institution Code
+	declare @AggregationID int
+	if ( len ( isnull ( @HoldingCode, '' ) ) > 0 )
+	begin
+		-- Does this institution already exist?
+		if (( select count(*) from SobekCM_Item_Aggregation where Code = @HoldingCode ) = 0 )
+		begin
+			-- Add new institution
+			insert into SobekCM_Item_Aggregation ( Code, [Name], ShortName, Description, ThematicHeadingID, [Type], isActive, Hidden, DisplayOptions, Map_Search, Map_Display, OAI_Flag, ContactEmail, HasNewItems )
+			values ( @HoldingCode, 'Added automatically', 'Added automatically', 'Added automatically', -1, 'Institution', 'false', 'true', '', 0, 0, 'false', '', 'false' )
+		end
+		
+		-- Add the link to this holding code ( and any legitimate parent aggregations )
+		exec SobekCM_Save_Item_Item_Aggregation_Link @ItemID, @HoldingCode		
+	end
+
+	-- Check for Source Institution Code
+	if ( len ( isnull ( @SourceCode, '' ) ) > 0 )
+	begin
+		-- Does this institution already exist?
+		if (( select count(*) from SobekCM_Item_Aggregation where Code = @SourceCode ) = 0 )
+		begin
+			-- Add new institution
+			insert into SobekCM_Item_Aggregation ( Code, [Name], ShortName, Description, ThematicHeadingID, [Type], isActive, Hidden, DisplayOptions, Map_Search, Map_Display, OAI_Flag, ContactEmail, HasNewItems )
+			values ( @SourceCode, 'Added automatically', 'Added automatically', 'Added automatically', -1, 'Institution', 'false', 'true', '', 0, 0, 'false', '', 'false' )
+		end
+
+		-- Add the link to this holding code ( and any legitimate parent aggregations )
+		exec SobekCM_Save_Item_Item_Aggregation_Link @ItemID, @SourceCode	
+	end	
+	
+commit transaction;
+GO
+
+-- Written by Mark Sullivan 
+ALTER PROCEDURE [dbo].[SobekCM_Save_Item_Behaviors_Minimal]
+	@ItemID int,
+	@TextSearchable bit
+AS
+begin transaction;
+
+	--Update the main item
+	update SobekCM_Item
+	set TextSearchable = @TextSearchable
+	where ( ItemID = @ItemID );
+
+commit transaction;
+GO
+
+-- Ensure the SobekCM_Add_Item_Viewers stored procedure exists
+IF object_id('SobekCM_Add_Item_Viewers') IS NULL EXEC ('create procedure dbo.SobekCM_Add_Item_Viewers as select 1;');
+GO
+
+-- Add or update existing viewers for an item
+-- NOTE: This does not delete any existing viewers
+ALTER PROCEDURE SobekCM_Add_Item_Viewers 
+	@ItemID int,
+	@Viewer1_TypeID int,
+	@Viewer1_Label nvarchar(50),
+	@Viewer1_Attribute nvarchar(250),
+	@Viewer2_TypeID int,
+	@Viewer2_Label nvarchar(50),
+	@Viewer2_Attribute nvarchar(250),
+	@Viewer3_TypeID int,
+	@Viewer3_Label nvarchar(50),
+	@Viewer3_Attribute nvarchar(250),
+	@Viewer4_TypeID int,
+	@Viewer4_Label nvarchar(50),
+	@Viewer4_Attribute nvarchar(250),
+	@Viewer5_TypeID int,
+	@Viewer5_Label nvarchar(50),
+	@Viewer5_Attribute nvarchar(250),
+	@Viewer6_TypeID int,
+	@Viewer6_Label nvarchar(50),
+	@Viewer6_Attribute nvarchar(250)
+AS
+BEGIN 
+
+
+	--	-- Clear the links to all existing viewers
+	--delete from SobekCM_Item_Viewers where ItemID=@ItemID
+	
+	-- Add the first viewer information
+	if ( @Viewer1_TypeID > 0 )
+	begin
+		-- Does this already exist?
+		if ( exists ( select 1 from SobekCM_Item_Viewers where ItemID=@ItemID and ItemViewTypeID=@Viewer1_TypeID ))
+		begin
+			-- Update this viewer information
+			update SobekCM_Item_Viewers
+			set Attribute=@Viewer1_Attribute, Label=@Viewer1_Label, Exclude='false'
+			where ( ItemID = @ItemID )
+			  and ( ItemViewTypeID = @Viewer1_TypeID );
+		end
+		else
+		begin
+			-- Insert this viewer information
+			insert into SobekCM_Item_Viewers ( ItemID, ItemViewTypeID, Attribute, Label )
+			values ( @ItemID, @Viewer1_TypeID, @Viewer1_Attribute, @Viewer1_Label );
+		end;
+	end;
+	
+	-- Add the second viewer information
+	if ( @Viewer2_TypeID > 0 )
+	begin
+		-- Does this already exist?
+		if ( exists ( select 1 from SobekCM_Item_Viewers where ItemID=@ItemID and ItemViewTypeID=@Viewer2_TypeID ))
+		begin
+			-- Update this viewer information
+			update SobekCM_Item_Viewers
+			set Attribute=@Viewer2_Attribute, Label=@Viewer2_Label, Exclude='false'
+			where ( ItemID = @ItemID )
+			  and ( ItemViewTypeID = @Viewer2_TypeID );
+		end
+		else
+		begin
+			-- Insert this viewer information
+			insert into SobekCM_Item_Viewers ( ItemID, ItemViewTypeID, Attribute, Label )
+			values ( @ItemID, @Viewer2_TypeID, @Viewer2_Attribute, @Viewer2_Label );
+		end;
+	end;
+	
+	-- Add the third viewer information
+	if ( @Viewer3_TypeID > 0 )
+	begin
+		-- Does this already exist?
+		if ( exists ( select 1 from SobekCM_Item_Viewers where ItemID=@ItemID and ItemViewTypeID=@Viewer3_TypeID ))
+		begin
+			-- Update this viewer information
+			update SobekCM_Item_Viewers
+			set Attribute=@Viewer3_Attribute, Label=@Viewer3_Label, Exclude='false'
+			where ( ItemID = @ItemID )
+			  and ( ItemViewTypeID = @Viewer3_TypeID );
+		end
+		else
+		begin
+			-- Insert this viewer information
+			insert into SobekCM_Item_Viewers ( ItemID, ItemViewTypeID, Attribute, Label )
+			values ( @ItemID, @Viewer3_TypeID, @Viewer3_Attribute, @Viewer3_Label );
+		end;
+	end;
+	
+	-- Add the fourth viewer information
+	if ( @Viewer4_TypeID > 0 )
+	begin
+		-- Does this already exist?
+		if ( exists ( select 1 from SobekCM_Item_Viewers where ItemID=@ItemID and ItemViewTypeID=@Viewer4_TypeID ))
+		begin
+			-- Update this viewer information
+			update SobekCM_Item_Viewers
+			set Attribute=@Viewer4_Attribute, Label=@Viewer4_Label, Exclude='false'
+			where ( ItemID = @ItemID )
+			  and ( ItemViewTypeID = @Viewer4_TypeID );
+		end
+		else
+		begin
+			-- Insert this viewer information
+			insert into SobekCM_Item_Viewers ( ItemID, ItemViewTypeID, Attribute, Label )
+			values ( @ItemID, @Viewer4_TypeID, @Viewer4_Attribute, @Viewer4_Label );
+		end;
+	end;
+	
+	-- Add the fifth viewer information
+	if ( @Viewer5_TypeID > 0 )
+	begin
+		-- Does this already exist?
+		if ( exists ( select 1 from SobekCM_Item_Viewers where ItemID=@ItemID and ItemViewTypeID=@Viewer5_TypeID ))
+		begin
+			-- Update this viewer information
+			update SobekCM_Item_Viewers
+			set Attribute=@Viewer5_Attribute, Label=@Viewer5_Label, Exclude='false'
+			where ( ItemID = @ItemID )
+			  and ( ItemViewTypeID = @Viewer5_TypeID );
+		end
+		else
+		begin
+			-- Insert this viewer information
+			insert into SobekCM_Item_Viewers ( ItemID, ItemViewTypeID, Attribute, Label )
+			values ( @ItemID, @Viewer5_TypeID, @Viewer5_Attribute, @Viewer5_Label );
+		end;
+	end;
+	
+	-- Add the sixth viewer information
+	if ( @Viewer6_TypeID > 0 )
+	begin
+		-- Does this already exist?
+		if ( exists ( select 1 from SobekCM_Item_Viewers where ItemID=@ItemID and ItemViewTypeID=@Viewer6_TypeID ))
+		begin
+			-- Update this viewer information
+			update SobekCM_Item_Viewers
+			set Attribute=@Viewer6_Attribute, Label=@Viewer6_Label, Exclude='false'
+			where ( ItemID = @ItemID )
+			  and ( ItemViewTypeID = @Viewer6_TypeID );
+		end
+		else
+		begin
+			-- Insert this viewer information
+			insert into SobekCM_Item_Viewers ( ItemID, ItemViewTypeID, Attribute, Label )
+			values ( @ItemID, @Viewer6_TypeID, @Viewer6_Attribute, @Viewer6_Label );
+		end;
+	end;
+
+END;
+GO
+
+-- Ensure the SobekCM_Remove_Item_Viewers stored procedure exists
+IF object_id('SobekCM_Remove_Item_Viewers') IS NULL EXEC ('create procedure dbo.SobekCM_Remove_Item_Viewers as select 1;');
+GO
+
+
+-- Remove an existing viewer for an item
+-- NOTE: This does not delete any existing viewers
+ALTER PROCEDURE [dbo].[SobekCM_Remove_Item_Viewers] 
+	@ItemID int,
+	@Viewer1_Type varchar(50),
+	@Viewer2_Type varchar(50),
+	@Viewer3_Type varchar(50),
+	@Viewer4_Type varchar(50),
+	@Viewer5_Type varchar(50),
+	@Viewer6_Type varchar(50)
+AS
+BEGIN 
+
+	-- Exclude the first viewer
+	if ( len(coalesce(@Viewer1_Type, '')) > 0 )
+	begin
+		-- Get the primary key for this viewer type
+		declare @Viewer1_TypeID int;
+		set @Viewer1_TypeID = coalesce(( select ItemViewTypeID from SobekCM_Item_Viewer_Types where ViewType = @Viewer1_Type ), -1 );
+
+		-- Only continue if that viewer type was found
+		if ( @Viewer1_TypeID > 0 )
+		begin
+			update SobekCM_Item_Viewers 
+			set Exclude='true' 
+			where ItemID=@ItemID and ItemViewTypeID=@Viewer1_TypeID;
+		end;
+	end;
+
+	-- Exclude the second viewer
+	if ( len(coalesce(@Viewer2_Type, '')) > 0 )
+	begin
+		-- Get the primary key for this viewer type
+		declare @Viewer2_TypeID int;
+		set @Viewer2_TypeID = coalesce(( select ItemViewTypeID from SobekCM_Item_Viewer_Types where ViewType = @Viewer2_Type ), -1 );
+
+		-- Only continue if that viewer type was found
+		if ( @Viewer2_TypeID > 0 )
+		begin
+			update SobekCM_Item_Viewers 
+			set Exclude='true' 
+			where ItemID=@ItemID and ItemViewTypeID=@Viewer2_TypeID;
+		end;
+	end;
+
+	-- Exclude the third viewer
+	if ( len(coalesce(@Viewer3_Type, '')) > 0 )
+	begin
+		-- Get the primary key for this viewer type
+		declare @Viewer3_TypeID int;
+		set @Viewer3_TypeID = coalesce(( select ItemViewTypeID from SobekCM_Item_Viewer_Types where ViewType = @Viewer3_Type ), -1 );
+
+		-- Only continue if that viewer type was found
+		if ( @Viewer3_TypeID > 0 )
+		begin
+			update SobekCM_Item_Viewers 
+			set Exclude='true' 
+			where ItemID=@ItemID and ItemViewTypeID=@Viewer3_TypeID;
+		end;
+	end;
+
+	-- Exclude the fourth viewer
+	if ( len(coalesce(@Viewer4_Type, '')) > 0 )
+	begin
+		-- Get the primary key for this viewer type
+		declare @Viewer4_TypeID int;
+		set @Viewer4_TypeID = coalesce(( select ItemViewTypeID from SobekCM_Item_Viewer_Types where ViewType = @Viewer4_Type ), -1 );
+
+		-- Only continue if that viewer type was found
+		if ( @Viewer4_TypeID > 0 )
+		begin
+			update SobekCM_Item_Viewers 
+			set Exclude='true' 
+			where ItemID=@ItemID and ItemViewTypeID=@Viewer4_TypeID;
+		end;
+	end;
+
+	-- Exclude the fifth viewer
+	if ( len(coalesce(@Viewer5_Type, '')) > 0 )
+	begin
+		-- Get the primary key for this viewer type
+		declare @Viewer5_TypeID int;
+		set @Viewer5_TypeID = coalesce(( select ItemViewTypeID from SobekCM_Item_Viewer_Types where ViewType = @Viewer5_Type ), -1 );
+
+		-- Only continue if that viewer type was found
+		if ( @Viewer5_TypeID > 0 )
+		begin
+			update SobekCM_Item_Viewers 
+			set Exclude='true' 
+			where ItemID=@ItemID and ItemViewTypeID=@Viewer5_TypeID;
+		end;
+	end;
+
+	-- Exclude the sixth viewer
+	if ( len(coalesce(@Viewer6_Type, '')) > 0 )
+	begin
+		-- Get the primary key for this viewer type
+		declare @Viewer6_TypeID int;
+		set @Viewer6_TypeID = coalesce(( select ItemViewTypeID from SobekCM_Item_Viewer_Types where ViewType = @Viewer6_Type ), -1 );
+
+		-- Only continue if that viewer type was found
+		if ( @Viewer6_TypeID > 0 )
+		begin
+			update SobekCM_Item_Viewers 
+			set Exclude='true' 
+			where ItemID=@ItemID and ItemViewTypeID=@Viewer6_TypeID;
+		end;
+	end;
+END;
+GO
+
+-- Modifies the item behaviors in a mass update for all items in 
+-- a particular item group
+ALTER PROCEDURE [dbo].[SobekCM_Mass_Update_Item_Behaviors]
+	@GroupID int,
+	@IP_Restriction_Mask smallint,
+	@CheckoutRequired bit,
+	@Dark_Flag bit,
+	@Born_Digital bit,
+	@AggregationCode1 varchar(20),
+	@AggregationCode2 varchar(20),
+	@AggregationCode3 varchar(20),
+	@AggregationCode4 varchar(20),
+	@AggregationCode5 varchar(20),
+	@AggregationCode6 varchar(20),
+	@AggregationCode7 varchar(20),
+	@AggregationCode8 varchar(20),
+	@HoldingCode varchar(20),
+	@SourceCode varchar(20),
+	@Icon1_Name varchar(50),
+	@Icon2_Name varchar(50),
+	@Icon3_Name varchar(50),
+	@Icon4_Name varchar(50),
+	@Icon5_Name varchar(50),
+	@Viewer1_Type varchar(50),
+	@Viewer1_Label nvarchar(50),
+	@Viewer1_Attribute nvarchar(250),
+	@Viewer2_Type varchar(50),
+	@Viewer2_Label nvarchar(50),
+	@Viewer2_Attribute nvarchar(250),
+	@Viewer3_Type varchar(50),
+	@Viewer3_Label nvarchar(50),
+	@Viewer3_Attribute nvarchar(250),
+	@Viewer4_Type varchar(50),
+	@Viewer4_Label nvarchar(50),
+	@Viewer4_Attribute nvarchar(250),
+	@Viewer5_Type varchar(50),
+	@Viewer5_Label nvarchar(50),
+	@Viewer5_Attribute nvarchar(250),
+	@Viewer6_Type varchar(50),
+	@Viewer6_Label nvarchar(50),
+	@Viewer6_Attribute nvarchar(250)
+AS
+begin transaction
+
+	--Update the main item's flags if provided
+	if ( @IP_Restriction_Mask is not null )
+	begin
+		update SobekCM_Item
+		set IP_Restriction_Mask=@IP_Restriction_Mask
+		where ( GroupID = @GroupID );
+	end;
+	
+	if ( @CheckoutRequired is not null )
+	begin
+		update SobekCM_Item
+		set CheckoutRequired=@CheckoutRequired
+		where ( GroupID = @GroupID );
+	end;
+	
+	if ( @Dark_Flag is not null )
+	begin
+		update SobekCM_Item
+		set Dark=@Dark_Flag
+		where ( GroupID = @GroupID );
+	end;
+	
+	if ( @Born_Digital is not null )
+	begin
+		update SobekCM_Item
+		set Born_Digital=@Born_Digital
+		where ( GroupID = @GroupID );
+	end;
+	
+	-- Only do icon stuff if the first icon has length
+	if ( len( isnull( @Icon1_Name, '' )) > 0 ) 
+	begin
+
+		-- Clear the links to all existing icons
+		delete from SobekCM_Item_Icons 
+		where exists (  select *
+						from SobekCM_Item
+						where ( SobekCM_Item.GroupID=@GroupID )
+						  and ( SobekCM_Item.ItemID = SobekCM_Item_Icons.ItemID ));
+		
+		-- Add the first icon to this object  (this requires the icons have been pre-established )
+		declare @IconID int;
+		if ( len( isnull( @Icon1_Name, '' )) > 0 ) 
+		begin
+			-- Get the Icon ID for this icon
+			select @IconID = IconID from SobekCM_Icon where Icon_Name = @Icon1_Name;
+
+			-- Tie this item to this icon
+			if ( ISNULL(@IconID,-1) > 0 )
+			begin
+				insert into SobekCM_Item_Icons ( ItemID, IconID, [Sequence] )
+				select ItemID, @IconID, 1 from SobekCM_Item I where I.GroupID=@GroupID;
+			end;
+		end;
+
+		-- Add the second icon to this object  (this requires the icons have been pre-established )
+		if ( len( isnull( @Icon2_Name, '' )) > 0 ) 
+		begin
+			-- Get the Icon ID for this icon
+			select @IconID = IconID from SobekCM_Icon where Icon_Name = @Icon2_Name;
+
+			-- Tie this item to this icon
+			if ( ISNULL(@IconID,-1) > 0 )
+			begin
+				insert into SobekCM_Item_Icons ( ItemID, IconID, [Sequence] )
+				select ItemID, @IconID, 2 from SobekCM_Item I where I.GroupID=@GroupID;
+			end;
+		end;
+
+		-- Add the third icon to this object  (this requires the icons have been pre-established )
+		if ( len( isnull( @Icon3_Name, '' )) > 0 ) 
+		begin
+			-- Get the Icon ID for this icon
+			select @IconID = IconID from SobekCM_Icon where Icon_Name = @Icon3_Name;
+
+			-- Tie this item to this icon
+			if ( ISNULL(@IconID,-1) > 0 )
+			begin
+				insert into SobekCM_Item_Icons ( ItemID, IconID, [Sequence] )
+				select ItemID, @IconID, 3 from SobekCM_Item I where I.GroupID=@GroupID;
+			end;
+		end;
+
+		-- Add the fourth icon to this object  (this requires the icons have been pre-established )
+		if ( len( isnull( @Icon4_Name, '' )) > 0 ) 
+		begin
+			-- Get the Icon ID for this icon
+			select @IconID = IconID from SobekCM_Icon where Icon_Name = @Icon4_Name;
+			
+			-- Tie this item to this icon
+			if ( ISNULL(@IconID,-1) > 0 )
+			begin
+				insert into SobekCM_Item_Icons ( ItemID, IconID, [Sequence] )
+				select ItemID, @IconID, 4 from SobekCM_Item I where I.GroupID=@GroupID;
+			end;
+		end;
+
+		-- Add the fifth icon to this object  (this requires the icons have been pre-established )
+		if ( len( isnull( @Icon5_Name, '' )) > 0 ) 
+		begin
+			-- Get the Icon ID for this icon
+			select @IconID = IconID from SobekCM_Icon where Icon_Name = @Icon5_Name;
+
+			-- Tie this item to this icon
+			if ( ISNULL(@IconID,-1) > 0 )
+			begin
+				insert into SobekCM_Item_Icons ( ItemID, IconID, [Sequence] )
+				select ItemID, @IconID, 5 from SobekCM_Item I where I.GroupID=@GroupID;
+			end;
+		end;
+	end;
+	
+	-- Only modify the aggregation codes if they have length
+	if ( LEN ( ISNULL( @AggregationCode1, '')) > 0 )
+	begin
+	
+		-- Clear all links to aggregations
+		delete from SobekCM_Item_Aggregation_Item_Link 
+		where exists ( select * from SobekCM_Item I where I.GroupID=@GroupID and I.ItemID=SobekCM_Item_Aggregation_Item_Link.ItemID );
+
+		-- Add all of the aggregations
+		exec [SobekCM_Mass_Update_Item_Aggregation_Link] @GroupID, @AggregationCode1;
+		exec [SobekCM_Mass_Update_Item_Aggregation_Link] @GroupID, @AggregationCode2;
+		exec [SobekCM_Mass_Update_Item_Aggregation_Link] @GroupID, @AggregationCode3;
+		exec [SobekCM_Mass_Update_Item_Aggregation_Link] @GroupID, @AggregationCode4;
+		exec [SobekCM_Mass_Update_Item_Aggregation_Link] @GroupID, @AggregationCode5;
+		exec [SobekCM_Mass_Update_Item_Aggregation_Link] @GroupID, @AggregationCode6;
+		exec [SobekCM_Mass_Update_Item_Aggregation_Link] @GroupID, @AggregationCode7;
+		exec [SobekCM_Mass_Update_Item_Aggregation_Link] @GroupID, @AggregationCode8;
+
+	end;
+
+	-- Check for Holding Institution Code
+	declare @AggregationID int;
+	if ( len ( isnull ( @HoldingCode, '' ) ) > 0 )
+	begin
+		-- Does this institution already exist?
+		if (( select count(*) from SobekCM_Item_Aggregation where Code = @HoldingCode ) = 0 )
+		begin
+			-- Add new institution
+			insert into SobekCM_Item_Aggregation ( Code, [Name], ShortName, Description, ThematicHeadingID, [Type], isActive, Hidden, DisplayOptions, Map_Search, Map_Display, OAI_Flag, ContactEmail, HasNewItems )
+			values ( @HoldingCode, 'Added automatically', 'Added automatically', 'Added automatically', -1, 'Institution', 'false', 'true', '', 0, 0, 'false', '', 'false' );
+		end;
+		
+		-- Add the link to this holding code ( and any legitimate parent aggregations )
+		exec [SobekCM_Mass_Update_Item_Aggregation_Link] @GroupID, @HoldingCode;
+	end;
+
+	-- Check for Source Institution Code
+	if ( len ( isnull ( @SourceCode, '' ) ) > 0 )
+	begin
+		-- Does this institution already exist?
+		if (( select count(*) from SobekCM_Item_Aggregation where Code = @SourceCode ) = 0 )
+		begin
+			-- Add new institution
+			insert into SobekCM_Item_Aggregation ( Code, [Name], ShortName, Description, ThematicHeadingID, [Type], isActive, Hidden, DisplayOptions, Map_Search, Map_Display, OAI_Flag, ContactEmail, HasNewItems )
+			values ( @SourceCode, 'Added automatically', 'Added automatically', 'Added automatically', -1, 'Institution', 'false', 'true', '', 0, 0, 'false', '', 'false' );
+		end;
+
+		-- Add the link to this holding code ( and any legitimate parent aggregations )
+		exec [SobekCM_Mass_Update_Item_Aggregation_Link] @GroupID, @SourceCode;
+	end;
+		
+	-- Add the first viewer information, if provided
+	if ( len(coalesce(@Viewer1_Type, '')) > 0 )
+	begin
+		-- Get the primary key for this viewer type
+		declare @Viewer1_TypeID int;
+		set @Viewer1_TypeID = coalesce(( select ItemViewTypeID from SobekCM_Item_Viewer_Types where ViewType = @Viewer1_Type ), -1 );
+
+		-- Only continue if that viewer type was found
+		if ( @Viewer1_TypeID > 0 )
+		begin
+			-- Insert this viewer information to all items, where it does not already exist
+			insert into SobekCM_Item_Viewers ( ItemID, ItemViewTypeID, Attribute, Label )
+			select I.ItemID, @Viewer1_TypeID, @Viewer1_Attribute, @Viewer1_Label 
+			from SobekCM_Item I 
+			where ( I.GroupID=@GroupID )
+				and ( not exists ( select 1 from SobekCM_Item_Viewers where ItemID=I.ItemID and ItemViewTypeID=@Viewer1_TypeID ))
+		end
+	end;
+
+	-- Add the second viewer information, if provided
+	if ( len(coalesce(@Viewer2_Type, '')) > 0 )
+	begin
+		-- Get the primary key for this viewer type
+		declare @Viewer2_TypeID int;
+		set @Viewer2_TypeID = coalesce(( select ItemViewTypeID from SobekCM_Item_Viewer_Types where ViewType = @Viewer2_Type ), -1 );
+
+		-- Only continue if that viewer type was found
+		if ( @Viewer2_TypeID > 0 )
+		begin
+			-- Insert this viewer information to all items, where it does not already exist
+			insert into SobekCM_Item_Viewers ( ItemID, ItemViewTypeID, Attribute, Label )
+			select I.ItemID, @Viewer2_TypeID, @Viewer2_Attribute, @Viewer2_Label 
+			from SobekCM_Item I 
+			where ( I.GroupID=@GroupID )
+				and ( not exists ( select 1 from SobekCM_Item_Viewers where ItemID=I.ItemID and ItemViewTypeID=@Viewer2_TypeID ))
+		end
+	end;
+
+	-- Add the third viewer information, if provided
+	if ( len(coalesce(@Viewer3_Type, '')) > 0 )
+	begin
+		-- Get the primary key for this viewer type
+		declare @Viewer3_TypeID int;
+		set @Viewer3_TypeID = coalesce(( select ItemViewTypeID from SobekCM_Item_Viewer_Types where ViewType = @Viewer3_Type ), -1 );
+
+		-- Only continue if that viewer type was found
+		if ( @Viewer3_TypeID > 0 )
+		begin
+			-- Insert this viewer information to all items, where it does not already exist
+			insert into SobekCM_Item_Viewers ( ItemID, ItemViewTypeID, Attribute, Label )
+			select I.ItemID, @Viewer3_TypeID, @Viewer3_Attribute, @Viewer3_Label 
+			from SobekCM_Item I 
+			where ( I.GroupID=@GroupID )
+				and ( not exists ( select 1 from SobekCM_Item_Viewers where ItemID=I.ItemID and ItemViewTypeID=@Viewer3_TypeID ))
+		end
+	end;
+
+	-- Add the fourth viewer information, if provided
+	if ( len(coalesce(@Viewer4_Type, '')) > 0 )
+	begin
+		-- Get the primary key for this viewer type
+		declare @Viewer4_TypeID int;
+		set @Viewer4_TypeID = coalesce(( select ItemViewTypeID from SobekCM_Item_Viewer_Types where ViewType = @Viewer4_Type ), -1 );
+
+		-- Only continue if that viewer type was found
+		if ( @Viewer4_TypeID > 0 )
+		begin
+			-- Insert this viewer information to all items, where it does not already exist
+			insert into SobekCM_Item_Viewers ( ItemID, ItemViewTypeID, Attribute, Label )
+			select I.ItemID, @Viewer4_TypeID, @Viewer4_Attribute, @Viewer4_Label 
+			from SobekCM_Item I 
+			where ( I.GroupID=@GroupID )
+				and ( not exists ( select 1 from SobekCM_Item_Viewers where ItemID=I.ItemID and ItemViewTypeID=@Viewer4_TypeID ))
+		end
+	end;
+
+	-- Add the fifth viewer information, if provided
+	if ( len(coalesce(@Viewer5_Type, '')) > 0 )
+	begin
+		-- Get the primary key for this viewer type
+		declare @Viewer5_TypeID int;
+		set @Viewer5_TypeID = coalesce(( select ItemViewTypeID from SobekCM_Item_Viewer_Types where ViewType = @Viewer5_Type ), -1 );
+
+		-- Only continue if that viewer type was found
+		if ( @Viewer5_TypeID > 0 )
+		begin
+			-- Insert this viewer information to all items, where it does not already exist
+			insert into SobekCM_Item_Viewers ( ItemID, ItemViewTypeID, Attribute, Label )
+			select I.ItemID, @Viewer5_TypeID, @Viewer5_Attribute, @Viewer5_Label 
+			from SobekCM_Item I 
+			where ( I.GroupID=@GroupID )
+				and ( not exists ( select 1 from SobekCM_Item_Viewers where ItemID=I.ItemID and ItemViewTypeID=@Viewer5_TypeID ))
+		end
+	end;
+
+	-- Add the sixth viewer information, if provided
+	if ( len(coalesce(@Viewer6_Type, '')) > 0 )
+	begin
+		-- Get the primary key for this viewer type
+		declare @Viewer6_TypeID int;
+		set @Viewer6_TypeID = coalesce(( select ItemViewTypeID from SobekCM_Item_Viewer_Types where ViewType = @Viewer6_Type ), -1 );
+
+		-- Only continue if that viewer type was found
+		if ( @Viewer6_TypeID > 0 )
+		begin
+			-- Insert this viewer information to all items, where it does not already exist
+			insert into SobekCM_Item_Viewers ( ItemID, ItemViewTypeID, Attribute, Label )
+			select I.ItemID, @Viewer6_TypeID, @Viewer6_Attribute, @Viewer6_Label 
+			from SobekCM_Item I 
+			where ( I.GroupID=@GroupID )
+				and ( not exists ( select 1 from SobekCM_Item_Viewers where ItemID=I.ItemID and ItemViewTypeID=@Viewer6_TypeID ))
+		end
+	end;
+
+commit transaction;
+GO
+
 
 GRANT EXECUTE ON SobekCM_Aggregation_Change_Parent to sobek_user;
 GO
@@ -1795,4 +2764,16 @@ GRANT EXECUTE ON [dbo].[SobekCM_Builder_Get_Incoming_Folder] to sobek_builder;
 GO
 
 GRANT EXECUTE ON [dbo].[Tracking_Get_Work_History] to sobek_user;
+GO
+
+GRANT EXECUTE ON SobekCM_Add_Item_Viewers TO sobek_builder;
+GRANT EXECUTE ON SobekCM_Add_Item_Viewers TO sobek_user;
+GO
+
+GRANT EXECUTE ON SobekCM_Remove_Item_Viewers TO sobek_builder;
+GRANT EXECUTE ON SobekCM_Remove_Item_Viewers TO sobek_user;
+GO
+
+GRANT EXECUTE ON SobekCM_Get_Item_Viewers TO sobek_user;
+GRANT EXECUTE ON SobekCM_Get_Item_Viewers TO sobek_builder;
 GO
