@@ -204,7 +204,7 @@ function combo_text_element_onchange(comboboxid, textboxid, clearFlag) {
     if ((thisSelectBox != null) && (thisTextBox != null)) {
         var thisValue = thisSelectBox.value;
         if (thisValue.indexOf("|") > 0) {
-            thisTextBox.value = thisValue.substring(thisValue.indexOf("|"));
+            thisTextBox.value = thisValue.substring(thisValue.indexOf("|") + 1);
             return false;
         }
 
@@ -1042,21 +1042,6 @@ function add_complex_abstract( rows, cols )
     return false;
 }
 
-function viewer_type_changed( viewerSelect )
-{
-    var select_obj = document.getElementById( viewerSelect );
-    var selected_value = select_obj.value;
-    var details_span = document.getElementById( viewerSelect.replace('_type', '_details' ));
-    if (( selected_value == 'html' ) || ( selected_value == 'htmlmap' ))
-    {
-        details_span.style.display = 'inline';    
-    }
-    else
-    {
-        details_span.style.display = 'none';    
-    }
-}
-
 function add_viewer_element( )
 {
     // Get a reference to the temporal division
@@ -1071,7 +1056,7 @@ function add_viewer_element( )
     type_select.className = "viewer_type";
     type_select.name = "viewer_type" + append_new_id;
     type_select.id = "viewer_type" + append_new_id;  
-    type_select.onchange = function() { viewer_type_changed(type_select.id) };
+    //type_select.onchange = function() { viewer_type_changed(type_select.id) };
     viewer_div.appendChild(type_select);
     
     // Copy all the options over
@@ -1085,6 +1070,7 @@ function add_viewer_element( )
         }
     } 
     
+    /*
     // Add the details span
     var detailsSpan = document.createElement('span');   
     detailsSpan.style.display = "none";
@@ -1103,6 +1089,7 @@ function add_viewer_element( )
     file_select.name = "viewer_file" + append_new_id;
     file_select.id = "viewer_file" + append_new_id;  
     detailsSpan.appendChild(file_select);
+    
     
     // Copy all the options over
     var origFileSelect = document.getElementById( 'viewer_file1');
@@ -1128,6 +1115,8 @@ function add_viewer_element( )
     newInput.id = "viewer_label" + append_new_id;   
     newInput.className="viewer_label_input sbk_Focusable";
     detailsSpan.appendChild(newInput);    
+
+    */
     
     // Increment the counter
     new_element_index++;    

@@ -1,6 +1,17 @@
 // Functions related to the system wide administrative tasks for logged on system administrators
 
 
+// More generic version of setting a hidden value and submitting the itemNavForm
+function set_hidden_value_postback(hiddenId, newValue) {
+    // Set the new value
+    var hiddenElement = document.getElementById(hiddenId);
+    hiddenElement.value = newValue;
+
+    // Submit this
+    document.itemNavForm.submit();
+    return false;
+}
+
 // Clear the text boxes for a single custom settings
 function settings_reorder(selectbox) {
 	var startfield = document.getElementById('admin_settings_order');
