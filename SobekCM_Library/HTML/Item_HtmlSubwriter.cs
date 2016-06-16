@@ -126,7 +126,7 @@ namespace SobekCM.Library.HTML
             ItemViewer_Factory.Configure_Brief_Item_Viewers(currentItem);
 
             // Set some flags based on the resource type
-            is_bib_level = (String.Compare(currentItem.Type, "BIB_LEVEL", StringComparison.OrdinalIgnoreCase) == 0);
+            is_bib_level = (String.Compare(currentItem.VID, "00000", StringComparison.OrdinalIgnoreCase) == 0);
             is_ead = (String.Compare(currentItem.Type, "EAD", StringComparison.OrdinalIgnoreCase) == 0);
 
             // Determine if this user can edit this item
@@ -807,7 +807,9 @@ namespace SobekCM.Library.HTML
 
                 if ( is_bib_level )
                 {
-                    string grouptitle = currentItem.Behaviors.GroupTitle;
+                    string grouptitle = "NO TITLE";
+                    if ((currentItem.Behaviors != null) && (!String.IsNullOrWhiteSpace(currentItem.Behaviors.GroupTitle)))
+                        grouptitle = currentItem.Behaviors.GroupTitle;
                     if (grouptitle.Length > 125)
                     {
                         Output.WriteLine("\t<h1 itemprop=\"name\"><abbr title=\"" + grouptitle + "\">" + grouptitle.Substring(0, 120) + "..</abbr></h1>");

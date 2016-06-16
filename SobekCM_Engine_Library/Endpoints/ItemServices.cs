@@ -109,7 +109,31 @@ namespace SobekCM.Engine_Library.Endpoints
                     }
                     else
                     {
-                        tracer.Add_Trace("ItemServices.GetItemCitation", "Requested VID 0000 - Currently invalid");
+                        tracer.Add_Trace("ItemServices.GetItemCitation", "Requested VID 00000  - will pull the item group / title");
+
+                        // Get the brief item
+                        tracer.Add_Trace("ItemServices.GetItemCitation", "Build full brief item");
+                        BriefItemInfo returnValue = GetBriefTitle(bibid, null, tracer);
+
+                        // Was the item null?
+                        if (returnValue == null)
+                        {
+                            // If this was debug mode, then just write the tracer
+                            if (IsDebug)
+                            {
+                                tracer.Add_Trace("ItemServices.GetItemCitation", "NULL value returned from getBriefItem method");
+
+                                Response.ContentType = "text/plain";
+                                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                                Response.Output.WriteLine();
+                                Response.Output.WriteLine(tracer.Text_Trace);
+                            }
+                            return;
+                        }
+
+                        // Create the wrapper to return only basic citation-type information
+                        tracer.Add_Trace("ItemServices.GetItemCitation", "Create wrapper class to return only the citation info");
+                        BriefItem_CitationResponse responder = new BriefItem_CitationResponse(returnValue);
 
                         // If this was debug mode, then just write the tracer
                         if (IsDebug)
@@ -118,7 +142,19 @@ namespace SobekCM.Engine_Library.Endpoints
                             Response.Output.WriteLine("DEBUG MODE DETECTED");
                             Response.Output.WriteLine();
                             Response.Output.WriteLine(tracer.Text_Trace);
+
+                            return;
                         }
+
+                        // Get the JSON-P callback function
+                        string json_callback = "parseItemGroupCitation";
+                        if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                        {
+                            json_callback = QueryString["callback"];
+                        }
+
+                        // Use the base class to serialize the object according to request protocol
+                        Serialize(responder, Response, Protocol, json_callback);
                     }
                 }
                 catch (Exception ee)
@@ -232,7 +268,27 @@ namespace SobekCM.Engine_Library.Endpoints
                     }
                     else
                     {
-                        tracer.Add_Trace("ItemServices.GetItemBrief", "Requested VID 0000 - Currently invalid");
+                        tracer.Add_Trace("ItemServices.GetItemCitation", "Requested VID 00000  - will pull the item group / title");
+
+                        // Get the brief item
+                        tracer.Add_Trace("ItemServices.GetItemCitation", "Build full brief item");
+                        BriefItemInfo returnValue = GetBriefTitle(bibid, Mapping, tracer);
+
+                        // Was the item null?
+                        if (returnValue == null)
+                        {
+                            // If this was debug mode, then just write the tracer
+                            if (IsDebug)
+                            {
+                                tracer.Add_Trace("ItemServices.GetItemCitation", "NULL value returned from getBriefItem method");
+
+                                Response.ContentType = "text/plain";
+                                Response.Output.WriteLine("DEBUG MODE DETECTED");
+                                Response.Output.WriteLine();
+                                Response.Output.WriteLine(tracer.Text_Trace);
+                            }
+                            return;
+                        }
 
                         // If this was debug mode, then just write the tracer
                         if (IsDebug)
@@ -241,7 +297,19 @@ namespace SobekCM.Engine_Library.Endpoints
                             Response.Output.WriteLine("DEBUG MODE DETECTED");
                             Response.Output.WriteLine();
                             Response.Output.WriteLine(tracer.Text_Trace);
+
+                            return;
                         }
+
+                        // Get the JSON-P callback function
+                        string json_callback = "parseItemGroupBrief";
+                        if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                        {
+                            json_callback = QueryString["callback"];
+                        }
+
+                        // Use the base class to serialize the object according to request protocol
+                        Serialize(returnValue, Response, Protocol, json_callback);
                     }
                 }
                 catch (Exception ee)
@@ -591,8 +659,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // If not pulled from the cache, then we will have to build the item
 
             Tracer.Add_Trace("ItemServices.getSobekItemGroup", "Unable to find the digital resource on the cache.. will build");
-            SobekCM_Items_In_Title outItems;
-            SobekCM_Item_Factory.Get_Item_Group(BibID, Tracer, out outItems, out currentItem);
+            currentItem = SobekCM_Item_Factory.Get_Item_Group(BibID, Engine_ApplicationCache_Gateway.Icon_List, Engine_ApplicationCache_Gateway.Item_Viewer_Priority, Tracer);
             if (currentItem != null)
             {
                 Tracer.Add_Trace("ItemServices.getSobekItemGroup", "Store the digital resource object to the cache");
@@ -606,7 +673,80 @@ namespace SobekCM.Engine_Library.Endpoints
 
             return currentItem;
         }
+        
+        
+        #endregion
 
+        #region Methods related to pulling information about a single item group
+
+        private BriefItemInfo GetBriefTitle(string BibID, string MappingSet, Custom_Tracer Tracer)
+        {
+            // Get the full SOobekCM_Item object for the provided BibID / VID
+            Tracer.Add_Trace("ItemServices.getBriefTitle", "Get the full SobekCM_Item object for this BibID-level resource");
+            SobekCM_Item currentItem = getSobekTitle(BibID, Tracer);
+            if (currentItem == null)
+            {
+                Tracer.Add_Trace("ItemServices.getBriefTitle", "Could not retrieve the full SobekCM_Item object");
+                return null;
+            }
+
+            // Was there a mapping set indicated?
+            if (String.IsNullOrEmpty(MappingSet))
+            {
+                Tracer.Add_Trace("ItemServices.getBriefTitle", "Map to the brief item, using the default mapping set");
+                BriefItemInfo item = BriefItem_Factory.Create(currentItem, Tracer);
+                return item;
+            }
+
+            Tracer.Add_Trace("ItemServices.getBriefTitle", "Map to the brief item, using mapping set '" + MappingSet + "'");
+            BriefItemInfo item2 = BriefItem_Factory.Create(currentItem, MappingSet, Tracer);
+            return item2;
+        }
+
+        public SobekCM_Item getSobekTitle(string BibID, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("ItemServices.getSobekTitle", "Verify this BibID exists in the repository");
+
+            // Is this a valid BibID?
+            if (!Engine_ApplicationCache_Gateway.Items.Contains_BibID(BibID))
+            {
+                Tracer.Add_Trace("ItemServices.getSobekTitle", "ERROR: Invalid BibID indicated!");
+                return null;
+            }
+
+            // Try to get this from the cache
+            SobekCM_Item currentItem = CachedDataManager.Items.Retrieve_Digital_Resource_Object(BibID, "00000", Tracer);
+
+            // If not pulled from the cache, then we will have to build the item
+            if (currentItem == null)
+            {
+                Tracer.Add_Trace("ItemServices.getSobekTitle", "Unable to find the digital resource on the cache.. will build");
+                currentItem = SobekCM_Item_Factory.Get_Item_Group(BibID, Engine_ApplicationCache_Gateway.Icon_List, Engine_ApplicationCache_Gateway.Item_Viewer_Priority, Tracer);
+                if (currentItem != null)
+                {
+                    // Make a few adjustments here.
+                    //currentItem.Bib_Info.Main_Title.Clear();
+                    //currentItem.Bib_Info.Main_Title.Title = currentItem.Behaviors.GroupTitle;
+                    currentItem.Bib_Info.SobekCM_Type_String = currentItem.Behaviors.GroupType;
+                    currentItem.VID = "00000";
+
+                    // Store this on th cache
+                    Tracer.Add_Trace("ItemServices.getSobekTitle", "Store the digital resource object to the cache");
+                    CachedDataManager.Items.Store_Digital_Resource_Object(BibID, "00000", currentItem, Tracer);
+                }
+                else
+                {
+                    Tracer.Add_Trace("ItemServices.getSobekTitle", "Call to the SobekCM_Item_Factory returned NULL");
+                    return null;
+                }
+            }
+            else
+            {
+                Tracer.Add_Trace("ItemServices.getSobekTitle", "Found the digital resource object on the cache");
+            }
+
+            return currentItem;
+        }
 
 
         #endregion

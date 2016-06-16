@@ -18,6 +18,9 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
         /// <returns> TRUE if successful, FALSE if an exception is encountered </returns>
         public bool MapToBriefItem(SobekCM_Item Original, BriefItemInfo New)
         {
+            // Ensure the behaviors object exists
+            if (New.Behaviors == null) New.Behaviors = new BriefItem_Behaviors();
+
             // Copy aggregation codes over
             New.Behaviors.Aggregation_Code_List = Original.Behaviors.Aggregation_Code_List.ToList();
             New.Behaviors.Holding_Location_Aggregation = Original.Bib_Info.HoldingCode;

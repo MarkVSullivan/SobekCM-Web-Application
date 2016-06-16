@@ -31,147 +31,157 @@ namespace SobekCM.Engine_Library.Items
 	{
 		private int pageseq;
 
-		/// <summary> Builds an item group object, from a METS file </summary>
-		/// <param name="BibID"> Bibliographic identifier for the item group to retrieve </param>
-		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-		/// <param name="Item_Group_Object"> [OUT] Fully built item group object </param>
-		/// <param name="Items_In_Title"> [OUT] List of all the items in this title </param>
-		public void Build_Item_Group(string BibID, Custom_Tracer Tracer, out SobekCM_Items_In_Title Items_In_Title, out SobekCM_Item Item_Group_Object )
-		{
-			if (Tracer != null)
-			{
-				Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_Group", "Create the requested item group");
-			}
+	    /// <summary> Builds an item group object, from a METS file </summary>
+	    /// <param name="BibID"> Bibliographic identifier for the item group to retrieve </param>
+	    /// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the HTML for the icons linked to this digital resource</param>
+	    /// <param name="Item_Viewer_Priority"> List of the globally defined item viewer priorities </param>
+	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+	    public SobekCM_Item Build_Item_Group(string BibID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, List<string> Item_Viewer_Priority, Custom_Tracer Tracer)
+	    {
+	        if (Tracer != null)
+	        {
+	            Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_Group", "Create the requested item group");
+	        }
 
-			// Set to NULL by default
-			Item_Group_Object = null;
-			Items_In_Title = null;
+	        // Get the basic information about this item
+	        DataSet itemDetails = Engine_Database.Get_Item_Group_Details(BibID, Tracer);
 
-			// Get the basic information about this item
-			DataSet itemDetails = Engine_Database.Get_Item_Group_Details(BibID, Tracer);
+	        // If this is NULL then there was an error
+	        if (itemDetails == null)
+	        {
+	            if (Tracer != null)
+	            {
+	                Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Build_Item_Group", "Call to database for this BibID failed and returned NULL");
+	            }
+	            return null;
+	        }
 
-			// If this is NULL then there was an error
-			if (itemDetails == null)
-				return;
+	        // Get the location for the METS file from the returned value
+	        DataRow mainItemRow = itemDetails.Tables[0].Rows[0];
+	        string metsLocation = mainItemRow["File_Location"].ToString();
 
-			// Get the location for the METS file from the returned value
-			DataRow mainItemRow = itemDetails.Tables[0].Rows[0];
-			string metsLocation = mainItemRow["File_Location"].ToString();
+	        // Get the response object for this METS file
+	        string metsFile = metsLocation.Replace("\\", "/") + "/" + BibID + ".xml";
+	        if (metsFile.IndexOf("http:") < 0)
+	        {
+	            metsFile = Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + metsFile;
+	        }
 
-			// Get the response object for this METS file
-			string metsFile = metsLocation.Replace("\\", "/") + "/" + BibID + ".xml";
-			if (metsFile.IndexOf("http:") < 0)
-			{
-                metsFile = Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network + metsFile;
-			}
+	        // Try to read this METS file
+	        bool pulledFromMETSFile = true;
+	        SobekCM_Item Item_Group_Object = Build_Item_From_METS(metsFile, BibID + ".xml", Tracer);
 
-			// Try to read this METS file
-			bool pulledFromMETSFile = true;
-			Item_Group_Object = Build_Item_From_METS(metsFile, BibID + ".xml", Tracer);
+	        // If this failed, just create an item from scratch
+	        if (Item_Group_Object == null)
+	        {
+	            Item_Group_Object = new SobekCM_Item();
+	            Item_Group_Object.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Serial;
+	            Item_Group_Object.BibID = BibID;
+	            pulledFromMETSFile = false;
+	        }
 
-			// If this failed, just create an item from scratch
-			if (Item_Group_Object == null)
-			{
-				Item_Group_Object = new SobekCM_Item();
-				Item_Group_Object.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Serial;
-				Item_Group_Object.BibID = BibID;
-				pulledFromMETSFile = false;
-			}
+	        // Set some default and add the management view
+	        Item_Group_Object.METS_Header.RecordStatus_Enum = METS_Record_Status.BIB_LEVEL;
+	        Item_Group_Object.Behaviors.Add_View("MANAGE");
 
-			// Set some default and add the management view
-			Item_Group_Object.METS_Header.RecordStatus_Enum = METS_Record_Status.BIB_LEVEL;
-			Item_Group_Object.Behaviors.Add_View("MANAGE");
+	        // Pull values from the database
+	        Item_Group_Object.Behaviors.GroupTitle = String.Empty;
+	        Item_Group_Object.Behaviors.Set_Primary_Identifier(mainItemRow["Primary_Identifier_Type"].ToString(), mainItemRow["Primary_Identifier"].ToString());
+	        Item_Group_Object.Behaviors.Text_Searchable = false;
 
-			// Pull values from the database
-			Item_Group_Object.Behaviors.GroupTitle = String.Empty;
-			Item_Group_Object.Behaviors.Set_Primary_Identifier(mainItemRow["Primary_Identifier_Type"].ToString(), mainItemRow["Primary_Identifier"].ToString());
-			Item_Group_Object.Behaviors.Text_Searchable = false;
+	        Item_Group_Object.Web.File_Root = String.Empty;
+	        Item_Group_Object.Web.Image_Root = Engine_ApplicationCache_Gateway.Settings.Servers.Image_URL;
+	        Item_Group_Object.Web.Siblings = 2;
+	        Item_Group_Object.Web.Static_PageCount = 0;
+	        Item_Group_Object.Web.Static_Division_Count = 0;
+	        Item_Group_Object.Web.AssocFilePath = "/" + BibID.Substring(0, 2) + "/" + BibID[2] + BibID[6] + "/" + BibID[4] + BibID[8] + "/" + BibID[3] + BibID[7] + "/" + BibID[5] + BibID[9] + "/";
+	        Item_Group_Object.Web.GroupID = Convert.ToInt32(mainItemRow["GroupID"]);
 
-			Item_Group_Object.Web.File_Root = String.Empty;
-            Item_Group_Object.Web.Image_Root = Engine_ApplicationCache_Gateway.Settings.Servers.Image_URL;
-			Item_Group_Object.Web.Siblings = 2;
-			Item_Group_Object.Web.Static_PageCount = 0;
-			Item_Group_Object.Web.Static_Division_Count = 0;
-			Item_Group_Object.Web.AssocFilePath = "/" + BibID.Substring(0, 2) + "/" + BibID[2] + BibID[6] + "/" + BibID[4] + BibID[8] + "/" + BibID[3] + BibID[7] + "/" + BibID[5] + BibID[9] + "/";
-			Item_Group_Object.Web.GroupID = Convert.ToInt32(mainItemRow["GroupID"]);
+	        // Add the full citation view and google map if pulled from the METS file
+	        if (pulledFromMETSFile)
+	        {
+	            // GEt the geospatial metadata module
+	            GeoSpatial_Information geoInfo = Item_Group_Object.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
+	            if ((geoInfo != null) && (geoInfo.hasData))
+	            {
+	                // In addition, if there is a latitude or longitude listed, add the Google Maps
+	                if ((geoInfo.Point_Count > 0) || (geoInfo.Polygon_Count > 0))
+	                {
+	                    Item_Group_Object.Behaviors.Insert_View(0, "GOOGLE_MAP");
+	                }
+	            }
 
-			// Add the full citation view and google map if pulled from the METS file
-			if (pulledFromMETSFile)
-			{
-				// GEt the geospatial metadata module
-				GeoSpatial_Information geoInfo = Item_Group_Object.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
-				if ((geoInfo != null) && (geoInfo.hasData))
-				{
-					// In addition, if there is a latitude or longitude listed, add the Google Maps
-					if ((geoInfo.Point_Count > 0) || (geoInfo.Polygon_Count > 0))
-					{
-						Item_Group_Object.Behaviors.Insert_View(0, "GOOGLE_MAP");
-					}
-				}
+	            Item_Group_Object.Behaviors.Insert_View(0, "CITATION");
+	        }
 
-				Item_Group_Object.Behaviors.Insert_View(0, "CITATION");
-			}
+	        // If this has more than 1 sibling (this count includes itself), add the multi-volumes viewer
+	        Item_Group_Object.Behaviors.Insert_View(0, "ALL_VOLUMES", String.Empty, Item_Group_Object.Bib_Info.SobekCM_Type_String);
 
-			// If this has more than 1 sibling (this count includes itself), add the multi-volumes viewer
-			Item_Group_Object.Behaviors.Insert_View(0, "ALL_VOLUMES", String.Empty, Item_Group_Object.Bib_Info.SobekCM_Type_String);
+	        // Pull the data from the database
+	        Item_Group_Object.Behaviors.GroupType = mainItemRow["Type"].ToString();
+	        Item_Group_Object.Behaviors.GroupTitle = mainItemRow["GroupTitle"].ToString();
+	        Item_Group_Object.Web.File_Root = mainItemRow["File_Location"].ToString();
 
-			// Pull the data from the database
-			Item_Group_Object.Behaviors.GroupType = mainItemRow["Type"].ToString();
-			Item_Group_Object.Behaviors.GroupTitle = mainItemRow["GroupTitle"].ToString();
-			Item_Group_Object.Web.File_Root = mainItemRow["File_Location"].ToString();
+	        // Add the database information to the icons now
+	        Item_Group_Object.Behaviors.Clear_Wordmarks();
+            foreach (DataRow iconRow in itemDetails.Tables[1].Rows)
+            {
+                string image = iconRow[0].ToString();
+                string link = iconRow[1].ToString().Replace("&", "&amp;").Replace("\"", "&quot;");
+                string code = iconRow[2].ToString();
+                string name = iconRow[3].ToString();
+                if (name.Length == 0)
+                    name = code.Replace("&", "&amp;").Replace("\"", "&quot;");
 
-			// Create the list of items in this title
-			Items_In_Title = new SobekCM_Items_In_Title(itemDetails.Tables[1]);
+                string html;
+                if (link.Length == 0)
+                {
+                    html = "<img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + image + "\" title=\"" + name + "\" alt=\"" + name + "\" />";
+                }
+                else
+                {
+                    if (link[0] == '?')
+                    {
+                        html = "<a href=\"" + link + "\"><img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + image + "\" alt=\"" + name + "\" /></a>";
+                    }
+                    else
+                    {
+                        html = "<a href=\"" + link + "\" target=\"_blank\"><img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + image + "\" alt=\"" + name + "\" /></a>";
+                    }
+                }
 
-			// Add the database information to the icons now
-			Item_Group_Object.Behaviors.Clear_Wordmarks();
-			foreach (DataRow thisIconRow in itemDetails.Tables[2].Rows)
-			{
-				Wordmark_Info newIcon = new Wordmark_Info();
-				if ( thisIconRow["Link"].ToString().Length == 0)
-				{
-					newIcon.Title = thisIconRow["Icon_Name"].ToString();
-					newIcon.Link = thisIconRow["Link"].ToString();
-					newIcon.HTML = "<img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + thisIconRow["Icon_URL"].ToString().Replace("&","&amp;") + "\" alt=\"" + newIcon.Title.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" />";
-				}
-				else
-				{
-					newIcon.Title = thisIconRow["Icon_Name"].ToString();
-					newIcon.Link = thisIconRow["Link"].ToString();
-					newIcon.HTML = "<a href=\"" + newIcon.Link + "\" target=\"_blank\"><img class=\"SobekItemWordmark\" src=\"<%BASEURL%>design/wordmarks/" + thisIconRow["Icon_URL"].ToString().Replace("&", "&amp;").Replace("\"", "&quot;") + "\" alt=\"" + newIcon.Title.Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a>";
-				}
-				Item_Group_Object.Behaviors.Add_Wordmark(newIcon);
-			}
+                Wordmark_Info newIcon = new Wordmark_Info { HTML = html, Link = link, Title = name, Code = code };
+                Item_Group_Object.Behaviors.Add_Wordmark(newIcon);
+            }
 
-			// Add the web skin codes to this bib-level item as well
-			Item_Group_Object.Behaviors.Clear_Web_Skins();
-			foreach (DataRow thisRow in itemDetails.Tables[3].Rows)
-			{
-				Item_Group_Object.Behaviors.Add_Web_Skin(thisRow[0].ToString().ToUpper());
-			}
+	        // Add the web skin codes to this bib-level item as well
+	        Item_Group_Object.Behaviors.Clear_Web_Skins();
+	        foreach (DataRow thisRow in itemDetails.Tables[2].Rows)
+	        {
+	            Item_Group_Object.Behaviors.Add_Web_Skin(thisRow[0].ToString().ToUpper());
+	        }
 
-			// Set the aggregationPermissions in the package to the aggregation links from the database
-			if (itemDetails.Tables.Count == 6)
-			{
-				Item_Group_Object.Behaviors.Clear_Aggregations();
-                DataTable aggrTable = itemDetails.Tables[4];
-                foreach (DataRow thisRow in aggrTable.Rows)
-				{
-					Item_Group_Object.Behaviors.Add_Aggregation(thisRow[0].ToString());
-				}
+	        // Set the aggregationPermissions in the package to the aggregation links from the database
+	        Item_Group_Object.Behaviors.Clear_Aggregations();
+	        DataTable aggrTable = itemDetails.Tables[3];
+	        foreach (DataRow thisRow in aggrTable.Rows)
+	        {
+	            Item_Group_Object.Behaviors.Add_Aggregation(thisRow[0].ToString());
+	        }
 
-				// Add the related titles, if there are some
-				foreach (DataRow thisRow in itemDetails.Tables[5].Rows)
-				{
-					string relationship = thisRow["Relationship"].ToString();
-					string title = thisRow["GroupTitle"].ToString();
-					string bibid = thisRow["BibID"].ToString();
-					Item_Group_Object.Web.All_Related_Titles.Add(new Related_Titles(relationship, title, "<%BASEURL%>" + bibid + "<%URL_OPTS%>\">"));
-				}
-			}
-		}
+	        // Add the related titles, if there are some
+	        foreach (DataRow thisRow in itemDetails.Tables[4].Rows)
+	        {
+	            string relationship = thisRow["Relationship"].ToString();
+	            string title = thisRow["GroupTitle"].ToString();
+	            string bibid = thisRow["BibID"].ToString();
+	            Item_Group_Object.Web.All_Related_Titles.Add(new Related_Titles(relationship, title, "<%BASEURL%>" + bibid + "<%URL_OPTS%>\">"));
+	        }
 
-		/// <summary> Builds a brief version of a digital resource, used when displaying the 'FULL VIEW' in 
+	        return Item_Group_Object;
+	    }
+
+	    /// <summary> Builds a brief version of a digital resource, used when displaying the 'FULL VIEW' in 
 		/// a search result or browse list </summary>
 		/// <param name="METS_Location"> Location (URL) of the METS file to read via HTTP </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>

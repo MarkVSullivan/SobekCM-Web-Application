@@ -769,7 +769,7 @@ namespace SobekCM.Library
 	            if (Current_Item == null)
 	            {
 		            string bibID = Current_Mode.BibID;
-		            SobekCM_Item_Factory.Get_Item_Group(bibID, Tracer, out Items_In_Title, out Current_Item );
+                    Current_Item = SobekCM_Item_Factory.Get_Item_Group(bibID, Icon_Table, Item_Viewer_Priority, Tracer);
 		            if (Tracer != null)
 		            {
 			            Tracer.Add_Trace("SobekCM_Assistant.Get_Item", "TEST LOG ENTRY");

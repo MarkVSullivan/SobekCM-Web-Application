@@ -66,12 +66,12 @@ namespace SobekCM.Engine_Library.Items
 
         /// <summary> Builds a title-level digital resource object for the given BibID </summary>
         /// <param name="BibID"> Bibliographic identifier for the digital resource to build </param>
+        /// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the HTML for the icons linked to this digital resource</param>
+        /// <param name="Item_Viewer_Priority"> List of the globally defined item viewer priorities  </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        /// <param name="Item_Group_Object"> [OUT] Fully built item group object </param>
-        /// <param name="Items_In_Title"> [OUT] List of all the items in this title </param>
         /// <remarks> This method relies heavily upon the <see cref="SobekCM_METS_Based_ItemBuilder"/> class to actually
         /// read the METS files and build the items. </remarks>
-        public static void Get_Item_Group(string BibID, Custom_Tracer Tracer, out SobekCM_Items_In_Title Items_In_Title, out SobekCM_Item Item_Group_Object)
+        public static SobekCM_Item Get_Item_Group(string BibID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, List<string> Item_Viewer_Priority, Custom_Tracer Tracer ) 
         {
             if (Tracer != null)
             {
@@ -82,7 +82,7 @@ namespace SobekCM.Engine_Library.Items
             SobekCM_METS_Based_ItemBuilder builder = new SobekCM_METS_Based_ItemBuilder();
 
             // Allow the builder to build the item
-            builder.Build_Item_Group(BibID, Tracer, out Items_In_Title, out Item_Group_Object );
+            return builder.Build_Item_Group(BibID, Icon_Dictionary, Item_Viewer_Priority, Tracer); 
         }
 
         /// <summary> Gets a page from an existing digital resource, by page sequence </summary>
