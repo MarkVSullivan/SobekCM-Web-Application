@@ -147,6 +147,13 @@ namespace SobekCM.Library.MySobekViewer
                // Store on the caches (to replace the other)
                CachedDataManager.Items.Remove_Digital_Resource_Objects(currentItem.BibID, RequestSpecificValues.Tracer);
 
+               // Also remove the list of volumes, since this may have changed
+               CachedDataManager.Items.Remove_Items_In_Title(currentItem.BibID, RequestSpecificValues.Tracer);
+
+               // Also clear the engine
+               SobekEngineClient.Items.Clear_Item_Group_Cache(currentItem.BibID, RequestSpecificValues.Tracer);
+
+
                // Forward
                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);

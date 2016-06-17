@@ -38,15 +38,29 @@ namespace SobekCM.Engine_Library.Endpoints
                     string BibID = UrlSegments[0];
                     string VID = UrlSegments[1];
 
-                    tracer.Add_Trace("CacheServices.ClearCachedItem", "Will clear the cache of instances related to " + BibID + ":" + VID);
+                    // If this is 00000, then this clears the entire item group
+                    if (VID == "00000")
+                    {
+                        tracer.Add_Trace("CacheServices.ClearCachedItem", "Will clear the cache of instances of all items/objects related to " + BibID + ".");
 
-                    CachedDataManager.Items.Remove_Digital_Resource_Object(BibID, VID, tracer);
+                        CachedDataManager.Items.Remove_Digital_Resource_Objects(BibID, tracer);
 
-                    // Also remove the list of volumes, since this may have changed
-                    CachedDataManager.Items.Remove_Items_In_Title(BibID, tracer);
+                        // Also remove the list of volumes, since this may have changed
+                        CachedDataManager.Items.Remove_Items_In_Title(BibID, tracer);
 
-                    returnMessage = "Cleared cache for " + BibID + ":" + VID;
+                        returnMessage = "Cleared cache for " + BibID + ":" + VID;
+                    }
+                    else
+                    {
+                        tracer.Add_Trace("CacheServices.ClearCachedItem", "Will clear the cache of instances related to " + BibID + ":" + VID);
 
+                        CachedDataManager.Items.Remove_Digital_Resource_Object(BibID, VID, tracer);
+
+                        // Also remove the list of volumes, since this may have changed
+                        CachedDataManager.Items.Remove_Items_In_Title(BibID, tracer);
+
+                        returnMessage = "Cleared cache for " + BibID + ":" + VID;
+                    }
                 }
 
                 // If this was debug mode, then just write the tracer

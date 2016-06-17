@@ -291,6 +291,27 @@ namespace SobekCM.Core.Client
             Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Clear_Item_Cache", "Response: " + returnValue );
         }
 
+        /// <summary> Clears the engine cache of all items related to a particular title, or all volumes within a single BibID </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for the digital resources </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        public void Clear_Item_Group_Cache(string BibID, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Clear_Item_Cache", "Clear all items cache for " + BibID );
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Items.ClearCache", Tracer);
+
+            // Format the URL
+            string url = String.Format(endpoint.URL, BibID, "00000");
+
+            // Call out to the endpoint and deserialize the object
+            string returnValue = Deserialize<string>(url, endpoint.Protocol, Tracer);
+
+            // Add the message to the trace
+            Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Clear_Item_Cache", "Response: " + returnValue);
+        }
+
 
 
         public SobekCM_Item Get_Sobek_Item(string BibID, string VID, Custom_Tracer Tracer)

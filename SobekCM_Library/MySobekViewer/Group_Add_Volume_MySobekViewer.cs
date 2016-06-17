@@ -51,7 +51,6 @@ namespace SobekCM.Library.MySobekViewer
         private readonly string dispositionAdviceNotes;
         private bool hierarchyCopiedFromDate;
         private readonly short ipRestrict;
-        private readonly SobekCM_Items_In_Title itemsInTitle;
         private readonly string level1;
         private readonly int level1Order;
         private readonly string level2;
@@ -65,6 +64,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly string title;
         private readonly string trackingBox;
 
+        private readonly List<Item_Hierarchy_Details> allVolumes;
         private readonly SobekCM_Item currentItem;
 
 
@@ -113,16 +113,18 @@ namespace SobekCM.Library.MySobekViewer
                 return;
             }
 
-            // Pull the list of items tied to this group
-            itemsInTitle = CachedDataManager.Items.Retrieve_Items_In_Title(currentItem.BibID, RequestSpecificValues.Tracer);
-            if (itemsInTitle == null)
+            // Pull the list of items tied to this group - Get the list of other volumes
+            RequestSpecificValues.Tracer.Add_Trace("Group_Add_Volume_MySobekViewer.Constructor", "Get the list of items under " + RequestSpecificValues.Current_Mode.BibID);
+            try
             {
-                // Get list of information about this item group and save the item list
-                DataSet itemDetails = Engine_Database.Get_Item_Group_Details(currentItem.BibID, RequestSpecificValues.Tracer);
-                itemsInTitle = new SobekCM_Items_In_Title(itemDetails.Tables[1]);
-
-                // Store in cache if retrieved
-                CachedDataManager.Items.Store_Items_In_Title(currentItem.BibID, itemsInTitle, RequestSpecificValues.Tracer);
+                allVolumes = SobekEngineClient.Items.Get_Multiple_Volumes(RequestSpecificValues.Current_Mode.BibID, RequestSpecificValues.Tracer);
+            }
+            catch (Exception ee)
+            {
+                RequestSpecificValues.Tracer.Add_Trace("Tracking_ItemViewer.Constructor", "Unable to pull volumes under " + RequestSpecificValues.Current_Mode.BibID);
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                RequestSpecificValues.Current_Mode.Error_Message = "Internal Error : Unable to pull volumes under " + RequestSpecificValues.Current_Mode.BibID;
+                return;
             }
 
             // Set some defaults
@@ -593,19 +595,24 @@ namespace SobekCM.Library.MySobekViewer
 		    Output.WriteLine("      <div style=\"text-align:left;padding-left:58px; padding-bottom: 10px;\">Import from existing volume: &nbsp; ");
 		    Output.WriteLine("        <select id=\"base_volume\" name=\"base_volume\" class=\"addvolume_base_volume\">");
 
-		    DataColumn vidColumn = itemsInTitle.Item_Table.Columns["VID"];
+
 		    bool first = true;
-		    DataView sortedView = new DataView(itemsInTitle.Item_Table) {Sort = "VID DESC"};
-		    foreach (DataRowView itemRowView in sortedView)
+            SortedList<string, string> sortList = new SortedList<string, string>();
+	        foreach (Item_Hierarchy_Details itemRowView in allVolumes)
+	        {
+                sortList.Add(itemRowView.VID, itemRowView.VID);
+	        }
+
+	        foreach (string thisVid in sortList.Values)
 		    {
 			    if (first)
 			    {
-				    Output.WriteLine("          <option value=\"" + itemRowView.Row[vidColumn] + "\" selected=\"selected\">" + itemRowView.Row[vidColumn] + "</option>");
+                    Output.WriteLine("          <option value=\"" + thisVid + "\" selected=\"selected\">" + thisVid + "</option>");
 				    first = false;
 			    }
 			    else
 			    {
-				    Output.WriteLine("          <option value=\"" + itemRowView.Row[vidColumn] + "\">" + itemRowView.Row[vidColumn] + "</option>");
+                    Output.WriteLine("          <option value=\"" + thisVid + "\">" + thisVid + "</option>");
 			    }
 		    }
 		    Output.WriteLine("        </select>");
