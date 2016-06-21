@@ -41,6 +41,7 @@ namespace SobekCM.Engine_Library.ApplicationState
         public static bool RefreshAll( Database_Instance_Configuration DbInstance )
         {
             bool error = !RefreshSettings(DbInstance);
+            error = error | !RefreshConfiguration(DbInstance);
             error = error | !RefreshStatsDateRange();
             error = error | !RefreshTranslations();
             error = error | !RefreshWebSkins();
@@ -68,6 +69,7 @@ namespace SobekCM.Engine_Library.ApplicationState
         public static bool RefreshAll()
         {
             bool error = !RefreshSettings();
+            error = error | !RefreshConfiguration();
             error = error | !RefreshStatsDateRange();
             error = error | !RefreshTranslations();
             error = error | !RefreshWebSkins();

@@ -456,12 +456,30 @@ namespace SobekCM.Library.AdminViewer
 			        {
 			            EnableExtensionMessage response = SobekEngineClient.Admin.Plugin_Enable(plugin_code, RequestSpecificValues.Tracer);
 			            actionMessage = response.Message;
+
+                        // If not successful, and there are errors, copy those over
+			            if ((!response.Success) && (response.Errors != null) && (response.Errors.Count > 0))
+			            {
+			                actionMessage = actionMessage + "<ul>";
+			                foreach (string thisError in response.Errors)
+			                    actionMessage = actionMessage + "<li>" + thisError + "</li>";
+			                actionMessage = actionMessage + "</ul>";
+			            }
 			        }
 
                     if (action_value == "disable_plugin")
                     {
                         EnableExtensionMessage response = SobekEngineClient.Admin.Plugin_Disable(plugin_code, RequestSpecificValues.Tracer);
                         actionMessage = response.Message;
+
+                        // If not successful, and there are errors, copy those over
+                        if ((!response.Success) && (response.Errors != null) && (response.Errors.Count > 0))
+                        {
+                            actionMessage = actionMessage + "<ul>";
+                            foreach (string thisError in response.Errors)
+                                actionMessage = actionMessage + "<li>" + thisError + "</li>";
+                            actionMessage = actionMessage + "</ul>";
+                        }
                     }
 
 			    }

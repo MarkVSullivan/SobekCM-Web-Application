@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Web;
+using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.Message;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
@@ -568,10 +569,38 @@ namespace SobekCM.Engine_Library.Endpoints
                     Message = "Enable request received by the engine"
                 };
 
-                // Set the new flag in the database and get the return message
-                responder.Message = Engine_Database.Plugin_Set_Enabled_Flag(plugin_code, true, tracer);
-                if (responder.Message.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0)
+                // Get this extension from the list of installed plugins
+                ExtensionInfo thisExtension = Engine_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension(plugin_code);
+
+                // If this was NULL, do nothing else
+                if (thisExtension == null)
+                {
+                    responder.Message = "Unable to find the extension indicated.";
                     responder.Success = false;
+                }
+                else
+                {
+                    // If there were config reading errors already, do not proceed
+                    if ((thisExtension.ConfigurationErrors != null) && (thisExtension.ConfigurationErrors.Count > 0))
+                    {
+                        responder.Message = "Cannot enable the extension due to configuration errors";
+                        responder.Success = false;
+                        foreach( string thisMessage in thisExtension.ConfigurationErrors )
+                            responder.Add_Error(thisMessage);
+                    }
+                    else
+                    {
+                        // Set the new flag in the database and get the return message
+                        responder.Message = Engine_Database.Plugin_Set_Enabled_Flag(plugin_code, true, tracer);
+                        if (responder.Message.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0)
+                            responder.Success = false;
+                        else
+                        {
+                            // Repull all the configuration information
+                            Engine_ApplicationCache_Gateway.RefreshAll();
+                        }
+                    }
+                }
 
 
                 // If this was debug mode, then just write the tracer
@@ -627,10 +656,27 @@ namespace SobekCM.Engine_Library.Endpoints
                     Message = "Disable request received by the engine"
                 };
 
-                // Set the new flag in the database and get the return message
-                responder.Message = Engine_Database.Plugin_Set_Enabled_Flag(plugin_code, false, tracer);
-                if (responder.Message.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0)
+                // Get this extension from the list of installed plugins
+                ExtensionInfo thisExtension = Engine_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension(plugin_code);
+
+                // If this was NULL, do nothing else
+                if (thisExtension == null)
+                {
+                    responder.Message = "Unable to find the extension indicated.";
                     responder.Success = false;
+                }
+                else
+                {
+                    // Set the new flag in the database and get the return message
+                    responder.Message = Engine_Database.Plugin_Set_Enabled_Flag(plugin_code, false, tracer);
+                    if (responder.Message.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0)
+                        responder.Success = false;
+                    else
+                    {
+                        // Repull all the configuration information
+                        Engine_ApplicationCache_Gateway.RefreshAll();
+                    }
+                }
 
                 // If this was debug mode, then just write the tracer
                 if (IsDebug)

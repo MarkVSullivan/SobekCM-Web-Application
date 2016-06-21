@@ -18,7 +18,7 @@
     </AdminInfo>
 
     <!-- Reference one of more assemblies (referenced relative to the plugin folder) -->
-    <Assembly name="PostcardCore.dll" />
+    <!-- <Assembly name="PostcardCore.dll" />  -->
 
     <!-- Add CSS, conditions are [always|admin|item|metadata|mysobek|aggregation|results] and that determines at -->
     <!-- what points the CSS file is included by the base SobekCM code                       -->
