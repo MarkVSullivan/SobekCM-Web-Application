@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
@@ -9,6 +10,7 @@ using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration;
 using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.Configuration.Engine;
+using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.Configuration.Localization;
 using SobekCM.Core.Configuration.OAIPMH;
 using SobekCM.Core.Settings;
@@ -18,6 +20,7 @@ using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.UI_Configuration.TemplateElements;
 using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items.BriefItems.Mappers;
 using SobekCM.Resource_Object.Configuration;
 
@@ -40,6 +43,7 @@ namespace SobekCM.Engine_Library.Configuration
 
             // Add all of the plug-in foldersm but ensure they are sorted
             string plug_in_folder = Path.Combine(Settings.Servers.Application_Server_Network, "plugins");
+            List<string> unreadPluginDirectories = new List<string>();
             if (Directory.Exists(plug_in_folder))
             {
                 // Get the list of subdirectories 
@@ -51,7 +55,15 @@ namespace SobekCM.Engine_Library.Configuration
                 {
                     // Get the directory name and add to the sorted list
                     string dirName = (new DirectoryInfo(thisSubDir)).Name;
-                    subdirs_sorted.Add(dirName, thisSubDir);
+
+                    // Does this match an enabled extension?
+                    if (Settings.ExtensionEnabled(dirName))
+                        subdirs_sorted.Add(dirName, thisSubDir);
+                    else
+                    {
+                        // Keep track of all plugin folders though
+                        unreadPluginDirectories.Add(thisSubDir);
+                    }
                 }
 
                 // Now, add each folder correctly sorted
@@ -66,7 +78,67 @@ namespace SobekCM.Engine_Library.Configuration
             // Add the final user configuration directory last
             configurationDirectories.Add(Path.Combine(Settings.Servers.Application_Server_Network, "config", "user"));
 
-            return Read_Config_Files(configurationDirectories, Settings);
+            InstanceWide_Configuration returnValue = Read_Config_Files(configurationDirectories, Settings);
+
+            // Now, handle any changes to the plug-ins folders and ensure database and
+            // the plug-in folders are in agreement
+            bool extension_change_occured = false;
+
+            // Look for plug-ins that exist in the directory, but not the database
+            foreach (string plugInDirectory in unreadPluginDirectories)
+            {
+                // Get the plug-in name
+                string dirName = Path.GetFileName(plugInDirectory);
+
+                // Get the list of XML and CONFIG files, and read them in alphabetical order
+                string[] files = Tools.SobekCM_File_Utilities.GetFiles(plugInDirectory, "*.xml|*.config");
+                if (files.Length > 0)
+                {
+                    // Get all the files and sort by name
+                    foreach (string thisFile in files)
+                    {
+                        ExtensionInfo extensionInfo = read_extension_config_file(thisFile);
+                        if (extensionInfo != null)
+                        {
+                            // Does this already exist?
+                            ExtensionInfo dbExtensionInfo = Settings.ExtensionByCode(extensionInfo.Code);
+                            if (dbExtensionInfo == null)
+                            {
+                                Engine_Database.Plugin_Add_Update(extensionInfo.Code, extensionInfo.Name, extensionInfo.Version, String.Empty, String.Empty, String.Empty, null);
+                                extension_change_occured = true;
+                            }
+                            else
+                            {
+                                // Does this need to be updated?
+                                if ((String.Compare(dbExtensionInfo.Name, extensionInfo.Name) != 0) || (String.Compare(dbExtensionInfo.Version, extensionInfo.Version) != 0))
+                                {
+                                    Engine_Database.Plugin_Add_Update(extensionInfo.Code, extensionInfo.Name, extensionInfo.Version, String.Empty, String.Empty, String.Empty, null);
+                                    extension_change_occured = true;
+                                }
+                            }
+
+                            // Must not be enabled, since it wasn't read above
+                            extensionInfo.Enabled = false;
+
+                            // Add this to the configuration as well
+                            returnValue.Extensions.Add_Extension(extensionInfo);
+
+                            break;
+                        }
+                    }
+
+                    // Repull the extension information, if it changed
+                    if (extension_change_occured)
+                        Settings.DbExtensions = Engine_Database.Plugin_Get_All(null);
+
+
+                }
+
+
+            }
+
+
+            return returnValue;
         }
 
         /// <summary> Refreshes the values from the database settings </summary>
@@ -159,14 +231,16 @@ namespace SobekCM.Engine_Library.Configuration
 
             // Add to the log
             ConfigObj.Source.Add_Log();
+            string directoryName = "Unknown";
+            string directory = Path.GetDirectoryName(ConfigFile);
             try
             {
                 string file = Path.GetFileName(ConfigFile);
                 DirectoryInfo dirInfo = new DirectoryInfo(Path.GetDirectoryName(ConfigFile));
-                string directory = dirInfo.Name;
+                directoryName = dirInfo.Name;
                 string directory2 = dirInfo.Parent.Name;
 
-                ConfigObj.Source.Add_Log("Reading " + directory2 + "\\" + directory + "\\" + file);
+                ConfigObj.Source.Add_Log("Reading " + directory2 + "\\" + directoryName + "\\" + file);
             }
             catch
             {
@@ -258,6 +332,24 @@ namespace SobekCM.Engine_Library.Configuration
                             case "templateelements":
                                 ConfigObj.Source.Add_Log("        Parsing TEMPLATE ELEMENTS subtree");
                                 read_template_elements_details(readerXml.ReadSubtree(), ConfigObj);
+                                break;
+
+                            case "extension":
+                                // Ensure the extension configuration exists
+                                if (ConfigObj.Extensions == null)
+                                    ConfigObj.Extensions = new Extension_Configuration();
+
+                                ConfigObj.Source.Add_Log("        Parsing EXTENSION subtree");
+                                ExtensionInfo extensionInfo = read_extension_details(readerXml, ConfigObj, directoryName, directory);
+
+                                // Since this was read here, it must be enabled, but determine enabled date
+                                extensionInfo.Enabled = true;
+                                ExtensionInfo dbInfo = Settings.ExtensionByCode(extensionInfo.Code);
+                                if (dbInfo != null)
+                                    extensionInfo.EnabledDate = dbInfo.EnabledDate;
+
+                                // Add this to the list of extensions
+                                ConfigObj.Extensions.Add_Extension(extensionInfo);
                                 break;
 
                             case "static_resources":
@@ -2687,7 +2779,219 @@ namespace SobekCM.Engine_Library.Configuration
 
         #endregion
 
+        #region Section reads all the extension information
 
+        private static ExtensionInfo read_extension_config_file(string ConfigFile )
+        {
+            // Add to the log
+            string directoryName = "Unknown";
+            string directory = Path.GetDirectoryName(ConfigFile);
+            try
+            {
+                string file = Path.GetFileName(ConfigFile);
+                DirectoryInfo dirInfo = new DirectoryInfo(Path.GetDirectoryName(ConfigFile));
+                directoryName = dirInfo.Name;
+            }
+            catch
+            {
+                return null;
+            }
+
+            // Streams used for reading
+            Stream readerStream = null;
+            XmlTextReader readerXml = null;
+
+            // Create the return object
+            ExtensionInfo returnObj = null;
+
+            try
+            {
+                // Open a link to the file
+                readerStream = new FileStream(ConfigFile, FileMode.Open, FileAccess.Read);
+
+                // Try to read the XML
+                readerXml = new XmlTextReader(readerStream);
+
+                // Step through this configuration file
+                while (readerXml.Read())
+                {
+                    if (readerXml.NodeType == XmlNodeType.Element)
+                    {
+                        switch (readerXml.Name.ToLower())
+                        {
+                            case "extension":
+                                // Ensure the extension configuration exists
+                                returnObj = read_extension_details(readerXml, null, directoryName, directory);
+                                break;
+                        }
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                returnObj = null;
+                //ConfigObj.Source.Add_Log("EXCEPTION CAUGHT in Configuration_Files_Reader.read_config_files");
+                //ConfigObj.Source.Add_Log(ee.Message);
+                //ConfigObj.Source.Add_Log(ee.StackTrace);
+
+                //ConfigObj.Source.ErrorEncountered = true;
+            }
+            finally
+            {
+                if (readerXml != null)
+                {
+                    readerXml.Close();
+                }
+                if (readerStream != null)
+                {
+                    readerStream.Close();
+                }
+            }
+
+            return returnObj;
+        }
+
+        private static ExtensionInfo read_extension_details(XmlReader readerXml, InstanceWide_Configuration config, string SourceDirectoryName, string SourceDirectory )
+        {
+            // Create the new extension information object
+            ExtensionInfo thisExtension = new ExtensionInfo
+            {
+                Code = SourceDirectoryName,
+                Name = SourceDirectoryName,
+                Version = "0.0"
+            };
+
+            // Read the attributes
+            if (readerXml.MoveToAttribute("name"))
+                thisExtension.Name = readerXml.Value.Trim();
+            if (readerXml.MoveToAttribute("version"))
+                thisExtension.Version = readerXml.Value.Trim();
+            if (readerXml.MoveToAttribute("code"))
+            {
+                string code = readerXml.Value.Trim();
+                if (String.Compare(SourceDirectoryName, code, StringComparison.OrdinalIgnoreCase) == 0)
+                    thisExtension.Code = code;
+                else
+                {
+                    thisExtension.Add_Error("WARNING: Code in the extension config ( " + code + " ) does not match directory name ( " + SourceDirectoryName + " )");
+                    if (config != null)
+                        config.Source.Add_Log("           WARNING: Code in the extension config ( " + code + " ) does not match directory name ( " + SourceDirectoryName + " )");
+                }
+            }
+        
+
+            // Just step through the subtree of this
+            readerXml.MoveToElement();
+            XmlReader childReader = readerXml.ReadSubtree();
+            while (childReader.Read())
+            {
+                if (childReader.NodeType == XmlNodeType.Element)
+                {
+                    switch (childReader.Name.ToLower())
+                    {
+                        case "description":
+                            childReader.Read();
+                            string description = childReader.Value;
+                            if (!String.IsNullOrWhiteSpace(description))
+                            {
+                                if (thisExtension.AdminInfo == null) thisExtension.AdminInfo = new ExtensionAdminInfo();
+                                thisExtension.AdminInfo.Description = description;
+                            }
+                            break;
+
+                        case "author":
+                            if (readerXml.MoveToAttribute("name"))
+                            {
+                                string author_name = readerXml.Value.Trim();
+                                string author_email = (readerXml.MoveToAttribute("email")) ? readerXml.Value.Trim() : String.Empty;
+                                if (thisExtension.AdminInfo == null) thisExtension.AdminInfo = new ExtensionAdminInfo();
+                                thisExtension.AdminInfo.Add_Author(author_name, author_email);
+                            }
+                            break;
+
+                        case "permissions":
+                            childReader.Read();
+                            string permissions = childReader.Value;
+                            if (!String.IsNullOrWhiteSpace(permissions))
+                            {
+                                if (thisExtension.AdminInfo == null) thisExtension.AdminInfo = new ExtensionAdminInfo();
+                                thisExtension.AdminInfo.Permissions = permissions;
+                            }
+                            break;
+                            break;
+
+                        case "assembly":
+                            if (childReader.MoveToAttribute("name"))
+                            {
+                                string assembly_name = childReader.Value.Trim();
+                                string full_assembly_name = Path.Combine(SourceDirectory, assembly_name);
+                                if ( File.Exists(full_assembly_name))
+                                    thisExtension.Add_Assembly(full_assembly_name);
+                                else 
+                                {
+                                    thisExtension.Add_Error("ERROR: Referenced assembly ( " + full_assembly_name + " ) does not exist");
+                                    if ( config != null )
+                                        config.Source.Add_Log("           ERROR: Referenced assembly ( " + full_assembly_name + " ) does not exist");
+                                }                      
+                            }
+                            break;
+
+                        case "css":
+                            string css_url = String.Empty;
+                            string css_condition = String.Empty;
+                            if (childReader.MoveToAttribute("url"))
+                                css_url = childReader.Value.Trim();
+                            if (childReader.MoveToAttribute("condition"))
+                                css_condition = childReader.Value.Trim();
+                            if ((!String.IsNullOrWhiteSpace(css_url)) && (!String.IsNullOrWhiteSpace(css_condition)))
+                            {
+                                ExtensionCssInfoConditionEnum condition = ExtensionCssInfoConditionEnum.ERROR;
+                                switch (css_condition.ToLower())
+                                {
+                                    case "admin":
+                                        condition = ExtensionCssInfoConditionEnum.Admin;
+                                        break;
+
+                                    case "aggregation":
+                                        condition = ExtensionCssInfoConditionEnum.Aggregation;
+                                        break;
+
+                                    case "always":
+                                        condition = ExtensionCssInfoConditionEnum.Always;
+                                        break;
+
+                                    case "item":
+                                        condition = ExtensionCssInfoConditionEnum.Item;
+                                        break;
+
+                                    case "metadata":
+                                        condition = ExtensionCssInfoConditionEnum.Metadata;
+                                        break;
+
+                                    case "mysobek":
+                                        condition = ExtensionCssInfoConditionEnum.MySobek;
+                                        break;
+
+                                    case "results":
+                                        condition = ExtensionCssInfoConditionEnum.Results;
+                                        break;
+
+                                }
+
+                                if (condition != ExtensionCssInfoConditionEnum.ERROR)
+                                    thisExtension.Add_CssFile(css_url, condition);
+                            }
+                            break;
+
+                    }
+                }
+            }
+
+            // Return the built extension information
+            return thisExtension;
+        }
+
+        #endregion
 
     }
 }

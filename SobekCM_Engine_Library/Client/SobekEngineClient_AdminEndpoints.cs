@@ -5,6 +5,7 @@ using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.Configuration.OAIPMH;
+using SobekCM.Core.Message;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Settings;
 using SobekCM.Core.UI_Configuration;
@@ -284,6 +285,48 @@ namespace SobekCM.Core.Client
 
             // Call out to the endpoint and return the deserialized object
             return Deserialize<WriterViewerConfig>(endpoint.URL, endpoint.Protocol, Tracer);
+        }
+
+        #endregion
+
+        #region Plugin related endpoints
+
+        /// <summary> Enable an existing plug-in/extension </summary>
+        /// <param name="Code"> Code for the plug-in to enable </param>
+        /// <param name="Tracer"></param>
+        /// <returns> Response message that includes if it was a success, as well as other trace information </returns>
+        public EnableExtensionMessage Plugin_Enable(string Code, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_AdminServices.Plugin_Enable");
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Admin.Enable_Plugin", Tracer);
+
+            // Determine the URL
+            string url = String.Format(endpoint.URL, Code);
+
+            // Call out to the endpoint and return the deserialized object
+            return Deserialize<EnableExtensionMessage>(url, endpoint.Protocol, Tracer);
+        }
+
+        /// <summary> Dsable an existing plug-in/extension </summary>
+        /// <param name="Code"> Code for the plug-in to disable </param>
+        /// <param name="Tracer"></param>
+        /// <returns> Message indicating success or failure </returns>
+        public EnableExtensionMessage Plugin_Disable(string Code, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_AdminServices.Plugin_Disable");
+
+            // Get the endpoint
+            MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Admin.Disable_Plugin", Tracer);
+
+            // Determine the URL
+            string url = String.Format(endpoint.URL, Code);
+
+            // Call out to the endpoint and return the deserialized object
+            return Deserialize<EnableExtensionMessage>(url, endpoint.Protocol, Tracer);
         }
 
         #endregion

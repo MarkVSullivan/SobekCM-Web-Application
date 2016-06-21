@@ -42,33 +42,70 @@ namespace SobekCM.Core.Configuration.Extensions
         [ProtoMember(5)]
         public string Version { get; set; }
 
+        /// <summary> Date this extension was enabled </summary>
+        [DataMember(Name = "enabledDate")]
+        [XmlIgnore]
+        [ProtoMember(6)]
+        public DateTime? EnabledDate { get; set; }
+
+        /// <summary> Date this extension was enabled (for XML serialization)</summary>
+        /// <remarks> This property is only exposed to allow for XML serialization of the nullable datetime </remarks>
+        [IgnoreDataMember]
+        [XmlAttribute("enableDate")]
+        public DateTime EnabledDate_XML
+        {
+            get { return EnabledDate.HasValue ? EnabledDate.Value : DateTime.MinValue; }
+            set { if (value != DateTime.MinValue) EnabledDate = value; }
+        }
+
+        /// <summary> Property controls if the associated property is serialized during XML serialization </summary>
+        public bool ShouldSerializeEnabledDate_XML
+        {
+            get { return EnabledDate.HasValue; }
+        }
+
         /// <summary> List of assemblies referenced in the extension configuration file </summary>
         [DataMember(Name = "assemblies", EmitDefaultValue = false)]
         [XmlArray("assemblies")]
         [XmlArrayItem("assembly", typeof(string))]
-        [ProtoMember(6)]
+        [ProtoMember(7)]
         public List<string> Assemblies { get; set; }
 
         /// <summary> List of CSS files referenced by this extension in the extension configuration file </summary>
         [DataMember(Name = "cssFiles", EmitDefaultValue = false)]
         [XmlArray("cssFiles")]
         [XmlArrayItem("css", typeof(ExtensionCssInfo))]
-        [ProtoMember(7)]
+        [ProtoMember(8)]
         public List<ExtensionCssInfo> CssFiles { get; set; }
 
         /// <summary> Simple key/value configurations from the extension configuration file </summary>
         [DataMember(Name = "keyValueConfigurations", EmitDefaultValue = false)]
         [XmlArray("keyValueConfigurations")]
         [XmlArrayItem("keyValueConfig", typeof(ExtensionKeyValueConfiguration))]
-        [ProtoMember(8)]
+        [ProtoMember(9)]
         public List<ExtensionKeyValueConfiguration> KeyValueConfigurations { get; set; }
 
         /// <summary> XML configuration sections from the extension configuration file </summary>
         [DataMember(Name = "xmlConfigurations", EmitDefaultValue = false)]
         [XmlArray("xmlConfigurations")]
         [XmlArrayItem("xmlConfig", typeof(ExtensionXmlConfiguration))]
-        [ProtoMember(9)]
+        [ProtoMember(10)]
         public List<ExtensionXmlConfiguration> XmlConfigurations { get; set; }
+
+        /// <summary> List of any errors (or warnings) that occurred while reading the configuration file </summary>
+        [DataMember(Name = "errors", EmitDefaultValue = false)]
+        [XmlArray("errors")]
+        [XmlArrayItem("error", typeof(string))]
+        [ProtoMember(11)]
+        public List<string> ConfigurationErrors { get; set; }
+
+
+        /// <summary> Administrative information about an extension/plug-in, such as description,
+        /// authors, permissions, etc..  </summary>
+        [DataMember(Name = "adminInfo",EmitDefaultValue = false)]
+        [XmlAttribute("adminInfo")]
+        [ProtoMember(12)]
+        public ExtensionAdminInfo AdminInfo { get; set; }
 
         /// <summary> Constructor for a new instance of the <see cref="ExtensionInfo"/> class </summary>
         public ExtensionInfo()
@@ -109,6 +146,34 @@ namespace SobekCM.Core.Configuration.Extensions
 
         #endregion
 
+        /// <summary> Add information about an extension CSS file </summary>
+        /// <param name="URL"> URL for this CSS </param>
+        /// <param name="Condition"> Condition upon which this CSS file should be added </param>
+        public void Add_CssFile(string URL, ExtensionCssInfoConditionEnum Condition)
+        {
+            if (CssFiles == null)
+                CssFiles = new List<ExtensionCssInfo>();
 
+            CssFiles.Add(new ExtensionCssInfo(URL, Condition));
+        }
+
+        /// <summary> Add information about any error encountered while reading the 
+        /// plug-in configuration file extension subtree </summary>
+        /// <param name="ErrorMessage"> Error message to add </param>
+        public void Add_Error(string ErrorMessage)
+        {
+            if (ConfigurationErrors == null) ConfigurationErrors = new List<string>();
+
+            ConfigurationErrors.Add(ErrorMessage);
+        }
+
+        /// <summary> Add information about a related assembly for this plug-in </summary>
+        /// <param name="AssemblyPathFile"> DLL file to include </param>
+        public void Add_Assembly(string AssemblyPathFile)
+        {
+            if (Assemblies == null) Assemblies = new List<string>();
+
+            Assemblies.Add(AssemblyPathFile);
+        }
     }
 }

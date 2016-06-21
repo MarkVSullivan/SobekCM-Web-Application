@@ -17,6 +17,7 @@ using SobekCM.Core.Configuration.Authentication;
 using SobekCM.Core.Configuration.Engine;
 using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.Configuration.OAIPMH;
+using SobekCM.Core.Message;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Search;
@@ -69,6 +70,7 @@ namespace SobekCM.Library.AdminViewer
 		private SortedList<string, string> tabPageNames;
 		private Dictionary<string, List<Admin_Setting_Value>> settingsByPage;
 	    private List<Admin_Setting_Value> builderSettings;
+	    private List<string> extensionCodes;
 
         private readonly Settings_Mode_Enum mainMode = Settings_Mode_Enum.NONE;
         private readonly Settings_Configuration_SubMode_Enum configSubMode = Settings_Configuration_SubMode_Enum.NONE;
@@ -188,6 +190,16 @@ namespace SobekCM.Library.AdminViewer
 		/// <remarks> Postback from handling saving the new settings is handled here in the constructor </remarks>
 		public Settings_AdminViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
 		{
+            // Determine the extension codes
+            extensionCodes = new List<string>();
+		    if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) && (UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions != null) && (UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions.Count > 0))
+		    {
+		        SortedList<string, string> extensionSorter = new SortedList<string, string>();
+		        foreach (ExtensionInfo thisInfo in UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions)
+		            extensionSorter[thisInfo.Code] = thisInfo.Code;
+		        extensionCodes = extensionSorter.Values.ToList();
+		    }
+
 			// If the RequestSpecificValues.Current_User cannot edit this, go back
 			if (( RequestSpecificValues.Current_User == null ) || ((!RequestSpecificValues.Current_User.Is_System_Admin) && (!RequestSpecificValues.Current_User.Is_Portal_Admin)))
 			{
@@ -385,16 +397,14 @@ namespace SobekCM.Library.AdminViewer
                         break;
 
                     case "extensions":
+                        extensionSubMode = -1;
                         mainMode = Settings_Mode_Enum.Extensions;
-                        int extensionsCount = 0;
-                        if (UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions != null)
-                            extensionsCount = UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions.Count;
-                        if ((extensionsCount > 0 ) && ( RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 1))
+                        if ((extensionCodes.Count > 0) && (RequestSpecificValues.Current_Mode.Remaining_Url_Segments.Length > 1))
                         {
                             int tryExtensionNum;
                             if (Int32.TryParse(RequestSpecificValues.Current_Mode.Remaining_Url_Segments[1], out tryExtensionNum))
                             {
-                                if ((tryExtensionNum > 0) && (tryExtensionNum <= extensionsCount))
+                                if ((tryExtensionNum > 0) && (tryExtensionNum <= extensionCodes.Count))
                                     extensionSubMode = tryExtensionNum;
                             }
                         }
@@ -437,6 +447,23 @@ namespace SobekCM.Library.AdminViewer
 			    if ((action_value == "save") && (RequestSpecificValues.Current_User.Is_System_Admin))
 			    {
     			    save_setting_values(RequestSpecificValues, mainMode );
+			    }
+			    if ((mainMode == Settings_Mode_Enum.Extensions) && (extensionSubMode > 0))
+			    {
+                    // Get the code
+			        string plugin_code = extensionCodes[extensionSubMode - 1];
+			        if (action_value == "enable_plugin")
+			        {
+			            EnableExtensionMessage response = SobekEngineClient.Admin.Plugin_Enable(plugin_code, RequestSpecificValues.Tracer);
+			            actionMessage = response.Message;
+			        }
+
+                    if (action_value == "disable_plugin")
+                    {
+                        EnableExtensionMessage response = SobekEngineClient.Admin.Plugin_Disable(plugin_code, RequestSpecificValues.Tracer);
+                        actionMessage = response.Message;
+                    }
+
 			    }
 			}
 		}
@@ -691,13 +718,13 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("        </ul>");
 
 			Output.WriteLine(add_leftnav_h2_link("Extensions", "extensions", redirectUrl, currentViewerCode));
-			if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) && (UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions != null) && (UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions.Count > 0))
+			if (extensionCodes.Count > 0 )
 			{
 				Output.WriteLine("        <ul>");
 				int extensionNumber = 1;
-				foreach (ExtensionInfo thisExtension in UI_ApplicationCache_Gateway.Configuration.Extensions.Extensions)
+				foreach (string thisCode in extensionCodes)
 				{
-					Output.WriteLine(add_leftnav_li_link(thisExtension.Name, "extensions/" + extensionNumber, redirectUrl, currentViewerCode));
+					Output.WriteLine(add_leftnav_li_link(thisCode, "extensions/" + extensionNumber, redirectUrl, currentViewerCode));
 					extensionNumber++;
 				}
 				Output.WriteLine("        </ul>");
@@ -709,11 +736,22 @@ namespace SobekCM.Library.AdminViewer
 
 			Output.WriteLine("<div class=\"sbkAdm_HomeText\">");
 
-			if (actionMessage.Length > 0)
-			{
-				Output.WriteLine("  <br />");
-				Output.WriteLine("  <div id=\"sbkAdm_ActionMessage\">" + actionMessage + "</div>");
-			}
+
+            // Add the action message, if there is one
+            if (!String.IsNullOrEmpty(actionMessage))
+            {
+                // If this is an error, show it differently
+                if (actionMessage.IndexOf("Error", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    Output.WriteLine("  <br />");
+                    Output.WriteLine("  <div id=\"sbkAdm_ActionMessageError\">" + actionMessage + "</div>");
+                }
+                else
+                {
+                    Output.WriteLine("  <br />");
+                    Output.WriteLine("  <div id=\"sbkAdm_ActionMessageSuccess\">" + actionMessage + "</div>");
+                }
+            }
 
 			// Add the content, based on the main mode
 			switch (mainMode)
@@ -3785,9 +3823,139 @@ namespace SobekCM.Library.AdminViewer
 
 		private void add_extensions_info(TextWriter Output)
 		{
-            Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
+            if ((extensionSubMode < 1) || (extensionSubMode >  extensionCodes.Count ))
+		    {
+                Output.WriteLine("  <span class=\"sbkSeav_BackUpLink\"><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "") + "\">Back to top</a></span>");
 
-            Output.WriteLine("EXTENSIONS INFO HERE");
+                Output.WriteLine("  <h2>Extensions</h2>");
+
+                Output.WriteLine("  <p>The SobekCM digital repository system supports a rich extension, or plug-in, architecture allowing major configuration, functionality, and appearance changes to be implemented through the use of plug-ins.</p>");
+
+		        if (extensionCodes.Count > 0)
+		        {
+                    Output.WriteLine("  <p>The table below includes the list of all plug-ins that are present in this system.  By clicking on a row below, you can view the details for that plug-in and enable or disable the functionality.</p>");
+
+		            Output.WriteLine("  <h3>Installed Extensions</h3>");
+		            Output.WriteLine("  <table class=\"sbkSeav_BaseTable sbkSeav_ExtensionsTable\">");
+		            Output.WriteLine("    <tr>");
+		            Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_EnabledCol\">Enabled</th>");
+		            Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_CodeCol\">Code</th>");
+		            Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_NameCol\">Name</th>");
+		            Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_NameCol\">Version</th>");
+		            Output.WriteLine("      <th class=\"sbkSeav_ExtensionsTable_DateEnabledCol\">Date Enabled</th>");
+		            Output.WriteLine("    </tr>");
+		            int extension_count = 1;
+		            foreach (string thisCode in extensionCodes)
+		            {
+		                // Get the extension information
+		                ExtensionInfo thisExtension = UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension(thisCode);
+		                if (thisExtension == null) continue;
+
+                        Output.WriteLine("    <tr class=\"sbkSeav_ExtensionsTable_Row\" onclick=\"window.location.href='" + RequestSpecificValues.Current_Mode.Base_URL + "l/admin/settings/extensions/" + extension_count + "'; return false;\">");
+		                if (thisExtension.Enabled)
+		                    Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark2_Png + "\" alt=\"yes\" /></td>");
+		                else
+		                    Output.WriteLine("      <td class=\"sbkSeav_TableCenterCell\"><img src=\"" + Static_Resources_Gateway.Checkmark_Png + "\" alt=\"no\" /></td>");
+
+		                Output.WriteLine("      <td>" + thisExtension.Code + "</td>");
+		                Output.WriteLine("      <td>" + thisExtension.Name + "</td>");
+		                Output.WriteLine("      <td>" + thisExtension.Version + "</td>");
+
+		                if ((thisExtension.Enabled) && (thisExtension.EnabledDate.HasValue))
+		                    Output.WriteLine("      <td>" + thisExtension.EnabledDate.Value.ToShortDateString() + "</td>");
+		                else
+		                    Output.WriteLine("      <td></td>");
+
+		                Output.WriteLine("    </tr>");
+
+		                extension_count++;
+		            }
+		            Output.WriteLine("  </table>");
+		        }
+		        else
+		        {
+                    Output.WriteLine("  <p>You do not currently have any installed plug-ins.</p>");
+		        }
+		    }
+		    else
+		    {
+                // Get the referenced code
+		        string code = extensionCodes[extensionSubMode - 1];
+
+                // Get the extension
+		        ExtensionInfo extension = UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension(code);
+
+
+                Output.WriteLine("  <h2>" + extension.Name + "</h2>");
+
+                Output.WriteLine("  <p>The information below is for a plug-in that is installed on this system.");
+
+                // Add the button
+		        Output.WriteLine("  <div style=\"float: right;\">");
+
+                if ( extension.Enabled )
+                    Output.WriteLine("    <button title=\"Disable this plug-in\" class=\"sbkAdm_RoundButton\" onclick=\"if ( confirm('Are you sure you want to disable this currently active plug-in?  This may result in loss of metadata or functionality.') == true ) { set_hidden_value_postback('admin_settings_action','disable_plugin'); } return false; \">DISABLE</button>");
+                else
+                    Output.WriteLine("    <button title=\"Enable this plug-in\" class=\"sbkAdm_RoundButton\" onclick=\"if ( confirm('Are you sure you want to enable this plug-in?') == true ) { set_hidden_value_postback('admin_settings_action','enable_plugin'); } return false;\">ENABLE</button>");
+
+                Output.WriteLine("  </div>");
+
+                if ( extension.Enabled)
+                    Output.WriteLine("  <p>This plug-in is currently enabled and in use by this system.  Press the button to the right to disable this plug-in completely.</p>");
+                else
+                    Output.WriteLine("  <p>This plug-in is installed but is NOT currently active.  Press the button to the right to enable this plug-in and reset system configuration.</p>");
+
+                Output.WriteLine("  <table class=\"sbkSeav_BaseTableVert sbkSeav_ExtensionTable\">");
+                if ((extension.Enabled) && (extension.EnabledDate.HasValue))
+                    Output.WriteLine("    <tr><th>Enabled Date:</th><td>" + extension.EnabledDate.Value.ToShortDateString() + "</td></tr>");
+                Output.WriteLine("    <tr><th>Code:</th><td>" + extension.Code + "</td></tr>");
+                Output.WriteLine("    <tr><th>Name:</th><td>" + extension.Name + "</td></tr>");
+
+		        if (extension.AdminInfo != null)
+		        {
+		            // Add description information
+		            if (!String.IsNullOrWhiteSpace(extension.AdminInfo.Description))
+		            {
+		                Output.WriteLine("    <tr><th>Description:</th><td>" + extension.AdminInfo.Description + "</td></tr>");
+		            }
+
+		            // Add author information
+		            if ((extension.AdminInfo.Authors != null) && (extension.AdminInfo.Authors.Count > 0))
+		            {
+		                Output.Write("    <tr><th>Author(s):</th><td>");
+		                foreach (ExtensionAdminAuthorInfo thisAuthor in extension.AdminInfo.Authors)
+		                {
+		                    if (!String.IsNullOrWhiteSpace(thisAuthor.Email))
+		                        Output.Write(thisAuthor.Name + " ( " + thisAuthor.Email + " )<br/>");
+		                    else
+		                        Output.Write(thisAuthor.Name + "<br />");
+		                }
+		                Output.WriteLine("</td></tr>");
+		            }
+
+		            // Add permissions information
+		            if (!String.IsNullOrWhiteSpace(extension.AdminInfo.Permissions))
+		            {
+		                Output.WriteLine("    <tr><th>Permissions:</th><td>" + extension.AdminInfo.Permissions + "</td></tr>");
+		            }
+		        }          
+
+                Output.WriteLine("  </table>");
+
+                // Any errors or warnings found?
+		        if ((extension.ConfigurationErrors != null) && (extension.ConfigurationErrors.Count > 0))
+		        {
+		            Output.WriteLine("  <h3>Configuration Errors</h3>");
+                    Output.WriteLine("  <p>The following configuration errors occured while reading this plug-in information.  These must be corrected before this extension can be enabled.");
+                    Output.WriteLine("  <ul id=\"sbkSeav_ExtensionErrors\">");
+		            foreach (string thisError in extension.ConfigurationErrors)
+		            {
+		                Output.WriteLine("    <li>" + thisError + "</li>");
+		            }
+                    Output.WriteLine("  </ul>");
+
+		        }
+		    }
 		}
 
 		#endregion

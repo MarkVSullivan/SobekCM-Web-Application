@@ -5,7 +5,17 @@
 		http://sobekrepository.org/schemas/sobekcm_config.xsd">
   
   <!-- This code describes the actual extension and sets some top level inforation -->
-  <Extension code="POSTCARD" name="Postcard Metadata Extensions" version="1.0" >
+  <Extension code="PostcardCore" name="Postcard Metadata Extensions" version="1.0" >
+    
+    <!-- Administrative information about this plugin -->
+    <AdminInfo>
+      <Description>This plug-in adds custom metadata used by the postcards by USF.</Description>
+      <Authors>
+        <Author name="Bernardy, Richard" />
+        <Author name="Sullivan, Mark" email="Mark.V.Sullivan@sobekdigital.com" />
+      </Authors>
+      <Permissions>Copyright 2016 by University of South Florida.  For permission to use this plugin in your repository, contact Richard Bernardy.</Permissions>      
+    </AdminInfo>
 
     <!-- Reference one of more assemblies (referenced relative to the plugin folder) -->
     <Assembly name="PostcardCore.dll" />

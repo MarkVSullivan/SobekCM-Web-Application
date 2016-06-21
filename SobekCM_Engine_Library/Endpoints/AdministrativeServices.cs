@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Web;
+using SobekCM.Core.Message;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
@@ -538,6 +539,127 @@ namespace SobekCM.Engine_Library.Endpoints
 
             // Use the base class to serialize the object according to request protocol
             Serialize(Engine_ApplicationCache_Gateway.Configuration.UI.StaticResources, Response, Protocol, json_callback);
+        }
+
+        #endregion
+
+        #region Plug-in related endpoints
+
+        /// <summary> Enable an existing plug-in </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void EnablePlugin(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Must at least have one URL segment for the Plugin ID
+            if (UrlSegments.Count > 0)
+            {
+                Custom_Tracer tracer = new Custom_Tracer();
+
+                // Get the plugin to enable/disable
+                string plugin_code = UrlSegments[0];
+
+                // Create the message to return
+                EnableExtensionMessage responder = new EnableExtensionMessage
+                {
+                    Success = true,
+                    Message = "Enable request received by the engine"
+                };
+
+                // Set the new flag in the database and get the return message
+                responder.Message = Engine_Database.Plugin_Set_Enabled_Flag(plugin_code, true, tracer);
+                if (responder.Message.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0)
+                    responder.Success = false;
+
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+
+                    return;
+                }
+
+                // Get the JSON-P callback function
+                string json_callback = "parsePluginEnable";
+                if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                {
+                    json_callback = QueryString["callback"];
+                }
+
+                // Use the base class to serialize the object according to request protocol
+                Serialize(responder, Response, Protocol, json_callback);
+
+
+            }
+            else
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("The unique plug-in code to enable must be provided");
+            }
+        }
+
+        /// <summary> Disable an existing plug-in </summary>
+        /// <param name="Response"></param>
+        /// <param name="UrlSegments"></param>
+        /// <param name="QueryString"></param>
+        /// <param name="Protocol"></param>
+        /// <param name="IsDebug"></param>
+        public void DisablePlugin(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, bool IsDebug)
+        {
+            // Must at least have one URL segment for the Plugin ID
+            if (UrlSegments.Count > 0)
+            {
+                Custom_Tracer tracer = new Custom_Tracer();
+
+                // Get the plugin to enable/disable
+                string plugin_code = UrlSegments[0];
+
+                // Create the message to return
+                EnableExtensionMessage responder = new EnableExtensionMessage
+                {
+                    Success = true, 
+                    Message = "Disable request received by the engine"
+                };
+
+                // Set the new flag in the database and get the return message
+                responder.Message = Engine_Database.Plugin_Set_Enabled_Flag(plugin_code, false, tracer);
+                if (responder.Message.IndexOf("error", StringComparison.OrdinalIgnoreCase) >= 0)
+                    responder.Success = false;
+
+                // If this was debug mode, then just write the tracer
+                if (IsDebug)
+                {
+                    Response.ContentType = "text/plain";
+                    Response.Output.WriteLine("DEBUG MODE DETECTED");
+                    Response.Output.WriteLine();
+                    Response.Output.WriteLine(tracer.Text_Trace);
+
+                    return;
+                }
+
+                // Get the JSON-P callback function
+                string json_callback = "parsePluginEnable";
+                if ((Protocol == Microservice_Endpoint_Protocol_Enum.JSON_P) && (!String.IsNullOrEmpty(QueryString["callback"])))
+                {
+                    json_callback = QueryString["callback"];
+                }
+
+                // Use the base class to serialize the object according to request protocol
+                Serialize(responder, Response, Protocol, json_callback);
+
+
+            }
+            else
+            {
+                Response.ContentType = "text/plain";
+                Response.Output.WriteLine("The unique plug-in code to enable must be provided");
+            }
         }
 
         #endregion

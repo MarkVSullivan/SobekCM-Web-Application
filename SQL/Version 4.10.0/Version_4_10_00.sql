@@ -42,7 +42,7 @@ BEGIN
 	CREATE TABLE [dbo].[SobekCM_Extension](
 		[ExtensionID] [int] IDENTITY(1,1) NOT NULL,
 		[Code] [nvarchar](50) NOT NULL,
-		[Description] [nvarchar](max) NOT NULL,
+		[Name] [nvarchar](255) NOT NULL,
 		[CurrentVersion] [varchar](50) NOT NULL,
 		[IsEnabled] [bit] NOT NULL,
 		[EnabledDate] [datetime] NULL,
@@ -54,6 +54,17 @@ BEGIN
 		[ExtensionID] ASC
 	)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 	) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+END
+ELSE
+BEGIN
+	if ( NOT EXISTS (select * from sys.columns where Name = N'Name' and Object_ID = Object_ID(N'SobekCM_Extension')))
+	BEGIN
+		ALTER TABLE SobekCM_Extension ADD Name varchar(255) not null;
+		ALTER TABLE SobekCM_Extension DROP COLUMN [Description];
+	END;
+END;
+GO
+
 END;
 GO
 

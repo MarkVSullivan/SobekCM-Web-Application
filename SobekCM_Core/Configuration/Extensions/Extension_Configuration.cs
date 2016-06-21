@@ -16,6 +16,33 @@ namespace SobekCM.Core.Configuration.Extensions
         [XmlArray("extensions")]
         [XmlArrayItem("extension", typeof(ExtensionInfo))]
         [ProtoMember(1)]
-        public List<ExtensionInfo> Extensions { get; set; } 
+        public List<ExtensionInfo> Extensions { get; set; }
+
+        /// <summary> Add a new extension to this list of extensions </summary>
+        /// <param name="NewExtension"> New extension to add </param>
+        public void Add_Extension(ExtensionInfo NewExtension)
+        {
+            if (Extensions == null)
+                Extensions = new List<ExtensionInfo>();
+
+            Extensions.Add(NewExtension);
+        }
+
+        /// <summary> Gets an extension, by extension code, otherwise NULL </summary>
+        /// <param name="ExtensionCode"> Unique extension code for the extension information to retrieve </param>
+        /// <returns> Extension information, or NULL if no matching extension was found </returns>
+        public ExtensionInfo Get_Extension(string ExtensionCode)
+        {
+            if ((Extensions == null) || (Extensions.Count == 0))
+                return null;
+
+            foreach (ExtensionInfo thisExtension in Extensions)
+            {
+                if (String.Compare(thisExtension.Code, ExtensionCode, StringComparison.OrdinalIgnoreCase) == 0)
+                    return thisExtension;
+            }
+
+            return null;
+        }
     }
 }

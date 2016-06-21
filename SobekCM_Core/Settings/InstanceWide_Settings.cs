@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
 using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Search;
 using SobekCM.Core.Settings.DbItemViewers;
@@ -277,9 +278,12 @@ namespace SobekCM.Core.Settings
             if (CurrentUser.ShibbID.Trim().Length > 0)
                 userInProcessDirectory = Servers.In_Process_Submission_Location + "\\" + CurrentUser.ShibbID + "\\" + DirectoryName;
 
-            return userInProcessDirectory;
+            return userInProcessDirectory; 
         }
 
+
+        #region Properties and methods related to additional custom settings 
+       
 
         /// <summary> Additional custom settings associated with this SobekCM system at
         /// the highest level </summary>
@@ -340,6 +344,51 @@ namespace SobekCM.Core.Settings
                 return null;
             }
         }
+
+        #endregion
+
+        #region Properties related to the list of extensions/plugins from the database
+
+        /// <summary> List of basic extension/plugin information from the database </summary>
+        [DataMember(Name = "additionalSettings", EmitDefaultValue = false)]
+        [XmlArray("additionalSettings")]
+        [XmlArrayItem("setting", typeof(Simple_Setting))]
+        [ProtoMember(22)]
+        public List<ExtensionInfo> DbExtensions { get; set; }
+
+        /// <summary> Checks to see if the extension exists and is enabled, according to the database </summary>
+        /// <param name="Code"> Code of the extensions, which must match the directory for the plug-in </param>
+        /// <returns> TRUE if the extension exists and is enabled, otherwise FALSE </returns>
+        public bool ExtensionEnabled(string Code)
+        {
+            if (DbExtensions == null) return false;
+
+            foreach (ExtensionInfo thisExtension in DbExtensions)
+            {
+                if (String.Compare(Code, thisExtension.Code, StringComparison.OrdinalIgnoreCase) == 0)
+                    return thisExtension.Enabled;
+            }
+
+            return false;
+        }
+
+        /// <summary> Gets the information from the database for a single extension </summary>
+        /// <param name="Code"> Code of the extensions, which must match the directory for the plug-in </param>
+        /// <returns> Extension information from the database, or NULL </returns>
+        public ExtensionInfo ExtensionByCode(string Code)
+        {
+            if (DbExtensions == null) return null;
+
+            foreach (ExtensionInfo thisExtension in DbExtensions)
+            {
+                if (String.Compare(Code, thisExtension.Code, StringComparison.OrdinalIgnoreCase) == 0)
+                    return thisExtension;
+            }
+
+            return null;
+        }
+
+        #endregion
 
 
         #region Methods that controls XML serialization

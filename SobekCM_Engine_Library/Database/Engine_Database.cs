@@ -10,6 +10,7 @@ using SobekCM.Core;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.ApplicationState;
 using SobekCM.Core.Builder;
+using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.Items;
 using SobekCM.Core.Results;
 using SobekCM.Core.Search;
@@ -5758,6 +5759,192 @@ namespace SobekCM.Engine_Library.Database
             }
 
             return user;
+        }
+
+        #endregion
+
+        #region Methods related to the extensions/plug-ins ( i.e., add/remove/enable )
+
+        /// <summary> Add or update information about a plug-in that exists in this system (but may not be enabled) </summary>
+        /// <param name="Code"> Unique code for this plug-in </param>
+        /// <param name="Name"> Name of this plug-in </param>
+        /// <param name="CurrentVersion"> Currently installed version for this plug-in </param>
+        /// <param name="LicenseKey"> Any provided license key </param>
+        /// <param name="UpgradeUrl"> Upgrade URL </param>
+        /// <param name="LatestVersion"> Latest version of the plug-in that is available  </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Extensions_Add_Update' stored procedure </remarks> 
+        public static bool Plugin_Add_Update(string Code, string Name, string CurrentVersion, string LicenseKey, string UpgradeUrl, string LatestVersion, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Plugin_Add_Update", "");
+            }
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[6];
+                parameters[0] = new EalDbParameter("@Code", Code);
+                parameters[1] = new EalDbParameter("@Name", Name);
+                parameters[2] = new EalDbParameter("@CurrentVersion", CurrentVersion);
+                parameters[3] = new EalDbParameter("@LicenseKey", LicenseKey);
+                parameters[4] = new EalDbParameter("@UpgradeUrl", UpgradeUrl);
+                parameters[5] = new EalDbParameter("@LatestVersion", LatestVersion);
+
+                // Define a temporary dataset
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Extensions_Add_Update", parameters);
+
+                // return the success
+                return true;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Plugin_Add_Update", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Plugin_Add_Update", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Plugin_Add_Update", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+        /// <summary> Remove information about a (previously) installed plug-in </summary>
+        /// <param name="Code"> Unique code for this plug-in </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
+        /// <remarks> This calls the 'SobekCM_Extensions_Remove' stored procedure </remarks> 
+        public static bool Plugin_Remove(string Code, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Plugin_Remove", "");
+            }
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[1];
+                parameters[0] = new EalDbParameter("@Code", Code);
+
+                // Define a temporary dataset
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Extensions_Remove", parameters);
+
+                // return the success
+                return true;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Plugin_Remove", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Plugin_Remove", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Plugin_Remove", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return false;
+            }
+        }
+
+        /// <summary> Changes whether a plug-in is enabled or not within this system </summary>
+        /// <param name="Code"> Unique code for this plug-in </param>
+        /// <param name="NewEnabledFlag"> New flag to set for this plug-in enabled state </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Message indicating if this was a success or failure </returns>
+        /// <remarks> This calls the 'SobekCM_Extensions_Set_Enable' stored procedure </remarks> 
+        public static string Plugin_Set_Enabled_Flag(string Code, bool NewEnabledFlag, Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Plugin_Set_Enabled_Flag", "");
+            }
+
+            try
+            {
+                EalDbParameter[] parameters = new EalDbParameter[3];
+                parameters[0] = new EalDbParameter("@Code", Code);
+                parameters[1] = new EalDbParameter("@EnableFlag", NewEnabledFlag);
+                parameters[2] = new EalDbParameter("@Message", String.Empty.PadLeft(255,' ')) { Direction = ParameterDirection.InputOutput };
+
+                // Define a temporary dataset
+                EalDbAccess.ExecuteNonQuery(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Extensions_Set_Enable", parameters);
+
+                // return the success
+                return parameters[2].Value.ToString();
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Plugin_Set_Enabled_Flag", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Plugin_Set_Enabled_Flag", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Plugin_Set_Enabled_Flag", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return "ERROR: Unexpected exception ocurred ( " + ee.Message + " )";
+            }
+        }
+
+        /// <summary> Gets the list of all the plug-ins from the database </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> Message indicating if this was a success or failure </returns>
+        /// <remarks> This calls the 'SobekCM_Extensions_Get_All' stored procedure </remarks> 
+        public static List<ExtensionInfo> Plugin_Get_All(Custom_Tracer Tracer)
+        {
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("Engine_Database.Plugin_Get_All", "");
+            }
+
+            try
+            {
+                // Define a temporary dataset
+                DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Extensions_Get_All");
+
+                List<ExtensionInfo> returnValue = DataTable_to_Extensions(tempSet.Tables[0]);
+
+                // return the success
+                return returnValue;
+            }
+            catch (Exception ee)
+            {
+                Last_Exception = ee;
+                if (Tracer != null)
+                {
+                    Tracer.Add_Trace("Engine_Database.Plugin_Get_All", "Exception caught during database work", Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Plugin_Get_All", ee.Message, Custom_Trace_Type_Enum.Error);
+                    Tracer.Add_Trace("Engine_Database.Plugin_Get_All", ee.StackTrace, Custom_Trace_Type_Enum.Error);
+                }
+                return null;
+            }
+        }
+
+        /// <summary> Takes a datatable from the database holding extension information
+        /// and converts it into a list of <see cref="ExtensionInfo" /> objects. </summary>
+        /// <param name="Source"> Source datatable from the database </param>
+        /// <returns> Corresponding list of <see cref="ExtensionInfo" /> objects </returns>
+        public static List<ExtensionInfo> DataTable_to_Extensions(DataTable Source)
+        {
+            List<ExtensionInfo> returnValue = new List<ExtensionInfo>();
+
+            foreach (DataRow thisRow in Source.Rows)
+            {
+                ExtensionInfo newExtension = new ExtensionInfo
+                {
+                    Code = thisRow["Code"].ToString(), 
+                    Name = thisRow["Name"].ToString(), 
+                    Enabled = Boolean.Parse(thisRow["IsEnabled"].ToString()), 
+                    Version = thisRow["CurrentVersion"].ToString()
+                };
+
+                if (thisRow["EnabledDate"] != DBNull.Value)
+                    newExtension.EnabledDate = DateTime.Parse(thisRow["EnabledDate"].ToString());
+
+                returnValue.Add(newExtension);
+            }
+
+            return returnValue;
         }
 
         #endregion

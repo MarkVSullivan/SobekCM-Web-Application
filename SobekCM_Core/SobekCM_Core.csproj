@@ -110,6 +110,9 @@
     <Compile Include="Configuration\Configuration_Source_Info.cs" />
     <Compile Include="Configuration\ContactForm_Configuration.cs" />
     <Compile Include="Configuration\Database_Instance_Configuration.cs" />
+    <Compile Include="Configuration\Extensions\ExtensionAdminAuthorInfo.cs" />
+    <Compile Include="Configuration\Extensions\ExtensionAdminInfo.cs" />
+    <Compile Include="Message\EnableExtensionMessage.cs" />
     <Compile Include="Settings\DbItemViewers\DbItemViewerTypes.cs" />
     <Compile Include="Configuration\Extensions\ExtensionCssInfo.cs" />
     <Compile Include="Configuration\Extensions\ExtensionInfo.cs" />

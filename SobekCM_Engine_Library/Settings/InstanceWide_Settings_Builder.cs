@@ -274,6 +274,9 @@ namespace SobekCM.Engine_Library.Settings
                         // Add the viewer
                         SettingsObject.DbItemViewers.Add_ViewerType(viewerId, viewerType, viewerOrder, viewerDefault, viewerMenuOrder );
                     }
+
+                    // Add all the extension information to the settings object
+                    SettingsObject.DbExtensions = Engine_Database.DataTable_to_Extensions(SobekCM_Settings.Tables[8]);
                 }
 
 
