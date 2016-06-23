@@ -65,8 +65,6 @@ BEGIN
 END;
 GO
 
-END;
-GO
 
 if ( NOT EXISTS (select * from sys.columns where Name = N'TabPage' and Object_ID = Object_ID(N'SobekCM_Settings')))
 BEGIN

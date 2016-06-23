@@ -11,6 +11,8 @@ namespace SobekCM.Core.Configuration.Extensions
     [XmlRoot("ExtensionConfig")]
     public class Extension_Configuration
     {
+        private Dictionary<string, string> assemblyDictionary;
+
         /// <summary> Collection of information about each extension </summary>
         [DataMember(Name = "extensions", EmitDefaultValue = false)]
         [XmlArray("extensions")]
@@ -41,6 +43,38 @@ namespace SobekCM.Core.Configuration.Extensions
                 if (String.Compare(thisExtension.Code, ExtensionCode, StringComparison.OrdinalIgnoreCase) == 0)
                     return thisExtension;
             }
+
+            return null;
+        }
+
+        /// <summary> Gets the absolute path and filename for an assembly included in one of the 
+        /// extensions, by extension ID </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        public string Get_Assembly(string ID)
+        {
+           if ((Extensions == null) || (Extensions.Count == 0))
+                return null;
+
+            // If the dictionary has not been built, build it
+            if (assemblyDictionary == null)
+            {
+                assemblyDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                foreach (ExtensionInfo thisExtension in Extensions)
+                {
+                    if (thisExtension.Assemblies != null)
+                    {
+                        foreach (ExtensionAssembly thisAssembly in thisExtension.Assemblies)
+                        {
+                            assemblyDictionary[thisAssembly.ID] = thisAssembly.FilePath;
+                        }
+                    }
+                }
+            }
+
+            // Now look and return the assembly if the ID exists
+            if (assemblyDictionary.ContainsKey(ID))
+                return assemblyDictionary[ID];
 
             return null;
         }

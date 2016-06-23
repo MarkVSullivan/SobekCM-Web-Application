@@ -347,7 +347,12 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                 Assembly dllAssembly = Assembly.GetExecutingAssembly();
                 if (!String.IsNullOrEmpty(MapperAssembly))
                 {
-                    dllAssembly = Assembly.LoadFrom(MapperAssembly);
+                    // Try to find the file/path for this assembly then
+                    string assemblyFilePath = Engine_ApplicationCache_Gateway.Configuration.Extensions.Get_Assembly(MapperAssembly);
+                    if (assemblyFilePath != null)
+                    {
+                        dllAssembly = Assembly.LoadFrom(assemblyFilePath);
+                    }
                 }
 
                 Type readerWriterType = dllAssembly.GetType(MapperClass);

@@ -18,7 +18,7 @@
     </AdminInfo>
 
     <!-- Reference one of more assemblies (referenced relative to the plugin folder) -->
-    <!-- <Assembly name="PostcardCore.dll" />  -->
+    <Assembly id="PostcardCore" name="PostcardCore.dll" />  
 
     <!-- Add CSS, conditions are [always|admin|item|metadata|mysobek|aggregation|results] and that determines at -->
     <!-- what points the CSS file is included by the base SobekCM code                       -->
@@ -103,7 +103,10 @@
   <!-- This adds a brief mapping from the metadata module to the BriefItem object that will be used -->
   <!-- for citation and (eventually) all public access to the digital resource.                     -->
   <BriefItem_Mapping ClearAll="false">
-    <MappingSet ID="Standard" Default="true">
+    <MappingSet ID="Internal">
+      <Mapper Assembly="PostcardCore" Class="PostcardCore.PostcardCore_BriefItemMapper" Enabled="true" />
+    </MappingSet>
+	<MappingSet ID="Standard">
       <Mapper Assembly="PostcardCore" Class="PostcardCore.PostcardCore_BriefItemMapper" Enabled="true" />
     </MappingSet>
     <MappingSet ID="Citation">
@@ -114,7 +117,7 @@
   <!-- This adds a new section to the end of the online citation/description when viewing an item -->
   <!-- online.  This maps from the fields in the BriefItem object to display the new values.      -->
   <Citation ClearAll="false">
-    <CitationSet Name="DEFAULT" Default="true">
+    <CitationSet Name="DEFAULT" >
       <FieldSet ID="POSTCARD" Heading="Postcard Information" Order="append" >
         <Elements>
           <Append MetadataTerm="Image Caption" DisplayTerm="Image Caption" />

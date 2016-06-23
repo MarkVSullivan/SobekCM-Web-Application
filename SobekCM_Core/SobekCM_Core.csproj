@@ -112,6 +112,7 @@
     <Compile Include="Configuration\Database_Instance_Configuration.cs" />
     <Compile Include="Configuration\Extensions\ExtensionAdminAuthorInfo.cs" />
     <Compile Include="Configuration\Extensions\ExtensionAdminInfo.cs" />
+    <Compile Include="Configuration\Extensions\ExtensionAssembly.cs" />
     <Compile Include="Message\EnableExtensionMessage.cs" />
     <Compile Include="Settings\DbItemViewers\DbItemViewerTypes.cs" />
     <Compile Include="Configuration\Extensions\ExtensionCssInfo.cs" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
@@ -67,9 +68,9 @@ namespace SobekCM.Core.Configuration.Extensions
         /// <summary> List of assemblies referenced in the extension configuration file </summary>
         [DataMember(Name = "assemblies", EmitDefaultValue = false)]
         [XmlArray("assemblies")]
-        [XmlArrayItem("assembly", typeof(string))]
+        [XmlArrayItem("assembly", typeof(ExtensionAssembly))]
         [ProtoMember(7)]
-        public List<string> Assemblies { get; set; }
+        public List<ExtensionAssembly> Assemblies { get; set; }
 
         /// <summary> List of CSS files referenced by this extension in the extension configuration file </summary>
         [DataMember(Name = "cssFiles", EmitDefaultValue = false)]
@@ -168,12 +169,30 @@ namespace SobekCM.Core.Configuration.Extensions
         }
 
         /// <summary> Add information about a related assembly for this plug-in </summary>
-        /// <param name="AssemblyPathFile"> DLL file to include </param>
+        /// <param name="AssemblyPathFile"> Absolute path and filename for this assembly DLL file  </param>
         public void Add_Assembly(string AssemblyPathFile)
         {
-            if (Assemblies == null) Assemblies = new List<string>();
+            if (Assemblies == null) Assemblies = new List<ExtensionAssembly>();
 
-            Assemblies.Add(AssemblyPathFile);
+            try
+            {
+                string filename = Path.GetFileNameWithoutExtension(AssemblyPathFile);
+                Assemblies.Add(new ExtensionAssembly(filename, AssemblyPathFile));
+            }
+            catch 
+            {
+                Assemblies.Add(new ExtensionAssembly(String.Empty, AssemblyPathFile));
+            }
+        }
+
+        /// <summary> Add information about a related assembly for this plug-in </summary>
+        /// <param name="ID"> ID for this assembly, which is used throughout the configuration files to reference this assembly </param>
+        /// <param name="AssemblyPathFile"> Absolute path and filename for this assembly DLL file  </param>
+        public void Add_Assembly(string ID, string AssemblyPathFile)
+        {
+            if (Assemblies == null) Assemblies = new List<ExtensionAssembly>();
+
+            Assemblies.Add(new ExtensionAssembly(ID, AssemblyPathFile));
         }
     }
 }

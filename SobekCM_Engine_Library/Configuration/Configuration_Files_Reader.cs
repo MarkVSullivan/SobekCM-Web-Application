@@ -2925,14 +2925,25 @@ namespace SobekCM.Engine_Library.Configuration
                             {
                                 string assembly_name = childReader.Value.Trim();
                                 string full_assembly_name = Path.Combine(SourceDirectory, assembly_name);
-                                if ( File.Exists(full_assembly_name))
-                                    thisExtension.Add_Assembly(full_assembly_name);
-                                else 
+
+                                string id = String.Empty;
+                                if (childReader.MoveToAttribute("id"))
+                                    id = childReader.Value.Trim();
+
+                                if (File.Exists(full_assembly_name))
+                                {
+                                    // Was there an ID?
+                                    if (String.IsNullOrEmpty(id))
+                                        id = Path.GetFileNameWithoutExtension(full_assembly_name);
+
+                                    thisExtension.Add_Assembly(id, full_assembly_name);
+                                }
+                                else
                                 {
                                     thisExtension.Add_Error("ERROR: Referenced assembly ( " + full_assembly_name + " ) does not exist");
-                                    if ( config != null )
+                                    if (config != null)
                                         config.Source.Add_Log("           ERROR: Referenced assembly ( " + full_assembly_name + " ) does not exist");
-                                }                      
+                                }
                             }
                             break;
 
