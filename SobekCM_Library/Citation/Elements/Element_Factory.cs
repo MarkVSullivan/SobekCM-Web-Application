@@ -3,6 +3,7 @@
 using System;
 using System.Reflection;
 using SobekCM.Core.UI_Configuration.TemplateElements;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Library.Citation.Elements.implemented_elements;
 using SobekCM.Library.UI;
 
@@ -293,14 +294,22 @@ namespace SobekCM.Library.Citation.Elements
 
             try
             {
-                Assembly dllAssembly = Assembly.LoadFrom(config.Assembly);
+                // Try to find the file/path for this assembly then
+                Assembly dllAssembly = null;
+                string assemblyFilePath = Engine_ApplicationCache_Gateway.Configuration.Extensions.Get_Assembly(config.Assembly);
+                if (assemblyFilePath != null)
+                {
+                    dllAssembly = Assembly.LoadFrom(assemblyFilePath);
+                }
                 Type elementType = dllAssembly.GetType(config.Class);
                 abstract_Element returnObj = (abstract_Element) Activator.CreateInstance(elementType);
                 return returnObj;
             }
-            catch (Exception)
+            catch (Exception ee)
             {
                 // Not sure exactly what to do here, honestly
+                if (ee.Message.Length > 0)
+                    return null;
                 return null;
             }
         }

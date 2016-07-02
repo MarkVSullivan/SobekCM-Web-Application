@@ -280,6 +280,13 @@ namespace SobekCM.Engine_Library.Settings
                 }
 
 
+                // If this is running in debug, set base directory to this one
+#if DEBUG
+                    string baseDir = System.Web.HttpContext.Current.Server.MapPath("~");
+                    SettingsObject.Servers.Base_Directory = baseDir;
+                    SettingsObject.Servers.In_Process_Submission_Location = Path.Combine(baseDir, "mySobek", "InProcess");
+#endif
+
                 return true;
             }
             catch

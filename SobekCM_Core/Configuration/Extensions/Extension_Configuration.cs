@@ -59,24 +59,29 @@ namespace SobekCM.Core.Configuration.Extensions
             // If the dictionary has not been built, build it
             if (assemblyDictionary == null)
             {
-                assemblyDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                foreach (ExtensionInfo thisExtension in Extensions)
-                {
-                    if (thisExtension.Assemblies != null)
-                    {
-                        foreach (ExtensionAssembly thisAssembly in thisExtension.Assemblies)
-                        {
-                            assemblyDictionary[thisAssembly.ID] = thisAssembly.FilePath;
-                        }
-                    }
-                }
+                build_assembly_dictionary();
             }
 
             // Now look and return the assembly if the ID exists
-            if (assemblyDictionary.ContainsKey(ID))
+            if (( assemblyDictionary != null ) && ( assemblyDictionary.ContainsKey(ID)))
                 return assemblyDictionary[ID];
 
             return null;
+        }
+
+        private void build_assembly_dictionary()
+        {
+            assemblyDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (ExtensionInfo thisExtension in Extensions)
+            {
+                if (thisExtension.Assemblies != null)
+                {
+                    foreach (ExtensionAssembly thisAssembly in thisExtension.Assemblies)
+                    {
+                        assemblyDictionary[thisAssembly.ID] = thisAssembly.FilePath;
+                    }
+                }
+            }
         }
     }
 }

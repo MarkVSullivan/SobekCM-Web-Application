@@ -167,10 +167,11 @@ namespace SobekCM.Engine_Library
                             Assembly dllAssembly = Assembly.GetExecutingAssembly();
                             if (!String.IsNullOrEmpty(verbMapping.Component.Assembly))
                             {
-                                string assembly_name = verbMapping.Component.Assembly;
-                                if (assembly_name.IndexOf(".dll", StringComparison.OrdinalIgnoreCase) < 0)
-                                    assembly_name = assembly_name + ".dll";
-                                dllAssembly = Assembly.LoadFrom(@"C:\GitRepository\SobekCM-Web-Application - Copy\SobekCM\bin\" + assembly_name);
+                                string assemblyFilePath = Engine_ApplicationCache_Gateway.Configuration.Extensions.Get_Assembly(verbMapping.Component.Assembly);
+                                if (assemblyFilePath != null)
+                                {
+                                    dllAssembly = Assembly.LoadFrom(assemblyFilePath);
+                                }
                             }
 
                             // Type restApiClassType = dllAssembly.GetType(Component.Namespace + "." + Component.Class);

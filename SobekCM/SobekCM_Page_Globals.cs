@@ -91,6 +91,9 @@ namespace SobekCM
 			        UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL = base_url;
 			        UI_ApplicationCache_Gateway.Settings.Servers.Base_URL = base_url;
 
+                    string baseDir = System.Web.HttpContext.Current.Server.MapPath("~");
+                    UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory = baseDir;
+                    UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location = Path.Combine(baseDir, "mySobek", "InProcess");
 			    }
 #endif
 
