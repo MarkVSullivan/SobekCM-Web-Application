@@ -20,6 +20,7 @@ using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.UI_Configuration.TemplateElements;
 using SobekCM.Core.UI_Configuration.Viewers;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Items.BriefItems.Mappers;
 using SobekCM.Resource_Object.Configuration;
@@ -213,8 +214,24 @@ namespace SobekCM.Engine_Library.Configuration
             // Now, perform some final clean-up functions here now that all the files have been read
             engine_config_finalize(returnValue);
 
+            // Copy over all the extension information
+            foreach (ExtensionInfo thisExtension in returnValue.Extensions.Extensions)
+            {
+                if (( thisExtension.Enabled ) && ( thisExtension.Assemblies != null))
+                {
+                    foreach (ExtensionAssembly thisAssembly in thisExtension.Assemblies)
+                    {
+                        ResourceObjectSettings.Add_Assembly(thisAssembly.ID, thisAssembly.FilePath);
+                    }
+                }
+            }
+
+            // Finalize the metadata config
+            returnValue.Metadata.Finalize_Metadata_Configuration();
+
             // Save the metadata configuration to the resource object library
             ResourceObjectSettings.MetadataConfig = returnValue.Metadata;
+
 
             returnValue.HasData = true;
 
@@ -330,6 +347,7 @@ namespace SobekCM.Engine_Library.Configuration
                                 break;
 
                             case "templateelements":
+                            case "templateconfig":
                                 ConfigObj.Source.Add_Log("        Parsing TEMPLATE ELEMENTS subtree");
                                 read_template_elements_details(readerXml.ReadSubtree(), ConfigObj);
                                 break;
@@ -968,14 +986,14 @@ namespace SobekCM.Engine_Library.Configuration
                             if (enabled)
                             {
                                 string error;
-                                IBriefItemMapper mapper = get_or_create_mapper(mapperAssembly, mapperClass, MappingObjDictionary, out error);
+                              //  IBriefItemMapper mapper = get_or_create_mapper(mapperAssembly, mapperClass, MappingObjDictionary, out error);
 
                                 BriefItemMapping_Mapper mapperConfig = new BriefItemMapping_Mapper
                                 {
                                     Assembly = mapperAssembly,
                                     Class = mapperClass,
                                     Enabled = true,
-                                    MappingObject = mapper
+                                    MappingObject = null
                                 };
 
                                 ReturnValue.Mappings.Add(mapperConfig);
@@ -1193,7 +1211,12 @@ namespace SobekCM.Engine_Library.Configuration
                 Assembly dllAssembly = Assembly.GetExecutingAssembly();
                 if (!String.IsNullOrEmpty(MapperAssembly))
                 {
-                    dllAssembly = Assembly.LoadFrom(MapperAssembly);
+                    // Try to find the file/path for this assembly then
+                    string assemblyFilePath = Engine_ApplicationCache_Gateway.Configuration.Extensions.Get_Assembly(MapperAssembly);
+                    if (assemblyFilePath != null)
+                    {
+                        dllAssembly = Assembly.LoadFrom(assemblyFilePath);
+                    }
                 }
 
                 Type readerWriterType = dllAssembly.GetType(MapperClass);

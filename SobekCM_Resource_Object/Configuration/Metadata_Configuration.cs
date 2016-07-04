@@ -237,47 +237,55 @@ namespace SobekCM.Resource_Object.Configuration
         {
             // Add to list of all METS sections readers/writers
             METS_Section_File_ReaderWriter_Configs.Add(New_ReaderWriter);
+        }
 
-            // Create an instance of this reader/writer from the config
-            if (!New_ReaderWriter.Create_ReaderWriterObject())
-                return;
-            object testObj = New_ReaderWriter.ReaderWriterObject;
-
-            // Set flag defaults
-            bool isAmdPackage = false;
-            bool isDmdPackage = false;
-            bool isDmdDivision = false;
-            bool isAmdDivision = false;
-            bool isDmdFile = false;
-            bool isAmdFile = false;
-
-            // Test for interface inheritence
-            if (testObj is iPackage_amdSec_ReaderWriter) isAmdPackage = true;
-            if (testObj is iPackage_dmdSec_ReaderWriter) isDmdPackage = true;
-            if (testObj is iDivision_dmdSec_ReaderWriter) isDmdDivision = true;
-            if (testObj is iDivision_amdSec_ReaderWriter) isAmdDivision = true;
-            if (testObj is iFile_dmdSec_ReaderWriter) isDmdFile = true;
-            if (testObj is iFile_amdSec_ReaderWriter) isAmdFile = true;
-
-            // Step through all the mappings and add to the dictionaries
-            foreach (METS_Section_ReaderWriter_Mapping thisMapping in New_ReaderWriter.Mappings)
+        /// <summary> Finalize the metadata configuration and create all the individual reader/writers </summary>
+        public void Finalize_Metadata_Configuration()
+        {
+            foreach (METS_Section_ReaderWriter_Config metsConfig in METS_Section_File_ReaderWriter_Configs)
             {
-                // Create the dictionay key for this mapping
-                Tuple<string, string> thisMappingKey = new Tuple<string, string>(thisMapping.MD_Type.ToUpper(), thisMapping.Other_MD_Type.ToUpper());
+                // Create an instance of this reader/writer from the config
+                if (!metsConfig.Create_ReaderWriterObject())
+                    continue;
 
-                // Add to the appropriate dictionary
-                if (isAmdPackage)
-                    packageAmdSecDictionary[thisMappingKey] = (iPackage_amdSec_ReaderWriter)testObj;
-                if (isDmdDivision)
-                    divisionDmdSecDictionary[thisMappingKey] = (iDivision_dmdSec_ReaderWriter)testObj;
-                if (isDmdPackage)
-                    packageDmdSecDictionary[thisMappingKey] = (iPackage_dmdSec_ReaderWriter)testObj;
-                if (isAmdDivision)
-                    divisionAmdSecDictionary[thisMappingKey] = (iDivision_amdSec_ReaderWriter)testObj;
-                if (isDmdFile)
-                    fileDmdSecDictionary[thisMappingKey] = (iFile_dmdSec_ReaderWriter)testObj;
-                if (isAmdFile)
-                    fileAmdSecDictionary[thisMappingKey] = (iFile_amdSec_ReaderWriter)testObj;
+                object testObj = metsConfig.ReaderWriterObject;
+
+                // Set flag defaults
+                bool isAmdPackage = false;
+                bool isDmdPackage = false;
+                bool isDmdDivision = false;
+                bool isAmdDivision = false;
+                bool isDmdFile = false;
+                bool isAmdFile = false;
+
+                // Test for interface inheritence
+                if (testObj is iPackage_amdSec_ReaderWriter) isAmdPackage = true;
+                if (testObj is iPackage_dmdSec_ReaderWriter) isDmdPackage = true;
+                if (testObj is iDivision_dmdSec_ReaderWriter) isDmdDivision = true;
+                if (testObj is iDivision_amdSec_ReaderWriter) isAmdDivision = true;
+                if (testObj is iFile_dmdSec_ReaderWriter) isDmdFile = true;
+                if (testObj is iFile_amdSec_ReaderWriter) isAmdFile = true;
+
+                // Step through all the mappings and add to the dictionaries
+                foreach (METS_Section_ReaderWriter_Mapping thisMapping in metsConfig.Mappings)
+                {
+                    // Create the dictionay key for this mapping
+                    Tuple<string, string> thisMappingKey = new Tuple<string, string>(thisMapping.MD_Type.ToUpper(), thisMapping.Other_MD_Type.ToUpper());
+
+                    // Add to the appropriate dictionary
+                    if (isAmdPackage)
+                        packageAmdSecDictionary[thisMappingKey] = (iPackage_amdSec_ReaderWriter) testObj;
+                    if (isDmdDivision)
+                        divisionDmdSecDictionary[thisMappingKey] = (iDivision_dmdSec_ReaderWriter) testObj;
+                    if (isDmdPackage)
+                        packageDmdSecDictionary[thisMappingKey] = (iPackage_dmdSec_ReaderWriter) testObj;
+                    if (isAmdDivision)
+                        divisionAmdSecDictionary[thisMappingKey] = (iDivision_amdSec_ReaderWriter) testObj;
+                    if (isDmdFile)
+                        fileDmdSecDictionary[thisMappingKey] = (iFile_dmdSec_ReaderWriter) testObj;
+                    if (isAmdFile)
+                        fileAmdSecDictionary[thisMappingKey] = (iFile_amdSec_ReaderWriter) testObj;
+                }
             }
         }
 

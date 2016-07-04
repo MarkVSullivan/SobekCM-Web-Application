@@ -137,10 +137,12 @@
     <TemplateElement type="Image Caption" class="PostcardCore.Image_Caption_Element" assembly="PostcardCore" />
     <TemplateElement type="Format" subtype="postcard" class="PostcardCore.Format_Element" assembly="PostcardCore" />
     <TemplateElement type="Production Date" class="PostcardCore.Production_Date_Element" assembly="PostcardCore"  />
-    <TemplateElement type="Era" class="PostcardCore.Era_Element" assembly="PostcardCore.dll"  />
+    <TemplateElement type="Era" class="PostcardCore.Era_Element" assembly="PostcardCore"  />
     <TemplateElement type="Production Number" class="PostcardCore.Production_Number_Element" assembly="PostcardCore" />
     <TemplateElement type="Postmark Sent" class="PostcardCore.Postmark_Sent_Element" assembly="PostcardCore" />
     <TemplateElement type="Postmark Received" class="PostcardCore.Postmark_Received_Element" assembly="PostcardCore" />
+    <TemplateElement type="Subject" subtype="postcard" class="PostcardCore.Subject_Element" assembly="PostcardCore" />
+
   </TemplateConfig>
   
 </SobekCM_Config>

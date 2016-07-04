@@ -112,7 +112,7 @@ namespace SobekCM.Resource_Object.Configuration
             if (NewConfig == null)
                 return;
 
-            if ( NewConfig.ReaderWriterObject is iPackage_amdSec_ReaderWriter )
+           // if ( NewConfig.ReaderWriterObject is iPackage_amdSec_ReaderWriter )
                 Package_Level_AmdSec_Writer_Configs.Add(NewConfig);
         }
 
@@ -123,7 +123,7 @@ namespace SobekCM.Resource_Object.Configuration
             if (NewConfig == null)
                 return;
 
-            if (NewConfig.ReaderWriterObject is iPackage_dmdSec_ReaderWriter)
+           // if (NewConfig.ReaderWriterObject is iPackage_dmdSec_ReaderWriter)
                 Package_Level_DmdSec_Writer_Configs.Add(NewConfig);
         }
 
@@ -134,7 +134,7 @@ namespace SobekCM.Resource_Object.Configuration
             if (NewConfig == null)
                 return;
 
-            if (NewConfig.ReaderWriterObject is iDivision_amdSec_ReaderWriter)
+          //  if (NewConfig.ReaderWriterObject is iDivision_amdSec_ReaderWriter)
                 Division_Level_AmdSec_Writer_Configs.Add(NewConfig);
         }
 
@@ -145,7 +145,7 @@ namespace SobekCM.Resource_Object.Configuration
             if (NewConfig == null)
                 return;
 
-            if (NewConfig.ReaderWriterObject is iDivision_dmdSec_ReaderWriter)
+           // if (NewConfig.ReaderWriterObject is iDivision_dmdSec_ReaderWriter)
                 Division_Level_DmdSec_Writer_Configs.Add(NewConfig);
         }
 
@@ -156,7 +156,7 @@ namespace SobekCM.Resource_Object.Configuration
             if (NewConfig == null)
                 return;
 
-            if (NewConfig.ReaderWriterObject is iFile_amdSec_ReaderWriter)
+           // if (NewConfig.ReaderWriterObject is iFile_amdSec_ReaderWriter)
                 File_Level_AmdSec_Writer_Configs.Add(NewConfig);
         }
 
@@ -167,7 +167,7 @@ namespace SobekCM.Resource_Object.Configuration
             if (NewConfig == null)
                 return;
 
-            if (NewConfig.ReaderWriterObject is iFile_dmdSec_ReaderWriter)
+          //  if (NewConfig.ReaderWriterObject is iFile_dmdSec_ReaderWriter)
                 File_Level_DmdSec_Writer_Configs.Add(NewConfig);
         }
     }

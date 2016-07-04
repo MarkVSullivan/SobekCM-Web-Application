@@ -87,7 +87,9 @@ namespace SobekCM.Library.HTML
                     {
                         try
                         {
-                            Assembly dllAssembly = Assembly.LoadFrom(UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.MainMenu.Assembly);
+                            string assemblyName = UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.MainMenu.Assembly;
+                            string assemblyFilePath = Engine_ApplicationCache_Gateway.Configuration.Extensions.Get_Assembly(assemblyName);
+                            Assembly dllAssembly = Assembly.LoadFrom(assemblyFilePath);
                             Type readerWriterType = dllAssembly.GetType(UI_ApplicationCache_Gateway.Configuration.UI.WriterViewers.Items.MainMenu.Class);
                             menuProvider = (iItemMenuProvider)Activator.CreateInstance(readerWriterType);
                         }

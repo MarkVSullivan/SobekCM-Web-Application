@@ -67,6 +67,16 @@
 				<element type="Note" repeatable="true" subtype="simple"
 				         acronym="Enter any additional information that is important for describing your material.  Include significant keywords or other data useful for finding your material in a citation-only search."/>
 			</panel>
+    	<panel>
+				<name language="eng">Postcard Information</name>
+				<element type="Image Caption" acronym="Enter the caption from the postcard." />
+        <element type="Format" subtype="postcard" acronym="Enter the caption from the postcard." />
+        <element type="Production Date" acronym="Enter the caption from the postcard." />
+        <element type="Era" acronym="Enter the caption from the postcard." />
+        <element type="Production Number" acronym="Enter the caption from the postcard." />
+        <element type="Postmark Sent" acronym="Enter the caption from the postcard." />
+        <element type="Postmark Received" acronym="Enter the caption from the postcard." />
+			</panel>
 		</page>
 	</inputs>
 </input_template>

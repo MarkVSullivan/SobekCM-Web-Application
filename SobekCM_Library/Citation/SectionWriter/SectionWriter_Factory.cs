@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SobekCM.Engine_Library.ApplicationState;
 
 
 namespace SobekCM.Library.Citation.SectionWriter
@@ -14,14 +15,14 @@ namespace SobekCM.Library.Citation.SectionWriter
         /// <param name="Assembly"> Assembly from which to load the section writer, or null/empty</param>
         /// <param name="Class"> Fully qualified class name </param>
         /// <returns> Built citation section writer </returns>
-        public static iCitationSectionWriter GetSectionWriter(string Assembly, string Class)
+        public static iCitationSectionWriter GetSectionWriter(string AssemblyName, string Class)
         {
             // Was the writers dictionary declared?
             if (writers == null)
                 writers = new Dictionary<string, iCitationSectionWriter>();
 
             // If there was no assembly listed, try to find a match in the existing template elements
-            if (String.IsNullOrEmpty(Assembly))
+            if (String.IsNullOrEmpty(AssemblyName))
             {
                 // Look in the dictionary, just by class
                 if (writers.ContainsKey(Class))
@@ -75,16 +76,21 @@ namespace SobekCM.Library.Citation.SectionWriter
             }
 
             // An assembly was indicated, look in dicationry with that
-            if (writers.ContainsKey(Assembly + "|" + Class))
-                return writers[Assembly + "|" + Class];
+            if (writers.ContainsKey(AssemblyName + "|" + Class))
+                return writers[AssemblyName + "|" + Class];
 
             try
             {
-                Assembly dllAssembly = System.Reflection.Assembly.LoadFrom(Assembly);
+                Assembly dllAssembly = null;
+                string assemblyFilePath = Engine_ApplicationCache_Gateway.Configuration.Extensions.Get_Assembly(AssemblyName);
+                if (assemblyFilePath != null)
+                {
+                    dllAssembly = Assembly.LoadFrom(assemblyFilePath);
+                }
                 Type elementType = dllAssembly.GetType(Class);
                 iCitationSectionWriter returnObj = (iCitationSectionWriter)Activator.CreateInstance(elementType);
 
-                if (returnObj != null) writers[Assembly + "|" + Class] = returnObj;
+                if (returnObj != null) writers[AssemblyName + "|" + Class] = returnObj;
 
                 return returnObj;
             }

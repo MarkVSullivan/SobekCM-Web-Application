@@ -146,7 +146,12 @@ namespace SobekCM.Resource_Object.Configuration
                 Assembly dllAssembly = Assembly.GetExecutingAssembly();
                 if (Code_Assembly.Length > 0)
                 {
-                    dllAssembly = Assembly.LoadFrom(Code_Assembly);
+                    // Try to find the file/path for this assembly then
+                    string assemblyFilePath = ResourceObjectSettings.Get_Assembly(Code_Assembly);
+                    if (assemblyFilePath != null)
+                    {
+                        dllAssembly = Assembly.LoadFrom(assemblyFilePath);
+                    }
                 }
                 
               //  Assembly dllAssembly = Assembly..LoadFrom( Code_Assembly );

@@ -191,10 +191,15 @@ namespace SobekCM.Library.ItemViewer
             {
                 try
                 {
-                    Assembly dllAssembly = Assembly.LoadFrom(assembly);
-                    Type readerWriterType = dllAssembly.GetType(className);
-                    iItemViewerPrototyper returnObj = (iItemViewerPrototyper)Activator.CreateInstance(readerWriterType);
-                    return returnObj;
+                    // Try to find the file/path for this assembly then
+                    string assemblyFilePath = Engine_ApplicationCache_Gateway.Configuration.Extensions.Get_Assembly(assembly);
+                    if (assemblyFilePath != null)
+                    {
+                        Assembly dllAssembly = Assembly.LoadFrom(assemblyFilePath);
+                        Type readerWriterType = dllAssembly.GetType(className);
+                        iItemViewerPrototyper returnObj = (iItemViewerPrototyper) Activator.CreateInstance(readerWriterType);
+                        return returnObj;
+                    }
                 }
                 catch (Exception)
                 {
