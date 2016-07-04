@@ -3172,7 +3172,7 @@ namespace SobekCM.Engine_Library.Database
 			    }
 
                 // Add any setting key/value pairs from the database
-			    if (tempSet.Tables[5].Rows.Count > 0)
+			    if (( tempSet.Tables.Count > 5 ) && ( tempSet.Tables[5].Rows.Count > 0))
 			    {
 			        foreach (DataRow settingRow in tempSet.Tables[5].Rows)
 			        {
@@ -3730,11 +3730,10 @@ namespace SobekCM.Engine_Library.Database
 			{
                 EalDbParameter[] parameters = new EalDbParameter[1];
                 parameters[0] = new EalDbParameter("@IncludeAdminViewInfo", IncludeAdminViewInfo);
-
                 DataSet tempSet = EalDbAccess.ExecuteDataset( DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Settings", parameters);
 
 
-                //DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Settings");
+               // DataSet tempSet = EalDbAccess.ExecuteDataset(DatabaseType, Connection_String, CommandType.StoredProcedure, "SobekCM_Get_Settings");
 				return tempSet;
 			}
 			catch (Exception ee)
