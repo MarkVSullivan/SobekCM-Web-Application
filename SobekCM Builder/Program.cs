@@ -34,7 +34,6 @@ namespace SobekCM.Builder
 	        bool complete_static_rebuild = false;
             bool marc_rebuild = false;
             bool run_preloader = true;
-            bool run_background = false;
             bool show_help = false;
             bool build_production_marcxml_feed = false;
             bool build_test_marcxml_feed = false;
@@ -65,10 +64,9 @@ namespace SobekCM.Builder
                     return;
                 }
 
-                // Check for no loader flag
+                // Always run in BACKGROUND mode
                 if (thisArgs == "--background")
                 {
-                    run_background = true;
                     arg_handled = true;
                 }
 
@@ -146,7 +144,6 @@ namespace SobekCM.Builder
                 builder.Append("  --config\tRuns the configuration tool\n\n");
                 builder.Append("  --version\tDisplays the current version of the SobekCM Builder\n\n");
                 builder.Append("  --verbose\tFlag indicates to be verbose in the logs and console\n\n");
-                builder.Append("  --background\tContinues to run in the background\n\n");
                 builder.Append("  --help\t\tShows these instructions\n\n");
                 builder.Append("  --noload\t\tSupresses the loading portion of the SobekCM Builder\n\n");
                 builder.Append("  --staticrebuild\tPerform a complete rebuild on static pages\n\n");
@@ -353,12 +350,9 @@ namespace SobekCM.Builder
             //    return;
             //}
 
-            // Two ways to run this... constantly in background or once
+            // Controller always runs in background mode
             Worker_Controller controller = new Worker_Controller(verbose, Application.StartupPath + "\\Logs\\");
-            if (!run_background)
-                controller.Execute_Immediately(build_production_marcxml_feed, build_test_marcxml_feed, run_preloader, complete_static_rebuild, marc_rebuild );
-            else
-                controller.Execute_In_Background();
+            controller.Execute_In_Background();
 
             // If this was set to aborting, set to last execution aborted
             Builder_Operation_Flag_Enum operationFlag = Abort_Database_Mechanism.Builder_Operation_Flag;

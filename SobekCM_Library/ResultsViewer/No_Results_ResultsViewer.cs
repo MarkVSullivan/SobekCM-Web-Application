@@ -176,7 +176,6 @@ namespace SobekCM.Library.ResultsViewer
             {
                 StringBuilder sampleFileContent = new StringBuilder();
 
-
                 sampleFileContent.AppendLine("<span class=\"SobekNoResultsText\"><br />Your search returned no results.<br /><br /></span>");
                 sampleFileContent.AppendLine("<div style=\"display:[%MatchesFoundDivDisplay%]\">");
                 sampleFileContent.AppendLine("    The following matches were found:<br /><br />");

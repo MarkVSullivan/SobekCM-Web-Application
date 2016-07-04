@@ -72,22 +72,51 @@ namespace SobekCM.Builder_Library
                 return;
             }
 
-            // Pull the values from the database and assign other setting values
-            DataSet settings = Engine_Database.Get_Settings_Complete(false, null);
-            if (settings == null)
+            // This is as good a time as any to get rid of the old log files
+            try
             {
-                Console.WriteLine("FATAL ERROR pulling latest settings from the database: " + Library.Database.SobekCM_Database.Last_Exception.Message);
-                return;
+                // Collect list of log files to delete
+                List<string> log_files = new List<string>();
+                log_files.AddRange(Directory.GetFiles(logFileDirectory, "*.html"));
+                log_files.AddRange(Directory.GetFiles(logFileDirectory, "*.log"));
+
+                // Check age of each and delete
+                int deleted_logs = 0;
+                foreach (string thisLogFile in log_files)
+                {
+                    TimeSpan logFileAge = DateTime.Now.Subtract((new FileInfo(thisLogFile)).LastWriteTime);
+                    if (logFileAge.TotalDays > 30)
+                    {
+                        File.Delete(thisLogFile);
+                        deleted_logs++;
+                    }
+                }
+
+                // Add a message to the console
+                if (deleted_logs > 0)
+                {
+                    Console.WriteLine("Deleted " + deleted_logs + " log files that were older than 30 days");
+                }
+
             }
-            if (!Engine_ApplicationCache_Gateway.RefreshAll())
+            catch (Exception ee)
             {
-                Console.WriteLine("Error using database settings to refresh SobekCM_Library_Settings in Worker_Controller constructor");
+                Console.WriteLine("ERROR expiring logs older than 30 days: " + ee.Message);
+                Console.WriteLine("Execution will continue as non-fatal error");
             }
 
-            // If this starts in an ABORTED mode, set to standard
-            Builder_Operation_Flag_Enum operationFlag = Abort_Database_Mechanism.Builder_Operation_Flag;
-            if ((operationFlag == Builder_Operation_Flag_Enum.ABORTING) || ( operationFlag == Builder_Operation_Flag_Enum.ABORT_REQUESTED ) || ( operationFlag == Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED ))
-                Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
+            // Pull the values from the database and assign other setting values
+            //DataSet settings = Engine_Database.Get_Settings_Complete(false, null);
+            //if (settings == null)
+            //{
+            //    Console.WriteLine("FATAL ERROR pulling latest settings from the database: " + Library.Database.SobekCM_Database.Last_Exception.Message);
+            //    return;
+            //}
+            //if (!Engine_ApplicationCache_Gateway.RefreshAll())
+            //{
+            //    Console.WriteLine("Error using database settings to refresh SobekCM_Library_Settings in Worker_Controller constructor");
+            //}
+
 
             // start with warnings on imagemagick and ghostscript not being installed
             if ((String.IsNullOrEmpty(Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable)) || (!File.Exists(Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable)))
@@ -164,49 +193,56 @@ namespace SobekCM.Builder_Library
 			Console.WriteLine("Checking for initial abort condition");
 			preloader_logger.AddNonError("Checking for initial abort condition");
 	        string abort_message = String.Empty;
-			Builder_Operation_Flag_Enum abort_flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
-	        foreach (Database_Instance_Configuration dbConfig in instances)
-	        {
-		        if ((!aborted) && (dbConfig.Is_Active) && (dbConfig.Can_Abort))
-		        {
+            int build_instances = 0;
+            foreach (Database_Instance_Configuration dbConfig in instances)
+            {
+                if (!dbConfig.Is_Active)
+                {
+                    Console.WriteLine(dbConfig.Name + " is set to INACTIVE");
+                    preloader_logger.AddNonError(dbConfig.Name + " is set to INACTIVE");
+                }
+                else
+                {
+
                     SobekCM_Item_Database.Connection_String = dbConfig.Connection_String;
-			        Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
+                    Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
 
-			        // Check that this should not be skipped or aborted
-			        Builder_Operation_Flag_Enum operationFlag = Abort_Database_Mechanism.Builder_Operation_Flag;
-			        switch (operationFlag)
-			        {
-				        case Builder_Operation_Flag_Enum.ABORT_REQUESTED:
-				        case Builder_Operation_Flag_Enum.ABORTING:
-					        abort_message = "PREVIOUS ABORT flag found in " + dbConfig.Name;
-							abort_flag = Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED;
-							Console.WriteLine(abort_message);
-							preloader_logger.AddNonError(abort_message);
-					        aborted = true;
-							Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.LAST_EXECUTION_ABORTED;
-					        break;
+                    // Check that this should not be skipped or aborted
+                    Builder_Operation_Flag_Enum operationFlag = Abort_Database_Mechanism.Builder_Operation_Flag;
+                    switch (operationFlag)
+                    {
+                        case Builder_Operation_Flag_Enum.ABORT_REQUESTED:
+                        case Builder_Operation_Flag_Enum.ABORTING:
+                            // Since this was an abort request at the very beginning, switch back to standard
+                            Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
+                            build_instances++;
+                            break;
 
-						case Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED:
-					        abort_message = "PREVIOUS NO BUILDING flag found in " + dbConfig.Name;
-							Console.WriteLine(abort_message);
-							preloader_logger.AddNonError(abort_message);
-							aborted = true;
-							break;
+                        case Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED:
+                            abort_message = "PREVIOUS NO BUILDING flag found in " + dbConfig.Name;
+                            Console.WriteLine(abort_message);
+                            preloader_logger.AddNonError(abort_message);
+                            break;
 
-			        }
-		        }
-	        }
+                        default:
+                            build_instances++;
+                            break;
 
-			// If initially aborted, step through each instance and set a message
-			if (aborted)
+                    }
+                }
+            }
+
+
+            // If no instances to run just abort
+            if (build_instances == 0)
 			{
 				// Add messages in each active instance
 				foreach (Database_Instance_Configuration dbConfig in instances)
 				{
 					if (dbConfig.Is_Active) 
 					{
-						Console.WriteLine("Setting previous abort flag message in " + dbConfig.Name);
-						preloader_logger.AddNonError("Setting previous abort flag message in " + dbConfig.Name);
+                        Console.WriteLine("No active databases set for building in the config file");
+                        preloader_logger.AddError("No active databases set for building in config file... Aborting");
                         SobekCM_Item_Database.Connection_String = dbConfig.Connection_String;
 						Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
 						Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", abort_message, String.Empty);
@@ -215,10 +251,6 @@ namespace SobekCM.Builder_Library
                         Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version);
 						Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
 						Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", abort_message);
-
-						// Finally, set the builder flag appropriately
-						if (abort_flag != Builder_Operation_Flag_Enum.STANDARD_OPERATION)
-							Abort_Database_Mechanism.Builder_Operation_Flag = abort_flag;
 					}
 				}
 
@@ -229,47 +261,31 @@ namespace SobekCM.Builder_Library
 	        // Build all the bulk loader objects
 	        List<Worker_BulkLoader> loaders = new List<Worker_BulkLoader>();
 	        bool activeInstanceFound = false;
-			foreach (Database_Instance_Configuration dbConfig in instances)
-			{
-				if (!dbConfig.Is_Active)
-				{
-					loaders.Add(null);
-					Console.WriteLine(dbConfig.Name + " is set to INACTIVE");
-					preloader_logger.AddNonError(dbConfig.Name + " is set to INACTIVE");
-				}
-				else
-				{
-					activeInstanceFound = true;
-                    SobekCM_Item_Database.Connection_String = dbConfig.Connection_String;
-					Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
+            foreach (Database_Instance_Configuration dbConfig in instances)
+            {
 
-                    // At this point warn on mossing the Ghostscript and ImageMagick, to get it into each instances database logs
-                    if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.ImageMagick_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.ImageMagick_Executable)))
-                    {
-                        Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.", String.Empty);
-                    }
+                activeInstanceFound = true;
+                SobekCM_Item_Database.Connection_String = dbConfig.Connection_String;
+                Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
 
-                    if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.Ghostscript_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.Ghostscript_Executable)))
-                    {
-                        Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.", String.Empty);
-                    }
+                // At this point warn on mossing the Ghostscript and ImageMagick, to get it into each instances database logs
+                if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.ImageMagick_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.ImageMagick_Executable)))
+                {
+                    Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.", String.Empty);
+                }
 
-					Console.WriteLine(dbConfig.Name + " - Preparing to begin polling");
-					preloader_logger.AddNonError(dbConfig.Name + " - Preparing to begin polling");
-					Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Preparing to begin polling", String.Empty);
+                if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.Ghostscript_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.Ghostscript_Executable)))
+                {
+                    Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.", String.Empty);
+                }
 
-                    Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig, (instances.Count > 1), logFileDirectory);
-					loaders.Add(newLoader);
-				}
-			}
+                Console.WriteLine(dbConfig.Name + " - Preparing to begin polling");
+                preloader_logger.AddNonError(dbConfig.Name + " - Preparing to begin polling");
+                Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Preparing to begin polling", String.Empty);
 
-			// If no active instances, just exit
-			if (!activeInstanceFound)
-			{
-				Console.WriteLine("No active databases in the config file");
-				preloader_logger.AddError("No active databases in config file... Aborting");
-				return;
-			}
+                Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig, (instances.Count > 1), logFileDirectory);
+                loaders.Add(newLoader);
+            }
 
             // Set the maximum number of packages to process before moving to the next instance
             if (loaders.Count > 1)
@@ -279,6 +295,7 @@ namespace SobekCM.Builder_Library
 
 
             // Loop continually until the end hour is achieved
+            Builder_Operation_Flag_Enum abort_flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
             do
             {
 				// Is it time to build any RSS/XML feeds?
@@ -556,65 +573,71 @@ namespace SobekCM.Builder_Library
 
          #endregion
 
-        #region Method to immediately execute all requested processes
+        #region Method to immediately execute all requested processes - DEPRECATED
 
-	    /// <summary> Immediately perform all requested tasks </summary>
-	    /// <param name="BuildProductionMarcxmlFeed"> Flag indicates if the MarcXML feed for OPACs should be produced </param>
-	    /// <param name="BuildTestMarcxmlFeed"> Flag indicates if the items set to be put in a TEST feed should have their MarcXML feed produced</param>
-	    /// <param name="RunBulkloader"> Flag indicates if the preload </param>
-	    /// <param name="CompleteStaticRebuild"> Flag indicates whether to rebuild all the item static pages </param>
-	    /// <param name="MarcRebuild"> Flag indicates if all the MarcXML files for each resource should be rewritten from the METS/MODS metadata files </param>
-	    public void Execute_Immediately(bool BuildProductionMarcxmlFeed, bool BuildTestMarcxmlFeed, bool RunBulkloader, bool CompleteStaticRebuild, bool MarcRebuild )
-        {
-            // start with warnings on imagemagick and ghostscript not being installed
-            if (Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable.Length == 0)
-            {
-                Console.WriteLine("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.");
-            }
-            if (Engine_ApplicationCache_Gateway.Settings.Builder.Ghostscript_Executable.Length == 0)
-            {
-                Console.WriteLine("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
-            }
+        // THIS REGION IS RETAINED JUST TO HAVE THIS CODE AVAILABLE, BUT:
+        //    1) the builder ONLY runs in background mode
+        //    2) the other portions from this method may be useful as the other
+        //       builder options are refined as scheduled tasks
 
-            if (CompleteStaticRebuild)
-            {
-				Console.WriteLine("Beginning static rebuild");
-                LogFileXhtml staticRebuildLog = new LogFileXhtml( logFileDirectory  + "\\static_rebuild.html");
-                Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network);
-                builder.Rebuild_All_Static_Pages(staticRebuildLog, true, String.Empty, -1);
-            }
+
+        ///// <summary> Immediately perform all requested tasks </summary>
+        ///// <param name="BuildProductionMarcxmlFeed"> Flag indicates if the MarcXML feed for OPACs should be produced </param>
+        ///// <param name="BuildTestMarcxmlFeed"> Flag indicates if the items set to be put in a TEST feed should have their MarcXML feed produced</param>
+        ///// <param name="RunBulkloader"> Flag indicates if the preload </param>
+        ///// <param name="CompleteStaticRebuild"> Flag indicates whether to rebuild all the item static pages </param>
+        ///// <param name="MarcRebuild"> Flag indicates if all the MarcXML files for each resource should be rewritten from the METS/MODS metadata files </param>
+        //public void Execute_Immediately(bool BuildProductionMarcxmlFeed, bool BuildTestMarcxmlFeed, bool RunBulkloader, bool CompleteStaticRebuild, bool MarcRebuild )
+        //{
+        //    // start with warnings on imagemagick and ghostscript not being installed
+        //    if (Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable.Length == 0)
+        //    {
+        //        Console.WriteLine("WARNING: Could not find ImageMagick installed.  Some image processing will be unavailable.");
+        //    }
+        //    if (Engine_ApplicationCache_Gateway.Settings.Builder.Ghostscript_Executable.Length == 0)
+        //    {
+        //        Console.WriteLine("WARNING: Could not find GhostScript installed.  Some PDF processing will be unavailable.");
+        //    }
+
+        //    if (CompleteStaticRebuild)
+        //    {
+        //        Console.WriteLine("Beginning static rebuild");
+        //        LogFileXhtml staticRebuildLog = new LogFileXhtml( logFileDirectory  + "\\static_rebuild.html");
+        //        Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network);
+        //        builder.Rebuild_All_Static_Pages(staticRebuildLog, true, String.Empty, -1);
+        //    }
             
-            if ( MarcRebuild )
-            {
-                Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network);
-                builder.Rebuild_All_MARC_Files(Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network);
-            }
+        //    if ( MarcRebuild )
+        //    {
+        //        Static_Pages_Builder builder = new Static_Pages_Builder(Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL, Engine_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location, Engine_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network);
+        //        builder.Rebuild_All_MARC_Files(Engine_ApplicationCache_Gateway.Settings.Servers.Image_Server_Network);
+        //    }
 
-            if (BuildProductionMarcxmlFeed)
-            {
-                Create_Complete_MarcXML_Feed(false);
-            }
+        //    if (BuildProductionMarcxmlFeed)
+        //    {
+        //        Create_Complete_MarcXML_Feed(false);
+        //    }
 
-            if (BuildTestMarcxmlFeed)
-            {
-                Create_Complete_MarcXML_Feed(true);
-            }
+        //    if (BuildTestMarcxmlFeed)
+        //    {
+        //        Create_Complete_MarcXML_Feed(true);
+        //    }
 
-            // Create the log
-            string directory = logFileDirectory;
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
+        //    // Create the log
+        //    string directory = logFileDirectory;
+        //    if (!Directory.Exists(directory))
+        //        Directory.CreateDirectory(directory);
 
-            // Run the PRELOADER
-            if (RunBulkloader)
-            {
-                Run_BulkLoader( verbose );
-            }
-            else
-            {
-                Console.WriteLine("PreLoader skipped per command line arguments");
-            }
-        }
+        //    // Run the PRELOADER
+        //    if (RunBulkloader)
+        //    {
+        //        Run_BulkLoader( verbose );
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine("PreLoader skipped per command line arguments");
+        //    }
+        //}
 
         #endregion
 
@@ -691,7 +714,6 @@ namespace SobekCM.Builder_Library
         }
 
         #endregion
-
 
         #region Code to read registry values
 
