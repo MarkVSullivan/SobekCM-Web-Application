@@ -62,6 +62,23 @@ namespace SobekCM.Core.Client
             return Deserialize<InstanceWide_Configuration>(endpoint.URL, endpoint.Protocol, Tracer);
         }
 
+        /// <summary> Gets the complete configuration information, read from the configuration files </summary>
+        /// <param name="Engine_URL"> Engine endpoint URL to use for this request </param>
+        /// <param name="Engine_Protocol"> Engine protocol to use to pull the configuration information </param>
+        /// <param name="Tracer"></param>
+        /// <returns> Fully built configuration object </returns>
+        public InstanceWide_Configuration Get_Complete_Configuration(string Engine_URL, MicroservicesClient.Microservice_Endpoint_Protocol_Enum Engine_Protocol, Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("SobekEngineClient_AdminServices.Get_Complete_Configuration");
+            }
+
+            // Call out to the endpoint and return the deserialized object
+            return Deserialize<InstanceWide_Configuration>(Engine_URL, Engine_Protocol, Tracer);
+        }
+
         /// <summary> Gets the user-interface configuration information, read from the configuration files </summary>
         /// <param name="Tracer"></param>
         /// <returns> Fully built user interface configuration object </returns>

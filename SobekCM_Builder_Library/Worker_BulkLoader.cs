@@ -34,8 +34,11 @@ namespace SobekCM.Builder_Library
         private Builder_Modules BuilderSettings;
 
 
-        private readonly Database_Instance_Configuration dbInstance;
+        private readonly Single_Instance_Configuration instanceInfo;
+
         private InstanceWide_Settings settings;
+        private InstanceWide_Configuration configuration;
+
         private DataTable itemTable;
 
         private readonly LogFileXhtml logger;
@@ -61,20 +64,19 @@ namespace SobekCM.Builder_Library
         /// <summary> Constructor for a new instance of the Worker_BulkLoader class </summary>
         /// <param name="Logger"> Log file object for logging progress </param>
         /// <param name="Verbose"> Flag indicates if the builder is in verbose mode, where it should log alot more information </param>
-        /// <param name="DbInstance"> This database instance </param>
-        /// <param name="MultiInstanceBuilder"> Flag indicates if this is set to be a multi-instance builder configuration </param>
+        /// <param name="InstanceInfo"> Information for the instance of SobekCM to be processed by this bulk loader </param>
         /// <param name="LogFileDirectory"> Directory where any log files would be written </param>
-        public Worker_BulkLoader(LogFileXhtml Logger, bool Verbose, Database_Instance_Configuration DbInstance, bool MultiInstanceBuilder, string LogFileDirectory )
+        public Worker_BulkLoader(LogFileXhtml Logger, Single_Instance_Configuration InstanceInfo, bool Verbose, string LogFileDirectory )
         {
             // Save the log file and verbose flag
             logger = Logger;
             verbose = Verbose;
-	        instanceName = DbInstance.Name;
-		    canAbort = DbInstance.Can_Abort;
-	        multiInstanceBuilder = MultiInstanceBuilder;
-	        dbInstance = DbInstance;
+	        multiInstanceBuilder = ( MultiInstance_Builder_Settings.Instances.Count > 1);
             logFileDirectory = LogFileDirectory;
+            instanceInfo = InstanceInfo;
 
+            // If this is processing multiple instances, limit the numbe of packages that should be processed
+            // before allowing the builder to move to the next instance and poll
 	        if (multiInstanceBuilder)
 	            newItemLimit = 100;
 	        else
@@ -82,33 +84,15 @@ namespace SobekCM.Builder_Library
  
             Add_NonError_To_Log("Worker_BulkLoader.Constructor: Start", verbose, String.Empty, String.Empty, -1);
 
-
             // Create new list of collections to build
             aggregationsToRefresh = new List<string>();
 	        processedItems = new List<BibVidStruct>();
 	        deletedItems = new List<BibVidStruct>();
 
-			// get all the info
-	        settings = InstanceWide_Settings_Builder.Build_Settings(dbInstance);
-	        Refresh_Settings_And_Item_List();
-            
-			// Ensure there is SOME instance name
-	        if (instanceName.Length == 0)
-		        instanceName = settings.System.System_Name;
-            if (verbose)
-                settings.Builder.Verbose_Flag = true;
-
-
-            Add_NonError_To_Log("Worker_BulkLoader.Constructor: Created Static Pages Builder", verbose, String.Empty, String.Empty, -1);
-
             // Set some defaults
             aborted = false;
 
-
-            Add_NonError_To_Log("Worker_BulkLoader.Constructor: Building modules for pre, post, and item processing", verbose, String.Empty, String.Empty, -1);
-
-
-	        Add_NonError_To_Log("Worker_BulkLoader.Constructor: Done", verbose, String.Empty, String.Empty, -1);
+            Add_NonError_To_Log("Worker_BulkLoader.Constructor: Done", verbose, String.Empty, String.Empty, -1);
         }
 
         #region Main Method that steps through each package and performs work
@@ -359,12 +343,14 @@ namespace SobekCM.Builder_Library
             // Disable the cache
             CachedDataManager.Settings.Disabled = true;
 
-            Engine_Database.Connection_String = dbInstance.Connection_String;
-            SobekCM_Item_Database.Connection_String = dbInstance.Connection_String;
-            Library.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
+            Engine_Database.Connection_String = instanceInfo.DatabaseConnection.Connection_String;
+            SobekCM_Item_Database.Connection_String = instanceInfo.DatabaseConnection.Connection_String;
+            Library.Database.SobekCM_Database.Connection_String = instanceInfo.DatabaseConnection.Connection_String;
 
             // Determine the appropriate engine URL ( hardcoded for now )
-            string engine = 
+		    string engine = instanceInfo.Engine_URL;
+            settings = SobekEngineClient.Admin.
+		    configuration = SobekEngineClient.Admin.Get_Complete_Configuration(engine, instanceInfo.Engine_Protocol, null);
 
 
             // Reload all the other data

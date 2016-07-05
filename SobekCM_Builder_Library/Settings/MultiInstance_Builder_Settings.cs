@@ -24,6 +24,9 @@ namespace SobekCM.Builder_Library.Settings
         /// <summary> Ghostscript executable file </summary>
         public static string Ghostscript_Executable { get; set; }
 
+        /// <summary> Tesseract executable file </summary>
+        public static string Tesseract_Executable { get; set; }
+
         /// <summary> List of all the SobekCM instances supported by this builder </summary>
         public static List<Single_Instance_Configuration> Instances { get; set; }
 
