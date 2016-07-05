@@ -215,13 +215,16 @@ namespace SobekCM.Engine_Library.Configuration
             engine_config_finalize(returnValue);
 
             // Copy over all the extension information
-            foreach (ExtensionInfo thisExtension in returnValue.Extensions.Extensions)
+            if (returnValue.Extensions.Extensions != null)
             {
-                if (( thisExtension.Enabled ) && ( thisExtension.Assemblies != null))
+                foreach (ExtensionInfo thisExtension in returnValue.Extensions.Extensions)
                 {
-                    foreach (ExtensionAssembly thisAssembly in thisExtension.Assemblies)
+                    if ((thisExtension.Enabled) && (thisExtension.Assemblies != null))
                     {
-                        ResourceObjectSettings.Add_Assembly(thisAssembly.ID, thisAssembly.FilePath);
+                        foreach (ExtensionAssembly thisAssembly in thisExtension.Assemblies)
+                        {
+                            ResourceObjectSettings.Add_Assembly(thisAssembly.ID, thisAssembly.FilePath);
+                        }
                     }
                 }
             }
