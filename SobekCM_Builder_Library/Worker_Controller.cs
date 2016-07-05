@@ -331,8 +331,6 @@ namespace SobekCM.Builder_Library
 							break;
 						}
 
-
-
 						// Refresh all settings, etc..
 						loaders[i].Refresh_Settings_And_Item_List();
 

@@ -363,6 +363,10 @@ namespace SobekCM.Builder_Library
             SobekCM_Item_Database.Connection_String = dbInstance.Connection_String;
             Library.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
 
+            // Determine the appropriate engine URL ( hardcoded for now )
+            string engine = 
+
+
             // Reload all the other data
             Engine_ApplicationCache_Gateway.RefreshAll(dbInstance);
 

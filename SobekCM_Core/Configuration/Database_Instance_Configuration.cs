@@ -20,9 +20,6 @@ namespace SobekCM.Core.Configuration
 		public Database_Instance_Configuration()
 		{
 			Database_Type = EalDbTypeEnum.MSSQL;
-			Is_Active = true;
-			Can_Abort = true;
-			Name = String.Empty;
 		}
 
         /// <summary> Database connection string includes all the information to connect to a single instance </summary>
@@ -36,31 +33,6 @@ namespace SobekCM.Core.Configuration
         [XmlAttribute("databaseType")]
         [ProtoMember(2)]
         public EalDbTypeEnum Database_Type { get; set;  }
-
-        /// <summary> Flag indicates if this database instance is active for the builder </summary>
-        /// <remarks> The configuration file for the builder may have multiple database settings to allow a single
-        /// SobekCM builder to support multiple SobekCM instances.  </remarks>
-        [DataMember(Name = "isActive")]
-        [XmlAttribute("isActive")]
-        [ProtoMember(3)]
-        public bool Is_Active { get; set; }
-
-        /// <summary> Flag indicates if this database instance can force an abort
-        /// of the SobekCM system, or a NO BUILDING REQUESTED. </summary>
-        /// <remarks> Any system can pause itself, but only certain ones may request
-        /// a full abort through the web interface </remarks>
-        [DataMember(Name = "canAbort")]
-        [XmlAttribute("canAbort")]
-        [ProtoMember(4)]
-        public bool Can_Abort { get; set;  }
-
-        /// <summary> Name for this database instance </summary>
-        /// <remarks> This is only used by the SobekCM builder to be able to report the instance
-        /// name, in the event that the database referenced is inaccessible. </remarks>
-        [DataMember(Name = "name", EmitDefaultValue = false)]
-        [XmlAttribute("name")]
-        [ProtoMember(5)]
-        public string Name { get; set;  }
 
         /// <summary> Database type (as a string) </summary>
         [XmlIgnore]

@@ -510,28 +510,14 @@ namespace SobekCM.Engine_Library.Settings
                                 if (xmlReader.Value.ToLower() == "postgresql")
                                     newDb.Database_Type = EalDbTypeEnum.PostgreSQL;
                             }
-                            if (xmlReader.MoveToAttribute("active"))
-                            {
-                                if (xmlReader.Value.ToLower() == "false")
-                                    newDb.Is_Active = false;
-                            }
-                            if (xmlReader.MoveToAttribute("canAbort"))
-                            {
-                                if (xmlReader.Value.ToLower() == "false")
-                                    newDb.Can_Abort = false;
-                            }
                             if (xmlReader.MoveToAttribute("isHosted"))
                             {
                                 if (xmlReader.Value.ToLower() == "true")
                                     SettingsObject.Servers.isHosted = true;
                             }
-                            if (xmlReader.MoveToAttribute("name"))
-                                newDb.Name = xmlReader.Value.Trim();
-
+  
                             xmlReader.Read();
                             newDb.Connection_String = xmlReader.Value;
-                            if (newDb.Name.Length == 0)
-                                newDb.Name = "Connection" + (SettingsObject.Database_Connections.Count + 1);
                             SettingsObject.Database_Connections.Add(newDb);
                             break;
 
