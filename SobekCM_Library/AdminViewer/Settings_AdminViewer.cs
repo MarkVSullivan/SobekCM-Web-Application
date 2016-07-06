@@ -984,29 +984,32 @@ namespace SobekCM.Library.AdminViewer
 				// If this is hidden, just do nothing
 				if (thisValue.Hidden) continue;
 
+                // Get the tab page name, and handle nulls or empty values gracefully
+			    string tabPage = String.IsNullOrWhiteSpace(thisValue.TabPage) ? "General Settings" : thisValue.TabPage;
+
 				// If deprecated skip here
-                if (String.Compare(thisValue.TabPage, "Deprecated", StringComparison.OrdinalIgnoreCase) == 0) continue;
+                if (String.Compare(tabPage, "Deprecated", StringComparison.OrdinalIgnoreCase) == 0) continue;
 
                 // Handle builder settings separately
-			    if (String.Compare(thisValue.TabPage, "Builder", StringComparison.OrdinalIgnoreCase) == 0)
+                if (String.Compare(tabPage, "Builder", StringComparison.OrdinalIgnoreCase) == 0)
 			    {
 			        builderSettings.Add(thisValue);
 			        continue;
 			    }
 
 				// Was this tab page already added?
-				if (( thisValue.TabPage != null ) && (!settingsByPage.ContainsKey(thisValue.TabPage)))
+                if ((!settingsByPage.ContainsKey(tabPage)))
 				{
 					// We are going to move 'General.." up to the front, others are in alphabetical order
-					if (thisValue.TabPage.IndexOf("General", StringComparison.OrdinalIgnoreCase) == 0)
-						tabPageNames.Add("00", thisValue.TabPage);
+                    if (tabPage.IndexOf("General", StringComparison.OrdinalIgnoreCase) == 0)
+                        tabPageNames.Add("00", tabPage);
 					else
-						tabPageNames.Add(thisValue.TabPage, thisValue.TabPage);
-					settingsByPage[thisValue.TabPage] = new List<Admin_Setting_Value> { thisValue };
+                        tabPageNames.Add(tabPage, tabPage);
+                    settingsByPage[tabPage] = new List<Admin_Setting_Value> { thisValue };
 				}
 				else
 				{
-					settingsByPage[thisValue.TabPage].Add(thisValue);
+                    settingsByPage[tabPage].Add(thisValue);
 				}
 			}
 
@@ -1104,17 +1107,21 @@ namespace SobekCM.Library.AdminViewer
 				SortedList<string, string> headingSorted = new SortedList<string, string>();
 				Dictionary<string, SortedList<string, Admin_Setting_Value>> headingValuesSorted = new Dictionary<string, SortedList<string, Admin_Setting_Value>>();
 
+                // Step through each heading 
 				foreach (Admin_Setting_Value thisValue in AdminSettingValues)
 				{
-					if (!headingSorted.ContainsKey(thisValue.Heading))
+                    // Get the heading value, and handle an unexpected value gracefully
+				    string headingName = String.IsNullOrWhiteSpace(thisValue.Heading) ? "Other Settings" : thisValue.Heading;
+
+                    if (!headingSorted.ContainsKey(headingName))
 					{
-						headingSorted.Add(thisValue.Heading, thisValue.Heading);
+                        headingSorted.Add(headingName, headingName);
 						SortedList<string, Admin_Setting_Value> sortedList = new SortedList<string, Admin_Setting_Value> { { thisValue.Key, thisValue } };
-						headingValuesSorted[thisValue.Heading] = sortedList;
+                        headingValuesSorted[headingName] = sortedList;
 					}
 					else
 					{
-						headingValuesSorted[thisValue.Heading].Add(thisValue.Key, thisValue);
+                        headingValuesSorted[headingName].Add(thisValue.Key, thisValue);
 					}
 				}
 
