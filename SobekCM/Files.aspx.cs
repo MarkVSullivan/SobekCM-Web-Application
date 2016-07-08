@@ -47,7 +47,7 @@ namespace SobekCM
 					{
 						// Create an error message 
 						string errorMessage;
-                        if ((UI_ApplicationCache_Gateway.Settings.Database_Connections.Count == 0) || (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String)))
+                        if ((UI_ApplicationCache_Gateway.Settings.Database_Connection == null ) || (String.IsNullOrEmpty(UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String)))
 						{
 							errorMessage = "No database connection string found!";
 							string configFileLocation = AppDomain.CurrentDomain.BaseDirectory + "config/sobekcm.xml";
@@ -73,7 +73,7 @@ namespace SobekCM
 							}
 							else
 							{
-                                errorMessage = "Error connecting to the database and pulling necessary data.<br /><br />Confirm the following:<ul><li>Database connection string is correct ( " + UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String + ")</li><li>IIS is configured correctly to use anonymous authentication</li><li>Anonymous user (or service account) is part of the sobek_users role in the database.</li></ul>";
+                                errorMessage = "Error connecting to the database and pulling necessary data.<br /><br />Confirm the following:<ul><li>Database connection string is correct ( " + UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String + ")</li><li>IIS is configured correctly to use anonymous authentication</li><li>Anonymous user (or service account) is part of the sobek_users role in the database.</li></ul>";
 							}
 						}
 						// Wrap this into the SobekCM Exception

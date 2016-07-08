@@ -75,8 +75,8 @@ namespace SobekCM.Engine_Library.Settings
             UrlWriterHelper.Unhandled_Error_URL = returnValue.Servers.System_Error_URL;
 
             // Set the connection string to the database
-            Engine_Database.Connection_String = returnValue.Database_Connections[0].Connection_String;
-            SobekCM_Item_Database.Connection_String = returnValue.Database_Connections[0].Connection_String;
+            Engine_Database.Connection_String = returnValue.Database_Connection.Connection_String;
+            SobekCM_Item_Database.Connection_String = returnValue.Database_Connection.Connection_String;
 
             // Get the settings
             DataSet sobekCMSettings = Engine_Database.Get_Settings_Complete(false, null);
@@ -492,7 +492,7 @@ namespace SobekCM.Engine_Library.Settings
             if (!File.Exists(ConfigFile))
                 return;
 
-            SettingsObject.Database_Connections.Clear();
+            SettingsObject.Database_Connection = null;
 
             StreamReader reader = new StreamReader(ConfigFile);
             XmlTextReader xmlReader = new XmlTextReader(reader);
@@ -518,7 +518,7 @@ namespace SobekCM.Engine_Library.Settings
   
                             xmlReader.Read();
                             newDb.Connection_String = xmlReader.Value;
-                            SettingsObject.Database_Connections.Add(newDb);
+                            SettingsObject.Database_Connection = newDb;
                             break;
 
                         case "erroremails":

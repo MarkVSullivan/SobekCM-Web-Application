@@ -46,7 +46,6 @@ namespace SobekCM.Core.Settings
         public InstanceWide_Settings()
         {
             // Define new empty collections
-            Database_Connections = new List<Database_Instance_Configuration>();
             dispositionLookup = new Dictionary<int, Disposition_Option>();
             Metadata_Search_Fields = new List<Metadata_Search_Field>();
             metadataFieldsByCode = new Dictionary<string, Metadata_Search_Field>();
@@ -137,12 +136,11 @@ namespace SobekCM.Core.Settings
         [ProtoMember(10)]
         public System_Settings System { get; set; }
 
-        /// <summary> Database connection string(s) built from the system config file (usually sits in a config subfolder)</summary>
-        [DataMember(Name = "dbConnections", EmitDefaultValue = false)]
-        [XmlArray("dbConnections")]
-        [XmlArrayItem("dbConnection", typeof (Database_Instance_Configuration))]
+        /// <summary> Database connection string built from the system config file (usually sits in a config subfolder)</summary>
+        [DataMember(Name = "dbConnection", EmitDefaultValue = false)]
+        [XmlElement("dbConnection")]
         [ProtoMember(11)]
-        public List<Database_Instance_Configuration> Database_Connections { get; set; }
+        public Database_Instance_Configuration Database_Connection { get; set; }
 
         /// <summary> All the item viewer information from the database,
         /// which includes which viewers are added by default, default orders, and the primary key 

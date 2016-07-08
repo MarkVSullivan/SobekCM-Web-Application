@@ -94,7 +94,7 @@ namespace SobekCM.Library.Citation.SectionWriter
             else
             {
                 // Show the rights image?
-                if (!String.IsNullOrEmpty(rights_image))
+                if (String.IsNullOrEmpty(rights_image))
                 {
                     if (!String.IsNullOrEmpty(uri))
                     {

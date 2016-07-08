@@ -1037,7 +1037,7 @@ namespace SobekCM.Library.AdminViewer
 				Key = "Database Connection String",
 				Reserved = 3,
 				SettingID = 9990,
-				Value = UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String
+				Value = UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String
 			};
 
 			Admin_Setting_Value dbType = new Admin_Setting_Value
@@ -1048,7 +1048,7 @@ namespace SobekCM.Library.AdminViewer
 				Key = "Database Type",
 				Reserved = 3,
 				SettingID = 9991,
-				Value = UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Database_Type_String
+				Value = UI_ApplicationCache_Gateway.Settings.Database_Connection.Database_Type_String
 			};
 
 			Admin_Setting_Value isHosted = new Admin_Setting_Value

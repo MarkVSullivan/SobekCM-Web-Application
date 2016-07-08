@@ -19,7 +19,7 @@ public partial class CallBacks : Page
     [WebMethod]
     public static object MapSearch(string sendData)
     {
-        SobekCM_Database.Connection_String = UI_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
+        SobekCM_Database.Connection_String = UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String;
         return Google_Map_ResultsViewer.Process_MapSearch_Callback(sendData);
     }
 }

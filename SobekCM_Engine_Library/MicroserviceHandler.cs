@@ -34,7 +34,7 @@ namespace SobekCM.Engine_Library
         /// <param name="Context">The context for the current request </param>
         public void ProcessRequest(HttpContext Context)
         {
-            Engine_Database.Connection_String = Engine_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
+            Engine_Database.Connection_String = Engine_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String;
 
             // Get the original query string
             string queryString = Context.Request.QueryString["urlrelative"];

@@ -182,6 +182,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             bool returnValue = false;
             includeLinkToZoomable = false;
+            bool width_found = false;
 
             // Find the page information
             BriefItem_FileGrouping imagePage = BriefItem.Images[page - 1];
@@ -198,13 +199,66 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         if (String.Compare(extension, thisPossibleFileExtension, StringComparison.OrdinalIgnoreCase) == 0)
                         {
+                            // If a return value was already found, look to see if this one is bigger, in which case it will be used
+                            // This is a convenient way to get around thumbnails issue without looking for "thm.jpg"
+                            if (returnValue)
+                            {
+                                // Are their widths present?
+                                if (width_found && thisFile.Width.HasValue)
+                                {
+                                    if (thisFile.Width.Value > width)
+                                    {
+                                        // THis file is bigger (wider)
+                                        filename = thisFile.Name;
+                                        width = thisFile.Width.Value;
+                                        if (thisFile.Height.HasValue) height = thisFile.Height.Value;
+                                    }
+                                }
+                                else
+                                {
+                                    // Since no width was found, just go for a shorter filename
+                                    if (filename.Length > thisFile.Name.Length)
+                                    {
+                                        // This name is shorter... assuming it doesn't include thm.jpg then
+                                        filename = thisFile.Name;
+                                        if (thisFile.Width.HasValue)
+                                        {
+                                            width = thisFile.Width.Value;
+                                            width_found = true;
+                                        }
+                                        else
+                                        {
+                                            width = 500;
+                                        }
+                                        if (thisFile.Height.HasValue) height = thisFile.Height.Value;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // Get the JPEG information
+                                filename = thisFile.Name;
+                                if (thisFile.Width.HasValue)
+                                {
+                                    width = thisFile.Width.Value;
+                                    width_found = true;
+                                }
+                                if (thisFile.Height.HasValue) height = thisFile.Height.Value;
+                            }
+
+
+
                             // Get the JPEG information
+
                             filename = thisFile.Name;
-                            if (thisFile.Width.HasValue) width = thisFile.Width.Value;
+                            if (thisFile.Width.HasValue)
+                            {
+                                width = thisFile.Width.Value;
+                                width_found = true;
+                            }
                             if (thisFile.Height.HasValue) height = thisFile.Height.Value;
 
-                            // if there is no need to look for a JPEG2000 file, done here!
-                            if (!zoomableViewerIncluded) return true;
+                            // Found a value to return
                             returnValue = true;
                         }
                     }
@@ -223,11 +277,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             }
                         }
                     }
-
                 }
+
+                // Finished looking at all the page files and found the file to display, so return TRUE
+                if (returnValue) return true;
             }
 
-            return returnValue;
+            return false;
         }
 
         /// <summary> Any additional inline style for this viewer that affects the main box around this</summary>
