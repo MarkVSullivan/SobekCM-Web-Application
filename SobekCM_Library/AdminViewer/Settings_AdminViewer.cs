@@ -562,6 +562,7 @@ namespace SobekCM.Library.AdminViewer
 	        // to the values the user entered, like different starts or endings
 	        foreach (Simple_Setting thisSetting in newValues)
 	        {
+
 	            settingsObjsById[thisSetting.SettingID].Value = thisSetting.Value;
 	        }
 
