@@ -121,50 +121,63 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Add the google script information
             mapHeight = 500;
             StringBuilder scriptBuilder = new StringBuilder();
-            
-            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?v=3.2&sensor=false\"></script>");
-            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Map_Search_Js + "\"></script>");
-            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Map_Tool_Js + "\"></script>");
-            
-            scriptBuilder.AppendLine("<script type=\"text/javascript\">");
-            scriptBuilder.AppendLine("  //<![CDATA[");
-            scriptBuilder.AppendLine("  function load() { ");
 
-            // Set the latitude and longitude
-            int zoom = 1;
-            decimal latitude = 0;
-            decimal longitude = 0;
-            if (ViewBag.Hierarchy_Object.Map_Search_Display != null)
+            // Only continue if there actually IS a map key
+            if (!String.IsNullOrWhiteSpace(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
             {
-                if ((ViewBag.Hierarchy_Object.Map_Search_Display.ZoomLevel.HasValue) && (ViewBag.Hierarchy_Object.Map_Search_Display.Latitude.HasValue) && (ViewBag.Hierarchy_Object.Map_Search_Display.Longitude.HasValue))
+                scriptBuilder.AppendLine("<script src=\"https://maps.googleapis.com/maps/api/js?key=" + UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key + "\" type=\"text/javascript\"></script>");
+                scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Map_Search_Js + "\"></script>");
+                scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Map_Tool_Js + "\"></script>");
+
+                scriptBuilder.AppendLine("<script type=\"text/javascript\">");
+                scriptBuilder.AppendLine("  //<![CDATA[");
+                scriptBuilder.AppendLine("  function load() { ");
+
+                // Set the latitude and longitude
+                int zoom = 1;
+                decimal latitude = 0;
+                decimal longitude = 0;
+                if (ViewBag.Hierarchy_Object.Map_Search_Display != null)
                 {
-                    latitude = ViewBag.Hierarchy_Object.Map_Search_Display.Latitude.Value;
-                    longitude = ViewBag.Hierarchy_Object.Map_Search_Display.Longitude.Value;
-                    zoom = ViewBag.Hierarchy_Object.Map_Search_Display.ZoomLevel.Value;
+                    if ((ViewBag.Hierarchy_Object.Map_Search_Display.ZoomLevel.HasValue) && (ViewBag.Hierarchy_Object.Map_Search_Display.Latitude.HasValue) && (ViewBag.Hierarchy_Object.Map_Search_Display.Longitude.HasValue))
+                    {
+                        latitude = ViewBag.Hierarchy_Object.Map_Search_Display.Latitude.Value;
+                        longitude = ViewBag.Hierarchy_Object.Map_Search_Display.Longitude.Value;
+                        zoom = ViewBag.Hierarchy_Object.Map_Search_Display.ZoomLevel.Value;
+                    }
                 }
-            }
-            scriptBuilder.AppendLine("    load_search_map(" + latitude + ", " + longitude + ", " + zoom + ", \"map1\");");
-            
-            //// If no point searching is allowed, disable it
-            //if (ViewBag.Hierarchy_Object.Map_Search >= 100)
-            //{
-            //    pointSearchingDisabled = true;
-            //    scriptBuilder.AppendLine("    disable_point_searching();");
-            //}
+                scriptBuilder.AppendLine("    load_search_map(" + latitude + ", " + longitude + ", " + zoom + ", \"map1\");");
 
-            if ((text1.Length > 0) && (text2.Length > 0) && (text3.Length > 0) && (text4.Length > 0))
-            {
-                scriptBuilder.AppendLine("    add_selection_rectangle( " + text1 + ", " + text2 + ", " + text3 + ", " + text4 + " );");
-                scriptBuilder.AppendLine("    zoom_to_bounds();");
-            }
-            else if ((text1.Length > 0) && (text2.Length > 0))
-            {
-                scriptBuilder.AppendLine("    add_selection_point( " + text1 + ", " + text2 + ", 8 );");
-            }
+                //// If no point searching is allowed, disable it
+                //if (ViewBag.Hierarchy_Object.Map_Search >= 100)
+                //{
+                //    pointSearchingDisabled = true;
+                //    scriptBuilder.AppendLine("    disable_point_searching();");
+                //}
 
-            scriptBuilder.AppendLine("  }");
-            scriptBuilder.AppendLine("  //]]>");
-            scriptBuilder.AppendLine("</script>");
+                if ((text1.Length > 0) && (text2.Length > 0) && (text3.Length > 0) && (text4.Length > 0))
+                {
+                    scriptBuilder.AppendLine("    add_selection_rectangle( " + text1 + ", " + text2 + ", " + text3 + ", " + text4 + " );");
+                    scriptBuilder.AppendLine("    zoom_to_bounds();");
+                }
+                else if ((text1.Length > 0) && (text2.Length > 0))
+                {
+                    scriptBuilder.AppendLine("    add_selection_point( " + text1 + ", " + text2 + ", 8 );");
+                }
+
+                scriptBuilder.AppendLine("  }");
+                scriptBuilder.AppendLine("  //]]>");
+                scriptBuilder.AppendLine("</script>");
+            }
+            else
+            {
+                // No Google Map API Key
+                scriptBuilder.AppendLine("<script type=\"text/javascript\">");
+                scriptBuilder.AppendLine("  //<![CDATA[ ");
+                scriptBuilder.AppendLine("  function load() {  }");
+                scriptBuilder.AppendLine("  //]]>");
+                scriptBuilder.AppendLine("</script>");
+            }
             Search_Script_Reference = scriptBuilder.ToString();
 
             // Get the action name for the button
@@ -319,7 +332,22 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 RequestSpecificValues.Current_Mode.Info_Browse_Mode = "1";
                 Output.WriteLine("      </div>");
             }
-            Output.WriteLine("      <div id=\"map1\" style=\"width: " + width + "px; height: " + mapHeight + "px\"></div>");
+
+
+            // Show error message if there is no Google Map API key
+            if (String.IsNullOrWhiteSpace(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
+            {
+                Output.WriteLine("  <div style=\"width: " + width + "px; height: " + mapHeight + "px;padding: 25px\">");
+                Output.WriteLine("              <p style=\"font-weight:bold; text-size:1.1em\">ERROR: Google Maps are not enabled on this instance of SobekCM!</p>");
+                Output.WriteLine("              <p style=\"width: " + (width - 100) + "px;\">To enable them, please create a Google Map API key and enter it in the system-wide settings.</p>");
+                Output.WriteLine("              <p style=\"width: " + (width - 100) + "px;\">Information on this process can be found here: <a href=\"http://sobekrepository.org/software/config/googlemaps\">http://sobekrepository.org/software/config/googlemaps</a>.</p>");
+                Output.WriteLine("  </div>");
+            }
+            else
+            {
+                Output.WriteLine("      <div id=\"map1\" style=\"width: " + width + "px; height: " + mapHeight + "px\"></div>");
+            }
+
             Output.WriteLine("    </td>");
             Output.WriteLine("    <td>");
             Output.WriteLine(show_coordinates ? "      <div id=\"map_coordinates_div\" >" : "      <div id=\"map_coordinates_div\" style=\"display: none;\" >");

@@ -92,6 +92,12 @@ namespace SobekCM.Core.Settings
         [ProtoMember(11)]
         public string Help_URL_Base { get; set; }
 
+        /// <summary> API Key for the Google Map display features within SobekCM </summary>
+        [DataMember(Name = "googleMapApiKey", EmitDefaultValue = false)]
+        [XmlElement("googleMapApiKey")]
+        [ProtoMember(12)]
+        public string Google_Map_API_Key { get; set; }
+
         /// <summary> Get the URL for all metadata help pages which are used when users request 
         /// help while submitting a new item or editing an existing item </summary>
         /// <param name="Current_Base_URL"> Current base url for the current user's request </param>

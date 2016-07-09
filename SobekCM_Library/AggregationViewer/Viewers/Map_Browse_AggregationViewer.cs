@@ -36,8 +36,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
         /// <summary> Constructor for a new instance of the Metadata_Browse_AggregationViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="ViewBag"> Aggregation-specific request information, such as aggregation object and any browse object requested </param>
-        public Map_Browse_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag)
-            : base(RequestSpecificValues, ViewBag)
+        public Map_Browse_AggregationViewer(RequestCache RequestSpecificValues, AggregationViewBag ViewBag) : base(RequestSpecificValues, ViewBag)
         {
             // Get the coordinate information
             DataTable coordinates = Engine_Database.Get_All_Coordinate_Points_By_Aggregation(ViewBag.Hierarchy_Object.Code, RequestSpecificValues.Tracer);
@@ -45,127 +44,141 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Add the google script information
             StringBuilder scriptBuilder = new StringBuilder(10000);
 
-            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?sensor=false\"></script>");
-            scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Keydragzoom_Packed_Js + "\"></script>");
-            scriptBuilder.AppendLine("<script type=\"text/javascript\">");
-            scriptBuilder.AppendLine("  //<![CDATA[");
-            scriptBuilder.AppendLine("  // Global values");
-            scriptBuilder.AppendLine("  var map, bounds, custom_icon, info_window, last_center;");
-            scriptBuilder.AppendLine();
-            scriptBuilder.AppendLine("  // Initialize the map on load ");
-            scriptBuilder.AppendLine("  function load() { ");
-
-            decimal center_latitude = 0;
-            decimal center_longitude = 0;
-            int zoom = 1;
-            bool zoom_to_extent = true;
-            if ((ViewBag.Hierarchy_Object.Map_Browse_Display != null) && ( ViewBag.Hierarchy_Object.Map_Browse_Display.Type == Item_Aggregation_Map_Coverage_Type_Enum.FIXED ))
+            // Only continue if there actually IS a map key
+            if (!String.IsNullOrWhiteSpace(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
             {
-                Item_Aggregation_Map_Coverage_Info mapTypeInfo = ViewBag.Hierarchy_Object.Map_Browse_Display;
-                if ((mapTypeInfo.Latitude.HasValue) && (mapTypeInfo.Longitude.HasValue))
+                scriptBuilder.AppendLine("<script src=\"https://maps.googleapis.com/maps/api/js?key=" + UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key  +"\" type=\"text/javascript\"></script>");
+                scriptBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Keydragzoom_Packed_Js + "\"></script>");
+                scriptBuilder.AppendLine("<script type=\"text/javascript\">");
+                scriptBuilder.AppendLine("  //<![CDATA[");
+                scriptBuilder.AppendLine("  // Global values");
+                scriptBuilder.AppendLine("  var map, bounds, custom_icon, info_window, last_center;");
+                scriptBuilder.AppendLine();
+                scriptBuilder.AppendLine("  // Initialize the map on load ");
+                scriptBuilder.AppendLine("  function load() { ");
+
+                decimal center_latitude = 0;
+                decimal center_longitude = 0;
+                int zoom = 1;
+                bool zoom_to_extent = true;
+                if ((ViewBag.Hierarchy_Object.Map_Browse_Display != null) && (ViewBag.Hierarchy_Object.Map_Browse_Display.Type == Item_Aggregation_Map_Coverage_Type_Enum.FIXED))
                 {
-                    center_latitude = mapTypeInfo.Latitude.Value;
-                    center_longitude = mapTypeInfo.Longitude.Value;
-                    zoom = 7;
-
-                    if (mapTypeInfo.ZoomLevel.HasValue)
-                        zoom = mapTypeInfo.ZoomLevel.Value;
-
-                    zoom_to_extent = false;
-                }
-            }
-
-            scriptBuilder.AppendLine("    // Create the map and set some values");
-            scriptBuilder.AppendLine("    var latlng = new google.maps.LatLng(" + center_latitude + ", " + center_longitude + ");"); 
-            scriptBuilder.AppendLine("    var myOptions = { zoom: " + zoom + ", center: latlng, mapTypeId: google.maps.MapTypeId.TERRAIN, streetViewControl: false  };");
-			scriptBuilder.AppendLine("    map = new google.maps.Map(document.getElementById('sbkMbav_MapDiv'), myOptions);");
-            scriptBuilder.AppendLine("    map.enableKeyDragZoom();");
-
-            if (( coordinates != null ) && ( coordinates.Rows.Count > 0 ))
-            {
-                scriptBuilder.AppendLine();
-                scriptBuilder.AppendLine("    // Create the custom icon / marker image");
-                scriptBuilder.AppendLine("    var iconSize = new google.maps.Size(11, 11);");
-                scriptBuilder.AppendLine("    var iconAnchor = new google.maps.Point(5, 5);");
-                scriptBuilder.AppendLine("    var pointer_image = '" + Static_Resources_Gateway.Map_Point_Png + "';");
-                scriptBuilder.AppendLine("    custom_icon = new google.maps.MarkerImage(pointer_image, iconSize, null, iconAnchor);");
-
-                scriptBuilder.AppendLine();
-                scriptBuilder.AppendLine("    // Create the bounds");
-                scriptBuilder.AppendLine("    bounds = new google.maps.LatLngBounds();");
-
-                scriptBuilder.AppendLine();
-                scriptBuilder.AppendLine("    // Create the info window for display");
-                scriptBuilder.AppendLine("    info_window = new google.maps.InfoWindow();");
-                scriptBuilder.AppendLine("    google.maps.event.addListener(info_window, 'closeclick', function() { if (last_center != null) { map.panTo(last_center); last_center = null; } });");
-
-                scriptBuilder.AppendLine();
-                scriptBuilder.AppendLine("    // Add all the points");
-                string last_latitude = coordinates.Rows[0]["Point_Latitude"].ToString();
-                string last_longitude = coordinates.Rows[0]["Point_Longitude"].ToString();
-                List<DataRow> bibids_in_this_point = new List<DataRow>();
-                foreach( DataRow thisRow in coordinates.Rows )
-                {
-                    string latitude = thisRow["Point_Latitude"].ToString();
-                    string longitude = thisRow["Point_Longitude"].ToString();
-
-                    // Is this upcoming point new?
-                    if ((latitude != last_latitude) || (longitude != last_longitude))
+                    Item_Aggregation_Map_Coverage_Info mapTypeInfo = ViewBag.Hierarchy_Object.Map_Browse_Display;
+                    if ((mapTypeInfo.Latitude.HasValue) && (mapTypeInfo.Longitude.HasValue))
                     {
-                        // Write the last point, if there was one
-                        if (bibids_in_this_point.Count > 0)
+                        center_latitude = mapTypeInfo.Latitude.Value;
+                        center_longitude = mapTypeInfo.Longitude.Value;
+                        zoom = 7;
+
+                        if (mapTypeInfo.ZoomLevel.HasValue)
+                            zoom = mapTypeInfo.ZoomLevel.Value;
+
+                        zoom_to_extent = false;
+                    }
+                }
+
+                scriptBuilder.AppendLine("    // Create the map and set some values");
+                scriptBuilder.AppendLine("    var latlng = new google.maps.LatLng(" + center_latitude + ", " + center_longitude + ");");
+                scriptBuilder.AppendLine("    var myOptions = { zoom: " + zoom + ", center: latlng, mapTypeId: google.maps.MapTypeId.TERRAIN, streetViewControl: false  };");
+                scriptBuilder.AppendLine("    map = new google.maps.Map(document.getElementById('sbkMbav_MapDiv'), myOptions);");
+                scriptBuilder.AppendLine("    map.enableKeyDragZoom();");
+
+                if ((coordinates != null) && (coordinates.Rows.Count > 0))
+                {
+                    scriptBuilder.AppendLine();
+                    scriptBuilder.AppendLine("    // Create the custom icon / marker image");
+                    scriptBuilder.AppendLine("    var iconSize = new google.maps.Size(11, 11);");
+                    scriptBuilder.AppendLine("    var iconAnchor = new google.maps.Point(5, 5);");
+                    scriptBuilder.AppendLine("    var pointer_image = '" + Static_Resources_Gateway.Map_Point_Png + "';");
+                    scriptBuilder.AppendLine("    custom_icon = new google.maps.MarkerImage(pointer_image, iconSize, null, iconAnchor);");
+
+                    scriptBuilder.AppendLine();
+                    scriptBuilder.AppendLine("    // Create the bounds");
+                    scriptBuilder.AppendLine("    bounds = new google.maps.LatLngBounds();");
+
+                    scriptBuilder.AppendLine();
+                    scriptBuilder.AppendLine("    // Create the info window for display");
+                    scriptBuilder.AppendLine("    info_window = new google.maps.InfoWindow();");
+                    scriptBuilder.AppendLine("    google.maps.event.addListener(info_window, 'closeclick', function() { if (last_center != null) { map.panTo(last_center); last_center = null; } });");
+
+                    scriptBuilder.AppendLine();
+                    scriptBuilder.AppendLine("    // Add all the points");
+                    string last_latitude = coordinates.Rows[0]["Point_Latitude"].ToString();
+                    string last_longitude = coordinates.Rows[0]["Point_Longitude"].ToString();
+                    List<DataRow> bibids_in_this_point = new List<DataRow>();
+                    foreach (DataRow thisRow in coordinates.Rows)
+                    {
+                        string latitude = thisRow["Point_Latitude"].ToString();
+                        string longitude = thisRow["Point_Longitude"].ToString();
+
+                        // Is this upcoming point new?
+                        if ((latitude != last_latitude) || (longitude != last_longitude))
                         {
-                            // Add the point
-                            add_single_point(last_latitude, last_longitude, RequestSpecificValues.Current_Mode, bibids_in_this_point, scriptBuilder);
+                            // Write the last point, if there was one
+                            if (bibids_in_this_point.Count > 0)
+                            {
+                                // Add the point
+                                add_single_point(last_latitude, last_longitude, RequestSpecificValues.Current_Mode, bibids_in_this_point, scriptBuilder);
 
-                            // Assign this as the last value
-                            last_latitude = latitude;
-                            last_longitude = longitude;
+                                // Assign this as the last value
+                                last_latitude = latitude;
+                                last_longitude = longitude;
 
-                            // Clear the list of newspapers linked to this point
-                            bibids_in_this_point.Clear();
+                                // Clear the list of newspapers linked to this point
+                                bibids_in_this_point.Clear();
+                            }
+
+                            // Start a new list and include this bib id
+                            bibids_in_this_point.Add(thisRow);
                         }
-
-                        // Start a new list and include this bib id
-                        bibids_in_this_point.Add(thisRow);
+                        else
+                        {
+                            // Add this bibid to the list
+                            bibids_in_this_point.Add(thisRow);
+                        }
                     }
-                    else
+
+                    // Write the last point, if there was one
+                    if (bibids_in_this_point.Count > 0)
                     {
-                        // Add this bibid to the list
-                        bibids_in_this_point.Add(thisRow);
+                        // Add the point
+                        add_single_point(last_latitude, last_longitude, RequestSpecificValues.Current_Mode, bibids_in_this_point, scriptBuilder);
+
+                        // Clear the list of newspapers linked to this point
+                        bibids_in_this_point.Clear();
                     }
                 }
 
-                // Write the last point, if there was one
-                if (bibids_in_this_point.Count > 0)
+
+                // Zoom to extent?
+                if (zoom_to_extent)
                 {
-                    // Add the point
-                    add_single_point(last_latitude, last_longitude, RequestSpecificValues.Current_Mode, bibids_in_this_point, scriptBuilder);
-
-                    // Clear the list of newspapers linked to this point
-                    bibids_in_this_point.Clear();
+                    scriptBuilder.AppendLine("    map.fitBounds(bounds);");
                 }
-            }
-            
 
-            // Zoom to extent?
-            if (zoom_to_extent)
+                scriptBuilder.AppendLine("  }");
+                scriptBuilder.AppendLine();
+                scriptBuilder.AppendLine("  // Add a single point ");
+                scriptBuilder.AppendLine("  function add_point(latitude, longitude, window_content) {");
+                scriptBuilder.AppendLine("    var point = new google.maps.LatLng(latitude, longitude);");
+                scriptBuilder.AppendLine("    bounds.extend(point);");
+                scriptBuilder.AppendLine("    var marker = new google.maps.Marker({ position: point, draggable: false, map: map, icon: custom_icon });");
+                scriptBuilder.AppendLine("    google.maps.event.addListener(marker, 'click', function() { info_window.setContent(window_content); last_center = map.getCenter(); info_window.open(map, marker); });");
+
+                scriptBuilder.AppendLine("  }");
+                scriptBuilder.AppendLine("  //]]>");
+                scriptBuilder.AppendLine("</script>");
+
+            }
+            else
             {
-                scriptBuilder.AppendLine("    map.fitBounds(bounds);");
+                // No Google Map API Key
+                scriptBuilder.AppendLine("<script type=\"text/javascript\">");
+                scriptBuilder.AppendLine("  //<![CDATA[ ");
+                scriptBuilder.AppendLine("  function load() {  }");
+                scriptBuilder.AppendLine("  //]]>");
+                scriptBuilder.AppendLine("</script>");
             }
-
-            scriptBuilder.AppendLine("  }");
-            scriptBuilder.AppendLine();
-            scriptBuilder.AppendLine("  // Add a single point ");
-            scriptBuilder.AppendLine("  function add_point(latitude, longitude, window_content) {");
-            scriptBuilder.AppendLine("    var point = new google.maps.LatLng(latitude, longitude);");
-            scriptBuilder.AppendLine("    bounds.extend(point);");
-            scriptBuilder.AppendLine("    var marker = new google.maps.Marker({ position: point, draggable: false, map: map, icon: custom_icon });");
-            scriptBuilder.AppendLine("    google.maps.event.addListener(marker, 'click', function() { info_window.setContent(window_content); last_center = map.getCenter(); info_window.open(map, marker); });");
-
-            scriptBuilder.AppendLine("  }");
-            scriptBuilder.AppendLine("  //]]>");
-            scriptBuilder.AppendLine("</script>");
             Search_Script_Reference = scriptBuilder.ToString();
         }
 
@@ -260,18 +273,30 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             }
 
 			Output.WriteLine("<div class=\"sbkMbav_MainPanel\">");
-			Output.WriteLine("  <table id=\"sbkMbav_MainTable\">");
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>");
-            Output.WriteLine("        <blockquote>Select a point below to view the items from or about that location.<br />Press the SHIFT button, and then drag a box on the map to zoom in.</blockquote>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
-            Output.WriteLine("    <tr>");
-            Output.WriteLine("      <td>");
-			Output.WriteLine("        <div id=\"sbkMbav_MapDiv\"></div>");
-            Output.WriteLine("      </td>");
-            Output.WriteLine("    </tr>");
-            Output.WriteLine("  </table>");
+
+            if (!String.IsNullOrWhiteSpace(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
+            {
+                Output.WriteLine("  <table id=\"sbkMbav_MainTable\">");
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <blockquote>Select a point below to view the items from or about that location.<br />Press the SHIFT button, and then drag a box on the map to zoom in.</blockquote>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>"); 
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <div id=\"sbkMbav_MapDiv\"></div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+                Output.WriteLine("  </table>");
+            }
+            else
+            {
+                Output.WriteLine("  <div style=\"padding: 25px\">");
+                Output.WriteLine("    <p style=\"font-weight:bold; text-size:1.1em\">ERROR: Google Maps are not enabled on this instance of SobekCM!</p>");
+                Output.WriteLine("    <p>To enable them, please create a Google Map API key and enter it in the system-wide settings.</p>");
+                Output.WriteLine("    <p>Information on this process can be found here: <a href=\"http://sobekrepository.org/software/config/googlemaps\">http://sobekrepository.org/software/config/googlemaps</a>.</p>");
+                Output.WriteLine("  </div>");
+            }
             Output.WriteLine("</div>");
             Output.WriteLine();
         }

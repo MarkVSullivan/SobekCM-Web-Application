@@ -323,26 +323,29 @@ namespace SobekCM.Library.HTML
                 }
             }
 
+            // Get the session id
+            string sessionId = HttpContext.Current.Session.SessionID ?? String.Empty;
+
             // Add the appropriate header
             if (useItemHeader)
             {
-                Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name));
+                Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId));
             }
             else
             {
                 if (container_inner.Length == 0)
                 {
                     if ((RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.Value))
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", String.Empty).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name));
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", String.Empty).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId));
                     else
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name));
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId));
                 }
                 else
                 {
                     if ((RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.Value))
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "<div id=\"" + container_inner + "\">").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name));
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "<div id=\"" + container_inner + "\">").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId));
                     else
-                        Output.WriteLine("<div id=\"" + container_inner + "\">" + Environment.NewLine + RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name));
+                        Output.WriteLine("<div id=\"" + container_inner + "\">" + Environment.NewLine + RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId));
 
                 }
             }
@@ -391,25 +394,28 @@ namespace SobekCM.Library.HTML
             if (version.IndexOf(" ") > 0)
                 version = version.Split(" ".ToCharArray())[0];
 
+            // Get the session id
+            string sessionId = HttpContext.Current.Session.SessionID ?? String.Empty;
+
             if (useItemFooter)
             {
-                Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Trim());
+                Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Trim());
             }
             else
             {
                 if (( RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.Value))
                 {
                     if (!end_div)
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Trim());
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Trim());
                     else
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "</div>").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Trim());
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "</div>").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Trim());
                 }
                 else
                 {
                     if (!end_div)
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Trim());
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Trim());
                     else
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Trim() + Environment.NewLine + "</div>");
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Trim() + Environment.NewLine + "</div>");
                 }
             }
         }

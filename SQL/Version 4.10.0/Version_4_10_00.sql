@@ -247,6 +247,13 @@ begin
 end;
 GO
 
+if ( not exists ( select 1 from SobekCM_Settings where Setting_Key = 'Google Map API Key' ))
+begin
+  insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help )
+  values ('Google Map API Key', '', 'System / Server Settings', 'System Settings', 0, 0, 'Google Map API key for displaying geographic displays within this system.  Help is found at http://sobekrepository.org/software/config/googlemaps.');
+end;
+GO
+
 
 update SobekCM_Item_Viewer_Types set ViewType='DATASET_CODEBOOK' where ViewType='Dataset Codebook';
 update SobekCM_Item_Viewer_Types set ViewType='DATASET_REPORTS' where ViewType='Dataset Reports';

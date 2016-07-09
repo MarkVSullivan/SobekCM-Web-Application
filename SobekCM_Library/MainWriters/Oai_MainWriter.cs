@@ -422,7 +422,7 @@ namespace SobekCM.Library.MainWriters
                     }
 
                     // Was there a from and until date included in the token?
-                    if (SetCode.IndexOf(".") > 0)
+                    if (SetCode.IndexOf(".") >= 0)
                     {
                         int period_index = SetCode.IndexOf(".");
                         string from_string = SetCode.Substring(period_index + 1, 8);

@@ -169,6 +169,7 @@ namespace SobekCM.Engine_Library.Settings
                 Get_Boolean_Value(settingsDictionary, "Facets Collapsible", SettingsObject.Search, X => X.Facets_Collapsible, ref error, false);
                 Get_String_Value(settingsDictionary, "FDA Report DropBox", SettingsObject.Florida, X => X.FDA_Report_DropBox, ref error);
                 Get_String_Value(settingsDictionary, "Files To Exclude From Downloads", SettingsObject.Resources, X => X.Files_To_Exclude_From_Downloads, ref error);
+                Get_String_Value(settingsDictionary, "Google Map API Key", SettingsObject.System, X => X.Google_Map_API_Key, ref error);
                 Get_String_Value(settingsDictionary, "Help URL", SettingsObject.System, X => X.Help_URL_Base, "http://sobekrepository.org/");
                 Get_String_Value(settingsDictionary, "Help Metadata URL", SettingsObject.System, X => X.Metadata_Help_URL_Base, "http://sobekrepository.org/");
                 Get_String_Value(settingsDictionary, "Image Server Network", SettingsObject.Servers, X => X.Image_Server_Network, ref error);

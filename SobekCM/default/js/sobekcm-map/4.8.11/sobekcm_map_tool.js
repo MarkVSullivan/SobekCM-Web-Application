@@ -499,13 +499,13 @@ SobekCM.Map_Key.prototype = {
         // Compute the inner text
         var innerBuilder = '<table width="100%" style="font-size:x-small; text-align:left" >';
         if (search_type == SobekCM_Search_Type_Enum.point)
-            innerBuilder = innerBuilder + '<tr><td width="25px"><img src="http://ufdc.uflib.ufl.edu/default/images/legend_red_pushpin.png" /></td><td>Search Point</td></tr>';
+            innerBuilder = innerBuilder + '<tr><td width="25px"><img src="https://cdn.sobekdigital.com/images/misc/legend_red_pushpin.png" /></td><td>Search Point</td></tr>';
         if (search_type == SobekCM_Search_Type_Enum.rectangle)
-            innerBuilder = innerBuilder + '<tr><td width="25px"><img src="http://ufdc.uflib.ufl.edu/default/images/legend_search_area.png" /></td><td>Search Area</td></tr>';
+            innerBuilder = innerBuilder + '<tr><td width="25px"><img src="https://cdn.sobekdigital.com/images/misc/legend_search_area.png" /></td><td>Search Area</td></tr>';
         if (areas_shown)
-            innerBuilder = innerBuilder + '<tr><td width="25px"><img src="http://ufdc.uflib.ufl.edu/default/images/legend_selected_polygon.png" /></td><td>Matching ' + area_name + '</td></tr><tr><td><img src="http://ufdc.uflib.ufl.edu/default/images/legend_nonselected_polygon.png" /></td><td>Other ' + area_name + '</td></tr>';
+            innerBuilder = innerBuilder + '<tr><td width="25px"><img src="https://cdn.sobekdigital.com/images/misc/legend_selected_polygon.png" /></td><td>Matching ' + area_name + '</td></tr><tr><td><img src="http://cdn.sobekdigital.com/images/misc/legend_nonselected_polygon.png" /></td><td>Other ' + area_name + '</td></tr>';
         if (points_shown)
-            innerBuilder = innerBuilder + '<tr><td width="25px"><img src="http://ufdc.uflib.ufl.edu/default/images/legend_point_interest.png" /></td><td>Point of Interest</td></tr>';
+            innerBuilder = innerBuilder + '<tr><td width="25px"><img src="https://cdn.sobekdigital.com/images/misc/legend_point_interest.png" /></td><td>Point of Interest</td></tr>';
         this.globals.containerDiv.innerHTML = innerBuilder + '</table>';
     },
 

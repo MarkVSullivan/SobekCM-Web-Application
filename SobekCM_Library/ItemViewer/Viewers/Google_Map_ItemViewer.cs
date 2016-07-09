@@ -12,6 +12,7 @@ using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -157,7 +158,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Behaviors = EmptyBehaviors;
             googleItemSearch = false;
 
-            mapBuilder = new StringBuilder();
+
             if (CurrentRequest.ViewerCode == "mapsearch")
                 googleItemSearch = true;
 
@@ -181,208 +182,226 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
             }
 
-            // Get the google map API
-            mapBuilder.AppendLine("<script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?sensor=false\"></script>");
-            mapBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Map_Search_Js + "\"></script>");
-            mapBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Map_Tool_Js + "\"></script>");
+            mapBuilder = new StringBuilder();
 
-            // Set some values for the map key
-            string search_type = "geographic";
-            bool areas_shown = false;
-            bool points_shown = false;
-            string areas_name = "Sheet";
-            if (BriefItem.Type.IndexOf("aerial", StringComparison.OrdinalIgnoreCase) >= 0)
-                areas_name = "Tile";
+            allPolygons = new List<BriefItem_Coordinate_Polygon>();
+            allPoints = new List<BriefItem_Coordinate_Point>();
+            allLines = new List<BriefItem_Coordinate_Line>();
 
-            // Load the map
-            mapBuilder.AppendLine("<script type=\"text/javascript\">");
-            mapBuilder.AppendLine("  //<![CDATA[");
-            mapBuilder.AppendLine("  function load() {");
-            mapBuilder.AppendLine(googleItemSearch
-                                      ? "    load_search_map(6, 19.5, 3, \"sbkGmiv_MapDiv\");"
-                                      : "    load_map(6, 19.5, 3, \"sbkGmiv_MapDiv\");");
-
-            // Keep track of any matching tiles
-            matchingTilesList = new List<string>();
-
-            // Add the points
-            if (BriefItem != null)
+            // Only continue if there actually IS a map key
+            if (!String.IsNullOrWhiteSpace(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
             {
-                allPolygons = new List<BriefItem_Coordinate_Polygon>();
-                allPoints = new List<BriefItem_Coordinate_Point>();
-                allLines = new List<BriefItem_Coordinate_Line>();
+                mapBuilder.AppendLine("<script src=\"https://maps.googleapis.com/maps/api/js?key=" + UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key + "\" type=\"text/javascript\"></script>");
 
-                // Add the search rectangle first
-                if ((validCoordinateSearchFound) && (!googleItemSearch))
+                //mapBuilder.AppendLine("<script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?sensor=false\"></script>");
+                mapBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Map_Search_Js + "\"></script>");
+                mapBuilder.AppendLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Map_Tool_Js + "\"></script>");
+
+                // Set some values for the map key
+                string search_type = "geographic";
+                bool areas_shown = false;
+                bool points_shown = false;
+                string areas_name = "Sheet";
+                if (BriefItem.Type.IndexOf("aerial", StringComparison.OrdinalIgnoreCase) >= 0)
+                    areas_name = "Tile";
+
+                // Load the map
+                mapBuilder.AppendLine("<script type=\"text/javascript\">");
+                mapBuilder.AppendLine("  //<![CDATA[");
+                mapBuilder.AppendLine("  function load() {");
+                mapBuilder.AppendLine(googleItemSearch
+                    ? "    load_search_map(6, 19.5, 3, \"sbkGmiv_MapDiv\");"
+                    : "    load_map(6, 19.5, 3, \"sbkGmiv_MapDiv\");");
+
+                // Keep track of any matching tiles
+                matchingTilesList = new List<string>();
+
+                // Add the points
+                if (BriefItem != null)
                 {
-                    if ((providedMaxLat != providedMinLat) || (providedMaxLong != providedMinLong))
-                    {
-                        search_type = "rectangle";
-                        mapBuilder.AppendLine("    add_rectangle(" + providedMaxLat + ", " + providedMaxLong + ", " + providedMinLat + ", " + providedMinLong + ");");
-                    }
-                    else
-                    {
-                        search_type = "point";
-                    }
-                }
 
-                // Build the matching polygon HTML to overlay the matches over the non-matches
-                StringBuilder matchingPolygonsBuilder = new StringBuilder();
-
-                // Collect all the polygons, points, and lines
-                BriefItem_GeoSpatial geoInfo = BriefItem.GeoSpatial;
-                if ((geoInfo != null) && (geoInfo.hasData))
-                {
-                    if (geoInfo.Polygon_Count > 0)
+                    // Add the search rectangle first
+                    if ((validCoordinateSearchFound) && (!googleItemSearch))
                     {
-                        foreach (BriefItem_Coordinate_Polygon thisPolygon in geoInfo.Polygons)
-                            allPolygons.Add(thisPolygon);
-                    }
-                    if (geoInfo.Line_Count > 0)
-                    {
-                        foreach (BriefItem_Coordinate_Line thisLine in geoInfo.Lines)
-                            allLines.Add(thisLine);
-                    }
-                    if (geoInfo.Point_Count > 0)
-                    {
-                        foreach (BriefItem_Coordinate_Point thisPoint in geoInfo.Points)
-                            allPoints.Add(thisPoint);
-                    }
-                }
-
-                // Add all the polygons now
-                if ((allPolygons.Count > 0) && (allPolygons[0].Edge_Points_Count > 1))
-                {
-                    areas_shown = true;
-
-                    // Determine a base URL for pointing for any polygons that correspond to a page sequence
-                    string currentViewerCode = CurrentRequest.ViewerCode;
-                    CurrentRequest.ViewerCode = "XXXXXXXX";
-                    string redirect_url = UrlWriterHelper.Redirect_URL(CurrentRequest); ;
-                    CurrentRequest.ViewerCode = currentViewerCode;
-
-                    // Add each polygon 
-                    foreach (BriefItem_Coordinate_Polygon itemPolygon in allPolygons)
-                    {
-                        // Determine if this polygon is within the search
-                        bool in_coordinates_search = false;
-                        if ((validCoordinateSearchFound) && (!googleItemSearch))
+                        if ((providedMaxLat != providedMinLat) || (providedMaxLong != providedMinLong))
                         {
-                            // Was this a point search or area search?
-                            if ((providedMaxLong == providedMinLong) && (providedMaxLat == providedMinLat))
-                            {
-                                // Check this point
-                                if (itemPolygon.is_In_Bounding_Box(providedMaxLat, providedMaxLong))
-                                {
-                                    in_coordinates_search = true;
-                                }
-                            }
-                            else
-                            {
-                                // Chieck this area search
-                                if (itemPolygon.is_In_Bounding_Box(providedMaxLat, providedMaxLong, providedMinLat, providedMinLong))
-                                {
-                                    in_coordinates_search = true;
-                                }
-                            }
-                        }
-
-                        // Look for a link for this item
-                        string link = String.Empty;
-                        if ((itemPolygon.Page_Sequence > 0) && (!googleItemSearch))
-                        {
-                            link = redirect_url.Replace("XXXXXXXX", itemPolygon.Page_Sequence.ToString());
-                        }
-
-                        // If this is an item search, don't show labels (too distracting)
-                        string label = itemPolygon.Label;
-                        if (googleItemSearch)
-                            label = String.Empty;
-
-                        if (in_coordinates_search)
-                        {
-                            // Start to call the add polygon method
-                            matchingPolygonsBuilder.AppendLine("    add_polygon([");
-                            foreach (BriefItem_Coordinate_Point thisPoint in itemPolygon.Edge_Points)
-                            {
-                                matchingPolygonsBuilder.AppendLine("      new google.maps.LatLng(" + thisPoint.Latitude + ", " + thisPoint.Longitude + "),");
-                            }
-                            matchingPolygonsBuilder.Append("      new google.maps.LatLng(" + itemPolygon.Edge_Points[0].Latitude + ", " + itemPolygon.Edge_Points[0].Longitude + ")],");
-                            matchingPolygonsBuilder.AppendLine("true, '" + label + "', '" + link + "' );");
-
-                            // Also add to the list of matching titles
-                            matchingTilesList.Add("<a href=\"" + link + "\">" + itemPolygon.Label + "</a>");
+                            search_type = "rectangle";
+                            mapBuilder.AppendLine("    add_rectangle(" + providedMaxLat + ", " + providedMaxLong + ", " + providedMinLat + ", " + providedMinLong + ");");
                         }
                         else
                         {
-                            // Start to call the add polygon method
-                            mapBuilder.AppendLine("    add_polygon([");
-                            foreach (BriefItem_Coordinate_Point thisPoint in itemPolygon.Edge_Points)
-                            {
-                                mapBuilder.AppendLine("      new google.maps.LatLng(" + thisPoint.Latitude + ", " + thisPoint.Longitude + "),");
-                            }
-
-                            mapBuilder.Append("      new google.maps.LatLng(" + itemPolygon.Edge_Points[0].Latitude + ", " + itemPolygon.Edge_Points[0].Longitude + ")],");
-
-                            // If just one polygon, still show the red outline
-                            if (allPolygons.Count == 1)
-                            {
-                                mapBuilder.AppendLine("true, '', '" + link + "' );");
-                            }
-                            else
-                            {
-                                mapBuilder.AppendLine("false, '" + label + "', '" + link + "' );");
-                            }
+                            search_type = "point";
                         }
                     }
 
-                    // Add any matching polygons last
-                    mapBuilder.Append(matchingPolygonsBuilder.ToString());
-                }
+                    // Build the matching polygon HTML to overlay the matches over the non-matches
+                    StringBuilder matchingPolygonsBuilder = new StringBuilder();
 
-                // Draw all the single points 
-                if (allPoints.Count > 0)
-                {
-                    points_shown = true;
-                    for (int point = 0; point < allPoints.Count; point++)
+                    // Collect all the polygons, points, and lines
+                    BriefItem_GeoSpatial geoInfo = BriefItem.GeoSpatial;
+                    if ((geoInfo != null) && (geoInfo.hasData))
                     {
-                        mapBuilder.AppendLine("    add_point(" + allPoints[point].Latitude + ", " + allPoints[point].Longitude + ", '" + allPoints[point].Label + "' );");
+                        if (geoInfo.Polygon_Count > 0)
+                        {
+                            foreach (BriefItem_Coordinate_Polygon thisPolygon in geoInfo.Polygons)
+                                allPolygons.Add(thisPolygon);
+                        }
+                        if (geoInfo.Line_Count > 0)
+                        {
+                            foreach (BriefItem_Coordinate_Line thisLine in geoInfo.Lines)
+                                allLines.Add(thisLine);
+                        }
+                        if (geoInfo.Point_Count > 0)
+                        {
+                            foreach (BriefItem_Coordinate_Point thisPoint in geoInfo.Points)
+                                allPoints.Add(thisPoint);
+                        }
                     }
-                }
 
-                // If this was a point search, also add the point
-                if (validCoordinateSearchFound)
-                {
-                    if ((providedMaxLat == providedMinLat) && (providedMaxLong == providedMinLong))
+                    // Add all the polygons now
+                    if ((allPolygons.Count > 0) && (allPolygons[0].Edge_Points_Count > 1))
                     {
-                        search_type = "point";
-                        mapBuilder.AppendLine("    add_selection_point(" + providedMaxLat + ", " + providedMaxLong + ", 8 );");
-                    }
-                }
+                        areas_shown = true;
 
-                // Add the searchable, draggable polygon last (if in search mode)
-                if ((validCoordinateSearchFound) && (googleItemSearch))
-                {
-                    if ((providedMaxLat != providedMinLat) || (providedMaxLong != providedMinLong))
+                        // Determine a base URL for pointing for any polygons that correspond to a page sequence
+                        string currentViewerCode = CurrentRequest.ViewerCode;
+                        CurrentRequest.ViewerCode = "XXXXXXXX";
+                        string redirect_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                        ;
+                        CurrentRequest.ViewerCode = currentViewerCode;
+
+                        // Add each polygon 
+                        foreach (BriefItem_Coordinate_Polygon itemPolygon in allPolygons)
+                        {
+                            // Determine if this polygon is within the search
+                            bool in_coordinates_search = false;
+                            if ((validCoordinateSearchFound) && (!googleItemSearch))
+                            {
+                                // Was this a point search or area search?
+                                if ((providedMaxLong == providedMinLong) && (providedMaxLat == providedMinLat))
+                                {
+                                    // Check this point
+                                    if (itemPolygon.is_In_Bounding_Box(providedMaxLat, providedMaxLong))
+                                    {
+                                        in_coordinates_search = true;
+                                    }
+                                }
+                                else
+                                {
+                                    // Chieck this area search
+                                    if (itemPolygon.is_In_Bounding_Box(providedMaxLat, providedMaxLong, providedMinLat, providedMinLong))
+                                    {
+                                        in_coordinates_search = true;
+                                    }
+                                }
+                            }
+
+                            // Look for a link for this item
+                            string link = String.Empty;
+                            if ((itemPolygon.Page_Sequence > 0) && (!googleItemSearch))
+                            {
+                                link = redirect_url.Replace("XXXXXXXX", itemPolygon.Page_Sequence.ToString());
+                            }
+
+                            // If this is an item search, don't show labels (too distracting)
+                            string label = itemPolygon.Label;
+                            if (googleItemSearch)
+                                label = String.Empty;
+
+                            if (in_coordinates_search)
+                            {
+                                // Start to call the add polygon method
+                                matchingPolygonsBuilder.AppendLine("    add_polygon([");
+                                foreach (BriefItem_Coordinate_Point thisPoint in itemPolygon.Edge_Points)
+                                {
+                                    matchingPolygonsBuilder.AppendLine("      new google.maps.LatLng(" + thisPoint.Latitude + ", " + thisPoint.Longitude + "),");
+                                }
+                                matchingPolygonsBuilder.Append("      new google.maps.LatLng(" + itemPolygon.Edge_Points[0].Latitude + ", " + itemPolygon.Edge_Points[0].Longitude + ")],");
+                                matchingPolygonsBuilder.AppendLine("true, '" + label + "', '" + link + "' );");
+
+                                // Also add to the list of matching titles
+                                matchingTilesList.Add("<a href=\"" + link + "\">" + itemPolygon.Label + "</a>");
+                            }
+                            else
+                            {
+                                // Start to call the add polygon method
+                                mapBuilder.AppendLine("    add_polygon([");
+                                foreach (BriefItem_Coordinate_Point thisPoint in itemPolygon.Edge_Points)
+                                {
+                                    mapBuilder.AppendLine("      new google.maps.LatLng(" + thisPoint.Latitude + ", " + thisPoint.Longitude + "),");
+                                }
+
+                                mapBuilder.Append("      new google.maps.LatLng(" + itemPolygon.Edge_Points[0].Latitude + ", " + itemPolygon.Edge_Points[0].Longitude + ")],");
+
+                                // If just one polygon, still show the red outline
+                                if (allPolygons.Count == 1)
+                                {
+                                    mapBuilder.AppendLine("true, '', '" + link + "' );");
+                                }
+                                else
+                                {
+                                    mapBuilder.AppendLine("false, '" + label + "', '" + link + "' );");
+                                }
+                            }
+                        }
+
+                        // Add any matching polygons last
+                        mapBuilder.Append(matchingPolygonsBuilder.ToString());
+                    }
+
+                    // Draw all the single points 
+                    if (allPoints.Count > 0)
                     {
-                        mapBuilder.AppendLine("    add_selection_rectangle(" + providedMaxLat + ", " + providedMaxLong + ", " + providedMinLat + ", " + providedMinLong + " );");
+                        points_shown = true;
+                        for (int point = 0; point < allPoints.Count; point++)
+                        {
+                            mapBuilder.AppendLine("    add_point(" + allPoints[point].Latitude + ", " + allPoints[point].Longitude + ", '" + allPoints[point].Label + "' );");
+                        }
                     }
+
+                    // If this was a point search, also add the point
+                    if (validCoordinateSearchFound)
+                    {
+                        if ((providedMaxLat == providedMinLat) && (providedMaxLong == providedMinLong))
+                        {
+                            search_type = "point";
+                            mapBuilder.AppendLine("    add_selection_point(" + providedMaxLat + ", " + providedMaxLong + ", 8 );");
+                        }
+                    }
+
+                    // Add the searchable, draggable polygon last (if in search mode)
+                    if ((validCoordinateSearchFound) && (googleItemSearch))
+                    {
+                        if ((providedMaxLat != providedMinLat) || (providedMaxLong != providedMinLong))
+                        {
+                            mapBuilder.AppendLine("    add_selection_rectangle(" + providedMaxLat + ", " + providedMaxLong + ", " + providedMinLat + ", " + providedMinLong + " );");
+                        }
+                    }
+
+                    // Add the map key
+                    if (!googleItemSearch)
+                    {
+                        mapBuilder.AppendLine("    add_key('" + search_type + "', " + areas_shown.ToString().ToLower() + ", " + points_shown.ToString().ToLower() + ", '" + areas_name + "');");
+                    }
+
+                    // Zoom appropriately
+                    mapBuilder.AppendLine(matchingPolygonsBuilder.Length > 0 ? "    zoom_to_selected();" : "    zoom_to_bounds();");
                 }
 
-                // Add the map key
-                if (!googleItemSearch)
-                {
-                    mapBuilder.AppendLine("    add_key('" + search_type + "', " + areas_shown.ToString().ToLower() + ", " + points_shown.ToString().ToLower() + ", '" + areas_name + "');");
-                }
 
-                // Zoom appropriately
-                mapBuilder.AppendLine(matchingPolygonsBuilder.Length > 0 ? "    zoom_to_selected();" : "    zoom_to_bounds();");
+                mapBuilder.AppendLine("  }");
+                mapBuilder.AppendLine("  //]]>");
+                mapBuilder.AppendLine("</script>");
             }
-
-
-            mapBuilder.AppendLine("  }");
-            mapBuilder.AppendLine("  //]]>");
-            mapBuilder.AppendLine("</script>");
+            else
+            {
+                // No Google Map API Key
+                mapBuilder.AppendLine("<script type=\"text/javascript\">");
+                mapBuilder.AppendLine("  //<![CDATA[ ");
+                mapBuilder.AppendLine("  function load() {  }");
+                mapBuilder.AppendLine("  //]]>");
+                mapBuilder.AppendLine("</script>");
+            }
         }
 
         /// <summary> Gets the collection of body attributes to be included 
@@ -637,8 +656,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             Output.WriteLine("        <tr>");
             Output.WriteLine("          <td class=\"SobekCitationDisplay\">");
-            Output.WriteLine("            <div id=\"sbkGmiv_MapDiv\"></div>");
-            Output.WriteLine();
+
+            if (!String.IsNullOrWhiteSpace(UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key))
+            {
+                Output.WriteLine("            <div id=\"sbkGmiv_MapDiv\"></div>");
+                Output.WriteLine();
+            }
+            else
+            {
+                Output.WriteLine("            <div style=\"padding: 50px\">");
+                Output.WriteLine("              <p style=\"font-weight:bold; text-size:1.1em\">ERROR: Google Maps are not enabled on this instance of SobekCM!</p>");
+                Output.WriteLine("              <p>To enable them, please create a Google Map API key and enter it in the system-wide settings.</p>");
+                Output.WriteLine("              <p>Information on this process can be found here: <a href=\"http://sobekrepository.org/software/config/googlemaps\" style=\"color:white;\">http://sobekrepository.org/software/config/googlemaps</a>.</p>");
+                Output.WriteLine("            </div>");
+            }
+
 
             Tracer.Add_Trace("goole_map_itemviewer.Write_HTML", "Adding google map instructions as script");
             Output.WriteLine(mapBuilder.ToString());

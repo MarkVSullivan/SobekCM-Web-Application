@@ -21,7 +21,10 @@ namespace SobekCM
 
 		protected void Session_Start(object sender, EventArgs e)
 		{
-
+            // This initializes the session, by assigning SOME value.
+            // Since the session object has been accessed, the session id will now be
+            // fixed for this session
+            Session["init"] = true;
 		}
 
 		protected void Application_BeginRequest(object sender, EventArgs e)

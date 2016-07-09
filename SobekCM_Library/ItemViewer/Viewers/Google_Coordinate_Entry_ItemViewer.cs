@@ -624,7 +624,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Rotate_Js + "\"></script> ");
                 Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Knob_Js + "\"></script> ");
                 Output.WriteLine(" <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Json_2_4_Js + "\"></script> ");
-                Output.WriteLine(" <script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&libraries=drawing\"></script> ");
+
+                Output.WriteLine(" <script src=\"https://maps.googleapis.com/maps/api/js?key=" + UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key + "&libraries=drawing\" type=\"text/javascript\"></script>");
+
+          //      Output.WriteLine(" <script type=\"text/javascript\" src=\"https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&key=AIzaSyCzliz5FjUlEI9D2605b33-etBrENSSBZM&libraries=drawing\"></script> ");
                 Output.WriteLine(" <script type=\"text/javascript\" src=\"" + CurrentRequest.Base_URL + "default/scripts/mapeditor/gmaps-infobox.js\"></script> ");
 
                 //custom js
