@@ -246,18 +246,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 if (thisFile.Height.HasValue) height = thisFile.Height.Value;
                             }
 
-
-
-                            // Get the JPEG information
-
-                            filename = thisFile.Name;
-                            if (thisFile.Width.HasValue)
-                            {
-                                width = thisFile.Width.Value;
-                                width_found = true;
-                            }
-                            if (thisFile.Height.HasValue) height = thisFile.Height.Value;
-
                             // Found a value to return
                             returnValue = true;
                         }

@@ -307,8 +307,8 @@ namespace SobekCM.Library.ItemViewer
         /// <returns></returns>
         public static void Clear()
         {
-            viewerCodeToItemViewerPrototyper.Clear();
-            viewTypeToItemViewerPrototyper.Clear();
+            if ( viewerCodeToItemViewerPrototyper != null ) viewerCodeToItemViewerPrototyper.Clear();
+            if ( viewTypeToItemViewerPrototyper != null ) viewTypeToItemViewerPrototyper.Clear();
         }
 
         /// <summary> Gets the viewer code (used in URLs and such) for a specific view type,
