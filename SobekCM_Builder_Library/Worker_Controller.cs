@@ -30,7 +30,7 @@ namespace SobekCM.Builder_Library
         private DateTime feedNextBuildTime;
         private readonly bool verbose;
 
-        private readonly List<Database_Instance_Configuration> instances;
+        private readonly List<Single_Instance_Configuration> instances;
         private readonly string logFileDirectory;
 
         /// <summary> Constructor for a new instance of the Worker_Controller class </summary>
@@ -43,13 +43,9 @@ namespace SobekCM.Builder_Library
             aborted = false;
             logFileDirectory = LogFileDirectory;
 
-            // Assign the database connection strings
-            SobekCM_Item_Database.Connection_String = Engine_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
-            Library.Database.SobekCM_Database.Connection_String = Engine_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
-
             // Save the list of instances
-            instances = new List<Database_Instance_Configuration>();
-            foreach (Database_Instance_Configuration dbInfo in Engine_ApplicationCache_Gateway.Settings.Database_Connections)
+            instances = new List<Single_Instance_Configuration>();
+            foreach (Single_Instance_Configuration dbInfo in MultiInstance_Builder_Settings.Instances)
             {
                 instances.Add(dbInfo);
             }
@@ -161,7 +157,7 @@ namespace SobekCM.Builder_Library
 
             // Set the variable which will control background execution
 	        int time_between_polls = Engine_ApplicationCache_Gateway.Settings.Builder.Override_Seconds_Between_Polls.HasValue ? Engine_ApplicationCache_Gateway.Settings.Builder.Override_Seconds_Between_Polls.Value : 60;
-			if (( time_between_polls < 0 ) || ( Engine_ApplicationCache_Gateway.Settings.Database_Connections.Count == 1 ))
+			if (( time_between_polls < 0 ) || ( MultiInstance_Builder_Settings.Instances.Count == 1 ))
 				time_between_polls = Convert.ToInt32(Engine_ApplicationCache_Gateway.Settings.Builder.Seconds_Between_Polls);
 
             // Determine the new log name
@@ -194,7 +190,7 @@ namespace SobekCM.Builder_Library
 			preloader_logger.AddNonError("Checking for initial abort condition");
 	        string abort_message = String.Empty;
             int build_instances = 0;
-            foreach (Database_Instance_Configuration dbConfig in instances)
+            foreach (Single_Instance_Configuration dbConfig in instances)
             {
                 if (!dbConfig.Is_Active)
                 {
@@ -204,8 +200,8 @@ namespace SobekCM.Builder_Library
                 else
                 {
 
-                    SobekCM_Item_Database.Connection_String = dbConfig.Connection_String;
-                    Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
+                    SobekCM_Item_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
+                    Library.Database.SobekCM_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
 
                     // Check that this should not be skipped or aborted
                     Builder_Operation_Flag_Enum operationFlag = Abort_Database_Mechanism.Builder_Operation_Flag;
@@ -237,14 +233,14 @@ namespace SobekCM.Builder_Library
             if (build_instances == 0)
 			{
 				// Add messages in each active instance
-				foreach (Database_Instance_Configuration dbConfig in instances)
+				foreach (Single_Instance_Configuration dbConfig in instances)
 				{
 					if (dbConfig.Is_Active) 
 					{
                         Console.WriteLine("No active databases set for building in the config file");
                         preloader_logger.AddError("No active databases set for building in config file... Aborting");
-                        SobekCM_Item_Database.Connection_String = dbConfig.Connection_String;
-						Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
+                        SobekCM_Item_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
+						Library.Database.SobekCM_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
 						Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", abort_message, String.Empty);
 
 						// Save information about this last run
@@ -261,12 +257,12 @@ namespace SobekCM.Builder_Library
 	        // Build all the bulk loader objects
 	        List<Worker_BulkLoader> loaders = new List<Worker_BulkLoader>();
 	        bool activeInstanceFound = false;
-            foreach (Database_Instance_Configuration dbConfig in instances)
+            foreach (Single_Instance_Configuration dbConfig in instances)
             {
 
                 activeInstanceFound = true;
-                SobekCM_Item_Database.Connection_String = dbConfig.Connection_String;
-                Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
+                SobekCM_Item_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
+                Library.Database.SobekCM_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
 
                 // At this point warn on mossing the Ghostscript and ImageMagick, to get it into each instances database logs
                 if ((String.IsNullOrEmpty(MultiInstance_Builder_Settings.ImageMagick_Executable)) || (!File.Exists(MultiInstance_Builder_Settings.ImageMagick_Executable)))
@@ -283,7 +279,7 @@ namespace SobekCM.Builder_Library
                 preloader_logger.AddNonError(dbConfig.Name + " - Preparing to begin polling");
                 Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Preparing to begin polling", String.Empty);
 
-                Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig, (instances.Count > 1), logFileDirectory);
+                Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, dbConfig, verbose, logFileDirectory);
                 loaders.Add(newLoader);
             }
 
@@ -311,17 +307,17 @@ namespace SobekCM.Builder_Library
 				{
 					if (loaders[i] != null)
 					{
-						// Get the instance
-						Database_Instance_Configuration dbInstance = instances[i];
+                        // Get the instance
+                        Single_Instance_Configuration dbInstance = instances[i];
 
 						// Set the database connection strings
-					    Engine_Database.Connection_String = dbInstance.Connection_String;
-                        SobekCM_Item_Database.Connection_String = dbInstance.Connection_String;
-						Library.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
+					    Engine_Database.Connection_String = dbInstance.DatabaseConnection.Connection_String;
+                        SobekCM_Item_Database.Connection_String = dbInstance.DatabaseConnection.Connection_String;
+						Library.Database.SobekCM_Database.Connection_String = dbInstance.DatabaseConnection.Connection_String;
 
 						// Look for abort
-						if ((dbInstance.Can_Abort) && (CheckForAbort()))
-						{
+						if (CheckForAbort())
+                        {
 							aborted = true;
 							if (Abort_Database_Mechanism.Builder_Operation_Flag != Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED)
 							{
@@ -369,7 +365,7 @@ namespace SobekCM.Builder_Library
                             skip_sleep = skip_sleep || Run_BulkLoader(loaders[i], verbose);
 
 							// Look for abort
-							if ((!aborted) && (dbInstance.Can_Abort) && (CheckForAbort()))
+							if ((!aborted) && (CheckForAbort()))
 							{
 								aborted = true;
 								if (Abort_Database_Mechanism.Builder_Operation_Flag != Builder_Operation_Flag_Enum.NO_BUILDING_REQUESTED)
@@ -412,12 +408,12 @@ namespace SobekCM.Builder_Library
 		        {
 			        if (loaders[i] != null)
 			        {
-				        // Get the instance
-				        Database_Instance_Configuration dbInstance = instances[i];
+                        // Get the instance
+                        Single_Instance_Configuration dbInstance = instances[i];
 
 				        // Set the database flag
-                        SobekCM_Item_Database.Connection_String = dbInstance.Connection_String;
-			            Library.Database.SobekCM_Database.Connection_String = dbInstance.Connection_String;
+                        SobekCM_Item_Database.Connection_String = dbInstance.DatabaseConnection.Connection_String;
+			            Library.Database.SobekCM_Database.Connection_String = dbInstance.DatabaseConnection.Connection_String;
 
 				        // Pull the abort/pause flag
 				        Builder_Operation_Flag_Enum currentPauseFlag2 = Abort_Database_Mechanism.Builder_Operation_Flag;
@@ -437,14 +433,14 @@ namespace SobekCM.Builder_Library
 	        else
 	        {
 		        // Mark the aborted in each instance
-		        foreach (Database_Instance_Configuration dbConfig in instances )
+		        foreach (Single_Instance_Configuration dbConfig in instances )
 		        {
 					if (dbConfig.Is_Active)
 					{
 						Console.WriteLine("Setting abort flag message in " + dbConfig.Name);
 						preloader_logger.AddNonError("Setting abort flag message in " + dbConfig.Name);
-                        SobekCM_Item_Database.Connection_String = dbConfig.Connection_String;
-						Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
+                        SobekCM_Item_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
+						Library.Database.SobekCM_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
 						Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Building ABORTED per request from database key", String.Empty);
 
 						// Save information about this last run
@@ -540,7 +536,7 @@ namespace SobekCM.Builder_Library
             LogFileXhtml preloader_logger = new LogFileXhtml(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
 
 			// Step through each database instance
-	        foreach (Database_Instance_Configuration dbConfig in Engine_ApplicationCache_Gateway.Settings.Database_Connections)
+	        foreach (Single_Instance_Configuration dbConfig in MultiInstance_Builder_Settings.Instances)
 	        {
 		        try
 		        {
@@ -551,9 +547,9 @@ namespace SobekCM.Builder_Library
 			        }
 			        else
 			        {
-                        SobekCM_Item_Database.Connection_String = dbConfig.Connection_String;
-			            Library.Database.SobekCM_Database.Connection_String = dbConfig.Connection_String;
-                        Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, verbose, dbConfig, (instances.Count > 1), logFileDirectory);
+                        SobekCM_Item_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
+			            Library.Database.SobekCM_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
+                        Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, dbConfig, verbose, logFileDirectory);
 						newLoader.Perform_BulkLoader(Verbose);
 
 						// Save information about this last run

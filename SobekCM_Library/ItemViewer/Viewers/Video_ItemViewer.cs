@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection.Emit;
 using System.Web;
 using System.Web.UI.WebControls;
@@ -43,7 +44,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> TRUE if this viewer should generally be included with this item, otherwise FALSE </returns>
         public bool Include_Viewer(BriefItemInfo CurrentItem)
         {
-            return !String.IsNullOrEmpty(CurrentItem.Behaviors.Embedded_Video);
+            // If the FileExtensions IS null, that is an error
+            if ( FileExtensions == null ) 
+                FileExtensions = new string[] {"WEBM", "OGG", "MP4"};
+
+            // Check to see if there are any Video files attached, but allow the configuration 
+            // to actually rule which files are necessary to be shown ( i.e., maybe 'PDFA' will be an extension
+            // in the future )
+            return FileExtensions.Any(Extension => CurrentItem.Web.Contains_File_Extension(Extension));
         }
 
         /// <summary> Flag indicates if this viewer should be override on checkout </summary>
@@ -78,9 +86,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string url = UrlWriterHelper.Redirect_URL(CurrentRequest);
             CurrentRequest.ViewerCode = previous_code;
 
-            // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem("Video", null, null, url, ViewerCode);
-            MenuItems.Add(menuItem);
+            // Allow the label to be implemented for this viewer
+            BriefItem_BehaviorViewer thisViewerInfo = CurrentItem.Behaviors.Get_Viewer("video");
+
+            // If this is null, or no label, use the default
+            if ((thisViewerInfo == null) || (String.IsNullOrWhiteSpace(thisViewerInfo.Label)))
+            {
+                // Add the item menu information using the default label
+                Item_MenuItem menuItem = new Item_MenuItem("Video", null, null, url, ViewerCode);
+                MenuItems.Add(menuItem);
+            }
+            else
+            {
+                // Add the item menu information using the custom level
+                Item_MenuItem menuItem = new Item_MenuItem(thisViewerInfo.Label, null, null, url, ViewerCode);
+                MenuItems.Add(menuItem);
+            }
         }
 
         /// <summary> Creates and returns the an instance of the <see cref="Video_ItemViewer"/> class for showing a locally

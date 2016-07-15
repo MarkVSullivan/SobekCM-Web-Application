@@ -13,6 +13,7 @@ using SobekCM.Resource_Object.Configuration;
 using SobekCM.Resource_Object.METS_Sec_ReaderWriters;
 using SobekCM.Builder_Library;
 using Microsoft.Win32;
+using SobekCM.Builder_Library.Settings;
 
 #endregion
 
@@ -206,7 +207,7 @@ namespace SobekCM.Builder
             }
 
             // Should be a config file now, so read it
-            if (( Engine_ApplicationCache_Gateway.Settings.Database_Connections.Count == 0 ) || (Engine_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String.Length == 0))
+            if (( MultiInstance_Builder_Settings.Instances.Count == 0 ) || ( String.IsNullOrEmpty(MultiInstance_Builder_Settings.Instances[0].DatabaseConnection.Connection_String)))
             {
                 Console.WriteLine("Missing database connection string!!\n");
                 Console.Write("Would you like to run the configuration tool? [Y/N]: ");
@@ -242,9 +243,9 @@ namespace SobekCM.Builder
             }
 
             // Assign the connection string and test the connection (if only a single connection listed)
-	        if (Engine_ApplicationCache_Gateway.Settings.Database_Connections.Count == 1)
+	        if ( MultiInstance_Builder_Settings.Instances.Count == 1)
 	        {
-		        SobekCM_Database.Connection_String = Engine_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
+		        SobekCM_Database.Connection_String = MultiInstance_Builder_Settings.Instances[0].DatabaseConnection.Connection_String;
 		        if (!SobekCM_Database.Test_Connection())
 		        {
 			        Console.WriteLine("Unable to connect to the database using provided connection string:");

@@ -96,7 +96,7 @@ namespace SobekCM.Core.BriefItem
         /// <summary> Behavior information, on how this item behaves in the SobekCM system </summary>
         [DataMember(EmitDefaultValue = false, Name = "extensions")]
         [XmlArray("extensions")]
-        [XmlArrayItem("extension", typeof(BriefItem_TocElement))]
+        [XmlArrayItem("extension", typeof(BriefItem_ExtensionData))]
         [ProtoMember(12)]
         public List<BriefItem_ExtensionData> Extensions { get; set; }
 

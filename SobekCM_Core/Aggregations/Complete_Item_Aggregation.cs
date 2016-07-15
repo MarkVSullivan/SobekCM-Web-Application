@@ -1085,9 +1085,9 @@ namespace SobekCM.Core.Aggregations
         /// behavior/setting information for an aggregation/collection </summary>
         [DataMember(EmitDefaultValue = false, Name = "settings")]
         [XmlArray("settings")]
-        [XmlArrayItem("setting", typeof(string))]
+        [XmlArrayItem("setting", typeof(StringKeyValuePair))]
         [ProtoMember(45)]
-        public List<StringKeyValuePair> Settings { get; private set; }
+        public List<StringKeyValuePair> Settings { get; set; }
 
         [XmlIgnore]
         [IgnoreDataMember]

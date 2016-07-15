@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Win32;
 using SobekCM.Builder_Library;
+using SobekCM.Builder_Library.Settings;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Library.Database;
 using SobekCM.Resource_Object.Configuration;
@@ -57,9 +58,9 @@ namespace SobekCM_Builder_Service
             }
 
             // Assign the connection string and test the connection (if only a single connection listed)
-            if (Engine_ApplicationCache_Gateway.Settings.Database_Connections.Count == 1)
+            if ( MultiInstance_Builder_Settings.Instances.Count == 1)
             {
-                SobekCM_Database.Connection_String = Engine_ApplicationCache_Gateway.Settings.Database_Connections[0].Connection_String;
+                SobekCM_Database.Connection_String = MultiInstance_Builder_Settings.Instances[0].DatabaseConnection.Connection_String;
                 if (!SobekCM_Database.Test_Connection())
                 {
                     if ( SobekCM_Database.Last_Exception != null )

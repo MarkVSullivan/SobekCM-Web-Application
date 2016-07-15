@@ -113,9 +113,9 @@ namespace SobekCM.Core.BriefItem
         /// behavior/setting information for a digital resource </summary>
         [DataMember(EmitDefaultValue = false, Name = "settings")]
         [XmlArray("settings")]
-        [XmlArrayItem("setting", typeof(string))]
+        [XmlArrayItem("setting", typeof(StringKeyValuePair))]
         [ProtoMember(16)]
-        public List<StringKeyValuePair> Settings { get; private set; }
+        public List<StringKeyValuePair> Settings { get; set; }
 
         [XmlIgnore]
         [IgnoreDataMember]
@@ -125,7 +125,7 @@ namespace SobekCM.Core.BriefItem
         public BriefItem_Behaviors()
         {
             Viewers = new List<BriefItem_BehaviorViewer>();
-            viewerTypeToConfig = new Dictionary<string, BriefItem_BehaviorViewer>();
+            viewerTypeToConfig = new Dictionary<string, BriefItem_BehaviorViewer>(StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary> Add a key/value pair setting to this item </summary>

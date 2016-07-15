@@ -23,8 +23,8 @@ namespace SobekCM.Core.BriefItem
         public int TagID { get; set; }
 
         /// <summary> Date the tag was added or last modified </summary>
-        [DataMember(Name = "id")]
-        [XmlElement("id")]
+        [DataMember(Name = "date")]
+        [XmlElement("date")]
         [ProtoMember(2)]
         public DateTime Date_Added { get; set; }
 

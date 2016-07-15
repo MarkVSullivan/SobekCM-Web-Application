@@ -614,7 +614,7 @@ namespace SobekCM
 			// If there is already a user logged on, do nothing here
 			if (HttpContext.Current.Session["user"] == null)
 			{
-				// If this is a responce from Shibboleth/Gatorlink, get the user information and register them if necessary
+				// If this is a responce from Shibboleth, get the user information and register them if necessary
 			    if ((UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth != null ) && (UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.Enabled))
 			    {
 			        string shibboleth_id = HttpContext.Current.Request.ServerVariables[UI_ApplicationCache_Gateway.Configuration.Authentication.Shibboleth.UserIdentityAttribute];
