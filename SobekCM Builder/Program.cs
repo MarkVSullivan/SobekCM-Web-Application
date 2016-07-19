@@ -46,18 +46,6 @@ namespace SobekCM.Builder
             {
                 bool arg_handled = false;
 
-                // Check for the config flag
-                if (thisArgs == "--config")
-                {
-                    if (File.Exists(app_start_config + "\\SobekCM_Builder_Configuration.exe"))
-                    {
-                        Process.Start(app_start_config + "\\SobekCM_Builder_Configuration.exe");
-                        return;
-                    }
-	                Console.WriteLine("ERROR: Unable to find configuration executable file!!");
-	                return;
-                }
-
                 // Check for versioning option
                 if (thisArgs == "--version")
                 {
@@ -142,7 +130,6 @@ namespace SobekCM.Builder
                 builder.Append("in support of a SobekCM web application.\n\n");
                 builder.Append("Usage: SobekCM_Builder [options]\n\n");
                 builder.Append("Options:\n\n");
-                builder.Append("  --config\tRuns the configuration tool\n\n");
                 builder.Append("  --version\tDisplays the current version of the SobekCM Builder\n\n");
                 builder.Append("  --verbose\tFlag indicates to be verbose in the logs and console\n\n");
                 builder.Append("  --help\t\tShows these instructions\n\n");
@@ -174,72 +161,24 @@ namespace SobekCM.Builder
             if (!File.Exists(config_file))
             {
                 Console.WriteLine("The configuration file is missing!!\n");
-                Console.Write("Would you like to run the configuration tool? [Y/N]: ");
-                string result = Console.ReadLine().ToUpper();
-                if ((result == "Y") || (result == "YES"))
-                {
-                    // Does the config app exist?
-                    if (File.Exists(Application.StartupPath + "\\config\\SobekCM_Builder_Configuration.exe"))
-                    {
-                        // Run the config app
-                        Process configProcess = new Process {StartInfo = {FileName = Application.StartupPath + "\\config\\SobekCM_Builder_Configuration.exe"}};
-	                    configProcess.Start();
-                        configProcess.WaitForExit();
-
-                        // If still no config file, just abort
-                        if (!File.Exists(config_file))
-                        {
-                            Console.WriteLine("Execution aborted due to missing configuration file.");
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("ERROR: Unable to find configuration executable file!!");
-                        return;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Execution aborted due to missing configuration file.");
-                    return;
-                }
+                Console.WriteLine("Execution aborted due to missing configuration file.");
+                return;
             }
 
             // Should be a config file now, so read it
-            if (( MultiInstance_Builder_Settings.Instances.Count == 0 ) || ( String.IsNullOrEmpty(MultiInstance_Builder_Settings.Instances[0].DatabaseConnection.Connection_String)))
+            if (!MultiInstance_Builder_Settings_Reader.Read_Config(config_file))
+            {
+                Console.WriteLine("Error encountered reading the configuration file!!\n");
+                Console.WriteLine("Execution aborted due to incorrect configuration file.");
+                return;
+            }
+
+            // If no instances exist, then the builder has nothing to do
+            if ((MultiInstance_Builder_Settings.Instances.Count == 0) || (String.IsNullOrEmpty(MultiInstance_Builder_Settings.Instances[0].DatabaseConnection.Connection_String)))
             {
                 Console.WriteLine("Missing database connection string!!\n");
-                Console.Write("Would you like to run the configuration tool? [Y/N]: ");
-                string result = Console.ReadLine().ToUpper();
-                if ((result == "Y") || (result == "YES"))
-                {
-                    // Does the config app exist?
-                    if (File.Exists(Application.StartupPath + "\\config\\SobekCM_Builder_Configuration.exe"))
-                    {
-                        // Run the config app
-                        Process configProcess = new Process {StartInfo = {FileName = Application.StartupPath + "\\config\\SobekCM_Builder_Configuration.exe"}};
-	                    configProcess.Start();
-                        configProcess.WaitForExit();
-
-                        // If still no config file, just abort
-                        if (!File.Exists(config_file))
-                        {
-                            Console.WriteLine("Execution aborted due to missing configuration file.");
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("ERROR: Unable to find configuration executable file!!");
-                        return;
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Execution aborted due to missing configuration file.");
-                    return;
-                }
+                Console.WriteLine("Execution aborted due to configuration file not including any instances to process");
+                return;
             }
 
             // Assign the connection string and test the connection (if only a single connection listed)
@@ -251,13 +190,9 @@ namespace SobekCM.Builder
 			        Console.WriteLine("Unable to connect to the database using provided connection string:");
 			        Console.WriteLine();
 			        Console.WriteLine(SobekCM_Database.Connection_String);
-			        Console.WriteLine();
-			        Console.WriteLine("Run this application with an argument of '--config' to launch the configuration tool.");
 			        return;
 		        }
 	        }
-
-
 
             // Verify connectivity and rights on the logs subfolder
             string uri = System.Reflection.Assembly.GetExecutingAssembly().CodeBase.Replace("file:///","");
@@ -352,7 +287,7 @@ namespace SobekCM.Builder
             //}
 
             // Controller always runs in background mode
-            Worker_Controller controller = new Worker_Controller(verbose, Application.StartupPath + "\\Logs\\");
+            Worker_Controller controller = new Worker_Controller(verbose, Application.StartupPath );
             controller.Execute_In_Background();
 
             // If this was set to aborting, set to last execution aborted

@@ -37,6 +37,13 @@ namespace SobekCM.Core.MicroservicesClient
             Config = ConfigObj;
         }
 
+        /// <summary> Directly set the microservice configuration </summary>
+        /// <param name="EndpointConfig"> Configuration of all the endpoint information </param>
+        public static void Set_Endpoints(MicroservicesClient_Configuration EndpointConfig)
+        {
+            Config = EndpointConfig;
+        }
+
         #region Helper methods
 
         /// <summary> Gets the endpoint information from the microservices client configuration </summary>

@@ -19,7 +19,7 @@ namespace SobekCM.Resource_Object.Configuration
     /// or sections within a METS file </summary>
     [Serializable, DataContract, ProtoContract]
     [XmlRoot("MetadataConfig")]
-    public  class Metadata_Configuration
+    public  class Metadata_Configuration 
     {
         private Dictionary<string, METS_Writing_Profile> metsWritingProfilesDictionary;
         private METS_Writing_Profile defaultWritingProfile;
@@ -54,10 +54,6 @@ namespace SobekCM.Resource_Object.Configuration
 
             // Set some default values
             errorsEncountered = new List<string>();
-
-            // Set default reader/writer values to have a baseline in case there is no file to be read 
-            Set_Default_Values();
-
         }
 
         /// <summary> Clear all the current metadata configuration information </summary>
@@ -82,6 +78,37 @@ namespace SobekCM.Resource_Object.Configuration
             isDefault = false;
         }
 
+        /// <summary> Runs a number of post-serialization fixes to ensure the objects in the profiles are 
+        /// the same objects as in the lists of configs </summary>
+        public void PostUnSerialization()
+        {
+            Dictionary<string, METS_Section_ReaderWriter_Config> tempDictionary = new Dictionary<string, METS_Section_ReaderWriter_Config>(StringComparer.OrdinalIgnoreCase);
+            foreach (METS_Section_ReaderWriter_Config thisConfig in METS_Section_File_ReaderWriter_Configs)
+            {
+                tempDictionary[thisConfig.ID] = thisConfig;
+            }
+
+            foreach (METS_Writing_Profile thisProfile in MetsWritingProfiles)
+            {
+                post_unserialization_single_list_fix(tempDictionary, thisProfile.Package_Level_AmdSec_Writer_Configs);
+                post_unserialization_single_list_fix(tempDictionary, thisProfile.Package_Level_DmdSec_Writer_Configs);
+                post_unserialization_single_list_fix(tempDictionary, thisProfile.Division_Level_AmdSec_Writer_Configs);
+                post_unserialization_single_list_fix(tempDictionary, thisProfile.Division_Level_DmdSec_Writer_Configs);
+                post_unserialization_single_list_fix(tempDictionary, thisProfile.File_Level_AmdSec_Writer_Configs);
+                post_unserialization_single_list_fix(tempDictionary, thisProfile.File_Level_DmdSec_Writer_Configs);
+            }
+        }
+
+        private void post_unserialization_single_list_fix(Dictionary<string, METS_Section_ReaderWriter_Config> tempDictionary, List<METS_Section_ReaderWriter_Config> configList)
+        {
+            for (int i = 0; i < configList.Count; i++)
+            {
+                METS_Section_ReaderWriter_Config currentConfig = configList[i];
+                if ( tempDictionary.ContainsKey(currentConfig.ID))
+                    configList[i] = tempDictionary[currentConfig.ID];
+            }
+        }
+
         /// <summary> List of metadata modules to be included with all bibliographic items </summary>
         [DataMember(Name = "MetsProfiles")]
         [XmlArray("MetsProfiles")]
@@ -96,14 +123,37 @@ namespace SobekCM.Resource_Object.Configuration
         {
             get
             {
+                // If a profile was already set here, return it
                 if ( defaultWritingProfile != null )
                     return defaultWritingProfile;
-                if (metsWritingProfilesDictionary.Count > 0)
+
+                // Check the dictionary
+                if (metsWritingProfilesDictionary == null)
+                    metsWritingProfilesDictionary = new Dictionary<string, METS_Writing_Profile>(StringComparer.OrdinalIgnoreCase);
+
+                // Are they the same count. i.e., is the dictionary good?
+                if (metsWritingProfilesDictionary.Count != MetsWritingProfiles.Count)
                 {
-                    string first = metsWritingProfilesDictionary.Keys.FirstOrDefault();
-                    if ( first != null )
-                        return metsWritingProfilesDictionary[first];
+                    metsWritingProfilesDictionary.Clear();
+                    foreach (METS_Writing_Profile profile in MetsWritingProfiles)
+                    {
+                        if ((defaultWritingProfile == null) && (profile.Default_Profile))
+                            defaultWritingProfile = profile;
+
+                        metsWritingProfilesDictionary[profile.Profile_Name] = profile;
+                    }
                 }
+
+                // If a profile was set during the process above, return it
+                if (defaultWritingProfile != null)
+                    return defaultWritingProfile;
+
+                // Just return the first profile
+                if (MetsWritingProfiles.Count > 0)
+                {
+                    return MetsWritingProfiles[0];
+                }
+
                 return null;
             }
         }
@@ -123,6 +173,9 @@ namespace SobekCM.Resource_Object.Configuration
                 metsWritingProfilesDictionary.Clear();
                 foreach (METS_Writing_Profile profile in MetsWritingProfiles)
                 {
+                    if ((defaultWritingProfile == null) && (profile.Default_Profile))
+                        defaultWritingProfile = profile;
+
                     metsWritingProfilesDictionary[profile.Profile_Name] = profile;
                 }
             }
@@ -242,6 +295,14 @@ namespace SobekCM.Resource_Object.Configuration
         /// <summary> Finalize the metadata configuration and create all the individual reader/writers </summary>
         public void Finalize_Metadata_Configuration()
         {
+            // Ensure there are profiles listed
+            if (MetsWritingProfiles.Count == 0)
+            {
+                // Set default reader/writer values to have a baseline in case there is no file to be read 
+                Set_Default_Values();
+            }
+
+            // Step through all the configuration information
             foreach (METS_Section_ReaderWriter_Config metsConfig in METS_Section_File_ReaderWriter_Configs)
             {
                 // Create an instance of this reader/writer from the config

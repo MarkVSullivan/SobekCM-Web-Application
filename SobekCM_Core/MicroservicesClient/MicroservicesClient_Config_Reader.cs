@@ -38,7 +38,7 @@ namespace SobekCM.Core.MicroservicesClient
                         switch (readerXml.Name.ToLower())
                         {
                             case "microservicesclient":
-                                read_microservices_client_details(readerXml.ReadSubtree(), returnValue, SystemBaseUrl);
+                                Read_Microservices_Client_Details(readerXml.ReadSubtree(), returnValue, SystemBaseUrl);
                                 break;
                         }
                     }
@@ -63,7 +63,11 @@ namespace SobekCM.Core.MicroservicesClient
             return returnValue;
         }
 
-        private static void read_microservices_client_details(XmlReader readerXml, MicroservicesClient_Configuration config, string SystemBaseUrl)
+        /// <summary> Read the microservice endpoints portion of a XML file </summary>
+        /// <param name="readerXml"> XML Reader open to the microservice portion </param>
+        /// <param name="config"> Configuration information </param>
+        /// <param name="SystemBaseUrl"> Base URL for this instance </param>
+        public static void Read_Microservices_Client_Details(XmlReader readerXml, MicroservicesClient_Configuration config, string SystemBaseUrl)
         {
             // Just step through the subtree of this
             while (readerXml.Read())

@@ -181,7 +181,15 @@ namespace SobekCM.Core.Client
             MicroservicesClient_Endpoint endpoint = GetEndpointConfig("Configuration.Metadata", Tracer);
 
             // Call out to the endpoint and return the deserialized object
-            return Deserialize<Metadata_Configuration>(endpoint.URL, endpoint.Protocol, Tracer);
+            Metadata_Configuration returnValue = Deserialize<Metadata_Configuration>(endpoint.URL, endpoint.Protocol, Tracer);
+
+            // If not null
+            if (returnValue != null)
+            {
+                returnValue.PostUnSerialization();
+            }
+
+            return returnValue;
         }
 
         /// <summary> Gets the oai-pmh configuration information, read from the configuration files </summary>

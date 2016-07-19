@@ -40,6 +40,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> TRUE if this viewer should generally be included with this item, otherwise FALSE </returns>
         public bool Include_Viewer(BriefItemInfo CurrentItem)
         {
+            // If the downloads is null, then return FALSE
+            if (CurrentItem.Downloads == null)
+                return false;
+
             // Any download files are really good enoughh
             if (CurrentItem.Downloads.Any(DownloadGroup => DownloadGroup.Files.Count > 0))
                 return true;

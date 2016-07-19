@@ -12,13 +12,13 @@ namespace SobekCM.Core.Configuration.Extensions
     {
         /// <summary> ID for this assembly, which is used throughout the configuration files to reference this assembly </summary>
         [DataMember(Name = "id")]
-        [XmlElement("id")]
+        [XmlAttribute("id")]
         [ProtoMember(1)]
         public string ID { get; set; }
 
         /// <summary> Absolute path and filename for this assembly DLL file </summary>
         [DataMember(Name = "filePath")]
-        [XmlElement("filePath")]
+        [XmlText]
         [ProtoMember(2)]
         public string FilePath { get; set; }
 

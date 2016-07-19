@@ -1,0 +1,3 @@
+Note, these folders belong in the bin/debug or bin/release folders, once they are built by Visual Studio.
+
+We do not commit these folders to GitHub, so these required folders sit here.

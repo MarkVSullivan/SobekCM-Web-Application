@@ -1183,7 +1183,7 @@ namespace SobekCM.Engine_Library.Database
 			return tempSet;
 		}
 
-		/// <summary> Gets complete information for an item which may be missing from the complete list of items </summary>
+		/// <summary> Gets brief information for an item which may be missing from the complete list of items </summary>
 		/// <param name="BibID"> Bibliographic identifiers for the item of interest </param>
 		/// <param name="Vid"> Volume identifiers for the item of interest </param>
 		/// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>

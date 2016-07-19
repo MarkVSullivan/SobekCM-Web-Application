@@ -16,8 +16,9 @@ using SobekCM.Core.Settings;
 namespace SobekCM.Builder_Library.Settings
 {
     /// <summary> Collection of builder modules to run for an instance of SobekCM / builder </summary>
-    public class Builder_Modules : Builder_Settings
+    public class Builder_Modules 
     {
+        private readonly Builder_Settings settings;
         private readonly List<iPreProcessModule> preProcessModules;
         private readonly List<iSubmissionPackageModule> processItemModules;
         private readonly List<iSubmissionPackageModule> deleteItemModules;
@@ -28,8 +29,11 @@ namespace SobekCM.Builder_Library.Settings
 
 
         /// <summary> Constructor for a new instance of the Builder_Modules class </summary>
-        public Builder_Modules() 
+        /// <param name="Settings"> Setting information </param>
+        public Builder_Modules(Builder_Settings Settings ) 
         {
+            settings = Settings;
+
             preProcessModules = new List<iPreProcessModule>();
             processItemModules = new List<iSubmissionPackageModule>();
             deleteItemModules = new List<iSubmissionPackageModule>();
@@ -40,9 +44,9 @@ namespace SobekCM.Builder_Library.Settings
         }
 
         /// <summary> Clear all the settings and the list of modules </summary>
-        public override void Clear()
+        public void Clear()
         {
-            base.Clear();
+            settings.Clear();
 
             preProcessModules.Clear();
             processItemModules.Clear();
@@ -67,7 +71,7 @@ namespace SobekCM.Builder_Library.Settings
             assemblyClassToModule.Clear();
 
             // Create all the pre-process modules
-            foreach (Builder_Module_Setting preSetting in PreProcessModulesSettings)
+            foreach (Builder_Module_Setting preSetting in settings.PreProcessModulesSettings)
             {
                 // Look for the standard 
                 if (String.IsNullOrEmpty(preSetting.Assembly))
@@ -118,7 +122,7 @@ namespace SobekCM.Builder_Library.Settings
             }
 
             // Create all the post-process modules
-            foreach (Builder_Module_Setting postSetting in PostProcessModulesSettings)
+            foreach (Builder_Module_Setting postSetting in settings.PostProcessModulesSettings)
             {
                 // Look for the standard 
                 if (String.IsNullOrEmpty(postSetting.Assembly))
@@ -169,7 +173,7 @@ namespace SobekCM.Builder_Library.Settings
             }
 
             // Create all the item processing modules (for new or updated item)
-            foreach (Builder_Module_Setting itemSetting in ItemProcessModulesSettings)
+            foreach (Builder_Module_Setting itemSetting in settings.ItemProcessModulesSettings)
             {
                 iSubmissionPackageModule itemModule = Get_Submission_Module(itemSetting, out errorMessage);
                 if ((itemModule == null) && (!String.IsNullOrEmpty(errorMessage)))
@@ -179,7 +183,7 @@ namespace SobekCM.Builder_Library.Settings
             }
 
             // Create all the item processing modules (for deleting items)
-            foreach (Builder_Module_Setting itemSetting in ItemDeleteModulesSettings)
+            foreach (Builder_Module_Setting itemSetting in settings.ItemDeleteModulesSettings)
             {
                 iSubmissionPackageModule itemModule = Get_Submission_Module(itemSetting, out errorMessage);
                 if ((itemModule == null) && (!String.IsNullOrEmpty(errorMessage)))
@@ -189,7 +193,7 @@ namespace SobekCM.Builder_Library.Settings
             }
 
             // Create the folder modules - look at every folder
-            foreach (Builder_Source_Folder thisFolder in IncomingFolders)
+            foreach (Builder_Source_Folder thisFolder in settings.IncomingFolders)
             {
                 // If not linked to a module set, do nothing
                 if (thisFolder.Builder_Module_Set == null)
@@ -287,15 +291,15 @@ namespace SobekCM.Builder_Library.Settings
             return errors;
         }
 
-        private iSubmissionPackageModule Get_Submission_Module(Builder_Module_Setting itemSetting, out string ErrorMessage)
+        private iSubmissionPackageModule Get_Submission_Module(Builder_Module_Setting ItemSetting, out string ErrorMessage)
         {
             ErrorMessage = String.Empty;
 
             // Look for the standard 
-            if (String.IsNullOrEmpty(itemSetting.Assembly))
+            if (String.IsNullOrEmpty(ItemSetting.Assembly))
             {
                 iSubmissionPackageModule thisModule = null;
-                switch (itemSetting.Class)
+                switch (ItemSetting.Class)
                 {
                     case "SobekCM.Builder_Library.Modules.Items.ConvertOfficeFilesToPdfModule":
                         thisModule = new ConvertOfficeFilesToPdfModule();
@@ -408,19 +412,19 @@ namespace SobekCM.Builder_Library.Settings
 
                 if (thisModule != null)
                 {
-                    if ((!String.IsNullOrEmpty(itemSetting.Argument1)) || (!String.IsNullOrEmpty(itemSetting.Argument2)) || (!String.IsNullOrEmpty(itemSetting.Argument3)))
+                    if ((!String.IsNullOrEmpty(ItemSetting.Argument1)) || (!String.IsNullOrEmpty(ItemSetting.Argument2)) || (!String.IsNullOrEmpty(ItemSetting.Argument3)))
                     {
                         if (thisModule.Arguments == null)
                             thisModule.Arguments = new List<string>();
-                        thisModule.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument1) ? String.Empty : itemSetting.Argument1);
-                        thisModule.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument2) ? String.Empty : itemSetting.Argument2);
-                        thisModule.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument3) ? String.Empty : itemSetting.Argument3);
+                        thisModule.Arguments.Add(String.IsNullOrEmpty(ItemSetting.Argument1) ? String.Empty : ItemSetting.Argument1);
+                        thisModule.Arguments.Add(String.IsNullOrEmpty(ItemSetting.Argument2) ? String.Empty : ItemSetting.Argument2);
+                        thisModule.Arguments.Add(String.IsNullOrEmpty(ItemSetting.Argument3) ? String.Empty : ItemSetting.Argument3);
                     }
                     return thisModule;
                 }
             }
 
-            object itemAsObj = Get_Module(itemSetting, out ErrorMessage);
+            object itemAsObj = Get_Module(ItemSetting, out ErrorMessage);
             if ((itemAsObj == null) && (ErrorMessage.Length > 0))
             {
                 return null;
@@ -429,17 +433,17 @@ namespace SobekCM.Builder_Library.Settings
             iSubmissionPackageModule itemAsItem = itemAsObj as iSubmissionPackageModule;
             if (itemAsItem == null)
             {
-                ErrorMessage = itemSetting.Class + " loaded from assembly but does not implement the ISubmissionPackageModules interface!";
+                ErrorMessage = ItemSetting.Class + " loaded from assembly but does not implement the ISubmissionPackageModules interface!";
                 return null;
             }
                 
-            if ((!String.IsNullOrEmpty(itemSetting.Argument1)) || (!String.IsNullOrEmpty(itemSetting.Argument2)) || (!String.IsNullOrEmpty(itemSetting.Argument3)))
+            if ((!String.IsNullOrEmpty(ItemSetting.Argument1)) || (!String.IsNullOrEmpty(ItemSetting.Argument2)) || (!String.IsNullOrEmpty(ItemSetting.Argument3)))
             {
                 if (itemAsItem.Arguments == null)
                     itemAsItem.Arguments = new List<string>();
-                itemAsItem.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument1) ? String.Empty : itemSetting.Argument1);
-                itemAsItem.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument2) ? String.Empty : itemSetting.Argument2);
-                itemAsItem.Arguments.Add(String.IsNullOrEmpty(itemSetting.Argument3) ? String.Empty : itemSetting.Argument3);
+                itemAsItem.Arguments.Add(String.IsNullOrEmpty(ItemSetting.Argument1) ? String.Empty : ItemSetting.Argument1);
+                itemAsItem.Arguments.Add(String.IsNullOrEmpty(ItemSetting.Argument2) ? String.Empty : ItemSetting.Argument2);
+                itemAsItem.Arguments.Add(String.IsNullOrEmpty(ItemSetting.Argument3) ? String.Empty : ItemSetting.Argument3);
             }
 
             return itemAsItem;

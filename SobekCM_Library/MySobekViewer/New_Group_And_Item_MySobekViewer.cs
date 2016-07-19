@@ -953,11 +953,8 @@ namespace SobekCM.Library.MySobekViewer
                     File.Delete(thisFile);
                 }
 
-                // Finally, set the item for more processing if there were any files
-                if (((image_files.Count > 0) || (download_files.Count > 0)) && ( Item_To_Complete.Web.ItemID > 0 ))
-                {
-                    SobekCM_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true, Tracer);
-                }
+                // Always set the additional work needed flag, to give the builder a  chance to look at it
+                SobekCM_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true, Tracer);
 
                 // Clear any temporarily assigned current project and CompleteTemplate
                 RequestSpecificValues.Current_User.Current_Default_Metadata = null;

@@ -75,7 +75,7 @@ namespace SobekCM.Resource_Object.Configuration
         [DataMember(Name = "fileDmdSecWriterConfigs")]
         [XmlArray("fileDmdSecWriterConfigs")]
         [XmlArrayItem("writerConfig", typeof(METS_Section_ReaderWriter_Config))]
-        [ProtoMember(8)]
+        [ProtoMember(9)]
         public List<METS_Section_ReaderWriter_Config> File_Level_DmdSec_Writer_Configs { get; set; }
 
         /// <summary> Constructor for a new instance of a METS_Writing_Profile </summary>

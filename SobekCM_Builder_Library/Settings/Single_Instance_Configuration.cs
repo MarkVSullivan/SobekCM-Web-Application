@@ -19,20 +19,15 @@ namespace SobekCM.Builder_Library.Settings
         /// <summary> Flag indicates if this database instance is active for the builder </summary>
         public bool Is_Active { get; set; }
 
-        /// <summary> URL for the engine, to retrieve all the setting information </summary>
-        public string Engine_URL { get; set; }
-
-        /// <summary> Protocol to use when pulling the configuration and setting information
-        /// directly from the SobekCM engine </summary>
-        public Microservice_Endpoint_Protocol_Enum Engine_Protocol { get; set;  }
+        /// <summary> Collection of all the microservice endpoints necessary for the builder on this instance </summary>
+        public MicroservicesClient_Configuration Microservices { get; set; }
 
         /// <summary> Constructor for a new instance of the Single_Instance_Configuration class </summary>
         public Single_Instance_Configuration()
         {
             Is_Active = true;
             Name = String.Empty;
-            Engine_URL = String.Empty;
-            Engine_Protocol = Microservice_Endpoint_Protocol_Enum.PROTOBUF;
+            Microservices = new MicroservicesClient_Configuration();
             DatabaseConnection = new Database_Instance_Configuration();
 
         }

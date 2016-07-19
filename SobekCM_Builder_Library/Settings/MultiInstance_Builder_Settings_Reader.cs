@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using EngineAgnosticLayerDbAccess;
-using SobekCM.Core.Configuration;
+using SobekCM.Core.MicroservicesClient;
 
 namespace SobekCM.Builder_Library.Settings
 {
+    /// <summary> Reads the builder configuration file, which is configured differently than the standard configuration file </summary>
     public static class MultiInstance_Builder_Settings_Reader
     {
-
+        /// <summary> Read all the information about the instance(s) for the builder to operate over </summary>
+        /// <param name="ConfigFile"> Filename and path of the configuration </param>
+        /// <returns> TRUE if successful, otherwise FALSE </returns>
         public static bool Read_Config(string ConfigFile)
         {
             try
@@ -96,7 +95,7 @@ namespace SobekCM.Builder_Library.Settings
             while (ReaderXml.Read())
             {
                 // Only detect start elements.
-                if (ReaderXml.IsStartElement())
+                if (ReaderXml.NodeType == XmlNodeType.Element)
                 {
                     // Get element name and switch on it.
                     switch (ReaderXml.Name.ToLower())
@@ -133,13 +132,12 @@ namespace SobekCM.Builder_Library.Settings
                             singleInstance.DatabaseConnection.Connection_String = ReaderXml.Value;
                             break;
 
-                        case "engine":
-                            ReaderXml.Read();
-                            singleInstance.Engine_URL = ReaderXml.Value;
+                        case "microservices":
+                            MicroservicesClient_Config_Reader.Read_Microservices_Client_Details(ReaderXml.ReadSubtree(), singleInstance.Microservices, String.Empty);
                             break;
                     }
                 }
-                else if ((ReaderXml.NodeType == XmlNodeType.EndElement) && (ReaderXml.Name.ToLower() == "Instance"))
+                else if ((ReaderXml.NodeType == XmlNodeType.EndElement) && (ReaderXml.Name.ToLower() == "instance"))
                 {
                     // Esnure it has SOME name
                     if ( String.IsNullOrWhiteSpace(singleInstance.Name))

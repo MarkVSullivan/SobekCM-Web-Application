@@ -2,17 +2,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Threading;
 using Microsoft.Win32;
 using SobekCM.Builder_Library.Settings;
 using SobekCM.Builder_Library.Tools;
-using SobekCM.Core.Configuration;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Library;
-using SobekCM.Resource_Object.Database;
 using SobekCM.Tools.Logs;
 using SobekCM_Resource_Database;
 
@@ -32,16 +29,17 @@ namespace SobekCM.Builder_Library
 
         private readonly List<Single_Instance_Configuration> instances;
         private readonly string logFileDirectory;
+        private readonly string pluginRootDirectory;
 
         /// <summary> Constructor for a new instance of the Worker_Controller class </summary>
         /// <param name="Verbose"> Flag indicates if this should be verbose in the log file and console </param>
-        /// <param name="LogFileDirectory"> Directory for the log files </param>
-        public Worker_Controller( bool Verbose, string LogFileDirectory )
+        /// <param name="StartUpDirectory"> Local startup directory </param>
+        public Worker_Controller( bool Verbose, string StartUpDirectory )
         {
             verbose = Verbose;
             controllerStarted = DateTime.Now;
             aborted = false;
-            logFileDirectory = LogFileDirectory;
+
 
             // Save the list of instances
             instances = new List<Single_Instance_Configuration>();
@@ -51,20 +49,34 @@ namespace SobekCM.Builder_Library
             }
 
             // Determine, and create the local work space
-            if (String.IsNullOrEmpty(logFileDirectory))
-            {
-                logFileDirectory = Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().CodeBase, "logs");
-            }
-
             try
             {
-                Console.WriteLine("Creating local log directory: " + logFileDirectory);
+                logFileDirectory = Path.Combine(StartUpDirectory, "logs");
                 if (!Directory.Exists(logFileDirectory))
+                {
+                    Console.WriteLine("Creating local log directory: " + logFileDirectory);
                     Directory.CreateDirectory(logFileDirectory);
+                }
             }
             catch
             {
                 Console.WriteLine("Error creating the temporary log directory: " + logFileDirectory, null, null, -1);
+                return;
+            }
+
+            // Determine and create the plugins work space
+            pluginRootDirectory = Path.Combine(StartUpDirectory, "plugins");
+            try
+            {
+                if (!Directory.Exists(pluginRootDirectory))
+                {
+                    Console.WriteLine("Creating local plugin directory: " + pluginRootDirectory);
+                    Directory.CreateDirectory(pluginRootDirectory);
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Error creating the temporary plugin directory: " + pluginRootDirectory, null, null, -1);
                 return;
             }
 
@@ -256,11 +268,8 @@ namespace SobekCM.Builder_Library
 
 	        // Build all the bulk loader objects
 	        List<Worker_BulkLoader> loaders = new List<Worker_BulkLoader>();
-	        bool activeInstanceFound = false;
             foreach (Single_Instance_Configuration dbConfig in instances)
             {
-
-                activeInstanceFound = true;
                 SobekCM_Item_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
                 Library.Database.SobekCM_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
 
@@ -279,8 +288,25 @@ namespace SobekCM.Builder_Library
                 preloader_logger.AddNonError(dbConfig.Name + " - Preparing to begin polling");
                 Library.Database.SobekCM_Database.Builder_Add_Log_Entry(-1, String.Empty, "Standard", "Preparing to begin polling", String.Empty);
 
-                Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, dbConfig, verbose, logFileDirectory);
-                loaders.Add(newLoader);
+                // Create the new bulk loader
+                Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, dbConfig, verbose, logFileDirectory, pluginRootDirectory);
+
+                // Try to refresh to test database and engine connectivity
+                if (newLoader.Refresh_Settings_And_Item_List())
+                    loaders.Add(newLoader);
+                else
+                {
+                    Console.WriteLine(dbConfig.Name + " - Error pulling setting of configuration information");
+                    preloader_logger.AddError(dbConfig.Name + " - Error pulling setting of configuration information");
+                }
+            }
+
+            // If no loaders past the tests above, done
+            if (loaders.Count == 0)
+            {
+                Console.WriteLine("Aborting since no valid instances found to process");
+                preloader_logger.AddError("Aborting since no valid instances found to process");
+                return;
             }
 
             // Set the maximum number of packages to process before moving to the next instance
@@ -517,52 +543,6 @@ namespace SobekCM.Builder_Library
             {
                 return false;
             }
-        }
-  
-        private void Run_BulkLoader( bool Verbose )
-        {
-            // Create the local log directories
-            if (!Directory.Exists(logFileDirectory))
-            {
-                Console.WriteLine("Creating local log directory: " + logFileDirectory);
-                Directory.CreateDirectory(logFileDirectory);
-            }
-
-            // Determine the new log name
-            string log_name = "incoming_" + controllerStarted.Year + "_" + controllerStarted.Month.ToString().PadLeft(2, '0') + "_" + controllerStarted.Day.ToString().PadLeft(2, '0') + ".html";
-            string local_log_name = Path.Combine(logFileDirectory, log_name);
-
-            // Create the new log file
-            LogFileXhtml preloader_logger = new LogFileXhtml(local_log_name, "SobekCM Incoming Packages Log", "UFDC_Builder.exe", true);
-
-			// Step through each database instance
-	        foreach (Single_Instance_Configuration dbConfig in MultiInstance_Builder_Settings.Instances)
-	        {
-		        try
-		        {
-			        if (!dbConfig.Is_Active)
-			        {
-				        Console.WriteLine( dbConfig.Name + " is set to INACTIVE");
-				        preloader_logger.AddNonError(dbConfig.Name + " is set to INACTIVE");
-			        }
-			        else
-			        {
-                        SobekCM_Item_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
-			            Library.Database.SobekCM_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
-                        Worker_BulkLoader newLoader = new Worker_BulkLoader(preloader_logger, dbConfig, verbose, logFileDirectory);
-						newLoader.Perform_BulkLoader(Verbose);
-
-						// Save information about this last run
-                        Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version);
-						Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
-						Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", newLoader.Final_Message);
-			        }
-		        }
-		        catch
-		        {
-
-		        }
-	        }
         }
 
          #endregion

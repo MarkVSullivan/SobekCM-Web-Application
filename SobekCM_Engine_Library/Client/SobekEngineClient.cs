@@ -24,7 +24,8 @@ namespace SobekCM.Core.Client
         /// <summary> Flag indicates if an error was encountered while reading the microsservices configuration file </summary>
         public static string Config_Read_Error { get; private set; }
 
-        public static MicroservicesClient_Configuration ConfigObj { get; set; }
+        /// <summary> Configuration object for all the microservice endpoints </summary>
+        public static MicroservicesClient_Configuration ConfigObj { get; private set; }
 
         /// <summary> Read the microservices configuration file </summary>
         /// <param name="ConfigFile"> File ( including path )</param>
@@ -51,6 +52,22 @@ namespace SobekCM.Core.Client
 
             Config_Read_Error = ConfigObj.Error;
             return false;
+        }
+
+        /// <summary> Directly set the microservice configuration </summary>
+        /// <param name="EndpointConfig"> Configuration of all the endpoint information </param>
+        public static void Set_Endpoints(MicroservicesClient_Configuration EndpointConfig )
+        {
+            ConfigObj = EndpointConfig;
+            Config_Read_Attempted = true;
+            Aggregations = new SobekEngineClient_AggregationEndpoints(ConfigObj);
+            WebSkins = new SobekEngineClient_WebSkinEndpoints(ConfigObj);
+            Items = new SobekEngineClient_ItemEndpoints(ConfigObj);
+            Search = new SobekEngineClient_SearchEndpoints(ConfigObj);
+            WebContent = new SobekEngineClient_WebContentEndpoints(ConfigObj);
+            Navigation = new SobekEngineClient_NavigationEndpoints(ConfigObj);
+            Builder = new SobekEngineClient_BuilderEndpoints(ConfigObj);
+            Admin = new SobekEngineClient_AdminEndpoints(ConfigObj);
         }
 
         /// <summary> Aggregation-related endpoints exposed by the SobekCM engine </summary>

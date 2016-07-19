@@ -72,6 +72,7 @@ namespace SobekCM.Core.MicroservicesClient
             }
         }
 
+        /// <summary> Get the list of all microservice endpoints </summary>
         public List<MicroservicesClient_Endpoint> Endpoints
         {
             get { return endpoints.Values.ToList(); }

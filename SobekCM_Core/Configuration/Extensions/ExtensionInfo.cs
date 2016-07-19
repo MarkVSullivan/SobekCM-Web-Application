@@ -104,7 +104,7 @@ namespace SobekCM.Core.Configuration.Extensions
         /// <summary> Administrative information about an extension/plug-in, such as description,
         /// authors, permissions, etc..  </summary>
         [DataMember(Name = "adminInfo",EmitDefaultValue = false)]
-        [XmlAttribute("adminInfo")]
+        [XmlElement("adminInfo")]
         [ProtoMember(12)]
         public ExtensionAdminInfo AdminInfo { get; set; }
 

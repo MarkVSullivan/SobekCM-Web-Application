@@ -48,7 +48,7 @@ namespace SobekCM.Core.Configuration.Extensions
 
         /// <summary> URL for this CSS </summary>
         [DataMember(Name = "url")]
-        [XmlAttribute("url")]
+        [XmlText]
         [ProtoMember(2)]
         public string URL { get; set; }
 

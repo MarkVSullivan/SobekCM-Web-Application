@@ -13,13 +13,14 @@ using SobekCM.Builder_Library.Modules.Schedulable;
 using SobekCM.Builder_Library.Settings;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
-using SobekCM.Core.Configuration;
+using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Settings;
-using SobekCM.Resource_Object.Database;
+using SobekCM.Resource_Object.Configuration;
+using SobekCM.Tools;
 using SobekCM.Tools.Logs;
 using SobekCM_Resource_Database;
 
@@ -30,27 +31,24 @@ namespace SobekCM.Builder_Library
     /// <summary> Class is the worker thread for the main bulk loader processor </summary>
     public class Worker_BulkLoader
     {
-        // NOTE: This was PUBLIC.. not sure why.  Made PRIVATE on 7/15/2015 (MARK)
-        private Builder_Modules BuilderSettings;
 
+        private Builder_Settings builderSettings;
+        private Builder_Modules builderModules;
 
         private readonly Single_Instance_Configuration instanceInfo;
 
         private InstanceWide_Settings settings;
-        private InstanceWide_Configuration configuration;
 
-        private DataTable itemTable;
 
         private readonly LogFileXhtml logger;
         private readonly string logFileDirectory;
+        private readonly string pluginRootDirectory;
         
-	    private readonly bool canAbort;
         private bool aborted;
         private bool verbose;
         
 	    private readonly bool multiInstanceBuilder;
 
-	    private readonly string instanceName;
 	    private string finalmessage;
         
         private readonly List<string> aggregationsToRefresh;
@@ -66,13 +64,14 @@ namespace SobekCM.Builder_Library
         /// <param name="Verbose"> Flag indicates if the builder is in verbose mode, where it should log alot more information </param>
         /// <param name="InstanceInfo"> Information for the instance of SobekCM to be processed by this bulk loader </param>
         /// <param name="LogFileDirectory"> Directory where any log files would be written </param>
-        public Worker_BulkLoader(LogFileXhtml Logger, Single_Instance_Configuration InstanceInfo, bool Verbose, string LogFileDirectory )
+        public Worker_BulkLoader(LogFileXhtml Logger, Single_Instance_Configuration InstanceInfo, bool Verbose, string LogFileDirectory, string PluginRootDirectory )
         {
             // Save the log file and verbose flag
             logger = Logger;
             verbose = Verbose;
 	        multiInstanceBuilder = ( MultiInstance_Builder_Settings.Instances.Count > 1);
             logFileDirectory = LogFileDirectory;
+            pluginRootDirectory = PluginRootDirectory;
             instanceInfo = InstanceInfo;
 
             // If this is processing multiple instances, limit the numbe of packages that should be processed
@@ -149,10 +148,10 @@ namespace SobekCM.Builder_Library
             statsModule.DoWork(settings);
             
             // RUN ANY PRE-PROCESSING MODULES HERE 
-            if (BuilderSettings.PreProcessModules.Count > 0)
+            if (builderModules.PreProcessModules.Count > 0)
             {
                 Add_NonError_To_Log("Running all pre-processing steps", verbose, String.Empty, String.Empty, -1);
-                foreach (iPreProcessModule thisModule in BuilderSettings.PreProcessModules)
+                foreach (iPreProcessModule thisModule in builderModules.PreProcessModules)
                 {
                     // Check for abort
                     if (CheckForAbort())
@@ -166,11 +165,11 @@ namespace SobekCM.Builder_Library
             }
 
             // Load the settings into thall the item and folder processors
-            foreach (iSubmissionPackageModule thisModule in BuilderSettings.ItemProcessModules)
+            foreach (iSubmissionPackageModule thisModule in builderModules.ItemProcessModules)
                 thisModule.Settings = settings;
-            foreach (iSubmissionPackageModule thisModule in BuilderSettings.DeleteItemModules)
+            foreach (iSubmissionPackageModule thisModule in builderModules.DeleteItemModules)
                 thisModule.Settings = settings;
-            foreach (iFolderModule thisModule in BuilderSettings.AllFolderModules)
+            foreach (iFolderModule thisModule in builderModules.AllFolderModules)
                 thisModule.Settings = settings;
 
 
@@ -195,7 +194,7 @@ namespace SobekCM.Builder_Library
             List<Incoming_Digital_Resource> deletes = new List<Incoming_Digital_Resource>();
 
             // Step through all the incoming folders, and run the folder modules
-            if (BuilderSettings.IncomingFolders.Count == 0)
+            if (builderSettings.IncomingFolders.Count == 0)
             {
                 Add_NonError_To_Log("Worker_BulkLoader.Move_Appropriate_Inbound_Packages_To_Processing: There are no incoming folders set in the database", "Standard", String.Empty, String.Empty, -1);
             }
@@ -203,9 +202,9 @@ namespace SobekCM.Builder_Library
             {
                 Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Begin processing builder folders", verbose, String.Empty, String.Empty, -1);
 
-                foreach (Builder_Source_Folder folder in BuilderSettings.IncomingFolders)
+                foreach (Builder_Source_Folder folder in builderSettings.IncomingFolders)
                 {
-                    Actionable_Builder_Source_Folder actionFolder = new Actionable_Builder_Source_Folder(folder, BuilderSettings);
+                    Actionable_Builder_Source_Folder actionFolder = new Actionable_Builder_Source_Folder(folder, builderModules);
 
                     foreach (iFolderModule thisModule in actionFolder.BuilderModules)
                     {
@@ -223,7 +222,7 @@ namespace SobekCM.Builder_Library
                 }
 
                 // Since all folder processing is complete, release resources
-                foreach (iFolderModule thisModule in BuilderSettings.AllFolderModules)
+                foreach (iFolderModule thisModule in builderModules.AllFolderModules)
                     thisModule.ReleaseResources();
             }
             
@@ -252,7 +251,7 @@ namespace SobekCM.Builder_Library
             Process_All_Incoming_Packages(incoming_packages);
 
             // Can now release these resources
-            foreach (iSubmissionPackageModule thisModule in BuilderSettings.ItemProcessModules)
+            foreach (iSubmissionPackageModule thisModule in builderModules.ItemProcessModules)
             {
                 thisModule.ReleaseResources();
             }
@@ -262,17 +261,17 @@ namespace SobekCM.Builder_Library
             Process_All_Deletes(deletes);
 
             // Can now release these resources
-            foreach (iSubmissionPackageModule thisModule in BuilderSettings.DeleteItemModules)
+            foreach (iSubmissionPackageModule thisModule in builderModules.DeleteItemModules)
             {
                 thisModule.ReleaseResources();
             }
 
 
             // RUN ANY POST-PROCESSING MODULES HERE 
-            if (BuilderSettings.PostProcessModules.Count > 0)
+            if (builderModules.PostProcessModules.Count > 0)
             {
                 Add_NonError_To_Log("Running all post-processing steps", verbose, String.Empty, String.Empty, -1);
-                foreach (iPostProcessModule thisModule in BuilderSettings.PostProcessModules)
+                foreach (iPostProcessModule thisModule in builderModules.PostProcessModules)
                 {
                     // Check for abort
                     if (CheckForAbort())
@@ -312,21 +311,20 @@ namespace SobekCM.Builder_Library
         public void ReleaseResources()
         {
             // Set some things to NULL
-            itemTable = null;
             aggregationsToRefresh.Clear();
             processedItems.Clear();
             deletedItems.Clear();
 
             // release all modules
-            foreach (iFolderModule thisModule in BuilderSettings.AllFolderModules)
+            foreach (iFolderModule thisModule in builderModules.AllFolderModules)
             {
                 thisModule.ReleaseResources();
             }
-            foreach (iSubmissionPackageModule thisModule in BuilderSettings.DeleteItemModules)
+            foreach (iSubmissionPackageModule thisModule in builderModules.DeleteItemModules)
             {
                 thisModule.ReleaseResources();
             }
-            foreach (iSubmissionPackageModule thisModule in BuilderSettings.ItemProcessModules)
+            foreach (iSubmissionPackageModule thisModule in builderModules.ItemProcessModules)
             {
                 thisModule.ReleaseResources();
             }
@@ -340,57 +338,175 @@ namespace SobekCM.Builder_Library
 		/// <returns> TRUE if successful, otherwise FALSE </returns>
         public bool Refresh_Settings_And_Item_List()
         {
+            // Create the tracer for this
+		    Custom_Tracer tracer = new Custom_Tracer();
+
             // Disable the cache
             CachedDataManager.Settings.Disabled = true;
 
+            // Set all the database strings appropriately
             Engine_Database.Connection_String = instanceInfo.DatabaseConnection.Connection_String;
             SobekCM_Item_Database.Connection_String = instanceInfo.DatabaseConnection.Connection_String;
             Library.Database.SobekCM_Database.Connection_String = instanceInfo.DatabaseConnection.Connection_String;
 
-            // Determine the appropriate engine URL ( hardcoded for now )
-		    string engine = instanceInfo.Engine_URL;
-            settings = SobekEngineClient.Admin.
-		    configuration = SobekEngineClient.Admin.Get_Complete_Configuration(engine, instanceInfo.Engine_Protocol, null);
-
-
-            // Reload all the other data
-            Engine_ApplicationCache_Gateway.RefreshAll(dbInstance);
-
-            // Also, pull the engine configuration
-            // Try to read the OAI-PMH configuration file
-            if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "\\config\\user\\sobekcm_microservices.config"))
-            {
-                SobekEngineClient.Read_Config_File(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "\\config\\user\\sobekcm_microservices.config", Engine_ApplicationCache_Gateway.Settings.Servers.System_Base_URL);
-            }
-            else if (File.Exists(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "\\config\\default\\sobekcm_microservices.config"))
-            {
-                SobekEngineClient.Read_Config_File(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Directory + "\\config\\default\\sobekcm_microservices.config", Engine_ApplicationCache_Gateway.Settings.Servers.System_Base_URL);
-            }
-
+            // Get the settings values directly from the database
+            settings = InstanceWide_Settings_Builder.Build_Settings(instanceInfo.DatabaseConnection);
 		    if (settings == null)
 		    {
 	            Add_Error_To_Log("Unable to pull the newest settings from the database", String.Empty, String.Empty, -1);
                 return false;
 		    }
 
-            // Save the item table
-		    itemTable = Library.Database.SobekCM_Database.Get_Item_List(true, null).Tables[0];
+            // Set the microservice endpoints
+		    SobekEngineClient.Set_Endpoints(instanceInfo.Microservices);
 
-            // get all the info
-            settings = InstanceWide_Settings_Builder.Build_Settings(dbInstance);
-            BuilderSettings = new Builder_Modules();
-		    DataSet builderSettingsTbl = Engine_Database.Get_Builder_Settings(false, null);
-		    if (builderSettingsTbl == null)
+            // Load the necessary configuration objects into the engine application cache gateway
+		    try
 		    {
-                Add_Error_To_Log("Unable to pull the newest BUILDER settings from the database", String.Empty, String.Empty, -1);
+		        Engine_ApplicationCache_Gateway.Configuration.OAI_PMH = SobekEngineClient.Admin.Get_OAI_PMH_Configuration(tracer);
+		    }
+		    catch (Exception ee)
+		    {
+                Add_Error_To_Log("Unable to pull the OAI-PMH settings from the engine", String.Empty, String.Empty, -1);
+                Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
                 return false;
 		    }
-		    if (!Builder_Settings_Builder.Refresh(BuilderSettings, builderSettingsTbl, false, 0))
+
+            try
+            {
+                Engine_ApplicationCache_Gateway.Configuration.Metadata = SobekEngineClient.Admin.Get_Metadata_Configuration(tracer);
+            }
+            catch (Exception ee)
+            {
+                Add_Error_To_Log("Unable to pull the metadata settings from the engine", String.Empty, String.Empty, -1);
+                Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+                return false;
+            }
+
+            try
+            {
+                Engine_ApplicationCache_Gateway.Configuration.Extensions = SobekEngineClient.Admin.Get_Extensions_Configuration(tracer);
+            }
+            catch (Exception ee)
+            {
+                Add_Error_To_Log("Unable to pull the extension settings from the engine", String.Empty, String.Empty, -1);
+                Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+                return false;
+            }
+
+
+            // Check for any enabled extensions with assemblies
+		    ResourceObjectSettings.Clear_Assemblies();
+		    try
 		    {
-                Add_Error_To_Log("Error building the builder settings from the dataset", String.Empty, String.Empty, -1);
-                return false; 
+		        if ((Engine_ApplicationCache_Gateway.Configuration.Extensions.Extensions != null) && (Engine_ApplicationCache_Gateway.Configuration.Extensions.Extensions.Count > 0))
+		        {
+		            // Step through each extension
+		            foreach (ExtensionInfo extensionInfo in Engine_ApplicationCache_Gateway.Configuration.Extensions.Extensions)
+		            {
+		                // If not enabled, skip it
+		                if (!extensionInfo.Enabled) continue;
+
+		                // Look for assemblies
+		                if ((extensionInfo.Assemblies != null) && (extensionInfo.Assemblies.Count > 0))
+		                {
+		                    // Step through each assembly
+		                    foreach (ExtensionAssembly assembly in extensionInfo.Assemblies)
+		                    {
+		                        // Find the relative file name
+		                        if (assembly.FilePath.IndexOf("plugins", StringComparison.OrdinalIgnoreCase) > 0)
+		                        {
+		                            // Determine the network way to get there
+		                            string from_plugins = assembly.FilePath.Substring(assembly.FilePath.IndexOf("plugins", StringComparison.OrdinalIgnoreCase));
+		                            string network_plugin_file = Path.Combine(settings.Servers.Application_Server_Network, from_plugins);
+
+		                            // Get the plugin filename
+		                            string plugin_filename = Path.GetFileName(assembly.FilePath);
+
+		                            // Does this local plugin directory exist for this extension?
+		                            string local_path = Path.Combine(pluginRootDirectory, instanceInfo.Name, extensionInfo.Code);
+		                            if (!Directory.Exists(local_path))
+		                            {
+		                                try
+		                                {
+		                                    Directory.CreateDirectory(local_path);
+		                                }
+		                                catch (Exception ee)
+		                                {
+		                                    Add_Error_To_Log("Error creating the necessary plug-in subdirectory", String.Empty, String.Empty, -1);
+		                                    Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+		                                    return false;
+		                                }
+		                            }
+
+		                            // Determine if the assembly is here
+		                            string local_file = Path.Combine(local_path, plugin_filename);
+		                            if (!File.Exists(local_file))
+		                            {
+		                                File.Copy(network_plugin_file, local_file);
+		                            }
+		                            else
+		                            {
+		                                // Do a date check
+		                                DateTime webFileDate = File.GetLastWriteTime(network_plugin_file);
+		                                DateTime localFileDate = File.GetLastWriteTime(local_file);
+
+		                                if (webFileDate.CompareTo(localFileDate) > 0)
+		                                {
+		                                    File.Copy(network_plugin_file, local_file, true);
+		                                }
+		                            }
+
+		                            // Also, point the assembly to use the local file
+		                            assembly.FilePath = local_file;
+		                        }
+		                    }
+		                }
+		            }
+
+		            // Now, also set this all in the metadata portion
+		            // Copy over all the extension information
+		            foreach (ExtensionInfo thisExtension in Engine_ApplicationCache_Gateway.Configuration.Extensions.Extensions)
+		            {
+		                if ((thisExtension.Enabled) && (thisExtension.Assemblies != null))
+		                {
+		                    foreach (ExtensionAssembly thisAssembly in thisExtension.Assemblies)
+		                    {
+		                        ResourceObjectSettings.Add_Assembly(thisAssembly.ID, thisAssembly.FilePath);
+		                    }
+		                }
+		            }
+		        }
 		    }
-            List<string> errors = BuilderSettings.Builder_Modules_From_Settings();
+		    catch (Exception ee)
+		    {
+		        Add_Error_To_Log("Unable to copy the extension files from the web", String.Empty, String.Empty, -1);
+		        Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+		        return false;
+		    }
+            
+            // Finalize the metadata config
+            Engine_ApplicationCache_Gateway.Configuration.Metadata.Finalize_Metadata_Configuration();
+
+            // Set the metadata preferences for writing
+            ResourceObjectSettings.MetadataConfig = Engine_ApplicationCache_Gateway.Configuration.Metadata;
+
+		    // Also, load the builder configuration this way
+            try
+            {
+                builderSettings = SobekEngineClient.Builder.Get_Builder_Settings(false, tracer);
+            }
+            catch (Exception ee)
+            {
+                Add_Error_To_Log("Unable to pull the builder settings from the engine", String.Empty, String.Empty, -1);
+                Add_Error_To_Log(ee.Message, String.Empty, String.Empty, -1);
+                return false;
+            }
+
+
+            // Build the modules
+		    builderModules = new Builder_Modules(builderSettings);
+            List<string> errors = builderModules.Builder_Modules_From_Settings();
 
             if (( errors != null ) && ( errors.Count > 0 ))
             {
@@ -403,27 +519,27 @@ namespace SobekCM.Builder_Library
             }
 
             // Add the event listeners 
-            foreach (iPreProcessModule thisModule in BuilderSettings.PreProcessModules)
+            foreach (iPreProcessModule thisModule in builderModules.PreProcessModules)
             {
                 thisModule.Error += module_Error;
                 thisModule.Process += module_Process;
             }
-            foreach (iSubmissionPackageModule thisModule in BuilderSettings.DeleteItemModules)
+            foreach (iSubmissionPackageModule thisModule in builderModules.DeleteItemModules)
             {
                 thisModule.Error += module_Error;
                 thisModule.Process += module_Process;
             }
-            foreach (iSubmissionPackageModule thisModule in BuilderSettings.ItemProcessModules)
+            foreach (iSubmissionPackageModule thisModule in builderModules.ItemProcessModules)
             {
                 thisModule.Error += module_Error;
                 thisModule.Process += module_Process;
             }
-            foreach (iPostProcessModule thisModule in BuilderSettings.PostProcessModules)
+            foreach (iPostProcessModule thisModule in builderModules.PostProcessModules)
             {
                 thisModule.Error += module_Error;
                 thisModule.Process += module_Process;
             }
-            foreach (iFolderModule thisModule in BuilderSettings.AllFolderModules)
+            foreach (iFolderModule thisModule in builderModules.AllFolderModules)
             {
                 thisModule.Error += module_Error;
                 thisModule.Process += module_Process;
@@ -504,7 +620,7 @@ namespace SobekCM.Builder_Library
                 Library.Database.SobekCM_Database.Add_Minimum_Builder_Information(AdditionalWorkResource.Metadata);
 
                 // Do all the item processing per instance config
-                foreach (iSubmissionPackageModule thisModule in BuilderSettings.ItemProcessModules)
+                foreach (iSubmissionPackageModule thisModule in builderModules.ItemProcessModules)
                 {
                     if (verbose)
                     {
@@ -590,13 +706,13 @@ namespace SobekCM.Builder_Library
 			Library.Database.SobekCM_Database.Builder_Clear_Item_Error_Log(ResourcePackage.BibID, ResourcePackage.VID, "SobekCM Builder");
 
             // Before we save this or anything, let's see if this is truly a new resource
-            ResourcePackage.NewPackage = !(itemTable.Select("BibID='" + ResourcePackage.BibID + "' and VID='" + ResourcePackage.VID + "'").Length > 0);
+            ResourcePackage.NewPackage = (Engine_Database.Get_Item_Information(ResourcePackage.BibID, ResourcePackage.VID, null ) == null );
             ResourcePackage.Package_Time = DateTime.Now;
 
             try
             {
                 // Do all the item processing per instance config
-                foreach (iSubmissionPackageModule thisModule in BuilderSettings.ItemProcessModules)
+                foreach (iSubmissionPackageModule thisModule in builderModules.ItemProcessModules)
                 {
                     //if ( superverbose)
                     //{
@@ -677,10 +793,11 @@ namespace SobekCM.Builder_Library
                 // Save these collections to mark them for search index building
                 Add_Delete_Info_To_PostProcess_Lists(deleteResource.BibID, deleteResource.VID, deleteResource.Metadata.Behaviors.Aggregation_Code_List);
 
-                if (itemTable.Select("BibID='" + deleteResource.BibID + "' and VID='" + deleteResource.VID + "'").Length > 0)
+                // Only continue if this bibid/vid exists
+                if (Engine_Database.Get_Item_Information(deleteResource.BibID, deleteResource.VID, null) != null)
                 {
                     // Do all the item processing per instance config
-                    foreach (iSubmissionPackageModule thisModule in BuilderSettings.DeleteItemModules)
+                    foreach (iSubmissionPackageModule thisModule in builderModules.DeleteItemModules)
                     {
                         if (!thisModule.DoWork(deleteResource))
                         {
@@ -726,8 +843,8 @@ namespace SobekCM.Builder_Library
         {
 			if (multiInstanceBuilder)
 			{
-				Console.WriteLine(instanceName + " - " + LogStatement);
-				logger.AddNonError(instanceName + " - " + LogStatement.Replace("\t", "....."));
+				Console.WriteLine( instanceInfo.Name + " - " + LogStatement);
+                logger.AddNonError(instanceInfo.Name + " - " + LogStatement.Replace("\t", "....."));
 			}
 			else
 			{
@@ -743,8 +860,8 @@ namespace SobekCM.Builder_Library
             {
 	            if (multiInstanceBuilder)
 	            {
-		            Console.WriteLine(instanceName + " - " + LogStatement);
-		            logger.AddNonError(instanceName + " - " + LogStatement.Replace("\t", "....."));
+                    Console.WriteLine(instanceInfo.Name + " - " + LogStatement);
+                    logger.AddNonError(instanceInfo.Name + " - " + LogStatement.Replace("\t", "....."));
 	            }
 	            else
 				{
@@ -760,8 +877,8 @@ namespace SobekCM.Builder_Library
         {
 			if (multiInstanceBuilder)
 			{
-				Console.WriteLine(instanceName + " - " + LogStatement);
-				logger.AddError(instanceName + " - " + LogStatement.Replace("\t", "....."));
+                Console.WriteLine(instanceInfo.Name + " - " + LogStatement);
+                logger.AddError(instanceInfo.Name + " - " + LogStatement.Replace("\t", "....."));
 			}
 			else
 			{
@@ -775,8 +892,8 @@ namespace SobekCM.Builder_Library
         {
             if (multiInstanceBuilder)
             {
-                Console.WriteLine(instanceName + " - " + LogStatement);
-                logger.AddError(instanceName + " - " + LogStatement.Replace("\t", "....."));
+                Console.WriteLine(instanceInfo.Name + " - " + LogStatement);
+                logger.AddError(instanceInfo.Name + " - " + LogStatement.Replace("\t", "....."));
             }
             else
             {
@@ -816,8 +933,8 @@ namespace SobekCM.Builder_Library
         {
 	        if (multiInstanceBuilder)
 	        {
-		        Console.WriteLine(instanceName + " - " + LogStatement);
-		        logger.AddComplete(instanceName + " - " + LogStatement.Replace("\t", "....."));
+                Console.WriteLine(instanceInfo.Name + " - " + LogStatement);
+                logger.AddComplete(instanceInfo.Name + " - " + LogStatement.Replace("\t", "....."));
 	        }
 	        else
 			{
@@ -872,8 +989,6 @@ namespace SobekCM.Builder_Library
 
         private bool CheckForAbort()
         {
-	        if (!canAbort)
-		        return false;
 
             if (aborted)
                 return true;
