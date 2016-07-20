@@ -15,6 +15,7 @@ using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration.Extensions;
 using SobekCM.Core.MemoryMgmt;
+using SobekCM.Core.MicroservicesClient;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Engine_Library.Database;
@@ -34,9 +35,7 @@ namespace SobekCM.Builder_Library
 
         private Builder_Settings builderSettings;
         private Builder_Modules builderModules;
-
         private readonly Single_Instance_Configuration instanceInfo;
-
         private InstanceWide_Settings settings;
 
 
@@ -46,6 +45,7 @@ namespace SobekCM.Builder_Library
         
         private bool aborted;
         private bool verbose;
+        private bool refreshed;
         
 	    private readonly bool multiInstanceBuilder;
 
@@ -59,11 +59,14 @@ namespace SobekCM.Builder_Library
         private bool stillPendingItems;
 
 
+
+
         /// <summary> Constructor for a new instance of the Worker_BulkLoader class </summary>
         /// <param name="Logger"> Log file object for logging progress </param>
         /// <param name="Verbose"> Flag indicates if the builder is in verbose mode, where it should log alot more information </param>
         /// <param name="InstanceInfo"> Information for the instance of SobekCM to be processed by this bulk loader </param>
         /// <param name="LogFileDirectory"> Directory where any log files would be written </param>
+        /// <param name="PluginRootDirectory"> Root directory where all the plug-ins are stored locally for the builder </param>
         public Worker_BulkLoader(LogFileXhtml Logger, Single_Instance_Configuration InstanceInfo, bool Verbose, string LogFileDirectory, string PluginRootDirectory )
         {
             // Save the log file and verbose flag
@@ -90,6 +93,7 @@ namespace SobekCM.Builder_Library
 
             // Set some defaults
             aborted = false;
+            refreshed = false;
 
             Add_NonError_To_Log("Worker_BulkLoader.Constructor: Done", verbose, String.Empty, String.Empty, -1);
         }
@@ -357,6 +361,22 @@ namespace SobekCM.Builder_Library
                 return false;
 		    }
 
+            // If this was not refreshed yet, ensure [BASEURL] is replaced
+		    if (!refreshed)
+		    {
+                // Determine the base url
+                string baseUrl = String.IsNullOrWhiteSpace(settings.Servers.Base_URL) ? settings.Servers.Application_Server_URL : settings.Servers.Base_URL;
+		        List<MicroservicesClient_Endpoint> endpoints = instanceInfo.Microservices.Endpoints;
+		        foreach (MicroservicesClient_Endpoint thisEndpoint in endpoints)
+		        {
+		            if (thisEndpoint.URL.IndexOf("[BASEURL]") > 0)
+                        thisEndpoint.URL = thisEndpoint.URL.Replace("[BASEURL]", baseUrl).Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
+                    else if (( thisEndpoint.URL.IndexOf("http:/") < 0 ) && ( thisEndpoint.URL.IndexOf("https:/") < 0 ))
+                        thisEndpoint.URL = ( baseUrl + thisEndpoint.URL).Replace("//", "/").Replace("http:/", "http://").Replace("https:/", "https://");
+		        }
+                refreshed = true;
+		    }
+
             // Set the microservice endpoints
 		    SobekEngineClient.Set_Endpoints(instanceInfo.Microservices);
 
@@ -586,7 +606,7 @@ namespace SobekCM.Builder_Library
                         Incoming_Digital_Resource additionalWorkResource = new Incoming_Digital_Resource(resource_folder, sourceFolder) 
 							{BibID = bibID, VID = vid, File_Root = bibID.Substring(0, 2) + "\\" + bibID.Substring(2, 2) + "\\" + bibID.Substring(4, 2) + "\\" + bibID.Substring(6, 2) + "\\" + bibID.Substring(8, 2)};
 
-	                    Complete_Single_Recent_Load_Requiring_Additional_Work( resource_folder, additionalWorkResource);
+	                    Complete_Single_Recent_Load_Requiring_Additional_Work( additionalWorkResource);
                     }
                     else
                     {
@@ -600,7 +620,7 @@ namespace SobekCM.Builder_Library
             }
         }
 
-        private void Complete_Single_Recent_Load_Requiring_Additional_Work(string Resource_Folder, Incoming_Digital_Resource AdditionalWorkResource)
+        private void Complete_Single_Recent_Load_Requiring_Additional_Work( Incoming_Digital_Resource AdditionalWorkResource)
         {
 	        AdditionalWorkResource.METS_Type_String = "Reprocess";
             AdditionalWorkResource.BuilderLogId = Add_NonError_To_Log("........Reprocessing '" + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID + "'", "Standard",  AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.METS_Type_String, -1);
@@ -624,7 +644,7 @@ namespace SobekCM.Builder_Library
                 {
                     if (verbose)
                     {
-                        Add_NonError_To_Log("Running module " + thisModule.GetType().ToString(), true, AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, String.Empty, AdditionalWorkResource.BuilderLogId);
+                        Add_NonError_To_Log("Running module " + thisModule.GetType(), true, AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, String.Empty, AdditionalWorkResource.BuilderLogId);
                     }
                     if (!thisModule.DoWork(AdditionalWorkResource))
                     {

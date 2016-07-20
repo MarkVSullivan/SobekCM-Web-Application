@@ -119,6 +119,13 @@ namespace SobekCM.Library.AdminViewer
                             }
                             else
                             {
+                                // Clear settings to be pulled again
+                                HttpContext.Current.Session["Admin_Settigs"] = null;
+
+                                // Assign this to be used by the system
+                                UI_ApplicationCache_Gateway.ResetSettings();
+
+                                // Return to the folder list
                                 string returnUrl = RequestSpecificValues.Current_Mode.Base_URL + "l/admin/settings/builder/folders";
                                 RequestSpecificValues.Current_Mode.Request_Completed = true;
                                 HttpContext.Current.Response.Redirect(returnUrl, false);

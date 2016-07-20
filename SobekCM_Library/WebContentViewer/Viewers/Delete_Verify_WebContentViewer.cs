@@ -2,12 +2,12 @@
 using System.IO;
 using System.Web;
 using SobekCM.Core.Client;
+using SobekCM.Core.MemoryMgmt;
 using SobekCM.Core.Message;
 using SobekCM.Core.Navigation;
-using SobekCM.Core.UI_Configuration;
-using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.WebContentViewer.Viewers
@@ -19,6 +19,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
         private readonly string errorMessage;
         private readonly bool canDelete;
         private readonly HTML_Based_Content webContent;
+        private readonly bool deleted;
 
         /// <summary>  Constructor for a new instance of the Delete_Verify_WebContentViewer class  </summary>
         /// <param name="RequestSpecificValues">  All the necessary, non-global data specific to the current request  </param>
@@ -49,6 +50,7 @@ namespace SobekCM.Library.WebContentViewer.Viewers
 
             // If the user was logged on, but did not have permissions, show an error message
             canDelete = true;
+            deleted = false;
             if (!webContent.Can_Delete(RequestSpecificValues.Current_User))
             {
                 errorMessage = "ERROR: You do not have permission to delete this page";
@@ -80,7 +82,15 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                         }
                         else
                         {
-                            errorMessage = "Success deleted this web content page.";
+                            errorMessage = "Successfully deleted this web content page.";
+
+                            // Clear cached data here on the client
+                            CachedDataManager.WebContent.Clear_All_Web_Content_Lists();
+                            CachedDataManager.WebContent.Clear_All_Web_Content_Pages();
+                            CachedDataManager.WebContent.Clear_Page_Details();
+                            UI_ApplicationCache_Gateway.WebContent_Hierarchy_Clear();
+
+                            deleted = true;
                         }
                     }
                 }
@@ -129,26 +139,30 @@ namespace SobekCM.Library.WebContentViewer.Viewers
                 Output.WriteLine("  <div id=\"sbkWchs_ActionMessageError\">" + errorMessage + "</div>");
             }
 
-            Output.WriteLine("<div class=\"Wchs_Text\">");
-            Output.WriteLine("  <p>This form allows you to delete a web content page from the system.  The source files will remain, but the page or redirect will be removed from the system.</p>");
-            Output.WriteLine();
-            Output.WriteLine("  <table id=\"sbkWchs_DeleteTable\">");
-            Output.WriteLine("    <tr><td>Title: &nbsp; </td><td>" + webContent.Title + "</td></tr>");
-            string url = webContent.URL(RequestSpecificValues.Current_Mode.Base_URL);
-            Output.WriteLine("    <tr><td>URL:</td><td><a href=\"" + url + "\">" + url + "</a></td></tr>");
-            Output.WriteLine("  </table>");
-            Output.WriteLine();
-
-            if (canDelete)
+            if (!deleted)
             {
-                Output.WriteLine("  <p>Enter DELETE in the textbox below and select GO to complete this deletion.</p>");
-                Output.WriteLine("  <div id=\"sbkWchs_DeleteVerifyDiv\">");
-                Output.WriteLine("    <input class=\"sbkDimv_input sbk_Focusable\" name=\"admin_delete_confirm\" id=\"admin_delete_confirm\" type=\"text\" value=\"\" /> &nbsp; &nbsp; ");
-                Output.WriteLine("    <button title=\"Confirm delete of this page\" class=\"roundbutton\" onclick=\"delete_item(); return false;\">CONFIRM <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
-                Output.WriteLine("  </div>");
-            }
 
-            Output.WriteLine("</div>");
+                Output.WriteLine("<div class=\"Wchs_Text\">");
+                Output.WriteLine("  <p>This form allows you to delete a web content page from the system.  The source files will remain, but the page or redirect will be removed from the system.</p>");
+                Output.WriteLine();
+                Output.WriteLine("  <table id=\"sbkWchs_DeleteTable\">");
+                Output.WriteLine("    <tr><td>Title: &nbsp; </td><td>" + webContent.Title + "</td></tr>");
+                string url = webContent.URL(RequestSpecificValues.Current_Mode.Base_URL);
+                Output.WriteLine("    <tr><td>URL:</td><td><a href=\"" + url + "\">" + url + "</a></td></tr>");
+                Output.WriteLine("  </table>");
+                Output.WriteLine();
+
+                if (canDelete)
+                {
+                    Output.WriteLine("  <p>Enter DELETE in the textbox below and select GO to complete this deletion.</p>");
+                    Output.WriteLine("  <div id=\"sbkWchs_DeleteVerifyDiv\">");
+                    Output.WriteLine("    <input class=\"sbkDimv_input sbk_Focusable\" name=\"admin_delete_confirm\" id=\"admin_delete_confirm\" type=\"text\" value=\"\" /> &nbsp; &nbsp; ");
+                    Output.WriteLine("    <button title=\"Confirm delete of this page\" class=\"roundbutton\" onclick=\"delete_item(); return false;\">CONFIRM <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+                    Output.WriteLine("  </div>");
+                }
+
+                Output.WriteLine("</div>");
+            }
 
             Output.WriteLine();
             Output.WriteLine("<!-- Focus on confirm box -->");

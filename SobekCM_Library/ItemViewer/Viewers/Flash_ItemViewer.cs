@@ -94,6 +94,13 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 }
             }
 
+            // Allow the label to be implemented for this viewer from the database as well
+            BriefItem_BehaviorViewer thisViewerInfo = CurrentItem.Behaviors.Get_Viewer(ViewerCode);
+
+            // If this is found, and has a custom label, use that 
+            if ((thisViewerInfo != null) && (!String.IsNullOrWhiteSpace(thisViewerInfo.Label)))
+                first_label = thisViewerInfo.Label;
+
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;
             CurrentRequest.ViewerCode = ViewerCode;

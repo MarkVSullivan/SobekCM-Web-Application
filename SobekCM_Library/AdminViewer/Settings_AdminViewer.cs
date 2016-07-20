@@ -1777,8 +1777,16 @@ namespace SobekCM.Library.AdminViewer
             // Look to see if any builder folders exist
             if ((UI_ApplicationCache_Gateway.Settings.Builder.IncomingFolders == null) || (UI_ApplicationCache_Gateway.Settings.Builder.IncomingFolders.Count == 0))
             {
-                Output.WriteLine("  <br /><br />");
-                Output.WriteLine("  <strong>YOU HAVE NO BUILDER FOLDERS DEFINED!!</strong>");
+                Output.WriteLine("  <p style=\"font-weight:bold; color:#841F27\">YOU HAVE NO BUILDER FOLDERS DEFINED!!</p>");
+
+                if (allowEdit)
+                {
+                    Output.WriteLine("  <p>For the builder to run and for bulk ingest to occur, a builder folder must be defined.  Click the <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "admin/builderfolder/new\">Add New Builder Folder</a> button below to add one.</p>");
+                }
+                else
+                {
+                    Output.WriteLine("  <p>For the builder to run and for bulk ingest to occur, a builder folder must be defined.</p>");
+                }
             }
             else
             {

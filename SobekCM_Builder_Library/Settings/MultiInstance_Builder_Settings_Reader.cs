@@ -63,6 +63,12 @@ namespace SobekCM.Builder_Library.Settings
                                     MultiInstance_Builder_Settings.Override_Seconds_Between_Polls = testValue;
                                 break;
 
+                            case "connections":
+                                // This is the old ( pre version 4.10.0 ) format of instance information
+                                // This will remain backwardly compatible for a while
+                                read_legacy_instance_config(xmlReader.ReadSubtree());
+                                break;
+
                         }
                     }
                 }
@@ -87,6 +93,50 @@ namespace SobekCM.Builder_Library.Settings
             }
         }
 
+        private static void read_legacy_instance_config(XmlReader ReaderXml)
+        {
+            while (ReaderXml.Read())
+            {
+                // Only detect start elements.
+                if (ReaderXml.NodeType == XmlNodeType.Element)
+                {
+                    // Get element name and switch on it.
+                    switch (ReaderXml.Name.ToLower())
+                    {
+                        case "connection_string":
+                            Single_Instance_Configuration singleInstance = new Single_Instance_Configuration();
+                            if (ReaderXml.MoveToAttribute("active"))
+                            {
+                                if (ReaderXml.Value.ToLower() == "false")
+                                    singleInstance.Is_Active = false;
+                            }
+                            if (ReaderXml.MoveToAttribute("name"))
+                                singleInstance.Name = ReaderXml.Value.Trim();
+                            if (ReaderXml.MoveToAttribute("type"))
+                            {
+                                if (ReaderXml.Value.ToLower() == "postgresql")
+                                    singleInstance.DatabaseConnection.Database_Type = EalDbTypeEnum.PostgreSQL;
+                            }
+                            ReaderXml.Read();
+                            singleInstance.DatabaseConnection.Connection_String = ReaderXml.Value;
+
+                            // Add the default microservice endpoints then
+                            singleInstance.Microservices.Add_Endpoint("Builder.Get_Builder_Settings", "[BASEURL]/engine/builder/settings/protobuf?IncludeDescs={0}", Microservice_Endpoint_Protocol_Enum.PROTOBUF);
+                            singleInstance.Microservices.Add_Endpoint("Configuration.Extensions", "[BASEURL]/engine/config/extensions/protobuf", Microservice_Endpoint_Protocol_Enum.PROTOBUF);
+                            singleInstance.Microservices.Add_Endpoint("Configuration.Metadata", "[BASEURL]/engine/config/metadata/protobuf", Microservice_Endpoint_Protocol_Enum.PROTOBUF);
+                            singleInstance.Microservices.Add_Endpoint("Configuration.OAI_PMH", "[BASEURL]/engine/config/oaipmh/protobuf", Microservice_Endpoint_Protocol_Enum.PROTOBUF);
+
+                            // Esnure it has SOME name
+                            if (String.IsNullOrWhiteSpace(singleInstance.Name))
+                                singleInstance.Name = "Connection" + (MultiInstance_Builder_Settings.Instances.Count + 1);
+
+                            // Add this to the list of instances
+                            MultiInstance_Builder_Settings.Instances.Add(singleInstance);
+                            break;
+                    }
+                }
+            }
+        }
 
         private static void read_instances(XmlReader ReaderXml )
         {
@@ -109,17 +159,6 @@ namespace SobekCM.Builder_Library.Settings
                             }
                             if (ReaderXml.MoveToAttribute("name"))
                                 singleInstance.Name = ReaderXml.Value.Trim();
-
-                            //if (xmlReader.MoveToAttribute("canAbort"))
-                            //{
-                            //    if (xmlReader.Value.ToLower() == "false")
-                            //        newDb.Can_Abort = false;
-                            //}
-                            //if (xmlReader.MoveToAttribute("isHosted"))
-                            //{
-                            //    if (xmlReader.Value.ToLower() == "true")
-                            //        SettingsObject.Servers.isHosted = true;
-                            //}
                             break;
 
                         case "connection_string":
@@ -142,6 +181,8 @@ namespace SobekCM.Builder_Library.Settings
                     // Esnure it has SOME name
                     if ( String.IsNullOrWhiteSpace(singleInstance.Name))
                         singleInstance.Name = "Connection" + ( MultiInstance_Builder_Settings.Instances.Count + 1);
+
+                    // Add this to the list of instances
                     MultiInstance_Builder_Settings.Instances.Add(singleInstance);
                 }
             }

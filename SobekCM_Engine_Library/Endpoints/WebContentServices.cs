@@ -511,8 +511,15 @@ namespace SobekCM.Engine_Library.Endpoints
             // Ensure the web page does not already exist
             if (Engine_Database.WebContent_Delete_Page(webcontentId, reason, user, tracer))
             {
+                // Clear cached data
                 CachedDataManager.WebContent.Clear_All_Web_Content_Lists();
                 CachedDataManager.WebContent.Clear_All_Web_Content_Pages();
+                CachedDataManager.WebContent.Clear_Page_Details();
+
+                // Also refresh the list of web content pages
+                Engine_ApplicationCache_Gateway.RefreshWebContentHierarchy();
+
+                // Respond with the success message
                 Serialize(new RestResponseMessage(ErrorRestTypeEnum.Successful, null), Response, Protocol, null);
                 Response.StatusCode = 200;
             }
@@ -554,6 +561,7 @@ namespace SobekCM.Engine_Library.Endpoints
             }
             string user = RequestForm["User"];
 
+
             // Get and validate the required CONTENT (HTML_Based_Content) posted request objects
             if ((RequestForm["Content"] == null) || (String.IsNullOrEmpty(RequestForm["Content"])))
             {
@@ -561,6 +569,8 @@ namespace SobekCM.Engine_Library.Endpoints
                 Response.StatusCode = 400;
                 return;
             }
+
+
 
             string contentString = RequestForm["Content"];
             HTML_Based_Content content = null;
@@ -1043,28 +1053,30 @@ namespace SobekCM.Engine_Library.Endpoints
                             // If nothing was retrieved, build it
                             if (parentValue == null)
                             {
-
                                 // Try to read and return the html based content 
                                 // Get the details from the database
                                 WebContent_Basic_Info parentBasicInfo = Engine_Database.WebContent_Get_Page(possibleParent.WebContentID, tracer);
-                                if ((parentBasicInfo != null) && (!String.IsNullOrEmpty(parentBasicInfo.Redirect)))
+                                if ((parentBasicInfo != null) && (String.IsNullOrEmpty(parentBasicInfo.Redirect)))
                                 {
                                     // Try to Build the HTML content
                                     WebContentEndpointErrorEnum errorType;
                                     parentValue = read_source_file(parentBasicInfo, tracer, out errorType);
-                                    if (parentValue != null)
-                                    {
-                                        // Since everything was found, copy over the values and stop looking for a parent
-                                        if (!String.IsNullOrEmpty(parentValue.Banner)) content.Banner = parentValue.Banner;
-                                        if (!String.IsNullOrEmpty(parentValue.CssFile)) content.CssFile = parentValue.CssFile;
-                                        if (!String.IsNullOrEmpty(parentValue.Extra_Head_Info)) content.Extra_Head_Info = parentValue.Extra_Head_Info;
-                                        if (parentValue.IncludeMenu.HasValue) content.IncludeMenu = parentValue.IncludeMenu;
-                                        if (!String.IsNullOrEmpty(parentValue.JavascriptFile)) content.JavascriptFile = parentValue.JavascriptFile;
-                                        if (!String.IsNullOrEmpty(parentValue.SiteMap)) content.SiteMap = parentValue.SiteMap;
-                                        if (!String.IsNullOrEmpty(parentValue.Web_Skin)) content.Web_Skin = parentValue.Web_Skin;
-                                        break;
-                                    }
+
                                 }
+                            }
+
+                            // If the parent was found, then copy over values
+                            if (parentValue != null)
+                            {
+                                // Since everything was found, copy over the values and stop looking for a parent
+                                if (!String.IsNullOrEmpty(parentValue.Banner)) content.Banner = parentValue.Banner;
+                                if (!String.IsNullOrEmpty(parentValue.CssFile)) content.CssFile = parentValue.CssFile;
+                                if (!String.IsNullOrEmpty(parentValue.Extra_Head_Info)) content.Extra_Head_Info = parentValue.Extra_Head_Info;
+                                if (parentValue.IncludeMenu.HasValue) content.IncludeMenu = parentValue.IncludeMenu;
+                                if (!String.IsNullOrEmpty(parentValue.JavascriptFile)) content.JavascriptFile = parentValue.JavascriptFile;
+                                if (!String.IsNullOrEmpty(parentValue.SiteMap)) content.SiteMap = parentValue.SiteMap;
+                                if (!String.IsNullOrEmpty(parentValue.Web_Skin)) content.Web_Skin = parentValue.Web_Skin;
+                                break;
                             }
                         }
 

@@ -73,8 +73,18 @@ namespace SobekCM.Library.ItemViewer.Viewers
             string url = UrlWriterHelper.Redirect_URL(CurrentRequest);
             CurrentRequest.ViewerCode = previous_code;
 
+            // Start with the default label on the menu
+            string label = "Video";
+
+            // Allow the label to be implemented for this viewer
+            BriefItem_BehaviorViewer thisViewerInfo = CurrentItem.Behaviors.Get_Viewer(ViewerCode);
+
+            // If this is found, and has a custom label, use that 
+            if ((thisViewerInfo != null) && (!String.IsNullOrWhiteSpace(thisViewerInfo.Label)))
+                label = thisViewerInfo.Label;
+
             // Add the item menu information
-            Item_MenuItem menuItem = new Item_MenuItem("Video", null, null, url, ViewerCode);
+            Item_MenuItem menuItem = new Item_MenuItem(label, null, null, url, ViewerCode);
             MenuItems.Add(menuItem);
         }
 

@@ -87,7 +87,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             CurrentRequest.ViewerCode = previous_code;
 
             // Allow the label to be implemented for this viewer
-            BriefItem_BehaviorViewer thisViewerInfo = CurrentItem.Behaviors.Get_Viewer("video");
+            BriefItem_BehaviorViewer thisViewerInfo = CurrentItem.Behaviors.Get_Viewer(ViewerCode);
 
             // If this is null, or no label, use the default
             if ((thisViewerInfo == null) || (String.IsNullOrWhiteSpace(thisViewerInfo.Label)))
