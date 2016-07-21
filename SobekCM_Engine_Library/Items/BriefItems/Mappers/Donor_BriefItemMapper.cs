@@ -22,7 +22,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             // Add the donor
             if ((Original.Bib_Info.hasDonor) && (!String.IsNullOrWhiteSpace(Original.Bib_Info.Donor.Full_Name)))
             {
-                New.Add_Description("Donor", Original.Bib_Info.Donor.ToString());
+                New.Add_Description("Donor", Original.Bib_Info.Donor.ToString(false)).SubTerm = "donor";
             }
 
             return true;

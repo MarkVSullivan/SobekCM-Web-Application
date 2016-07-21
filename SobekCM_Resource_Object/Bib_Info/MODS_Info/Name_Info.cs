@@ -307,7 +307,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                         return String.Empty;
 
                     if (temp_role_text.Count == 1)
-                        return " ( <i>" + Convert_String_To_XML_Safe(temp_role_text[0]) + "</i> )";
+                        return Convert_String_To_XML_Safe(temp_role_text[0]);
 
                     StringBuilder nameBuilder = new StringBuilder();
                     bool role_started = false;
@@ -315,7 +315,7 @@ namespace SobekCM.Resource_Object.Bib_Info
                     {
                         if (!role_started)
                         {
-                            nameBuilder.Append(" ( <i>" + Convert_String_To_XML_Safe(thisRole));
+                            nameBuilder.Append(Convert_String_To_XML_Safe(thisRole));
                             role_started = true;
                         }
                         else
@@ -323,8 +323,6 @@ namespace SobekCM.Resource_Object.Bib_Info
                             nameBuilder.Append(", " + Convert_String_To_XML_Safe(thisRole));
                         }
                     }
-                    if (role_started)
-                        nameBuilder.Append("</i> )");
                     return nameBuilder.ToString();
                 }
                 return String.Empty;

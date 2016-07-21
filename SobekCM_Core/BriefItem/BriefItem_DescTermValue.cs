@@ -45,6 +45,14 @@ namespace SobekCM.Core.BriefItem
         [ProtoMember(5)]
         public string Language { get; set; }
 
+        /// <summary> Search term if different than the display term (optional) </summary>
+        /// <remarks> This is used, for example, by the creators where the full name should be displayed,
+        /// but only a portion is really searched </remarks>
+        [DataMember(EmitDefaultValue = false, Name = "searchTerm")]
+        [XmlAttribute("searchTerm")]
+        [ProtoMember(6)]
+        public string SearchTerm { get; set; }
+
         /// <summary> Constructor for a new instance of the BriefItem_DescTermValue class </summary>
         public BriefItem_DescTermValue()
         {

@@ -175,6 +175,7 @@
     <Compile Include="Citation\Elements\nonstandard elements\Serial_Hierarchy_Panel_Element.cs" />
     <Compile Include="Citation\Elements\nonstandard elements\Zoological_Taxonomy_Form_Element.cs" />
     <Compile Include="Citation\SectionWriter\Coordinates_SectionWriter.cs" />
+    <Compile Include="Citation\SectionWriter\Creator_SectionWriter.cs" />
     <Compile Include="Citation\SectionWriter\iCitationSectionWriter.cs" />
     <Compile Include="Citation\SectionWriter\Rights_SectionWriter.cs" />
     <Compile Include="Citation\SectionWriter\SectionWriter_Factory.cs" />
@@ -190,6 +191,7 @@
     <Compile Include="ItemViewer\Menu\Item_MenuItem.cs" />
     <Compile Include="ItemViewer\Menu\iItemMenuProvider.cs" />
     <Compile Include="ItemViewer\Menu\StandardItemMenuProvider.cs" />
+    <Compile Include="ItemViewer\NoViews_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\abstractItemViewerPrototyper.cs" />
     <Compile Include="ItemViewer\Viewers\abstractNoPaginationItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\abstractPageFilesItemViewer.cs" />

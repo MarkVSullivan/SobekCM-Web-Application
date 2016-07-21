@@ -59,18 +59,26 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                         }
                     }
 
+                    // This is all that should be searched
+                    string searchTerm = nameBuilder.ToString();
+
                     // Add the display form and dates
                     if (thisName.Display_Form.Length > 0)
                         nameBuilder.Append(" ( " + thisName.Display_Form + " )");
                     if (thisName.Dates.Length > 0)
                         nameBuilder.Append(", " + thisName.Dates);
 
+                    // Add this now
+                    BriefItem_DescTermValue descTerm = New.Add_Description("Creator", nameBuilder.ToString());
+
                     // Add with the sub-roles as well
                     string roles = thisName.Role_String;
                     if (!String.IsNullOrWhiteSpace(roles))
-                        New.Add_Description("Creator", nameBuilder.ToString()).SubTerm = roles;
-                    else
-                        New.Add_Description("Creator", nameBuilder.ToString());
+                        descTerm.SubTerm = roles;
+
+                    // Was the search term different than the actual name?
+                    if (searchTerm != nameBuilder.ToString())
+                        descTerm.SearchTerm = searchTerm;
                 }
             }
 
@@ -112,18 +120,26 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                             }
                         }
 
+                        // This is all that should be searched
+                        string searchTerm = nameBuilder.ToString();
+
                         // Add the display form and dates
                         if (thisName.Display_Form.Length > 0)
                             nameBuilder.Append(" ( " + thisName.Display_Form + " )");
                         if (thisName.Dates.Length > 0)
                             nameBuilder.Append(", " + thisName.Dates);
 
+                        // Add this now
+                        BriefItem_DescTermValue descTerm = New.Add_Description("Creator", nameBuilder.ToString());
+
                         // Add with the sub-roles as well
                         string roles = thisName.Role_String;
                         if (!String.IsNullOrWhiteSpace(roles))
-                            New.Add_Description("Creator", nameBuilder.ToString()).SubTerm = roles;
-                        else
-                            New.Add_Description("Creator", nameBuilder.ToString());
+                            descTerm.SubTerm = roles;
+
+                        // Was the search term different than the actual name?
+                        if (searchTerm != nameBuilder.ToString())
+                            descTerm.SearchTerm = searchTerm;
                     }
                 }
             }

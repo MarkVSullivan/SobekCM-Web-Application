@@ -382,28 +382,31 @@ namespace SobekCM.Library.ItemViewer.Viewers
                             {
                                 if (!String.IsNullOrEmpty(thisField.SearchCode))
                                 {
+                                    // It is possible a different search term is valid for this item, so check it
+                                    string searchTerm = (!String.IsNullOrWhiteSpace(thisValue.SearchTerm)) ? thisValue.SearchTerm : thisValue.Value;
+
                                     if (String.IsNullOrEmpty(thisField.ItemProp))
                                     {
                                         if (String.IsNullOrEmpty(thisValue.Authority))
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end);
+                                                valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(searchTerm)).Replace("<%CODE%>", thisField.SearchCode) + display_text_from_value(thisValue.Value) + search_link_end);
                                             }
                                             else
                                             {
-                                                valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )");
+                                                valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(searchTerm)).Replace("<%CODE%>", thisField.SearchCode) + display_text_from_value(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )");
                                             }
                                         }
                                         else
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )");
+                                                valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(searchTerm)).Replace("<%CODE%>", thisField.SearchCode) + display_text_from_value(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )");
                                             }
                                             else
                                             {
-                                                valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
+                                                valueArray.Add(search_link.Replace("<%VALUE%>", search_link_from_value(searchTerm)).Replace("<%CODE%>", thisField.SearchCode) + display_text_from_value(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
                                             }
                                         }
 
@@ -414,22 +417,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + "</span>");
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(searchTerm)).Replace("<%CODE%>", thisField.SearchCode) + display_text_from_value(thisValue.Value) + search_link_end + "</span>");
                                             }
                                             else
                                             {
-                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )" + "</span>");
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(searchTerm)).Replace("<%CODE%>", thisField.SearchCode) + display_text_from_value(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )" + "</span>");
                                             }
                                         }
                                         else
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )" + "</span>");
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(searchTerm)).Replace("<%CODE%>", thisField.SearchCode) + display_text_from_value(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )" + "</span>");
                                             }
                                             else
                                             {
-                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>");
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(searchTerm)).Replace("<%CODE%>", thisField.SearchCode) + display_text_from_value(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>");
                                             }
                                         }
                                     }
@@ -442,22 +445,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value));
+                                                valueArray.Add(display_text_from_value(thisValue.Value));
                                             }
                                             else
                                             {
-                                                valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )");
+                                                valueArray.Add(display_text_from_value(thisValue.Value) + " ( " + thisValue.Language + " )");
                                             }
                                         }
                                         else
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )");
+                                                valueArray.Add(display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + " )");
                                             }
                                             else
                                             {
-                                                valueArray.Add(HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
+                                                valueArray.Add(display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
                                             }
                                         }
 
@@ -468,22 +471,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + "</span>");
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + "</span>");
                                             }
                                             else
                                             {
-                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )" + "</span>");
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + " ( " + thisValue.Language + " )" + "</span>");
                                             }
                                         }
                                         else
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )" + "</span>");
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + " )" + "</span>");
                                             }
                                             else
                                             {
-                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>");
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>");
                                             }
                                         }
                                     }
@@ -506,6 +509,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         label = thisValue.SubTerm;
                                 }
 
+                                // It is possible a different search term is valid for this item, so check it
+                                string searchTerm = (!String.IsNullOrWhiteSpace(thisValue.SearchTerm)) ? thisValue.SearchTerm : thisValue.Value;
+
                                 if (!String.IsNullOrEmpty(thisField.SearchCode))
                                 {
                                     if (String.IsNullOrEmpty(thisField.ItemProp))
@@ -514,22 +520,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end, INDENT));
+                                                result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(searchTerm)).Replace("<%CODE%>", thisField.SearchCode) + display_text_from_value(thisValue.Value) + search_link_end, INDENT));
                                             }
                                             else
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )", INDENT));
+                                                result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(searchTerm)).Replace("<%CODE%>", thisField.SearchCode) + display_text_from_value(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )", INDENT));
                                             }
                                         }
                                         else
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )", INDENT));
+                                                result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(searchTerm)).Replace("<%CODE%>", thisField.SearchCode) + display_text_from_value(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )", INDENT));
                                             }
                                             else
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )", INDENT));
+                                                result.Append(Single_Citation_HTML_Row(label, search_link.Replace("<%VALUE%>", search_link_from_value(searchTerm)).Replace("<%CODE%>", thisField.SearchCode) + display_text_from_value(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )", INDENT));
                                             }
                                         }
                                     }
@@ -539,22 +545,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + "</span>", INDENT));
+                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(searchTerm)).Replace("<%CODE%>", thisField.SearchCode) + display_text_from_value(thisValue.Value) + search_link_end + "</span>", INDENT));
                                             }
                                             else
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )" + "</span>", INDENT));
+                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(searchTerm)).Replace("<%CODE%>", thisField.SearchCode) + display_text_from_value(thisValue.Value) + search_link_end + " ( " + thisValue.Language + " )" + "</span>", INDENT));
                                             }
                                         }
                                         else
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )" + "</span>", INDENT));
+                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(searchTerm)).Replace("<%CODE%>", thisField.SearchCode) + display_text_from_value(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + " )" + "</span>", INDENT));
                                             }
                                             else
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(thisValue.Value)).Replace("<%CODE%>", thisField.SearchCode) + HttpUtility.HtmlEncode(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>", INDENT));
+                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + search_link.Replace("<%VALUE%>", search_link_from_value(searchTerm)).Replace("<%CODE%>", thisField.SearchCode) + display_text_from_value(thisValue.Value) + search_link_end + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>", INDENT));
                                             }
                                         }
                                     }
@@ -567,22 +573,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value), INDENT));
+                                                result.Append(Single_Citation_HTML_Row(label, display_text_from_value(thisValue.Value), INDENT));
                                             }
                                             else
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )", INDENT));
+                                                result.Append(Single_Citation_HTML_Row(label, display_text_from_value(thisValue.Value) + " ( " + thisValue.Language + " )", INDENT));
                                             }
                                         }
                                         else
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )", INDENT));
+                                                result.Append(Single_Citation_HTML_Row(label, display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + " )", INDENT));
                                             }
                                             else
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )", INDENT));
+                                                result.Append(Single_Citation_HTML_Row(label, display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )", INDENT));
                                             }
                                         }
                                     }
@@ -592,22 +598,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + "</span>", INDENT));
+                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + "</span>", INDENT));
                                             }
                                             else
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Language + " )" + "</span>", INDENT));
+                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + " ( " + thisValue.Language + " )" + "</span>", INDENT));
                                             }
                                         }
                                         else
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + " )" + "</span>", INDENT));
+                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + " )" + "</span>", INDENT));
                                             }
                                             else
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + HttpUtility.HtmlEncode(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>", INDENT));
+                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>", INDENT));
                                             }
                                         }
                                     }
@@ -657,6 +663,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Return the built string
             return result.ToString();
+        }
+
+        private static string display_text_from_value(string Value)
+        {
+            return HttpUtility.HtmlEncode(Value).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>");
         }
 
         private static string search_link_from_value(string Value)
@@ -746,7 +757,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 // Ensure the CITATION is included in the system and in the item (should be though)
                 string viewer_code = ItemViewer_Factory.ViewCode_From_ViewType("CITATION");
-                if (( BriefItem.Behaviors.Get_Viewer("CITATION") != null ) && ( !String.IsNullOrEmpty(viewer_code)))
+                if ((BriefItem.Behaviors.Get_Viewer("CITATION") != null) && (!BriefItem.Behaviors.Get_Viewer("CITATION").Excluded) && (!String.IsNullOrEmpty(viewer_code)))
                     Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest, "citation") + "\">" + STANDARD_VIEW + "</a></li>");
             }
 
@@ -759,7 +770,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 // Ensure the MARC is included in the system and in the item 
                 string viewer_code = ItemViewer_Factory.ViewCode_From_ViewType("MARC");
-                if ((BriefItem.Behaviors.Get_Viewer("MARC") != null) && (!String.IsNullOrEmpty(viewer_code)))
+                if ((BriefItem.Behaviors.Get_Viewer("MARC") != null) && (!BriefItem.Behaviors.Get_Viewer("MARC").Excluded) && (!String.IsNullOrEmpty(viewer_code)))
                     Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest, "marc") + "\">" + MARC_VIEW + "</a></li>");
             }
 
@@ -775,7 +786,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     // Ensure the MARC is included in the system and in the item 
                     string viewer_code = ItemViewer_Factory.ViewCode_From_ViewType("METADATA");
-                    if ((BriefItem.Behaviors.Get_Viewer("METADATA") != null) && (!String.IsNullOrEmpty(viewer_code)))
+                    if ((BriefItem.Behaviors.Get_Viewer("METADATA") != null) && (!BriefItem.Behaviors.Get_Viewer("METADATA").Excluded) && (!String.IsNullOrEmpty(viewer_code)))
                         Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest, "metadata") + "\">" + METADATA_VIEW + "</a></li>");
                 }
 
@@ -788,7 +799,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     // Ensure the MARC is included in the system and in the item 
                     string viewer_code = ItemViewer_Factory.ViewCode_From_ViewType("USAGE");
-                    if ((BriefItem.Behaviors.Get_Viewer("USAGE") != null) && (!String.IsNullOrEmpty(viewer_code)))
+                    if ((BriefItem.Behaviors.Get_Viewer("USAGE") != null) && (!BriefItem.Behaviors.Get_Viewer("USAGE").Excluded) && (!String.IsNullOrEmpty(viewer_code)))
                         Output.WriteLine("      <li><a href=\"" + UrlWriterHelper.Redirect_URL(CurrentRequest, "usage") + "\">" + STATISTICS_VIEW + "</a></li>");
                 }
             }

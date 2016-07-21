@@ -38,6 +38,9 @@ namespace SobekCM.Library.Citation.SectionWriter
                     case "SobekCM.Library.Citation.SectionWriter.Coordinates_SectionWriter":
                         returnValue = new Coordinates_SectionWriter();
                         break;
+                    case "SobekCM.Library.Citation.SectionWriter.Creator_SectionWriter":
+                        returnValue = new Creator_SectionWriter();
+                        break;
                     case "SobekCM.Library.Citation.SectionWriter.Rights_SectionWriter":
                         returnValue = new Rights_SectionWriter();
                         break;

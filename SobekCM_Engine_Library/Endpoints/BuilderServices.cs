@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
+using System.Text;
 using System.Web;
 using SobekCM.Core.Builder;
 using SobekCM.Core.MemoryMgmt;
@@ -437,10 +438,10 @@ namespace SobekCM.Engine_Library.Endpoints
                 // Start the JSON response for this row
                 DataRow thisRow = logTable.Rows[i];
 
-                Response.Output.Write("[\"" + thisRow[dateColumn] + "\", ");
-                Response.Output.Write("\"" + thisRow[bibVidColumn] + "\", ");
-                Response.Output.Write("\"" + thisRow[typeColumn] + "\", ");
-                Response.Output.Write("\"" + thisRow[messageColumn] + "\" ");
+                Response.Output.Write("[\"" + thisRow[dateColumn].ToString().Replace("\"", "'") + "\", ");
+                Response.Output.Write("\"" + thisRow[bibVidColumn].ToString().Replace("\"", "'") + "\", ");
+                Response.Output.Write("\"" + thisRow[typeColumn].ToString().Replace("\"","'") + "\", ");
+                Response.Output.Write("\"" + thisRow[messageColumn].ToString().Replace("\"", "'").Replace(@"\", @"\\").Replace("\n", "\\n").Replace("\r", "") + "\" "); 
 
                 // Finish this row
                 if ((i < displayStart + displayLength - 1) && (i < total_results - 1))

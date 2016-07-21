@@ -405,6 +405,10 @@ namespace SobekCM.Library.HTML
             if (RequestSpecificValues.Current_Mode.Request_Completed)
                 return;
 
+            // If there were NO views, then pageViewer could be null
+            if (pageViewer == null)
+                pageViewer = new NoViews_ItemViewer();
+
             RequestSpecificValues.Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Created " + pageViewer.GetType().ToString().Replace("SobekCM.Library.ItemViewer.Viewers.", ""));
 
             // Assign the rest of the information, if a page viewer was created
@@ -413,7 +417,10 @@ namespace SobekCM.Library.HTML
             {
                 // Get the list of any special behaviors
                 pageViewerBehaviors = pageViewer.ItemViewer_Behaviors;
-                behaviors.AddRange(pageViewerBehaviors);
+                if ( pageViewerBehaviors != null )
+                    behaviors.AddRange(pageViewerBehaviors);
+                else
+                    pageViewerBehaviors = new List<HtmlSubwriter_Behaviors_Enum>();
             }
             else
             {
