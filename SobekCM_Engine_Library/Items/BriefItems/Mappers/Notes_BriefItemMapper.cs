@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using SobekCM.Core.BriefItem;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
@@ -37,7 +38,11 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                         {
                             if (thisNote.Note_Type != Note_Type_Enum.InternalComments)
                             {
-                                New.Add_Description("Note", thisNote.Note).SubTerm = thisNote.Note_Type_Display_String;
+                                BriefItem_DescTermValue newAbstract = New.Add_Description("Note", thisNote.Note);
+                                newAbstract.SubTerm = thisNote.Note_Type_Display_String;
+
+                                if (!String.IsNullOrWhiteSpace(thisNote.Display_Label))
+                                    newAbstract.SubTerm = thisNote.Display_Label;
                             }
                         }
                     }

@@ -2636,6 +2636,7 @@ namespace SobekCM.Engine_Library.Configuration
                             {
                                 case "subterm":
                                     currElement.OverrideDisplayTerm = CitationElement_OverrideDispayTerm_Enum.subterm;
+                                    currElement.IndividualFields = true;
                                     break;
 
                                 default:
@@ -2668,6 +2669,7 @@ namespace SobekCM.Engine_Library.Configuration
                             {
                                 case "subterm":
                                     currElement.OverrideDisplayTerm = CitationElement_OverrideDispayTerm_Enum.subterm;
+                                    currElement.IndividualFields = true;
                                     break;
 
                                 default:

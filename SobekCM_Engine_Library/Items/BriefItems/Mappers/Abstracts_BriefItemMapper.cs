@@ -25,14 +25,13 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             {
                 foreach (Abstract_Info thisAbstract in Original.Bib_Info.Abstracts)
                 {
+                    BriefItem_DescTermValue newAbstract = New.Add_Description("Abstract", thisAbstract.Abstract_Text);
+
                     if (!String.IsNullOrWhiteSpace(thisAbstract.Display_Label))
-                    {
-                        New.Add_Description("Abstract", thisAbstract.Abstract_Text).SubTerm = thisAbstract.Display_Label;
-                    }
-                    else
-                    {
-                        New.Add_Description("Abstract", thisAbstract.Abstract_Text);
-                    }
+                        newAbstract.SubTerm = thisAbstract.Display_Label;
+
+                    if (!String.IsNullOrWhiteSpace(thisAbstract.Language))
+                        newAbstract.Language = thisAbstract.Language;
                 }
             }
 

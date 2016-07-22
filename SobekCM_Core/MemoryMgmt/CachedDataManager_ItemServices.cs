@@ -103,14 +103,11 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Now, remove the actual item
-            string key = "ITEM_" + BibID + "_" + VID;
+            HttpContext.Current.Cache.Remove("ITEM_" + BibID + "_" + VID);
             if (UserID > 0)
             {
-                key = "USERITEM" + UserID + "_" + key;
+                HttpContext.Current.Cache.Remove("USERITEM" + UserID + "_ITEM_" + BibID + "_" + VID);
             }
-
-            // Clear this from the local cache
-            HttpContext.Current.Cache.Remove(key);
         }
 
 
