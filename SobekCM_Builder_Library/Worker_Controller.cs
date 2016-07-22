@@ -34,7 +34,7 @@ namespace SobekCM.Builder_Library
         /// <summary> Constructor for a new instance of the Worker_Controller class </summary>
         /// <param name="Verbose"> Flag indicates if this should be verbose in the log file and console </param>
         /// <param name="StartUpDirectory"> Local startup directory </param>
-        public Worker_Controller( bool Verbose, string StartUpDirectory )
+        public Worker_Controller( bool Verbose )
         {
             verbose = Verbose;
             controllerStarted = DateTime.Now;
@@ -51,7 +51,7 @@ namespace SobekCM.Builder_Library
             // Determine, and create the local work space
             try
             {
-                logFileDirectory = Path.Combine(StartUpDirectory, "logs");
+                logFileDirectory = Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "logs");
                 if (!Directory.Exists(logFileDirectory))
                 {
                     Console.WriteLine("Creating local log directory: " + logFileDirectory);
@@ -65,7 +65,7 @@ namespace SobekCM.Builder_Library
             }
 
             // Determine and create the plugins work space
-            pluginRootDirectory = Path.Combine(StartUpDirectory, "plugins");
+            pluginRootDirectory = Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "plugins");
             try
             {
                 if (!Directory.Exists(pluginRootDirectory))

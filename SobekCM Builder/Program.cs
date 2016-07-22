@@ -194,9 +194,11 @@ namespace SobekCM.Builder
 		        }
 	        }
 
+            // Get the root directory
+            MultiInstance_Builder_Settings.Builder_Executable_Directory = Application.StartupPath;
+
             // Verify connectivity and rights on the logs subfolder
-            string uri = System.Reflection.Assembly.GetExecutingAssembly().CodeBase.Replace("file:///","");
-            string logFileDirectory = Path.Combine(new FileInfo(uri).Directory.FullName, "logs");
+            string logFileDirectory = Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "logs");
             if (!Directory.Exists(logFileDirectory))
             {
                 try
@@ -287,7 +289,7 @@ namespace SobekCM.Builder
             //}
 
             // Controller always runs in background mode
-            Worker_Controller controller = new Worker_Controller(verbose, Application.StartupPath );
+            Worker_Controller controller = new Worker_Controller(verbose );
             controller.Execute_In_Background();
 
             // If this was set to aborting, set to last execution aborted

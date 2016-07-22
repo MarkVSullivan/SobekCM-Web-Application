@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using SobekCM.Builder_Library.Settings;
 using SobekCM.Builder_Library.Tools;
 
 #endregion
@@ -96,9 +97,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                 }
                 catch (Exception ee)
                 {
-                    string startupPath = Assembly.GetExecutingAssembly().CodeBase;
-
-                    StreamWriter errorWriter = new StreamWriter( Path.Combine(startupPath, "Logs\\error.log"), true);
+                    StreamWriter errorWriter = new StreamWriter(Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "Logs\\error.log"), true);
                     errorWriter.WriteLine("Message: " + ee.Message);
                     errorWriter.WriteLine("Stack Trace: " + ee.StackTrace);
                     errorWriter.Flush();

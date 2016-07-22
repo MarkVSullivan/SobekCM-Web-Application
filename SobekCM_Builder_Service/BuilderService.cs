@@ -73,7 +73,9 @@ namespace SobekCM_Builder_Service
             }
 
             // Verify connectivity and rights on the logs subfolder
-            string logFileDirectory = Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().CodeBase, "logs");
+            string startUpFile = System.Reflection.Assembly.GetExecutingAssembly().CodeBase.Replace("file://", "");
+            MultiInstance_Builder_Settings.Builder_Executable_Directory = (new FileInfo(startUpFile)).Directory.FullName;
+            string logFileDirectory = Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "logs");
             if (!Directory.Exists(logFileDirectory))
             {
                 try
@@ -118,7 +120,7 @@ namespace SobekCM_Builder_Service
                 Engine_ApplicationCache_Gateway.Settings.Builder.ImageMagick_Executable = possible_imagemagick;
 
             // Two ways to run this... constantly in background or once
-            Worker_Controller controller = new Worker_Controller(true, logFileDirectory);
+            Worker_Controller controller = new Worker_Controller(true);
             controller.Execute_In_Background();
 
             // If this was set to aborting, set to last execution aborted

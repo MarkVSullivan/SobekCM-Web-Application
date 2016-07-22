@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using SobekCM.Builder_Library.Settings;
 using SobekCM.Library.Database;
 using SobekCM.Resource_Object.Divisions;
 
@@ -19,8 +20,6 @@ namespace SobekCM.Builder_Library.Modules.Items
         /// <returns> TRUE if processing can continue, FALSE if a critical error occurred which should stop all processing </returns>
         public override bool DoWork(Incoming_Digital_Resource Resource)
         {
-            string startupPath = Assembly.GetExecutingAssembly().CodeBase;
-
             // Ensure a thumbnail is attached
             if ((Resource.Metadata.Behaviors.Main_Thumbnail.Length == 0) ||
                 ((Resource.Metadata.Behaviors.Main_Thumbnail.IndexOf("http:") < 0) && (!File.Exists(Path.Combine(Resource.Resource_Folder, Resource.Metadata.Behaviors.Main_Thumbnail)))))
@@ -45,9 +44,9 @@ namespace SobekCM.Builder_Library.Modules.Items
                                 string mimetype = thisDownloadFile.MIME_Type(thisDownloadFile.File_Extension).ToUpper();
                                 if ((mimetype.IndexOf("AUDIO") >= 0) || (mimetype.IndexOf("VIDEO") >= 0))
                                 {
-                                    if (File.Exists(Path.Combine(startupPath, "images\\multimedia.jpg")))
+                                    if (File.Exists(Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "images\\multimedia.jpg")))
                                     {
-                                        File.Copy(Path.Combine(startupPath, "images\\multimedia.jpg"), Path.Combine(Resource.Resource_Folder, "multimediathm.jpg"), true);
+                                        File.Copy(Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "images\\multimedia.jpg"), Path.Combine(Resource.Resource_Folder, "multimediathm.jpg"), true);
                                         Resource.Metadata.Behaviors.Main_Thumbnail = "multimediathm.jpg";
                                     }
                                     break;

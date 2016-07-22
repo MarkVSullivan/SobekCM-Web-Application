@@ -13,6 +13,9 @@ namespace SobekCM.Builder_Library.Settings
             Instances = new List<Single_Instance_Configuration>();
         }
 
+        /// <summary> Directory in which the builder is currently running </summary>
+        public static string Builder_Executable_Directory { get; set; }
+
         /// <summary> Maximum number of packages to process for each instance, before moving onto the 
         /// instance  </summary>
         /// <remarks> -1 is the default value and indicates no limit </remarks>

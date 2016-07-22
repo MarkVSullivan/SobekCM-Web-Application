@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using SobekCM.Builder_Library.Settings;
+using SobekCM.Engine_Library.Email;
 using SobekCM.Resource_Object.Utilities;
 
 #endregion
@@ -119,7 +120,19 @@ namespace SobekCM.Builder_Library.Modules.Items
             }
             else
             {
+                // Put this in the builder logs
                 OnError(NewMessage, BibID_VID, String.Empty, ParentLogID);
+
+                // Email a message
+                string email_address = Settings.Email.System_Error_Email;
+                if (String.IsNullOrWhiteSpace(email_address))
+                    email_address = Settings.Email.System_Email;
+                if (!String.IsNullOrEmpty(email_address))
+                {
+                    Email_Helper.SendEmail(email_address, "Image Derivation Error : " + BibID_VID, "An error was encountered while creating images for the web from the provided files in the SobekCM Builder service.  Processing of this item will be incomplete.\n\n" + NewMessage + "\n\nPlease review this item and correct the issue, most likely by checking the TIFFs and reloading them.", false, Settings.System.System_Name);
+                }
+
+                // This will indicate a failure
                 returnValue = false;
             }
         }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using SobekCM.Builder_Library.Settings;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.Aggregations;
@@ -30,7 +31,7 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
                 return;
 
             // Determine, and create the local work space
-            string localWorkArea = Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().CodeBase, "temp");
+            string localWorkArea = Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "temp");
 
             try
             {

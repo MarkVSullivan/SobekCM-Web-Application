@@ -949,6 +949,29 @@ namespace SobekCM.Library.Database
 					Resource.Behaviors.Add_Web_Skin(skinRow[0].ToString().ToUpper());
 				}
 
+                // Add the views
+			    Resource.Behaviors.Clear_Views();
+			    foreach (DataRow viewRow in tempSet.Tables[4].Rows)
+			    {
+			        string viewType = viewRow[0].ToString();
+                    string attributes = viewRow[1].ToString();
+                    string label = viewRow[2].ToString();
+			        double menuOrder = Double.Parse(viewRow[3].ToString());
+			        bool exclude = Boolean.Parse(viewRow[4].ToString());
+
+                    // Create new database title object for this
+                    View_Object result = new View_Object
+                    {
+                        View_Type = viewType,
+                        Attributes = attributes,
+                        Label = label,
+                        MenuOrder = (float)menuOrder,
+                        Exclude = exclude
+                    };
+
+                    Resource.Behaviors.Add_View(result);
+			    }
+
 				// Return the first table from the returned dataset
 				return true;
 			}

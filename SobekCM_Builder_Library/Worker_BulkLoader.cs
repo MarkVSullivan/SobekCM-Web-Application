@@ -931,7 +931,7 @@ namespace SobekCM.Builder_Library
 
 
             // Determine, and create the local work space
-            string localLogArea = Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().CodeBase, "logs");
+            string localLogArea = Path.Combine(MultiInstance_Builder_Settings.Builder_Executable_Directory, "logs");
 
             if (!Directory.Exists(localLogArea))
                 Directory.CreateDirectory(localLogArea);
