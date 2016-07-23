@@ -694,5 +694,16 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Gets the CSS class of the container that the page is wrapped within </summary>
         public override string Container_CssClass { get { return "container-inner1000"; } }
+
+
+        /// <summary> Write any additional values within the HTML Head of the final served page </summary>
+        /// <param name="Output"> Output stream currently within the HTML head tags </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
+        /// <returns> TRUE if this should completely override the default added by the admin or mySobek viewer </returns>
+        public override bool Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        {
+            Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            return false;
+        }
     }
 }

@@ -292,12 +292,12 @@ namespace SobekCM.Library.HTML
         /// database and hands off to the <see cref="CachedDataManager" /> to store in the cache. </remarks>
         protected static bool Get_Collection(Navigation_Object Current_Mode, Custom_Tracer Tracer, out Item_Aggregation Aggregation_Object)
         {
+            string languageCode = Web_Language_Enum_Converter.Enum_To_Code(Current_Mode.Language);
+
             if (Tracer != null)
             {
-                Tracer.Add_Trace("abstractHtmlSubwriter.Get_Collection", String.Empty);
+                Tracer.Add_Trace("abstractHtmlSubwriter.Get_Collection", "Get " + Current_Mode.Aggregation + " for " + languageCode );
             }
-
-            string languageCode = Web_Language_Enum_Converter.Enum_To_Code(Current_Mode.Language);
 
             // If there is an aggregation listed, try to get that now
             if ((Current_Mode.Aggregation.Length > 0) && (Current_Mode.Aggregation != "all"))
@@ -305,18 +305,18 @@ namespace SobekCM.Library.HTML
                 // Try to pull the aggregation information
                 Aggregation_Object = CachedDataManager.Aggregations.Retrieve_Item_Aggregation(Current_Mode.Aggregation, Web_Language_Enum_Converter.Code_To_Enum(languageCode), Tracer);
                 if (Aggregation_Object != null)
+                {
+                    set_web_skin_from_aggregation(Current_Mode, Aggregation_Object);
                     return true;
+                }
 
-                // Get the item aggregation from the Sobek Engine Client
+                // Get the item aggregation from the Sobek Engine Client (which checks the local cache as well)
                 Aggregation_Object = SobekEngineClient.Aggregations.Get_Aggregation(Current_Mode.Aggregation, Web_Language_Enum_Converter.Code_To_Enum(languageCode), UI_ApplicationCache_Gateway.Settings.System.Default_UI_Language, Tracer);
 
                 // Return if this was valid
                 if (Aggregation_Object != null)
                 {
-                    if ((Current_Mode.Skin_In_URL != true) && (!String.IsNullOrEmpty(Aggregation_Object.Default_Skin)))
-                    {
-                        Current_Mode.Skin = Aggregation_Object.Default_Skin.ToLower();
-                    }
+                    set_web_skin_from_aggregation(Current_Mode, Aggregation_Object);
                     return true;
                 }
 
@@ -326,6 +326,46 @@ namespace SobekCM.Library.HTML
 
             return Get_Top_Level_Collection(Current_Mode, Tracer, out Aggregation_Object);
         }
+
+	    private static void set_web_skin_from_aggregation(Navigation_Object Current_Mode, Item_Aggregation Aggregation_Object)
+	    {
+            // If th aggregation can only display under certain web skins, see if the current is acceptable
+            // Do NOT do this replacement if the web skin is in the URL and this is admin mode
+            if ((!Current_Mode.Skin_In_URL) || (Current_Mode.Mode != Display_Mode_Enum.Administrative))
+            {
+                // Is there a list of acceptible web skins?
+                if ((Aggregation_Object.Web_Skins != null) && (Aggregation_Object.Web_Skins.Count > 0))
+                {
+                    string currentWebSkin = Current_Mode.Skin;
+                    bool acceptableSkin = false;
+                    foreach (string aggrWebSkin in Aggregation_Object.Web_Skins)
+                    {
+                        if (String.Compare(currentWebSkin, aggrWebSkin, StringComparison.OrdinalIgnoreCase) == 0)
+                        {
+                            acceptableSkin = true;
+                            break;
+                        }
+                    }
+
+                    // If no match found, assign the skin
+                    if (!acceptableSkin)
+                    {
+                        // Use default skin if there
+                        if (!String.IsNullOrWhiteSpace(Aggregation_Object.Default_Skin))
+                        {
+                            Current_Mode.Skin = Aggregation_Object.Default_Skin.ToLower();
+                        }
+                        else
+                        {
+                            Current_Mode.Skin = Aggregation_Object.Web_Skins[0];
+                        }
+
+                        // Let the nav object know this was a default
+                        Current_Mode.Default_Skin = Current_Mode.Skin;
+                    }
+                }
+            }
+	    }
 
         /// <summary> Gets the item aggregation and search fields for the current item aggregation </summary>
         /// <param name="Current_Mode"> Mode / navigation information for the current request</param>

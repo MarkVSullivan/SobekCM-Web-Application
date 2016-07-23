@@ -320,5 +320,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             // Do nothing
         }
+
+        /// <summary> Any additional inline style for this viewer that affects the main box around this</summary>
+        /// <remarks> This makes the main viewport NOT centered, since this will be made full page by javascript anyway </remarks>
+        public override string ViewerBox_InlineStyle
+        {
+            get
+            {
+                return "margin-left:10px; margin-right:10px; ";
+            }
+        }
     }
 }

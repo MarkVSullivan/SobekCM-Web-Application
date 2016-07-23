@@ -201,7 +201,7 @@ UL.sbkIsw_NavBarMenu { PADDING: 0; MARGIN: 0; WIDTH: 100%; WHITE-SPACE: nowrap; 
 #sbkCiv_LocationList dd { margin-left: 100px; }
 
 /** DOWNLOAD_ITEMVIEWER (For any downloads related to the resource) */
-#sbkDiv_MainArea { width: 100%; COLOR: #222222; BACKGROUND-COLOR: #ffffff;}
+#sbkDiv_MainArea { width: 100%; COLOR: #222222; BACKGROUND-COLOR: #ffffff;text-align: left;}
 #sbkDiv_MainArea h2 { font-size: 1.1em;font-weight: bold;padding: 15px 0 0 50px;  }
 #sbkDiv_MainArea p { padding-left: 75px;padding-right: 50px; }
 #sbkDiv_Downloads { padding: 25px 0 100px 100px; }

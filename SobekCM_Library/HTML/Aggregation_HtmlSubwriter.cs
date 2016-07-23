@@ -78,19 +78,19 @@ namespace SobekCM.Library.HTML
                 return;
             }
 
-            // Check if a differente skin should be used if this is a collection display
-            string current_skin_code = RequestSpecificValues.Current_Mode.Skin.ToUpper();
-            if ((hierarchyObject != null) && (hierarchyObject.Web_Skins != null) && (hierarchyObject.Web_Skins.Count > 0))
-            {
-                // Do NOT do this replacement if the web skin is in the URL and this is admin mode
-                if ((!RequestSpecificValues.Current_Mode.Skin_In_URL) || (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Administrative))
-                {
-                    if (!hierarchyObject.Web_Skins.Contains(current_skin_code.ToLower()))
-                    {
-                        RequestSpecificValues.Current_Mode.Skin = hierarchyObject.Web_Skins[0];
-                    }
-                }
-            }
+            //// Check if a differente skin should be used if this is a collection display
+            //string current_skin_code = RequestSpecificValues.Current_Mode.Skin.ToUpper();
+            //if ((hierarchyObject != null) && (hierarchyObject.Web_Skins != null) && (hierarchyObject.Web_Skins.Count > 0))
+            //{
+            //    // Do NOT do this replacement if the web skin is in the URL and this is admin mode
+            //    if ((!RequestSpecificValues.Current_Mode.Skin_In_URL) || (RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Administrative))
+            //    {
+            //        if (!hierarchyObject.Web_Skins.Contains(current_skin_code.ToLower()))
+            //        {
+            //            RequestSpecificValues.Current_Mode.Skin = hierarchyObject.Web_Skins[0];
+            //        }
+            //    }
+            //}
             
             // Run the browse/info work if it is of those modes
             if (((RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info) || (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Child_Page_Edit)))

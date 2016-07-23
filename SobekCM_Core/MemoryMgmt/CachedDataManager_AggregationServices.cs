@@ -126,7 +126,8 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Determine the key
-            string key = "AGGR|" + AggregationCode.ToUpper() + "|" + Web_Language_Enum_Converter.Enum_To_Code(Language);
+            string languageCode = Web_Language_Enum_Converter.Enum_To_Code(Language);
+            string key = "AGGR|" + AggregationCode.ToUpper() + "|" + languageCode;
 
             // See if this is in the local cache first
             Item_Aggregation returnValue = HttpContext.Current.Cache.Get(key) as Item_Aggregation;
@@ -134,7 +135,7 @@ namespace SobekCM.Core.MemoryMgmt
             {
                 if (Tracer != null)
                 {
-                    Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Found item aggregation on local cache");
+                    Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Found " + AggregationCode + " item aggregation on local cache for " + languageCode);
                 }
 
                 return returnValue;
@@ -142,7 +143,7 @@ namespace SobekCM.Core.MemoryMgmt
 
             if (Tracer != null)
             {
-                Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Aggregation not found in either the local cache ");
+                Tracer.Add_Trace("CachedDataManager.Retrieve_Item_Aggregation", "Aggregation ( " + AggregationCode + " ) not found in the local cache for " + languageCode );
             }
 
             // Since everything failed, just return null

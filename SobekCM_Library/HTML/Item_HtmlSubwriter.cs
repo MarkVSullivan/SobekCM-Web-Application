@@ -1403,8 +1403,6 @@ namespace SobekCM.Library.HTML
         {
             Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Closing", "Close the item viewer and add final pagination");
 
-            Tracer.Add_Trace("Item_HtmlSubwriter.Write_ItemNavForm_Closing", "Close the item viewer and add final pagination");
-
             // If this is the page turner viewer, don't draw anything else
             //if ((pageViewer != null) && (pageViewer.ItemViewer_Type == ItemViewer_Type_Enum.GnuBooks_PageTurner))
             //{
@@ -1439,26 +1437,23 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("\t</tr>");
             }
 
-            //if (pageViewer != null && ((currentItem.Behaviors.Single_Use) && (pageViewer.ItemViewer_Type != ItemViewer_Type_Enum.Checked_Out)))
-            //{
-            //    Output.WriteLine("<tr><td><span id=\"sbkIsw_CheckOutRequired\">This item contains copyrighted material and is reserved for single (fair) use.  Once you finish working with this item,<br />it will return to the digital stacks in fifteen minutes for another patron to use.<br /><br /></span></td></tr>");
-            //}
+            // Close the item viewer table and section for main viewering
             Output.WriteLine("</table>");
             Output.WriteLine("</section>");
 
-            // Add a spot for padding
-            Output.WriteLine();
-            Output.WriteLine("<!-- Division is used to add extra bottom padding, if the left nav bar is taller than the item viewer -->");
-            Output.WriteLine("<div id=\"sbkIsw_BottomPadding\"></div>");
-            Output.WriteLine();
+            // Only need extra padding if the left nav bar was shown
+            if (ShouldLeftNavigationBarBeShown)
+            {
+                // Add a spot for padding
+                Output.WriteLine();
+                Output.WriteLine("<!-- Division is used to add extra bottom padding, if the left nav bar is taller than the item viewer -->");
+                Output.WriteLine("<div id=\"sbkIsw_BottomPadding\"></div>");
+                Output.WriteLine();
 
-            // Close the item scope div
-            Output.WriteLine("<!-- Close microdata itemscope div -->");
-            Output.WriteLine("</section>");
-            Output.WriteLine();
-
-            Output.WriteLine("<!-- Close the presentation table -->");
-            Output.WriteLine("</td></tr></table>");
+                // Close the presentation table
+                Output.WriteLine("<!-- Close the presentation table -->");
+                Output.WriteLine("</td></tr></table>");
+            }
 
             // None of the sharing options are available if the user is restricted from this item
             // or if we are generating this as a static page source for robots
@@ -1482,7 +1477,10 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("<script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Ui_1_10_3_Draggable_Js + "\"></script>");
 	        }
 
-
+            // Close the item scope div
+            Output.WriteLine("<!-- Close microdata itemscope div -->");
+            Output.WriteLine("</section>");
+            Output.WriteLine();
         }
 
         /// <summary> Gets the collection of body attributes to be included 
@@ -1649,9 +1647,10 @@ namespace SobekCM.Library.HTML
             if (treeView1.SelectedNode != null)
             {
                 string currentNodeID = treeView1.SelectedNode.Value;
-                if ((currentNodeID.Length > 0) && (Convert.ToInt32(currentNodeID) > 0))
+                int currentNodeId_Int;
+                if ((currentNodeID.Length > 0) && ( Int32.TryParse(currentNodeID, out currentNodeId_Int)) && ( currentNodeId_Int >= 0 ))
                 {
-                    RequestSpecificValues.Current_Mode.Page = Convert.ToUInt16(currentNodeID);
+                    RequestSpecificValues.Current_Mode.Page = Convert.ToUInt16(currentNodeId_Int);
                     RequestSpecificValues.Current_Mode.ViewerCode = currentNodeID;
                 }
                 else
@@ -1684,6 +1683,7 @@ namespace SobekCM.Library.HTML
             foreach (BriefItem_TocElement divNode in currentItem.Images_TOC)
             {
                 TreeNode treeViewNode = new TreeNode { Text = string.Format("<span class=\"sbkIsw_TocTreeViewItem\" Title=\"{0}\">{1}</span>", divNode.Name, divNode.Shortened_Name) };
+                treeViewNode.Value = divNode.Sequence.ToString();
                 TreeViewArg.Nodes.Add(treeViewNode);
                 nodes.Add(treeViewNode);
                // List<TreeNode> pathNodes = new List<TreeNode> { treeViewNode };

@@ -767,14 +767,14 @@ namespace SobekCM.Engine_Library.Endpoints
                     if (parentAggr != null)
                     {
                         if (String.Compare(parentAggr.Code, "all", StringComparison.InvariantCultureIgnoreCase) == 0)
-                            link_to_parent = "<br />" + Environment.NewLine + " ← Back to <a href=\"<%BASEURL%>\" alt=\"Return to parent collection\">" + parentAggr.Name + "</a>" + Environment.NewLine;
+                            link_to_parent = "<p>&larr; Back to <a href=\"<%BASEURL%>\" alt=\"Return to parent collection\">" + parentAggr.Name + "</a></p>" + Environment.NewLine;
                         else
-                            link_to_parent = "<br />" + Environment.NewLine + " ← Back to <a href=\"<%BASEURL%>" + parentAggr.Code + "\" alt=\"Return to parent collection\">" + parentAggr.Name + "</a>" + Environment.NewLine;
+                            link_to_parent = "<p>&larr; Back to <a href=\"<%BASEURL%>" + parentAggr.Code + "\" alt=\"Return to parent collection\">" + parentAggr.Name + "</a></p>" + Environment.NewLine;
                     }
 
                     // Create a default home text file
                     StreamWriter writer = new StreamWriter(folder + "/html/home/text.html");
-                    writer.WriteLine(link_to_parent + "<br />" + Environment.NewLine + "<h3>About " + NewAggregation.Name + "</h3>" + Environment.NewLine + "<p>" + NewAggregation.Description + "</p>" + Environment.NewLine + "<p>To edit this, log on as the aggregation admin and hover over this text to edit it.</p>" + Environment.NewLine + "<br />");
+                    writer.WriteLine(link_to_parent + "<h3>About " + NewAggregation.Name + "</h3>" + Environment.NewLine + "<p>" + NewAggregation.Description + "</p>" + Environment.NewLine + "<p>To edit this, log on as the aggregation admin and hover over this text to edit it.</p>" + Environment.NewLine );
 
                     writer.Flush();
                     writer.Close();
