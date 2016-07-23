@@ -1208,7 +1208,7 @@ namespace SobekCM.Engine_Library.Endpoints
         /// <param name="Protocol"></param>
         /// <param name="RequestForm"></param>
         /// <param name="IsDebug"></param>
-        public void Add_Milestone(HttpResponse Response, List<string> UrlSegments, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
+        public void Add_Milestone(HttpResponse Response, List<string> UrlSegments, NameValueCollection QueryString, Microservice_Endpoint_Protocol_Enum Protocol, NameValueCollection RequestForm, bool IsDebug)
         {
             Custom_Tracer tracer = new Custom_Tracer();
 
@@ -4882,14 +4882,19 @@ namespace SobekCM.Engine_Library.Endpoints
                 if ( IsDebug )
                     tracer.Add_Trace("WebContentServices.Get_All_Sitemaps", "Sitemap directory: " + sitemap_directory);
 
+                // Create the return value
+                returnValue = new List<string>();
+
                 try
                 {
                     // Get the sitemaps files from the directory
-                    string[]  sitemapFiles = Directory.GetFiles(sitemap_directory, "*.sitemap");
-                    returnValue = new List<string>();
-                    foreach (string thisSitemap in sitemapFiles)
+                    if (Directory.Exists(sitemap_directory))
                     {
-                        returnValue.Add(Path.GetFileName(thisSitemap).Replace(".sitemap", ""));
+                        string[] sitemapFiles = Directory.GetFiles(sitemap_directory, "*.sitemap");
+                        foreach (string thisSitemap in sitemapFiles)
+                        {
+                            returnValue.Add(Path.GetFileName(thisSitemap).Replace(".sitemap", ""));
+                        }
                     }
                 }
                 catch (Exception ee)
