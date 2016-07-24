@@ -556,7 +556,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 if (currentItem == null)
                 {
                     Tracer.Add_Trace("ItemServices.getSobekItem", "Unable to find the digital resource on the cache.. will build");
-                    currentItem = SobekCM_Item_Factory.Get_Item(BibID, VID, Engine_ApplicationCache_Gateway.Icon_List, Engine_ApplicationCache_Gateway.Item_Viewer_Priority, Tracer);
+                    currentItem = SobekCM_Item_Factory.Get_Item(BibID, VID, Engine_ApplicationCache_Gateway.Icon_List, Tracer);
                     if (currentItem != null)
                     {
                         Tracer.Add_Trace("ItemServices.getSobekItem", "Store the digital resource object to the cache");
@@ -596,7 +596,7 @@ namespace SobekCM.Engine_Library.Endpoints
                 if (currentItem == null)
                 {
                     Tracer.Add_Trace("ItemServices.getSobekItem", "Unable to find the digital resource on the cache.. will build");
-                    currentItem = SobekCM_Item_Factory.Get_Item(BibID, VID, Engine_ApplicationCache_Gateway.Icon_List, Engine_ApplicationCache_Gateway.Item_Viewer_Priority, Tracer);
+                    currentItem = SobekCM_Item_Factory.Get_Item(BibID, VID, Engine_ApplicationCache_Gateway.Icon_List, Tracer);
                     if (currentItem != null)
                     {
                         Tracer.Add_Trace("ItemServices.getSobekItem", "Store the digital resource object to the cache");
@@ -659,7 +659,7 @@ namespace SobekCM.Engine_Library.Endpoints
             // If not pulled from the cache, then we will have to build the item
 
             Tracer.Add_Trace("ItemServices.getSobekItemGroup", "Unable to find the digital resource on the cache.. will build");
-            currentItem = SobekCM_Item_Factory.Get_Item_Group(BibID, Engine_ApplicationCache_Gateway.Icon_List, Engine_ApplicationCache_Gateway.Item_Viewer_Priority, Tracer);
+            currentItem = SobekCM_Item_Factory.Get_Item_Group(BibID, Engine_ApplicationCache_Gateway.Icon_List, Tracer);
             if (currentItem != null)
             {
                 Tracer.Add_Trace("ItemServices.getSobekItemGroup", "Store the digital resource object to the cache");
@@ -721,7 +721,7 @@ namespace SobekCM.Engine_Library.Endpoints
             if (currentItem == null)
             {
                 Tracer.Add_Trace("ItemServices.getSobekTitle", "Unable to find the digital resource on the cache.. will build");
-                currentItem = SobekCM_Item_Factory.Get_Item_Group(BibID, Engine_ApplicationCache_Gateway.Icon_List, Engine_ApplicationCache_Gateway.Item_Viewer_Priority, Tracer);
+                currentItem = SobekCM_Item_Factory.Get_Item_Group(BibID, Engine_ApplicationCache_Gateway.Icon_List, Tracer);
                 if (currentItem != null)
                 {
                     // Make a few adjustments here.

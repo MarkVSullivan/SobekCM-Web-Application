@@ -529,11 +529,6 @@ namespace SobekCM.Builder_Library
             {
                 bool returnValue = Prebuilder.Perform_BulkLoader( Verbose );
 
-                // Save information about this last run
-                Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version);
-                Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
-                Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", Prebuilder.Final_Message);
-
                 if (Prebuilder.Aborted)
                     aborted = true;
 

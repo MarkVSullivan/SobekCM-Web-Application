@@ -852,7 +852,7 @@ namespace SobekCM.Library
                 SobekCM_Item currentItem;
                 Page_TreeNode currentPage;
                 SobekCM_Items_In_Title itemsInTitle;
-				assistant.Get_Item(String.Empty, currentMode, Item_List, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL, UI_ApplicationCache_Gateway.Icon_List, null, tracer, null, out currentItem, out currentPage, out itemsInTitle);
+				assistant.Get_Item(String.Empty, currentMode, Item_List, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL, UI_ApplicationCache_Gateway.Icon_List, tracer, null, out currentItem, out currentPage, out itemsInTitle);
                 currentMode.Aggregation = String.Empty;
                 if (currentItem == null)
                     return false;
@@ -913,7 +913,7 @@ namespace SobekCM.Library
             SobekCM_Item currentItem;
             Page_TreeNode currentPage;
             SobekCM_Items_In_Title itemsInTitle;
-            assistant.Get_Item(String.Empty, currentMode, Item_List, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL, UI_ApplicationCache_Gateway.Icon_List, null, tracer, null, out currentItem, out currentPage, out itemsInTitle);
+            assistant.Get_Item(String.Empty, currentMode, Item_List, UI_ApplicationCache_Gateway.Settings.Servers.Image_URL, UI_ApplicationCache_Gateway.Icon_List, tracer, null, out currentItem, out currentPage, out itemsInTitle);
 		    if (currentItem == null)
 			    return false;
 

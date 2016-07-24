@@ -50,7 +50,6 @@ namespace SobekCM.Engine_Library.ApplicationState
             error = error | !RefreshStopWords();
             error = error | !RefreshIP_Restrictions();
             error = error | !RefreshThematicHeadings();
-            error = error | !RefreshItemViewerPriority();
             error = error | !RefreshUserGroups();
             error = error | !RefreshCollectionAliases();
             error = error | !RefreshMimeTypes();
@@ -78,7 +77,6 @@ namespace SobekCM.Engine_Library.ApplicationState
             error = error | !RefreshStopWords();
             error = error | !RefreshIP_Restrictions();
             error = error | !RefreshThematicHeadings();
-            error = error | !RefreshItemViewerPriority();
             error = error | !RefreshUserGroups();
             error = error | !RefreshCollectionAliases();
             error = error | !RefreshMimeTypes();
@@ -749,47 +747,6 @@ namespace SobekCM.Engine_Library.ApplicationState
                     }
 
                     return thematicHeadings;
-                }
-            }
-        }
-
-
-        #endregion
-
-        #region Properties and methods about the item viewer priority list
-
-        private static List<string> itemViewerPriority;
-        private static readonly Object itemViewerPriorityLock = new Object();
-
-        /// <summary> Refresh the list of item viewer priority by pulling the data back from the database </summary>
-        /// <returns> TRUE if successful, otherwise FALSE </returns>
-        public static bool RefreshItemViewerPriority()
-        {
-            try
-            {
-                lock (itemViewerPriorityLock)
-                {
-                    if (itemViewerPriority != null )
-                        itemViewerPriority.Clear();
-                    itemViewerPriority = Engine_Database.Get_Viewer_Priority(null);
-                }
-
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        /// <summary> Get the list of item viewer priority  (or build the collection and return it) </summary>
-        public static List<string> Item_Viewer_Priority
-        {
-            get
-            {
-                lock (itemViewerPriorityLock)
-                {
-                    return itemViewerPriority ?? (itemViewerPriority = Engine_Database.Get_Viewer_Priority(null));
                 }
             }
         }

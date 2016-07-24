@@ -34,9 +34,8 @@ namespace SobekCM.Engine_Library.Items
 	    /// <summary> Builds an item group object, from a METS file </summary>
 	    /// <param name="BibID"> Bibliographic identifier for the item group to retrieve </param>
 	    /// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the HTML for the icons linked to this digital resource</param>
-	    /// <param name="Item_Viewer_Priority"> List of the globally defined item viewer priorities </param>
 	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-	    public SobekCM_Item Build_Item_Group(string BibID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, List<string> Item_Viewer_Priority, Custom_Tracer Tracer)
+	    public SobekCM_Item Build_Item_Group(string BibID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
 	    {
 	        if (Tracer != null)
 	        {
@@ -225,10 +224,9 @@ namespace SobekCM.Engine_Library.Items
 	    /// <param name="BibID"> Bibliographic identifier for the title </param>
 	    /// <param name="VID"> Volume identifier for the title </param>
 	    /// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the HTML for the icons linked to this digital resource</param>
-        /// <param name="Item_Viewer_Priority"> List of the globally defined item viewer priorities </param>
 	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 	    /// <returns> Fully built version of a digital resource </returns>
-	    public SobekCM_Item Build_Item(string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, List<string> Item_Viewer_Priority, Custom_Tracer Tracer)
+	    public SobekCM_Item Build_Item(string BibID, string VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 				{
@@ -287,7 +285,7 @@ namespace SobekCM.Engine_Library.Items
 				bool multiple_volumes_exist = Convert.ToInt32(mainItemRow["Total_Volumes"]) > 1;
 
 				// Now finish building the object from the application state values
-				Finish_Building_Item(thisPackage, itemDetails, multiple_volumes_exist, Item_Viewer_Priority, Tracer);              
+				Finish_Building_Item(thisPackage, itemDetails, multiple_volumes_exist, Tracer);              
 
 				return thisPackage;
 			}
@@ -304,10 +302,9 @@ namespace SobekCM.Engine_Library.Items
 	    /// <param name="VID"> Volume identifier for the title </param>
 	    /// <param name="METS_Location"> Location of the METS file to read </param>
 	    /// <param name="Icon_Dictionary"> Dictionary of information about every wordmark/icon in this digital library, used to build the HTML for the icons linked to this digital resource</param>
-        /// <param name="Item_Viewer_Priority">  List of the globally defined item viewer priorities  </param>
 	    /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
 	    /// <returns> Fully built version of a digital resource </returns>
-	    public SobekCM_Item Build_Item(string METS_Location, string BibID, String VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, List<string> Item_Viewer_Priority, Custom_Tracer Tracer)
+	    public SobekCM_Item Build_Item(string METS_Location, string BibID, String VID, Dictionary<string, Wordmark_Icon> Icon_Dictionary, Custom_Tracer Tracer)
 		{
 			if (Tracer != null)
 			{
@@ -343,7 +340,7 @@ namespace SobekCM.Engine_Library.Items
 				}
 
 				// Now finish building the object from the application state values
-				Finish_Building_Item(thisPackage, itemDetails, false, Item_Viewer_Priority, Tracer);
+				Finish_Building_Item(thisPackage, itemDetails, false, Tracer);
 
 				return thisPackage;
 			}
@@ -409,7 +406,7 @@ namespace SobekCM.Engine_Library.Items
 
 		#region Private methods for finalizing builds
 
-		private void Finish_Building_Item(SobekCM_Item Package_To_Finalize, DataSet DatabaseInfo, bool Multiple, List<string> Item_Viewer_Priority, Custom_Tracer Tracer )
+		private void Finish_Building_Item(SobekCM_Item Package_To_Finalize, DataSet DatabaseInfo, bool Multiple, Custom_Tracer Tracer )
 		{
            
 			Tracer.Add_Trace("SobekCM_METS_Based_ItemBuilder.Finish_Building_Item", "Load the data from the database into the resource object");

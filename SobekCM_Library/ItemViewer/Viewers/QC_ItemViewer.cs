@@ -269,7 +269,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     (File.GetLastWriteTime(metsInProcessFile).Subtract(DateTime.Now).Hours < 8))
                 {
                     // Read the temporary METS file, and use that to build the qc_item
-                    qc_item = SobekCM_Item_Factory.Get_Item(metsInProcessFile, BriefItem.BibID, BriefItem.VID, null, null, Tracer);
+                    qc_item = SobekCM_Item_Factory.Get_Item(metsInProcessFile, BriefItem.BibID, BriefItem.VID, null, Tracer);
                     qc_item.Source_Directory = SobekFileSystem.Resource_Network_Uri(BriefItem);
                 }
                 else

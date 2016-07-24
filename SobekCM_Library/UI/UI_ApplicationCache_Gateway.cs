@@ -139,12 +139,6 @@ namespace SobekCM.Library.UI
             get { return Engine_ApplicationCache_Gateway.IP_Restrictions; }
         }
 
-        /// <summary> Get the list of item viewer priority  (or build the collection and return it) </summary>
-        public static List<string> Item_Viewer_Priority
-        {
-            get { return Engine_ApplicationCache_Gateway.Item_Viewer_Priority; }
-        }
-
         /// <summary> Get the settings object (or build the object and return it) </summary>
         public static InstanceWide_Settings Settings
         {

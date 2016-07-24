@@ -563,7 +563,6 @@ namespace SobekCM.Library
         /// <param name="All_Items_Lookup"> Lookup object used to pull basic information about any item loaded into this library </param>
         /// <param name="Base_URL"> Base URL for all the digital resource files for items to display </param>
         /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
-        /// <param name="Item_Viewer_Priority"> List of the globally defined item viewer priorities  </param>
         /// <param name="Current_User"> Currently logged on user information (used when editing an item)</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Current_Item"> [OUT] Built single digital resource ready for displaying or editing </param>
@@ -577,14 +576,13 @@ namespace SobekCM.Library
                              Item_Lookup_Object All_Items_Lookup,
                              string Base_URL, 
                              Dictionary<string, Wordmark_Icon> Icon_Table,
-							 List<string> Item_Viewer_Priority,
 							 User_Object Current_User,
                              Custom_Tracer Tracer, 
                              out SobekCM_Item Current_Item, 
                              out Page_TreeNode Current_Page,
                              out SobekCM_Items_In_Title Items_In_Title )
         {
-            return Get_Item(String.Empty, Current_Mode, All_Items_Lookup, Base_URL, Icon_Table, Item_Viewer_Priority, Tracer, Current_User, out Current_Item, out Current_Page, out Items_In_Title);
+            return Get_Item(String.Empty, Current_Mode, All_Items_Lookup, Base_URL, Icon_Table, Tracer, Current_User, out Current_Item, out Current_Page, out Items_In_Title);
         }
 
         /// <summary> Get a digital resource for display or for editing </summary>
@@ -594,7 +592,6 @@ namespace SobekCM.Library
         /// <param name="Base_URL"> Base URL for all the digital resource files for items to display </param>
         /// <param name="Icon_Table"> Dictionary of all the wordmark/icons which can be tagged to the items </param>
         /// <param name="Current_User"> Currently logged on user information (used when editing an item)</param>
-        /// <param name="Item_Viewer_Priority"> List of the globally defined item viewer priorities </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         /// <param name="Current_Item"> [OUT] Built single digital resource ready for displaying or editing </param>
         /// <param name="Current_Page"> [OUT] Build current page for display </param>
@@ -608,7 +605,6 @@ namespace SobekCM.Library
                              Item_Lookup_Object All_Items_Lookup, 
                              string Base_URL, 
                              Dictionary<string, Wordmark_Icon> Icon_Table, 
-							 List<string> Item_Viewer_Priority,
 							 Custom_Tracer Tracer, 
                              User_Object Current_User,
                              out SobekCM_Item Current_Item,
@@ -714,7 +710,7 @@ namespace SobekCM.Library
                         Tracer.Add_Trace("SobekCM_Assistant.Get_Item", "Build the item");
                     }
 
-                    Current_Item = SobekCM_Item_Factory.Get_Item(Current_Mode.BibID, Current_Mode.VID, Icon_Table, Item_Viewer_Priority, Tracer);
+                    Current_Item = SobekCM_Item_Factory.Get_Item(Current_Mode.BibID, Current_Mode.VID, Icon_Table, Tracer);
                     if (Current_Item != null)
                     {
                         if ((Current_Mode.Mode == Display_Mode_Enum.My_Sobek) && (Current_Mode.My_Sobek_Type == My_Sobek_Type_Enum.Edit_Item_Metadata) && (Current_User != null))
@@ -769,7 +765,7 @@ namespace SobekCM.Library
 	            if (Current_Item == null)
 	            {
 		            string bibID = Current_Mode.BibID;
-                    Current_Item = SobekCM_Item_Factory.Get_Item_Group(bibID, Icon_Table, Item_Viewer_Priority, Tracer);
+                    Current_Item = SobekCM_Item_Factory.Get_Item_Group(bibID, Icon_Table, Tracer);
 		            if (Tracer != null)
 		            {
 			            Tracer.Add_Trace("SobekCM_Assistant.Get_Item", "TEST LOG ENTRY");

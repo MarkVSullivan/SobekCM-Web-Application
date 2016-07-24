@@ -58,6 +58,8 @@ namespace SobekCM.Builder_Library
         private readonly int newItemLimit;
         private bool stillPendingItems;
 
+        private bool noFoldersReported;
+
 
 
 
@@ -94,6 +96,7 @@ namespace SobekCM.Builder_Library
             // Set some defaults
             aborted = false;
             refreshed = false;
+            noFoldersReported = false;
 
             Add_NonError_To_Log("Worker_BulkLoader.Constructor: Done", verbose, String.Empty, String.Empty, -1);
         }
@@ -115,13 +118,14 @@ namespace SobekCM.Builder_Library
             finalmessage = String.Empty;
             stillPendingItems = false;
 
-            Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Start", verbose, String.Empty, String.Empty, -1);
+            Add_NonError_To_Log("Starting to perform bulk load", verbose, String.Empty, String.Empty, -1);
 
             // Refresh any settings and item lists 
             if (!Refresh_Settings_And_Item_List())
             {
-                Add_Error_To_Log("Worker_BulkLoader.Perform_BulkLoader: Error refreshing settings and item list", String.Empty, String.Empty, -1);
+                Add_Error_To_Log("Error refreshing settings and item list", String.Empty, String.Empty, -1);
                 finalmessage = "Error refreshing settings and item list";
+                ReportLastRun();
                 return false;
             }
 
@@ -131,13 +135,14 @@ namespace SobekCM.Builder_Library
                 verbose = settings.Builder.Verbose_Flag;
             }
 
-            Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Refreshed settings and item list", verbose, String.Empty, String.Empty, -1);
+            Add_NonError_To_Log("Refreshed settings and item list", verbose, String.Empty, String.Empty, -1);
 
             // Check for abort
             if (CheckForAbort()) 
             {
-                Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Aborted (line 137)", verbose, String.Empty, String.Empty, -1);
+                Add_NonError_To_Log("Aborted (Worker_BulkLoader line 137)", verbose, String.Empty, String.Empty, -1);
                 finalmessage = "Aborted per database request";
+                ReportLastRun();
                 return false; 
             }
 
@@ -177,19 +182,20 @@ namespace SobekCM.Builder_Library
                 thisModule.Settings = settings;
 
 
-            Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Begin completing any recent loads requiring additional work", verbose, String.Empty, String.Empty, -1);
+            Add_NonError_To_Log("Begin completing any recent loads requiring additional work", verbose, String.Empty, String.Empty, -1);
 
             // Handle all packages already on the web server which are flagged for additional work required
             Complete_Any_Recent_Loads_Requiring_Additional_Work();
 
-            Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Finished completing any recent loads requiring additional work", verbose, String.Empty, String.Empty, -1);
+            Add_NonError_To_Log("Finished completing any recent loads requiring additional work", verbose, String.Empty, String.Empty, -1);
 
             // Check for abort
             if (CheckForAbort())
             {
-                Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Aborted (line 151)", verbose, String.Empty, String.Empty, -1);
+                Add_NonError_To_Log("Aborted (Worker_BulkLoader line 151)", verbose, String.Empty, String.Empty, -1);
                 finalmessage = "Aborted per database request";
                 ReleaseResources();
+                ReportLastRun();
                 return false;
             }
 
@@ -200,11 +206,15 @@ namespace SobekCM.Builder_Library
             // Step through all the incoming folders, and run the folder modules
             if (builderSettings.IncomingFolders.Count == 0)
             {
-                Add_NonError_To_Log("Worker_BulkLoader.Move_Appropriate_Inbound_Packages_To_Processing: There are no incoming folders set in the database", "Standard", String.Empty, String.Empty, -1);
+                if (!noFoldersReported)
+                {
+                    Add_NonError_To_Log("There are no incoming folders set in the database", "Standard", String.Empty, String.Empty, -1);
+                    noFoldersReported = true;
+                }
             }
             else
             {
-                Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Begin processing builder folders", verbose, String.Empty, String.Empty, -1);
+                Add_NonError_To_Log("Begin processing builder folders", verbose, String.Empty, String.Empty, -1);
 
                 foreach (Builder_Source_Folder folder in builderSettings.IncomingFolders)
                 {
@@ -215,9 +225,10 @@ namespace SobekCM.Builder_Library
                         // Check for abort
                         if (CheckForAbort())
                         {
-                            Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Aborted (line 151)", verbose, String.Empty, String.Empty, -1);
+                            Add_NonError_To_Log("Aborted (Worker_BulkLoader line 151)", verbose, String.Empty, String.Empty, -1);
                             finalmessage = "Aborted per database request";
                             ReleaseResources();
+                            ReportLastRun();
                             return false;
                         }
 
@@ -234,9 +245,10 @@ namespace SobekCM.Builder_Library
             // Check for abort
             if (CheckForAbort())
             {
-                Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Aborted (line 179)", verbose, String.Empty, String.Empty, -1);
+                Add_NonError_To_Log("Aborted (Worker_BulkLoader line 179)", verbose, String.Empty, String.Empty, -1);
                 finalmessage = "Aborted per database request";
                 ReleaseResources();
+                ReportLastRun();
                 return false;
             }
 
@@ -247,11 +259,12 @@ namespace SobekCM.Builder_Library
                 if (finalmessage.Length == 0)
                     finalmessage = "No New Packages - Process Complete";
                 ReleaseResources();
+                ReportLastRun();
                 return false;
             }
 
             // Iterate through all non-delete resources ready for processing
-            Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Process any incoming packages", verbose, String.Empty, String.Empty, -1);
+            Add_NonError_To_Log("Process any incoming packages", verbose, String.Empty, String.Empty, -1);
             Process_All_Incoming_Packages(incoming_packages);
 
             // Can now release these resources
@@ -261,7 +274,7 @@ namespace SobekCM.Builder_Library
             }
 
             // Process any delete requests ( iterate through all deletes )
-            Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Process any deletes", verbose, String.Empty, String.Empty, -1);
+            Add_NonError_To_Log("Process any deletes", verbose, String.Empty, String.Empty, -1);
             Process_All_Deletes(deletes);
 
             // Can now release these resources
@@ -301,14 +314,27 @@ namespace SobekCM.Builder_Library
                 Add_Complete_To_Log("Process Aborted Cleanly", "Complete", String.Empty, String.Empty, -1);
             }
 
+            // Save information about this last run
+            ReportLastRun();
+
             // Clear lots of collections and such from memory, since we are done processing
             ReleaseResources();
 
 
-            Add_NonError_To_Log("Worker_BulkLoader.Perform_BulkLoader: Done", verbose, String.Empty, String.Empty, -1);
+            Add_NonError_To_Log("Process Done", verbose, String.Empty, String.Empty, -1);
+
+
 
             return stillPendingItems;
 
+        }
+
+        private void ReportLastRun()
+        {
+            // Save information about this last run
+            Library.Database.SobekCM_Database.Set_Setting("Builder Version", Engine_ApplicationCache_Gateway.Settings.Static.Current_Builder_Version);
+            Library.Database.SobekCM_Database.Set_Setting("Builder Last Run Finished", DateTime.Now.ToString());
+            Library.Database.SobekCM_Database.Set_Setting("Builder Last Message", finalmessage);
         }
 
         /// <summary> Release all the resources held in this class and all the related builder modules </summary>

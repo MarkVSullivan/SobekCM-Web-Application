@@ -1,4 +1,6 @@
 
+-- THIS UPGRADES THE SQL DATABASE FROM 4_09_00 to 4_10_00
+
 
 /****** Object:  Index [IX_SobekCM_Item_Viewer_Types_ViewType]    Script Date: 6/4/2016 12:33:10 PM ******/
 if ( not exists ( SELECT 1 FROM sys.indexes WHERE name='IX_SobekCM_Item_Viewer_Types_ViewType' AND object_id = OBJECT_ID('SobekCM_Item_Viewer_Types')))
@@ -161,8 +163,8 @@ update SobekCM_Settings set TabPage='Deprecated', Heading='Deprecated', Hidden=0
 update SobekCM_Settings set TabPage='System / Server Settings', Heading='Server Settings', Hidden=0, Reserved=0, Help='Server share for the web application''s network location.\n\nExample: ''\\\\lib-sandbox\\Production\\''' where Setting_Key='Application Server Network'
 update SobekCM_Settings set TabPage='System / Server Settings', Heading='Server Settings', Hidden=0, Reserved=0, Help='Base URL which points to the web application.\n\nExamples: ''http://localhost/sobekcm/'', ''http://ufdc.ufl.edu/'', etc..' where Setting_Key='Application Server URL'
 update SobekCM_Settings set TabPage='Builder', Heading='Archive Settings', Hidden=0, Reserved=0, Help='Network location for the archive drop box.  If this is set to a value, the builder/bulk loader will place a copy of the package in this folder for archiving purposes.  This folder is where any of your archiving processes should look for new packages.' where Setting_Key='Archive DropBox'
-update SobekCM_Settings set TabPage='Builder', Heading='Builder Settings', Hidden=0, Reserved=0, Options='true|false', Help='Flag indicates if the page turner view should be added automatically to all items with four or more pages.' where Setting_Key='Builder Add PageTurner ItemViewer'
-update SobekCM_Settings set TabPage='Deprecated', Heading='Deprecated', Hidden=0, Reserved=0, Help='IIS web log location (usually a network share) for the builder to read the logs and add the usage statistics to the database.' where Setting_Key='Builder IIS Logs Directory'
+update SobekCM_Settings set TabPage='Deprecated', Heading='Deprecated', Hidden=0, Reserved=0, Options='true|false', Help='Flag indicates if the page turner view should be added automatically to all items with four or more pages.' where Setting_Key='Builder Add PageTurner ItemViewer'
+update SobekCM_Settings set TabPage='Builder', Heading='Builder Settings', Hidden=0, Reserved=0, Help='IIS web log location (usually a network share) for the builder to read the logs and add the usage statistics to the database.' where Setting_Key='Builder IIS Logs Directory'
 update SobekCM_Settings set TabPage='Builder', Heading='Status', Hidden=0, Reserved=0, Help='Help for Builder Last Message' where Setting_Key='Builder Last Message'
 update SobekCM_Settings set TabPage='Builder', Heading='Status', Hidden=0, Reserved=0, Help='Help for Builder Last Run Finished' where Setting_Key='Builder Last Run Finished'
 update SobekCM_Settings set TabPage='Builder', Heading='Builder Settings', Hidden=0, Reserved=0, Options='10|30|365|99999', Help='Number of days the SobekCM Builder logs are retained.' where Setting_Key='Builder Log Expiration in Days'
@@ -173,7 +175,7 @@ update SobekCM_Settings set TabPage='Builder', Heading='Status', Hidden=0, Reser
 update SobekCM_Settings set TabPage='Deprecated', Heading='Deprecated', Hidden=0, Reserved=0, Help='URL for the AppFabric Cache host machine, if a caching server/cluster is in use in this system.' where Setting_Key='Caching Server'
 update SobekCM_Settings set TabPage='General Settings', Heading='Search Settings', Hidden=0, Reserved=0, Options='true|false', Help='When this is set to TRUE, users can remove a single search term from their current search.  Setting this to FALSE, makes the display slightly cleaner.' where Setting_Key='Can Remove Single Search Term'
 update SobekCM_Settings set TabPage='Digital Resource Settings', Heading='Online Management Settings', Hidden=0, Reserved=0, Options='true|false', Help='Flag dictates if users can submit items online, or if this is disabled in this system.' where Setting_Key='Can Submit Edit Online'
-update SobekCM_Settings set TabPage='Deprecated', Heading='Deprecated', Hidden=0, Reserved=0, Options='true|false', Help='Flag dictates if users can submit items online, or if this is disabled in this system.' where Setting_Key='Can Submit Items Online'
+update SobekCM_Settings set TabPage='System / Server Settings', Heading='System Settings', Hidden=0, Reserved=0, Options='true|false', Help='Flag dictates if users can submit items online, or if this is disabled in this system.' where Setting_Key='Can Submit Items Online'
 update SobekCM_Settings set TabPage='Builder', Heading='Builder Settings', Hidden=0, Reserved=0, Options='true|false', Help='Flag dictates if users can submit items online, or if this is disabled in this system.' where Setting_Key='Convert Office Files to PDF'
 update SobekCM_Settings set TabPage='Builder', Heading='Builder Settings', Hidden=0, Reserved=0, Options='true|false', Help='Flag indicates if the builder/bulk loader should create the MARC feed by default when operating in background mode.' where Setting_Key='Create MARC Feed By Default'
 update SobekCM_Settings set TabPage='System / Server Settings', Heading='System Settings', Hidden=0, Reserved=0, Options='true|false', Help='Flag indicates if more refined user permissions can be assigned, such as if a user can edit behaviors of an item in a collection vs. a more general flag that says a RequestSpecificValues.Current_User can make all changes to an item in a collection.' where Setting_Key='Detailed User Permissions'
@@ -253,6 +255,38 @@ begin
   values ('Google Map API Key', '', 'System / Server Settings', 'System Settings', 0, 0, 'Google Map API key for displaying geographic displays within this system.  Help is found at http://sobekrepository.org/software/config/googlemaps.');
 end;
 GO
+
+
+if ( not exists ( select 1 from SobekCM_Settings where Setting_Key = 'Builder Last Message' ))
+begin
+	insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) values ( 'Builder Last Message','','Builder','Status','0',0,'Help for Builder Last Message','','');
+end
+else
+begin
+	update SobekCM_Settings set TabPage='Builder', Heading='Status', Hidden='false', Reserved=0, Help='Help for Builder Last Message', Options='', Dimensions='' where Setting_Key='Builder Last Message';
+end
+GO
+
+if ( not exists ( select 1 from SobekCM_Settings where Setting_Key = 'Builder Last Run Finished' ))
+begin
+	insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) values ( 'Builder Last Run Finished','','Builder','Status','0',0,'Help for Builder Last Run Finished','','');
+end
+else
+begin
+	update SobekCM_Settings set TabPage='Builder', Heading='Status', Hidden='false', Reserved=0, Help='Help for Builder Last Run Finished', Options='', Dimensions='' where Setting_Key='Builder Last Run Finished';
+end
+GO
+
+if ( not exists ( select 1 from SobekCM_Settings where Setting_Key = 'Builder Version' ))
+begin
+	insert into SobekCM_Settings ( Setting_Key, Setting_Value, TabPage, Heading, Hidden, Reserved, Help, Options, Dimensions ) values ( 'Builder Version','','Builder','Status','0',0,'Help for Builder Version','','');
+end
+else
+begin
+	update SobekCM_Settings set TabPage='Builder', Heading='Status', Hidden='false', Reserved=0, Help='Help for Builder Version', Options='', Dimensions='' where Setting_Key='Builder Version';
+end
+GO
+
 
 
 update SobekCM_Item_Viewer_Types set ViewType='DATASET_CODEBOOK' where ViewType='Dataset Codebook';
@@ -3723,6 +3757,68 @@ ErrorHandler:
 END;
 GO
 
+-- Procedure gets some minimum item information necessary for the builder
+ALTER PROCEDURE [dbo].[SobekCM_Builder_Get_Minimum_Item_Information]
+	@bibid varchar(10),
+	@vid varchar(5)
+AS
+begin
+
+	-- No need to perform any locks here.  A slightly dirty read won't hurt much
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+	
+	-- Only continue if there is ONE match
+	if (( select COUNT(*) from SobekCM_Item I, SobekCM_Item_Group G where I.GroupID = G.GroupID and G.BibID = @BibID and I.VID = @VID ) = 1 )
+	begin
+		-- Get the itemid
+		declare @ItemID int;
+		select @ItemID = ItemID from SobekCM_Item I, SobekCM_Item_Group G where I.GroupID = G.GroupID and G.BibID = @BibID and I.VID = @VID;
+
+		-- Get the item id and mainthumbnail
+		select I.ItemID, I.MainThumbnail, I.IP_Restriction_Mask, I.Born_Digital, G.ItemCount, I.Dark
+		from SobekCM_Item I, SobekCM_Item_Group G
+		where ( I.VID = @vid )
+		  and ( G.BibID = @bibid )
+		  and ( I.GroupID = G.GroupID );
+
+		-- Get the links to the aggregations
+		select A.Code, A.Name, A.[Type]
+		from SobekCM_Item_Aggregation_Item_Link L, SobekCM_Item_Aggregation A
+		where ( L.ItemID = @itemid )
+		  and ( L.AggregationID = A.AggregationID );
+	 
+		-- Return the icons for this item
+		select Icon_URL, Link, Icon_Name, I.Title
+		from SobekCM_Icon I, SobekCM_Item_Icons L
+		where ( L.IconID = I.IconID ) 
+		  and ( L.ItemID = @ItemID )
+		order by Sequence;
+			  
+		-- Return any web skin restrictions
+		select S.WebSkinCode
+		from SobekCM_Item_Group_Web_Skin_Link L, SobekCM_Item I, SobekCM_Web_Skin S
+		where ( L.GroupID = I.GroupID )
+		  and ( L.WebSkinID = S.WebSkinID )
+		  and ( I.ItemID = @ItemID )
+		order by L.Sequence;
+
+		-- Return the current viewer information
+		select T.ViewType, V.Attribute, V.Label, coalesce(V.MenuOrder, T.MenuOrder) as MenuOrder, V.Exclude, coalesce(V.OrderOverride, T.[Order]) as [Order]
+		from SobekCM_Item_Viewers V, SobekCM_Item_Viewer_Types T, SobekCM_Item I, SobekCM_Item_Group G
+		where ( I.GroupID = G.GroupID )
+		  and ( G.BibID = @bibid )
+		  and ( I.VID = @vid )
+		  and ( V.ItemID = I.ItemID )
+		  and ( V.ItemViewTypeID = T.ItemViewTypeID )
+		group by T.ViewType, V.Attribute, V.Label, coalesce(V.MenuOrder, T.MenuOrder), V.Exclude, coalesce(V.OrderOverride, T.[Order])
+		order by coalesce(V.OrderOverride, T.[Order]) ASC;
+		
+	end;
+
+end;
+GO
+
+
 
 GRANT EXECUTE ON SobekCM_Aggregation_Change_Parent to sobek_user;
 GO
@@ -3786,4 +3882,24 @@ GO
 GRANT EXECUTE ON [dbo].[SobekCM_Builder_Get_Incoming_Folder] to sobek_user;
 GO
 GRANT EXECUTE ON [dbo].[SobekCM_Builder_Get_Incoming_Folder] to sobek_builder;
+GO
+
+DROP PROCEDURE SobekCM_Get_Viewer_Priority;
+GO
+
+DROP TABLE SobekCM_Item_Viewer_Priority;
+GO
+
+
+-- Update the version number
+if (( select count(*) from SobekCM_Database_Version ) = 0 )
+begin
+	insert into SobekCM_Database_Version ( Major_Version, Minor_Version, Release_Phase )
+	values ( 4, 10, '0' );
+end
+else
+begin
+	update SobekCM_Database_Version
+	set Major_Version=4, Minor_Version=10, Release_Phase='0';
+end;
 GO
