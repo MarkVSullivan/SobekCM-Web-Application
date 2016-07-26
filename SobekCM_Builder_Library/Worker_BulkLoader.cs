@@ -46,6 +46,7 @@ namespace SobekCM.Builder_Library
         private bool aborted;
         private bool verbose;
         private bool refreshed;
+        private bool firstrun;
         
 	    private readonly bool multiInstanceBuilder;
 
@@ -97,6 +98,7 @@ namespace SobekCM.Builder_Library
             aborted = false;
             refreshed = false;
             noFoldersReported = false;
+            firstrun = true;
 
             Add_NonError_To_Log("Worker_BulkLoader.Constructor: Done", verbose, String.Empty, String.Empty, -1);
         }
@@ -151,11 +153,15 @@ namespace SobekCM.Builder_Library
 			Abort_Database_Mechanism.Builder_Operation_Flag = Builder_Operation_Flag_Enum.STANDARD_OPERATION;
 
             // Run the usage stats module first
-            CalculateUsageStatisticsModule statsModule = new CalculateUsageStatisticsModule();
-            statsModule.Process += module_Process;
-            statsModule.Error += module_Error;
-            statsModule.DoWork(settings);
-            
+            if (firstrun)
+            {
+                CalculateUsageStatisticsModule statsModule = new CalculateUsageStatisticsModule();
+                statsModule.Process += module_Process;
+                statsModule.Error += module_Error;
+                statsModule.DoWork(settings);
+                firstrun = false;
+            }
+
             // RUN ANY PRE-PROCESSING MODULES HERE 
             if (builderModules.PreProcessModules.Count > 0)
             {

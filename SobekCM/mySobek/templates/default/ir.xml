@@ -17,7 +17,7 @@
 	<uploads>FILE</uploads>
 	<uploadMandatory>false</uploadMandatory>
 	<bibidRoot>IR</bibidRoot>
-        <emailUponSubmit>lrsdigital@gmail.com</emailUponSubmit>
+<!-- <emailUponSubmit>name@email.edu</emailUponSubmit>  -->
 
 	<!-- This defines the inputs which are available for the user -->
 	<inputs>

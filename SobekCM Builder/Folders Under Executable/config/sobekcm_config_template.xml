@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<SobekCM_Config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://sobekrepository.org/schemas/sobekcm_config"
+  xsi:schemaLocation="http://sobekrepository.org/schemas/sobekcm_config 
+    http://sobekrepository.org/schemas/sobekcm_config.xsd">
+    <Instances>
+      <Instance name="PUT A CODE OR SHORT NAME FOR YOUR INSTANCE HERE STRING HERE" active="true">
+        <Connection_String type="MSSQL">PUT YOUR CONNECTION STRING HERE</Connection_String>
+        <Microservices>
+          <Add Key="Builder.Get_Builder_Settings" URL="[BASEURL]/engine/builder/settings/protobuf?IncludeDescs={0}" Protocol="PROTOBUF" />
+          <Add Key="Configuration.Extensions" URL="[BASEURL]/engine/config/extensions/protobuf" Protocol="PROTOBUF" />
+          <Add Key="Configuration.Metadata" URL="[BASEURL]/engine/config/metadata/protobuf" Protocol="PROTOBUF" />
+          <Add Key="Configuration.OAI_PMH" URL="[BASEURL]/engine/config/oaipmh/protobuf" Protocol="PROTOBUF" />
+        </Microservices>
+      </Instance>
+
+   <!--  If your builder is runing over multiple instances of SobekCM, you can just add another, like below
+      <Instance name="QDL" active="true">
+        <Connection_String type="MSSQL">data source=myServer;initial catalog=myCatalog;integrated security=Yes;</Connection_String>
+        <Microservices>
+          <Add Key="Builder.Get_Builder_Settings" URL="[BASEURL]/engine/builder/settings/protobuf?IncludeDescs={0}" Protocol="PROTOBUF" />
+          <Add Key="Configuration.Extensions" URL="[BASEURL]/engine/config/extensions/protobuf" Protocol="PROTOBUF" />
+          <Add Key="Configuration.Metadata" URL="[BASEURL]/engine/config/metadata/protobuf" Protocol="PROTOBUF" />
+          <Add Key="Configuration.OAI_PMH" URL="[BASEURL]/engine/config/oaipmh/protobuf" Protocol="PROTOBUF" />
+        </Microservices>
+      </Instance> -->
+	  
+    </Instances>
+  <Builder>
+    <Ghostscript_Executable></Ghostscript_Executable>
+    <Imagemagick_Executable></Imagemagick_Executable>
+	<Tesseract_Executable></Tesseract_Executable>
+  </Builder>
+</SobekCM_Config>

@@ -270,6 +270,12 @@ namespace SobekCM.Builder_Library
 	        List<Worker_BulkLoader> loaders = new List<Worker_BulkLoader>();
             foreach (Single_Instance_Configuration dbConfig in instances)
             {
+                if (!dbConfig.Is_Active)
+                {
+                    loaders.Add(null);
+                    continue;
+                }
+
                 SobekCM_Item_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
                 Library.Database.SobekCM_Database.Connection_String = dbConfig.DatabaseConnection.Connection_String;
 
@@ -329,7 +335,7 @@ namespace SobekCM.Builder_Library
                 bool skip_sleep = false;
 
 				// Step through each instance
-				for (int i = 0; i < instances.Count; i++)
+				for (int i = 0; i < loaders.Count; i++)
 				{
 					if (loaders[i] != null)
 					{
