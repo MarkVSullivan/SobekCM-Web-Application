@@ -287,7 +287,12 @@ begin
 end
 GO
 
+update SobekCM_Settings set TabPage='Deprecated', Heading='Deprecated' where TabPage is null;
+GO
 
+
+update SobekCM_Settings set Reserved=2 where TabPage='System / Server Settings';
+GO
 
 update SobekCM_Item_Viewer_Types set ViewType='DATASET_CODEBOOK' where ViewType='Dataset Codebook';
 update SobekCM_Item_Viewer_Types set ViewType='DATASET_REPORTS' where ViewType='Dataset Reports';

@@ -985,6 +985,10 @@ namespace SobekCM.Library.AdminViewer
 				// If this is hidden, just do nothing
 				if (thisValue.Hidden) continue;
 
+                // Check on if this is reserved and shouldn't be displayed
+                if ((limitedRightsMode) && (thisValue.Reserved == 2))
+                    continue;
+
                 // Get the tab page name, and handle nulls or empty values gracefully
 			    string tabPage = String.IsNullOrWhiteSpace(thisValue.TabPage) ? "General Settings" : thisValue.TabPage;
 
@@ -1016,82 +1020,86 @@ namespace SobekCM.Library.AdminViewer
 
 			// Add some readonly configuration information from the config file
 			// First, look for a server tab name
-			string tabNameForConfig = tabPageNames.Values.FirstOrDefault(ThisTabName => ThisTabName.IndexOf("Server", StringComparison.OrdinalIgnoreCase) >= 0);
-		    if (String.IsNullOrEmpty(tabNameForConfig))
-			{
-				foreach (string thisTabName in tabPageNames.Values.Where(ThisTabName => ThisTabName.IndexOf("System", StringComparison.OrdinalIgnoreCase) >= 0)) {
-				    tabNameForConfig = thisTabName;
-				    break;
-				}
-			}
-			if (String.IsNullOrEmpty(tabNameForConfig))
-			{
-				tabNameForConfig = tabPageNames.Values[0];
-			}
+		    if (!limitedRightsMode)
+		    {
+		        string tabNameForConfig = tabPageNames.Values.FirstOrDefault(ThisTabName => ThisTabName.IndexOf("Server", StringComparison.OrdinalIgnoreCase) >= 0);
+		        if (String.IsNullOrEmpty(tabNameForConfig))
+		        {
+		            foreach (string thisTabName in tabPageNames.Values.Where(ThisTabName => ThisTabName.IndexOf("System", StringComparison.OrdinalIgnoreCase) >= 0))
+		            {
+		                tabNameForConfig = thisTabName;
+		                break;
+		            }
+		        }
+		        if (String.IsNullOrEmpty(tabNameForConfig))
+		        {
+		            tabNameForConfig = tabPageNames.Values[0];
+		        }
 
-			// Build the values to add
-			Admin_Setting_Value dbString = new Admin_Setting_Value
-			{
-				Heading = "Configuration Settings",
-				Help = "Connection string used to connect to the SobekCM database\n\nThis value resides in the configuration file on the web server.  See your database and web server administrator to change this value.",
-				Hidden = false,
-				Key = "Database Connection String",
-				Reserved = 3,
-				SettingID = 9990,
-				Value = UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String
-			};
+		        // Build the values to add
+		        Admin_Setting_Value dbString = new Admin_Setting_Value
+		        {
+		            Heading = "Configuration Settings",
+		            Help = "Connection string used to connect to the SobekCM database\n\nThis value resides in the configuration file on the web server.  See your database and web server administrator to change this value.",
+		            Hidden = false,
+		            Key = "Database Connection String",
+		            Reserved = 3,
+		            SettingID = 9990,
+		            Value = UI_ApplicationCache_Gateway.Settings.Database_Connection.Connection_String
+		        };
 
-			Admin_Setting_Value dbType = new Admin_Setting_Value
-			{
-				Heading = "Configuration Settings",
-				Help = "Type of database used to drive the SobekCM system.\n\nCurrently, only Microsoft SQL Server is allowed with plans to add PostgreSQL and MySQL to the supported database system.\n\nThis value resides in the configuration on the web server.  See your database and web server administrator to change this value.",
-				Hidden = false,
-				Key = "Database Type",
-				Reserved = 3,
-				SettingID = 9991,
-				Value = UI_ApplicationCache_Gateway.Settings.Database_Connection.Database_Type_String
-			};
+		        Admin_Setting_Value dbType = new Admin_Setting_Value
+		        {
+		            Heading = "Configuration Settings",
+		            Help = "Type of database used to drive the SobekCM system.\n\nCurrently, only Microsoft SQL Server is allowed with plans to add PostgreSQL and MySQL to the supported database system.\n\nThis value resides in the configuration on the web server.  See your database and web server administrator to change this value.",
+		            Hidden = false,
+		            Key = "Database Type",
+		            Reserved = 3,
+		            SettingID = 9991,
+		            Value = UI_ApplicationCache_Gateway.Settings.Database_Connection.Database_Type_String
+		        };
 
-			Admin_Setting_Value isHosted = new Admin_Setting_Value
-			{
-				Heading = "Configuration Settings",
-				Help = "Flag indicates if this instance is set as 'hosted', in which case a new Host Administrator role is added and some rights are reserved to that role which are normally assigned to system administrators.\n\nThis value resides in the configuration on the web server.  See your database and web server administrator to change this value.",
-				Hidden = false,
-				Key = "Hosted Intance",
-				Reserved = 3,
-				SettingID = 9994,
-				Value = UI_ApplicationCache_Gateway.Settings.Servers.isHosted.ToString().ToLower()
-			};
+		        Admin_Setting_Value isHosted = new Admin_Setting_Value
+		        {
+		            Heading = "Configuration Settings",
+		            Help = "Flag indicates if this instance is set as 'hosted', in which case a new Host Administrator role is added and some rights are reserved to that role which are normally assigned to system administrators.\n\nThis value resides in the configuration on the web server.  See your database and web server administrator to change this value.",
+		            Hidden = false,
+		            Key = "Hosted Intance",
+		            Reserved = 3,
+		            SettingID = 9994,
+		            Value = UI_ApplicationCache_Gateway.Settings.Servers.isHosted.ToString().ToLower()
+		        };
 
-			Admin_Setting_Value errorEmails = new Admin_Setting_Value
-			{
-				Heading = "Configuration Settings",
-				Help = "Email address for the web application to mail for any errors encountered while executing requests.\n\nThis account will be notified of inabilities to connect to servers, potential attacks, missing files, etc..\n\nIf the system is able to connect to the database, the 'System Error Email' address listed there, if there is one, will be used instead.\n\nUse a semi-colon betwen email addresses if multiple addresses are included.\n\nExample: 'person1@corp.edu;person2@corp2.edu'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.",
-				Hidden = false,
-				Key = "Error Emails",
-				Reserved = 3,
-				SettingID = 9992,
-				Value = UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email
-			};
+		        Admin_Setting_Value errorEmails = new Admin_Setting_Value
+		        {
+		            Heading = "Configuration Settings",
+		            Help = "Email address for the web application to mail for any errors encountered while executing requests.\n\nThis account will be notified of inabilities to connect to servers, potential attacks, missing files, etc..\n\nIf the system is able to connect to the database, the 'System Error Email' address listed there, if there is one, will be used instead.\n\nUse a semi-colon betwen email addresses if multiple addresses are included.\n\nExample: 'person1@corp.edu;person2@corp2.edu'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.",
+		            Hidden = false,
+		            Key = "Error Emails",
+		            Reserved = 3,
+		            SettingID = 9992,
+		            Value = UI_ApplicationCache_Gateway.Settings.Email.System_Error_Email
+		        };
 
-			Admin_Setting_Value errorWebPage = new Admin_Setting_Value
-			{
-				Heading = "Configuration Settings",
-				Help = "Static page the user should be redirected towards if an unexpected exception occurs which cannot be handled by the web application.\n\nExample: 'http://ufdc.ufl.edu/error.html'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.",
-				Hidden = false,
-				Key = "Error Web Page",
-				Reserved = 3,
-				SettingID = 9993,
-				Value = UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL
-			};
+		        Admin_Setting_Value errorWebPage = new Admin_Setting_Value
+		        {
+		            Heading = "Configuration Settings",
+		            Help = "Static page the user should be redirected towards if an unexpected exception occurs which cannot be handled by the web application.\n\nExample: 'http://ufdc.ufl.edu/error.html'.\n\nThis value resides in the web.config file on the web server.  See your web server administrator to change this value.",
+		            Hidden = false,
+		            Key = "Error Web Page",
+		            Reserved = 3,
+		            SettingID = 9993,
+		            Value = UI_ApplicationCache_Gateway.Settings.Servers.System_Error_URL
+		        };
 
-			// Add them all to the tab page
-			List<Admin_Setting_Value> settings = settingsByPage[tabNameForConfig];
-			settings.Add(dbType);
-			settings.Add(dbString);
-			settings.Add(isHosted);
-			settings.Add(errorEmails);
-			settings.Add(errorWebPage);
+		        // Add them all to the tab page
+		        List<Admin_Setting_Value> settings = settingsByPage[tabNameForConfig];
+		        settings.Add(dbType);
+		        settings.Add(dbString);
+		        settings.Add(isHosted);
+		        settings.Add(errorEmails);
+		        settings.Add(errorWebPage);
+		    }
 
 
 		}
@@ -1201,7 +1209,21 @@ namespace SobekCM.Library.AdminViewer
 			{
 				Output.WriteLine("            <th colspan=\"2\">");
 				Output.WriteLine("              " + Heading.ToUpper());
-				Output.WriteLine("              <div style=\"float: right; text-align:right; padding-right: 40px;text-transform:none\">Order: <select id=\"reorder_select\" name=\"reorder_select\" onchange=\"settings_reorder(this);\"><option value=\"alphabetical\" selected=\"selected\">Alphabetical</option><option value=\"category\">Categories</option></select></div>");
+			    Output.WriteLine("              <div style=\"float: right; text-align:right; padding-right: 40px;text-transform:none\">Order: ");
+                Output.WriteLine("                <select id=\"reorder_select\" name=\"reorder_select\" onchange=\"settings_reorder(this);\">");
+
+			    if (category_view)
+			    {
+			        Output.WriteLine("                  <option value=\"alphabetical\">Alphabetical</option>");
+                    Output.WriteLine("                  <option value=\"category\" selected=\"selected\">Categories</option>");
+			    }
+			    else
+			    {
+                    Output.WriteLine("                  <option value=\"alphabetical\" selected=\"selected\">Alphabetical</option>");
+                    Output.WriteLine("                  <option value=\"category\">Categories</option>");
+			    }
+			    Output.WriteLine("                </select>");
+                Output.WriteLine("              </div>");
 				Output.WriteLine("            </th>");
 			}
 			else
