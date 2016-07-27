@@ -4,10 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
 
@@ -60,8 +62,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> TRUE if the user has access to use this viewer, otherwise FALSE </returns>
         public bool Has_Access(BriefItemInfo CurrentItem, User_Object CurrentUser, bool IpRestricted)
         {
-            // This can always be shown
-            return true;
+            // This can only be shown when the item is DARK or IP restricted from this user
+            return (( CurrentItem.Behaviors.Dark_Flag) || ( IpRestricted ));
         }
 
         /// <summary> Gets the menu items related to this viewer that should be included on the main item (digital resource) menu </summary>
@@ -70,9 +72,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
-        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
+        /// <param name="IpRestricted"> Flag indicates if this item is IP restricted AND if the current user is outside the ranges </param>
+        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IpRestricted  )
         {
-            // Do nothing since this is already handed and added to the menu by the MANAGE MENU item viewer
+            // If not IP restricted, then do nothing
+            if (!IpRestricted) return;
+
+            // Get the URL for this
+            string previous_code = CurrentRequest.ViewerCode;
+            CurrentRequest.ViewerCode = ViewerCode;
+            string url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+            CurrentRequest.ViewerCode = previous_code;
+
+            // Add the item menu information
+            Item_MenuItem menuItem = new Item_MenuItem("Restricted", null, null, url, ViewerCode);
+            MenuItems.Add(menuItem);
         }
 
         /// <summary> Creates and returns the an instance of the <see cref="Restricted_ItemViewer"/> class which is used to 
@@ -112,9 +126,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Behaviors = EmptyBehaviors;
         }
 
-        /// <summary> Message to show to the user if they are restricted </summary>
-        public string RestrictedMessage { get; set; }
-
         /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
         /// <value> This always returns the value 'sbkRiv_Viewer' </value>
         public override string ViewerBox_CssId
@@ -132,9 +143,38 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("Restricted_ItemViewer.Write_Main_Viewer_Section", "");
             }
 
+            // Check to see if this is IP restricted
+            string restriction_message = "This item is not restricted";
+            if (BriefItem.Behaviors.Dark_Flag)
+            {
+                restriction_message = "<table style=\"width:100%;\"> <tr style=\"text-align:center\"><td style=\"font-size:1.8em; font-weight: bold; color:white\"><br />This item is set to be DARK and resource files cannot be displayed<br /><br /></td></tr></table>";
+            }
+            else if (BriefItem.Behaviors.IP_Restriction_Membership > 0)
+            {
+                if (HttpContext.Current != null)
+                {
+                    int user_mask = (int)HttpContext.Current.Session["IP_Range_Membership"];
+                    int comparison = BriefItem.Behaviors.IP_Restriction_Membership & user_mask;
+                    if (comparison == 0)
+                    {
+                        int restriction = BriefItem.Behaviors.IP_Restriction_Membership;
+                        int restriction_counter = 1;
+                        while (restriction % 2 != 1)
+                        {
+                            restriction = restriction >> 1;
+                            restriction_counter++;
+                        }
+                        if (Engine_ApplicationCache_Gateway.IP_Restrictions[restriction_counter] != null)
+                            restriction_message = Engine_ApplicationCache_Gateway.IP_Restrictions[restriction_counter].Item_Restricted_Statement;
+                        else
+                            restriction_message = "Restricted Item";
+                    }
+                }
+            }
+
             // Replace item URL in the restricted message
             CurrentRequest.ViewerCode = string.Empty;
-            string msg = RestrictedMessage.Replace("<%ITEMURL%>", UrlWriterHelper.Redirect_URL(CurrentRequest));
+            string msg = restriction_message.Replace("<%ITEMURL%>", UrlWriterHelper.Redirect_URL(CurrentRequest));
 
             Output.WriteLine("<td style=\"text-align:left;\" id=\"sbkRes_MainArea\">" + msg + "</td>");
 

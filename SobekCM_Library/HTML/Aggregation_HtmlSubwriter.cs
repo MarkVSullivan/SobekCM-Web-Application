@@ -108,7 +108,8 @@ namespace SobekCM.Library.HTML
                 {
                     if (!Get_Browse_Info(RequestSpecificValues.Current_Mode, hierarchyObject, UI_ApplicationCache_Gateway.Settings.Servers.Base_Directory, RequestSpecificValues.Tracer, out thisBrowseObject, out datasetBrowseResultsStats, out pagedResults, out staticBrowse))
                     {
-                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
+                        RequestSpecificValues.Current_Mode.Aggregation_Type = Aggregation_Type_Enum.Home;
+                        //RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Error;
                     }
                 }
             }

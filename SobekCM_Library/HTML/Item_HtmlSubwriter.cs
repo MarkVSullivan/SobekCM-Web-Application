@@ -158,6 +158,8 @@ namespace SobekCM.Library.HTML
                     int comparison = currentItem.Behaviors.IP_Restriction_Membership & user_mask;
                     if (comparison == 0)
                     {
+                        itemRestrictedFromUserByIp = true;
+
                         int restriction = currentItem.Behaviors.IP_Restriction_Membership;
                         int restriction_counter = 1;
                         while (restriction % 2 != 1)
@@ -397,9 +399,25 @@ namespace SobekCM.Library.HTML
             // Get the valid viewer code
             RequestSpecificValues.Tracer.Add_Trace("Item_HtmlSubwriter.Add_Controls", "Getting the appropriate item viewer");
             prototyper = ItemViewer_Factory.Get_Item_Viewer(currentItem, RequestSpecificValues.Current_Mode.ViewerCode);
-            if (prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, !String.IsNullOrEmpty(restriction_message)))
+            if (( prototyper != null ) && ( prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, !String.IsNullOrEmpty(restriction_message))))
                 pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer );
+            else
+            {
+                // Since the user did not have access to THAT viewer, try to find one that he does have access to
+                if (currentItem.UI.Viewers_By_Priority != null)
+                {
+                    foreach (string viewerType in currentItem.UI.Viewers_By_Priority)
+                    {
+                        prototyper = ItemViewer_Factory.Get_Viewer_By_ViewType(viewerType);
+                        if ((prototyper != null) && (prototyper.Has_Access(currentItem, RequestSpecificValues.Current_User, !String.IsNullOrEmpty(restriction_message))))
+                        {
+                            pageViewer = prototyper.Create_Viewer(currentItem, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode, RequestSpecificValues.Tracer);
+                            break;
+                        }
+                    }
+                }
 
+            }
 
             // If execution should end, do it now
             if (RequestSpecificValues.Current_Mode.Request_Completed)

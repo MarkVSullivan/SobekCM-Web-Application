@@ -15,8 +15,10 @@ namespace SobekCM.Core.BriefItem
         private Dictionary<string, string> viewerCodesDictionary;
         private Dictionary<string, string> viewerTypesDictionary;
 
+        /// <summary> Collection of viewer types, listed by priority </summary>
         public List<string> Viewers_By_Priority { get; set; } 
 
+        /// <summary> Collection of viewers, listed by menu order </summary>
         public List<string> Viewers_Menu_Order { get; set; }
 
         public void Add_Viewer_Code(string Code, string ViewerType )
@@ -88,7 +90,7 @@ namespace SobekCM.Core.BriefItem
             }
 
             // Just return the FIRST viewer then if there was a viewer
-            if ( Viewers_By_Priority.Count > 0 )
+            if ((Viewers_By_Priority != null) && ( Viewers_By_Priority.Count > 0 ))
                 return Viewers_By_Priority[0];
 
             // If no viewers, that is in ERROR.. but return the CITATION only .. for now at least

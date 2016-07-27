@@ -38,10 +38,13 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             New.Web.Source_URL = Original.Web.Source_URL;
 
             // Step through all the files and collection file extensions
-            List<string> extensions = new List<string>();
-            collect_extensions(Original.Divisions.Download_Tree, extensions);
-            collect_extensions(Original.Divisions.Physical_Tree, extensions);
-            New.Web.File_Extensions = extensions;
+            if (!Original.Behaviors.Dark_Flag)
+            {
+                List<string> extensions = new List<string>();
+                collect_extensions(Original.Divisions.Download_Tree, extensions);
+                collect_extensions(Original.Divisions.Physical_Tree, extensions);
+                New.Web.File_Extensions = extensions;
+            }
 
             // Copy over the related titles
             if (Original.Web.Related_Titles_Count > 0)

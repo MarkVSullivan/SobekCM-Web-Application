@@ -21,6 +21,9 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
         /// <returns> TRUE if successful, FALSE if an exception is encountered </returns>
         public bool MapToBriefItem(SobekCM_Item Original, BriefItemInfo New)
         {
+            // If the original item was DARK, don't add any file information
+            if (Original.Behaviors.Dark_Flag) return true;
+
             // Step through each of the nodes within the images first
             List<BriefItem_FileGrouping> images = new List<BriefItem_FileGrouping>();
             List<BriefItem_FileGrouping> downloads = new List<BriefItem_FileGrouping>();
@@ -44,8 +47,6 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                 New.Downloads = downloads;
             if (downloads_toc.Count > 0)
                 New.Downloads_TOC = downloads_toc;
-
-            // Also, add the file extensions to the UI portion
 
 
             // No exception

@@ -73,7 +73,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// in the main item (digital resource) menu </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
-        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
+        /// <param name="IpRestricted"> Flag indicates if this item is IP restricted AND if the current user is outside the ranges </param>
+        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IpRestricted )
         {
             // Determine the label to show on the menu
             string label = "Map It!";

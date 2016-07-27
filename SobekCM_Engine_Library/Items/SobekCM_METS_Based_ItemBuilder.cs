@@ -764,9 +764,6 @@ namespace SobekCM.Engine_Library.Items
 				}
 			}
 
-			// IF this is dark, add no other views
-			if (Package_To_Finalize.Behaviors.Dark_Flag) return;
-
 			// Check to see which views were present from the database, and build the list
 			foreach (DataRow viewRow in DatabaseInfo.Tables[4].Rows)
 			{
@@ -778,6 +775,9 @@ namespace SobekCM.Engine_Library.Items
 
                 Package_To_Finalize.Behaviors.Add_View(viewType, label, attribute, menuOrder, exclude);
 			}
+
+            // IF this is dark, add no other views
+            if (Package_To_Finalize.Behaviors.Dark_Flag) return;
 
             // We will continue to set the static page count
             // Step through each page and set the static page count

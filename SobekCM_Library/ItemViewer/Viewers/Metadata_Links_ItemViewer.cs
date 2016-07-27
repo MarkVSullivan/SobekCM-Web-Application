@@ -41,8 +41,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <returns> TRUE if this viewer should generally be included with this item, otherwise FALSE </returns>
         public bool Include_Viewer(BriefItemInfo CurrentItem)
         {
-            // This should always be included 
-            return true;
+            // If not dark, always show
+            if (!CurrentItem.Behaviors.Dark_Flag) return true;
+
+            // If it is dark, use the system setting
+            return UI_ApplicationCache_Gateway.Settings.Resources.Show_Citation_For_Dark_Items;
         }
 
         /// <summary> Flag indicates if this viewer should be override on checkout </summary>
@@ -70,7 +73,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
         /// <param name="MenuItems"> List of menu items, to which this method may add one or more menu items </param>
-        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems)
+        /// <param name="IpRestricted"> Flag indicates if this item is IP restricted AND if the current user is outside the ranges </param>
+        public void Add_Menu_items(BriefItemInfo CurrentItem, User_Object CurrentUser, Navigation_Object CurrentRequest, List<Item_MenuItem> MenuItems, bool IpRestricted)
         {
             // Get the URL for this
             string previous_code = CurrentRequest.ViewerCode;
