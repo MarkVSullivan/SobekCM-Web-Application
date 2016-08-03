@@ -484,6 +484,11 @@ namespace SobekCM.Core.Navigation
                                 return this_base_url + "admin/headings/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
                             return this_base_url + "admin/headings" + urlOptions1;
 
+                        case Admin_Type_Enum.TEI:
+                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                return this_base_url + "admin/tei/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
+                            return this_base_url + "admin/tei" + urlOptions1;
+
                         case Admin_Type_Enum.Skins_Mgmt:
                             return this_base_url + "admin/webskins" + urlOptions1;
 

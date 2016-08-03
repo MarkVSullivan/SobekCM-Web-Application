@@ -57,6 +57,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="config\samples\readme.txt" />
     <Content Include="Dashboard.aspx" />
     <Content Include="default\banner_images\1.jpg" />
     <Content Include="default\banner_images\2.jpg" />
@@ -977,7 +978,12 @@
     <Content Include="config\default\sobekcm_item_viewers.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="config\default\sobekcm_aggregation_viewers.config" />
+    <Content Include="config\samples\add_builder_server_ips.config" />
+    <Content Include="config\samples\sobekcm_aggregation_viewers.config" />
+    <Content Include="config\samples\sobekcm_contactform_example.config" />
+    <Content Include="config\samples\sobekcm_engine_example.config" />
+    <Content Include="config\samples\sobekcm_shibboleth_example.config" />
+    <Content Include="config\samples\sobekcm_static_resources_example.config" />
     <None Include="Properties\PublishProfiles\U262189 USF SobekCM local instance.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -1017,6 +1023,9 @@
     <Folder Include="default\includes\datatables\1.11.1\scroller\images\" />
     <Folder Include="default\includes\datatables\1.11.1\scroller\js\" />
     <Folder Include="default\js\sobekcm-full\4.10.0\" />
+    <Folder Include="plugins\TEI\CSS\" />
+    <Folder Include="plugins\TEI\Mapping\" />
+    <Folder Include="plugins\TEI\XSLT\" />
     <Folder Include="winauth\" />
   </ItemGroup>
   <PropertyGroup>

@@ -1388,6 +1388,24 @@ namespace SobekCM.Library.HTML
                     Output.WriteLine("        <li id=\"sbkUsm_WebContentUsage\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.WebContent_Usage_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Web Content Usage Reports</div></a></li>");
 
                     Output.WriteLine("      </ul></li>");
+
+                    // Check to see if the TEI extension should be added here
+                    // Ensure the plug-in list exists and contains the TEI plug-in
+                    if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
+                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI") != null) &&
+                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled))
+                    {
+                        // Web content pages
+                        Output.WriteLine("      <li id=\"sbkUsm_ExtensionsMenu\"><a href=\"" + current_url + "#extensions\"> <div class=\"sbkUsm_TextWithImage\">Extensions</div></a><ul>");
+
+                        // Manage the TEI plug-in
+                        RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.TEI;
+                        Output.WriteLine("        <li id=\"sbkUsm_ExtensionsMenu1\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Small + "\" /> <div class=\"sbkUsm_TextWithImage\">Manage TEI plug-in</div></a></li>");
+
+                        Output.WriteLine("      </ul></li>");
+                    }
+
+
                     Output.WriteLine("    </ul></li>");
                 }
            

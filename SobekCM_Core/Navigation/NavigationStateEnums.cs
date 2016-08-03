@@ -421,6 +421,9 @@
         /// <summary> Provides list of all existing web skins and allows admin to enter a new web skin or edit an existing web skin </summary>
         Skins_Mgmt,
 
+        /// <summary> Administrative features related to the TEI plug-in </summary>
+        TEI,
+
         /// <summary> Allows the system administrator to add new thematic headings to the main home page </summary>
         Thematic_Headings,
 

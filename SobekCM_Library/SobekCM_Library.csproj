@@ -101,6 +101,7 @@
     <Compile Include="AdminViewer\iMySobek_Admin_Viewer.cs" />
     <Compile Include="AdminViewer\Permissions_Reports_AdminViewer.cs" />
     <Compile Include="AdminViewer\Skin_Single_AdminViewer.cs" />
+    <Compile Include="AdminViewer\TEI_PlugIn_AdminViewer.cs" />
     <Compile Include="AdminViewer\WebContent_Add_New_AdminViewer.cs" />
     <Compile Include="AdminViewer\WebContent_Mgmt_AdminViewer.cs" />
     <Compile Include="AdminViewer\WebContent_History_AdminViewer.cs" />
@@ -195,6 +196,7 @@
     <Compile Include="ItemViewer\Viewers\abstractItemViewerPrototyper.cs" />
     <Compile Include="ItemViewer\Viewers\abstractNoPaginationItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\abstractPageFilesItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\TEI_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\UF_Archives_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Citation_MARC_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Citation_Standard_ItemViewer.cs" />
@@ -335,6 +337,7 @@
     <Compile Include="MySobekViewer\MySobekViewer_Factory.cs" />
     <Compile Include="RequestCache.cs" />
     <Compile Include="ResultsViewer\Google_Map_ResultsViewer_Beta.cs" />
+    <Compile Include="TEI\TEI_Configuration.cs" />
     <Compile Include="UI\UI_ApplicationCache_Gateway.cs" />
     <Compile Include="UploadiFive\UploadiFive_Settings.cs" />
     <Compile Include="MySobekViewer\Page_Image_Upload_MySobekViewer.cs" />

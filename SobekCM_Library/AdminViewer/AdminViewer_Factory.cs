@@ -85,6 +85,9 @@ namespace SobekCM.Library.AdminViewer
                 case Admin_Type_Enum.Thematic_Headings:
                     return new Thematic_Headings_AdminViewer(RequestSpecificValues);
 
+                case Admin_Type_Enum.TEI:
+                    return new TEI_PlugIn_AdminViewer(RequestSpecificValues);
+
                 case Admin_Type_Enum.Settings:
                     return new Settings_AdminViewer(RequestSpecificValues);
 
@@ -126,6 +129,8 @@ namespace SobekCM.Library.AdminViewer
 
                     // If it made it here, it must be manage all the default metadatas
                     return new Default_Metadata_AdminViewer(RequestSpecificValues);
+
+
             }
 
             return null;

@@ -57,6 +57,7 @@ namespace SobekCM.Library.AdminViewer
         private const string WEB_MGMT_BRIEF = "Manage the top-level static web content pages within this system and all the existing web content redirects.";
         private const string WEB_HISTORY_BRIEF = "View the complete list of recent updates to the top-level static web content pages, including page, user, and change type.";
         private const string WEB_USAGE_BRIEF = "View the online usage statistics reports related to the top-level static web content pages.";
+        private const string TEI_BRIEF = "Administer portions of the TEI module, including user permissions and managing uploaded XSLTs, CSS files, and mapping files.";
 
 
 	    /// <summary> Constructor for a new instance of the Home_AdminViewer class </summary>
@@ -243,6 +244,21 @@ namespace SobekCM.Library.AdminViewer
             string webUsageIcon = "  <a href=\"" + webUsageUrl + "\" title=\"" + WEB_USAGE_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.WebContent_Usage_Img + "\" /><span class=\"sbkHav_ButtonText\">Web Content<br />Usage Reports</span></div></a>";
             icons["Web Content Usage Statistics"] = webUsageIcon;
             categories_dictionary["web"].Add(webUsageIcon);
+
+            // Check to see if the TEI extension should be added here
+            // Ensure the plug-in list exists and contains the TEI plug-in
+            if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
+                (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI") != null) &&
+                (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled))
+            {
+                categories_dictionary["extensions"] = new List<string>();
+
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.TEI;
+                string teiUrl = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                string teiIcon = "  <a href=\"" + teiUrl + "\" title=\"" + TEI_BRIEF + "\"><div class=\"sbkHav_ButtonDiv\"><img src=\"" + Static_Resources_Gateway.Settings_Img + "\" /><span class=\"sbkHav_ButtonText\">Manage TEI plug-in</span></div></a>";
+                icons["Manage TEI plug-in"] = teiIcon;
+                categories_dictionary["extensions"].Add(teiIcon);
+            }
 
 	        // Edit users (REPEAT FROM COMMON TASKS CATEGORY)
             if ((RequestSpecificValues.Current_User != null) && ( RequestSpecificValues.Current_User.Is_System_Admin))
@@ -576,7 +592,7 @@ namespace SobekCM.Library.AdminViewer
             }
 
             // Manage web content pages
-            Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"permissions\">Web Content Pages</h2></td></tr>");
+            Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"webcontent\">Web Content Pages</h2></td></tr>");
 
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.WebContent_Mgmt;
             string webcontent_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
@@ -611,6 +627,23 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("      </td>");
             Output.WriteLine("    </tr>");
 
+            // Manage extensions
+            if (categories_dictionary.ContainsKey("extensions"))
+            {
+                Output.WriteLine("    <tr><td colspan=\"3\"><h2 id=\"extensions\">Extensions</h2></td></tr>");
+
+                RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.TEI;
+                string tei_url = UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode);
+                Output.WriteLine("    <tr>");
+                Output.WriteLine("      <td>&nbsp;</td>");
+                Output.WriteLine("      <td><a href=\"" + tei_url + "\"><img src=\"" + Static_Resources_Gateway.Settings_Img_Large + "\" /></a></td>");
+                Output.WriteLine("      <td>");
+                Output.WriteLine("        <a href=\"" + tei_url + "\">Manage TEI Plug-In</a>");
+                Output.WriteLine("        <div class=\"sbkMmav_Desc\">" + TEI_BRIEF + "</div>");
+                Output.WriteLine("      </td>");
+                Output.WriteLine("    </tr>");
+            }
+
             RequestSpecificValues.Current_Mode.Admin_Type = Admin_Type_Enum.Home;
 
             Output.WriteLine("  </table>");
@@ -629,6 +662,7 @@ namespace SobekCM.Library.AdminViewer
             display_single_category(Output, "settings", "Settings");
             display_single_category(Output, "permissions", "Users and Permissions");
             display_single_category(Output, "web", "Web Content Pages");
+            display_single_category(Output, "extensions", "Extensions");
 
             Output.WriteLine("  </div>");
 	    }

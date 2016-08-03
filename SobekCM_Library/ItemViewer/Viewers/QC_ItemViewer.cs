@@ -276,7 +276,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 else
                 {
                     // Just read the normal otherwise ( if we had the ability to deep copy a SobekCM_Item, we could skip this )
-                    qc_item = SobekCM_Item_Factory.Get_Item(BriefItem.BibID, BriefItem.VID, null, null, Tracer);
+                    qc_item = SobekCM_Item_Factory.Get_Item(BriefItem.BibID, BriefItem.VID, null, Tracer);
                 }
 
                 // Save to the session, so it is easily available for next time

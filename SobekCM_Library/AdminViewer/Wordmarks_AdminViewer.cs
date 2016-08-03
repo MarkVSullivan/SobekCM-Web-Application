@@ -265,7 +265,7 @@ namespace SobekCM.Library.AdminViewer
         /// <remarks> This class does nothing, since the wordmarks list is added as controls, not HTML </remarks>
         public override void Write_HTML(TextWriter Output, Custom_Tracer Tracer)
         {
-            Tracer.Add_Trace("Wordmarks_AdminViewer.Write_HTML", "Do nothing");
+            Tracer.Add_Trace("Wordmarks_AdminViewer.Write_HTML", "");
 
 			Output.WriteLine("<!-- Wordmarks_AdminViewer.Write_HTML -->");
 

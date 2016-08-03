@@ -2653,6 +2653,38 @@ namespace SobekCM.Library.Database
 			}
 		}
 
+        /// <summary> Gets settings across all the users that are like the key start </summary>
+        /// <param name="KeyStart"> Beginning or entire key to return settings for.  Since this uses like, you can pass 
+        /// in a string like 'TEI.%' and that will return all the values that have a setting key that STARTS with 'TEI.' </param>
+        /// <param name="SettingValue"> If SettingValue is NULL, then all settings that match are returned.  If a 
+        /// value is provided then only the settings that match the key search and have the same value in the 
+        /// database as SettingValue are returned.  This is particularly useful for boolean settings, where you 
+        /// only want to the see the settings set to 'true'</param>
+        /// <returns> DataTable with matching user settings  </returns>
+        /// <remarks> This calls the 'mySobek_Get_All_User_Settings_Like' stored procedure </remarks> 
+        public static DataTable Get_All_User_Settings_Like( string KeyStart, string SettingValue )
+        {
+            try
+            {
+                // Execute this non-query stored procedure
+                EalDbParameter[] paramList = new EalDbParameter[2];
+                paramList[0] = new EalDbParameter("@keyStart", KeyStart);
+
+                if (SettingValue == null)
+                    paramList[1] = new EalDbParameter("@value", DBNull.Value);
+                else
+                    paramList[1] = new EalDbParameter("@value", SettingValue);
+
+                DataSet resultSet = EalDbAccess.ExecuteDataset(DatabaseType, connectionString, CommandType.StoredProcedure, "mySobek_Get_All_User_Settings_Like", paramList);
+                return resultSet.Tables[0];
+            }
+            catch (Exception ee)
+            {
+                lastException = ee;
+                return null;
+            }
+        }
+
 		#endregion
 
 		#region Methods used by the SobekCM Builder  (moved from bib package)

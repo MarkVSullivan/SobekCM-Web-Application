@@ -26,7 +26,13 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             {
                 foreach (Aggregation_Info thisAggr in Original.Behaviors.Aggregations)
                 {
+                    // Look for the aggregation in the current aggregation codes
                     Item_Aggregation_Related_Aggregations aggrObj = Engine_ApplicationCache_Gateway.Codes[thisAggr.Code];
+
+                    // If the aggregation is NULL, as it may have been deleted, skip it
+                    if (aggrObj == null) continue;
+
+                    // If active, add with the URL, otherwise just add the short name
                     if (aggrObj.Active)
                     {
                         New.Add_Description("Aggregations", aggrObj.ShortName).Add_URI("[%BASEURL%]" + aggrObj.Code + "[%URLOPTS%]");

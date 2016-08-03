@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Web.Caching;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
@@ -20,6 +21,7 @@ using SobekCM.Engine_Library.Email;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
+using SobekCM.Library.TEI;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
@@ -44,6 +46,10 @@ namespace SobekCM.Library.AdminViewer
         private readonly string actionMessage;
         private readonly User_Object editUser;
         private readonly Users_Admin_Mode_Enum mode;
+        
+        // TEI plug-in infrmation
+        private bool tei_plugin_enabled;
+        private TEI_Configuration teiConfig;
 
 		#region Constructor and code to handle any post backs
 
@@ -73,7 +79,7 @@ namespace SobekCM.Library.AdminViewer
 			{
 				try
 				{
-					int edit_userid = Convert.ToInt32(RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Replace("a", "").Replace("b", "").Replace("c", "").Replace("v", ""));
+                    int edit_userid = Convert.ToInt32(RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Replace("a", "").Replace("b", "").Replace("c", "").Replace("d", "").Replace("v", ""));
 
 					// Check this admin's session for this RequestSpecificValues.Current_User object
 					Object sessionEditUser = HttpContext.Current.Session["Edit_User_" + edit_userid];
@@ -106,7 +112,34 @@ namespace SobekCM.Library.AdminViewer
 				RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
 			}
 
-			// Perform post back work
+            // Determine if TEI is enabled (and pull configuration if it is)
+		    if (mode == Users_Admin_Mode_Enum.Edit_User)
+		    {
+		        tei_plugin_enabled = false;
+		        if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
+		            (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI") != null) &&
+		            (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled))
+		        {
+		            // TEI enabled
+		            tei_plugin_enabled = true;
+
+		            // Try to pull the configuration from the cache, otherwise create it manually
+		            teiConfig = HttpContext.Current.Cache.Get("TEI.Configuration") as TEI_Configuration;
+
+		            // Did not find it in the cache
+		            if (teiConfig == null)
+		            {
+		                // Build the new object then
+		                string plugin_directory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins", "tei");
+		                teiConfig = new TEI_Configuration(plugin_directory);
+
+		                // Store on the cache for several minutes
+		                HttpContext.Current.Cache.Insert("TEI.Configuration", teiConfig, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(2));
+		            }
+		        }
+		    }
+
+		    // Perform post back work
 			if (RequestSpecificValues.Current_Mode.isPostBack)
 			{
 				if (mode == Users_Admin_Mode_Enum.List_Users_And_Groups)
@@ -212,6 +245,10 @@ namespace SobekCM.Library.AdminViewer
 						page = 2;
 					else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.IndexOf("c") > 0)
 						page = 3;
+
+                    // Allow page 4 if TEI is enabled
+				    if ((tei_plugin_enabled) && ((RequestSpecificValues.Current_Mode.My_Sobek_SubMode.IndexOf("d") > 0)))
+				        page = 4;
 
 					// Get a reference to this form
 					NameValueCollection form = HttpContext.Current.Request.Form;
@@ -621,6 +658,103 @@ namespace SobekCM.Library.AdminViewer
 								}
 							}
 							break;
+
+                        // TEI plug-in permissions
+                        case 4:
+
+                            // First, check to see if TEI is enabled
+					        if (form["admin_user_tei_enabled"] == null)
+					        {
+                                // If the setting is already the same, no need to update the database
+					            if (editUser.Get_Setting("TEI.Enabled", "false") != "false")
+					            {
+					                if ( SobekCM_Database.Set_User_Setting(editUser.UserID, "TEI.Enabled", "false") )
+                                        editUser.Add_Setting("TEI.Enabled", "false");
+					            }
+					        }
+					        else
+					        {
+                                // If the setting is already the same, no need to update the database
+					            if (editUser.Get_Setting("TEI.Enabled", "false") != "true")
+					            {
+					                if ( SobekCM_Database.Set_User_Setting(editUser.UserID, "TEI.Enabled", "true"))
+                                        editUser.Add_Setting("TEI.Enabled", "true");
+					            }
+					        }
+
+                            // Now, look for XSLT file links
+					        foreach (string thisFileName in teiConfig.XSLT_Files)
+					        {
+					            // Look for this checkbox
+                                if (form["admin_user_tei_xslt_" + thisFileName.ToLower()] == null)
+                                {
+                                    // If the setting is already the same, no need to update the database
+                                    if (editUser.Get_Setting("TEI.XSLT." + thisFileName.ToUpper(), "false") != "false")
+                                    {
+                                        if ( SobekCM_Database.Set_User_Setting(editUser.UserID, "TEI.XSLT." + thisFileName.ToUpper(), "false"))
+                                            editUser.Add_Setting("TEI.XSLT." + thisFileName.ToUpper(), "false");
+                                    }
+                                }
+                                else
+                                {
+                                    // If the setting is already the same, no need to update the database
+                                    if (editUser.Get_Setting("TEI.XSLT." + thisFileName.ToUpper(), "false") != "true")
+                                    {
+                                        if ( SobekCM_Database.Set_User_Setting(editUser.UserID, "TEI.XSLT." + thisFileName.ToUpper(), "true"))
+                                            editUser.Add_Setting("TEI.XSLT." + thisFileName.ToUpper(), "true");
+                                    }
+                                }
+					        }
+
+                            // Look for CSS file links
+                            foreach (string thisFileName in teiConfig.CSS_Files)
+                            {
+                                // Look for this checkbox
+                                if (form["admin_user_tei_css_" + thisFileName.ToLower()] == null)
+                                {
+                                    // If the setting is already the same, no need to update the database
+                                    if (editUser.Get_Setting("TEI.CSS." + thisFileName.ToUpper(), "false") != "false")
+                                    {
+                                       if ( SobekCM_Database.Set_User_Setting(editUser.UserID, "TEI.CSS." + thisFileName.ToUpper(), "false") )
+                                           editUser.Add_Setting("TEI.CSS." + thisFileName.ToUpper(), "false");
+                                    }
+                                }
+                                else
+                                {
+                                    // If the setting is already the same, no need to update the database
+                                    if (editUser.Get_Setting("TEI.CSS." + thisFileName.ToUpper(), "false") != "true")
+                                    {
+                                        if ( SobekCM_Database.Set_User_Setting(editUser.UserID, "TEI.CSS." + thisFileName.ToUpper(), "true"))
+                                            editUser.Add_Setting("TEI.CSS." + thisFileName.ToUpper(), "true");
+                                    }
+                                }
+                            }
+
+                            // Look for mapping file links
+                            foreach (string thisFileName in teiConfig.Mapping_Files)
+                            {
+                                // Look for this checkbox
+                                if (form["admin_user_tei_mapping_" + thisFileName.ToLower()] == null)
+                                {
+                                    // If the setting is already the same, no need to update the database
+                                    if (editUser.Get_Setting("TEI.MAPPING." + thisFileName.ToUpper(), "false") != "false")
+                                    {
+                                        if ( SobekCM_Database.Set_User_Setting(editUser.UserID, "TEI.MAPPING." + thisFileName.ToUpper(), "false"))
+                                            editUser.Add_Setting("TEI.MAPPING." + thisFileName.ToUpper(), "false");
+                                    }
+                                }
+                                else
+                                {
+                                    // If the setting is already the same, no need to update the database
+                                    if (editUser.Get_Setting("TEI.MAPPING." + thisFileName.ToUpper(), "false") != "true")
+                                    {
+                                        if ( SobekCM_Database.Set_User_Setting(editUser.UserID, "TEI.MAPPING." + thisFileName.ToUpper(), "true"))
+                                            editUser.Add_Setting("TEI.MAPPING." + thisFileName.ToUpper(), "true");
+                                    }
+                                }
+                            }
+
+                            break;
 					}
 
 					// Should this be saved to the database?
@@ -1084,6 +1218,12 @@ namespace SobekCM.Library.AdminViewer
             else if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.IndexOf("c") > 0)
                 page = 3;
 
+            // Only allow page FOUR if the TEI plug-in is enabled
+            if (tei_plugin_enabled)
+            {
+                if (RequestSpecificValues.Current_Mode.My_Sobek_SubMode.IndexOf("d") > 0) page = 4;
+            }
+
             Output.WriteLine("  <div class=\"SobekHomeText\">");
             Output.WriteLine("  <br />");
             Output.WriteLine("  <b>Edit this users's permissions, abilities, and basic information</b>");
@@ -1129,6 +1269,21 @@ namespace SobekCM.Library.AdminViewer
                 //RequestSpecificValues.Current_Mode.My_Sobek_SubMode = edit_user.UserID + "c";
                 //Output.WriteLine("    <a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + base.Unselected_Tab_Start + " AGGREGATIONS " + base.Unselected_Tab_End + "</a>");
             }
+
+            // Show the TEI tab, if enabled
+            if (tei_plugin_enabled)
+            {
+                if (page == 4)
+                {
+                    Output.WriteLine("      <li class=\"tabActiveHeader\"> TEI PLUG-IN </li>");
+
+                }
+                else
+                {
+                    Output.WriteLine("    <li onclick=\"return new_user_edit_page('" + editUser.UserID + "d" + "');\">" + " TEI PLUG-IN " + "</li>");
+                }
+            }
+
 			Output.WriteLine("    </ul>");
             Output.WriteLine("  </div>");
 
@@ -1713,6 +1868,98 @@ namespace SobekCM.Library.AdminViewer
 
                     Output.WriteLine("</table>");
                     Output.WriteLine("<br />");
+                    break;
+
+                case 4:
+                    // Was this user enabled?
+                    bool enabled_for_tei = (String.Compare(editUser.Get_Setting("TEI.Enabled", "false"), "false", StringComparison.OrdinalIgnoreCase) != 0);
+
+                    Output.WriteLine("  <h2>TEI Permissions</h2>");
+                    Output.WriteLine("  <p>This tab is used to control permissions for this user for the TEI plug-in and different files under the TEI plug-in.</p>");
+                    Output.WriteLine("  <br /><br />");
+
+                    Output.WriteLine("  <span class=\"SobekEditItemSectionTitle_first\"> &nbsp; Global Permissions</span>");
+                    Output.WriteLine("    <p>For the user to have the option to upload or edit TEI files, this user must first be enabled to use the plug-in.</p>");
+                    Output.WriteLine(enabled_for_tei
+                     ? "    <input class=\"admin_user_checkbox_tei\" type=\"checkbox\" name=\"admin_user_tei_enabled\" id=\"admin_user_tei_enabled\" checked=\"checked\" /> <label for=\"admin_user_tei_enabled\">Enabled to use the TEI plug-in</label> <br /><br /><br />"
+                     : "    <input class=\"admin_user_checkbox_tei\" type=\"checkbox\" name=\"admin_user_tei_enabled\" id=\"admin_user_tei_enabled\" /> <label for=\"admin_user_tei_enabled\">Enabled to use the TEI plug-in</label> <br /><br /><br />");
+                    Output.WriteLine();
+
+                    // Add XSLT permissions
+                    Output.WriteLine("  <span class=\"SobekEditItemSectionTitle\"> &nbsp; XSLT Permissions</span>");
+                    if (teiConfig.XSLT_Files.Count == 0)
+                    {
+                        Output.WriteLine("    <p>There are no XSLT files in the system!</p>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("    <p>Select the XSLT transform files this user has access to select for their items.</p>");
+
+                        foreach (string thisFile in teiConfig.XSLT_Files)
+                        {
+                            // Determine if enabled
+                            bool tei_xlst_enabled = (String.Compare(editUser.Get_Setting("TEI.XSLT." + thisFile.ToUpper(), "false"), "false", StringComparison.OrdinalIgnoreCase) != 0);
+
+                            // Show check box
+                            Output.WriteLine(tei_xlst_enabled
+                                ? "    <input class=\"admin_user_checkbox_tei\" type=\"checkbox\" name=\"admin_user_tei_xslt_" + thisFile.ToLower() + "\" id=\"admin_user_tei_xslt_" + thisFile.ToLower() + "\" checked=\"checked\" /> <label for=\"admin_user_tei_xslt_" + thisFile.ToLower() + "\">" + thisFile + "</label> <br />"
+                                : "    <input class=\"admin_user_checkbox_tei\" type=\"checkbox\" name=\"admin_user_tei_xslt_" + thisFile.ToLower() + "\" id=\"admin_user_tei_xslt_" + thisFile.ToLower() + "\" /> <label for=\"admin_user_tei_xslt_" + thisFile.ToLower() + "\">" + thisFile + "</label> <br />");
+
+                        }
+                    }
+                    Output.WriteLine("  <br /><br />");
+                    Output.WriteLine();
+
+                    // Add the CSS permissions
+                    Output.WriteLine("  <span class=\"SobekEditItemSectionTitle\"> &nbsp; CSS Permissions</span>");
+                    if (teiConfig.CSS_Files.Count == 0)
+                    {
+                        Output.WriteLine("    <p>There are no CSS files in the system!</p>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("    <p>Select the CSS stylesheet files this user has access to select for their items.</p>");
+
+                        foreach (string thisFile in teiConfig.CSS_Files)
+                        {
+                            // Determine if enabled
+                            bool tei_css_enabled = (String.Compare(editUser.Get_Setting("TEI.CSS." + thisFile.ToUpper(), "false"), "false", StringComparison.OrdinalIgnoreCase) != 0);
+
+                            // Show check box
+                            Output.WriteLine(tei_css_enabled
+                                ? "    <input class=\"admin_user_checkbox_tei\" type=\"checkbox\" name=\"admin_user_tei_css_" + thisFile.ToLower() + "\" id=\"admin_user_tei_css_" + thisFile.ToLower() + "\" checked=\"checked\" /> <label for=\"admin_user_tei_css_" + thisFile.ToLower() + "\">" + thisFile + "</label> <br />"
+                                : "    <input class=\"admin_user_checkbox_tei\" type=\"checkbox\" name=\"admin_user_tei_css_" + thisFile.ToLower() + "\" id=\"admin_user_tei_css_" + thisFile.ToLower() + "\" /> <label for=\"admin_user_tei_css_" + thisFile.ToLower() + "\">" + thisFile + "</label> <br />");
+
+                        }
+                    }
+                    Output.WriteLine("  <br /><br />");
+                    Output.WriteLine();
+
+                    // Add the mappings permissions
+                    Output.WriteLine("  <span class=\"SobekEditItemSectionTitle\"> &nbsp; Mappings Permissions</span>");
+                    if ( teiConfig.Mapping_Files.Count == 0)
+                    {
+                        Output.WriteLine("    <p>There are no mapping files in the system!</p>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("    <p>Select the XML mappnig files this user has access to select for their items.</p>");
+
+                        foreach (string thisFile in teiConfig.Mapping_Files)
+                        {
+                            // Determine if enabled
+                            bool tei_mapping_enabled = (String.Compare(editUser.Get_Setting("TEI.MAPPING." + thisFile.ToUpper(), "false"), "false", StringComparison.OrdinalIgnoreCase) != 0);
+
+                            // Show check box
+                            Output.WriteLine(tei_mapping_enabled
+                                ? "    <input class=\"admin_user_checkbox_tei\" type=\"checkbox\" name=\"admin_user_tei_mapping_" + thisFile.ToLower() + "\" id=\"admin_user_tei_mapping_" + thisFile.ToLower() + "\" checked=\"checked\" /> <label for=\"admin_user_mapping_xslt_" + thisFile.ToLower() + "\">" + thisFile + "</label> <br />"
+                                : "    <input class=\"admin_user_checkbox_tei\" type=\"checkbox\" name=\"admin_user_tei_mapping_" + thisFile.ToLower() + "\" id=\"admin_user_tei_mapping_" + thisFile.ToLower() + "\" /> <label for=\"admin_user_tei_mapping_" + thisFile.ToLower() + "\">" + thisFile + "</label> <br />");
+
+                        }
+                    }
+                    Output.WriteLine("  <br />");
+
+
                     break;
             }
 
