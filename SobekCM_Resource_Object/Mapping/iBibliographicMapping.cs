@@ -8,7 +8,8 @@
         /// <param name="Package">Bibliographic package to receive the data</param>
         /// <param name="Data">Text of the data</param>
         /// <param name="Field">Mapped field</param>
-        void Add_Data(SobekCM_Item Package, string Data, string Field);
+        /// <returns> TRUE if the field was mapped, FALSE if there was data and no mapping was found </returns>
+        bool Add_Data(SobekCM_Item Package, string Data, string Field);
 
     }
 }

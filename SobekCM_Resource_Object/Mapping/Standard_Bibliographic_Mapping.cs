@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
 using SobekCM.Resource_Object.Bib_Info;
@@ -84,15 +85,16 @@ namespace SobekCM.Resource_Object.Mapping
         /// <param name="Package">Bibliographic package to receive the data</param>
         /// <param name="Data">Text of the data</param>
         /// <param name="Field">Mapped field</param>
-        public void Add_Data(SobekCM_Item Package, string Data, string Field)
+        /// <returns> TRUE if the field was mapped, FALSE if there was data and no mapping was found </returns>
+        public bool Add_Data(SobekCM_Item Package, string Data, string Field)
         {
-            // If no field listed, just skip
+            // If no field listed, just skip (but not a mapping error, so return TRUE)
             if (String.IsNullOrEmpty(Field))
-                return;
+                return true;
 
-            // If no data listed, just skip
+            // If no data listed, just skip (but not a mapping error, so return TRUE)
             if (String.IsNullOrWhiteSpace(Data))
-                return;
+                return true;
 
             // Trim the data
             Data = Data.Trim();
@@ -131,21 +133,22 @@ namespace SobekCM.Resource_Object.Mapping
             {
                 case "NONE":
                     // Do nothing, since no mapping exists
-                    break;
+                    return true;
 
                 case "ABSTRACT":
                     Package.Bib_Info.Add_Abstract(Data, "en");
-                    break;
+                    return true;
 
                 case "ACCESSION":
                 case "ACCESSIONNUMBER":
                     Package.Bib_Info.Add_Identifier(Data, "Accession Number");
-                    break;
+                    return true;
 
                 case "ALTERNATETITLE":
                 case "ALTTITLE":
+                case "TITLEVARIANT":
                     Package.Bib_Info.Add_Other_Title(Data, Title_Type_Enum.Alternative);
-                    break;
+                    return true;
 
                 case "ALTERNATETITLELANGUAGE":
                 case "ALTTITLELANGUAGE":
@@ -154,12 +157,16 @@ namespace SobekCM.Resource_Object.Mapping
                     {
                         otherTitles[otherTitles.Count - 1].Language = Data;
                     }
-                    break;
+                    return true;
+
+                case "TITLETRANSLATION":
+                case "TRANSLATEDTITLE":
+                    Package.Bib_Info.Add_Other_Title(Data, Title_Type_Enum.Translated);
+                    return true;
 
                 case "ATTRIBUTION":
                     Package.Bib_Info.Add_Note(Data, Note_Type_Enum.Funding);
-                    break;
-
+                    return true;
 
                 case "COLLECTION":
                 case "COLLECTIONCODE":
@@ -168,11 +175,11 @@ namespace SobekCM.Resource_Object.Mapping
                 case "SUBCOLLECTION":
                 case "SUBCOLLECTIONS":
                     Package.Behaviors.Add_Aggregation(Data.ToUpper());
-                    break;
+                    return true;
 
                 case "CLASSIFICATION":
                     Package.Bib_Info.Add_Classification(Data);
-                    break;
+                    return true;
 
                 case "CLASSIFICATIONTYPE":
                 case "CLASSIFICATIONAUTHORITY":
@@ -180,18 +187,30 @@ namespace SobekCM.Resource_Object.Mapping
                     {
                         Package.Bib_Info.Classifications[Package.Bib_Info.Classifications_Count - 1].Authority = Data;
                     }
-                    break;
+                    return true;
 
                 case "CONTRIBUTOR":
                 case "CONTRIBUTORS":
                     Package.Bib_Info.Add_Named_Entity(new Name_Info(Data, "contributor"));
-                    break;
+                    return true;
 
                 case "CREATOR":
                 case "CREATORS":
                 case "AUTHOR":
                     Package.Bib_Info.Add_Named_Entity(new Name_Info(Data, "creator"));
-                    break;
+                    return true;
+
+                case "CREATORPERSONALNAME":
+                    Name_Info personalCreator = new Name_Info(Data, "creator");
+                    personalCreator.Name_Type = Name_Info_Type_Enum.Personal;
+                    Package.Bib_Info.Add_Named_Entity(personalCreator);
+                    return true;
+
+                case "CREATORCORPORATENAME":
+                    Name_Info corporateCreator = new Name_Info(Data, "creator");
+                    corporateCreator.Name_Type = Name_Info_Type_Enum.Corporate;
+                    Package.Bib_Info.Add_Named_Entity(corporateCreator);
+                    return true;
 
                 case "CREATORAFFILIATION":
                 case "AUTHORAFFILIATION":
@@ -199,7 +218,7 @@ namespace SobekCM.Resource_Object.Mapping
                     {
                         Package.Bib_Info.Names[Package.Bib_Info.Names_Count - 1].Affiliation = Data;
                     }
-                    break;
+                    return true;
 
                 case "CREATORDATES":
                 case "AUTHORDATES":
@@ -207,7 +226,7 @@ namespace SobekCM.Resource_Object.Mapping
                     {
                         Package.Bib_Info.Names[Package.Bib_Info.Names_Count - 1].Dates = Data;
                     }
-                    break;
+                    return true;
 
                 case "CREATORFAMILYNAME":
                 case "AUTHORFAMILYNAME":
@@ -228,7 +247,7 @@ namespace SobekCM.Resource_Object.Mapping
                         Name_Info newNameEntity = new Name_Info { Family_Name = Data };
                         Package.Bib_Info.Add_Named_Entity(newNameEntity);
                     }
-                    break;
+                    return true;
 
                 case "CREATORGIVENNAME":
                 case "AUTHORGIVENNAME":
@@ -249,12 +268,13 @@ namespace SobekCM.Resource_Object.Mapping
                         Name_Info newNameEntity = new Name_Info { Given_Name = Data };
                         Package.Bib_Info.Add_Named_Entity(newNameEntity);
                     }
-                    break;
+                    return true;
 
                 case "CREATORROLE":
                 case "AUTHORROLE":
                 case "CREATORROLES":
                 case "AUTHORROLES":
+                case "CREATORATTRIBUTION":
                     if (Package.Bib_Info.Names_Count > 0)
                     {
                         Name_Info thisCreator = Package.Bib_Info.Names[Package.Bib_Info.Names_Count - 1];
@@ -262,9 +282,10 @@ namespace SobekCM.Resource_Object.Mapping
                             thisCreator.Roles.Clear();
                         Package.Bib_Info.Names[Package.Bib_Info.Names_Count - 1].Add_Role(Data);
                     }
-                    break;
+                    return true;
 
                 case "CULTURALCONTEXT":
+                case "CULTURE":
                     VRACore_Info vraCoreInfo = Package.Get_Metadata_Module("VRACore") as VRACore_Info;
                     if (vraCoreInfo == null)
                     {
@@ -272,43 +293,54 @@ namespace SobekCM.Resource_Object.Mapping
                         Package.Add_Metadata_Module("VRACore", vraCoreInfo);
                     }
                     vraCoreInfo.Add_Cultural_Context(Data);
-                    break;
+                    return true;
 
                 case "DONOR":
                     Package.Bib_Info.Donor.Full_Name = Data;
-                    break;
+                    return true;
 
                 case "GENRE":
                     Package.Bib_Info.Add_Genre(Data);
-                    break;
+                    return true;
 
                 case "GENREAUTHORITY":
                     if (Package.Bib_Info.Genres_Count > 0)
                     {
                         Package.Bib_Info.Genres[Package.Bib_Info.Genres_Count - 1].Authority = Data;
                     }
-                    break;
+                    return true;
 
                 case "HOLDINGLOCATIONCODE":
                 case "HOLDINGCODE":
                     Package.Bib_Info.Location.Holding_Code = Data;
-                    break;
+                    return true;
 
                 case "HOLDINGLOCATIONSTATEMENT":
                 case "HOLDINGSTATEMENT":
+                case "CONTRIBUTINGINSTITUTION":
+                case "LOCATIONCURRENT":
+                case "LOCATIONCURRENTSITE":
+                case "LOCATIONCURRENTREPOSITORY":
                     Package.Bib_Info.Location.Holding_Name = Data;
-                    break;
+                    return true;
+
+                case "LOCATIONFORMERSITE":
+                    Package.Bib_Info.Add_Note(Data, Note_Type_Enum.OriginalLocation);
+                    return true;
 
                 case "IDENTIFIER":
+                case "IDNUMBERFORMERREPOSITORY":
+                case "IDNUMBERCURRENTREPOSITORY":
+                case "IDNUMBERCURRENTRESPOSITORY":
                     Package.Bib_Info.Add_Identifier(Data);
-                    break;
+                    return true;
 
                 case "IDENTIFIERTYPE":
                     if (Package.Bib_Info.Identifiers_Count > 0)
                     {
                         Package.Bib_Info.Identifiers[Package.Bib_Info.Identifiers_Count - 1].Type = Data;
                     }
-                    break;
+                    return true;
 
                 case "INSCRIPTION":
                     VRACore_Info vraCoreInfo8 = Package.Get_Metadata_Module("VRACore") as VRACore_Info;
@@ -318,16 +350,16 @@ namespace SobekCM.Resource_Object.Mapping
                         Package.Add_Metadata_Module("VRACore", vraCoreInfo8);
                     }
                     vraCoreInfo8.Add_Inscription(Data);
-                    break;
+                    return true;
 
                 case "LANGUAGE":
                     Package.Bib_Info.Add_Language(Data);
-                    break;
+                    return true;
 
                 case "PUBLISHER":
                 case "PUBLISHERS":
                     Package.Bib_Info.Add_Publisher(Data);
-                    break;
+                    return true;
 
                 case "PLACEOFPUBLICATION":
                 case "PUBLICATIONPLACE":
@@ -335,39 +367,40 @@ namespace SobekCM.Resource_Object.Mapping
                 case "PUBLICATIONLOCATION":
                 case "PLACE":
                     Package.Bib_Info.Origin_Info.Add_Place(Data);
-                    break;
+                    return true;
 
                 case "RELATEDURLLABEL":
                     Package.Bib_Info.Location.Other_URL_Display_Label = Data;
-                    break;
+                    return true;
 
                 case "RELATEDURL":
                 case "RELATEDURLLINK":
                     Package.Bib_Info.Location.Other_URL = Data;
-                    break;
+                    return true;
 
                 case "RELATEDURLNOTE":
                 case "RELATEDURLNOTES":
                     Package.Bib_Info.Location.Other_URL_Note = Data;
-                    break;
+                    return true;
 
                 case "SOURCEINSTITUTIONCODE":
                 case "SOURCECODE":
                     Package.Bib_Info.Source.Code = Data;
-                    break;
+                    return true;
 
                 case "SOURCEINSTITUTIONSTATEMENT":
                 case "SOURCESTATEMENT":
                 case "SOURCE":
                     Package.Bib_Info.Source.Statement = Data;
-                    break;
+                    return true;
 
                 case "SUBJECTKEYWORD":
                 case "SUBJECTKEYWORDS":
                 case "SUBJECT":
                 case "SUBJECTS":
+                case "KEYWORDS":
                     Package.Bib_Info.Add_Subject(Data, String.Empty);
-                    break;
+                    return true;
 
                 case "SUBJECTKEYWORDAUTHORITY":
                 case "SUBJECTAUTHORITY":
@@ -375,20 +408,21 @@ namespace SobekCM.Resource_Object.Mapping
                     {
                         Package.Bib_Info.Subjects[Package.Bib_Info.Subjects_Count - 1].Authority = Data;
                     }
-                    break;
+                    return true;
 
                 case "BIBID":
                 case "BIB":
                 case "BIBLIOGRAHPICID":
                 case "BIBLIOGRAPHICIDENTIFIER":
                     Package.Bib_Info.BibID = Data.ToUpper();
-                    break;
+                    return true;
 
                 case "VID":
                     Package.Bib_Info.VID = Data.PadLeft(5, '0');
-                    break;
+                    return true;
 
                 case "DATE":
+                case "DATECREATION":
                     try
                     {
                         // first, try converting the string value to a date object
@@ -406,103 +440,128 @@ namespace SobekCM.Resource_Object.Mapping
                             Package.Bib_Info.Origin_Info.Date_Issued = Data;
                         }
                     }
-                    break;
+                    return true;
+
+                case "DATEBEGINNING":
+                    Package.Bib_Info.Origin_Info.MARC_DateIssued_Start = Data;
+                    return true;
+
+                case "DATECOMPLETION":
+                    Package.Bib_Info.Origin_Info.MARC_DateIssued_End = Data;
+                    return true;
 
                 case "EDITION":
                     Package.Bib_Info.Origin_Info.Edition = Data;
-                    break;
+                    return true;
 
                 case "FORMAT":
                 case "PHYSICALDESCRIPTION":
                     Package.Bib_Info.Original_Description.Extent = Data;
-                    break;
+                    return true;
 
                 case "NOTE":
                 case "NOTES":
+                case "DESCRIPTION":
                     Package.Bib_Info.Add_Note(Data);
-                    break;
+                    return true;
+
+                case "PROVENANCE":
+                    Package.Bib_Info.Add_Note(Data, Note_Type_Enum.Acquisition);
+                    return true;
+
+                case "USAGESTATEMENT":
+                    Package.Bib_Info.Add_Note(Data, Note_Type_Enum.CitationReference);
+                    return true;
+
+                case "CONTACT":
+                case "CONTACTNOTES":
+                case "CONTACTINFORMATION":
+                    Package.Bib_Info.Add_Note(Data, Note_Type_Enum.NONE, "Contact");
+                    return true;
 
                 case "RIGHTS":
                     Package.Bib_Info.Access_Condition.Text = Data;
-                    break;
+                    return true;
 
                 case "BIBSERIESTITLE":
                 case "SERIESTITLE":
+                case "TITLESERIES":
                     Package.Bib_Info.SeriesTitle.Title = Data;
                     Package.Behaviors.GroupTitle = Data;
-                    break;
+                    return true;
 
                 case "MATERIALTYPE":
                 case "TYPE":
+                case "RECORDTYPE":
                     string upper_data = Data.ToUpper();
                     if (upper_data.IndexOf("NEWSPAPER", StringComparison.Ordinal) >= 0)
                     {
                         Package.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Newspaper;
-                        break;
+                        return true;
                     }
                     if ((upper_data.IndexOf("MONOGRAPH", StringComparison.Ordinal) >= 0) || (upper_data.IndexOf("BOOK", StringComparison.Ordinal) >= 0))
                     {
                         Package.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Book;
-                        break;
+                        return true;
                     }
                     if (upper_data.IndexOf("SERIAL", StringComparison.Ordinal) >= 0)
                     {
                         Package.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Serial;
-                        break;
+                        return true;
                     }
                     if (upper_data.IndexOf("AERIAL", StringComparison.Ordinal) >= 0)
                     {
                         Package.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Aerial;
                         if (Package.Bib_Info.Original_Description.Extent.Length == 0)
                             Package.Bib_Info.Original_Description.Extent = "Aerial Photograph";
-                        break;
+                        return true;
                     }
                     if (upper_data.IndexOf("PHOTO", StringComparison.Ordinal) >= 0)
                     {
                         Package.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Photograph;
-                        break;
+                        return true;
                     }
                     if (upper_data.IndexOf("POSTCARD", StringComparison.Ordinal) >= 0)
                     {
                         Package.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Photograph;
                         if (Package.Bib_Info.Original_Description.Extent.Length == 0)
                             Package.Bib_Info.Original_Description.Extent = "Postcard";
-                        break;
+                        return true;
                     }
                     if (upper_data.IndexOf("MAP", StringComparison.Ordinal) >= 0)
                     {
                         Package.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Map;
-                        break;
+                        return true;
                     }
                     if (upper_data.IndexOf("TEXT", StringComparison.Ordinal) >= 0)
                     {
                         Package.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Book;
-                        break;
+                        return true;
                     }
                     if (upper_data.IndexOf("AUDIO", StringComparison.Ordinal) >= 0)
                     {
                         Package.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Audio;
-                        break;
+                        return true;
                     }
                     if (upper_data.IndexOf("VIDEO", StringComparison.Ordinal) >= 0)
                     {
                         Package.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Video;
-                        break;
+                        return true;
                     }
                     if ((upper_data.IndexOf("ARCHIVE", StringComparison.Ordinal) >= 0) || (upper_data.IndexOf("ARCHIVAL", StringComparison.Ordinal) >= 0))
                     {
                         Package.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Archival;
-                        break;
+                        return true;
                     }
                     if (upper_data.IndexOf("ARTIFACT", StringComparison.Ordinal) >= 0)
                     {
                         Package.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Artifact;
-                        break;
+                        return true;
                     }
                     if (upper_data.IndexOf("IMAGE", StringComparison.Ordinal) >= 0)
                     {
                         Package.Bib_Info.SobekCM_Type = TypeOfResource_SobekCM_Enum.Photograph;
-                        break;
+                        return true;
                     }
 
                     // if there was no match, set type to "UNDETERMINED"
@@ -510,51 +569,51 @@ namespace SobekCM.Resource_Object.Mapping
 
                     if (Package.Bib_Info.Original_Description.Extent.Length == 0)
                         Package.Bib_Info.Original_Description.Extent = "Undetermined";
-                    break;
+                    return true;
 
                 case "BIBUNIFORMTITLE":
                 case "UNIFORMTITLE":
                     Package.Bib_Info.Add_Other_Title(Data, Title_Type_Enum.Uniform);
                     Package.Behaviors.GroupTitle = Data;
-                    break;
+                    return true;
 
                 case "VOLUMETITLE":
                 case "TITLE":
                     Package.Bib_Info.Main_Title.Title = Data;
-                    break;
+                    return true;
 
                 case "TITLELANGUAGE":
                     Package.Bib_Info.Main_Title.Language = Data;
-                    break;
+                    return true;
 
                 case "ALEPH":
                     Package.Bib_Info.Add_Identifier(Data, "ALEPH");
-                    break;
+                    return true;
 
                 case "OCLC":
                     Package.Bib_Info.Add_Identifier(Data, "OCLC");
-                    break;
+                    return true;
 
                 case "LCCN":
                     Package.Bib_Info.Add_Identifier(Data, "LCCN");
-                    break;
+                    return true;
 
                 case "ISBN":
                     Package.Bib_Info.Add_Identifier(Data, "ISBN");
-                    break;
+                    return true;
 
                 case "ISSN":
                     Package.Bib_Info.Add_Identifier(Data, "ISSN");
-                    break;
+                    return true;
 
                 case "SUBTITLE":
                     Package.Bib_Info.Main_Title.Subtitle = Data;
-                    break;
+                    return true;
 
                 case "VOLUME":
                     Package.Bib_Info.Series_Part_Info.Enum1 = Data;
                     Package.Behaviors.Serial_Info.Add_Hierarchy(Package.Behaviors.Serial_Info.Count + 1, 1, Data);
-                    break;
+                    return true;
 
                 case "ISSUE":
                     if (Package.Bib_Info.Series_Part_Info.Enum1.Length == 0)
@@ -566,7 +625,7 @@ namespace SobekCM.Resource_Object.Mapping
                         Package.Bib_Info.Series_Part_Info.Enum2 = Data;
                     }
                     Package.Behaviors.Serial_Info.Add_Hierarchy(Package.Behaviors.Serial_Info.Count + 1, 1, Data);
-                    break;
+                    return true;
 
                 case "SECTION":
                     if (Package.Bib_Info.Series_Part_Info.Enum2.Length == 0)
@@ -582,7 +641,7 @@ namespace SobekCM.Resource_Object.Mapping
                     }
                     Package.Behaviors.Serial_Info.Add_Hierarchy(Package.Behaviors.Serial_Info.Count + 1, 1, Data);
                     // Do nothing for now
-                    break;
+                    return true;
 
                 case "YEAR":
                     Package.Bib_Info.Series_Part_Info.Year = Data;
@@ -593,21 +652,21 @@ namespace SobekCM.Resource_Object.Mapping
                         year = Data;
                     build_date_string(Package);
 
-                    break;
+                    return true;
 
                 case "MONTH":
                     Package.Bib_Info.Series_Part_Info.Month = Data;
                     month = Data;
                     build_date_string(Package);
 
-                    break;
+                    return true;
 
                 case "DAY":
                     Package.Bib_Info.Series_Part_Info.Day = Data;
                     day = Data;
                     build_date_string(Package);
 
-                    break;
+                    return true;
 
                 case "COORDINATES":
                     GeoSpatial_Information geoInfo = Package.Get_Metadata_Module(GlobalVar.GEOSPATIAL_METADATA_MODULE_KEY) as GeoSpatial_Information;
@@ -635,7 +694,7 @@ namespace SobekCM.Resource_Object.Mapping
                     catch
                     {
                     }
-                    break;
+                    return true;
 
                 case "LATITUDE":
                 case "COORDINATESLATITUDE":
@@ -655,7 +714,7 @@ namespace SobekCM.Resource_Object.Mapping
                     catch
                     {
                     }
-                    break;
+                    return true;
 
                 case "LONGITUDE":
                 case "COORDINATESLONGITUDE":
@@ -675,21 +734,21 @@ namespace SobekCM.Resource_Object.Mapping
                     catch
                     {
                     }
-                    break;
+                    return true;
 
                 case "PROJECTION":
                 case "MAPPROJECTION":
                     Guarantee_Cartographics(Package).Projection = Data;
-                    break;
+                    return true;
 
                 case "SCALE":
                 case "MAPSCALE":
                     Guarantee_Cartographics(Package).Scale = Data;
-                    break;
+                    return true;
 
                 //case Mapped_Fields.Spatial_Coverage:
                 //    Package.Bib_Info.Hierarchical_Spatials[0].Area = Data;
-                //    break;
+                //    return true;
 
                 case "ICON/WORDMARK":
                 case "ICON/WORDMARKS":
@@ -698,161 +757,175 @@ namespace SobekCM.Resource_Object.Mapping
                 case "WORDMARK":
                 case "WORDMARKS":
                     Package.Behaviors.Add_Wordmark(Data);
-                    break;
+                    return true;
 
                 case "WEBSKINS":
                 case "WEBSKIN":
                 case "SKINS":
                 case "SKIN":
                     Package.Behaviors.Add_Web_Skin(Data);
-                    break;
+                    return true;
 
                 case "TEMPORALCOVERAGE":
                 case "TEMPORAL":
+                case "TIMEPERIOD":
                     Package.Bib_Info.Add_Temporal_Subject(-1, -1, Data);
-                    break;
+                    return true;
+
+                case "COVERAGE":
+                    // Was this a number.. likely, a year?
+                    int possible_year;
+                    if (( Data.Length >= 4 ) && ( Int32.TryParse(Data.Substring(0,4), out possible_year)))
+                        Package.Bib_Info.Add_Temporal_Subject(-1, -1, Data);
+                    else
+                        Package.Bib_Info.Add_Spatial_Subject(Data);
+                    return true;
 
                 case "AFFILIATIONUNIVERSITY":
                 case "UNIVERSITY":
                     Guarantee_Affiliation_Collection(Package);
                     Package.Bib_Info.Affiliations[0].University = Data;
-                    break;
+                    return true;
 
                 case "AFFILIATIONCAMPUS":
                 case "CAMPUS":
                     Guarantee_Affiliation_Collection(Package);
                     Package.Bib_Info.Affiliations[0].Campus = Data;
-                    break;
+                    return true;
 
                 case "AFFILIATIONCOLLEGE":
                 case "COLLEGE":
                     Guarantee_Affiliation_Collection(Package);
                     Package.Bib_Info.Affiliations[0].College = Data;
-                    break;
+                    return true;
 
                 case "AFFILIATIONUNIT":
                 case "UNIT":
                     Guarantee_Affiliation_Collection(Package);
                     Package.Bib_Info.Affiliations[0].Unit = Data;
-                    break;
+                    return true;
 
                 case "AFFILIATIONDEPARTMENT":
                 case "DEPARTMENT":
                     Guarantee_Affiliation_Collection(Package);
                     Package.Bib_Info.Affiliations[0].Department = Data;
-                    break;
+                    return true;
 
                 case "AFFILIATIONINSTITUTE":
                 case "INSTITUTE":
                     Guarantee_Affiliation_Collection(Package);
                     Package.Bib_Info.Affiliations[0].Institute = Data;
-                    break;
+                    return true;
 
                 case "AFFILIATIONCENTER":
                 case "CENTER":
                     Guarantee_Affiliation_Collection(Package);
                     Package.Bib_Info.Affiliations[0].Center = Data;
-                    break;
+                    return true;
 
                 case "AFFILIATIONSECTION":
                     Guarantee_Affiliation_Collection(Package);
                     Package.Bib_Info.Affiliations[0].Section = Data;
-                    break;
+                    return true;
 
                 case "AFFILIATIONSUBSECTION":
                     Guarantee_Affiliation_Collection(Package);
                     Package.Bib_Info.Affiliations[0].SubSection = Data;
-                    break;
+                    return true;
 
                 case "GEOGRAPHYCONTINENT":
                 case "CONTINENT":
                     Guarantee_Hierarchical_Spatial(Package).Continent = Data;
-                    break;
+                    return true;
 
                 case "GEOGRAPHYCOUNTRY":
                 case "COUNTRY":
                     Guarantee_Hierarchical_Spatial(Package).Country = Data;
-                    break;
+                    return true;
 
                 case "GEOGRAPHYPROVINCE":
                 case "PROVINCE":
                     Guarantee_Hierarchical_Spatial(Package).Province = Data;
-                    break;
+                    return true;
 
                 case "GEOGRAPHYREGION":
                 case "REGION":
                     Guarantee_Hierarchical_Spatial(Package).Region = Data;
-                    break;
+                    return true;
 
                 case "GEOGRAPHYSTATE":
                 case "STATE":
                     Guarantee_Hierarchical_Spatial(Package).State = Data;
-                    break;
+                    return true;
 
                 case "GEOGRAPHYTERRITORY":
                 case "TERRITORY":
                     Guarantee_Hierarchical_Spatial(Package).Territory = Data;
-                    break;
+                    return true;
 
                 case "GEOGRAPHYCOUNTY":
                 case "COUNTY":
                     Guarantee_Hierarchical_Spatial(Package).County = Data;
-                    break;
+                    return true;
 
                 case "GEOGRAPHYCITY":
                 case "CITY":
                     Guarantee_Hierarchical_Spatial(Package).City = Data;
-                    break;
+                    return true;
 
                 case "GEOGRAPHYISLAND":
                 case "ISLAND":
                     Guarantee_Hierarchical_Spatial(Package).Island = Data;
-                    break;
+                    return true;
 
                 case "GEOGRAPHYAREA":
                 case "AREA":
                     Guarantee_Hierarchical_Spatial(Package).Area = Data;
-                    break;
+                    return true;
+
+                case "LOCATION":
+                    Package.Bib_Info.Add_Spatial_Subject(Data);
+                    return true;
 
                 case "COPYRIGHTDATE":
                 case "COPYRIGHT":
                     Package.Bib_Info.Origin_Info.Date_Copyrighted = Data;
-                    break;
+                    return true;
 
                 case "EADNAME":
                 case "EAD":
                     Package.Bib_Info.Location.EAD_Name = Data;
-                    break;
+                    return true;
 
                 case "EADURL":
                     Package.Bib_Info.Location.EAD_URL = Data;
-                    break;
+                    return true;
 
                 case "COMMENTS":
                 case "INTERNALCOMMENTS":
                 case "INTERNAL":
                     Package.Tracking.Internal_Comments = Data;
-                    break;
+                    return true;
 
                 case "CONTAINERBOX":
                 case "BOX":
                     Package.Bib_Info.Add_Container("Box", Data, 1);
-                    break;
+                    return true;
 
                 case "CONTAINERDIVIDER":
                 case "DIVIDER":
                     Package.Bib_Info.Add_Container("Divider", Data, 2);
-                    break;
+                    return true;
 
                 case "CONTAINERFOLDER":
                 case "FOLDER":
                     Package.Bib_Info.Add_Container("Folder", Data, 3);
-                    break;
+                    return true;
 
                 case "VIEWERS":
                 case "VIEWER":
                     Package.Behaviors.Add_View(Data);
-                    break;
+                    return true;
 
                 case "VISIBILITY":
                     switch (Data.ToUpper())
@@ -860,37 +933,37 @@ namespace SobekCM.Resource_Object.Mapping
                         case "DARK":
                             Package.Behaviors.Dark_Flag = true;
                             Package.Behaviors.IP_Restriction_Membership = -1;
-                            break;
+                            return true;
 
                         case "PRIVATE":
                             Package.Behaviors.Dark_Flag = false;
                             Package.Behaviors.IP_Restriction_Membership = -1;
-                            break;
+                            return true;
 
                         case "PUBLIC":
                             Package.Behaviors.Dark_Flag = false;
                             Package.Behaviors.IP_Restriction_Membership = 0;
-                            break;
+                            return true;
 
                         case "RESTRICTED":
                             Package.Behaviors.Dark_Flag = false;
                             Package.Behaviors.IP_Restriction_Membership = 1;
-                            break;
+                            return true;
                     }
-                    break;
+                    return true;
 
                 case "TICKLER":
                     Package.Behaviors.Add_Tickler(Data);
-                    break;
+                    return true;
 
                 case "TRACKINGBOX":
                     Package.Tracking.Tracking_Box = Data;
-                    break;
+                    return true;
 
                 case "BORNDIGITAL":
                     if (Data.ToUpper().Trim() == "TRUE")
                         Package.Tracking.Born_Digital = true;
-                    break;
+                    return true;
 
                 case "MATERIALRECEIVED":
                 case "MATERIALRECEIVEDDATE":
@@ -899,10 +972,11 @@ namespace SobekCM.Resource_Object.Mapping
                     DateTime materialReceivedDate;
                     if (DateTime.TryParse(Data, out materialReceivedDate))
                         Package.Tracking.Material_Received_Date = materialReceivedDate;
-                    break;
+                    return true;
 
                 case "MATERIAL":
                 case "MATERIALS":
+                case "MATERIALMEDIUM":
                     VRACore_Info vraCoreInfo2 = Package.Get_Metadata_Module("VRACore") as VRACore_Info;
                     if (vraCoreInfo2 == null)
                     {
@@ -910,18 +984,52 @@ namespace SobekCM.Resource_Object.Mapping
                         Package.Add_Metadata_Module("VRACore", vraCoreInfo2);
                     }
                     vraCoreInfo2.Add_Material(Data, "medium");
-                    break;
+                    return true;
+
+                case "MATERIALSUPPORT":
+                    VRACore_Info vraCoreInfo2b = Package.Get_Metadata_Module("VRACore") as VRACore_Info;
+                    if (vraCoreInfo2b == null)
+                    {
+                        vraCoreInfo2b = new VRACore_Info();
+                        Package.Add_Metadata_Module("VRACore", vraCoreInfo2b);
+                    }
+                    vraCoreInfo2b.Add_Material(Data, "support");
+                    return true;
 
                 case "MEASUREMENT":
                 case "MEASUREMENTS":
+                case "MEASUREMENTDIMENSIONS":
+                case "MEASUREMENTSDIMENSIONS":
+                case "DIMENSIONS":
                     VRACore_Info vraCoreInfo3 = Package.Get_Metadata_Module("VRACore") as VRACore_Info;
                     if (vraCoreInfo3 == null)
                     {
                         vraCoreInfo3 = new VRACore_Info();
                         Package.Add_Metadata_Module("VRACore", vraCoreInfo3);
                     }
-                    vraCoreInfo3.Add_Measurement(Data, String.Empty);
-                    break;
+                    if (vraCoreInfo3.Measurement_Count == 0)
+                        vraCoreInfo3.Add_Measurement(Data, String.Empty);
+                    else
+                        vraCoreInfo3.Measurements[0].Measurements = Data;
+                    return true;
+
+                case "MEASUREMENTFORMAT":
+                case "MEASUREMENTUNITS":
+                case "MEASUREMENTSFORMAT":
+                case "MEASUREMENTSUNITS":
+                    VRACore_Info vraCoreInfo3b = Package.Get_Metadata_Module("VRACore") as VRACore_Info;
+                    if (vraCoreInfo3b == null)
+                    {
+                        vraCoreInfo3b = new VRACore_Info();
+                        Package.Add_Metadata_Module("VRACore", vraCoreInfo3b);
+                    }
+                    if (vraCoreInfo3b.Measurement_Count == 0)
+                        vraCoreInfo3b.Add_Measurement(String.Empty, Data);
+                    else
+                        vraCoreInfo3b.Measurements[0].Units = Data;
+                    return true;
+
+
 
                 case "STATEEDITION":
                     VRACore_Info vraCoreInfo4 = Package.Get_Metadata_Module("VRACore") as VRACore_Info;
@@ -931,7 +1039,7 @@ namespace SobekCM.Resource_Object.Mapping
                         Package.Add_Metadata_Module("VRACore", vraCoreInfo4);
                     }
                     vraCoreInfo4.Add_State_Edition(Data);
-                    break;
+                    return true;
 
                 case "STYLE":
                 case "PERIOD":
@@ -943,7 +1051,7 @@ namespace SobekCM.Resource_Object.Mapping
                         Package.Add_Metadata_Module("VRACore", vraCoreInfo5);
                     }
                     vraCoreInfo5.Add_Style_Period(Data);
-                    break;
+                    return true;
 
                 case "TECHNIQUE":
                     VRACore_Info vraCoreInfo6 = Package.Get_Metadata_Module("VRACore") as VRACore_Info;
@@ -953,7 +1061,16 @@ namespace SobekCM.Resource_Object.Mapping
                         Package.Add_Metadata_Module("VRACore", vraCoreInfo6);
                     }
                     vraCoreInfo6.Add_Technique(Data);
-                    break;
+                    return true;
+
+                case "TARGETAUDIENCE":
+                case "AUDIENCE":
+                    Package.Bib_Info.Add_Target_Audience(Data);
+                    return true;
+
+                default:
+                    // No mapping exists and this is a non-known no-mapping
+                    return false;
             }
         }
 
