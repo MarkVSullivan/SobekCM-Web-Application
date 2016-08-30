@@ -235,7 +235,28 @@ namespace SobekCM
 					// Determine which IP Ranges this IP address belongs to, if not already determined.
 					if (HttpContext.Current.Session["IP_Range_Membership"] == null)
 					{
-					    int ip_mask = UI_ApplicationCache_Gateway.IP_Restrictions.Restrictive_Range_Membership(request.UserHostAddress);
+					    string userAddress = request.UserHostAddress;
+#if DEBUG
+                        // If in DEBUG mode, and it is the loopback IP address, use a local IP
+					    if (userAddress == "::1")
+					    {
+                            try
+                            {
+                                var host = Dns.GetHostEntry(Dns.GetHostName());
+                                foreach (var ip in host.AddressList)
+                                {
+                                    if (ip.AddressFamily == AddressFamily.InterNetwork)
+                                    {
+                                        userAddress = ip.ToString();
+                                        break;
+                                    }
+                                }
+                            }
+                            catch { }
+
+					    }
+#endif
+                        int ip_mask = UI_ApplicationCache_Gateway.IP_Restrictions.Restrictive_Range_Membership(userAddress);
 						HttpContext.Current.Session["IP_Range_Membership"] = ip_mask;
 					}
 

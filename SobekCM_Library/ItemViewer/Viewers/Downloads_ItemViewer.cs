@@ -224,9 +224,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                         {
                             string file_link = greenstoneLocation + download.Name;
 
-                            //// MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
-                            //if ((CurrentItem.Behaviors.Dark_Flag) || (CurrentItem.Behaviors.IP_Restriction_Membership > 0))
-                            //    file_link = CurrentRequest.Base_URL + "files/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + download.System_Name;
+                            // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
+                            if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0))
+                                file_link = CurrentRequest.Base_URL + "files/" + BriefItem.BibID + "/" + BriefItem.VID + "/" + download.Name;
 
 
                             // Is the extension already a part of the label?

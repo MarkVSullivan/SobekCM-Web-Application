@@ -1,5 +1,6 @@
 #region Using directives
 
+using System;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
@@ -79,9 +80,9 @@ namespace SobekCM.Resource_Object.Utilities
                 // Return the valid flag
                 return isValid;
             }
-            catch
+            catch ( Exception ee )
             {
-                errors.Append("UNSPECIFIED ERROR CAUGHT DURING VALIDATION");
+                errors.Append("Error caught during validation of METS: " + ee.Message);
                 return false;
             }
         }
