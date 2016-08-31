@@ -571,53 +571,112 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                 }
                                 else
                                 {
-                                    if (String.IsNullOrEmpty(thisField.ItemProp))
+                                    // Since this isn't tied to a search code, we won't build a URL.  But the
+                                    // data could still HAVE a URL associated with it.
+                                    if ((thisValue.URIs == null) || (thisValue.URIs.Count == 0))
                                     {
-                                        if (String.IsNullOrEmpty(thisValue.Authority))
+                                        if (String.IsNullOrEmpty(thisField.ItemProp))
                                         {
-                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            if (String.IsNullOrEmpty(thisValue.Authority))
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, display_text_from_value(thisValue.Value), INDENT));
+                                                if (String.IsNullOrEmpty(thisValue.Language))
+                                                {
+                                                    result.Append(Single_Citation_HTML_Row(label, display_text_from_value(thisValue.Value), INDENT));
+                                                }
+                                                else
+                                                {
+                                                    result.Append(Single_Citation_HTML_Row(label, display_text_from_value(thisValue.Value) + " ( " + thisValue.Language + " )", INDENT));
+                                                }
                                             }
                                             else
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, display_text_from_value(thisValue.Value) + " ( " + thisValue.Language + " )", INDENT));
+                                                if (String.IsNullOrEmpty(thisValue.Language))
+                                                {
+                                                    result.Append(Single_Citation_HTML_Row(label, display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + " )", INDENT));
+                                                }
+                                                else
+                                                {
+                                                    result.Append(Single_Citation_HTML_Row(label, display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )", INDENT));
+                                                }
                                             }
                                         }
                                         else
                                         {
-                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            if (String.IsNullOrEmpty(thisValue.Authority))
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + " )", INDENT));
+                                                if (String.IsNullOrEmpty(thisValue.Language))
+                                                {
+                                                    result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + "</span>", INDENT));
+                                                }
+                                                else
+                                                {
+                                                    result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + " ( " + thisValue.Language + " )" + "</span>", INDENT));
+                                                }
                                             }
                                             else
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )", INDENT));
+                                                if (String.IsNullOrEmpty(thisValue.Language))
+                                                {
+                                                    result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + " )" + "</span>", INDENT));
+                                                }
+                                                else
+                                                {
+                                                    result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>", INDENT));
+                                                }
                                             }
                                         }
                                     }
                                     else
                                     {
-                                        if (String.IsNullOrEmpty(thisValue.Authority))
+                                        // This has a URI
+                                        if (String.IsNullOrEmpty(thisField.ItemProp))
                                         {
-                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            if (String.IsNullOrEmpty(thisValue.Authority))
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + "</span>", INDENT));
+                                                if (String.IsNullOrEmpty(thisValue.Language))
+                                                {
+                                                    result.Append(Single_Citation_HTML_Row(label, "<a href=\"" + thisValue.URIs[0] + "\">" + display_text_from_value(thisValue.Value) + "</a>", INDENT));
+                                                }
+                                                else
+                                                {
+                                                    result.Append(Single_Citation_HTML_Row(label, "<a href=\"" + thisValue.URIs[0] + "\">" + display_text_from_value(thisValue.Value) + "</a>" + " ( " + thisValue.Language + " )", INDENT));
+                                                }
                                             }
                                             else
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + " ( " + thisValue.Language + " )" + "</span>", INDENT));
+                                                if (String.IsNullOrEmpty(thisValue.Language))
+                                                {
+                                                    result.Append(Single_Citation_HTML_Row(label, "<a href=\"" + thisValue.URIs[0] + "\">" + display_text_from_value(thisValue.Value) + "</a>" + " ( " + thisValue.Authority + " )", INDENT));
+                                                }
+                                                else
+                                                {
+                                                    result.Append(Single_Citation_HTML_Row(label, "<a href=\"" + thisValue.URIs[0] + "\">" + display_text_from_value(thisValue.Value) + "</a>" + " ( " + thisValue.Authority + ", " + thisValue.Language + " )", INDENT));
+                                                }
                                             }
                                         }
                                         else
                                         {
-                                            if (String.IsNullOrEmpty(thisValue.Language))
+                                            if (String.IsNullOrEmpty(thisValue.Authority))
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + " )" + "</span>", INDENT));
+                                                if (String.IsNullOrEmpty(thisValue.Language))
+                                                {
+                                                    result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + "<a href=\"" + thisValue.URIs[0] + "\">" + display_text_from_value(thisValue.Value) + "</a>" + "</span>", INDENT));
+                                                }
+                                                else
+                                                {
+                                                    result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + "<a href=\"" + thisValue.URIs[0] + "\">" + display_text_from_value(thisValue.Value) + "</a>" + " ( " + thisValue.Language + " )" + "</span>", INDENT));
+                                                }
                                             }
                                             else
                                             {
-                                                result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>", INDENT));
+                                                if (String.IsNullOrEmpty(thisValue.Language))
+                                                {
+                                                    result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + "<a href=\"" + thisValue.URIs[0] + "\">" + display_text_from_value(thisValue.Value) + "</a>" + " ( " + thisValue.Authority + " )" + "</span>", INDENT));
+                                                }
+                                                else
+                                                {
+                                                    result.Append(Single_Citation_HTML_Row(label, "<span itemprop=\"" + thisField.ItemProp + "\">" + "<a href=\"" + thisValue.URIs[0] + "\">" + display_text_from_value(thisValue.Value) + "</a>" + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>", INDENT));
+                                                }
                                             }
                                         }
                                     }

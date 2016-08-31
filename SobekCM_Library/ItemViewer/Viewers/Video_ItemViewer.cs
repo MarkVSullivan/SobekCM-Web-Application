@@ -229,6 +229,10 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             string video_url = SobekFileSystem.Resource_Web_Uri(BriefItem, videoFileNames[video - 1]);
 
+            // MAKE THIS USE THE FILES.ASPX WEB PAGE if this is restricted (or dark)
+            if ((BriefItem.Behaviors.Dark_Flag) || (BriefItem.Behaviors.IP_Restriction_Membership > 0))
+                video_url = CurrentRequest.Base_URL + "files/" + BriefItem.BibID + "/" + BriefItem.VID + "/" + videoFileNames[video - 1];
+
             Output.WriteLine("        <tr>");
             Output.WriteLine("          <td id=\"sbkFiv_MainArea\">");
             Output.WriteLine("            <video id=\"sbkViv_Movie\" src=\"" + video_url + "\" controls autoplay></video>");

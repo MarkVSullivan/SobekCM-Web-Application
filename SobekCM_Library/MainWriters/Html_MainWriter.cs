@@ -830,9 +830,9 @@ namespace SobekCM.Library.MainWriters
                 if (HttpContext.Current.Items["Original_URL"] == null)
                     Output.WriteLine("<br /><br />Original URL: <i>None found</i><br />");
                 else
-                    Output.WriteLine("<br /><br />Original URL: " + HttpContext.Current.Items["Original_URL"] + "<br />");
+                    Output.WriteLine("<br /><br />Original URL: " + HttpUtility.HtmlEncode(HttpContext.Current.Items["Original_URL"]) + "<br />");
 
-                Output.WriteLine("Current URL: " + HttpContext.Current.Request.Url + "<br />");
+                Output.WriteLine("Current URL: " + HttpUtility.HtmlEncode(HttpContext.Current.Request.Url) + "<br />");
 
 
                 Output.WriteLine("<br /><br /><b>TRACE ROUTE</b>");

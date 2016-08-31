@@ -89,11 +89,11 @@ namespace SobekCM.Tools
         {
                 if (Message_Type == Custom_Trace_Type_Enum.Normal)
                 {
-                    traceBuilder.Append("<tr><td>" + Milliseconds + "</td><td>" + Method.ToLower() + "</td><td>" + Message + "</td></tr>\n");
+                    traceBuilder.Append("<tr><td>" + Milliseconds + "</td><td>" + Method.ToLower() + "</td><td>" + Message.Replace("<", "&lt;").Replace(">","&gt;") + "</td></tr>\n");
                 }
                 else
                 {
-                    traceBuilder.Append("<tr><td>" + Milliseconds + "</td><td>" + Method.ToLower() + "</td><td><font color=\"red\">" + Message + "</font></td></tr>\n");
+                    traceBuilder.Append("<tr><td>" + Milliseconds + "</td><td>" + Method.ToLower() + "</td><td><font color=\"red\">" + Message.Replace("<", "&lt;").Replace(">", "&gt;") + "</font></td></tr>\n");
                 }
         }
 

@@ -1359,11 +1359,11 @@ namespace SobekCM.Library.HTML
 							        // Add the term
 							        if (terms[i].Contains(" "))
 							        {
-							            Output.Write("\"" + terms[i].Replace("''''", "'").Replace("''", "'") + "\" ");
+							            Output.Write("\"" + HttpUtility.UrlEncode(terms[i].Replace("''''", "'").Replace("''", "'")) + "\" ");
 							        }
 							        else
 							        {
-							            Output.Write("'" + terms[i].Replace("''''", "'").Replace("''", "'") + "' ");
+							            Output.Write("'" + HttpUtility.UrlEncode(terms[i].Replace("''''", "'").Replace("''", "'")) + "' ");
 							        }
 
 							        // Does the field start with a negative?
@@ -1466,11 +1466,11 @@ namespace SobekCM.Library.HTML
 								// Add the term
 								if (terms[i].Contains(" "))
 								{
-									Output.Write("\"" + terms[i].Replace("''''", "'").Replace("''", "'") + "\" ");
+									Output.Write("\"" + HttpUtility.UrlEncode(terms[i].Replace("''''", "'").Replace("''", "'")) + "\" ");
 								}
 								else
 								{
-									Output.Write("'" + terms[i].Replace("''''", "'").Replace("''", "'") + "' ");
+									Output.Write("'" + HttpUtility.UrlEncode(terms[i].Replace("''''", "'").Replace("''", "'")) + "' ");
 								}
 
 								// Does the field start with a negative?
