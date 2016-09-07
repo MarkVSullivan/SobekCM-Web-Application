@@ -51,6 +51,7 @@
     <Compile Include="Actionable_Builder_Source_Folder.cs" />
     <Compile Include="Modules\Folders\ConvertLargeJpegsModule.cs" />
     <Compile Include="Modules\Items\AttachImagesAllModule.cs" />
+    <Compile Include="Modules\Items\CreateImageDerivativesLegacyModule.cs" />
     <Compile Include="Modules\Items\TesseractOcrModule.cs" />
     <Compile Include="Modules\Schedulable\CalculateUsageStatisticsModule.cs" />
     <Compile Include="Settings\MultiInstance_Builder_Settings_Reader.cs" />

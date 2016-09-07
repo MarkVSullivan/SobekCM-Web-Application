@@ -1,5 +1,6 @@
 ﻿#region Using directives
 
+using System;
 using System.Drawing;
 using System.IO;
 using SobekCM.Resource_Object.Divisions;
@@ -22,13 +23,22 @@ namespace SobekCM.Builder_Library.Modules.Items
             // Now, just look for the data being present in each file
             if (Directory.Exists(Resource.Resource_Folder))
             {
+                // Now, step through each file
                 foreach (SobekCM_File_Info thisFile in Resource.Metadata.Divisions.Files)
                 {
+                    // Does this exist?
+                    string file_in_resource_folder = Path.Combine(Resource.Resource_Folder, thisFile.System_Name);
+                    if (!File.Exists(file_in_resource_folder))
+                        continue;
+
                     // Is this a jpeg?
                     if (thisFile.System_Name.ToUpper().IndexOf(".JPG") > 0)
                     {
                         if (thisFile.System_Name.ToUpper().IndexOf("THM.JPG") < 0)
+                        {
+                            // JPEG attributes are ALWAYS re-calculated
                             Compute_Jpeg_Attributes(thisFile, Resource.Resource_Folder);
+                        }
                     }
 
                     // Is this a jpeg2000?
@@ -49,17 +59,14 @@ namespace SobekCM.Builder_Library.Modules.Items
         /// <remarks> The attribute information is computed and then stored in the provided METS SobekCM_File_Info object </remarks>
         private bool Compute_Jpeg_Attributes(SobekCM_File_Info JPEG_File, string File_Location)
         {
-            // If the width and height are already determined, done!
-            if ((JPEG_File.Width > 0) && (JPEG_File.Height > 0))
-                return true;
-
             // Does this file exist?
-            if (File.Exists(File_Location + "/" + JPEG_File.System_Name))
+            string file_in_place = Path.Combine(File_Location, JPEG_File.System_Name);
+            if (File.Exists(file_in_place))
             {
                 try
                 {
                     // Get the height and width of this JPEG file
-                    Bitmap image = (Bitmap)Image.FromFile(File_Location + "/" + JPEG_File.System_Name);
+                    Bitmap image = (Bitmap)Image.FromFile(file_in_place);
                     JPEG_File.Width = (ushort)image.Width;
                     JPEG_File.Height = (ushort)image.Height;
                     image.Dispose();

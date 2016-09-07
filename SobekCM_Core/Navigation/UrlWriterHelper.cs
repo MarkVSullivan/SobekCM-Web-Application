@@ -776,7 +776,7 @@ namespace SobekCM.Core.Navigation
                     // Add the page into the search results URL
                     if ((Current_Mode.Page.HasValue ) && ( Current_Mode.Page.Value > 1))
                     {
-                        results_url_builder.Append(Current_Mode.Page.ToString() + "/");
+                        results_url_builder.Append(HttpUtility.UrlEncode(Current_Mode.Page.ToString()) + "/");
                     }
 
                     bool queryStringBegun = false;
@@ -786,7 +786,8 @@ namespace SobekCM.Core.Navigation
                     {
                         if ((Current_Mode.Search_Type == Search_Type_Enum.Basic) && (Current_Mode.Search_String.Length > 0))
                         {
-                            results_url_builder.Append("?t=" + HttpUtility.UrlEncode(Current_Mode.Search_String).Replace("%2c", ","));
+                            results_url_builder.Append("?t=" + HttpUtility.UrlEncode(Current_Mode.Search_String).Replace("%2c", ",").Replace("%20","+"));
+
                             queryStringBegun = true;
                         }
 
@@ -794,31 +795,31 @@ namespace SobekCM.Core.Navigation
                         {
                             if (Current_Mode.Search_String.Length > 0)
                             {
-                                results_url_builder.Append("?t=" + HttpUtility.UrlEncode(Current_Mode.Search_String).Replace("%2c", ",") + "&f=" + Current_Mode.Search_Fields);
+                                results_url_builder.Append("?t=" + HttpUtility.UrlEncode(Current_Mode.Search_String).Replace("%2c", ",").Replace("%20","+") + "&f=" + HttpUtility.UrlEncode(Current_Mode.Search_Fields).Replace("%2c", ","));
                             }
                             else
                             {
-                                results_url_builder.Append("?f=" + Current_Mode.Search_Fields);
+                                results_url_builder.Append("?f=" + HttpUtility.UrlEncode(Current_Mode.Search_Fields).Replace("%2c", ",").Replace("%20","+"));
                             }
                             queryStringBegun = true;
                         }
 
                         if (Current_Mode.Search_Type == Search_Type_Enum.Full_Text)
                         {
-                            results_url_builder.Append("?text=" + HttpUtility.UrlEncode(Current_Mode.Search_String).Replace("%2c", ","));
+                            results_url_builder.Append("?text=" + HttpUtility.UrlEncode(Current_Mode.Search_String).Replace("%2c", ",").Replace("%20","+"));
                             queryStringBegun = true;
                         }
 
                         if ((Current_Mode.Search_Type == Search_Type_Enum.Map) && ( !String.IsNullOrEmpty(Current_Mode.Coordinates)))
                         {
-                            results_url_builder.Append("?coord=" + HttpUtility.UrlEncode(Current_Mode.Coordinates).Replace("%2c", ","));
+                            results_url_builder.Append("?coord=" + HttpUtility.UrlEncode(Current_Mode.Coordinates).Replace("%2c", ",").Replace("%20","+"));
                             queryStringBegun = true;
                         }
 
                         // Add the sort order
                         if (Current_Mode.Sort > 0)
                         {
-                            results_url_builder.Append("&o=" + Current_Mode.Sort);
+                            results_url_builder.Append("&o=" + Current_Mode.Sort.ToString());
                         }
                     }
 
@@ -827,32 +828,32 @@ namespace SobekCM.Core.Navigation
                     {
                         if (!queryStringBegun)
                         {
-                            results_url_builder.Append("?dt1=" + Current_Mode.DateRange_Date1);
+                            results_url_builder.Append("?dt1=" + Current_Mode.DateRange_Date1.ToString());
                             //queryStringBegun = true;
                         }
                         else
                         {
-                            results_url_builder.Append("&dt1=" + Current_Mode.DateRange_Date1);
+                            results_url_builder.Append("&dt1=" + Current_Mode.DateRange_Date1.ToString());
                         }
                         if (Current_Mode.DateRange_Date2 >= 0)
                         {
-                            results_url_builder.Append("&dt2=" + Current_Mode.DateRange_Date2);
+                            results_url_builder.Append("&dt2=" + Current_Mode.DateRange_Date2.ToString());
                         }
                     }
                     else if (Current_Mode.DateRange_Year1 >= 0)
                     {
                         if (!queryStringBegun)
                         {
-                            results_url_builder.Append("?yr1=" + Current_Mode.DateRange_Year1);
+                            results_url_builder.Append("?yr1=" + Current_Mode.DateRange_Year1.ToString());
                             //queryStringBegun = true;
                         }
                         else
                         {
-                            results_url_builder.Append("&yr1=" + Current_Mode.DateRange_Year1);
+                            results_url_builder.Append("&yr1=" + Current_Mode.DateRange_Year1.ToString());
                         }
                         if (Current_Mode.DateRange_Year2 >= 0)
                         {
-                            results_url_builder.Append("&yr2=" + Current_Mode.DateRange_Year2);
+                            results_url_builder.Append("&yr2=" + Current_Mode.DateRange_Year2.ToString());
                         }
                     }
 
@@ -899,7 +900,7 @@ namespace SobekCM.Core.Navigation
                         case Aggregation_Type_Enum.Browse_By:
                             string browse_by_mode = String.Empty;
                             if (!String.IsNullOrEmpty(Current_Mode.Info_Browse_Mode))
-                                browse_by_mode = Current_Mode.Info_Browse_Mode.Replace(" ", "_");
+                                browse_by_mode = HttpUtility.UrlEncode(Current_Mode.Info_Browse_Mode.Replace(" ", "_"));
                             if ((!String.IsNullOrEmpty(adjusted_aggregation)) && ((String.IsNullOrEmpty(Current_Mode.Default_Aggregation)) || (adjusted_aggregation != Current_Mode.Default_Aggregation)))
                             {
                                 if ((Current_Mode.Page > 1) && (browse_by_mode.Length > 0))
@@ -966,7 +967,7 @@ namespace SobekCM.Core.Navigation
                             {
                                 if (!String.IsNullOrEmpty(adjusted_aggregation))
                                 {
-                                    return this_base_url + adjusted_aggregation + "/itemcount/" + Current_Mode.Info_Browse_Mode + urlOptions1;
+                                    return this_base_url + adjusted_aggregation + "/itemcount/" + HttpUtility.UrlEncode(Current_Mode.Info_Browse_Mode) + urlOptions1;
                                 }
                                 return this_base_url + "itemcount/" + Current_Mode.Info_Browse_Mode + urlOptions1;
                             }
@@ -984,7 +985,7 @@ namespace SobekCM.Core.Navigation
                             {
                                 if (!String.IsNullOrEmpty(adjusted_aggregation))
                                 {
-                                    return this_base_url + adjusted_aggregation + "/usage/" + Current_Mode.Info_Browse_Mode + urlOptions1;
+                                    return this_base_url + adjusted_aggregation + "/usage/" + HttpUtility.UrlEncode(Current_Mode.Info_Browse_Mode) + urlOptions1;
                                 }
                                 return this_base_url + "usage/" + Current_Mode.Info_Browse_Mode + urlOptions1; 
                             }
@@ -1031,50 +1032,52 @@ namespace SobekCM.Core.Navigation
 
                             if ((!String.IsNullOrEmpty(adjusted_aggregation)) && ((String.IsNullOrEmpty(Current_Mode.Default_Aggregation)) || (adjusted_aggregation != Current_Mode.Default_Aggregation)))
                             {
+                                string current_info_browse_mode = HttpUtility.UrlEncode(Current_Mode.Info_Browse_Mode);
+
                                 if (Current_Mode.Page > 1)
                                 {
                                     switch (Current_Mode.Result_Display_Type)
                                     {
                                         case Result_Display_Type_Enum.Brief:
-                                            return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + "/brief/" + Current_Mode.Page + urlOptions1;
+                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/brief/" + Current_Mode.Page + urlOptions1;
                                         case Result_Display_Type_Enum.Export:
-                                            return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + "/export/" + Current_Mode.Page + urlOptions1;
+                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/export/" + Current_Mode.Page + urlOptions1;
                                         case Result_Display_Type_Enum.Full_Citation:
-                                            return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + "/citation/" + Current_Mode.Page + urlOptions1;
+                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/citation/" + Current_Mode.Page + urlOptions1;
                                         case Result_Display_Type_Enum.Full_Image:
-                                            return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + "/image/" + Current_Mode.Page + urlOptions1;
+                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/image/" + Current_Mode.Page + urlOptions1;
                                         case Result_Display_Type_Enum.Map:
-                                            return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + "/map/" + Current_Mode.Page + urlOptions1;
+                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/map/" + Current_Mode.Page + urlOptions1;
                                         case Result_Display_Type_Enum.Map_Beta:
-                                            return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + "/mapbeta/" + Current_Mode.Page + urlOptions1;
+                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/mapbeta/" + Current_Mode.Page + urlOptions1;
                                         case Result_Display_Type_Enum.Table:
-                                            return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + "/table/" + Current_Mode.Page + urlOptions1;
+                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/table/" + Current_Mode.Page + urlOptions1;
                                         case Result_Display_Type_Enum.Thumbnails:
-                                            return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + "/thumbs/" + Current_Mode.Page + urlOptions1;
+                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/thumbs/" + Current_Mode.Page + urlOptions1;
                                         default:
-                                            return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + "/" + Current_Mode.Page + urlOptions1;
+                                            return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/" + Current_Mode.Page + urlOptions1;
                                     }
                                 }
                                 switch (Current_Mode.Result_Display_Type)
                                 {
                                     case Result_Display_Type_Enum.Brief:
-                                        return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + "/brief" + urlOptions1;
+                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/brief" + urlOptions1;
                                     case Result_Display_Type_Enum.Export:
-                                        return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + "/export" + urlOptions1;
+                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/export" + urlOptions1;
                                     case Result_Display_Type_Enum.Full_Citation:
-                                        return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + "/citation" + urlOptions1;
+                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/citation" + urlOptions1;
                                     case Result_Display_Type_Enum.Full_Image:
-                                        return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + "/image" + urlOptions1;
+                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/image" + urlOptions1;
                                     case Result_Display_Type_Enum.Map:
-                                        return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + "/map" + urlOptions1;
+                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/map" + urlOptions1;
                                     case Result_Display_Type_Enum.Map_Beta:
-                                        return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + "/mapbeta" + urlOptions1;
+                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/mapbeta" + urlOptions1;
                                     case Result_Display_Type_Enum.Table:
-                                        return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + "/table" + urlOptions1;
+                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/table" + urlOptions1;
                                     case Result_Display_Type_Enum.Thumbnails:
-                                        return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + "/thumbs" + urlOptions1;
+                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + "/thumbs" + urlOptions1;
                                     default:
-                                        return this_base_url + adjusted_aggregation + "/" + Current_Mode.Info_Browse_Mode + urlOptions1;
+                                        return this_base_url + adjusted_aggregation + "/" + current_info_browse_mode + urlOptions1;
                                 }
                             }
                             // See if you need to include 'info' here

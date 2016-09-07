@@ -1359,11 +1359,11 @@ namespace SobekCM.Library.HTML
 							        // Add the term
 							        if (terms[i].Contains(" "))
 							        {
-							            Output.Write("\"" + HttpUtility.UrlEncode(terms[i].Replace("''''", "'").Replace("''", "'")) + "\" ");
+                                        Output.Write("\"" + HttpUtility.UrlEncode(terms[i].Replace("''''", "'").Replace("''", "'")).Replace("%2c", ",").Replace("+", " ") + "\" ");
 							        }
 							        else
 							        {
-							            Output.Write("'" + HttpUtility.UrlEncode(terms[i].Replace("''''", "'").Replace("''", "'")) + "' ");
+                                        Output.Write("'" + HttpUtility.UrlEncode(terms[i].Replace("''''", "'").Replace("''", "'")).Replace("%2c", ",").Replace("+", " ") + "' ");
 							        }
 
 							        // Does the field start with a negative?
@@ -1551,7 +1551,7 @@ namespace SobekCM.Library.HTML
 				return UI_ApplicationCache_Gateway.Translation.Get_Translation("anywhere", RequestSpecificValues.Current_Mode.Language);
 
 			Metadata_Search_Field field = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Code(Code);
-			return (field != null) ? in_language + UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Display_Term, RequestSpecificValues.Current_Mode.Language) : in_language + Code;
+			return (field != null) ? in_language + UI_ApplicationCache_Gateway.Translation.Get_Translation(field.Display_Term, RequestSpecificValues.Current_Mode.Language) : in_language + HttpUtility.UrlEncode(Code);
 		}
 
 		#region Methods to create the facets on the left side of the results

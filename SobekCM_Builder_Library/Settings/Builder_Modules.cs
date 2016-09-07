@@ -337,6 +337,10 @@ namespace SobekCM.Builder_Library.Settings
                         thisModule = new CreateImageDerivativesModule();
                         break;
 
+                    case "SobekCM.Builder_Library.Modules.Items.CreateImageDerivativesLegacyModule":
+                        thisModule = new CreateImageDerivativesLegacyModule();
+                        break;
+
                     case "SobekCM.Builder_Library.Modules.Items.CopyToArchiveFolderModule":
                         thisModule = new CopyToArchiveFolderModule();
                         break;

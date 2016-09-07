@@ -94,6 +94,7 @@ namespace SobekCM.Resource_Object.Utilities
 		/// <summary> Custom event is fired when all processing is complete </summary>
 		public event Image_Creation_Process_Complete_Delegate Process_Complete;
 
+
 	    /// <summary> Processes a single package </summary>
 	    /// <param name="TifFiles"> List of TIFF files </param>
 	    /// <param name="ParentLogId"> Primary key to the parent log entery if this is performed by the builder </param>
@@ -380,9 +381,27 @@ namespace SobekCM.Resource_Object.Utilities
 					convert.StartInfo.FileName = image_magick_path;
 				else
 					convert.StartInfo.FileName = image_magick_path + "\\convert.exe";
-				convert.StartInfo.Arguments = "-geometry " + Width + "x" + Height + " \"" + Sourcefile + "\"[0] \"" + Finalfile + "\"";
 
-				// Start
+                // Several choices here on the build
+
+                // For TIFFs, we will select [0], which fixes multi-page TIFFs
+			    string extension = Path.GetExtension(Sourcefile).ToLower();
+			    if ((extension == ".tif") || (extension == ".tiff"))
+			    {
+			        if ((Width > 1) && (Height > 1))
+			            convert.StartInfo.Arguments = "-geometry " + Width + "x" + Height + " \"" + Sourcefile + "\"[0] \"" + Finalfile + "\"";
+			        else
+			            convert.StartInfo.Arguments = "\"" + Sourcefile + "\"[0] \"" + Finalfile + "\"";
+			    }
+			    else
+			    {
+                    if ((Width > 1) && (Height > 1))
+                        convert.StartInfo.Arguments = "-geometry " + Width + "x" + Height + " \"" + Sourcefile + "\" \"" + Finalfile + "\"";
+                    else
+                        convert.StartInfo.Arguments = "\"" + Sourcefile + "\" \"" + Finalfile + "\"";
+			    }
+
+			    // Start
 				convert.Start();
 
 				// Check for any error
