@@ -2,15 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.UI.WebControls;
-using System.Xml;
-using System.Xml.Xsl;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.FileSystems;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Core.XSLT;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
 
@@ -61,7 +58,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     return false;
 
                 // Ensure the XSLT file really exists
-                
+                if (!File.Exists(xslt_file))
+                    return false;
 
                 // Everything exists
                 return true;
@@ -106,17 +104,24 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 return;
             }
 
+            // Ensure the TEI file really exists
+            if (!SobekFileSystem.FileExists(CurrentItem, tei_file))
+                return;
+
             // Look for the label in the METS structure map
             string first_label = "TEI";
-            foreach (BriefItem_FileGrouping thisPage in CurrentItem.Downloads)
+            if (CurrentItem.Downloads != null)
             {
-                // Look for a flash file on each page
-                foreach (BriefItem_File thisFile in thisPage.Files)
+                foreach (BriefItem_FileGrouping thisPage in CurrentItem.Downloads)
                 {
-                    if  ( String.Compare(thisFile.Name, tei_file, StringComparison.OrdinalIgnoreCase) == 0 )
+                    // Look for a flash file on each page
+                    foreach (BriefItem_File thisFile in thisPage.Files)
                     {
-                        first_label = thisPage.Label;
-                        break;
+                        if (String.Compare(thisFile.Name, tei_file, StringComparison.OrdinalIgnoreCase) == 0)
+                        {
+                            first_label = thisPage.Label;
+                            break;
+                        }
                     }
                 }
             }
@@ -201,28 +206,17 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("TEI_ItemViewer.Add_Main_Viewer_Section", "");
             }
 
-            string tei_string_to_display = String.Empty;
-            try
-            {
-                // Create the transform and load the XSL indicated
-                XslCompiledTransform transform = new XslCompiledTransform();
-                transform.Load(xslt_file);
+            string tei_file_network = SobekFileSystem.Resource_Network_Uri(BriefItem, tei_file);
 
-                // Apply the transform to convert the XML into HTML
-                StringWriter results = new StringWriter();
-                XmlReaderSettings settings = new XmlReaderSettings
-                {
-                    DtdProcessing = DtdProcessing.Parse
-                };
-                using (XmlReader transformreader = XmlReader.Create(SobekFileSystem.Resource_Network_Uri(BriefItem, tei_file), settings))
-                {
-                    transform.Transform(transformreader, null, results);
-                }
-                tei_string_to_display = results.ToString();
-            }
-            catch (Exception ee)
+            XSLT_Transformer_ReturnArgs returnArgs = XSLT_Transformer.Transform(tei_file_network, xslt_file);
+            string tei_string_to_display = String.Empty;
+            if (returnArgs.Successful)
             {
-                tei_string_to_display = "Exception caught during XSLT transform of TEI<br /><br />" + ee.Message;
+                tei_string_to_display = returnArgs.TransformedString;
+            }
+            else
+            {
+                tei_string_to_display = "Error during XSLT transform of TEI<br /><br />" + returnArgs.ErrorMessage;
             }
 
             // Build the value
@@ -262,9 +256,12 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <summary> Write any additional values within the HTML Head of the final served page </summary>
         /// <param name="Output"> Output stream currently within the HTML head tags </param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        public void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
+        public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
-            Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + css_file + "\" /> ");
+            if (!String.IsNullOrEmpty(css_file))
+            {
+                Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + css_file + "\" /> ");
+            }
         }
     }
 }

@@ -37,6 +37,9 @@
     <Reference Include="protobuf-net">
       <HintPath>..\DLLs\Protobuf-net\protobuf-net.dll</HintPath>
     </Reference>
+    <Reference Include="saxon9he-api">
+      <HintPath>..\DLLs\Saxon\saxon9he-api.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -263,6 +266,8 @@
     <Compile Include="WebContent\Single\Single_WebContent_Usage_Report.cs" />
     <Compile Include="WebContent\WebContent_Basic_Info.cs" />
     <Compile Include="WebContent\Admin\WebContent_Usage_Report.cs" />
+    <Compile Include="XSLT\XSLT_Transformer.cs" />
+    <Compile Include="XSLT\XSLT_Transformer_ReturnArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\EngineAgnosticLayerDbAccess\EngineAgnosticLayerDbAccess.csproj">

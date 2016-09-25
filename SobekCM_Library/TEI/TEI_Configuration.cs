@@ -41,7 +41,17 @@ namespace SobekCM.Library.TEI
                 foreach (string thisFile in xslt_files)
                 {
                     string fileName = Path.GetFileNameWithoutExtension(thisFile);
-                    xslt_files_sorted[fileName] = fileName;
+                    xslt_files_sorted[fileName] = Path.GetFileName(fileName);
+                }
+
+                // Collect all the XSL files
+                string[] xsl_files = Directory.GetFiles(xslt_directory, "*.xsl");
+
+                // Sort the XSL filenames (without extensions)
+                foreach (string thisFile in xsl_files)
+                {
+                    string fileName = Path.GetFileNameWithoutExtension(thisFile);
+                    xslt_files_sorted[fileName] = Path.GetFileName(fileName);
                 }
 
                 // Add the sorted names to the list
