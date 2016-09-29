@@ -41,7 +41,7 @@ namespace SobekCM.Library.MySobekViewer
 
         #region Constructor
 
-        /// <summary> Constructor for a new instance of the New_Group_And_Item_MySobekViewer class </summary>
+        /// <summary> Constructor for a new instance of the File_Management_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         public File_Management_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {

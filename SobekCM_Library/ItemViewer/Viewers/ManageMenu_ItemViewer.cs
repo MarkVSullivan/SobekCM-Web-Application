@@ -9,6 +9,7 @@ using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -101,12 +102,36 @@ namespace SobekCM.Library.ItemViewer.Viewers
             bool is_bib_level = (String.Compare(CurrentItem.Type, "BIB_LEVEL", StringComparison.OrdinalIgnoreCase) == 0);
             if (!is_bib_level)
             {
+                // Look for TEI-type item
+                bool is_tei = false;
+                if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
+                    (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI") != null) &&
+                    (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled))
+                {
+                    string tei_file = CurrentItem.Behaviors.Get_Setting("TEI.Source_File");
+                    string xslt_file = CurrentItem.Behaviors.Get_Setting("TEI.XSLT");
+                    if ((tei_file != null) && (xslt_file != null))
+                    {
+                        is_tei = true;
+                    }
+                }
 
-                // Add the menu item for editing metadatga
-                CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
-                CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
-                string edit_metadata_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                MenuItems.Add(new Item_MenuItem("Manage", "Edit Metadata", null, edit_metadata_url, "nevermatchthis"));
+                if (!is_tei)
+                {
+                    // Add the menu item for editing metadatga
+                    CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
+                    CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
+                    string edit_metadata_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                    MenuItems.Add(new Item_MenuItem("Manage", "Edit Metadata", null, edit_metadata_url, "nevermatchthis"));
+                }
+                else
+                {
+                    // Add the menu item for editing metadatga
+                    CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
+                    CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_TEI_Item;
+                    string edit_tei_url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                    MenuItems.Add(new Item_MenuItem("Manage", "Edit TEI", null, edit_tei_url, "nevermatchthis"));
+                }
 
                 // Add the menu item for editing item behaviors
                 CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;
@@ -230,6 +255,21 @@ namespace SobekCM.Library.ItemViewer.Viewers
             bool is_bib_level = (String.Compare(BriefItem.Type, "BIB_LEVEL", StringComparison.OrdinalIgnoreCase) == 0);
             if (!is_bib_level)
             {
+                // Look for TEI-type item
+                bool is_tei = false;
+                if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
+                    (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI") != null) &&
+                    (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled))
+                {
+                    string tei_file = BriefItem.Behaviors.Get_Setting("TEI.Source_File");
+                    string xslt_file = BriefItem.Behaviors.Get_Setting("TEI.XSLT");
+                    if ((tei_file != null) && (xslt_file != null))
+                    {
+                        is_tei = true;
+                    }
+                }
+
+
                 // Start the citation table
                 Output.WriteLine("  <td align=\"left\"><div class=\"sbkMmiv_ViewerTitle\">Manage this Item</div></td>");
                 Output.WriteLine("</tr>");
@@ -240,21 +280,41 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Output.WriteLine("\t\t\t<table id=\"sbkMmiv_MainTable\">");
                 Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_HeaderRow\"><td colspan=\"3\">How would you like to manage this item today?</td></tr>");
 
-
-                // Add ability to edit metadata for this item
-                CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
-                CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
-                CurrentRequest.My_Sobek_SubMode = "1";
-                string url = UrlWriterHelper.Redirect_URL(CurrentRequest);
-                Output.WriteLine("\t\t\t\t<tr>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
-                Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Edit_Metadata_Icon_Png + "\" /></a></td>");
-                Output.WriteLine("\t\t\t\t\t<td>");
-                Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Edit Item Metadata</a>");
-                Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Edit the information about this item which appears in the citation/description.  This is basic information about the original item and this digital manifestation.</div>");
-                Output.WriteLine("\t\t\t\t\t</td>");
-                Output.WriteLine("\t\t\t\t</tr>");
-                Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
+                string url;
+                if (!is_tei)
+                {
+                    // Add ability to edit metadata for this item
+                    CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
+                    CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
+                    CurrentRequest.My_Sobek_SubMode = "1";
+                    url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                    Output.WriteLine("\t\t\t\t<tr>");
+                    Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
+                    Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"" + Static_Resources_Gateway.Edit_Metadata_Icon_Png + "\" /></a></td>");
+                    Output.WriteLine("\t\t\t\t\t<td>");
+                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Edit Item Metadata</a>");
+                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Edit the information about this item which appears in the citation/description.  This is basic information about the original item and this digital manifestation.</div>");
+                    Output.WriteLine("\t\t\t\t\t</td>");
+                    Output.WriteLine("\t\t\t\t</tr>");
+                    Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
+                }
+                else
+                {
+                    // Add ability to edit metadata for this item
+                    CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;
+                    CurrentRequest.My_Sobek_Type = My_Sobek_Type_Enum.Edit_TEI_Item;
+                    CurrentRequest.My_Sobek_SubMode = "1";
+                    url = UrlWriterHelper.Redirect_URL(CurrentRequest);
+                    Output.WriteLine("\t\t\t\t<tr>");
+                    Output.WriteLine("\t\t\t\t\t<td style=\"width:50px\">&nbsp;</td>");
+                    Output.WriteLine("\t\t\t\t\t<td style=\"width:60px\"><a href=\"" + url + "\"><img src=\"http://cdn.sobekrepository.org/images/misc/add_tei.png\" /></a></td>");
+                    Output.WriteLine("\t\t\t\t\t<td>");
+                    Output.WriteLine("\t\t\t\t\t\t<a href=\"" + url + "\">Edit TEI</a>");
+                    Output.WriteLine("\t\t\t\t\t\t<div class=\"sbkMmiv_Desc\">Edit this TEI object, including the XSLT and CSS file used as well as uploading a new TEI file or editing the existing TEI file online.</div>");
+                    Output.WriteLine("\t\t\t\t\t</td>");
+                    Output.WriteLine("\t\t\t\t</tr>");
+                    Output.WriteLine("\t\t\t\t<tr class=\"sbkMmiv_SpacerRow\"><td colspan=\"3\"></td></tr>");
+                }
 
                 // Add ability to edit behaviors for this item
                 CurrentRequest.Mode = Display_Mode_Enum.My_Sobek;

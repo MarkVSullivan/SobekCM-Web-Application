@@ -2771,6 +2771,51 @@ namespace SobekCM_Resource_Database
             }
         }
 
+        /// <summary> Add or update a setting related to an individual digital resource </summary>
+        /// <param name="ItemID"> ItemID to attach this setting value </param>
+        /// <param name="Setting_Key"> Key for this setting value </param>
+        /// <param name="Setting_Value"> Value for this setting</param>
+        /// <returns> TRUE if succesful, otherwise FALSE </returns>
+        /// <remarks> This method calls the stored procedure 'SobekCM_Set_Item_Setting_Value'. </remarks>
+        public static bool Set_Item_Setting_Value(int ItemID, string Setting_Key, string Setting_Value)
+        {
+            try
+            {
+                // Build the parameter list
+                EalDbParameter[] param_list = new EalDbParameter[3];
+                param_list[0] = new EalDbParameter("@ItemID", ItemID);
+                param_list[1] = new EalDbParameter("@Setting_Key", Setting_Key);
+                param_list[2] = new EalDbParameter("@Setting_Value", Setting_Value);
+
+                // Execute this non-query stored procedure
+                EalDbAccess.ExecuteNonQuery(DatabaseType, connectionString, CommandType.StoredProcedure, "SobekCM_Set_Item_Setting_Value", param_list);
+
+                return true;
+            }
+            catch (Exception ee)
+            {
+                // Pass this exception onto the method to handle it
+                exception_caught("SobekCM_Save_Item_Behaviors_Minimal", ee);
+                return false;
+            }
+        }
+
+
+        /// <summary> Add an new item viewer linked to an item </summary>
+        /// <param name="ItemID">Item ID to associate these icons and downlaods with</param>
+        /// <param name="Viewer_Type"> Viewer type code for the new viewer type in the SobekCM database </param>
+        /// <param name="Viewer_Label"> Label to be displayed for the new viewer of this item </param>
+        /// <param name="Viewer_Attributes"> Optional attributes for the new viewer of this item </param>
+        /// <remarks> This method calls the stored procedure 'SobekCM_Add_Item_Viewers'. </remarks>
+        /// <exception cref="SobekCM_Database_Exception"> Exception is thrown if an error is caught during 
+        /// the database work and the THROW_EXCEPTIONS internal flag is set to true. </exception>
+        public static bool Save_Item_Add_Viewer(int ItemID, string Viewer_Type, string Viewer_Label, string Viewer_Attributes )
+        {
+            return Save_Item_Add_Viewers(ItemID, Viewer_Type, Viewer_Label, Viewer_Attributes, String.Empty, String.Empty, String.Empty,
+                String.Empty, String.Empty, String.Empty, String.Empty, String.Empty, String.Empty,
+                String.Empty, String.Empty, String.Empty, String.Empty, String.Empty, String.Empty);
+        }
+
         /// <summary> Add, or update existing, item viewers linked to an item </summary>
         /// <param name="ItemID">Item ID to associate these icons and downlaods with</param>
         /// <param name="Viewer1_Type"> Viewer type code for the first viewer type in the SobekCM database </param>

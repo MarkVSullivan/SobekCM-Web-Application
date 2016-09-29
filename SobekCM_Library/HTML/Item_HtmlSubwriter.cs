@@ -57,6 +57,7 @@ namespace SobekCM.Library.HTML
 
         private readonly bool is_ead;
         private readonly bool is_bib_level;
+        private readonly bool is_tei;
 
         private BriefItemInfo currentItem;
         private SobekCM_Items_In_Title itemsInTitle;
@@ -130,6 +131,20 @@ namespace SobekCM.Library.HTML
             // Set some flags based on the resource type
             is_bib_level = (String.Compare(currentItem.VID, "00000", StringComparison.OrdinalIgnoreCase) == 0);
             is_ead = (String.Compare(currentItem.Type, "EAD", StringComparison.OrdinalIgnoreCase) == 0);
+
+            // Look for TEI-type item
+            is_tei = false;
+            if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
+                (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI") != null) &&
+                (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled))
+            {
+                string tei_file = currentItem.Behaviors.Get_Setting("TEI.Source_File");
+                string xslt_file = currentItem.Behaviors.Get_Setting("TEI.XSLT");
+                if ((tei_file != null) && (xslt_file != null))
+                {
+                    is_tei = true;
+                }
+            }
 
             // Determine if this user can edit this item
             userCanEditItem = false;
@@ -555,10 +570,21 @@ namespace SobekCM.Library.HTML
                 if (userCanEditItem)
                 {
                     // Add ability to edit metadata for this item
-                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
-                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
-                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
-                    Output.WriteLine("          <button title=\"Edit Metadata\" class=\"sbkIsw_intheader_button edit_metadata_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                    if (is_tei)
+                    {
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_TEI_Item;
+                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
+                        Output.WriteLine("          <button title=\"Edit TEI\" class=\"sbkIsw_intheader_button edit_tei_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+                    }
+                    else
+                    {
+                        RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.My_Sobek;
+                        RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
+                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
+                        Output.WriteLine("          <button title=\"Edit Metadata\" class=\"sbkIsw_intheader_button edit_metadata_button\" onclick=\"window.location.href='" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "';return false;\"></button>");
+ 
+                    }
 
                     // Add ability to edit behaviors for this item
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Behaviors;

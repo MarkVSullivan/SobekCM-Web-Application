@@ -81,6 +81,23 @@ namespace SobekCM.Library.MySobekViewer
                     RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
                     RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
                     Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + Static_Resources_Gateway.New_Item_Img + "\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" >Start a new item</a></td></tr>");
+
+                    // Check to see if the TEI extension should be added here
+                    // Ensure the plug-in list exists and contains the TEI plug-in
+                    if ((UI_ApplicationCache_Gateway.Configuration.Extensions != null) &&
+                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI") != null) &&
+                        (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled))
+                    {
+                        // Ensure the user is TEI enabled
+                        string user_tei_enabled = RequestSpecificValues.Current_User.Get_Setting("TEI.Enabled", "false");
+                        if (String.Compare(user_tei_enabled, "true", StringComparison.OrdinalIgnoreCase) == 0)
+                        {
+                            RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_TEI_Item;
+                            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
+                            Output.WriteLine("    <tr><td style=\"width:35px\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"http://cdn.sobekrepository.org/images/misc/add_tei.png\" /></a></td><td><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\" >Add a new TEI item</a></td></tr>");
+                        }
+                    }
+
                 }
                 else
                 {

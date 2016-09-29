@@ -332,7 +332,7 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         string[] all_files = Directory.GetFiles(userInProcessDirectory);
                         foreach (string thisFile in all_files)
-                            Directory.Delete(thisFile);
+                            File.Delete(thisFile);
                         Directory.Delete(userInProcessDirectory);
                     }
                     catch (Exception)

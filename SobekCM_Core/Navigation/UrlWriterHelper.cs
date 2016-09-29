@@ -233,6 +233,11 @@ namespace SobekCM.Core.Navigation
                                 return this_base_url + "my/edit/" + Current_Mode.BibID + "/" + Current_Mode.VID + "/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
                             return this_base_url + "my/edit/" + Current_Mode.BibID + "/" + Current_Mode.VID + urlOptions1;
 
+                        case My_Sobek_Type_Enum.Edit_TEI_Item:
+                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                return this_base_url + "my/teiedit/" + Current_Mode.BibID + "/" + Current_Mode.VID + "/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
+                            return this_base_url + "my/teiedit/" + Current_Mode.BibID + "/" + Current_Mode.VID + urlOptions1;
+
                         case My_Sobek_Type_Enum.Edit_Item_Permissions:
                             if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
                                 return this_base_url + "my/itempermissions/" + Current_Mode.BibID + "/" + Current_Mode.VID + "/" + Current_Mode.My_Sobek_SubMode + urlOptions1;

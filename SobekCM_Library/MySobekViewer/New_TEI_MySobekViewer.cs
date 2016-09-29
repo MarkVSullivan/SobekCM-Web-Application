@@ -60,6 +60,11 @@ namespace SobekCM.Library.MySobekViewer
         private readonly string userInProcessDirectory;
         private readonly List<string> validationErrors;
 
+        private readonly string tei_file;
+        private readonly string mapping_file;
+        private readonly string xslt_file;
+        private readonly string css_file;
+
 
 
         #region Constructor
@@ -80,34 +85,30 @@ namespace SobekCM.Library.MySobekViewer
                 return;
             }
 
+            // Ensure the TEI plug-in is enabled
+            if ((UI_ApplicationCache_Gateway.Configuration.Extensions == null) ||
+                (UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI") == null) ||
+                (!UI_ApplicationCache_Gateway.Configuration.Extensions.Get_Extension("TEI").Enabled))
+            {
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
+            
+            // Ensure this user is enabled to add TEI 
+            string user_tei_enabled = RequestSpecificValues.Current_User.Get_Setting("TEI.Enabled", "false");
+            if (String.Compare(user_tei_enabled, "true", StringComparison.OrdinalIgnoreCase) != 0)
+            {
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
+
             // Determine the in process directory for this
             if (RequestSpecificValues.Current_User.ShibbID.Trim().Length > 0)
                 userInProcessDirectory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location, RequestSpecificValues.Current_User.ShibbID + "\\tei");
             else
                 userInProcessDirectory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.In_Process_Submission_Location, RequestSpecificValues.Current_User.UserName.Replace(".", "").Replace("@", "") + "\\tei");
-
-            // Handle postback for changing the CompleteTemplate or project
-            templateCode = RequestSpecificValues.Current_User.Current_Template;
-            if (RequestSpecificValues.Current_Mode.isPostBack)
-            {
-                string action1 = HttpContext.Current.Request.Form["action"];
-                if ((action1 != null) && ((action1 == "template") || (action1 == "project")))
-                {
-                    string newvalue = HttpContext.Current.Request.Form["phase"];
-                    if ((action1 == "template") && (newvalue != templateCode))
-                    {
-                        RequestSpecificValues.Current_User.Current_Template = newvalue;
-                        templateCode = RequestSpecificValues.Current_User.Current_Template;
-                        if (File.Exists(userInProcessDirectory + "\\agreement.txt"))
-                            File.Delete(userInProcessDirectory + "\\agreement.txt");
-                    }
-                    if ((action1 == "project") && (newvalue != RequestSpecificValues.Current_User.Current_Default_Metadata))
-                    {
-                        RequestSpecificValues.Current_User.Current_Default_Metadata = newvalue;
-                    }
-                    HttpContext.Current.Session["item"] = null;
-                }
-            }
 
             // Load the CompleteTemplate
             completeTemplate = Template_MemoryMgmt_Utility.Retrieve_Template("tei", RequestSpecificValues.Tracer);
@@ -151,6 +152,15 @@ namespace SobekCM.Library.MySobekViewer
             {
                 Int32.TryParse(RequestSpecificValues.Current_Mode.My_Sobek_SubMode.Substring(0), out currentProcessStep);
             }
+
+            // Load some information from the session
+            if ( HttpContext.Current.Session["New_TEI_mySobekViewer.Mapping_File"] != null )
+                mapping_file = HttpContext.Current.Session["New_TEI_mySobekViewer.Mapping_File"] as string;
+            if ( HttpContext.Current.Session["New_TEI_mySobekViewer.XSLT_File"] != null )
+                xslt_file = HttpContext.Current.Session["New_TEI_mySobekViewer.XSLT_File"] as string;
+            if ( HttpContext.Current.Session["New_TEI_mySobekViewer.CSS_File"] != null )
+                css_file = HttpContext.Current.Session["New_TEI_mySobekViewer.CSS_File"] as string;
+
 
             // If this is process step 1 and there is no permissions statement in the CompleteTemplate,
             // just go to step 2
@@ -223,6 +233,62 @@ namespace SobekCM.Library.MySobekViewer
             {
                 RequestSpecificValues.Tracer.Add_Trace("New_TEI_MySobekViewer.Constructor", "Item found in session cache");
                 item = (SobekCM_Item)HttpContext.Current.Session["Item"];
+            }
+
+            // Find the TEI file
+            if (Directory.Exists(userInProcessDirectory))
+            {
+                string[] tei_files = Directory.GetFiles(userInProcessDirectory, "*.xml");
+                if (tei_files.Length > 1)
+                {
+                    // Two XML files, so delete all but the latest
+                    string latest_tei_file = String.Empty;
+                    DateTime latest_timestamp = DateTime.MinValue;
+
+                    // Find the latest TEI file
+                    foreach (string thisTeiFile in tei_files)
+                    {
+                        // If this is marc.xml, skip it
+                        if (Path.GetFileName(thisTeiFile).ToLower().IndexOf("marc.xml") >= 0)
+                            continue;
+
+                        DateTime file_timestamp = File.GetLastWriteTime(thisTeiFile);
+
+                        if (DateTime.Compare(latest_timestamp, file_timestamp) < 0)
+                        {
+                            latest_tei_file = thisTeiFile;
+                            latest_timestamp = file_timestamp;
+                        }
+                    }
+
+                    // If a latest file as found, delete the others
+                    if (!String.IsNullOrEmpty(latest_tei_file))
+                    {
+                        foreach (string thisTeiFile in tei_files)
+                        {
+                            // If this is marc.xml, skip it
+                            if (Path.GetFileName(thisTeiFile).ToLower().IndexOf("marc.xml") >= 0)
+                                continue;
+
+                            // Was this the latest file?
+                            if (String.Compare(thisTeiFile, latest_tei_file, StringComparison.OrdinalIgnoreCase) == 0)
+                                continue;
+
+                            try
+                            {
+                                File.Delete(thisTeiFile);
+                            }
+                            catch { }
+
+                        }
+                    }
+
+                    tei_file = latest_tei_file;
+                }
+                else if (tei_files.Length == 1)
+                {
+                    tei_file = Path.GetFileName(tei_files[0]);
+                }
             }
 
             #region Special code to handle any uploaded files
@@ -307,6 +373,32 @@ namespace SobekCM.Library.MySobekViewer
                     }
                 }
 
+                // Was this where the mapping, xslt, and css is set?
+                if (currentProcessStep == 3)
+                {
+                    string[] getKeys = HttpContext.Current.Request.Form.AllKeys;
+                    string file_name_from_keys = String.Empty;
+                    string label_from_keys = String.Empty;
+                    foreach (string thisKey in getKeys)
+                    {
+                        if (thisKey.IndexOf("mapping_select") == 0)
+                        {
+                            mapping_file = HttpContext.Current.Request.Form[thisKey];
+                            HttpContext.Current.Session["New_TEI_mySobekViewer.Mapping_File"] = mapping_file;
+                        }
+                        if (thisKey.IndexOf("xslt_select") == 0)
+                        {
+                            xslt_file = HttpContext.Current.Request.Form[thisKey];
+                            HttpContext.Current.Session["New_TEI_mySobekViewer.XSLT_File"] = xslt_file;
+                        }
+                        if (thisKey.IndexOf("css_select") == 0)
+                        {
+                            css_file = HttpContext.Current.Request.Form[thisKey];
+                            HttpContext.Current.Session["New_TEI_mySobekViewer.CSS_File"] = css_file;
+                        }
+                    }
+                }
+
                 string action = HttpContext.Current.Request.Form["action"];
                 if (action == "cancel")
                 {
@@ -315,11 +407,12 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         string[] all_files = Directory.GetFiles(userInProcessDirectory);
                         foreach (string thisFile in all_files)
-                            Directory.Delete(thisFile);
+                            File.Delete(thisFile);
                         Directory.Delete(userInProcessDirectory);
                     }
-                    catch (Exception)
+                    catch (Exception ee)
                     {
+                        tei_file = ee.Message;
                         // Unable to delete existing file in the RequestSpecificValues.Current_User's folder.
                         // This is an error, but how to report it?
                     }
@@ -327,6 +420,11 @@ namespace SobekCM.Library.MySobekViewer
                     // Clear all the information in memory
                     HttpContext.Current.Session["agreement_date"] = null;
                     HttpContext.Current.Session["item"] = null;
+
+                    HttpContext.Current.Session["New_TEI_mySobekViewer.Mapping_File"] = null;
+                    HttpContext.Current.Session["New_TEI_mySobekViewer.XSLT_File"] = null;
+                    HttpContext.Current.Session["New_TEI_mySobekViewer.CSS_File"] = null;
+
 
                     // Clear any temporarily assigned current project and CompleteTemplate
                     RequestSpecificValues.Current_User.Current_Default_Metadata = null;
@@ -419,7 +517,7 @@ namespace SobekCM.Library.MySobekViewer
                     }
 
                     // If this is going from a step that includes the metadata entry portion, save this to the item
-                    if ((currentProcessStep > 1) && (currentProcessStep < 8))
+                    if ((currentProcessStep > 4) && (currentProcessStep < 8))
                     {
                         // Save to the item
                         completeTemplate.Save_To_Bib(item, RequestSpecificValues.Current_User, currentProcessStep - 1);
@@ -511,6 +609,23 @@ namespace SobekCM.Library.MySobekViewer
                 SobekCM_Item_Validator.Validate_SobekCM_Item(item, validationErrors);
             }
 
+            // If this is past the step to upload a TEI file, ensure a TEI file exists
+            if ((currentProcessStep > 2) && (String.IsNullOrEmpty(tei_file)))
+            {
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "2";
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
+
+
+            // If this is past the step to upload a TEI file, ensure a TEI file exists
+            if ((currentProcessStep > 3) && ((String.IsNullOrEmpty(mapping_file)) || (String.IsNullOrEmpty(xslt_file)) || (String.IsNullOrEmpty(css_file))))
+            {
+                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "3";
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                return;
+            }
+
             // If this is to put up items or complete the item, validate the METS
             if (currentProcessStep >= 8)
             {
@@ -600,6 +715,10 @@ namespace SobekCM.Library.MySobekViewer
                     string filename_sans_extension = thisFileInfo.Name.Replace(thisFileInfo.Extension, "");
                     string name_upper = thisFileInfo.Name.ToUpper();
 
+                    // Was this the TEI file?
+                    if (String.Compare(tei_file, name_upper, StringComparison.OrdinalIgnoreCase) == 0)
+                        continue;
+
                     // Is this a page image?
                     if ((extension_upper == ".JPG") || (extension_upper == ".TIF") || (extension_upper == ".JP2") || (extension_upper == ".JPX"))
                     {
@@ -642,9 +761,6 @@ namespace SobekCM.Library.MySobekViewer
                                     List<string> newDownloadGrouping = new List<string> { thisFileInfo.Name };
                                     download_files[filename_sans_extension.ToLower()] = newDownloadGrouping;
                                 }
-
-                                if (thisFileInfo.Name.IndexOf(".xml", StringComparison.OrdinalIgnoreCase) > 0)
-                                    xml_found = true;
                             }
                         }
                     }
@@ -738,16 +854,10 @@ namespace SobekCM.Library.MySobekViewer
                         }
                     }
 
-                    // Add the JPEG2000 and JPEG-specific viewers
-                    Item_To_Complete.Behaviors.Clear_Views();
-                    if (jpeg_added)
-                    {
-                        Item_To_Complete.Behaviors.Add_View("JPEG");
-                    }
-                    if (jp2_added)
-                    {
-                        Item_To_Complete.Behaviors.Add_View("JPEG2000");
-                    }
+                    // Now, add the TEI file
+                    SobekCM_File_Info tei_newFile = new SobekCM_File_Info(tei_file);
+                    string tei_label = tei_file + " (TEI)";
+                    Item_To_Complete.Divisions.Download_Tree.Add_File(tei_newFile, tei_label);
                 }
 
                 // Determine the total size of the package before saving
@@ -765,14 +875,6 @@ namespace SobekCM.Library.MySobekViewer
                     Item_To_Complete.Tracking.Born_Digital = true;
                 }
                 Item_To_Complete.Tracking.VID_Source = "SobekCM:" + templateCode;
-
-                // If this is a dataset and XML file was uploaded, add some viewers
-                if ((xml_found) && (Item_To_Complete.Bib_Info.SobekCM_Type == TypeOfResource_SobekCM_Enum.Dataset))
-                {
-                    Item_To_Complete.Behaviors.Add_View("DATASET_CODEBOOK");
-                    Item_To_Complete.Behaviors.Add_View("DATASET_REPORTS");
-                    Item_To_Complete.Behaviors.Add_View("DATASET_VIEWDATA");
-                }
 
                 // Save to the database
                 try
@@ -796,6 +898,19 @@ namespace SobekCM.Library.MySobekViewer
                 // Assign the file root and assoc file path
                 Item_To_Complete.Web.File_Root = Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8, 2);
                 Item_To_Complete.Web.AssocFilePath = Item_To_Complete.Web.File_Root + "\\" + Item_To_Complete.VID + "\\";
+
+                // Save the item settings
+                SobekCM_Item_Database.Set_Item_Setting_Value(Item_To_Complete.Web.ItemID, "TEI.Source_File", tei_file);
+                SobekCM_Item_Database.Set_Item_Setting_Value(Item_To_Complete.Web.ItemID, "TEI.CSS", css_file);
+                SobekCM_Item_Database.Set_Item_Setting_Value(Item_To_Complete.Web.ItemID, "TEI.Mapping", mapping_file);
+
+                // Find the actual XSLT file
+                string xslt_directory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins", "tei", "xslt");
+                string[] xslt_files = Directory.GetFiles(xslt_directory, xslt_file + ".xsl*");
+                SobekCM_Item_Database.Set_Item_Setting_Value(Item_To_Complete.Web.ItemID, "TEI.XSLT", Path.GetFileName(xslt_files[0]));
+
+                // Add the TEI viewer
+                SobekCM_Item_Database.Save_Item_Add_Viewer(Item_To_Complete.Web.ItemID, "TEI", tei_file.Replace(".xml", "").Replace(".XML", "") + " (TEI)", tei_file);
 
                 // Create the static html pages
                 string base_url = RequestSpecificValues.Current_Mode.Base_URL;
@@ -986,10 +1101,20 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
                 Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
                 Output.WriteLine("<br />");
-                Output.Write("<h2>Step 2 of " + totalTemplatePages + ": Upload TEI </ h2 >");
+                Output.Write("<h2>Step 2 of " + totalTemplatePages + ": Upload TEI </h2>");
 
                 string explanation = "Upload the TEI XML file for your new item and pick a short label for the TEI.";
-                Output.WriteLine("<blockquote>" + explanation + "</blockquote><br />");
+                Output.WriteLine("<blockquote>");
+                Output.WriteLine("  " + explanation);
+
+                // Is there a TEI file?
+                if (!String.IsNullOrEmpty(tei_file))
+                {
+                    string fileName = Path.GetFileName(tei_file);
+                    Output.WriteLine("<br /><br /><br />Current TEI file is: <i>" + fileName + "</i>.<br /><br />Select a new TEI file to replace this file or select NEXT to go to the next step.");
+                }
+
+                Output.WriteLine("</blockquote><br />");
             }
 
             if (currentProcessStep == 8)
@@ -997,7 +1122,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
                 Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
                 Output.WriteLine("<br />");
-                Output.Write("<h2>Step " + totalTemplatePages + " of " + totalTemplatePages + ": Upload Related Files (Optional) </ h2 >");
+                Output.Write("<h2>Step " + totalTemplatePages + " of " + totalTemplatePages + ": Upload Related Files (Optional) </h2>");
 
                 string explanation = "Upload the related files for your new item.  You can also provide labels for each file, once they are uploaded.";
                 Output.WriteLine("<blockquote>" + explanation + "</blockquote><br />");
@@ -1048,6 +1173,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 }
 
+                Output.WriteLine("<br />");
                 Output.WriteLine("</div>");
             }
 
@@ -1062,14 +1188,14 @@ namespace SobekCM.Library.MySobekViewer
 
                 Output.WriteLine("<h2>Step 3 of " + totalTemplatePages + ": Select Mapping and Display Parameters</h2>");
 
-                Output.WriteLine("<blockquote>Select the metadata mapping for importing metadata from your TEI and select the XSLT and CSS to display your TEI file within this system.<br /><br />");
+                Output.WriteLine("Select the metadata mapping for importing metadata from your TEI and select the XSLT and CSS to display your TEI file within this system.<br /><br />");
 
                 Output.WriteLine("<table class=\"sbkMySobek_TemplateTbl\" cellpadding=\"4px\" >");
                 Output.WriteLine("  <tr>");
                 Output.WriteLine("    <td colspan=\"3\" class=\"sbkMySobek_TemplateTblTitle_first\">Metadata Mapping</td>");
                 Output.WriteLine("  </tr>");
                 Output.WriteLine("  <tr>");
-                Output.WriteLine("    <td colspan=\"3\">Select the metadata mapping file below.  This mapping file will read the header information from your TEI file into the system, to facilitate searching and discovery of this resource.</td>");
+                Output.WriteLine("    <td colspan=\"3\" style=\"padding-left:30px;font-style:italic; color:#333; font-size:0.9em;\">Select the metadata mapping file below.  This mapping file will read the header information from your TEI file into the system, to facilitate searching and discovery of this resource.</td>");
                 Output.WriteLine("  </tr>");
 
                 Output.WriteLine("  <tr>");
@@ -1081,7 +1207,22 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("          <td>");
                 Output.WriteLine("            <div id=\"mapping_div\">");
                 Output.WriteLine("              <select class=\"type_select\" name=\"mapping_select\" id=\"mapping_select\" >");
-                //  <option value = "Aerial" > Aerial </ option >
+
+                foreach ( string thisSettingKey in RequestSpecificValues.Current_User.Settings.Keys)
+                {
+                    if (thisSettingKey.IndexOf("TEI.MAPPING.") == 0)
+                    {
+                        string enabled = RequestSpecificValues.Current_User.Get_Setting(thisSettingKey, "false");
+                        if (String.Compare(enabled, "true", StringComparison.OrdinalIgnoreCase) == 0)
+                        {
+                            string file = thisSettingKey.Replace("TEI.MAPPING.", "");
+                            if (String.Compare(file, mapping_file, StringComparison.OrdinalIgnoreCase) == 0)
+                                Output.WriteLine("              <option value=\"" + file + "\" selected=\"selected\">" + file + "</option>");
+                            else
+                                Output.WriteLine("              <option value=\"" + file + "\">" + file + "</option>");
+                        }
+                    }
+                }
 
                 Output.WriteLine("              </select>");
                 Output.WriteLine("            </div>");
@@ -1097,10 +1238,10 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("  </tr>");
 
                 Output.WriteLine("  <tr>");
-                Output.WriteLine("    <td colspan=\"3\" class=\"sbkMySobek_TemplateTblTitle_first\">Display Parameters (XSLT and CSS)</td>");
+                Output.WriteLine("    <td colspan=\"3\" class=\"sbkMySobek_TemplateTblTitle\" style=\"padding-top:25px\">Display Parameters (XSLT and CSS)</td>");
                 Output.WriteLine("  </tr>");
                 Output.WriteLine("  <tr>");
-                Output.WriteLine("    <td colspan=\"3\">The values below determine how the TEI will display within this system.  The XSLT will transform your TEI into HTML for display and the CSS file can add additional style to the resulting display.</td>");
+                Output.WriteLine("    <td colspan=\"3\" style=\"padding-left:30px;font-style:italic; color:#333; font-size:0.9em;\">The values below determine how the TEI will display within this system.  The XSLT will transform your TEI into HTML for display and the CSS file can add additional style to the resulting display.</td>");
                 Output.WriteLine("  </tr>");
 
                 Output.WriteLine("  <tr>");
@@ -1112,7 +1253,22 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("          <td>");
                 Output.WriteLine("            <div id=\"xslt_div\">");
                 Output.WriteLine("              <select class=\"type_select\" name=\"xslt_select\" id=\"xslt_select\" >");
-                //  <option value = "Aerial" > Aerial </ option >
+
+                foreach ( string thisSettingKey in RequestSpecificValues.Current_User.Settings.Keys)
+                {
+                    if (thisSettingKey.IndexOf("TEI.XSLT.") == 0)
+                    {
+                        string enabled = RequestSpecificValues.Current_User.Get_Setting(thisSettingKey, "false");
+                        if (String.Compare(enabled, "true", StringComparison.OrdinalIgnoreCase) == 0)
+                        {
+                            string file = thisSettingKey.Replace("TEI.XSLT.", "");
+                            if (String.Compare(file, xslt_file, StringComparison.OrdinalIgnoreCase) == 0)
+                                Output.WriteLine("              <option value=\"" + file + "\" selected=\"selected\">" + file + "</option>");
+                            else
+                                Output.WriteLine("              <option value=\"" + file + "\">" + file + "</option>");
+                        }
+                    }
+                }
 
                 Output.WriteLine("              </select>");
                 Output.WriteLine("            </div>");
@@ -1137,7 +1293,21 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("          <td>");
                 Output.WriteLine("            <div id=\"css_div\">");
                 Output.WriteLine("              <select class=\"type_select\" name=\"css_select\" id=\"css_select\" >");
-                //  <option value = "Aerial" > Aerial </ option >
+                foreach ( string thisSettingKey in RequestSpecificValues.Current_User.Settings.Keys)
+                {
+                    if (thisSettingKey.IndexOf("TEI.CSS.") == 0)
+                    {
+                        string enabled = RequestSpecificValues.Current_User.Get_Setting(thisSettingKey, "false");
+                        if (String.Compare(enabled, "true", StringComparison.OrdinalIgnoreCase) == 0)
+                        {
+                            string file = thisSettingKey.Replace("TEI.CSS.", "");
+                            if (String.Compare(file, css_file, StringComparison.OrdinalIgnoreCase) == 0)
+                                Output.WriteLine("              <option value=\"" + file + "\" selected=\"selected\">" + file + "</option>");
+                            else
+                                Output.WriteLine("              <option value=\"" + file + "\">" + file + "</option>");
+                        }
+                    }
+                }
 
                 Output.WriteLine("              </select>");
                 Output.WriteLine("            </div>");
@@ -1160,7 +1330,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("        <button onclick=\"return new_item_next_phase(4);\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("      </div>");
 
-                Output.WriteLine("</blockquote><br />");
+                Output.WriteLine("<br /><br /><br />");
 
                 Output.WriteLine("</div>");
             }
@@ -1179,7 +1349,8 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<blockquote>Below is a preview of the metadata extracted from your TEI file.<br /><br />");
 
 
-
+                string citation = Standard_Citation_String(false, Tracer);
+                Output.WriteLine(citation);
 
                 // Add the bottom buttons
                 Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
@@ -1189,6 +1360,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 Output.WriteLine("</blockquote><br />");
 
+                Output.WriteLine("<br />");
                 Output.WriteLine("</div>");
             }
 
@@ -1231,7 +1403,7 @@ namespace SobekCM.Library.MySobekViewer
                 }
 
                 int next_step = currentProcessStep + 1;
-                if (currentProcessStep == completeTemplate.InputPages_Count + 1)
+                if (currentProcessStep == completeTemplate.InputPages_Count + 4)
                 {
                     next_step = completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.None ? 9 : 8;
                 }
@@ -1241,14 +1413,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Add the top buttons
                 Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-                if (adjusted_process_step == 1)
-                {
-                    Output.WriteLine("        <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-                }
-                else
-                {
-                    Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
-                }
+                Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
                 Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + next_step + ");\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("      </div>");
                 Output.WriteLine("      <br /><br />");
@@ -1256,20 +1421,12 @@ namespace SobekCM.Library.MySobekViewer
 
                 bool isMozilla = ((!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Browser_Type)) && (RequestSpecificValues.Current_Mode.Browser_Type.ToUpper().IndexOf("FIREFOX") >= 0));
 
-                string popup_forms = completeTemplate.Render_Template_HTML(Output, item, RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, currentProcessStep - 1);
+                string popup_forms = completeTemplate.Render_Template_HTML(Output, item, RequestSpecificValues.Current_Mode.Skin, isMozilla, RequestSpecificValues.Current_User, RequestSpecificValues.Current_Mode.Language, UI_ApplicationCache_Gateway.Translation, RequestSpecificValues.Current_Mode.Base_URL, currentProcessStep - 4);
 
 
                 // Add the bottom buttons
                 Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
-                if (adjusted_process_step == 1)
-                {
-                    Output.WriteLine("        <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-                }
-                else
-                {
-                    Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
-                }
-                Output.WriteLine("        <button onclick=\"return new_item_clear();\" class=\"sbkMySobek_BigButton\"> CLEAR </button> &nbsp; &nbsp; ");
+                Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
                 Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + next_step + ");\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("      </div>");
                 Output.WriteLine("      <br />");
@@ -1278,7 +1435,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("    </div>");
                 Output.WriteLine("  </div>");
                 Output.WriteLine("</div>");
-                Output.WriteLine("<br />");
+                Output.WriteLine("<br /><br />");
 
 
                 if (popup_forms.Length > 0)
@@ -1291,10 +1448,14 @@ namespace SobekCM.Library.MySobekViewer
 
             if (currentProcessStep == 2)
             {
+
                 Output.WriteLine("<div class=\"sbkMySobek_FileRightButtons\">");
                 Output.WriteLine("      <button onclick=\"return new_upload_next_phase(1);\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
                 Output.WriteLine("      <button onclick=\"return new_upload_next_phase(3);\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("      <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
+                Output.WriteLine("</div>");
+
+                Output.WriteLine("<br /><br /><br />");
                 Output.WriteLine("</div>");
                 Output.WriteLine();
             }
@@ -1574,6 +1735,7 @@ namespace SobekCM.Library.MySobekViewer
 
                 Output.WriteLine("<div class=\"sbkMySobek_FileCompletionMsg\">" + completion_message + "</div>");
                 Output.WriteLine();
+                Output.WriteLine("<br />");
                 Output.WriteLine("</div>");
             }
 
@@ -2129,7 +2291,7 @@ namespace SobekCM.Library.MySobekViewer
             if (currentProcessStep == 2)
             {
                 // Add the upload controls to the file place holder
-                add_upload_controls(MainPlaceHolder, "Upload the TEI XML file for this package:", ".xml", Tracer);
+                add_upload_controls_tei(MainPlaceHolder, "", ".xml", Tracer);
             }
 
             if  (currentProcessStep == 8)
@@ -2140,6 +2302,43 @@ namespace SobekCM.Library.MySobekViewer
         }
 
         #region Step 3: Upload Related Files
+
+        private void add_upload_controls_tei(PlaceHolder MainPlaceholder, string Prompt, string AllowedFileExtensions, Custom_Tracer Tracer)
+        {
+            Tracer.Add_Trace("New_TEI_MySobekViewer.add_upload_controls", String.Empty);
+
+            StringBuilder filesBuilder = new StringBuilder(2000);
+            filesBuilder.AppendLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
+
+            if ((currentProcessStep == 2) || ((completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File) || (completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File_or_URL)))
+            {
+                filesBuilder.AppendLine(Prompt);
+                filesBuilder.AppendLine("<blockquote>");
+
+                LiteralControl filesLiteral2 = new LiteralControl(filesBuilder.ToString());
+                MainPlaceholder.Controls.Add(filesLiteral2);
+                filesBuilder.Remove(0, filesBuilder.Length);
+
+
+                UploadiFiveControl uploadControl = new UploadiFiveControl();
+                uploadControl.UploadPath = userInProcessDirectory;
+                uploadControl.UploadScript = RequestSpecificValues.Current_Mode.Base_URL + "UploadiFiveFileHandler.ashx";
+                uploadControl.AllowedFileExtensions = AllowedFileExtensions;
+                uploadControl.SubmitWhenQueueCompletes = true;
+                uploadControl.RemoveCompleted = true;
+                uploadControl.Swf = Static_Resources_Gateway.Uploadify_Swf;
+                uploadControl.RevertToFlashVersion = true;
+                uploadControl.QueueSizeLimit = 1;
+                uploadControl.ButtonText = "Select TEI File";
+                uploadControl.ButtonWidth = 175;
+                MainPlaceholder.Controls.Add(uploadControl);
+
+                filesBuilder.AppendLine("</blockquote><br />");
+            }
+
+            LiteralControl literal1 = new LiteralControl(filesBuilder.ToString());
+            MainPlaceholder.Controls.Add(literal1);
+        }
 
         private void add_upload_controls(PlaceHolder MainPlaceholder, string Prompt, string AllowedFileExtensions, Custom_Tracer Tracer)
         {
@@ -2220,17 +2419,10 @@ namespace SobekCM.Library.MySobekViewer
             {
                 Output.WriteLine("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/" + item.BibID + "/" + item.VID + "\">View this item</a><br/><br />");
 
-                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Metadata;
-                RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "1";
-                RequestSpecificValues.Current_Mode.BibID = item.BibID;
-                RequestSpecificValues.Current_Mode.VID = item.VID;
-                Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Edit this item</a><br /><br />");
-
-
-                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_Item;
+                RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.New_TEI_Item;
                 RequestSpecificValues.Current_Mode.BibID = String.Empty;
                 RequestSpecificValues.Current_Mode.VID = String.Empty;
-                Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Add another item</a><br /><br />");
+                Output.WriteLine("<a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">Add another TEI</a><br /><br />");
             }
             RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Folder_Management;
             RequestSpecificValues.Current_Mode.Result_Display_Type = Result_Display_Type_Enum.Brief;
@@ -2252,74 +2444,9 @@ namespace SobekCM.Library.MySobekViewer
 
         private void new_item(Custom_Tracer Tracer)
         {
-            // Load the project
-            item = null;
-            string project_code = RequestSpecificValues.Current_User.Current_Default_Metadata;
-            try
-            {
-                if (project_code.Length > 0)
-                {
-                    string project_name = UI_ApplicationCache_Gateway.Settings.Servers.Base_MySobek_Directory + "projects\\" + project_code + ".pmets";
-
-                    if (Tracer != null)
-                    {
-                        Tracer.Add_Trace("New_TEI_MySobekViewer.new_item()", "Loading project<br />(" + project_name + ")");
-                    }
-
-                    if (File.Exists(project_name))
-                    {
-                        item = SobekCM_Item.Read_METS(project_name);
-                    }
-                    else
-                    {
-                        if (File.Exists(project_name.Replace(".pmets", ".mets")))
-                        {
-                            item = SobekCM_Item.Read_METS(project_name.Replace(".pmets", ".mets"));
-                        }
-                    }
-
-                    // Only do more if the item is not null
-                    if (item != null)
-                    {
-                        // Transfer the default type note over to the type
-                        item.Bib_Info.SobekCM_Type_String = String.Empty;
-                        if (item.Bib_Info.Notes_Count > 0)
-                        {
-                            Note_Info deleteNote = null;
-                            foreach (Note_Info thisNote in item.Bib_Info.Notes)
-                            {
-                                if (thisNote.Note_Type == Note_Type_Enum.DefaultType)
-                                {
-                                    deleteNote = thisNote;
-                                    item.Bib_Info.SobekCM_Type_String = thisNote.Note;
-                                    break;
-                                }
-                            }
-                            if (deleteNote != null)
-                                item.Bib_Info.Remove_Note(deleteNote);
-                        }
-                    }
-                    else
-                    {
-                        project_code = String.Empty;
-                    }
-                }
-            }
-            catch (Exception ee)
-            {
-                if (Tracer != null)
-                {
-                    Tracer.Add_Trace("New_TEI_MySobekViewer.new_item()", "Error loading projects<br />" + ee);
-                }
-                project_code = String.Empty;
-            }
-
             // Build a new empty METS file
-            if (item == null)
-            {
-                item = new SobekCM_Item();
-                item.Bib_Info.SobekCM_Type_String = String.Empty;
-            }
+            item = new SobekCM_Item();
+            item.Bib_Info.SobekCM_Type_String = String.Empty;
 
             // Set the source directory first
             item.Source_Directory = userInProcessDirectory;
@@ -2394,6 +2521,20 @@ namespace SobekCM.Library.MySobekViewer
                 }
             }
 
+            // For testing
+            if (item.Bib_Info.Source.Code.Length == 0)
+            {
+                item.Bib_Info.Source.Code = "iSD";
+                item.Bib_Info.Source.Statement = "Testing purposes only";
+            }
+            if (item.Bib_Info.Location.Holding_Code.Length == 0)
+            {
+                item.Bib_Info.Location.Holding_Code = "iSD";
+                item.Bib_Info.Location.Holding_Name = "Testing purposes only";
+            }
+            item.Bib_Info.Main_Title.Title = "Test TEI Item";
+            item.Bib_Info.Type.MODS_Type = TypeOfResource_MODS_Enum.Mixed_Material;
+
             // Set some values from the CompleteTemplate
             if (completeTemplate.Include_User_As_Author)
             {
@@ -2403,18 +2544,11 @@ namespace SobekCM.Library.MySobekViewer
 
             item.VID = "00001";
             item.BibID = "TEMP000001";
-            if ((item.Behaviors.Aggregation_Count == 0) && (RequestSpecificValues.Current_Mode.Default_Aggregation == "dloc1"))
-                item.Behaviors.Add_Aggregation("DLOC");
             item.METS_Header.Create_Date = DateTime.Now;
             item.METS_Header.Modify_Date = item.METS_Header.Create_Date;
             item.METS_Header.Creator_Individual = RequestSpecificValues.Current_User.Full_Name;
-            if (project_code.Length == 0)
-                item.METS_Header.Add_Creator_Org_Notes("Created using CompleteTemplate '" + templateCode + "'");
-            else
-                item.METS_Header.Add_Creator_Org_Notes("Created using CompleteTemplate '" + templateCode + "' and project '" + project_code + "'.");
+            item.METS_Header.Add_Creator_Org_Notes("Created using online TEI submission form");
 
-            if (item.Bib_Info.Main_Title.Title.ToUpper().IndexOf("PROJECT LEVEL METADATA") == 0)
-                item.Bib_Info.Main_Title.Clear();
             if (RequestSpecificValues.Current_User.Default_Rights.Length > 0)
                 item.Bib_Info.Access_Condition.Text = RequestSpecificValues.Current_User.Default_Rights.Replace("[name]", RequestSpecificValues.Current_User.Full_Name).Replace("[year]", DateTime.Now.Year.ToString());
         }

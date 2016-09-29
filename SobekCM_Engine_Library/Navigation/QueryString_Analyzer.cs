@@ -466,6 +466,16 @@ namespace SobekCM.Engine_Library.Navigation
 												Navigator.My_Sobek_SubMode = url_relative_list[4];
 											break;
 
+                                        case "teiedit":
+                                            Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Edit_TEI_Item;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.BibID = url_relative_list[2].ToUpper();
+                                            if (url_relative_list.Count > 3)
+                                                Navigator.VID = url_relative_list[3];
+                                            if (url_relative_list.Count > 4)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[4];
+                                            break;
+
 										case "files":
 											Navigator.My_Sobek_Type = My_Sobek_Type_Enum.File_Management;
 											if (url_relative_list.Count > 2)

@@ -265,6 +265,9 @@ namespace SobekCM.Core.Users
         /// <summary> Flag indicates if this user should appear as a possible processing technician </summary>
         public bool Processing_Technician { get; set; }
 
+        /// <summary> Gets the full list of all settings </summary>
+        public Dictionary<string, object> Settings { get { return userSettings;  } }
+
         /// <summary> Get the user option as an object, by option key </summary>
         /// <param name="Option_Key"> Key for the user option </param>
         /// <returns> Option, as an uncast object, or NULL </returns>

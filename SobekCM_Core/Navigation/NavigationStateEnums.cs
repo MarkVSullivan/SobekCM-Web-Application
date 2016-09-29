@@ -324,6 +324,9 @@
         /// <summary> Edit an existing item 's permissions ( visibility, embargo, etc.. ) </summary>
         Edit_Item_Permissions,
 
+        /// <summary> Edit an existing TEI resource </summary>
+        Edit_TEI_Item,
+
         /// <summary> Edit the files related to a digial resource, by deleting or uploading new files </summary>
         File_Management,
 

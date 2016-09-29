@@ -23,7 +23,7 @@
 	<!-- This defines the inputs which are available for the user -->
 	<inputs>
 		<page>
-			<name language="eng">Item Description</name>
+			<name language="eng">Additional Item Information</name>
 			<panel>
 				<name language="eng">Title Information</name>
 				<element type="Title" subtype="simple" acronym="Enter the title of your chapter, article, report, or other material here." mandatory="true"/>

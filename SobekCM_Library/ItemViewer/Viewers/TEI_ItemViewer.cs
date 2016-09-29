@@ -9,6 +9,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
 using SobekCM.Core.XSLT;
 using SobekCM.Library.ItemViewer.Menu;
+using SobekCM.Library.UI;
 using SobekCM.Tools;
 
 namespace SobekCM.Library.ItemViewer.Viewers
@@ -59,7 +60,15 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                 // Ensure the XSLT file really exists
                 if (!File.Exists(xslt_file))
-                    return false;
+                {
+                    // This may just not have the path on it
+                    if ((xslt_file.IndexOf("/") < 0) && (xslt_file.IndexOf("\\") < 0))
+                    {
+                        xslt_file = Path.Combine( UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins\\tei\\xslt", xslt_file);
+                        if (!File.Exists(xslt_file)) return false;
+                    }
+                    else return false;
+                }
 
                 // Everything exists
                 return true;
@@ -119,7 +128,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         if (String.Compare(thisFile.Name, tei_file, StringComparison.OrdinalIgnoreCase) == 0)
                         {
-                            first_label = thisPage.Label;
+                            first_label = thisPage.Label.Replace(".xml", "").Replace(".XML", "");
                             break;
                         }
                     }
@@ -187,6 +196,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
             tei_file = BriefItem.Behaviors.Get_Setting("TEI.Source_File");
             xslt_file = BriefItem.Behaviors.Get_Setting("TEI.XSLT");
             css_file = BriefItem.Behaviors.Get_Setting("TEI.CSS");
+
+            // Ensure the XSLT file really exists
+            if (!File.Exists(xslt_file))
+            {
+                // This may just not have the path on it
+                if ((xslt_file.IndexOf("/") < 0) && (xslt_file.IndexOf("\\") < 0))
+                {
+                    xslt_file = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins\\tei\\xslt", xslt_file);
+                }
+            }
         }
 
         /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
