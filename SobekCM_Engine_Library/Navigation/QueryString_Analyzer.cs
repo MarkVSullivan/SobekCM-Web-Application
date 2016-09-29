@@ -430,6 +430,12 @@ namespace SobekCM.Engine_Library.Navigation
 												Navigator.My_Sobek_SubMode = url_relative_list[2];
 											break;
 
+                                        case "teisubmit":
+                                            Navigator.My_Sobek_Type = My_Sobek_Type_Enum.New_TEI_Item;
+                                            if (url_relative_list.Count > 2)
+                                                Navigator.My_Sobek_SubMode = url_relative_list[2];
+                                            break;
+
                                         case "itempermissions":
                                             Navigator.My_Sobek_Type = My_Sobek_Type_Enum.Edit_Item_Permissions;
                                             if (url_relative_list.Count > 2)

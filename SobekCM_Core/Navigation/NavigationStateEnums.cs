@@ -357,6 +357,9 @@
         /// <summary> Submit a new item through the online submittal process </summary>
         New_Item,
 
+        /// <summary> Allows a new TEI item to be added </summary>
+        New_TEI_Item,
+
         /// <summary> Change your current password (or temporary password) </summary>
         New_Password,
 

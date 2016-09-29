@@ -30,6 +30,9 @@ namespace SobekCM.Library.MySobekViewer
                 case My_Sobek_Type_Enum.New_Item:
                     return new New_Group_And_Item_MySobekViewer(RequestSpecificValues);
 
+                case My_Sobek_Type_Enum.New_TEI_Item:
+                    return new New_TEI_MySobekViewer(RequestSpecificValues);
+
                 case My_Sobek_Type_Enum.Folder_Management:
                     return new Folder_Mgmt_MySobekViewer(RequestSpecificValues);
 

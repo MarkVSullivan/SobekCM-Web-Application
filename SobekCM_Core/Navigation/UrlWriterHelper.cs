@@ -218,6 +218,11 @@ namespace SobekCM.Core.Navigation
                                 return this_base_url + "my/submit/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
                             return this_base_url + "my/submit" + urlOptions1;
 
+                        case My_Sobek_Type_Enum.New_TEI_Item:
+                            if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
+                                return this_base_url + "my/teisubmit/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
+                            return this_base_url + "my/teisubmit" + urlOptions1;
+
                         case My_Sobek_Type_Enum.Edit_Item_Behaviors:
                             if (!String.IsNullOrEmpty(Current_Mode.My_Sobek_SubMode))
                                 return this_base_url + "my/behaviors/" + Current_Mode.BibID + "/" + Current_Mode.VID + "/" + Current_Mode.My_Sobek_SubMode + urlOptions1;
