@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="utf-8"?>
+<XmlMappingSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="0000-100r_Arch53v_TEI_Netz-Wilson" creator="Mark Sullivan" version="1.0" createDate="5/19/2016">
+  <displayTagsToIgnore>
+    <tag>p</tag>
+    <tag>i</tag>
+    <tag>em</tag>
+    <tag>div</tag>
+    <tag>span</tag>
+    <tag>ref</tag>
+  </displayTagsToIgnore>
+  <mappings>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="None" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="None" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="fileDesc" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="None" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="fileDesc" />
+          <node name="titleStmt" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="None" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="fileDesc" />
+          <node name="titleStmt" />
+          <node name="title" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Title" ignoreSubTree="true" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="fileDesc" />
+          <node name="titleStmt" />
+          <node name="author" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Creator" ignoreSubTree="true" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="fileDesc" />
+          <node name="titleStmt" />
+          <node name="respStmt" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Creator.New" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="fileDesc" />
+          <node name="titleStmt" />
+          <node name="respStmt" />
+          <node name="resp" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Creator.Role" ignoreSubTree="true" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="fileDesc" />
+          <node name="titleStmt" />
+          <node name="respStmt" />
+          <node name="name" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Creator.Name" ignoreSubTree="true" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="fileDesc" />
+          <node name="publicationStmt" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="None" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="fileDesc" />
+          <node name="publicationStmt" />
+          <node name="idno" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Identifier" ignoreSubTree="true" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="fileDesc" />
+          <node name="publicationStmt" />
+          <node name="publisher" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Publisher" ignoreSubTree="true" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="fileDesc" />
+          <node name="publicationStmt" />
+          <node name="date" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Date.Publication" ignoreSubTree="true" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="fileDesc" />
+          <node name="publicationStmt" />
+          <node name="availability" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Rights" ignoreSubTree="true" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="fileDesc" />
+          <node name="sourceDesc" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="None" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="fileDesc" />
+          <node name="sourceDesc" />
+          <node name="listBibl" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="None" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="fileDesc" />
+          <node name="sourceDesc" />
+          <node name="listBibl" />
+          <node name="bibl" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Notes" ignoreSubTree="true" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="encodingDesc" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="None" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="encodingDesc" />
+          <node name="classDecl" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="None" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="encodingDesc" />
+          <node name="classDecl" />
+          <node name="taxonomy" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="None" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path attributeName="xml:id">
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="encodingDesc" />
+          <node name="classDecl" />
+          <node name="taxonomy" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="None" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="encodingDesc" />
+          <node name="classDecl" />
+          <node name="taxonomy" />
+          <node name="category" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="None" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path attributeName="xml:id">
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="encodingDesc" />
+          <node name="classDecl" />
+          <node name="taxonomy" />
+          <node name="category" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="None" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="encodingDesc" />
+          <node name="classDecl" />
+          <node name="taxonomy" keyAttributeName="xml:id" keyAttributeValue="keywords" />
+          <node name="category" />
+          <node name="catDesc" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Keywords" ignoreSubTree="true" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="profileDesc" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Unknown" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="profileDesc" />
+          <node name="langUsage" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Unknown" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="profileDesc" />
+          <node name="langUsage" />
+          <node name="language" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Unknown" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path attributeName="ident">
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="profileDesc" />
+          <node name="langUsage" />
+          <node name="language" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Language" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="profileDesc" />
+          <node name="textClass" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Unknown" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="profileDesc" />
+          <node name="textClass" />
+          <node name="keywords" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Unknown" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path attributeName="scheme">
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="profileDesc" />
+          <node name="textClass" />
+          <node name="keywords" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Unknown" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="profileDesc" />
+          <node name="textClass" />
+          <node name="keywords" />
+          <node name="list" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Unknown" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="teiHeader" />
+          <node name="profileDesc" />
+          <node name="textClass" />
+          <node name="keywords" />
+          <node name="list" />
+          <node name="item" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="Keywords" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="facsimile" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="None" ignoreSubTree="true" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="text" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="None" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path attributeName="xml:lang">
+        <nodes>
+          <node name="TEI" />
+          <node name="text" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="false" mapping="None" ignoreSubTree="false" />
+    </mapping>
+    <mapping>
+      <path>
+        <nodes>
+          <node name="TEI" />
+          <node name="text" />
+          <node name="body" />
+        </nodes>
+      </path>
+      <instructions retainInnerXmlTags="true" mapping="FullText" ignoreSubTree="true" />
+    </mapping>
+  </mappings>
+  <description>Automatically generated mapping set from the sample 0000-100r_Arch53v_TEI_Netz-Wilson TEI file.</description>
+</XmlMappingSet>

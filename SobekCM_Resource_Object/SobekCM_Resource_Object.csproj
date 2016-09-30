@@ -161,11 +161,15 @@
     <Compile Include="Event_Delegates.cs" />
     <Compile Include="GenericXml\Mapping\GenericXmlMappingPath.cs" />
     <Compile Include="GenericXml\Mapping\GenericXmlMappingSet.cs" />
+    <Compile Include="GenericXml\Mapping\GenericXmlMappingTreeNode.cs" />
     <Compile Include="GenericXml\Mapping\PathMappingInstructions.cs" />
     <Compile Include="GenericXml\Reader\GenericXmlNode.cs" />
     <Compile Include="GenericXml\Reader\GenericXmlPath.cs" />
     <Compile Include="GenericXml\Reader\GenericXmlPathValue.cs" />
     <Compile Include="GenericXml\Reader\GenericXmlReader.cs" />
+    <Compile Include="GenericXml\Results\GenericXmlReaderResults.cs" />
+    <Compile Include="GenericXml\Results\MappedValue.cs" />
+    <Compile Include="GenericXml\Results\UnmappedValue.cs" />
     <Compile Include="Generic_Reader.cs" />
     <Compile Include="Configuration\Additional_Metadata_Module_Config.cs" />
     <Compile Include="Configuration\Metadata_Configuration.cs" />

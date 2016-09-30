@@ -38,6 +38,9 @@ using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
+using SobekCM.Resource_Object.GenericXml.Reader;
+using SobekCM.Resource_Object.GenericXml.Results;
+using SobekCM.Resource_Object.Mapping;
 using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Resource_Object.Utilities;
 using SobekCM.Tools;
@@ -64,6 +67,8 @@ namespace SobekCM.Library.MySobekViewer
         private readonly string mapping_file;
         private readonly string xslt_file;
         private readonly string css_file;
+
+        private readonly string error_message;
 
 
 
@@ -516,11 +521,52 @@ namespace SobekCM.Library.MySobekViewer
                         }
                     }
 
+                    // If this goes from step 1 to step 2, write the permissions first
+                    if ((currentProcessStep == 3) && (next_phase == "4") && (completeTemplate.Permissions_Agreement.Length > 0))
+                    {
+                        // Get the mapping file
+                        string complete_mapping_file = Path.Combine(UI.UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins\\tei\\mapping", mapping_file + ".xml");
+                        string complete_tei_file = Path.Combine(userInProcessDirectory, tei_file);
+
+                        try
+                        {
+                            // Create a new item again
+                            new_item(RequestSpecificValues.Tracer);
+
+                            // Use the mapper and pull the results
+                            GenericXmlReader testMapper = new GenericXmlReader();
+                            GenericXmlReaderResults returnValue = testMapper.ProcessFile(complete_tei_file, complete_mapping_file);
+
+                            // Create the mapper to map these values into the SobekCM object
+                            Standard_Bibliographic_Mapping mappingObject = new Standard_Bibliographic_Mapping();
+
+                            // Add all this information
+                            foreach (MappedValue mappedValue in returnValue.MappedValues)
+                            {
+                                // If NONE mapping, just go on
+                                if ((String.IsNullOrEmpty(mappedValue.Mapping)) || (String.Compare(mappedValue.Mapping, "None", StringComparison.OrdinalIgnoreCase) == 0))
+                                    continue;
+
+                                if ( !String.IsNullOrEmpty(mappedValue.Value))
+                                    mappingObject.Add_Data(item, mappedValue.Value, mappedValue.Mapping);
+                            }
+
+                            item.Save_METS();
+                            HttpContext.Current.Session["Item"] = item;
+
+                        }
+                        catch (Exception ee)
+                        {
+                            error_message = ee.Message;
+                        }
+
+                    }
+
                     // If this is going from a step that includes the metadata entry portion, save this to the item
                     if ((currentProcessStep > 4) && (currentProcessStep < 8))
                     {
                         // Save to the item
-                        completeTemplate.Save_To_Bib(item, RequestSpecificValues.Current_User, currentProcessStep - 1);
+                        completeTemplate.Save_To_Bib(item, RequestSpecificValues.Current_User, currentProcessStep - 4);
                         item.Save_METS();
                         HttpContext.Current.Session["Item"] = item;
 
@@ -1727,7 +1773,7 @@ namespace SobekCM.Library.MySobekViewer
 
 
                 Output.WriteLine("<div class=\"sbkMySobek_FileRightButtons\">");
-                Output.WriteLine("      <button onclick=\"return new_upload_next_phase(" + (completeTemplate.InputPages.Count + 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
+                Output.WriteLine("      <button onclick=\"return new_upload_next_phase(" + (completeTemplate.InputPages.Count + 4) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
                 Output.WriteLine("      <button onclick=\"return new_upload_next_phase(9);\" class=\"sbkMySobek_BigButton\"> SUBMIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("      <div id=\"circular_progress\" name=\"circular_progress\" class=\"hidden_progress\">&nbsp;</div>");
                 Output.WriteLine("</div>");
@@ -2522,17 +2568,17 @@ namespace SobekCM.Library.MySobekViewer
             }
 
             // For testing
-            if (item.Bib_Info.Source.Code.Length == 0)
-            {
-                item.Bib_Info.Source.Code = "iSD";
-                item.Bib_Info.Source.Statement = "Testing purposes only";
-            }
-            if (item.Bib_Info.Location.Holding_Code.Length == 0)
-            {
-                item.Bib_Info.Location.Holding_Code = "iSD";
-                item.Bib_Info.Location.Holding_Name = "Testing purposes only";
-            }
-            item.Bib_Info.Main_Title.Title = "Test TEI Item";
+            //if (item.Bib_Info.Source.Code.Length == 0)
+            //{
+            //    item.Bib_Info.Source.Code = "iSD";
+            //    item.Bib_Info.Source.Statement = "Testing purposes only";
+            //}
+            //if (item.Bib_Info.Location.Holding_Code.Length == 0)
+            //{
+            //    item.Bib_Info.Location.Holding_Code = "iSD";
+            //    item.Bib_Info.Location.Holding_Name = "Testing purposes only";
+            //}
+            item.Bib_Info.Main_Title.Title = "TEI Item";
             item.Bib_Info.Type.MODS_Type = TypeOfResource_MODS_Enum.Mixed_Material;
 
             // Set some values from the CompleteTemplate
@@ -2580,6 +2626,12 @@ namespace SobekCM.Library.MySobekViewer
         public override bool Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
             Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
+
+            if (currentProcessStep == 4)
+            {
+                Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Item_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");    
+            }
+
             return false;
         }
 

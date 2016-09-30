@@ -175,7 +175,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
     {
         private readonly string tei_file;
         private readonly string xslt_file;
-        private readonly string css_file;
+        private string css_file;
+        private readonly string head_info;
+        private readonly string tei_string_to_display;
 
         /// <summary> Constructor for a new instance of the TEI_ItemViewer class, used to display a
         /// TEI file for a given digital resource </summary>
@@ -206,6 +208,42 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     xslt_file = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins\\tei\\xslt", xslt_file);
                 }
             }
+
+            string tei_file_network = SobekFileSystem.Resource_Network_Uri(BriefItem, tei_file);
+
+            XSLT_Transformer_ReturnArgs returnArgs = XSLT_Transformer.Transform(tei_file_network, xslt_file);
+            tei_string_to_display = String.Empty;
+            if (returnArgs.Successful)
+            {
+                tei_string_to_display = returnArgs.TransformedString;
+
+                // FInd the head information
+                int head_start = tei_string_to_display.IndexOf("<head", StringComparison.OrdinalIgnoreCase);
+                int head_end = tei_string_to_display.IndexOf("</head>", StringComparison.OrdinalIgnoreCase);
+                if ((head_start > 0) && (head_end > 0))
+                {
+                    head_info = tei_string_to_display.Substring(head_start, head_end - head_start);
+                    int end_bracket = head_info.IndexOf(">");
+                    head_info = head_info.Substring(end_bracket + 1);
+                }
+
+
+                // Trim down to the body
+                int body_start = tei_string_to_display.IndexOf("<body", StringComparison.OrdinalIgnoreCase);
+                int body_end = tei_string_to_display.IndexOf("</body>", StringComparison.OrdinalIgnoreCase);
+
+                if ((body_start > 0) && (body_end > 0))
+                {
+                    tei_string_to_display = tei_string_to_display.Substring(body_start, body_end - body_start);
+                    int end_bracket = tei_string_to_display.IndexOf(">");
+                    tei_string_to_display = tei_string_to_display.Substring(end_bracket + 1);
+                }
+
+            }
+            else
+            {
+                tei_string_to_display = "Error during XSLT transform of TEI<br /><br />" + returnArgs.ErrorMessage;
+            }
         }
 
         /// <summary> CSS ID for the viewer viewport for this particular viewer </summary>
@@ -225,18 +263,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 Tracer.Add_Trace("TEI_ItemViewer.Add_Main_Viewer_Section", "");
             }
 
-            string tei_file_network = SobekFileSystem.Resource_Network_Uri(BriefItem, tei_file);
 
-            XSLT_Transformer_ReturnArgs returnArgs = XSLT_Transformer.Transform(tei_file_network, xslt_file);
-            string tei_string_to_display = String.Empty;
-            if (returnArgs.Successful)
-            {
-                tei_string_to_display = returnArgs.TransformedString;
-            }
-            else
-            {
-                tei_string_to_display = "Error during XSLT transform of TEI<br /><br />" + returnArgs.ErrorMessage;
-            }
 
             // Build the value
             Output.WriteLine("          <td>");
@@ -277,10 +304,20 @@ namespace SobekCM.Library.ItemViewer.Viewers
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public override void Write_Within_HTML_Head(TextWriter Output, Custom_Tracer Tracer)
         {
+            if (!String.IsNullOrEmpty(head_info))
+            {
+                Output.WriteLine(head_info);
+            }
+
             if (!String.IsNullOrEmpty(css_file))
             {
+                if ((css_file.IndexOf("http:") < 0) && (css_file.IndexOf("https:") < 0))
+                    css_file = UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_URL + "/plugins/tei/css/" + css_file + ".css";
+
                 Output.WriteLine("  <link rel=\"stylesheet\" type=\"text/css\" href=\"" + css_file + "\" /> ");
             }
+
+
         }
     }
 }
