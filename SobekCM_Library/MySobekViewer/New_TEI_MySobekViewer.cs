@@ -521,8 +521,8 @@ namespace SobekCM.Library.MySobekViewer
                         }
                     }
 
-                    // If this goes from step 1 to step 2, write the permissions first
-                    if ((currentProcessStep == 3) && (next_phase == "4") && (completeTemplate.Permissions_Agreement.Length > 0))
+                    // If this goes from step 3 to step 4, read the XML using the mapping file
+                    if ((currentProcessStep == 3) && (next_phase == "4"))
                     {
                         // Get the mapping file
                         string complete_mapping_file = Path.Combine(UI.UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins\\tei\\mapping", mapping_file + ".xml");
@@ -2356,7 +2356,7 @@ namespace SobekCM.Library.MySobekViewer
             StringBuilder filesBuilder = new StringBuilder(2000);
             filesBuilder.AppendLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
 
-            if ((currentProcessStep == 2) || ((completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File) || (completeTemplate.Upload_Types == CompleteTemplate.Template_Upload_Types.File_or_URL)))
+            if (currentProcessStep == 2) 
             {
                 filesBuilder.AppendLine(Prompt);
                 filesBuilder.AppendLine("<blockquote>");
@@ -2615,7 +2615,7 @@ namespace SobekCM.Library.MySobekViewer
         {
             get
             {
-                return (!String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.My_Sobek_SubMode)) && ((RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0] == '8') || (RequestSpecificValues.Current_Mode.My_Sobek_SubMode[0] == '2'));
+                return (currentProcessStep == 8 || currentProcessStep == 2);
             }
         }
 

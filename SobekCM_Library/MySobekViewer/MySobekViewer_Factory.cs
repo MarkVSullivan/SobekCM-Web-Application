@@ -58,7 +58,7 @@ namespace SobekCM.Library.MySobekViewer
                     return new Edit_Item_Metadata_MySobekViewer(null, RequestSpecificValues);
 
                 case My_Sobek_Type_Enum.Edit_TEI_Item:
-                    return new Edit_TEI_Item_MySobekViewer(RequestSpecificValues);
+                    return new Edit_TEI_Item_MySobekViewer2(RequestSpecificValues);
 
                 case My_Sobek_Type_Enum.Edit_Item_Permissions:
                     return new Edit_Item_Permissions_MySobekViewer(RequestSpecificValues);

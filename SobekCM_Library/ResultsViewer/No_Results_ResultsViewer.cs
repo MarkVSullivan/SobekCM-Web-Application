@@ -186,7 +186,7 @@ namespace SobekCM.Library.ResultsViewer
                 sampleFileContent.AppendLine("Consider searching one of the following:<br /><br />");
 
                 sampleFileContent.AppendLine("Online Resource: <a href=\"http://scholar.google.com\" target=\"_BLANK\">Google Scholar</a> or <a href=\"http://books.google.com\" target=\"_BLANK\">Google Books</a><br />");
-                sampleFileContent.AppendLine("Physical Holdings: the <a href=\"http://uf.catalog.fcla.edu/uf.jsp[%SusMangoSearchEnding%]\" target=\"_BLANK\">Library Catalog</a> or <a href=\"http://www.worldcat.org\" target=\"_BLANK\">Worldcat</a><br />");
+                sampleFileContent.AppendLine("Physical Holdings: <a href=\"http://www.worldcat.org\" target=\"_BLANK\">Worldcat</a><br />");
                 sampleFileContent.AppendLine("  <br /><br /><br /><br />");
 
                 string sampleBuild = sampleFileContent.ToString();
