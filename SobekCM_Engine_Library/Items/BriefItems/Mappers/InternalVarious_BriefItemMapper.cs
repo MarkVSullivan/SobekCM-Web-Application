@@ -26,7 +26,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
 
             // Add some internal values (usually not displayed for non-internal users)
             New.Add_Description("Format", Original.Bib_Info.SobekCM_Type_String);
-            New.Add_Description("Creation Date", Original.METS_Header.Create_Date.ToShortDateString());
+            New.Add_Description("Digital Resource Creation Date", Original.METS_Header.Create_Date.ToShortDateString());
             New.Add_Description("Last Modified", Original.METS_Header.Modify_Date.ToShortDateString());
             New.Add_Description("Last Type", Original.METS_Header.RecordStatus);
             New.Add_Description("Last User", Original.METS_Header.Creator_Individual);

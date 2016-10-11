@@ -141,6 +141,34 @@ namespace SobekCM.Resource_Object.GenericXml.Mapping
             }
         }
 
+        public bool Contains_Path(GenericXmlPath Path)
+        {
+            if (searchNodes.Count == 0)
+                build_search_tree();
+
+            // Look for a match
+            if (searchNodes.ContainsKey(Path.PathNodes[0].NodeName))
+            {
+                GenericXmlMappingTreeNode lastMatchingNode = searchNodes[Path.PathNodes[0].NodeName];
+                int index = 1;
+                while (index < Path.PathNodes.Count)
+                {
+                    string nextNodeName = Path.PathNodes[index].NodeName;
+                    if (!lastMatchingNode.Children.ContainsKey(nextNodeName))
+                        return false;
+
+                    lastMatchingNode = lastMatchingNode.Children[nextNodeName];
+
+                    index++;
+                }
+
+                // If there are instructions here, return them
+                return true;
+            }
+
+            return false;
+        }
+
         public PathMappingInstructions Get_Matching_Path_Instructions(GenericXmlPath Path)
         {
             if (searchNodes.Count == 0)
@@ -164,6 +192,35 @@ namespace SobekCM.Resource_Object.GenericXml.Mapping
 
                 // If there are instructions here, return them
                 return lastMatchingNode.Instructions;
+            }
+
+            return null;
+        }
+
+        public PathMappingInstructions Get_Matching_Path_Instructions(GenericXmlPath Path, string AttributeName )
+        {
+            if (searchNodes.Count == 0)
+                build_search_tree();
+
+            // Look for a match
+            if (searchNodes.ContainsKey(Path.PathNodes[0].NodeName))
+            {
+                GenericXmlMappingTreeNode lastMatchingNode = searchNodes[Path.PathNodes[0].NodeName];
+                int index = 1;
+                while (index < Path.PathNodes.Count)
+                {
+                    string nextNodeName = Path.PathNodes[index].NodeName;
+                    if (!lastMatchingNode.Children.ContainsKey(nextNodeName))
+                        return null;
+
+                    lastMatchingNode = lastMatchingNode.Children[nextNodeName];
+
+                    index++;
+                }
+
+                // If there are instructions here, return them
+                if ((lastMatchingNode.AttributeInstructions != null) && (lastMatchingNode.AttributeInstructions.ContainsKey(AttributeName)))
+                    return lastMatchingNode.AttributeInstructions[AttributeName];
             }
 
             return null;
@@ -194,7 +251,10 @@ namespace SobekCM.Resource_Object.GenericXml.Mapping
                     // Was this the only node?
                     if (mapping.XmlPath.PathNodes.Count == 1)
                     {
-                        rootNode.Instructions = mapping.Instructions;
+                        if (!String.IsNullOrEmpty(mapping.XmlPath.AttributeName))
+                            rootNode.AttributeInstructions[mapping.XmlPath.AttributeName] = mapping.Instructions;
+                        else
+                            rootNode.Instructions = mapping.Instructions;
                     }
                     else
                     {
@@ -217,7 +277,10 @@ namespace SobekCM.Resource_Object.GenericXml.Mapping
                         }
 
                         // ASsign instructions here
-                        rootNode.Instructions = mapping.Instructions;
+                        if (!String.IsNullOrEmpty(mapping.XmlPath.AttributeName))
+                            rootNode.AttributeInstructions[mapping.XmlPath.AttributeName] = mapping.Instructions;
+                        else
+                            rootNode.Instructions = mapping.Instructions;
                     }
                 }
             }

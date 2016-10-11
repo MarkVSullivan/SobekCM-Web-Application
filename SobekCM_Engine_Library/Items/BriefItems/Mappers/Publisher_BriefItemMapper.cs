@@ -21,12 +21,12 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
         /// <returns> TRUE if successful, FALSE if an exception is encountered </returns>
         public bool MapToBriefItem(SobekCM_Item Original, BriefItemInfo New)
         {
+            // Keep track of place of publications alreadyadded
+            Dictionary<string, string> pub_places = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             // Add the publisher, and place of publications
             if (Original.Bib_Info.Publishers_Count > 0)
             {
-                // Keep track of place of publications alreadyadded
-                Dictionary<string, string> pub_places = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
                 // Step through each publisher
                 foreach (Publisher_Info thisPublisher in Original.Bib_Info.Publishers)
@@ -43,6 +43,18 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                             pub_places.Add(thisPubPlace.Place_Text, thisPubPlace.Place_Text);
                         }
                     }
+                }
+            }
+
+            if ((Original.Bib_Info.Origin_Info != null) && (Original.Bib_Info.Origin_Info.Places_Count > 0))
+            {
+                foreach (Origin_Info_Place thisPlace in Original.Bib_Info.Origin_Info.Places)
+                {
+                    if (!pub_places.ContainsKey(thisPlace.Place_Text))
+                    {
+                        New.Add_Description("Place of Publication", thisPlace.Place_Text);
+                        pub_places.Add(thisPlace.Place_Text, thisPlace.Place_Text);
+                    } 
                 }
             }
 

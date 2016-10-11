@@ -284,6 +284,7 @@
     <Compile Include="Tracking\Tracking_Info.cs" />
     <Compile Include="Behaviors\Behaviors_Info.cs" />
     <Compile Include="Utilities\SobekCM_Item_Mover.cs" />
+    <Compile Include="Utilities\XmlValidator.cs" />
     <Compile Include="Web_Info.cs" />
     <Compile Include="XML_Node_Base_Type.cs" />
     <Compile Include="Download_Info_DEPRECATED.cs" />

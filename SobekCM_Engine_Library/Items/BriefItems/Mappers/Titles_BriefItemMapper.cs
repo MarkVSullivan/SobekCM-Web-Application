@@ -34,9 +34,9 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
                         case Title_Type_Enum.Alternative:
                             string titleType = thisTitle.Display_Label;
                             if ((!String.IsNullOrWhiteSpace(titleType)) && ( String.Compare(titleType, "OTHER TITLE", StringComparison.InvariantCultureIgnoreCase ) != 0 ))
-                                New.Add_Description("Alternative Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim()).SubTerm = titleType;
+                                New.Add_Description("Alternate Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim()).SubTerm = titleType;
                             else
-                                New.Add_Description("Alternative Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim());
+                                New.Add_Description("Alternate Title", (thisTitle.NonSort + " " + thisTitle.Title + " " + thisTitle.Subtitle).Trim());
                             break;
 
                         case Title_Type_Enum.Uniform:

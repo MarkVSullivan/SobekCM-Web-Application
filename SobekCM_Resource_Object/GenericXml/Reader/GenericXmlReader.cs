@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Text;
 using System.Xml;
 using SobekCM.Resource_Object.GenericXml.Mapping;
@@ -518,7 +519,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
 
         #endregion
 
-        #region Methods retrieve all path/value pairs that existing in the file
+        #region Methods processes the XML file using the generic xml mapping
 
         public GenericXmlReaderResults ProcessFile(string XmlFile, string MappingFile)
         {
@@ -563,7 +564,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
             }
             catch (Exception ee)
             {
-                // MessageBox.Show(ee.Message);
+                returnValue.ErrorMessage = ee.Message;
             }
 
             return returnValue;
@@ -624,36 +625,40 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
             //}
 
 
+
+
+
             // Now, iterate through all the child elements that may exist
             while (readerXml.Read())
             {
-                if (readerXml.NodeType == XmlNodeType.Text)
-                {
-                    // Create the path for this
-                    GenericXmlPath thisPath = new GenericXmlPath();
-                    for (int j = currentReverseList.Count - 1; j >= 0; j--)
-                    {
-                        thisPath.PathNodes.Add(currentReverseList[j]);
-                    }
+                //if (readerXml.NodeType == XmlNodeType.Text)
+                //{
+                //    // Create the path for this
+                //    GenericXmlPath thisPath = new GenericXmlPath();
+                //    for (int j = currentReverseList.Count - 1; j >= 0; j--)
+                //    {
+                //        thisPath.PathNodes.Add(currentReverseList[j]);
+                //    }
 
-                    // Does mapping exist for this path?
-                    PathMappingInstructions instructions = set.Get_Matching_Path_Instructions(thisPath);
+                //    // Does mapping exist for this path?
+                //    PathMappingInstructions instructions = set.Get_Matching_Path_Instructions(thisPath);
 
-                    // Get the value for this path
-                    string textValue = readerXml.Value;
+                //    // Get the value for this path
+                //    string textValue = readerXml.Value;
 
-                    // If instructions, this was mapped
-                    if ((instructions != null) && ( !String.IsNullOrEmpty(instructions.SobekMapping)))
-                    {
-                        MappedValue thisMappedValue = new MappedValue();
-                        thisMappedValue.Mapping = instructions.SobekMapping;
-                        thisMappedValue.Path = thisPath;
-                        thisMappedValue.Value = textValue;
+                //    // If instructions, this was mapped
+                //    if ((instructions != null) && ( !String.IsNullOrEmpty(instructions.SobekMapping)))
+                //    {
+                //        MappedValue thisMappedValue = new MappedValue();
+                //        thisMappedValue.Mapping = instructions.SobekMapping;
+                //        thisMappedValue.Path = thisPath;
+                //        thisMappedValue.Value = textValue;
 
-                        returnValue.MappedValues.Add(thisMappedValue);
-                    }
-                }
+                //        returnValue.MappedValues.Add(thisMappedValue);
+                //    }
+                //}
 
+                bool text_found = false;
                 if (readerXml.NodeType == XmlNodeType.Element)
                 {
                     // Create the node for this top-level element
@@ -663,8 +668,96 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                     // Add this to the stack
                     currentStack.Push(topNode);
 
-                    // Recursively read this and all children
-                    recursive_process_file(readerXml.ReadSubtree(), currentStack, set, returnValue);
+                    if (topNode.NodeName == "text")
+                        text_found = true;
+
+                    // It may be that mapping exists right here at this level
+                    // Create the path for this
+                    currentReverseList = currentStack.ToList();
+                    GenericXmlPath thisPath = new GenericXmlPath();
+                    for (int j = currentReverseList.Count - 1; j >= 0; j--)
+                    {
+                        thisPath.PathNodes.Add(currentReverseList[j]);
+                    }
+
+                    // Does mapping exist for this path?
+                    if (set.Contains_Path(thisPath))
+                    {
+                        // Collect the attributes FIRST 
+                        List<Tuple<string, string>> attributes = null;
+                        if (readerXml.HasAttributes)
+                        {
+                            attributes = new List<Tuple<string, string>>();
+                            readerXml.MoveToFirstAttribute();
+                            attributes.Add(new Tuple<string, string>(readerXml.Name, readerXml.Value));
+                            while (readerXml.MoveToNextAttribute())
+                            {
+                                attributes.Add(new Tuple<string, string>(readerXml.Name, readerXml.Value));
+                            }
+                            readerXml.MoveToElement();
+                        }
+
+                        // Does mapping exist for this path?
+                        PathMappingInstructions instructions = set.Get_Matching_Path_Instructions(thisPath);
+
+                        // If instructions, this was mapped
+                        if ((instructions != null) && (!String.IsNullOrEmpty(instructions.SobekMapping)) && (instructions.IgnoreSubTree))
+                        {
+                            MappedValue thisMappedValue = new MappedValue();
+                            thisMappedValue.Mapping = instructions.SobekMapping;
+                            thisMappedValue.Path = thisPath;
+
+                            if (instructions.RetainInnerXmlTags)
+                            {
+                                thisMappedValue.Value = readerXml.ReadInnerXml();
+                            }
+                            else
+                            {
+                                StringBuilder builder = new StringBuilder();
+                                XmlReader innerReader = readerXml.ReadSubtree();
+                                while (innerReader.Read())
+                                {
+                                    if (innerReader.NodeType == XmlNodeType.Text)
+                                    {
+                                        builder.Append(innerReader.Value);
+                                    }
+                                }
+                                thisMappedValue.Value = builder.ToString();
+                            }
+
+                            returnValue.MappedValues.Add(thisMappedValue);
+
+                            //// Actually, there is something here about skipping this
+                            //readerXml.Skip();
+                        }
+                        else
+                        {
+                            // Recursively read this and all children
+                            recursive_process_file(readerXml.ReadSubtree(), currentStack, set, returnValue);
+                        }
+
+                        // Now, handle the attributes
+                        if ((attributes != null) && (attributes.Count > 0))
+                        {
+                            foreach (Tuple<string, string> attribute in attributes)
+                            {
+                                // Does mapping exist for this path?
+                                PathMappingInstructions attrInstructions = set.Get_Matching_Path_Instructions(thisPath, attribute.Item1);
+
+                                // If instructions, this was mapped
+                                if ((attrInstructions != null) && (!String.IsNullOrEmpty(attrInstructions.SobekMapping)))
+                                {
+                                    MappedValue thisMappedValue = new MappedValue();
+                                    thisMappedValue.Mapping = attrInstructions.SobekMapping;
+                                    thisMappedValue.Path = thisPath;
+                                    thisMappedValue.Path.AttributeName = attribute.Item1;
+                                    thisMappedValue.Value = attribute.Item2;
+
+                                    returnValue.MappedValues.Add(thisMappedValue);
+                                }
+                            }
+                        }
+                    }
 
                     // Since this node was handled, pop it off the stack
                     currentStack.Pop();
@@ -681,16 +774,25 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
         public string cleaned_xml_string_from_file(string XmlFile, GenericXmlMappingSet mappingSet)
         {
             // Just get the full text to work with
-            string fullText = File.ReadAllText(XmlFile);
+            string fullText = File.ReadAllText(XmlFile).Replace("\r\n", " ").Replace("\n", " ");
 
             // If there are no display tags to remove, done..
             if ((mappingSet.DisplayTagsToIgnore == null) || (mappingSet.DisplayTagsToIgnore.Count == 0))
                 return fullText;
 
-            
-
             // Open the content and read it into the StringBuilder
             StringBuilder builder = new StringBuilder((int) (fullText.Length*1.1));
+
+            // The cleaning of the tags will not include the <text> portion of any metadata file
+            int text_tag_index = -1;
+            int text_tag_index1 = fullText.IndexOf("<text ");
+            int text_tag_index2 = fullText.IndexOf("<text>");
+            if (text_tag_index1 > 0)
+                text_tag_index = text_tag_index1;
+            if (text_tag_index2 > text_tag_index)
+                text_tag_index = text_tag_index2;
+            if (text_tag_index == -1)
+                text_tag_index = fullText.Length;
 
             // Step through and remove the END tags
             int index = 0;
@@ -731,7 +833,14 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                     builder.Append(fullText.Substring(index));
                     break;
                 }
-                
+
+                // The text tag index is another end criteria
+                if (next_index > text_tag_index)
+                {
+                    builder.Append(fullText.Substring(index));
+                    break;
+                }
+               
                 // If a match was found, start by copying over the GOOD data
                 builder.Append(fullText.Substring(index, next_index - index));
 

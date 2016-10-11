@@ -1407,6 +1407,20 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (otherTitles == null)
                 otherTitles = new List<Title_Info>();
 
+            // Make sure this doesn't already exist as the main title
+            if (String.Compare(mainTitle.Title, Title, StringComparison.OrdinalIgnoreCase) == 0)
+                return mainTitle;
+
+            // Make sure this doesn't already exist as an other title
+            foreach (Title_Info thisOtherTitle in otherTitles)
+            {
+                if (String.Compare(thisOtherTitle.Title, Title, StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    thisOtherTitle.Title_Type = Type;
+                    return thisOtherTitle;
+                }
+            }
+
             Title_Info newTitle = new Title_Info(Title, Type);
             otherTitles.Add(newTitle);
             return newTitle;

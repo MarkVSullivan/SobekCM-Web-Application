@@ -8,9 +8,11 @@ namespace SobekCM.Resource_Object.GenericXml.Results
 {
     public class GenericXmlReaderResults
     {
-        public List<MappedValue> MappedValues;
+        public List<MappedValue> MappedValues { get; set; }
 
-        public List<UnmappedValue> UnmappedValues;
+        public List<UnmappedValue> UnmappedValues { get; set; }
+
+        public string ErrorMessage { get; set; }
 
         public GenericXmlReaderResults()
         {

@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Microsoft.SqlServer.Server;
 using SobekCM.Core.Aggregations;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Configuration;
@@ -27,6 +28,7 @@ using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Citation;
+using SobekCM.Library.Citation.Elements;
 using SobekCM.Library.Citation.SectionWriter;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.Database;
@@ -68,7 +70,7 @@ namespace SobekCM.Library.MySobekViewer
         private readonly string xslt_file;
         private readonly string css_file;
 
-        private readonly string error_message;
+        private string error_message;
 
 
 
@@ -79,8 +81,6 @@ namespace SobekCM.Library.MySobekViewer
         public New_TEI_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             RequestSpecificValues.Tracer.Add_Trace("New_TEI_MySobekViewer.Constructor", String.Empty);
-
-
 
             // If the RequestSpecificValues.Current_User cannot submit items, go back
             if (!RequestSpecificValues.Current_User.Can_Submit)
@@ -254,7 +254,7 @@ namespace SobekCM.Library.MySobekViewer
                     foreach (string thisTeiFile in tei_files)
                     {
                         // If this is marc.xml, skip it
-                        if (Path.GetFileName(thisTeiFile).ToLower().IndexOf("marc.xml") >= 0)
+                        if ((Path.GetFileName(thisTeiFile).ToLower().IndexOf("marc.xml") >= 0) || (Path.GetFileName(thisTeiFile).ToLower().IndexOf("mets.xml") >= 0))
                             continue;
 
                         DateTime file_timestamp = File.GetLastWriteTime(thisTeiFile);
@@ -272,7 +272,7 @@ namespace SobekCM.Library.MySobekViewer
                         foreach (string thisTeiFile in tei_files)
                         {
                             // If this is marc.xml, skip it
-                            if (Path.GetFileName(thisTeiFile).ToLower().IndexOf("marc.xml") >= 0)
+                            if ((Path.GetFileName(thisTeiFile).ToLower().IndexOf("marc.xml") >= 0) || (Path.GetFileName(thisTeiFile).ToLower().IndexOf("mets.xml") >= 0))
                                 continue;
 
                             // Was this the latest file?
@@ -521,45 +521,22 @@ namespace SobekCM.Library.MySobekViewer
                         }
                     }
 
-                    // If this goes from step 3 to step 4, read the XML using the mapping file
-                    if ((currentProcessStep == 3) && (next_phase == "4"))
+                    // If this goes from step 2 (upload TEI) to step 3, validate the TEI XML file
+                    if ((currentProcessStep == 2) && (next_phase == "3"))
                     {
-                        // Get the mapping file
-                        string complete_mapping_file = Path.Combine(UI.UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins\\tei\\mapping", mapping_file + ".xml");
-                        string complete_tei_file = Path.Combine(userInProcessDirectory, tei_file);
-
-                        try
+                        // Should be a TEI file to continue
+                        if (!String.IsNullOrEmpty(tei_file))
                         {
-                            // Create a new item again
-                            new_item(RequestSpecificValues.Tracer);
-
-                            // Use the mapper and pull the results
-                            GenericXmlReader testMapper = new GenericXmlReader();
-                            GenericXmlReaderResults returnValue = testMapper.ProcessFile(complete_tei_file, complete_mapping_file);
-
-                            // Create the mapper to map these values into the SobekCM object
-                            Standard_Bibliographic_Mapping mappingObject = new Standard_Bibliographic_Mapping();
-
-                            // Add all this information
-                            foreach (MappedValue mappedValue in returnValue.MappedValues)
+                            XmlValidator validator = new XmlValidator();
+                            string tei_filepath = Path.Combine(userInProcessDirectory, tei_file);
+                            bool isValid = validator.IsValid(tei_filepath);
+                            if (!isValid)
                             {
-                                // If NONE mapping, just go on
-                                if ((String.IsNullOrEmpty(mappedValue.Mapping)) || (String.Compare(mappedValue.Mapping, "None", StringComparison.OrdinalIgnoreCase) == 0))
-                                    continue;
-
-                                if ( !String.IsNullOrEmpty(mappedValue.Value))
-                                    mappingObject.Add_Data(item, mappedValue.Value, mappedValue.Mapping);
+                                string validatorErrors = validator.Errors.Replace("\n", "<br />\n");
+                                error_message = "Uploaded TEI file is not a valid XML source file.<br /><br />\n" + validatorErrors + "<br />";
+                                next_phase = "2";
                             }
-
-                            item.Save_METS();
-                            HttpContext.Current.Session["Item"] = item;
-
                         }
-                        catch (Exception ee)
-                        {
-                            error_message = ee.Message;
-                        }
-
                     }
 
                     // If this is going from a step that includes the metadata entry portion, save this to the item
@@ -629,9 +606,12 @@ namespace SobekCM.Library.MySobekViewer
                     }
 
                     // For now, just forward to the next phase
-                    RequestSpecificValues.Current_Mode.My_Sobek_SubMode = next_phase;
-                    UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
-                    return;
+                    if (currentProcessStep.ToString() != next_phase)
+                    {
+                        RequestSpecificValues.Current_Mode.My_Sobek_SubMode = next_phase;
+                        UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
+                        return;
+                    }
                 }
             }
 
@@ -665,7 +645,7 @@ namespace SobekCM.Library.MySobekViewer
 
 
             // If this is past the step to upload a TEI file, ensure a TEI file exists
-            if ((currentProcessStep > 3) && ((String.IsNullOrEmpty(mapping_file)) || (String.IsNullOrEmpty(xslt_file)) || (String.IsNullOrEmpty(css_file))))
+            if ((currentProcessStep > 3) && ((String.IsNullOrEmpty(mapping_file)) || (String.IsNullOrEmpty(xslt_file))))
             {
                 RequestSpecificValues.Current_Mode.My_Sobek_SubMode = "3";
                 UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
@@ -956,7 +936,8 @@ namespace SobekCM.Library.MySobekViewer
                 SobekCM_Item_Database.Set_Item_Setting_Value(Item_To_Complete.Web.ItemID, "TEI.XSLT", Path.GetFileName(xslt_files[0]));
 
                 // Add the TEI viewer
-                SobekCM_Item_Database.Save_Item_Add_Viewer(Item_To_Complete.Web.ItemID, "TEI", tei_file.Replace(".xml", "").Replace(".XML", "") + " (TEI)", tei_file);
+                string tei_filename = Path.GetFileName(tei_file);
+                SobekCM_Item_Database.Save_Item_Add_Viewer(Item_To_Complete.Web.ItemID, "TEI", tei_filename.Replace(".xml", "").Replace(".XML", "") + " (TEI)", tei_filename);
 
                 // Create the static html pages
                 string base_url = RequestSpecificValues.Current_Mode.Base_URL;
@@ -1149,6 +1130,14 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("<br />");
                 Output.Write("<h2>Step 2 of " + totalTemplatePages + ": Upload TEI </h2>");
 
+                // Was there a basic XML validation error?
+                if (!String.IsNullOrEmpty(error_message))
+                {
+                    Output.WriteLine("<div style=\"padding-left:30px;font-weight:bold; color:Red; font-size:1.1em;\">");
+                    Output.WriteLine(error_message);
+                    Output.WriteLine("</div>");
+                }
+
                 string explanation = "Upload the TEI XML file for your new item and pick a short label for the TEI.";
                 Output.WriteLine("<blockquote>");
                 Output.WriteLine("  " + explanation);
@@ -1240,133 +1229,244 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("  <tr>");
                 Output.WriteLine("    <td colspan=\"3\" class=\"sbkMySobek_TemplateTblTitle_first\">Metadata Mapping</td>");
                 Output.WriteLine("  </tr>");
-                Output.WriteLine("  <tr>");
-                Output.WriteLine("    <td colspan=\"3\" style=\"padding-left:30px;font-style:italic; color:#333; font-size:0.9em;\">Select the metadata mapping file below.  This mapping file will read the header information from your TEI file into the system, to facilitate searching and discovery of this resource.</td>");
-                Output.WriteLine("  </tr>");
 
-                Output.WriteLine("  <tr>");
-                Output.WriteLine("    <td style=\"width:15px\" > &nbsp;</td>");
-                Output.WriteLine("    <td class=\"metadata_label\">Metadata Mapping:</a></td>");
-                Output.WriteLine("    <td>");
-                Output.WriteLine("      <table>");
-                Output.WriteLine("        <tr>");
-                Output.WriteLine("          <td>");
-                Output.WriteLine("            <div id=\"mapping_div\">");
-                Output.WriteLine("              <select class=\"type_select\" name=\"mapping_select\" id=\"mapping_select\" >");
-
-                foreach ( string thisSettingKey in RequestSpecificValues.Current_User.Settings.Keys)
+                // Get the list of Mapping files that exist and this user is enabled for
+                List<string> mapping_files = new List<string>();
+                foreach (string thisSettingKey in RequestSpecificValues.Current_User.Settings.Keys)
                 {
                     if (thisSettingKey.IndexOf("TEI.MAPPING.") == 0)
                     {
+                        // Only show enabled options
                         string enabled = RequestSpecificValues.Current_User.Get_Setting(thisSettingKey, "false");
                         if (String.Compare(enabled, "true", StringComparison.OrdinalIgnoreCase) == 0)
                         {
+                            // Get this file name
                             string file = thisSettingKey.Replace("TEI.MAPPING.", "");
+
+                            // Also verify this mapping file exists
+                            string filepath = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins", "tei", "mapping", file + ".xml");
+                            if (!File.Exists(filepath))
+                                continue;
+
+                            // Since this exists, add to the mapping file list
+                            mapping_files.Add(file);
+                        }
+                    }
+                }
+
+                // Show an error message if no mapping file exists
+                if (mapping_files.Count == 0)
+                {
+                    Output.WriteLine("  <tr>");
+                    Output.WriteLine("    <td colspan=\"3\" style=\"padding-left:30px;font-weight:bold; color:Red; font-size:1.1em;\">You are not approved for any TEI mapping file.  Please let your system administrator know so they can approve you for an existing TEI mapping file.</td>");
+                    Output.WriteLine("  </tr>");
+                }
+                else
+                {
+
+                    Output.WriteLine("  <tr>");
+                    if (mapping_files.Count == 1)
+                        Output.WriteLine("    <td colspan=\"3\" style=\"padding-left:30px;font-style:italic; color:#333; font-size:0.9em;\">The mapping file below will read the header information from your TEI file into the system, to facilitate searching and discovery of this resource.</td>");
+                    else
+                        Output.WriteLine("    <td colspan=\"3\" style=\"padding-left:30px;font-style:italic; color:#333; font-size:0.9em;\">Select the metadata mapping file below.  This mapping file will read the header information from your TEI file into the system, to facilitate searching and discovery of this resource.</td>");
+
+                    Output.WriteLine("  </tr>");
+
+                    Output.WriteLine("  <tr>");
+                    Output.WriteLine("    <td style=\"width:15px\" > &nbsp;</td>");
+                    Output.WriteLine("    <td class=\"metadata_label\">Metadata Mapping:</a></td>");
+
+
+                    // If they are approved for only one mapping file, just show that one as text, not a select box
+                    if (mapping_files.Count == 1)
+                    {
+                        Output.WriteLine("    <td>");
+                        Output.WriteLine("      " + mapping_files[0]);
+                        Output.WriteLine("      <input type=\"hidden\" id=\"mapping_select\" name=\"mapping_select\" value=\"" + mapping_files[0] + "\" />");
+                        Output.WriteLine("    </td>");
+                    }
+                    else
+                    {
+
+                        Output.WriteLine("    <td>");
+                        Output.WriteLine("      <table>");
+                        Output.WriteLine("        <tr>");
+                        Output.WriteLine("          <td>");
+                        Output.WriteLine("            <div id=\"mapping_div\">");
+                        Output.WriteLine("              <select class=\"type_select\" name=\"mapping_select\" id=\"mapping_select\" >");
+
+                        foreach (string file in mapping_files)
+                        {
+                            // Add this mapping information
                             if (String.Compare(file, mapping_file, StringComparison.OrdinalIgnoreCase) == 0)
                                 Output.WriteLine("              <option value=\"" + file + "\" selected=\"selected\">" + file + "</option>");
                             else
                                 Output.WriteLine("              <option value=\"" + file + "\">" + file + "</option>");
                         }
+
+                        Output.WriteLine("              </select>");
+                        Output.WriteLine("            </div>");
+                        Output.WriteLine("          </td>");
+
+                        //Output.WriteLine("          <td style=\"vertical-align:bottom\">");
+                        //Output.WriteLine("            <a target=\"_TYPE\"  title=\"Get help.\" href=\"http://sobekrepository.org/help/typesimple\"><img class=\"help_button\" src=\"http://cdn.sobekrepository.org/images/misc/help_button.jpg\" /></a>");
+                        //Output.WriteLine("          </td>");
+
+                        Output.WriteLine("        </tr>");
+                        Output.WriteLine("      </table>");
+                        Output.WriteLine("    </td>");
                     }
+                    Output.WriteLine("  </tr>");
                 }
-
-                Output.WriteLine("              </select>");
-                Output.WriteLine("            </div>");
-                Output.WriteLine("          </td>");
-
-                //Output.WriteLine("          <td style=\"vertical-align:bottom\">");
-                //Output.WriteLine("            <a target=\"_TYPE\"  title=\"Get help.\" href=\"http://sobekrepository.org/help/typesimple\"><img class=\"help_button\" src=\"http://cdn.sobekrepository.org/images/misc/help_button.jpg\" /></a>");
-                //Output.WriteLine("          </td>");
-
-                Output.WriteLine("        </tr>");
-                Output.WriteLine("      </table>");
-                Output.WriteLine("    </td>");
-                Output.WriteLine("  </tr>");
 
                 Output.WriteLine("  <tr>");
                 Output.WriteLine("    <td colspan=\"3\" class=\"sbkMySobek_TemplateTblTitle\" style=\"padding-top:25px\">Display Parameters (XSLT and CSS)</td>");
                 Output.WriteLine("  </tr>");
-                Output.WriteLine("  <tr>");
-                Output.WriteLine("    <td colspan=\"3\" style=\"padding-left:30px;font-style:italic; color:#333; font-size:0.9em;\">The values below determine how the TEI will display within this system.  The XSLT will transform your TEI into HTML for display and the CSS file can add additional style to the resulting display.</td>");
-                Output.WriteLine("  </tr>");
 
-                Output.WriteLine("  <tr>");
-                Output.WriteLine("    <td style=\"width:15px\" > &nbsp;</td>");
-                Output.WriteLine("    <td class=\"metadata_label\">XSLT File:</a></td>");
-                Output.WriteLine("    <td>");
-                Output.WriteLine("      <table>");
-                Output.WriteLine("        <tr>");
-                Output.WriteLine("          <td>");
-                Output.WriteLine("            <div id=\"xslt_div\">");
-                Output.WriteLine("              <select class=\"type_select\" name=\"xslt_select\" id=\"xslt_select\" >");
-
-                foreach ( string thisSettingKey in RequestSpecificValues.Current_User.Settings.Keys)
+                // Get the list of XSLT files that exist and this user is enabled for
+                List<string> xslt_files = new List<string>();
+                foreach (string thisSettingKey in RequestSpecificValues.Current_User.Settings.Keys)
                 {
                     if (thisSettingKey.IndexOf("TEI.XSLT.") == 0)
                     {
+                        // Only show enabled options
                         string enabled = RequestSpecificValues.Current_User.Get_Setting(thisSettingKey, "false");
                         if (String.Compare(enabled, "true", StringComparison.OrdinalIgnoreCase) == 0)
                         {
+                            // Get this file name
                             string file = thisSettingKey.Replace("TEI.XSLT.", "");
+
+                            // Also verify this mapping file exists
+                            string filepath = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins", "tei", "xslt", file);
+                            if ((!File.Exists(filepath + ".xslt")) && (!File.Exists(filepath + ".xsl")))
+                                continue;
+
+                            // Since this exists, add to the xslt file list
+                            xslt_files.Add(file);
+                        }
+                    }
+                }
+
+                // Show an error message if no XSLT file exists
+                if (xslt_files.Count == 0)
+                {
+                    Output.WriteLine("  <tr>");
+                    Output.WriteLine("    <td colspan=\"3\" style=\"padding-left:30px;font-weight:bold; color:Red; font-size:1.1em;\">You are not approved for any TEI XSLT file.  Please let your system administrator know so they can approve you for an existing TEI XSLT file.</td>");
+                    Output.WriteLine("  </tr>");
+                }
+                else
+                {
+                    Output.WriteLine("  <tr>");
+                    Output.WriteLine("    <td colspan=\"3\" style=\"padding-left:30px;font-style:italic; color:#333; font-size:0.9em;\">The values below determine how the TEI will display within this system.  The XSLT will transform your TEI into HTML for display and the CSS file can add additional style to the resulting display.</td>");
+                    Output.WriteLine("  </tr>");
+
+                    Output.WriteLine("  <tr>");
+                    Output.WriteLine("    <td style=\"width:15px\" > &nbsp;</td>");
+                    Output.WriteLine("    <td class=\"metadata_label\">XSLT File:</a></td>");
+
+                    // If they are approved for only one XSLT file, just show that one as text, not a select box
+                    if (xslt_files.Count == 1)
+                    {
+                        Output.WriteLine("    <td>");
+                        Output.WriteLine("      " + xslt_files[0]);
+                        Output.WriteLine("      <input type=\"hidden\" id=\"xslt_select\" name=\"xslt_select\" value=\"" + xslt_files[0] + "\" />");
+                        Output.WriteLine("    </td>");
+                    }
+                    else
+                    {
+
+                        Output.WriteLine("    <td>");
+                        Output.WriteLine("      <table>");
+                        Output.WriteLine("        <tr>");
+                        Output.WriteLine("          <td>");
+                        Output.WriteLine("            <div id=\"xslt_div\">");
+                        Output.WriteLine("              <select class=\"type_select\" name=\"xslt_select\" id=\"xslt_select\" >");
+
+                        foreach (string file in xslt_files)
+                        {
+
+                            // Add this XSLT option
                             if (String.Compare(file, xslt_file, StringComparison.OrdinalIgnoreCase) == 0)
                                 Output.WriteLine("              <option value=\"" + file + "\" selected=\"selected\">" + file + "</option>");
                             else
                                 Output.WriteLine("              <option value=\"" + file + "\">" + file + "</option>");
                         }
+
+                        Output.WriteLine("              </select>");
+                        Output.WriteLine("            </div>");
+                        Output.WriteLine("          </td>");
+
+                        //Output.WriteLine("          <td style=\"vertical-align:bottom\">");
+                        //Output.WriteLine("            <a target=\"_TYPE\"  title=\"Get help.\" href=\"http://sobekrepository.org/help/typesimple\"><img class=\"help_button\" src=\"http://cdn.sobekrepository.org/images/misc/help_button.jpg\" /></a>");
+                        //Output.WriteLine("          </td>");
+
+                        Output.WriteLine("        </tr>");
+                        Output.WriteLine("      </table>");
+                        Output.WriteLine("    </td>");
                     }
+                    Output.WriteLine("  </tr>");
                 }
 
-                Output.WriteLine("              </select>");
-                Output.WriteLine("            </div>");
-                Output.WriteLine("          </td>");
-
-                //Output.WriteLine("          <td style=\"vertical-align:bottom\">");
-                //Output.WriteLine("            <a target=\"_TYPE\"  title=\"Get help.\" href=\"http://sobekrepository.org/help/typesimple\"><img class=\"help_button\" src=\"http://cdn.sobekrepository.org/images/misc/help_button.jpg\" /></a>");
-                //Output.WriteLine("          </td>");
-
-                Output.WriteLine("        </tr>");
-                Output.WriteLine("      </table>");
-                Output.WriteLine("    </td>");
-                Output.WriteLine("  </tr>");
-
-
-                Output.WriteLine("  <tr>");
-                Output.WriteLine("    <td style=\"width:15px\" > &nbsp;</td>");
-                Output.WriteLine("    <td class=\"metadata_label\">CSS File:</a></td>");
-                Output.WriteLine("    <td>");
-                Output.WriteLine("      <table>");
-                Output.WriteLine("        <tr>");
-                Output.WriteLine("          <td>");
-                Output.WriteLine("            <div id=\"css_div\">");
-                Output.WriteLine("              <select class=\"type_select\" name=\"css_select\" id=\"css_select\" >");
-                foreach ( string thisSettingKey in RequestSpecificValues.Current_User.Settings.Keys)
+                // CSS is not required, so check to see if any enable CSS's exist
+                List<string> css_files = new List<string>();
+                foreach (string thisSettingKey in RequestSpecificValues.Current_User.Settings.Keys)
                 {
                     if (thisSettingKey.IndexOf("TEI.CSS.") == 0)
                     {
+                        // Only show enabled options
                         string enabled = RequestSpecificValues.Current_User.Get_Setting(thisSettingKey, "false");
                         if (String.Compare(enabled, "true", StringComparison.OrdinalIgnoreCase) == 0)
                         {
+                            // Get this file name
                             string file = thisSettingKey.Replace("TEI.CSS.", "");
-                            if (String.Compare(file, css_file, StringComparison.OrdinalIgnoreCase) == 0)
-                                Output.WriteLine("              <option value=\"" + file + "\" selected=\"selected\">" + file + "</option>");
-                            else
-                                Output.WriteLine("              <option value=\"" + file + "\">" + file + "</option>");
-                        }
+
+                            // Also verify this mapping file exists
+                            string filepath = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins", "tei", "css", file + ".css");
+                            if (!File.Exists(filepath))
+                                continue;
+
+                            // Since this exists, add to the css file list
+                            css_files.Add(file);
+                         }
                     }
                 }
 
-                Output.WriteLine("              </select>");
-                Output.WriteLine("            </div>");
-                Output.WriteLine("          </td>");
+                // Only show the CSS options, if there are CSS options
+                if (css_files.Count > 0)
+                {
+                    Output.WriteLine("  <tr>");
+                    Output.WriteLine("    <td style=\"width:15px\" > &nbsp;</td>");
+                    Output.WriteLine("    <td class=\"metadata_label\">CSS File:</a></td>");
 
-                //Output.WriteLine("          <td style=\"vertical-align:bottom\">");
-                //Output.WriteLine("            <a target=\"_TYPE\"  title=\"Get help.\" href=\"http://sobekrepository.org/help/typesimple\"><img class=\"help_button\" src=\"http://cdn.sobekrepository.org/images/misc/help_button.jpg\" /></a>");
-                //Output.WriteLine("          </td>");
+                    Output.WriteLine("    <td>");
+                    Output.WriteLine("      <table>");
+                    Output.WriteLine("        <tr>");
+                    Output.WriteLine("          <td>");
+                    Output.WriteLine("            <div id=\"css_div\">");
+                    Output.WriteLine("              <select class=\"type_select\" name=\"css_select\" id=\"css_select\" >");
+                    Output.WriteLine("                <option value=\"\">(none)</option>");
+                    foreach (string file in css_files)
+                    {
+                        if (String.Compare(file, css_file, StringComparison.OrdinalIgnoreCase) == 0)
+                            Output.WriteLine("                <option value=\"" + file + "\" selected=\"selected\">" + file + "</option>");
+                        else
+                            Output.WriteLine("                <option value=\"" + file + "\">" + file + "</option>");
+                    }
 
-                Output.WriteLine("        </tr>");
-                Output.WriteLine("      </table>");
-                Output.WriteLine("    </td>");
-                Output.WriteLine("  </tr>");
+                    Output.WriteLine("              </select>");
+                    Output.WriteLine("            </div>");
+                    Output.WriteLine("          </td>");
+
+                    //Output.WriteLine("          <td style=\"vertical-align:bottom\">");
+                    //Output.WriteLine("            <a target=\"_TYPE\"  title=\"Get help.\" href=\"http://sobekrepository.org/help/typesimple\"><img class=\"help_button\" src=\"http://cdn.sobekrepository.org/images/misc/help_button.jpg\" /></a>");
+                    //Output.WriteLine("          </td>");
+
+                    Output.WriteLine("        </tr>");
+                    Output.WriteLine("      </table>");
+                    Output.WriteLine("    </td>");
+
+                    Output.WriteLine("  </tr>");
+                }
                 Output.WriteLine("</table>");
 
 
@@ -1387,10 +1487,91 @@ namespace SobekCM.Library.MySobekViewer
 
             if (currentProcessStep == 4)
             {
+                // Get the mapping file
+                string complete_mapping_file = Path.Combine(UI.UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "plugins\\tei\\mapping", mapping_file + ".xml");
+                string complete_tei_file = Path.Combine(userInProcessDirectory, tei_file);
+                bool error = false;
+
+                try
+                {
+                    // Create a new item again
+                    new_item(RequestSpecificValues.Tracer);
+
+                    // Use the mapper and pull the results
+                    GenericXmlReader testMapper = new GenericXmlReader();
+                    GenericXmlReaderResults returnValue = testMapper.ProcessFile(complete_tei_file, complete_mapping_file);
+
+                    // Was there an error converting using the selected mapping?
+                    if ((returnValue == null) || (!String.IsNullOrEmpty(returnValue.ErrorMessage)))
+                    {
+                        error = true;
+                        if (returnValue != null)
+                            error_message = "Error mapping the TEI XML file into the SobekCM item.<br /><br />" + returnValue.ErrorMessage + "<br /><br />Try a different mapping or contact your system administrator.<br /><br />";
+                        else
+                            error_message = "Error mapping the TEI XML file into the SobekCM item.<br /><br />Try a different mapping or contact your system administrator.<br /><br />";
+                    }
+                    else
+                    {
+                        // Create the mapper to map these values into the SobekCM object
+                        Standard_Bibliographic_Mapping mappingObject = new Standard_Bibliographic_Mapping();
+
+                        // Add all this information
+                        foreach (MappedValue mappedValue in returnValue.MappedValues)
+                        {
+                            // If NONE mapping, just go on
+                            if ((String.IsNullOrEmpty(mappedValue.Mapping)) || (String.Compare(mappedValue.Mapping, "None", StringComparison.OrdinalIgnoreCase) == 0))
+                                continue;
+
+                            if (!String.IsNullOrEmpty(mappedValue.Value))
+                            {
+                                // One mappig that is NOT bibliographic in nature is the full text
+                                if ((String.Compare(mappedValue.Mapping, "FullText", StringComparison.OrdinalIgnoreCase) == 0) ||
+                                    (String.Compare(mappedValue.Mapping, "Text", StringComparison.OrdinalIgnoreCase) == 0) ||
+                                    (String.Compare(mappedValue.Mapping, "Full Text", StringComparison.OrdinalIgnoreCase) == 0))
+                                {
+                                    // Ensure no other TEXT file exists here ( in case a different file was uploaded )
+                                    try
+                                    {
+                                        string text_file = Path.Combine(userInProcessDirectory, "fulltext.txt");
+                                        StreamWriter writer = new StreamWriter(text_file);
+                                        writer.Write(mappedValue.Value);
+                                        writer.Flush();
+                                        writer.Close();
+                                    }
+                                    catch
+                                    {
+
+                                    }
+                                }
+                                else
+                                {
+                                    mappingObject.Add_Data(item, mappedValue.Value, mappedValue.Mapping);
+                                }
+                            }
+                        }
+
+                        item.Save_METS();
+                        HttpContext.Current.Session["Item"] = item;
+                    }
+
+                }
+                catch (Exception ee)
+                {
+                    error_message = ee.Message;
+                }
+
                 Output.WriteLine("<div class=\"sbkMySobek_HomeText\" >");
                 Output.WriteLine("<br />");
 
                 Output.WriteLine("<h2>Step 4 of " + totalTemplatePages + ": Metadata Preview</h2>");
+
+                // Was there a basic XML validation error?
+                if ((error) && (!String.IsNullOrEmpty(error_message)))
+                {
+                    Output.WriteLine("<div style=\"padding-left:30px;font-weight:bold; color:Red; font-size:1.1em;\">");
+                    Output.WriteLine(error_message);
+                    Output.WriteLine("</div>");
+                }
 
                 Output.WriteLine("<blockquote>Below is a preview of the metadata extracted from your TEI file.<br /><br />");
 
@@ -1401,7 +1582,10 @@ namespace SobekCM.Library.MySobekViewer
                 // Add the bottom buttons
                 Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
                 Output.WriteLine("        <button onclick=\"return new_item_next_phase(3);\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
-                Output.WriteLine("        <button onclick=\"return new_item_next_phase(5);\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+
+                if ( !error )
+                    Output.WriteLine("        <button onclick=\"return new_item_next_phase(5);\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+
                 Output.WriteLine("      </div>");
 
                 Output.WriteLine("</blockquote><br />");
@@ -2578,7 +2762,7 @@ namespace SobekCM.Library.MySobekViewer
             //    item.Bib_Info.Location.Holding_Code = "iSD";
             //    item.Bib_Info.Location.Holding_Name = "Testing purposes only";
             //}
-            item.Bib_Info.Main_Title.Title = "TEI Item";
+            //item.Bib_Info.Main_Title.Title = "TEI Item";
             item.Bib_Info.Type.MODS_Type = TypeOfResource_MODS_Enum.Mixed_Material;
 
             // Set some values from the CompleteTemplate

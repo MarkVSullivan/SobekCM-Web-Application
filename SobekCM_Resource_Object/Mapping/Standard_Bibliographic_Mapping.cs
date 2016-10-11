@@ -136,6 +136,7 @@ namespace SobekCM.Resource_Object.Mapping
                     return true;
 
                 case "ABSTRACT":
+                case "SUMMARY":
                     Package.Bib_Info.Add_Abstract(Data, "en");
                     return true;
 
@@ -197,10 +198,30 @@ namespace SobekCM.Resource_Object.Mapping
                 case "CREATOR":
                 case "CREATORS":
                 case "AUTHOR":
+                    // Ensure it doesn't already exist
+                    if (Package.Bib_Info.Names_Count > 0)
+                    {
+                        foreach (Name_Info thisName in Package.Bib_Info.Names)
+                        {
+                            if (String.Compare(thisName.Full_Name, Data, StringComparison.OrdinalIgnoreCase) == 0)
+                                return true;
+                        }
+                    }
                     Package.Bib_Info.Add_Named_Entity(new Name_Info(Data, "creator"));
                     return true;
 
                 case "CREATORPERSONALNAME":
+
+                    // Ensure it doesn't already exist
+                    if (Package.Bib_Info.Names_Count > 0)
+                    {
+                        foreach (Name_Info thisName in Package.Bib_Info.Names)
+                        {
+                            if (String.Compare(thisName.Full_Name, Data, StringComparison.OrdinalIgnoreCase) == 0)
+                                return true;
+                        }
+                    }
+
                     Name_Info personalCreator = new Name_Info(Data, "creator");
                     personalCreator.Name_Type = Name_Info_Type_Enum.Personal;
                     Package.Bib_Info.Add_Named_Entity(personalCreator);
@@ -210,6 +231,13 @@ namespace SobekCM.Resource_Object.Mapping
                     Name_Info corporateCreator = new Name_Info(Data, "creator");
                     corporateCreator.Name_Type = Name_Info_Type_Enum.Corporate;
                     Package.Bib_Info.Add_Named_Entity(corporateCreator);
+                    return true;
+
+                case "CREATORLANGUAGE":
+                    if (Package.Bib_Info.Names_Count > 0)
+                    {
+                        Package.Bib_Info.Names[Package.Bib_Info.Names_Count - 1].Description = Data;
+                    }
                     return true;
 
                 case "CREATORAFFILIATION":
@@ -456,6 +484,7 @@ namespace SobekCM.Resource_Object.Mapping
 
                 case "FORMAT":
                 case "PHYSICALDESCRIPTION":
+                case "EXTENT":
                     Package.Bib_Info.Original_Description.Extent = Data;
                     return true;
 
@@ -579,7 +608,10 @@ namespace SobekCM.Resource_Object.Mapping
 
                 case "VOLUMETITLE":
                 case "TITLE":
-                    Package.Bib_Info.Main_Title.Title = Data;
+                    if (String.IsNullOrEmpty(Package.Bib_Info.Main_Title.Title))
+                        Package.Bib_Info.Main_Title.Title = Data;
+                    else
+                        Package.Bib_Info.Add_Other_Title(Data, Title_Type_Enum.Alternative);
                     return true;
 
                 case "TITLELANGUAGE":
