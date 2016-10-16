@@ -38,6 +38,10 @@ namespace SobekCM.Builder_Library.Modules.Items
             }
             Resource.Metadata.Behaviors.Text_Searchable = page_image_text_found;
 
+            // Do not save the viewers here, since the default will be used for NEW items and
+            // no change for existing items
+            Resource.Metadata.Behaviors.Views = null;
+
             // Save this package to the database
             if (!Resource.Save_to_Database(Resource.NewPackage))
             {

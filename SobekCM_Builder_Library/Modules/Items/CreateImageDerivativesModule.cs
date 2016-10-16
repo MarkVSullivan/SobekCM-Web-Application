@@ -45,13 +45,13 @@ namespace SobekCM.Builder_Library.Modules.Items
                 // Only continue if some exist
                 if (imageFiles.Count > 0)
                 {
-                    // Build the list of files listed in the metadata
-                    Dictionary<string, SobekCM_File_Info> names_to_mets_file = new Dictionary<string, SobekCM_File_Info>(StringComparer.OrdinalIgnoreCase);
-                    List<SobekCM_File_Info> files = Resource.Metadata.Divisions.Physical_Tree.All_Files;
-                    foreach (SobekCM_File_Info thisFile in files)
-                    {
-                        names_to_mets_file[thisFile.System_Name] = thisFile;
-                    }
+                    //// Build the list of files listed in the metadata
+                    //Dictionary<string, SobekCM_File_Info> names_to_mets_file = new Dictionary<string, SobekCM_File_Info>(StringComparer.OrdinalIgnoreCase);
+                    //List<SobekCM_File_Info> files = Resource.Metadata.Divisions.Physical_Tree.All_Files;
+                    //foreach (SobekCM_File_Info thisFile in files)
+                    //{
+                    //    names_to_mets_file[thisFile.System_Name] = thisFile;
+                    //}
 
                     // Step through all the image files and find the collection of page images
                     Dictionary<string, List<string>> imageRootFiles = new Dictionary<string, List<string>>( StringComparer.OrdinalIgnoreCase );
@@ -207,12 +207,12 @@ namespace SobekCM.Builder_Library.Modules.Items
                                 imageProcessor.ImageMagick_Create_JPEG(newest_source_file, resourceFolder + "\\" + name_sans_extension + "thm.jpg", Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
                                 imageProcessor.ImageMagick_Create_JPEG(newest_source_file, resourceFolder + "\\" + name_sans_extension + ".jpg", Settings.Resources.JPEG_Width, Settings.Resources.JPEG_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
 
-                                // If the JPEG exists with width/height information clear the information
-                                if (names_to_mets_file.ContainsKey(name_sans_extension + ".jpg"))
-                                {
-                                    names_to_mets_file[name_sans_extension + ".jpg"].Height = 0;
-                                    names_to_mets_file[name_sans_extension + ".jpg"].Width = 0;
-                                }
+                                //// If the JPEG exists with width/height information clear the information
+                                //if (names_to_mets_file.ContainsKey(name_sans_extension + ".jpg"))
+                                //{
+                                //    names_to_mets_file[name_sans_extension + ".jpg"].Height = 0;
+                                //    names_to_mets_file[name_sans_extension + ".jpg"].Width = 0;
+                                //}
                             }
                         }
                         else
@@ -237,12 +237,12 @@ namespace SobekCM.Builder_Library.Modules.Items
                                     imageProcessor.ImageMagick_Create_JPEG(jpeg2000_file, resourceFolder + "\\" + name_sans_extension + "thm.jpg", Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
                                     imageProcessor.ImageMagick_Create_JPEG(jpeg2000_file, resourceFolder + "\\" + name_sans_extension + ".jpg", Settings.Resources.JPEG_Width, Settings.Resources.JPEG_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
 
-                                    // If the JPEG exists with width/height information clear the information
-                                    if (names_to_mets_file.ContainsKey(name_sans_extension + ".jpg"))
-                                    {
-                                        names_to_mets_file[name_sans_extension + ".jpg"].Height = 0;
-                                        names_to_mets_file[name_sans_extension + ".jpg"].Width = 0;
-                                    }
+                                    //// If the JPEG exists with width/height information clear the information
+                                    //if (names_to_mets_file.ContainsKey(name_sans_extension + ".jpg"))
+                                    //{
+                                    //    names_to_mets_file[name_sans_extension + ".jpg"].Height = 0;
+                                    //    names_to_mets_file[name_sans_extension + ".jpg"].Width = 0;
+                                    //}
                                 }
                             }
                         }

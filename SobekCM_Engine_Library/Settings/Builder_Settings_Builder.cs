@@ -72,7 +72,7 @@ namespace SobekCM.Engine_Library.Settings
 
 
             int prevSetid = -1;
-            List<Builder_Module_Setting> folderSettings = new List<Builder_Module_Setting>();
+            Dictionary<int,List<Builder_Module_Setting>> folderSettings = new Dictionary<int, List<Builder_Module_Setting>>();
             foreach (DataRow thisRow in BuilderFoldersTable.Rows)
             {
                 string type = thisRow[typeAbbrevColumn].ToString().ToUpper();
@@ -116,27 +116,16 @@ namespace SobekCM.Engine_Library.Settings
 
                     case "FOLD":
                         int setId = Int32.Parse(thisRow[setIdColumn].ToString());
-                        if (prevSetid != setId)
+                        if (SetidToModules.ContainsKey(setId))
                         {
-                            if (folderSettings.Count > 0)
-                            {
-                                SetidToModules[prevSetid] = folderSettings;
-                                folderSettings = new List<Builder_Module_Setting>();
-                            }
-                            prevSetid = setId;
-                            folderSettings.Add(newSetting);
+                            SetidToModules[setId].Add(newSetting);
                         }
                         else
                         {
-                            folderSettings.Add(newSetting);
+                            SetidToModules[setId] = new List<Builder_Module_Setting> {newSetting};
                         }
                         break;
                 }
-            }
-
-            if (folderSettings.Count > 0)
-            {
-                SetidToModules[prevSetid] = folderSettings;
             }
         }
         

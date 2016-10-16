@@ -25,7 +25,6 @@ namespace SobekCM.Resource_Object.Behaviors
 	{
 		private List<Aggregation_Info> aggregations;
 		private List<string> ticklers;
-		private List<View_Object> views;
 	    private List<string> webskins;
 		private List<Wordmark_Info> wordmarks;
 		private readonly Identifier_Info primaryIdentifier;
@@ -175,7 +174,7 @@ namespace SobekCM.Resource_Object.Behaviors
 		internal void Add_BehaviorSec_METS(TextWriter BehaviorSec, bool PackageIncludesImageFiles)
 		{
 			// Were any views specified?
-			if ((views != null) && (views.Count > 0))
+            if ((Views != null) && (Views.Count > 0))
 			{
 				// Start the behavior section for views
 				BehaviorSec.Write("<METS:behaviorSec ID=\"VIEWS\" LABEL=\"Options available to the user for viewing this item\" >\r\n");
@@ -183,9 +182,9 @@ namespace SobekCM.Resource_Object.Behaviors
 				// Add each view behavior
                 List<string> views_added = new List<string>();
 				int view_count = 1;
-				if (views != null)
+                if (Views != null)
 				{
-					foreach (View_Object thisView in views)
+                    foreach (View_Object thisView in Views)
 					{
 						if (!views_added.Contains(thisView.View_Type))
 						{
@@ -500,24 +499,24 @@ namespace SobekCM.Resource_Object.Behaviors
 	    /// <summary> Gets the collection of SobekCM views associated with this resource </summary>
 		/// <remarks> You should check the count of views first using the <see cref="Views_Count"/> before using this property.
 		/// Even if there are no views, this property creates a readonly collection to pass back out.</remarks>
-		public ReadOnlyCollection<View_Object> Views
-		{
-			get { return views == null ? new ReadOnlyCollection<View_Object>(new List<View_Object>()) : new ReadOnlyCollection<View_Object>(views); }
-		}
+        public List<View_Object> Views
+        {
+            get; set;
+        }
 
 		/// <summary> Gets the number of overall SobekCM views associated with this resource </summary>
 		/// <remarks>This should be used rather than the Count property of the <see cref="Views"/> property.  Even if 
 		/// there are no views, the Views property creates a readonly collection to pass back out.</remarks>
 		public int Views_Count
 		{
-			get { return views == null ? 0 : views.Count; }
+            get { return Views == null ? 0 : Views.Count; }
 		}
 
 		/// <summary> Clear all the pre-existing views from this item </summary>
 		public void Clear_Views()
 		{
-			if (views != null)
-				views.Clear();
+            if (Views != null)
+                Views.Clear();
 		}
 
 
@@ -525,9 +524,9 @@ namespace SobekCM.Resource_Object.Behaviors
 		/// <param name="New_View">SobekCM View object</param>
 		public void Add_View(View_Object New_View)
 		{
-			if (views == null)
-				views = new List<View_Object>();
-			views.Add(New_View);
+            if (Views == null)
+                Views = new List<View_Object>();
+            Views.Add(New_View);
 		}
 
 		/// <summary>Add a new SobekCM View to this resource </summary>
@@ -547,11 +546,11 @@ namespace SobekCM.Resource_Object.Behaviors
 		{
             if (!String.IsNullOrEmpty(View_Type))
 			{
-				if (views == null)
-					views = new List<View_Object>();
+                if (Views == null)
+                    Views = new List<View_Object>();
 
 				View_Object newView = new View_Object(View_Type, Label, Attributes);
-				views.Add(newView);
+                Views.Add(newView);
 				return newView;
 			}
 
@@ -566,11 +565,11 @@ namespace SobekCM.Resource_Object.Behaviors
 		{
 			if ( !String.IsNullOrEmpty(View_Type ))
 			{
-				if (views == null)
-					views = new List<View_Object>();
+                if (Views == null)
+                    Views = new List<View_Object>();
 
 				View_Object newView = new View_Object(View_Type, String.Empty, String.Empty);
-				views.Insert(Index, newView);
+                Views.Insert(Index, newView);
 				return newView;
 			}
 			return null;
@@ -586,11 +585,11 @@ namespace SobekCM.Resource_Object.Behaviors
 		{
             if (!String.IsNullOrEmpty(View_Type))
 			{
-				if (views == null)
-					views = new List<View_Object>();
+                if (Views == null)
+                    Views = new List<View_Object>();
 
 				View_Object newView = new View_Object(View_Type, Label, Attributes);
-				views.Insert(Index, newView);
+                Views.Insert(Index, newView);
 				return newView;
 			}
 
@@ -608,11 +607,11 @@ namespace SobekCM.Resource_Object.Behaviors
         {
             if (!String.IsNullOrEmpty(View_Type))
             {
-                if (views == null)
-                    views = new List<View_Object>();
+                if (Views == null)
+                    Views = new List<View_Object>();
 
                 View_Object newView = new View_Object(View_Type, Label, Attributes) { MenuOrder = MenuOrder, Exclude = Exclude };
-                views.Add(newView);
+                Views.Add(newView);
                 return newView;
             }
 

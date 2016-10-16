@@ -1843,113 +1843,118 @@ namespace SobekCM_Resource_Database
                     Save_Item_Ticklers(ThisPackage.Web.ItemID, tickler1, tickler2, tickler3, tickler4, tickler5);
                 }
 
-                // Determine which viewers to add or remove from this single item
-                List<View_Object> currentViews = Get_Current_Item_Viewers(ThisPackage.BibID, ThisPackage.VID);
-                List<View_Object> removeViews = new List<View_Object>();
-                List<View_Object> addViews = new List<View_Object>();
-
-                // Use a found flag to determine which current viewers are NOT present in the new list
-                // booleans start with a default value of 'false', so need to initialize
-                bool[] foundFlag = new bool[currentViews.Count];
-
-                // Use a dictionary for quick lookup in current views
-                Dictionary<string, int> currentViewTypeToIndex = new Dictionary<string, int>( StringComparer.OrdinalIgnoreCase);
-                for (int i = 0; i < currentViews.Count; i++)
+                // If the views object is NULL then don't do anything here
+                if ((ThisPackage.Behaviors.Views != null) && (ThisPackage.Behaviors.Views.Count > 0))
                 {
-                    currentViewTypeToIndex[currentViews[i].View_Type] = i;
-                }
 
-                // Now, step through all the views in the object to save
-                foreach (View_Object thisView in ThisPackage.Behaviors.Views)
-                {
-                    // If this view is present only as an exclusion, skip it.  
-                    // If it is removing an existing view, that will be handled in the next FOR anyway
-                    if (thisView.Exclude) continue;
+                    // Determine which viewers to add or remove from this single item
+                    List<View_Object> currentViews = Get_Current_Item_Viewers(ThisPackage.BibID, ThisPackage.VID);
+                    List<View_Object> removeViews = new List<View_Object>();
+                    List<View_Object> addViews = new List<View_Object>();
 
-                    // Does this view already exists?
-                    if (currentViewTypeToIndex.ContainsKey(thisView.View_Type))
+                    // Use a found flag to determine which current viewers are NOT present in the new list
+                    // booleans start with a default value of 'false', so need to initialize
+                    bool[] foundFlag = new bool[currentViews.Count];
+
+                    // Use a dictionary for quick lookup in current views
+                    Dictionary<string, int> currentViewTypeToIndex = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+                    for (int i = 0; i < currentViews.Count; i++)
                     {
-                        // Get the index
-                        int viewIndex = currentViewTypeToIndex[thisView.View_Type];
-                        View_Object currentView = currentViews[viewIndex];
+                        currentViewTypeToIndex[currentViews[i].View_Type] = i;
+                    }
 
-                        // Compare the label and attribute.. is there a change there?
-                        if ((String.Compare(thisView.Attributes, currentView.Attributes, StringComparison.Ordinal) != 0) ||
-                            (String.Compare(thisView.Label, currentView.Label, StringComparison.Ordinal) != 0) ||
-                            (currentView.Exclude))
+                    // Now, step through all the views in the object to save
+                    foreach (View_Object thisView in ThisPackage.Behaviors.Views)
+                    {
+                        // If this view is present only as an exclusion, skip it.  
+                        // If it is removing an existing view, that will be handled in the next FOR anyway
+                        if (thisView.Exclude) continue;
+
+                        // Does this view already exists?
+                        if (currentViewTypeToIndex.ContainsKey(thisView.View_Type))
                         {
-                            // Even though this existed, since the label or attribute are different, this 
-                            // view will be sent to the 'add view' method
+                            // Get the index
+                            int viewIndex = currentViewTypeToIndex[thisView.View_Type];
+                            View_Object currentView = currentViews[viewIndex];
+
+                            // Compare the label and attribute.. is there a change there?
+                            if ((String.Compare(thisView.Attributes, currentView.Attributes, StringComparison.Ordinal) != 0) ||
+                                (String.Compare(thisView.Label, currentView.Label, StringComparison.Ordinal) != 0) ||
+                                (currentView.Exclude))
+                            {
+                                // Even though this existed, since the label or attribute are different, this 
+                                // view will be sent to the 'add view' method
+                                addViews.Add(thisView);
+                            }
+
+                            // This existing view was handled already
+                            foundFlag[viewIndex] = true;
+                        }
+                        else
+                        {
+                            // This is a new view type, so it will be added, assuming it is not an exclusion
                             addViews.Add(thisView);
                         }
-
-                        // This existing view was handled already
-                        foundFlag[viewIndex] = true;
                     }
-                    else
+
+                    // Look for views to remove from the database
+                    for (int i = 0; i < foundFlag.Length; i++)
                     {
-                        // This is a new view type, so it will be added, assuming it is not an exclusion
-                        addViews.Add(thisView);
+                        // If this view was not found in the object to save, it should be excluded
+                        // or removed from the database
+                        if (!foundFlag[i])
+                        {
+                            // If this view is just an exclusion view, then no need to 'remove it'
+                            if (!currentViews[i].Exclude)
+                                removeViews.Add(currentViews[i]);
+                        }
                     }
-                }
 
-                // Look for views to remove from the database
-                for (int i = 0; i < foundFlag.Length; i++)
-                {
-                    // If this view was not found in the object to save, it should be excluded
-                    // or removed from the database
-                    if (!foundFlag[i])
+                    // With the two lists in hand, now add any new views
+                    int add_start_index = 0;
+                    while (addViews.Count > add_start_index)
                     {
-                        // If this view is just an exclusion view, then no need to 'remove it'
-                        if ( !currentViews[i].Exclude )
-                            removeViews.Add(currentViews[i]);
+                        // Add the next six views
+                        Save_Item_Add_Viewers(ThisPackage.Web.ItemID,
+                            (addViews.Count > add_start_index ? addViews[add_start_index].View_Type : String.Empty),
+                            (addViews.Count > add_start_index ? addViews[add_start_index].Label : String.Empty),
+                            (addViews.Count > add_start_index ? addViews[add_start_index].Attributes : String.Empty),
+                            (addViews.Count > add_start_index + 1 ? addViews[add_start_index + 1].View_Type : String.Empty),
+                            (addViews.Count > add_start_index + 1 ? addViews[add_start_index + 1].Label : String.Empty),
+                            (addViews.Count > add_start_index + 1 ? addViews[add_start_index + 1].Attributes : String.Empty),
+                            (addViews.Count > add_start_index + 2 ? addViews[add_start_index + 2].View_Type : String.Empty),
+                            (addViews.Count > add_start_index + 2 ? addViews[add_start_index + 2].Label : String.Empty),
+                            (addViews.Count > add_start_index + 2 ? addViews[add_start_index + 2].Attributes : String.Empty),
+                            (addViews.Count > add_start_index + 3 ? addViews[add_start_index + 3].View_Type : String.Empty),
+                            (addViews.Count > add_start_index + 3 ? addViews[add_start_index + 3].Label : String.Empty),
+                            (addViews.Count > add_start_index + 3 ? addViews[add_start_index + 3].Attributes : String.Empty),
+                            (addViews.Count > add_start_index + 4 ? addViews[add_start_index + 4].View_Type : String.Empty),
+                            (addViews.Count > add_start_index + 4 ? addViews[add_start_index + 4].Label : String.Empty),
+                            (addViews.Count > add_start_index + 4 ? addViews[add_start_index + 4].Attributes : String.Empty),
+                            (addViews.Count > add_start_index + 5 ? addViews[add_start_index + 5].View_Type : String.Empty),
+                            (addViews.Count > add_start_index + 5 ? addViews[add_start_index + 5].Label : String.Empty),
+                            (addViews.Count > add_start_index + 5 ? addViews[add_start_index + 5].Attributes : String.Empty));
+
+                        // Handled these six adds
+                        add_start_index += 6;
                     }
-                }
 
-                // With the two lists in hand, now add any new views
-                int add_start_index = 0;
-                while (addViews.Count > add_start_index)
-                {
-                    // Add the next six views
-                    Save_Item_Add_Viewers(ThisPackage.Web.ItemID,
-                        (addViews.Count > add_start_index ? addViews[add_start_index].View_Type : String.Empty),
-                        (addViews.Count > add_start_index ? addViews[add_start_index].Label : String.Empty),
-                        (addViews.Count > add_start_index ? addViews[add_start_index].Attributes : String.Empty),
-                        (addViews.Count > add_start_index + 1 ? addViews[add_start_index + 1].View_Type : String.Empty),
-                        (addViews.Count > add_start_index + 1 ? addViews[add_start_index + 1].Label : String.Empty),
-                        (addViews.Count > add_start_index + 1 ? addViews[add_start_index + 1].Attributes : String.Empty),
-                        (addViews.Count > add_start_index + 2 ? addViews[add_start_index + 2].View_Type : String.Empty),
-                        (addViews.Count > add_start_index + 2 ? addViews[add_start_index + 2].Label : String.Empty),
-                        (addViews.Count > add_start_index + 2 ? addViews[add_start_index + 2].Attributes : String.Empty),
-                        (addViews.Count > add_start_index + 3 ? addViews[add_start_index + 3].View_Type : String.Empty),
-                        (addViews.Count > add_start_index + 3 ? addViews[add_start_index + 3].Label : String.Empty),
-                        (addViews.Count > add_start_index + 3 ? addViews[add_start_index + 3].Attributes : String.Empty),
-                        (addViews.Count > add_start_index + 4 ? addViews[add_start_index + 4].View_Type : String.Empty),
-                        (addViews.Count > add_start_index + 4 ? addViews[add_start_index + 4].Label : String.Empty),
-                        (addViews.Count > add_start_index + 4 ? addViews[add_start_index + 4].Attributes : String.Empty),
-                        (addViews.Count > add_start_index + 5 ? addViews[add_start_index + 5].View_Type : String.Empty),
-                        (addViews.Count > add_start_index + 5 ? addViews[add_start_index + 5].Label : String.Empty),
-                        (addViews.Count > add_start_index + 5 ? addViews[add_start_index + 5].Attributes : String.Empty));
+                    // Also handle any removes
+                    int remove_start_index = 0;
+                    while (removeViews.Count > remove_start_index)
+                    {
+                        // Remove the next six views
+                        Save_Item_Remove_Viewers(ThisPackage.Web.ItemID,
+                            (removeViews.Count > remove_start_index ? removeViews[remove_start_index].View_Type : String.Empty),
+                            (removeViews.Count > remove_start_index + 1 ? removeViews[remove_start_index + 1].View_Type : String.Empty),
+                            (removeViews.Count > remove_start_index + 2 ? removeViews[remove_start_index + 2].View_Type : String.Empty),
+                            (removeViews.Count > remove_start_index + 3 ? removeViews[remove_start_index + 3].View_Type : String.Empty),
+                            (removeViews.Count > remove_start_index + 4 ? removeViews[remove_start_index + 4].View_Type : String.Empty),
+                            (removeViews.Count > remove_start_index + 5 ? removeViews[remove_start_index + 5].View_Type : String.Empty));
 
-                    // Handled these six adds
-                    add_start_index += 6;
-                }
-
-                // Also handle any removes
-                int remove_start_index = 0;
-                while (removeViews.Count > remove_start_index)
-                {
-                    // Remove the next six views
-                    Save_Item_Remove_Viewers(ThisPackage.Web.ItemID,
-                        (removeViews.Count > remove_start_index ? removeViews[remove_start_index].View_Type : String.Empty),
-                        (removeViews.Count > remove_start_index + 1 ? removeViews[remove_start_index + 1].View_Type : String.Empty),
-                        (removeViews.Count > remove_start_index + 2 ? removeViews[remove_start_index + 2].View_Type : String.Empty),
-                        (removeViews.Count > remove_start_index + 3 ? removeViews[remove_start_index + 3].View_Type : String.Empty),
-                        (removeViews.Count > remove_start_index + 4 ? removeViews[remove_start_index + 4].View_Type : String.Empty),
-                        (removeViews.Count > remove_start_index + 5 ? removeViews[remove_start_index + 5].View_Type : String.Empty));
-
-                    // Handled these six removes
-                    remove_start_index += 6;
+                        // Handled these six removes
+                        remove_start_index += 6;
+                    }
                 }
             }
         }

@@ -2,9 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.IO;
 using System.Text;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
+using SobekCM.Resource_Object.Metadata_File_ReaderWriters;
 using SobekCM.Resource_Object.Metadata_Modules;
 using SobekCM.Resource_Object.Metadata_Modules.VRACore;
 
@@ -14,11 +18,13 @@ namespace SobekCM.Builder_Library.Modules.Folders
 {
     /// <summary> TEST Folder-level builder module for custom Wolfsonian processing </summary>
     /// <remarks> This class implements the <see cref="abstractFolderModule" /> abstract class and implements the <see cref="iFolderModule" /> interface. </remarks>
-    public class WolfsonianProcessorModule : abstractFolderModule
+    public class WolfsonianLibraryProcessorModule : abstractFolderModule
     {
-        private string source_folder, destination_folder, archived_files_link;
+        private string source_folder, destination_folder;
         private int bibid;
         private bool isLibrary;
+
+        private const string archived_files_link = "http://images.wolfsonian.org/resources/";
 
         /// <summary> Delegate for the custom event which is fired when the status
         /// string on the main form needs to change </summary>
@@ -43,7 +49,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
         public event MFP_Process_Complete_Delegate Process_Complete;
 
         /// <summary> Constructor for a new instance of the WolfsonianProcessorModule class </summary>
-        public WolfsonianProcessorModule()
+        public WolfsonianLibraryProcessorModule()
         {
             // Do nothing
         }
@@ -54,17 +60,12 @@ namespace SobekCM.Builder_Library.Modules.Folders
         /// <param name="destination_folder"></param>
         /// <param name="isLibrary"></param>
         /// <param name="archived_files_link"></param>
-        public WolfsonianProcessorModule(int bibid, string source_folder, string destination_folder, bool isLibrary, string archived_files_link)
+        public WolfsonianLibraryProcessorModule(int bibid, string source_folder, string destination_folder, bool isLibrary, string archived_files_link)
         {
             this.bibid = bibid;
             this.source_folder = source_folder;
             this.destination_folder = destination_folder;
             this.isLibrary = isLibrary;
-            this.archived_files_link = archived_files_link;
-
-            // Ensure the URL ends in a '/' slash
-            if ( this.archived_files_link[ this.archived_files_link.Length - 1 ] != '/' )
-                this.archived_files_link = this.archived_files_link + "/";
         }
 
         //public void Process()
@@ -733,7 +734,279 @@ namespace SobekCM.Builder_Library.Modules.Folders
         /// <param name="Deletes"> List of valid deletes, which may be modifyed by this process </param>
         public override void DoWork(Actionable_Builder_Source_Folder BuilderFolder, List<Incoming_Digital_Resource> IncomingPackages, List<Incoming_Digital_Resource> Deletes)
         {
-            
+            // Only continue if the processing folder exists and has subdirectories
+            if (!Directory.Exists(BuilderFolder.Inbound_Folder))
+                return;
+
+            // Look for top-level XML files
+            string[] xml_files = Directory.GetFiles(BuilderFolder.Inbound_Folder, "*.xml");
+
+            // If no XML files, return
+            if (xml_files.Length == 0)
+                return;
+
+            // Get the next BibID
+            string next_bibid = Get_Next_BibID("WOLF");
+            if ((String.IsNullOrEmpty(next_bibid)) || (next_bibid.IndexOf("ERROR") == 0))
+            {
+                OnError(next_bibid, "WolfsonianLibraryProcessorModule", "Wolfsonian Library XML", -1);
+                return;
+            }
+
+            int next_bibid_int = Convert.ToInt32(next_bibid.Substring(4));
+
+            // Step through each XML file
+            foreach (string this_xml_file in xml_files)
+            {
+                // Look to see if this exists
+                string identifier_from_name = Path.GetFileNameWithoutExtension(this_xml_file);
+                string existing_bib_vid = Get_BibID_VID_From_Identifier(identifier_from_name);
+
+                // Was this an error
+                if (( !String.IsNullOrEmpty(existing_bib_vid)) && ( existing_bib_vid.IndexOf("ERROR") == 0))
+                {
+                    OnError(existing_bib_vid, identifier_from_name, "Wolfsonian Library XML", -1);
+                    return;
+                }
+
+                // Do we need to set a BibID/VID?
+                string bib_vid = existing_bib_vid;
+                if (String.IsNullOrEmpty(existing_bib_vid))
+                {
+                    string new_bibid = "WOLF" + next_bibid_int.ToString().PadLeft(6, '0');
+                    bib_vid = new_bibid + "_00001";
+                    next_bibid_int++;
+                }
+
+                // Did this exist?
+                if (!String.IsNullOrEmpty(bib_vid))
+                {
+                    // Create the bibid/vid folder directly in processing to save time
+                    string new_folder = Path.Combine(BuilderFolder.Processing_Folder, bib_vid);
+                    if (!Directory.Exists(new_folder))
+                        Directory.CreateDirectory(new_folder);
+
+                    // Create the subfolder
+                    if (!Directory.Exists(Path.Combine(new_folder, "sobek_files")))
+                        Directory.CreateDirectory(Path.Combine(new_folder, "sobek_files"));
+
+                    // Move the XML file over there
+                    string new_xml_file = Path.Combine(new_folder, "sobek_files", Path.GetFileName(this_xml_file));
+                    File.Move(this_xml_file, new_xml_file);
+
+                    // Create a new empty item
+                    SobekCM_Item newItem = new SobekCM_Item();
+
+                    // Read the MDOS information from the XML file
+                    Stream reader = new FileStream(new_xml_file, FileMode.Open, FileAccess.Read);
+                    MODS_File_ReaderWriter modsReader = new MODS_File_ReaderWriter();
+                    String error = String.Empty;
+                    modsReader.Read_Metadata(reader, newItem, null, out error);
+
+                    // Get the BibID and VID
+                    string bibid = bib_vid.Substring(0, 10);
+                    string vid = bib_vid.Substring(11);
+
+                    // Set some values
+                    newItem.BibID = bibid;
+                    newItem.VID = vid;
+                    newItem.Bib_Info.Source.Code = "iWOLF";
+                    newItem.Bib_Info.Source.Statement = "The Wolfsonian-Florida International University";
+                    if (newItem.Bib_Info.Type.MODS_Type == TypeOfResource_MODS_Enum.UNKNOWN)
+                        newItem.Bib_Info.Type.MODS_Type = TypeOfResource_MODS_Enum.Three_Dimensional_Object;
+                    if (newItem.Bib_Info.Main_Title.Title.Length == 0)
+                        newItem.Bib_Info.Main_Title.Title = "NO TITLE";
+                    newItem.Source_Directory = new_folder;
+
+
+                    // We are now removing all Genres
+                    newItem.Bib_Info.Clear_Genres();
+
+
+                    newItem.Bib_Info.Location.Holding_Code = "iWOLF";
+                    if (newItem.Bib_Info.Location.Holding_Name.Length > 0)
+                    {
+                        newItem.Bib_Info.Location.Holding_Name = "The Wolfsonian FIU Library Collection ( " + newItem.Bib_Info.Location.Holding_Name + " )";
+                    }
+                    else
+                    {
+                        newItem.Bib_Info.Location.Holding_Name = "The Wolfsonian FIU Library Collection";
+                    }
+                    newItem.Behaviors.Add_Aggregation("LIBRARY");
+
+                    Clean_METS(newItem);
+
+                    // Change the name of the identifier 'accn' 
+                    foreach (Identifier_Info thisIdentifier in newItem.Bib_Info.Identifiers)
+                    {
+                        if (thisIdentifier.Type == "accn")
+                            thisIdentifier.Type = "accession number";
+                    }
+
+                    // Try to find the accession number.. may seem repetitive of work above, but
+                    // this METS/MODS may already have had the identifier converted to 'accession number'
+                    // from a previous iteration.  So, this search is done seperately, and more
+                    // generally
+                    string accession_number = String.Empty;
+                    foreach (Identifier_Info thisIdentifier in newItem.Bib_Info.Identifiers)
+                    {
+                        if ((thisIdentifier.Type.IndexOf("accn", StringComparison.InvariantCultureIgnoreCase) >= 0) || (thisIdentifier.Type.IndexOf("accession", StringComparison.InvariantCultureIgnoreCase) >= 0))
+                        {
+                            accession_number = thisIdentifier.Identifier.Trim();
+                            break;
+                        }
+                    }
+
+                    // If an accession number was found and the related link URL was included in this
+                    // run, add this as a related link (assuming it doesn't already exist)
+                    if ((accession_number.Length > 0) && (archived_files_link.Length > 0))
+                    {
+                        // Create the link for this item
+                        string item_link = archived_files_link + accession_number;
+
+                        // Make sure it does not already exist
+                        bool preexisting = false;
+                        if (newItem.Bib_Info.RelatedItems_Count > 0)
+                        {
+                            foreach (Related_Item_Info relatedItem in newItem.Bib_Info.RelatedItems)
+                            {
+                                if (relatedItem.URL.Length > 0)
+                                {
+                                    if (String.Compare(relatedItem.URL, item_link, StringComparison.InvariantCultureIgnoreCase) == 0)
+                                    {
+                                        preexisting = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Add this if not already existing
+                        if (!preexisting)
+                        {
+                            Related_Item_Info newRelatedItem = new Related_Item_Info();
+                            newRelatedItem.URL = item_link;
+                            newRelatedItem.Main_Title.Title = "Full-Resolution Files – Internal Access Only";
+                            newItem.Bib_Info.Add_Related_Item(newRelatedItem);
+                        }
+                    }
+
+
+                    // Save this METS then
+                    newItem.Save_METS();
+
+                }
+            }
+        }
+
+        private string Get_Next_BibID(string BibIdStart)
+        {
+            DataSet resultSet = new DataSet();
+
+            // Create the SQL connection
+            using (SqlConnection sqlConnect = new SqlConnection("data source=SOB-SQL01\\SOBEK2;initial catalog=wolfsonian;integrated security=Yes;"))
+            {
+                try
+                {
+                    sqlConnect.Open();
+                }
+                catch
+                {
+                    return "ERROR : Unable to open SQL connection";
+                }
+
+                // Create the SQL command
+                SqlCommand sqlCommand = new SqlCommand("SobekCM_Get_Next_BibID", sqlConnect)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                // Add the parameters
+                sqlCommand.Parameters.AddWithValue("BibIdStart", BibIdStart);
+
+                // Run the command itself
+                try
+                {
+                    SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand);
+
+                    adapter.Fill(resultSet);
+                }
+                catch (Exception ee)
+                {
+                    return "ERROR : Exception caught while executing SobekCM_Get_Next_BibID ( " + ee.Message + " )";
+                }
+
+                // Close the connection (not technical necessary since we put the connection in the
+                // scope of the using brackets.. it would dispose itself anyway)
+                try
+                {
+                    sqlConnect.Close();
+                }
+                catch
+                {
+                    return "ERROR : Unable to close SQL connection";
+                }
+            }
+
+            if ((resultSet.Tables.Count == 0) || (resultSet.Tables[0].Rows.Count == 0))
+                return String.Empty;
+
+            return resultSet.Tables[0].Rows[0]["NextBibId"].ToString();
+        }
+
+        private string Get_BibID_VID_From_Identifier(string Identifier)
+        {
+            // Create the SQL connection
+            using (SqlConnection sqlConnect = new SqlConnection("data source=SOB-SQL01\\SOBEK2;initial catalog=wolfsonian;integrated security=Yes;"))
+            {
+                try
+                {
+                    sqlConnect.Open();
+                }
+                catch
+                {
+                    return "ERROR : Unable to open SQL connection";
+                }
+
+                // Create the SQL command
+                SqlCommand sqlCommand = new SqlCommand("Wolfsonian_Library_Item_By_Identifier", sqlConnect)
+                {
+                    CommandType = CommandType.StoredProcedure
+                };
+
+                // Add the parameters
+                sqlCommand.Parameters.AddWithValue("Identifier", Identifier);
+
+                // Run the command itself
+                try
+                {
+                    SqlDataAdapter adapter = new SqlDataAdapter(sqlCommand);
+
+                    DataSet resultSet = new DataSet();
+                    adapter.Fill(resultSet);
+
+                    if ((resultSet.Tables.Count == 0) || (resultSet.Tables[0].Rows.Count == 0))
+                        return String.Empty;
+
+                    return resultSet.Tables[0].Rows[0]["BibID"] + "_" + resultSet.Tables[0].Rows[0]["VID"];
+
+                }
+                catch ( Exception ee )
+                {
+                    return "ERROR : Exception caught while executing Wolfsonian_Library_Item_By_Identifier ( " + ee.Message + " )";
+                }
+
+                // Close the connection (not technical necessary since we put the connection in the
+                // scope of the using brackets.. it would dispose itself anyway)
+                try
+                {
+                    sqlConnect.Close();
+                }
+                catch
+                {
+                    return "ERROR : Unable to close SQL connection";
+                }
+            }
         }
     }
 }

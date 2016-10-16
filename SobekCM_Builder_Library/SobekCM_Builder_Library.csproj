@@ -66,7 +66,7 @@
     <Compile Include="Modules\Folders\iFolderModule.cs" />
     <Compile Include="Modules\Folders\MoveAgedPackagesToProcessModule.cs" />
     <Compile Include="Modules\Folders\ValidateAndClassifyModule.cs" />
-    <Compile Include="Modules\Folders\WolfsonianProcessorModule.cs" />
+    <Compile Include="Modules\Folders\WolfsonianLibraryProcessorModule.cs" />
     <Compile Include="Modules\Items\abstractSubmissionPackageModule.cs" />
     <Compile Include="Modules\Items\AddNewImagesAndViewsModule.cs" />
     <Compile Include="Modules\Items\AddTrackingWorkflowModule.cs" />

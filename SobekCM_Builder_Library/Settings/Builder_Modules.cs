@@ -230,7 +230,7 @@ namespace SobekCM.Builder_Library.Settings
                                     break;
 
                                 case "SobekCM.Builder_Library.Modules.Folders.WolfsonianProcessorModule":
-                                    thisModule = new WolfsonianProcessorModule();
+                                    thisModule = new WolfsonianLibraryProcessorModule();
                                     break;
 
                                 case "SobekCM.Builder_Library.Modules.Folders.UpdateNonBibFolders":
