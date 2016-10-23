@@ -102,7 +102,7 @@ namespace SobekCM.Library.Citation.Elements
             // Options = NONE, HTML, HTML_MAP, JPEG, JPEG2000, RELATED_IMAGES, TEXT, PAGE TURNER, GOOGLE MAP, EMPTY STRING
             // Get collection of all items
             List<View_Object> views = new List<View_Object>();
-            if (Bib.Behaviors.Views_Count > 0)
+            if (( Bib.Behaviors.Views != null ) && ( Bib.Behaviors.Views_Count > 0))
             {
                 views.AddRange(Bib.Behaviors.Views.Where(ThisView => !ThisView.Exclude));
             }

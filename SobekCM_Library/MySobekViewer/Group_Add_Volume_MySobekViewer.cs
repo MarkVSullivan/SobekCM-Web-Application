@@ -438,7 +438,7 @@ namespace SobekCM.Library.MySobekViewer
             //oaiWriter.Save_OAI_File(bibPackage, resource_folder + "\\oai_dc.xml", bibPackage.Processing_Parameters.Collection_Primary.ToLower(), createDate);
 
             // If there was no match, try to save to the tracking database
-            Database.SobekCM_Database.Tracking_Online_Submit_Complete(Item_To_Complete.Web.ItemID, RequestSpecificValues.Current_User.Full_Name, String.Empty);
+            Engine_Database.Tracking_Online_Submit_Complete(Item_To_Complete.Web.ItemID, RequestSpecificValues.Current_User.Full_Name, String.Empty);
 
             // Create the options dictionary used when saving information to the database, or writing MarcXML
             Dictionary<string, object> options = new Dictionary<string, object>();

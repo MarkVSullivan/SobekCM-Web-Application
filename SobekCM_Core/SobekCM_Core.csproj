@@ -274,6 +274,10 @@
       <Project>{b481ce6e-05fd-4336-9524-64d057aab107}</Project>
       <Name>EngineAgnosticLayerDbAccess</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SobekCM_Resource_Database\SobekCM_Resource_Database.csproj">
+      <Project>{3d35e1a0-0126-45d2-b663-49ba144a3537}</Project>
+      <Name>SobekCM_Resource_Database</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SobekCM_Resource_Object\SobekCM_Resource_Object.csproj">
       <Project>{395c2621-ce19-41e0-aa1a-abdb37f6e815}</Project>
       <Name>SobekCM_Resource_Object</Name>

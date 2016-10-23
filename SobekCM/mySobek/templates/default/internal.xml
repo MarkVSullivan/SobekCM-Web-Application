@@ -74,10 +74,6 @@
 				<element type="Wordmark" repeatable="true"/>
 			</panel>
 			<panel>
-				<name>Viewers for this resource in UFDC</name>
-				<element type="Viewer" repeatable="true"/>
-			</panel>
-			<panel>
 				<name>Physical Material Tracking</name>
 				<element type="Born_Digital" />
 				<element type="Material_Received_Date" />

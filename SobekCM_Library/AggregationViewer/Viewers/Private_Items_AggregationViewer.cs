@@ -11,6 +11,7 @@ using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Core.Users;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Engine_Library.Navigation;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
@@ -97,7 +98,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             // Get the list of private items
             int current_sort = RequestSpecificValues.Current_Mode.Sort.HasValue ? RequestSpecificValues.Current_Mode.Sort.Value : 0;
             int current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
-            privateItems = SobekCM_Database.Tracking_Get_Aggregation_Private_Items(ViewBag.Hierarchy_Object.Code, (int)RESULTS_PER_PAGE, current_page, current_sort, RequestSpecificValues.Tracer);
+            privateItems = Engine_Database.Tracking_Get_Aggregation_Private_Items(ViewBag.Hierarchy_Object.Code, (int)RESULTS_PER_PAGE, current_page, current_sort, RequestSpecificValues.Tracer);
         }
 
         /// <summary>Flag indicates whether the subaggregation selection panel is displayed for this collection viewer</summary>

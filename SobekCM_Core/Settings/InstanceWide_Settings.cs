@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using ProtoBuf;
@@ -210,6 +211,47 @@ namespace SobekCM.Core.Settings
                 }
             }
             return -1;
+        }
+
+        private Dictionary<int, KeyValuePair<int, string>> dispositionFutureTypes;
+        private Dictionary<int, KeyValuePair<int, string>> dispositionPastTypes;
+
+        /// <summary> Gets the list of all possible disposition types in future tense </summary>
+        /// <remarks> This is used by the SMaRT tool and may be deprecated in the future </remarks>
+        public List<string> Disposition_Types_Future
+        {
+            get
+            {
+                if (dispositionFutureTypes == null)
+                {
+                    dispositionFutureTypes = new Dictionary<int, KeyValuePair<int, string>>();
+                    foreach (Disposition_Option thisOption in Disposition_Options)
+                    {
+                        dispositionFutureTypes[thisOption.Key] = new KeyValuePair<int, string>(thisOption.Key, thisOption.Future);
+                    }
+                }
+
+                return dispositionFutureTypes.Values.Select(thisValue => thisValue.Value).ToList();
+            }
+        }
+
+        /// <summary> Gets the list of all possible disposition types in past tense </summary>
+        /// <remarks> This is used by the SMaRT tool and may be deprecated in the future </remarks>
+        public List<string> Disposition_Types_Past
+        {
+            get
+            {
+                if (dispositionPastTypes == null)
+                {
+                    dispositionPastTypes = new Dictionary<int, KeyValuePair<int, string>>();
+                    foreach (Disposition_Option thisOption in Disposition_Options)
+                    {
+                        dispositionPastTypes[thisOption.Key] = new KeyValuePair<int, string>(thisOption.Key, thisOption.Past);
+                    }
+                }
+
+                return dispositionPastTypes.Values.Select(thisValue => thisValue.Value).ToList();
+            }
         }
 
         #endregion

@@ -6,6 +6,7 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
@@ -116,7 +117,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private readonly DataTable mediaTable;
 
         /// <summary> Constructor for a new instance of the UF_Media_ItemViewer class, used display
-        /// the tracking milestones information for a digital resource </summary>
+        /// the media ( i.e., archival CD or DVD  information ) for a digital resource </summary>
         /// <param name="BriefItem"> Digital resource object </param>
         /// <param name="CurrentUser"> Current user, who may or may not be logged on </param>
         /// <param name="CurrentRequest"> Information about the current request </param>
@@ -133,7 +134,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Get the archives information
             Tracer.Add_Trace("UF_Media_ItemViewer.Constructor", "Try to pull the archives details for this item");
-            DataSet data = SobekCM_Database.Tracking_Get_History_Archives(BriefItem.Web.ItemID, Tracer);
+            DataSet data = Engine_Database.Tracking_Get_History_Archives(BriefItem.Web.ItemID, Tracer);
             if ((data == null) || (data.Tables.Count < 1))
             {
                 Tracer.Add_Trace("Constructor.Constructor", "Unable to pull tracking details");

@@ -17,6 +17,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
@@ -152,7 +153,7 @@ namespace SobekCM.Library.HTML
 
 
                     case Internal_Type_Enum.New_Items:
-                        DataTable newItems = SobekCM_Database.Tracking_Update_List(Tracer);
+                        DataTable newItems = Engine_Database.Tracking_Update_List(Tracer);
                         add_new_item_html(Output, newItems, Tracer);
                         break;
 

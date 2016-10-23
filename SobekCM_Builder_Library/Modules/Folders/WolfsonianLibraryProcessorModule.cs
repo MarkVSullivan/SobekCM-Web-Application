@@ -741,159 +741,249 @@ namespace SobekCM.Builder_Library.Modules.Folders
             // Look for top-level XML files
             string[] xml_files = Directory.GetFiles(BuilderFolder.Inbound_Folder, "*.xml");
 
-            // If no XML files, return
-            if (xml_files.Length == 0)
-                return;
+            // Used for the next bib id
+            string next_bibid;
+            int next_bibid_int = -1;
 
-            // Get the next BibID
-            string next_bibid = Get_Next_BibID("WOLF");
-            if ((String.IsNullOrEmpty(next_bibid)) || (next_bibid.IndexOf("ERROR") == 0))
+            // Handle any loose XML files forst
+            if (xml_files.Length > 0)
             {
-                OnError(next_bibid, "WolfsonianLibraryProcessorModule", "Wolfsonian Library XML", -1);
-                return;
-            }
-
-            int next_bibid_int = Convert.ToInt32(next_bibid.Substring(4));
-
-            // Step through each XML file
-            foreach (string this_xml_file in xml_files)
-            {
-                // Look to see if this exists
-                string identifier_from_name = Path.GetFileNameWithoutExtension(this_xml_file);
-                string existing_bib_vid = Get_BibID_VID_From_Identifier(identifier_from_name);
-
-                // Was this an error
-                if (( !String.IsNullOrEmpty(existing_bib_vid)) && ( existing_bib_vid.IndexOf("ERROR") == 0))
+                // Get the next BibID
+                next_bibid = Get_Next_BibID("WOLF");
+                if ((String.IsNullOrEmpty(next_bibid)) || (next_bibid.IndexOf("ERROR") == 0))
                 {
-                    OnError(existing_bib_vid, identifier_from_name, "Wolfsonian Library XML", -1);
+                    OnError(next_bibid, "WolfsonianLibraryProcessorModule", "Wolfsonian Library XML", -1);
                     return;
                 }
 
-                // Do we need to set a BibID/VID?
-                string bib_vid = existing_bib_vid;
-                if (String.IsNullOrEmpty(existing_bib_vid))
+                next_bibid_int = Convert.ToInt32(next_bibid.Substring(4));
+
+                // Step through each XML file
+                foreach (string this_xml_file in xml_files)
                 {
-                    string new_bibid = "WOLF" + next_bibid_int.ToString().PadLeft(6, '0');
-                    bib_vid = new_bibid + "_00001";
-                    next_bibid_int++;
-                }
+                    // Look to see if this exists
+                    string identifier_from_name = Path.GetFileNameWithoutExtension(this_xml_file);
+                    string existing_bib_vid = Get_BibID_VID_From_Identifier(identifier_from_name);
 
-                // Did this exist?
-                if (!String.IsNullOrEmpty(bib_vid))
-                {
-                    // Create the bibid/vid folder directly in processing to save time
-                    string new_folder = Path.Combine(BuilderFolder.Processing_Folder, bib_vid);
-                    if (!Directory.Exists(new_folder))
-                        Directory.CreateDirectory(new_folder);
-
-                    // Create the subfolder
-                    if (!Directory.Exists(Path.Combine(new_folder, "sobek_files")))
-                        Directory.CreateDirectory(Path.Combine(new_folder, "sobek_files"));
-
-                    // Move the XML file over there
-                    string new_xml_file = Path.Combine(new_folder, "sobek_files", Path.GetFileName(this_xml_file));
-                    File.Move(this_xml_file, new_xml_file);
-
-                    // Create a new empty item
-                    SobekCM_Item newItem = new SobekCM_Item();
-
-                    // Read the MDOS information from the XML file
-                    Stream reader = new FileStream(new_xml_file, FileMode.Open, FileAccess.Read);
-                    MODS_File_ReaderWriter modsReader = new MODS_File_ReaderWriter();
-                    String error = String.Empty;
-                    modsReader.Read_Metadata(reader, newItem, null, out error);
-
-                    // Get the BibID and VID
-                    string bibid = bib_vid.Substring(0, 10);
-                    string vid = bib_vid.Substring(11);
-
-                    // Set some values
-                    newItem.BibID = bibid;
-                    newItem.VID = vid;
-                    newItem.Bib_Info.Source.Code = "iWOLF";
-                    newItem.Bib_Info.Source.Statement = "The Wolfsonian-Florida International University";
-                    if (newItem.Bib_Info.Type.MODS_Type == TypeOfResource_MODS_Enum.UNKNOWN)
-                        newItem.Bib_Info.Type.MODS_Type = TypeOfResource_MODS_Enum.Three_Dimensional_Object;
-                    if (newItem.Bib_Info.Main_Title.Title.Length == 0)
-                        newItem.Bib_Info.Main_Title.Title = "NO TITLE";
-                    newItem.Source_Directory = new_folder;
-
-
-                    // We are now removing all Genres
-                    newItem.Bib_Info.Clear_Genres();
-
-
-                    newItem.Bib_Info.Location.Holding_Code = "iWOLF";
-                    if (newItem.Bib_Info.Location.Holding_Name.Length > 0)
+                    // Was this an error
+                    if ((!String.IsNullOrEmpty(existing_bib_vid)) && (existing_bib_vid.IndexOf("ERROR") == 0))
                     {
-                        newItem.Bib_Info.Location.Holding_Name = "The Wolfsonian FIU Library Collection ( " + newItem.Bib_Info.Location.Holding_Name + " )";
-                    }
-                    else
-                    {
-                        newItem.Bib_Info.Location.Holding_Name = "The Wolfsonian FIU Library Collection";
-                    }
-                    newItem.Behaviors.Add_Aggregation("LIBRARY");
-
-                    Clean_METS(newItem);
-
-                    // Change the name of the identifier 'accn' 
-                    foreach (Identifier_Info thisIdentifier in newItem.Bib_Info.Identifiers)
-                    {
-                        if (thisIdentifier.Type == "accn")
-                            thisIdentifier.Type = "accession number";
+                        OnError(existing_bib_vid, identifier_from_name, "Wolfsonian Library XML", -1);
+                        return;
                     }
 
-                    // Try to find the accession number.. may seem repetitive of work above, but
-                    // this METS/MODS may already have had the identifier converted to 'accession number'
-                    // from a previous iteration.  So, this search is done seperately, and more
-                    // generally
-                    string accession_number = String.Empty;
-                    foreach (Identifier_Info thisIdentifier in newItem.Bib_Info.Identifiers)
+                    // Do we need to set a BibID/VID?
+                    string bib_vid = existing_bib_vid;
+                    if (String.IsNullOrEmpty(existing_bib_vid))
                     {
-                        if ((thisIdentifier.Type.IndexOf("accn", StringComparison.InvariantCultureIgnoreCase) >= 0) || (thisIdentifier.Type.IndexOf("accession", StringComparison.InvariantCultureIgnoreCase) >= 0))
+                        string new_bibid = "WOLF" + next_bibid_int.ToString().PadLeft(6, '0');
+                        bib_vid = new_bibid + "_00001";
+                        next_bibid_int++;
+                    }
+
+                    // Did this exist?
+                    if (!String.IsNullOrEmpty(bib_vid))
+                    {
+                        // Create the bibid/vid folder directly in processing to save time
+                        string new_folder = Path.Combine(BuilderFolder.Processing_Folder, bib_vid);
+                        if (!Directory.Exists(new_folder))
+                            Directory.CreateDirectory(new_folder);
+
+                        // Create the subfolder
+                        if (!Directory.Exists(Path.Combine(new_folder, "sobek_files")))
+                            Directory.CreateDirectory(Path.Combine(new_folder, "sobek_files"));
+
+                        // Move the XML file over there
+                        string new_xml_file = Path.Combine(new_folder, "sobek_files", Path.GetFileName(this_xml_file));
+                        File.Move(this_xml_file, new_xml_file);
+
+                        // Create a new empty item
+                        SobekCM_Item newItem = new SobekCM_Item();
+
+                        // Read the MDOS information from the XML file
+                        Stream reader = new FileStream(new_xml_file, FileMode.Open, FileAccess.Read);
+                        MODS_File_ReaderWriter modsReader = new MODS_File_ReaderWriter();
+                        String error = String.Empty;
+                        modsReader.Read_Metadata(reader, newItem, null, out error);
+
+                        // Get the BibID and VID
+                        string bibid = bib_vid.Substring(0, 10);
+                        string vid = bib_vid.Substring(11);
+
+                        // Set some values
+                        newItem.BibID = bibid;
+                        newItem.VID = vid;
+                        newItem.Bib_Info.Source.Code = "iWOLF";
+                        newItem.Bib_Info.Source.Statement = "The Wolfsonian-Florida International University";
+                        if (newItem.Bib_Info.Type.MODS_Type == TypeOfResource_MODS_Enum.UNKNOWN)
+                            newItem.Bib_Info.Type.MODS_Type = TypeOfResource_MODS_Enum.Three_Dimensional_Object;
+                        if (newItem.Bib_Info.Main_Title.Title.Length == 0)
+                            newItem.Bib_Info.Main_Title.Title = "NO TITLE";
+                        newItem.Source_Directory = new_folder;
+
+
+                        // We are now removing all Genres
+                        newItem.Bib_Info.Clear_Genres();
+
+
+                        newItem.Bib_Info.Location.Holding_Code = "iWOLF";
+                        if (newItem.Bib_Info.Location.Holding_Name.Length > 0)
                         {
-                            accession_number = thisIdentifier.Identifier.Trim();
-                            break;
+                            newItem.Bib_Info.Location.Holding_Name = "The Wolfsonian FIU Library Collection ( " + newItem.Bib_Info.Location.Holding_Name + " )";
                         }
-                    }
-
-                    // If an accession number was found and the related link URL was included in this
-                    // run, add this as a related link (assuming it doesn't already exist)
-                    if ((accession_number.Length > 0) && (archived_files_link.Length > 0))
-                    {
-                        // Create the link for this item
-                        string item_link = archived_files_link + accession_number;
-
-                        // Make sure it does not already exist
-                        bool preexisting = false;
-                        if (newItem.Bib_Info.RelatedItems_Count > 0)
+                        else
                         {
-                            foreach (Related_Item_Info relatedItem in newItem.Bib_Info.RelatedItems)
+                            newItem.Bib_Info.Location.Holding_Name = "The Wolfsonian FIU Library Collection";
+                        }
+                        newItem.Behaviors.Add_Aggregation("LIBRARY");
+
+                        Clean_METS(newItem);
+
+                        // Change the name of the identifier 'accn' 
+                        foreach (Identifier_Info thisIdentifier in newItem.Bib_Info.Identifiers)
+                        {
+                            if (thisIdentifier.Type == "accn")
+                                thisIdentifier.Type = "accession number";
+                        }
+
+                        // Try to find the accession number.. may seem repetitive of work above, but
+                        // this METS/MODS may already have had the identifier converted to 'accession number'
+                        // from a previous iteration.  So, this search is done seperately, and more
+                        // generally
+                        string accession_number = String.Empty;
+                        foreach (Identifier_Info thisIdentifier in newItem.Bib_Info.Identifiers)
+                        {
+                            if ((thisIdentifier.Type.IndexOf("accn", StringComparison.InvariantCultureIgnoreCase) >= 0) || (thisIdentifier.Type.IndexOf("accession", StringComparison.InvariantCultureIgnoreCase) >= 0))
                             {
-                                if (relatedItem.URL.Length > 0)
-                                {
-                                    if (String.Compare(relatedItem.URL, item_link, StringComparison.InvariantCultureIgnoreCase) == 0)
-                                    {
-                                        preexisting = true;
-                                        break;
-                                    }
-                                }
+                                accession_number = thisIdentifier.Identifier.Trim();
+                                break;
                             }
                         }
 
-                        // Add this if not already existing
-                        if (!preexisting)
+                        // If an accession number was found and the related link URL was included in this
+                        // run, add this as a related link (assuming it doesn't already exist)
+                        if ((accession_number.Length > 0) && (archived_files_link.Length > 0))
                         {
-                            Related_Item_Info newRelatedItem = new Related_Item_Info();
-                            newRelatedItem.URL = item_link;
-                            newRelatedItem.Main_Title.Title = "Full-Resolution Files – Internal Access Only";
-                            newItem.Bib_Info.Add_Related_Item(newRelatedItem);
+                            // Create the link for this item
+                            string item_link = archived_files_link + accession_number;
+
+                            // Make sure it does not already exist
+                            bool preexisting = false;
+                            if (newItem.Bib_Info.RelatedItems_Count > 0)
+                            {
+                                foreach (Related_Item_Info relatedItem in newItem.Bib_Info.RelatedItems)
+                                {
+                                    if (relatedItem.URL.Length > 0)
+                                    {
+                                        if (String.Compare(relatedItem.URL, item_link, StringComparison.InvariantCultureIgnoreCase) == 0)
+                                        {
+                                            preexisting = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Add this if not already existing
+                            if (!preexisting)
+                            {
+                                Related_Item_Info newRelatedItem = new Related_Item_Info();
+                                newRelatedItem.URL = item_link;
+                                newRelatedItem.Main_Title.Title = "Full-Resolution Files – Internal Access Only";
+                                newItem.Bib_Info.Add_Related_Item(newRelatedItem);
+                            }
+                        }
+
+
+                        // Save this METS then
+                        newItem.Save_METS();
+
+                    }
+                }
+            }
+
+            // Look for non-bib id folders
+            string[] incoming_folders = Directory.GetDirectories(BuilderFolder.Inbound_Folder);
+            List<string> non_bib_folders = new List<string>();
+            foreach (string this_incoming_folder in incoming_folders)
+            {
+                string folder_name = Path.GetFileName(this_incoming_folder);
+                bool is_bib_folder = false;
+
+                // Is this possibly the bibid?
+                if (folder_name.Length == 10)
+                {
+                    if (SobekCM_Item.is_bibid_format(folder_name))
+                        is_bib_folder = true;
+                }
+
+                // Is this possible the bibid_vid?
+                if ((folder_name.Length == 16) && (folder_name[10] == '_'))
+                {
+                    if (SobekCM_Item.is_bibid_format(folder_name.Substring(0,10)))
+                        is_bib_folder = true;
+                }
+
+                // If not bib format, collect it to be pre-processed
+                if (!is_bib_folder)
+                {
+                    non_bib_folders.Add(this_incoming_folder);
+                }
+            }
+
+            // Handle any non-BibID folders
+            if (non_bib_folders.Count > 0)
+            {
+                //// Did we already get the next bib id?
+                //if (next_bibid_int < 0)
+                //{
+                //    next_bibid = Get_Next_BibID("WOLF");
+                //    if ((String.IsNullOrEmpty(next_bibid)) || (next_bibid.IndexOf("ERROR") == 0))
+                //    {
+                //        OnError(next_bibid, "WolfsonianLibraryProcessorModule", "Wolfsonian Library XML", -1);
+                //        return;
+                //    }
+
+                //    next_bibid_int = Convert.ToInt32(next_bibid.Substring(4));
+                //}
+
+                // Step through each one
+                foreach (string this_non_bib_folder in non_bib_folders)
+                {
+                    string identifier_from_name = Path.GetFileName(this_non_bib_folder);
+                    string existing_bib_vid = Get_BibID_VID_From_Identifier(identifier_from_name);
+
+                    // Did this exist?
+                    if (!String.IsNullOrEmpty(existing_bib_vid))
+                    {
+                        try
+                        {
+                            // Create the bibid/vid folder directly in processing to save time
+                            string new_folder = Path.Combine(BuilderFolder.Processing_Folder, existing_bib_vid);
+                            if (!Directory.Exists(new_folder))
+                                Directory.CreateDirectory(new_folder);
+
+                            // Copy over all the files 
+                            string[] files = Directory.GetFiles(this_non_bib_folder);
+                            foreach (string thisFile in files)
+                            {
+                                // Also remove any periods here
+                                string extension = Path.GetExtension(thisFile);
+                                string filename = Path.GetFileNameWithoutExtension(thisFile);
+
+                                string new_file = Path.Combine(new_folder, filename.Replace(".","_") + extension );
+                                File.Move(thisFile, new_file);
+                            }
+
+                            // Try to delete the folder
+                            Directory.Delete(this_non_bib_folder);
+                        }
+                        catch (Exception ee)
+                        {
+                            // Exception here
+                            OnError("Unable to move the non-bib folder into bib format.  " + ee.Message, existing_bib_vid, "INCOMING", -1);
                         }
                     }
-
-
-                    // Save this METS then
-                    newItem.Save_METS();
 
                 }
             }

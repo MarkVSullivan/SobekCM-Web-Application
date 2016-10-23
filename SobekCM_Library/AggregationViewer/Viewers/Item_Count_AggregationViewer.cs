@@ -9,6 +9,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration;
 using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
@@ -110,7 +111,7 @@ namespace SobekCM.Library.AggregationViewer.Viewers
                 Tracer.Add_Trace("Item_Count_AggregationViewer.Add_Secondary_HTML", "Adding HTML");
             }
 
-            DataTable value = SobekCM_Database.Tracking_Get_Milestone_Report(ViewBag.Hierarchy_Object.Code, Tracer);
+            DataTable value = Engine_Database.Tracking_Get_Milestone_Report(ViewBag.Hierarchy_Object.Code, Tracer);
 
             Output.WriteLine("<div class=\"SobekText\">");
             Output.WriteLine("<br />");

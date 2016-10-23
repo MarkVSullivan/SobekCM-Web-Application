@@ -567,6 +567,8 @@ namespace SobekCM.Library.MySobekViewer
 
         private bool complete_item_submission(SobekCM_Item Item_To_Complete, Custom_Tracer Tracer)
         {
+            return false;
+
             // Set an initial flag 
             criticalErrorEncountered = false;
             bool xml_found = false;

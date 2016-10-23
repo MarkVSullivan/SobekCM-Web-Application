@@ -402,7 +402,7 @@ namespace SobekCM.Engine_Library.Settings
         /// for the period of time the web application functios </summary>
         /// <param name="SettingsObject"> Settings instance to be populated with the metadata types </param>
         /// <param name="MetadataTypesTable"> DataTable with all the possible metadata types, from the database </param>
-        private static void Set_Metadata_Types(InstanceWide_Settings SettingsObject, DataTable MetadataTypesTable)
+        public static void Set_Metadata_Types(InstanceWide_Settings SettingsObject, DataTable MetadataTypesTable)
         {
             SettingsObject.Metadata_Search_Fields.Clear();
 
@@ -460,7 +460,7 @@ namespace SobekCM.Engine_Library.Settings
         /// <param name="SettingsObject"> Settings instance to be populated with the metadata types </param>
         /// <param name="WorkflowTable"> DataTable with all the possible workflow types, from the database </param>
         /// <param name="DispositionTypeTable"> DataTable with all the possible disposition types, from the database </param>
-        private static void Set_Workflow_And_Disposition_Types(InstanceWide_Settings SettingsObject, DataTable WorkflowTable, DataTable DispositionTypeTable)
+        public static void Set_Workflow_And_Disposition_Types(InstanceWide_Settings SettingsObject, DataTable WorkflowTable, DataTable DispositionTypeTable)
         {
 
             foreach (DataRow thisRow in DispositionTypeTable.Rows)

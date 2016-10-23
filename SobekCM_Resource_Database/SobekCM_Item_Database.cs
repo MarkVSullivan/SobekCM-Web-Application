@@ -3802,9 +3802,6 @@ namespace SobekCM_Resource_Database
 
         #endregion
 
-
-
-
         #region Custom Public Properties
 
 

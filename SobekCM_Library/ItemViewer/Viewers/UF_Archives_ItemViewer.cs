@@ -5,6 +5,7 @@ using System.Web.UI.WebControls;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Navigation;
 using SobekCM.Core.Users;
+using SobekCM.Engine_Library.Database;
 using SobekCM.Library.Database;
 using SobekCM.Library.ItemViewer.Menu;
 using SobekCM.Tools;
@@ -132,7 +133,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             // Get the archives information
             Tracer.Add_Trace("UF_Archives_ItemViewer.Constructor", "Try to pull the archives details for this item");
-            DataSet data = SobekCM_Database.Tracking_Get_History_Archives(BriefItem.Web.ItemID, Tracer);
+            DataSet data = Engine_Database.Tracking_Get_History_Archives(BriefItem.Web.ItemID, Tracer);
             if ((data == null) || ( data.Tables.Count < 3 ))
             {
                 Tracer.Add_Trace("Constructor.Constructor", "Unable to pull tracking details");

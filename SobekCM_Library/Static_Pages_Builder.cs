@@ -372,7 +372,7 @@ namespace SobekCM.Library
 			Web_Skin_Object defaultSkinObject = assistant.Get_HTML_Skin(currentMode, Engine_ApplicationCache_Gateway.Web_Skin_Collection, false, null);
 
 	        // Get the list of all collections
-            DataTable allCollections = SobekCM_Database.Get_Codes_Item_Aggregations( null);
+            DataTable allCollections = Engine_Database.Get_Codes_Item_Aggregations(null);
             DataView collectionView = new DataView(allCollections) {Sort = "Name ASC"};
 
             // Build the basic site map first
