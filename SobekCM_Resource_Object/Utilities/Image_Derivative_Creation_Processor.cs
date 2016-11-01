@@ -463,24 +463,21 @@ namespace SobekCM.Resource_Object.Utilities
 
 		/// <summary> Creates a JPEG2000 derivative service file, according to NDNP specs, for display 
 		/// within a SobekCM library </summary>
-		/// <param name="LocalTempFile"> Complete name (including directory) of the TIFF file to actually process, which is often in a temporary location </param>
-		/// <param name="Filename"> Name of the resulting JPEG2000 file </param>
+        /// <param name="SourceFileName"> Complete name (including directory) of the TIFF file to actually process, which is often in a temporary location </param>
+        /// <param name="DestinationFilename"> Name of the resulting JPEG2000 file </param>
 		/// <param name="Directory"> Directory where the resulting JPEG2000 should be created ( usually the directory for the volume )</param>
 		/// <param name="ParentLogId"> Primary key to the parent log entery if this is performed by the builder </param>
 		/// <param name="PackageName"> Name of the package this file belongs to ( BibID : VID )</param>
 		/// <returns>TRUE if successful, otherwise FALSE</returns>
-		public bool Create_JPEG2000(string LocalTempFile, string Filename, string Directory, long ParentLogId, string PackageName)
+		public bool Create_JPEG2000(string SourceFileName, string DestinationFilename, string Directory, long ParentLogId, string PackageName)
 		{
 			bool returnVal = true;
+		    string full_destination_name = Path.Combine(Directory, DestinationFilename);
 
-			// Create the JPEG2000
-			string rootFile = Directory + "\\" + Filename;
-			string fullFileName = rootFile + ".tif";
-
-			if ((!File.Exists(rootFile + ".jp2")) || (File.GetLastWriteTime(rootFile + ".jp2").CompareTo(File.GetLastWriteTime(fullFileName)) < 0))
+            if ((!File.Exists(full_destination_name)) || (File.GetLastWriteTime(full_destination_name).CompareTo(File.GetLastWriteTime(SourceFileName)) < 0))
 			{
 				// Save the JPEG2000
-				returnVal = Kakadu_Create_JPEG2000(LocalTempFile, rootFile + ".jp2", ParentLogId, PackageName);
+                returnVal = Kakadu_Create_JPEG2000(SourceFileName, full_destination_name, ParentLogId, PackageName);
 			}
 
 			return returnVal;

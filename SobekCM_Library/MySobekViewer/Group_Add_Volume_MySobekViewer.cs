@@ -235,6 +235,10 @@ namespace SobekCM.Library.MySobekViewer
 
                         // Clear the volume list
                         CachedDataManager.Items.Remove_Items_In_Title(saveItem.BibID, RequestSpecificValues.Tracer);
+                        CachedDataManager.Items.Remove_Items_List(saveItem.BibID, RequestSpecificValues.Tracer);
+
+                        // Also clear the engine
+                        SobekEngineClient.Items.Clear_Item_Group_Cache(saveItem.BibID, RequestSpecificValues.Tracer);
 
                         // Also clear any searches or browses ( in the future could refine this to only remove those
                         // that are impacted by this save... but this is good enough for now )
@@ -397,32 +401,6 @@ namespace SobekCM.Library.MySobekViewer
 
             // Create the static html pages
             string base_url = RequestSpecificValues.Current_Mode.Base_URL;
-            try
-            {
-                Static_Pages_Builder staticBuilder = new Static_Pages_Builder(UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL, UI_ApplicationCache_Gateway.Settings.Servers.Base_Data_Directory, RequestSpecificValues.HTML_Skin.Skin_Code);
-                string filename = user_in_process_directory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html";
-                staticBuilder.Create_Item_Citation_HTML(Item_To_Complete, filename, String.Empty);
-
-				// Copy the static HTML file to the web server
-				try
-				{
-					if (!Directory.Exists(UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + currentItem.BibID.Substring(0, 2) + "\\" + currentItem.BibID.Substring(2, 2) + "\\" + currentItem.BibID.Substring(4, 2) + "\\" + currentItem.BibID.Substring(6, 2) + "\\" + currentItem.BibID.Substring(8)))
-						Directory.CreateDirectory(UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + currentItem.BibID.Substring(0, 2) + "\\" + currentItem.BibID.Substring(2, 2) + "\\" + currentItem.BibID.Substring(4, 2) + "\\" + currentItem.BibID.Substring(6, 2) + "\\" + currentItem.BibID.Substring(8));
-					if (File.Exists(user_in_process_directory + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html"))
-						File.Copy(user_in_process_directory + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html", UI_ApplicationCache_Gateway.Settings.Servers.Static_Pages_Location + currentItem.BibID.Substring(0, 2) + "\\" + currentItem.BibID.Substring(2, 2) + "\\" + currentItem.BibID.Substring(4, 2) + "\\" + currentItem.BibID.Substring(6, 2) + "\\" + currentItem.BibID.Substring(8) + "\\" + currentItem.BibID + "_" + currentItem.VID + ".html", true);
-				}
-				catch (Exception)
-				{
-					// This is not critical
-				}
-
-            }
-            catch (Exception ee)
-            {
-                message = message + "<br /><span style=\"color: red\"><strong>" + ee.Message + "<br />" + ee.StackTrace.Replace("\n", "<br />") + "</strong></span>";
-            }
-
-            RequestSpecificValues.Current_Mode.Base_URL = base_url;
 
             // Save the rest of the metadata
             Item_To_Complete.Source_Directory = user_in_process_directory;

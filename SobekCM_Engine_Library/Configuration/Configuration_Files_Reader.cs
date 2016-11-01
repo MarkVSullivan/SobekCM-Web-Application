@@ -468,7 +468,7 @@ namespace SobekCM.Engine_Library.Configuration
             //config.Sobekcm_Css = "http://cdn.sobekdigital.com/css/sobekcm/4.10.0/sobekcm.css";
             //config.Sobekcm_Admin_Css = "http://cdn.sobekdigital.com/css/sobekcm-admin/4.10.0/sobekcm_admin.css";
             //config.Sobekcm_Admin_Js = "http://cdn.sobekdigital.com/js/sobekcm-admin/4.10.0/sobekcm_admin.js";
-            //config.Sobekcm_Full_Js = "http://cdn.sobekdigital.com/js/sobekcm-full/4.10.0/sobekcm_full.js";
+            //config.Sobekcm_Full_Js = "http://localhost:52468/default/js/sobekcm-full/4.10.1/sobekcm_full.js";
             //config.Sobekcm_Item_Css = "http://cdn.sobekdigital.com/css/sobekcm-item/4.10.0/sobekcm_item.css";
             //config.Sobekcm_Qc_Css = "http://cdn.sobekdigital.com/css/sobekcm-qc/4.10.0/sobekcm_qc.css";
             //config.Sobekcm_Metadata_Js = "http://cdn.sobekdigital.com/js/sobekcm-metadata/4.10.0/sobekcm_metadata.js";

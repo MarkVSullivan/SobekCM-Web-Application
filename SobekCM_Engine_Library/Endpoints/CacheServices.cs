@@ -47,6 +47,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                         // Also remove the list of volumes, since this may have changed
                         CachedDataManager.Items.Remove_Items_In_Title(BibID, tracer);
+                        CachedDataManager.Items.Remove_Items_List(BibID, tracer);
 
                         returnMessage = "Cleared cache for " + BibID + ":" + VID;
                     }
@@ -58,6 +59,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
                         // Also remove the list of volumes, since this may have changed
                         CachedDataManager.Items.Remove_Items_In_Title(BibID, tracer);
+                        CachedDataManager.Items.Remove_Items_List(BibID, tracer);
 
                         returnMessage = "Cleared cache for " + BibID + ":" + VID;
                     }

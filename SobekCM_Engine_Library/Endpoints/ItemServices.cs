@@ -1669,7 +1669,7 @@ namespace SobekCM.Engine_Library.Endpoints
 
         #region Methods to serve small snippets of HTML to the users, on demand
 
-        /// <summary> Gets the item's marc record in object format for serialization/deserialization </summary>
+        /// <summary> Writes the small snippet of HTML to pop-up when the user selects the SEND EMAIL button </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
@@ -1744,7 +1744,7 @@ namespace SobekCM.Engine_Library.Endpoints
             Serialize(returnValue, Response, Protocol, json_callback);
         }
 
-        /// <summary> Gets the item's marc record in object format for serialization/deserialization </summary>
+        /// <summary> Writes the small snippet of HTML to pop-up when the user selects the PRINT button </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
@@ -1933,7 +1933,7 @@ namespace SobekCM.Engine_Library.Endpoints
             Response.Output.WriteLine();
         }
 
-        /// <summary> Gets the item's marc record in object format for serialization/deserialization </summary>
+        /// <summary> Serve the small DESCRIBE html used for adding tags to an item </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
@@ -1997,7 +1997,7 @@ namespace SobekCM.Engine_Library.Endpoints
             Serialize(returnValue, Response, Protocol, json_callback);
         }
 
-        /// <summary> Gets the item's marc record in object format for serialization/deserialization </summary>
+        /// <summary> Writes the small snippet of HTML to pop-up when the user selects the SHARE button </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>
@@ -2100,7 +2100,7 @@ namespace SobekCM.Engine_Library.Endpoints
             Response.Output.WriteLine();
         }
 
-        /// <summary> Gets the item's marc record in object format for serialization/deserialization </summary>
+        /// <summary> Writes the small snippet of HTML to pop-up when the user selects the ADD TO BOOKSHELF button </summary>
         /// <param name="Response"></param>
         /// <param name="UrlSegments"></param>
         /// <param name="QueryString"></param>

@@ -87,7 +87,8 @@ namespace SobekCM.Library.ItemViewer.Menu
 
                 if (( CurrentItem.Web != null ) && ( CurrentItem.Web.ItemID > 0))
                 {
-                    Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"print_form_open();\"><img src=\"" + Static_Resources_Gateway.Printer_Png + "\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
+                    string print_item_form_open_url = UI_ApplicationCache_Gateway.Settings.Servers.Engine_URL + "items/html/print/" + CurrentItem.BibID + "/" + CurrentItem.VID + "/" + CurrentMode.ViewerCode;
+                    Output.WriteLine("\t\t<span id=\"printbuttonitem\" class=\"action-sf-menu-item\" onclick=\"print_form_open('" + print_item_form_open_url + "');\"><img src=\"" + Static_Resources_Gateway.Printer_Png + "\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"printbuttonspan\">" + print_text + "</span></span>");
                 }
                 else
                 {
@@ -97,7 +98,8 @@ namespace SobekCM.Library.ItemViewer.Menu
 
                 if (isLoggedOn)
                 {
-                    Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"email_form_open();\"><img src=\"" + Static_Resources_Gateway.Email_Png + "\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
+                    string email_item_form_open_url = UI_ApplicationCache_Gateway.Settings.Servers.Engine_URL + "items/html/send/" + CurrentItem.BibID + "/" + CurrentItem.VID;
+                    Output.WriteLine("\t\t<span id=\"sendbuttonitem\" class=\"action-sf-menu-item\" onclick=\"email_form_open('" + email_item_form_open_url + "');\"><img src=\"" + Static_Resources_Gateway.Email_Png + "\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"sendbuttonspan\">" + send_text + "</span></span>");
 
 
                     if ((CurrentItem.Web != null) && (CurrentItem.Web.ItemID > 0))
@@ -108,7 +110,9 @@ namespace SobekCM.Library.ItemViewer.Menu
                         }
                         else
                         {
-                            Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"add_item_form_open();return false;\"><img src=\"" + Static_Resources_Gateway.Plussign_Png + "\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
+                            // Determine the URL
+                            string add_item_form_open_url = UI_ApplicationCache_Gateway.Settings.Servers.Engine_URL + "items/html/bookshelf/" + CurrentUser.UserID + "/" + CurrentItem.BibID + "/" + CurrentItem.VID;
+                            Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"add_item_form_open('" + add_item_form_open_url + "');return false;\"><img src=\"" + Static_Resources_Gateway.Plussign_Png + "\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
                         }
                     }
                 }
@@ -120,7 +124,8 @@ namespace SobekCM.Library.ItemViewer.Menu
                         Output.WriteLine("\t\t<span id=\"addbuttonitem\" class=\"action-sf-menu-item\" onclick=\"window.location='" + logOnUrl + "';return false;\"><img src=\"" + Static_Resources_Gateway.Plussign_Png + "\" alt=\"\" style=\"vertical-align:middle\" /><span id=\"addbuttonspan\">" + add_text + "</span></span>");
                 }
 
-                Output.WriteLine("\t\t<span id=\"sharebuttonitem\" class=\"action-sf-menu-item\" onclick=\"toggle_share_form('share_button');\"><span id=\"sharebuttonspan\">Share</span></span>");
+                string share_item_form_open_url = UI_ApplicationCache_Gateway.Settings.Servers.Engine_URL + "items/html/share/" + CurrentItem.BibID + "/" + CurrentItem.VID;
+                Output.WriteLine("\t\t<span id=\"sharebuttonitem\" class=\"action-sf-menu-item\" onclick=\"toggle_share_form('share_button', '" + share_item_form_open_url + "');\"><span id=\"sharebuttonspan\">Share</span></span>");
 
 
                 Output.WriteLine("\t</div>");

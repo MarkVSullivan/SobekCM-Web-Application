@@ -330,7 +330,18 @@ namespace SobekCM.Library.HTML
             // Add the appropriate header
             if (useItemHeader)
             {
-                Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid));
+                try
+                {
+                    Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid));
+                }
+                catch (Exception ee)
+                {
+                   RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "EXCEPTION CAUGHT while trying to write the header.");
+                   if (RequestSpecificValues.HTML_Skin == null)
+                       RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "HTML Skin was NULL");
+                   else if ( RequestSpecificValues.HTML_Skin.Header_Item_HTML == null )
+                       RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "HTML Skin was not NULL, but Header_Item_HTML property was NULL");
+                }
             }
             else
             {

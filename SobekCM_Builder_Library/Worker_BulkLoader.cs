@@ -655,7 +655,7 @@ namespace SobekCM.Builder_Library
         private void Complete_Single_Recent_Load_Requiring_Additional_Work( Incoming_Digital_Resource AdditionalWorkResource)
         {
 	        AdditionalWorkResource.METS_Type_String = "Reprocess";
-            AdditionalWorkResource.BuilderLogId = Add_NonError_To_Log("........Reprocessing '" + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID + "'", "Standard",  AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.METS_Type_String, -1);
+            AdditionalWorkResource.BuilderLogId = Add_NonError_To_Log("Reprocessing '" + AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID + "'", "Standard",  AdditionalWorkResource.BibID + ":" + AdditionalWorkResource.VID, AdditionalWorkResource.METS_Type_String, -1);
 
             try
             {

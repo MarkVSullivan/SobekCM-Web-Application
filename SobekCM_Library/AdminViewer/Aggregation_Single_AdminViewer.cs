@@ -1586,7 +1586,7 @@ namespace SobekCM.Library.AdminViewer
             // Get the map search type
 		    decimal latitude = 0;
 		    decimal longitude = 0;
-		    int zoom = 1;
+		    int zoom = 5;
 		    if (Form["admin_aggr_mapsearch_type"] != null)
 		    {
                 // Ensure this is not null
@@ -1674,7 +1674,7 @@ namespace SobekCM.Library.AdminViewer
             // Get the map browse type
             latitude = 0;
             longitude = 0;
-            zoom = 1;
+            zoom = 5;
             if (Form["admin_aggr_mapbrowse_type"] != null)
             {
                 // Ensure this is not null
@@ -2048,7 +2048,7 @@ namespace SobekCM.Library.AdminViewer
 		    int search_area_value = -2;
 		    decimal latitude = 0;
             decimal longitude = 0;
-		    int zoom = 1;
+		    int zoom = 5;
 		    if (itemAggregation.Map_Search_Display != null)
 		    {
 		        if (itemAggregation.Map_Search_Display.Type == Item_Aggregation_Map_Coverage_Type_Enum.FIXED)
@@ -2056,7 +2056,7 @@ namespace SobekCM.Library.AdminViewer
 		            search_area_value = -1;
 		            latitude = 0;
 		            longitude = 0;
-		            zoom = 1;
+		            zoom = 5;
 		            if ((itemAggregation.Map_Search_Display.ZoomLevel.HasValue) && (itemAggregation.Map_Search_Display.Latitude.HasValue) && (itemAggregation.Map_Search_Display.Longitude.HasValue))
 		            {
 		                latitude = itemAggregation.Map_Search_Display.Latitude.Value;
@@ -2188,7 +2188,7 @@ namespace SobekCM.Library.AdminViewer
             search_area_value = -2;
             latitude = 0;
             longitude = 0;
-            zoom = 1;
+            zoom = 5;
             if (itemAggregation.Map_Browse_Display != null)
             {
                 if (itemAggregation.Map_Browse_Display.Type == Item_Aggregation_Map_Coverage_Type_Enum.FIXED)
@@ -2196,7 +2196,7 @@ namespace SobekCM.Library.AdminViewer
                     search_area_value = -1;
                     latitude = 0;
                     longitude = 0;
-                    zoom = 1;
+                    zoom = 5;
                     if ((itemAggregation.Map_Browse_Display.ZoomLevel.HasValue) && (itemAggregation.Map_Browse_Display.Latitude.HasValue) && (itemAggregation.Map_Browse_Display.Longitude.HasValue))
                     {
                         latitude = itemAggregation.Map_Browse_Display.Latitude.Value;

@@ -50,6 +50,10 @@ namespace SobekCM.Engine_Library.Endpoints
                     IFormatter binary = new BinaryFormatter();
                     binary.Serialize(Response.OutputStream, ReturnValue);
                     break;
+
+                case Microservice_Endpoint_Protocol_Enum.TEXT:
+                    Response.Output.Write(ReturnValue.ToString());
+                    break;
             }
         }
     }

@@ -42,7 +42,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_ItemServices.Remove_Digital_Resource_Objects", "");
             }
 
-            string key_start = "ITEM_" + BibID + "_";
+            string key_start = "ITEM_" + BibID.ToUpper() + "_";
 
             // Build the sorted list of locally cached stuff
             List<Cached_Object_Info> locallyCached = (from DictionaryEntry thisItem in HttpContext.Current.Cache select new Cached_Object_Info(thisItem.Key.ToString(), thisItem.Value.GetType())).ToList();
@@ -57,7 +57,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Now, remove the actual item group
-            string key = "ITEM_GROUP_" + BibID;
+            string key = "ITEM_GROUP_" + BibID.ToUpper();
 
             // Clear the item group from the local cache
             HttpContext.Current.Cache.Remove(key);
@@ -88,7 +88,7 @@ namespace SobekCM.Core.MemoryMgmt
                 Tracer.Add_Trace("CachedDataManager_ItemServices.Remove_Digital_Resource_Object", "");
             }
 
-            string key_start = "ITEM_" + BibID + "_" + VID + "_";
+            string key_start = "ITEM_" + BibID.ToUpper() + "_" + VID + "_";
 
             // Build the sorted list of locally cached stuff
             List<Cached_Object_Info> locallyCached = (from DictionaryEntry thisItem in HttpContext.Current.Cache select new Cached_Object_Info(thisItem.Key.ToString(), thisItem.Value.GetType())).ToList();
@@ -103,10 +103,10 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Now, remove the actual item
-            HttpContext.Current.Cache.Remove("ITEM_" + BibID + "_" + VID);
+            HttpContext.Current.Cache.Remove("ITEM_" + BibID.ToUpper() + "_" + VID);
             if (UserID > 0)
             {
-                HttpContext.Current.Cache.Remove("USERITEM" + UserID + "_ITEM_" + BibID + "_" + VID);
+                HttpContext.Current.Cache.Remove("USERITEM" + UserID + "_ITEM_" + BibID.ToUpper() + "_" + VID);
             }
         }
 
@@ -124,7 +124,7 @@ namespace SobekCM.Core.MemoryMgmt
                 return null;
 
             // Determine the key
-            string key = "ITEM_" + BibID + "_" + VID;
+            string key = "ITEM_" + BibID.ToUpper() + "_" + VID;
             if (UserID > 0)
             {
                 key = "USERITEM" + UserID + "_" + key;
@@ -175,7 +175,7 @@ namespace SobekCM.Core.MemoryMgmt
                 return;
 
             // Determine the key
-            string key = "ITEM_" + BibID + "_" + VID;
+            string key = "ITEM_" + BibID.ToUpper() + "_" + VID;
             if (UserID > 0)
             {
                 key = "USERITEM" + UserID + "_" + key;
@@ -215,7 +215,7 @@ namespace SobekCM.Core.MemoryMgmt
                 return null;
 
             // Determine the key
-            string key = "ITEM_GROUP_" + BibID;
+            string key = "ITEM_GROUP_" + BibID.ToUpper();
 
             // See if this is in the local cache first
             object returnValue = HttpContext.Current.Cache.Get(key);
@@ -250,7 +250,7 @@ namespace SobekCM.Core.MemoryMgmt
                 return;
 
             // Determine the key
-            string key = "ITEM_GROUP_" + BibID;
+            string key = "ITEM_GROUP_" + BibID.ToUpper();
 
             if (Tracer != null)
             {
@@ -276,7 +276,7 @@ namespace SobekCM.Core.MemoryMgmt
                 return null;
 
             // Determine the key
-            string key = "ITEM_" + BibID + "_" + VID + "_Brief";
+            string key = "ITEM_" + BibID.ToUpper() + "_" + VID + "_Brief";
 
             // See if this is in the local cache first
             object returnValue = HttpContext.Current.Cache.Get(key);
@@ -311,7 +311,7 @@ namespace SobekCM.Core.MemoryMgmt
                 return;
 
             // Determine the key
-            string key = "ITEM_" + BibID + "_" + VID + "_Brief";
+            string key = "ITEM_" + BibID.ToUpper() + "_" + VID + "_Brief";
             const int LENGTH_OF_TIME = 15;
 
             if (Tracer != null)
@@ -342,7 +342,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Try to get this from the local cache next
-            object returnValue = HttpContext.Current.Cache.Get("ITEMLIST_" + BibID);
+            object returnValue = HttpContext.Current.Cache.Get("ITEMLIST_" + BibID.ToUpper());
             if (returnValue != null)
             {
                 if (Tracer != null)
@@ -372,7 +372,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Store this on the local cache, if not there and storing on the cache server failed
-            string key = "ITEMLIST_" + BibID;
+            string key = "ITEMLIST_" + BibID.ToUpper();
             if (HttpContext.Current.Cache[key] == null)
             {
                 if (Tracer != null)
@@ -399,7 +399,7 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             // Store this on the local cache, if not there and storing on the cache server failed
-            string key = "ITEMLIST_" + BibID;
+            string key = "ITEMLIST_" + BibID.ToUpper();
 
             // Clear this from the local cache
             HttpContext.Current.Cache.Remove(key);
@@ -544,7 +544,7 @@ namespace SobekCM.Core.MemoryMgmt
                 return null;
 
             // Determine the key
-            string key = "ITEM_" + BibID + "_ItemList";
+            string key = "ITEM_" + BibID.ToUpper() + "_ItemList";
 
             // See if this is in the local cache first
             object returnValue = HttpContext.Current.Cache.Get(key);
@@ -578,7 +578,7 @@ namespace SobekCM.Core.MemoryMgmt
                 return;
 
             // Determine the key
-            string key = "ITEM_" + BibID + "_ItemList";
+            string key = "ITEM_" + BibID.ToUpper() + "_ItemList";
             const int LENGTH_OF_TIME = 5;
 
             if (Tracer != null)
@@ -587,6 +587,27 @@ namespace SobekCM.Core.MemoryMgmt
             }
 
             HttpContext.Current.Cache.Insert(key, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LENGTH_OF_TIME));
+        }
+
+        /// <summary> Removes the  list of items for a single bibid to the cache  </summary>
+        /// <param name="BibID"> Bibliographic identifier for the list of items </param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Remove_Items_List(string BibID, Custom_Tracer Tracer)
+        {
+            // If the cache is disabled, just return before even tracing
+            if (settings.Disabled)
+                return;
+
+            if (Tracer != null)
+            {
+                Tracer.Add_Trace("CachedDataManager_ItemServices.Remove_Items_List", "");
+            }
+
+            // Store this on the local cache, if not there and storing on the cache server failed
+            string key = "ITEM_" + BibID.ToUpper() + "_ItemList";
+
+            // Clear this from the local cache
+            HttpContext.Current.Cache.Remove(key);
         }
 
         #endregion

@@ -2729,7 +2729,7 @@ namespace SobekCM_Resource_Database
                 param_list[24] = new EalDbParameter("@Icon2_Name", Icon2_Name);
                 param_list[25] = new EalDbParameter("@Icon3_Name", Icon3_Name);
                 param_list[26] = new EalDbParameter("@Icon4_Name", Icon4_Name);
-                param_list[27] = new EalDbParameter("@Icon5_Name", Icon4_Name);
+                param_list[27] = new EalDbParameter("@Icon5_Name", Icon5_Name);
                 param_list[28] = new EalDbParameter("@Left_To_Right", Left_To_Right);
                 param_list[29] = new EalDbParameter("@CitationSet", CitationSet);
 

@@ -65,7 +65,7 @@ namespace SobekCM.Builder_Library.Modules.Items
             if (( !String.IsNullOrEmpty(Settings.Archive.Archive_DropBox)) && ((ResourcePackage.Source_Folder.Archive_All_Files) || (ResourcePackage.Source_Folder.Archive_TIFFs)))
             {
 
-                OnProcess("\t\tCopying files to the archive", "Copy To Archive", ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, -1);
+               // OnProcess("\t\tCopying files to the archive", "Copy To Archive", ResourcePackage.BibID + ":" + ResourcePackage.VID, String.Empty, -1);
 
                 // Get the list of TIFFs
                 string[] tiff_files = Directory.GetFiles(ResourcePackage.Resource_Folder, "*.tif");

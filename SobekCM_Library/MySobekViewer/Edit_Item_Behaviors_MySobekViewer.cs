@@ -169,9 +169,14 @@ namespace SobekCM.Library.MySobekViewer
 
                 // Also remove the list of volumes, since this may have changed
                 CachedDataManager.Items.Remove_Items_In_Title(currentItem.BibID, RequestSpecificValues.Tracer);
+                CachedDataManager.Items.Remove_Items_List(currentItem.BibID, RequestSpecificValues.Tracer);
 
                 // Also clear the engine
-                SobekEngineClient.Items.Clear_Item_Cache(currentItem.BibID, currentItem.VID, RequestSpecificValues.Tracer);
+                SobekEngineClient.Items.Clear_Item_Group_Cache(currentItem.BibID, RequestSpecificValues.Tracer);
+
+                // Also clear any searches or browses ( in the future could refine this to only remove those
+                // that are impacted by this save... but this is good enough for now )
+                CachedDataManager.Clear_Search_Results_Browses();
 
                 // Forward
                 RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;

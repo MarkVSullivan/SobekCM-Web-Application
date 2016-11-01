@@ -30,7 +30,8 @@ namespace SobekCM.Builder_Library.Modules.Items
             string resourceFolder = Resource.Resource_Folder;
             string imagemagick_executable = MultiInstance_Builder_Settings.ImageMagick_Executable;
 
-
+            string executing_directory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase).Replace("file:\\","");
+            string kakadu_directory = Path.Combine(executing_directory, "kakadu");
 
             // Are there images that need to be processed here?
             if (!String.IsNullOrEmpty(imagemagick_executable))
@@ -106,7 +107,7 @@ namespace SobekCM.Builder_Library.Modules.Items
                     }
 
                     // Create the image process object for creating 
-                    Image_Derivative_Creation_Processor imageProcessor = new Image_Derivative_Creation_Processor(imagemagick_executable, null, true, true, Settings.Resources.JPEG_Width, Settings.Resources.JPEG_Height, false, Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, null);
+                    Image_Derivative_Creation_Processor imageProcessor = new Image_Derivative_Creation_Processor(imagemagick_executable, kakadu_directory, true, true, Settings.Resources.JPEG_Width, Settings.Resources.JPEG_Height, false, Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, null);
                     imageProcessor.New_Task_String += imageProcessor_New_Task_String;
                     imageProcessor.Error_Encountered += imageProcessor_Error_Encountered;
 
@@ -206,6 +207,8 @@ namespace SobekCM.Builder_Library.Modules.Items
                                 // Create the JPEG derivatives from the JPEG2000
                                 imageProcessor.ImageMagick_Create_JPEG(newest_source_file, resourceFolder + "\\" + name_sans_extension + "thm.jpg", Settings.Resources.Thumbnail_Width, Settings.Resources.Thumbnail_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
                                 imageProcessor.ImageMagick_Create_JPEG(newest_source_file, resourceFolder + "\\" + name_sans_extension + ".jpg", Settings.Resources.JPEG_Width, Settings.Resources.JPEG_Height, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
+
+                                imageProcessor.Create_JPEG2000(newest_source_file, name_sans_extension + ".jp2", resourceFolder, Resource.BuilderLogId, Resource.BibID + ":" + Resource.VID);
 
                                 //// If the JPEG exists with width/height information clear the information
                                 //if (names_to_mets_file.ContainsKey(name_sans_extension + ".jpg"))
