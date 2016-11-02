@@ -108,14 +108,16 @@ namespace SobekCM.Library.Citation.Elements
             {
                 // Are there aggregationPermissions set aside for the user?
                 List<User_Permissioned_Aggregation> allAggrs = Current_User.PermissionedAggregations;
-
-                foreach( User_Permissioned_Aggregation thisAggr in allAggrs )
+                if (allAggrs != null)
                 {
-                    if (thisAggr.CanSelect)
+                    foreach (User_Permissioned_Aggregation thisAggr in allAggrs)
                     {
-                        some_set_as_selectable = true;
-                        if ((items.Contains(thisAggr.Code)) && (!possibles.Contains(thisAggr.Code)))
-                            possibles.Add(thisAggr.Code);                           
+                        if (thisAggr.CanSelect)
+                        {
+                            some_set_as_selectable = true;
+                            if ((items.Contains(thisAggr.Code)) && (!possibles.Contains(thisAggr.Code)))
+                                possibles.Add(thisAggr.Code);
+                        }
                     }
                 }
             }
