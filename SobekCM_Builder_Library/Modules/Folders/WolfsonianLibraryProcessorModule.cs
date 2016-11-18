@@ -24,7 +24,7 @@ namespace SobekCM.Builder_Library.Modules.Folders
         private int bibid;
         private bool isLibrary;
 
-        private const string archived_files_link = "http://images.wolfsonian.org/resources/";
+        private const string archived_files_link = "http://resources.wolfsonian.org/";
 
         /// <summary> Delegate for the custom event which is fired when the status
         /// string on the main form needs to change </summary>

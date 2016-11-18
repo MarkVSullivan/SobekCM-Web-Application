@@ -180,6 +180,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private bool volumeErrorPresent = false;
         private string volumeErrorCode = String.Empty;
 
+        private readonly List<abstract_TreeNode> static_pages;
+
         /// <summary> Constructor for a new instance of the QC_ItemViewer class, used to perform quality control and 
         /// create the structural metadata ( page names and divisions ) for an online digital resource </summary>
         /// <param name="BriefItem"> Digital resource object </param>
@@ -544,6 +546,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     CurrentRequest.Request_Completed = true;
                     break;
             }
+
+            // Get the pages pre-order to be used everywhere else
+            static_pages = qc_item.Divisions.Physical_Tree.Pages_PreOrder;
+            if (static_pages == null)
+                static_pages = new List<abstract_TreeNode>();
         }
 
         /// <summary> Sets the QC Error for a page </summary>
@@ -1640,8 +1647,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             // Start the main div for the thumbnails
 
             ushort page = (ushort)(CurrentRequest.Page.HasValue ? CurrentRequest.Page.Value - 1 : (ushort)0);
-            if (page > (qc_item.Web.Static_PageCount - 1) / images_per_page)
-                page = (ushort)((qc_item.Web.Static_PageCount - 1) / images_per_page);
+            if (page > (static_pages.Count - 1) / images_per_page)
+                page = (ushort)((static_pages.Count - 1) / images_per_page);
 
 
             //Outer div which contains all the thumbnails
@@ -1675,9 +1682,6 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     qcDivisionList.Add(type, isNameable);
                 }
             }
-
-            // Get the collection of pages from the item
-            List<abstract_TreeNode> static_pages = qc_item.Divisions.Physical_Tree.Pages_PreOrder;
 
             // Determine some values including some icon sizes, based on current thumbnail size
             int error_icon_height;
@@ -2169,9 +2173,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Add the select options
 
             //iterate through the page items
-            if (qc_item.Web.Static_PageCount > 0)
+            if (static_pages.Count > 0)
             {
-                foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
+                foreach (Page_TreeNode thisFile in static_pages)
                 {
                     Output.WriteLine("<option value=\"" + thisFile.Files[0].File_Name_Sans_Extension + "\">" + thisFile.Files[0].File_Name_Sans_Extension + "</option>");
                 }
@@ -2183,9 +2187,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<td><select id=\"selectDestinationPageList2\"  name=\"selectDestinationPageList2\" onchange=\"update_preview();\" disabled=\"true\">");
 
             //iterate through the page items
-            if (qc_item.Web.Static_PageCount > 0)
+            if (static_pages.Count > 0)
             {
-                foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
+                foreach (Page_TreeNode thisFile in static_pages)
                 {
                     Output.WriteLine("<option value=\"" + thisFile.Files[0].File_Name_Sans_Extension + "\">" + thisFile.Files[0].File_Name_Sans_Extension + "</option>");
                 }
@@ -2287,7 +2291,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
             //If the current url has an anchor, call the javascript function to animate the corresponding span background color
             Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(MakeSpanFlashOnPageLoad());</script>");
-            Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(Configure_QC(" + qc_item.Web.Static_PageCount + "));</script>");
+            Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(Configure_QC(" + static_pages.Count + "));</script>");
             Output.WriteLine("<script type=\"text/javascript\">addLoadEvent(MakeSortable1());</script>");
 
 
@@ -2396,7 +2400,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             get
             {
-                return ((qc_item.Web.Static_PageCount - 1) / thumbnailsPerPage) + 1;
+                return ((static_pages.Count - 1) / thumbnailsPerPage) + 1;
             }
         }
 
@@ -2540,11 +2544,11 @@ namespace SobekCM.Library.ItemViewer.Viewers
             //Set the number of thumbnails to show per page
             int thumbnails_per_page;
 
-            if (qc_item.Web.Static_PageCount > 100)
+            if (static_pages.Count > 100)
                 thumbnails_per_page = 50;
             else
             {
-                thumbnails_per_page = qc_item.Web.Static_PageCount;
+                thumbnails_per_page = static_pages.Count;
             }
             //Set the thumbnails_per_page to the value from the query string, if present
             Uri uri = HttpContext.Current.Request.Url;
@@ -2611,14 +2615,16 @@ namespace SobekCM.Library.ItemViewer.Viewers
             Output.WriteLine("<span id=\"qc_mainmenu_delete\" class=\"sbkQc_MainMenuIcon\" ><a href=\"\" onclick=\"return bulkdeleteicon_click();\"><img src=\"" + Static_Resources_Gateway.Trash01_Ico + "\" alt=\"Missing icon\" title=\"Delete multiple pages\" style=\"height:20px;width:20px\" /></a></span>");
             Output.WriteLine("</div>");
 
-            // Add the option to GO TO a certain thumbnail next
-            Output.WriteLine("<div id=\"sbkQc_GoToThumbnailDiv\"><span id=\"GoToThumbnailTextSpan\">" + Go_To_Thumbnail + ":</span><select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect_QC(this.options[this.selectedIndex].value);\" /></div>");
 
             //iterate through the page items
-            if (qc_item.Web.Static_PageCount > 0)
+            if (static_pages.Count > 0 )
             {
+                // Add the option to GO TO a certain thumbnail next
+                Output.WriteLine("<div id=\"sbkQc_GoToThumbnailDiv\"><span id=\"GoToThumbnailTextSpan\">" + Go_To_Thumbnail + ":</span><select id=\"selectGoToThumbnail\" onchange=\"location=this.options[this.selectedIndex].value; AddAnchorDivEffect_QC(this.options[this.selectedIndex].value);\" /></div>");
+
+
                 int thumbnail_count = 0;
-                foreach (Page_TreeNode thisFile in qc_item.Web.Pages_By_Sequence)
+                foreach (Page_TreeNode thisFile in static_pages)
                 {
                     thumbnail_count++;
                     string currentPageURL1 = UrlWriterHelper.Redirect_URL(CurrentRequest, (thumbnail_count / thumbnails_per_page + (thumbnail_count % thumbnails_per_page == 0 ? 0 : 1)).ToString() + "qc");
@@ -2652,8 +2658,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
 
                     Output.WriteLine("<option value=\"" + currentPageURL1 + "#" + thisFile.Label + "\" title=\"" + tooltipText + "\">" + filename + "</option>");
                 }
+                Output.WriteLine("</select></div>");
             }
-            Output.WriteLine("</select></div>");
+
             Output.WriteLine("<ul class=\"sf-menu\" id=\"sbkQc_Menu\">");
 
             //builder.AppendLine("<li class=\"qc-menu-item\">Resource<ul>");

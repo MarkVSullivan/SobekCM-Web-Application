@@ -238,6 +238,13 @@ namespace SobekCM.Library.HTML
 						File.Delete(new_file);
 					File.Move(file, new_file);
 				}
+				else
+				{
+				    // Ensure the folder exists
+                    string directory = Path.GetDirectoryName(file);
+				    if (!Directory.Exists(directory))
+				        Directory.CreateDirectory(directory);
+				}
 
 				// Write to the file now
 				StreamWriter homeWriter = new StreamWriter(file, false);

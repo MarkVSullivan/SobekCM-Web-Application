@@ -980,7 +980,7 @@ namespace SobekCM.Library.HTML
         public override string WebPage_Title
         {
             get {
-                return staticWebContent != null ? staticWebContent.Title : "{0}";
+                return (( staticWebContent != null ) && ( staticWebContent.Title != null )) ? staticWebContent.Title : "{0}";
             }
         }
 

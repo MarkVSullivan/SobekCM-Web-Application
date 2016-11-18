@@ -58,7 +58,7 @@ namespace SobekCM.Core.BriefItem
                 if ((ViewerCode.IndexOf("0") >= 0) || (ViewerCode.IndexOf("1") >= 0) || (ViewerCode.IndexOf("2") >= 0) ||
                     (ViewerCode.IndexOf("3") >= 0) || (ViewerCode.IndexOf("4") >= 0) || (ViewerCode.IndexOf("5") >= 0) ||
                     (ViewerCode.IndexOf("6") >= 0) || (ViewerCode.IndexOf("7") >= 0) || (ViewerCode.IndexOf("8") >= 0) ||
-                    (ViewerCode.IndexOf("8") >= 0))
+                    (ViewerCode.IndexOf("9") >= 0))
                 {
                     // Build the fuzzy match viewer code
                     StringBuilder builder = new StringBuilder();

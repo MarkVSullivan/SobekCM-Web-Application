@@ -162,9 +162,16 @@ namespace SobekCM.Resource_Object.Bib_Info
                 }
 
                 // Add the main title here
-                if (Main_Title.Title.Length > 0)
+                if (( Main_Title != null ) && ( !String.IsNullOrEmpty(Main_Title.Title)))
                 {
-                    metadataTerms.Add(new KeyValuePair<string, string>("Title", Main_Title.Title.Replace("<i>", " ").Replace("</i>", " ")));
+                    metadataTerms.Add(new KeyValuePair<string, string>("Title", Main_Title.ToString()));
+
+                    // Add the subtitle here as well
+                    if (!String.IsNullOrEmpty(Main_Title.Subtitle))
+                    {
+                        metadataTerms.Add(new KeyValuePair<string, string>("Title", Main_Title.Subtitle ));
+                    }
+
                 }
 
                 // Add any manufacturers here
