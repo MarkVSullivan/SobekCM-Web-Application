@@ -415,6 +415,9 @@ namespace SobekCM.Engine_Library.Configuration
         /// <summary> URL for the default resource 'file_excel.png' file ( http://cdn.sobekrepository.org/images/misc/file_excel.png by default)</summary>
         public static string File_Excel_Img { get { return config.File_Excel_Img; } }
 
+        /// <summary> URL for the default resource 'file_font.png' file ( http://cdn.sobekrepository.org/images/misc/file_font.png by default)</summary>
+        public static string File_Font_Img { get { return config.File_Font_Img; } }
+
         /// <summary> URL for the default resource 'file_kml.png' file ( http://cdn.sobekrepository.org/images/misc/file_kml.png by default)</summary>
         public static string File_KML_Img { get { return config.File_KML_Img; } }
 

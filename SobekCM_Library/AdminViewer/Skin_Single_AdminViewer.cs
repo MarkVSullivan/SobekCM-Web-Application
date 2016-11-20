@@ -1180,7 +1180,7 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
 
             Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Upload Images and Documents</td></tr>");
-            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Manage your uploaded images which can be included in your web skin (either in the CSS or in the headers/footers) or other document types which can be uploaded and associated with this aggregation.</p><p>The following image types can be uploaded: bmp, gif, jpg, png.  The following other documents can also be uploaded: ai, doc, docx, eps, kml, pdf, psd, pub, txt, vsd, vsdx, xls, xlsx, xml, zip.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleskin\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>Manage your uploaded images which can be included in your web skin (either in the CSS or in the headers/footers) or other document types which can be uploaded and associated with this aggregation.</p><p>The following image types can be uploaded: bmp, gif, jpg, png.  The following other documents can also be uploaded: ai, doc, docx, eps, kml, pdf, psd, pub, txt, vsd, vsdx, xls, xlsx, xml, zip.   In addition, the following font formats are now accepted: eot, svg, ttf, woff, woff2.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleskin\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
 
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
@@ -1250,6 +1250,80 @@ namespace SobekCM.Library.AdminViewer
                         Output.Write("<br /><span class=\"sbkAdm_ActionLink\" >( ");
                         Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_skin_upload_file('" + thisImageFile + "');\" title=\"Delete this uploaded file\">delete</a> | ");
                         Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"window.prompt('Below is the URL, available to copy to your clipboard.  To copy to clipboard, press Ctrl+C (or Cmd+C) and Enter', '" + thisImageFile_URL + "'); return false;\" title=\"View the URL for this file\">view url</a>");
+                        Output.WriteLine(" )</span></td>");
+
+                        unused_column++;
+
+                        // Start a new row?
+                        if (unused_column >= 4)
+                        {
+                            Output.WriteLine("    </tr>");
+                            Output.WriteLine("    <tr>");
+                            unused_column = 0;
+                        }
+                    }
+
+                    // Finish the table cells and row
+                    while (unused_column < 4)
+                    {
+                        Output.WriteLine("      <td></td>");
+                        unused_column++;
+                    }
+                    Output.WriteLine("    </tr>");
+
+                    Output.WriteLine("  </table>");
+
+                    Output.WriteLine("    </td>");
+                    Output.WriteLine("  </tr>");
+                }
+
+                // Add exisitng FONTS |*.eot,.svg,.ttf,.woff,.woff2
+                string[] font_files = SobekCM_File_Utilities.GetFiles(uploads_dir, "|*.eot|*.svg|*.ttf|*.woff|*.woff2");
+                if (font_files.Length > 0)
+                {
+                    Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Existing Font Files</td></tr>");
+                    Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\"><td colspan=\"3\">&nbsp;</td></tr>");
+                    Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\">");
+                    Output.WriteLine("    <td colspan=\"3\" style=\"text-align:left\">");
+
+
+                    Output.WriteLine("  <table class=\"sbkSaav_UploadTable\">");
+                    Output.WriteLine("    <tr>");
+
+                    int unused_column = 0;
+                    foreach (string thisDocument in font_files)
+                    {
+                        string thisDocFile = Path.GetFileName(thisDocument);
+                        string thisDocFile_URL = RequestSpecificValues.Current_Mode.Base_URL + "design/skins/" + webSkin.Skin_Code + "/uploads/" + thisDocFile;
+
+                        // Determine which image to use for this document
+                        string extension = Path.GetExtension(thisDocument);
+                        string thisDocFileImage = Static_Resources_Gateway.File_Font_Img;
+
+                        Output.Write("      <td>");
+                        Output.Write("<a href=\"" + thisDocFile_URL + "\" target=\"_" + thisDocFile + "\" title=\"Download this uploaded font file\">");
+                        Output.Write("<img class=\"sbkSaav_UploadThumbnail2\" src=\"" + thisDocFileImage + "\" alt=\"Document\" title=\"" + thisDocFile + "\" /></a>");
+
+
+                        string display_name = thisDocFile;
+
+                        if (display_name.Length > 25)
+                        {
+                            Output.Write("<br /><span class=\"sbkSaav_UploadTitle\"><abbr title=\"" + display_name + "\">" + thisDocFile.Substring(0, 20) + "..." + extension + "</abbr></span>");
+                        }
+                        else
+                        {
+                            Output.Write("<br /><span class=\"sbkSaav_UploadTitle\">" + thisDocFile + "</span>");
+                        }
+
+
+
+                        // Build the action links
+                        Output.Write("<br /><span class=\"sbkAdm_ActionLink\" >( ");
+                        Output.Write("<a href=\"" + thisDocFile_URL + "\" target=\"_" + thisDocFile + "\" title=\"Download\">download</a> | ");
+                        Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"return delete_skin_upload_file('" + thisDocFile + "');\" title=\"Delete this uploaded font\">delete</a> | ");
+                        Output.Write("<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "l/technical/javascriptrequired\" onclick=\"window.prompt('Below is the URL, available to copy to your clipboard.  To copy to clipboard, press Ctrl+C (or Cmd+C) and Enter', '" + thisDocFile_URL + "'); return false;\" title=\"View the URL for this file\">view url</a>");
+
                         Output.WriteLine(" )</span></td>");
 
                         unused_column++;
@@ -1353,7 +1427,7 @@ namespace SobekCM.Library.AdminViewer
                                 break;
                         }
                         Output.Write("      <td>");
-                        Output.Write("<a href=\"" + thisDocFile_URL + "\" target=\"_" + thisDocFile + "\" title=\"View this uploaded image\">");
+                        Output.Write("<a href=\"" + thisDocFile_URL + "\" target=\"_" + thisDocFile + "\" title=\"View this uploaded document\">");
                         Output.Write("<img class=\"sbkSaav_UploadThumbnail2\" src=\"" + thisDocFileImage + "\" alt=\"Document\" title=\"" + thisDocFile + "\" /></a>");
 
 
@@ -1426,9 +1500,10 @@ namespace SobekCM.Library.AdminViewer
                     break;
 
                 case 5:
-                    add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg,.ai,.doc,.docx,.eps,.kml,.pdf,.psd,.pub,.txt,.vsd,.vsdx,.xls,.xlsx,.xml,.zip", skinDirectory + "\\uploads", String.Empty, true, Tracer);
+                    add_upload_controls(MainPlaceHolder, ".gif,.bmp,.jpg,.png,.jpeg,.ai,.doc,.docx,.eps,.kml,.pdf,.psd,.pub,.txt,.vsd,.vsdx,.xls,.xlsx,.xml,.zip,.eot,.svg,.ttf,.woff,.woff2", skinDirectory + "\\uploads", String.Empty, true, Tracer);
                     break;
             }
+            
         }
 
         private void add_upload_controls(PlaceHolder UploadFilesPlaceHolder, string FileExtensions, string UploadDirectory, string ServerSideName, bool UploadMultiple, Custom_Tracer Tracer)

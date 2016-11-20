@@ -150,6 +150,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             File_AI_Img = "http://cdn.sobekrepository.org/images/misc/file_ai.png";
             File_EPS_Img = "http://cdn.sobekrepository.org/images/misc/file_eps.png";
             File_Excel_Img = "http://cdn.sobekrepository.org/images/misc/file_excel.png";
+            File_Font_Img = "http://cdn.sobekrepository.org/images/misc/file_font.png";
             File_KML_Img = "http://cdn.sobekrepository.org/images/misc/file_kml.png";
             File_PDF_Img = "http://cdn.sobekrepository.org/images/misc/file_pdf.png";
             File_PSD_Img = "http://cdn.sobekrepository.org/images/misc/file_psd.png";
@@ -1171,6 +1172,12 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [XmlElement]
         [ProtoMember(130)]
         public string File_Excel_Img { get; set; }
+
+        /// <summary> URL for the default resource 'file_font.png' file ( http://cdn.sobekrepository.org/images/misc/file_font.png by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(373)]
+        public string File_Font_Img { get; set; }
 
         /// <summary> URL for the default resource 'file_kml.png' file ( http://cdn.sobekrepository.org/images/misc/file_kml.png by default)</summary>
         [DataMember]
@@ -3144,6 +3151,10 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
 
                 case "file_excel_img":
                     File_Excel_Img = Source;
+                    break;
+
+                case "file_font_img":
+                    File_Font_Img = Source;
                     break;
 
                 case "file_kml_img":
