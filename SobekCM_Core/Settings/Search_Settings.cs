@@ -14,6 +14,7 @@ namespace SobekCM.Core.Settings
         {
             Facets_Collapsible = false;
             Can_Remove_Single_Term = true;
+            Include_Result_Count_In_Search_Text = true;
         }
 
         /// <summary> Flag indicates if users can remove a single part of their search term </summary>
@@ -40,5 +41,11 @@ namespace SobekCM.Core.Settings
         [XmlElement("pullFacetsOnSearch")]
         [ProtoMember(4)]
         public bool Pull_Facets_On_Search { get; set; }
+
+        /// <summary> Flag indicates whether to include the results count in the search text ( i.e., Your search for .. resulted in 2 title. ) </summary>
+        [DataMember(Name = "includeResultCountInSearchText")]
+        [XmlElement("includeResultCountInSearchText")]
+        [ProtoMember(5)]
+        public bool Include_Result_Count_In_Search_Text { get; set; }
     }
 }

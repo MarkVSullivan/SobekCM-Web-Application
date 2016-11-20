@@ -609,7 +609,7 @@ namespace SobekCM.Library.HTML
                     descriptionBuilder.Append("<div class=\"sbkPrsw_ResultsExplanation\">");
                     StringBuilder searchInfoBuilder = new StringBuilder();
                     StringWriter writer = new StringWriter(searchInfoBuilder);
-                    Show_Search_Info(writer, false);
+                    Show_Search_Info(writer, UI_ApplicationCache_Gateway.Settings.Search.Include_Result_Count_In_Search_Text);
                     summation = remove_html_tags(searchInfoBuilder.ToString()).Replace("\"", "").Replace("'", "").Replace("\n", "").Replace("\r", "").Replace("&", "%26");
                     descriptionBuilder.Append(searchInfoBuilder);
                     descriptionBuilder.Append("</div>");
@@ -1032,7 +1032,7 @@ namespace SobekCM.Library.HTML
                     descriptionBuilder.Append("<div class=\"sbkPrsw_ResultsExplanation\">");
                     StringBuilder searchInfoBuilder = new StringBuilder();
                     StringWriter writer = new StringWriter(searchInfoBuilder);
-                    Show_Search_Info(writer, false);
+                    Show_Search_Info(writer, true);
                     descriptionBuilder.Append(searchInfoBuilder);
                     descriptionBuilder.Append("</div>");
                     DESCRIPTION = descriptionBuilder.ToString();
@@ -1676,7 +1676,7 @@ namespace SobekCM.Library.HTML
                 builder.AppendLine();
 
                 builder.AppendLine("<nav class=\"sbkPrsw_FacetColumn\" role=\"complementary\" aria-label=\"Facets\">");
-                builder.AppendLine("<div class=\"sbkPrsw_FacetColumnTitle\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("NARROW RESULTS BY", RequestSpecificValues.Current_Mode.Language) + ":</div>");
+                builder.AppendLine("<div class=\"sbkPrsw_FacetColumnTitle\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Narrow Results By", RequestSpecificValues.Current_Mode.Language) + ":</div>");
 
 
                 // Add the aggregation information first
