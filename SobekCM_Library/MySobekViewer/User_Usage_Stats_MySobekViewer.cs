@@ -35,11 +35,13 @@ namespace SobekCM.Library.MySobekViewer
             Tracer.Add_Trace("User_Usage_Stats_MySobekViewer.Write_HTML", String.Empty);
 
             string submode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
+            if (String.IsNullOrEmpty(submode))
+                submode = String.Empty;
 
             // Determine the date (month,year) for the usage stats to display
             int month = UI_ApplicationCache_Gateway.Stats_Date_Range.Latest_Month;
             int year = UI_ApplicationCache_Gateway.Stats_Date_Range.Latest_Year;
-            if (submode.Length >= 6)
+            if ( submode.Length >= 6)
             {
                 Int32.TryParse(submode.Substring(0, 4), out year);
                 Int32.TryParse(submode.Substring(4, 2), out month);

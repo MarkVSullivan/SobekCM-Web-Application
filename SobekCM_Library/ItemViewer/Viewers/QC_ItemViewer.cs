@@ -524,7 +524,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     {
                         foreach (QC_Viewer_Page_Division_Info thisPage in selected_page_div_from_form)
                         {
-                            Delete_Resource_File(thisPage.METS_StructMap_Page_Node.Files[0].File_Name_Sans_Extension);
+                            if (( thisPage.METS_StructMap_Page_Node.Files != null ) && ( thisPage.METS_StructMap_Page_Node.Files.Count > 0 ))
+                                Delete_Resource_File(thisPage.METS_StructMap_Page_Node.Files[0].File_Name_Sans_Extension);
                         }
                     }
 
@@ -548,7 +549,7 @@ namespace SobekCM.Library.ItemViewer.Viewers
             }
 
             // Get the pages pre-order to be used everywhere else
-            static_pages = qc_item.Divisions.Physical_Tree.Pages_PreOrder;
+            static_pages = qc_item.Divisions.Physical_Tree.Pages_PreOrder_With_Files;
             if (static_pages == null)
                 static_pages = new List<abstract_TreeNode>();
         }
@@ -922,11 +923,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
         {
             SortedDictionary<string, Page_TreeNode> nodeToFilename = new SortedDictionary<string, Page_TreeNode>();
             int newPageCount = 0;
+
             // Add each page node to a sorted list/dictionary and clear the label
             foreach (Page_TreeNode thisNode in qc_item.Divisions.Physical_Tree.Pages_PreOrder)
             {
                 thisNode.Label = String.Empty;
-                string file_sans = thisNode.Files[0].File_Name_Sans_Extension;
+                string file_sans = "missing" + newPageCount;
+                if (( thisNode.Files != null ) && ( thisNode.Files.Count > 0 ))
+                    file_sans = thisNode.Files[0].File_Name_Sans_Extension;
                 if (!nodeToFilename.ContainsKey(file_sans))
                 {
                     nodeToFilename[file_sans] = thisNode;
@@ -1372,6 +1376,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                     if (last_added_division.Nodes.Count > 0)
                     {
                         // Since there were pages, add this to the METS
+                        if (index_within_chapter_roots_to_begin_insert > qc_item.Divisions.Physical_Tree.Roots.Count)
+                            index_within_chapter_roots_to_begin_insert = qc_item.Divisions.Physical_Tree.Roots.Count;
+
                         qc_item.Divisions.Physical_Tree.Roots.Insert(index_within_chapter_roots_to_begin_insert++, last_added_division);
                     }
                 }
@@ -2177,7 +2184,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 foreach (Page_TreeNode thisFile in static_pages)
                 {
-                    Output.WriteLine("<option value=\"" + thisFile.Files[0].File_Name_Sans_Extension + "\">" + thisFile.Files[0].File_Name_Sans_Extension + "</option>");
+                    if (( thisFile.Files != null ) && ( thisFile.Files.Count > 0 ))
+                        Output.WriteLine("<option value=\"" + thisFile.Files[0].File_Name_Sans_Extension + "\">" + thisFile.Files[0].File_Name_Sans_Extension + "</option>");
                 }
             }
 
@@ -2191,7 +2199,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
             {
                 foreach (Page_TreeNode thisFile in static_pages)
                 {
-                    Output.WriteLine("<option value=\"" + thisFile.Files[0].File_Name_Sans_Extension + "\">" + thisFile.Files[0].File_Name_Sans_Extension + "</option>");
+                    if ((thisFile.Files != null) && (thisFile.Files.Count > 0))
+                        Output.WriteLine("<option value=\"" + thisFile.Files[0].File_Name_Sans_Extension + "\">" + thisFile.Files[0].File_Name_Sans_Extension + "</option>");
                 }
             }
             Output.WriteLine("</select></td></tr>");
@@ -2628,7 +2637,9 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 {
                     thumbnail_count++;
                     string currentPageURL1 = UrlWriterHelper.Redirect_URL(CurrentRequest, (thumbnail_count / thumbnails_per_page + (thumbnail_count % thumbnails_per_page == 0 ? 0 : 1)).ToString() + "qc");
-                    string filename = thisFile.Files[0].File_Name_Sans_Extension;
+                    string filename = "Empty Page";
+                    if (( thisFile.Files != null ) && ( thisFile.Files.Count > 0 ))
+                        filename = thisFile.Files[0].File_Name_Sans_Extension;
                     string tooltipText = String.Empty;
 
                     if (filename.Length > 16)

@@ -143,7 +143,7 @@ namespace SobekCM.Library.MySobekViewer
 								mainImg.Save(jpeg, ImageFormat.Jpeg);
 								var thumbnailImg = ScaleImage(tiffImg, 150, 400);
 								thumbnailImg.Save(jpeg_thumbnail, ImageFormat.Jpeg);
-
+                                tiffImg.Dispose();
 							}
 							catch 
 							{
@@ -279,8 +279,9 @@ namespace SobekCM.Library.MySobekViewer
                                 {
                                     File.Delete(thisFile);
                                 }
-                                catch
+                                catch ( Exception ee )
                                 {
+                                    RequestSpecificValues.Tracer.Add_Trace("Page_Image_Upload_MySobekViewer.Constructor","Error deleting uploaded file: " + ee.Message );
                                     // Do nothing - not a fatal problem
                                 }
                             }
@@ -487,8 +488,9 @@ namespace SobekCM.Library.MySobekViewer
                     {
                         File.Delete(thisFile);
                     }
-                    catch
+                    catch (Exception ee)
                     {
+                        RequestSpecificValues.Tracer.Add_Trace("Page_Image_Upload_MySobekViewer.Constructor", "Error deleting uploaded file: " + ee.Message);
                         // Do nothing - not a fatal problem
                     }
                 }

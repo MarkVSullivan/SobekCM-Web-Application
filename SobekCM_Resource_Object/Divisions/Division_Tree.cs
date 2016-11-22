@@ -236,7 +236,7 @@ namespace SobekCM.Resource_Object.Divisions
                 // Do the preorder build on each root node
                 foreach (abstract_TreeNode rootNode in Roots)
                 {
-                    preorder_build(returnVal, rootNode, false);
+                    preorder_build(returnVal, rootNode, false, false);
                 }
 
                 // Return the built collection
@@ -255,7 +255,7 @@ namespace SobekCM.Resource_Object.Divisions
                 // Do the preorder build on each root node
                 foreach (abstract_TreeNode rootNode in Roots)
                 {
-                    preorder_build(returnVal, rootNode, true);
+                    preorder_build(returnVal, rootNode, true, false);
                 }
 
                 // Return the built collection
@@ -263,7 +263,26 @@ namespace SobekCM.Resource_Object.Divisions
             }
         }
 
-        private void preorder_build(List<abstract_TreeNode> Collection, abstract_TreeNode ThisNode, bool OnlyAddPages)
+        /// <summary> Gets all the page nodes on the tree in pre-order traversal, omitting any empty pages </summary>
+        public List<abstract_TreeNode> Pages_PreOrder_With_Files
+        {
+            get
+            {
+                // Build the return collection
+                List<abstract_TreeNode> returnVal = new List<abstract_TreeNode>();
+
+                // Do the preorder build on each root node
+                foreach (abstract_TreeNode rootNode in Roots)
+                {
+                    preorder_build(returnVal, rootNode, true, true);
+                }
+
+                // Return the built collection
+                return returnVal;
+            }
+        }
+
+        private void preorder_build(List<abstract_TreeNode> Collection, abstract_TreeNode ThisNode, bool OnlyAddPages, bool PagesMustHaveFiles)
         {
             // Since this is pre-order, first 'visit' this
             if (!OnlyAddPages)
@@ -274,7 +293,22 @@ namespace SobekCM.Resource_Object.Divisions
             {
                 // If we are just getting pages, only add if it is not already added
                 if ((ThisNode.Page) && (!Collection.Contains(ThisNode)))
-                    Collection.Add(ThisNode);
+                {
+                    // If you just add all files, just add it here
+                    if ( !PagesMustHaveFiles )
+                        Collection.Add(ThisNode);
+                    else
+                    {
+                        // Must ensure this page has files to add it
+                        Page_TreeNode asPage = ThisNode as Page_TreeNode;
+                        if (asPage != null)
+                        {
+                            if (( asPage.Files != null ) && ( asPage.Files.Count > 0 ))
+                                Collection.Add(asPage);
+                        }
+                    }
+
+                }
             }
 
             // is this a division node? .. which can have children ..
@@ -285,7 +319,7 @@ namespace SobekCM.Resource_Object.Divisions
                 // Do the same for all the children
                 foreach (abstract_TreeNode childNode in thisDivNode.Nodes)
                 {
-                    preorder_build(Collection, childNode, OnlyAddPages);
+                    preorder_build(Collection, childNode, OnlyAddPages, PagesMustHaveFiles);
                 }
             }
         }
