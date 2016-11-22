@@ -349,7 +349,8 @@ namespace SobekCM.Library.ItemViewer.Viewers
                 result.AppendLine(INDENT + "<div class=\"sbkCiv_CitationSection\" id=\"sbkCiv_" + fieldsSet.ID.Replace(" ", "_") + "Section\" >");
                 if (!String.IsNullOrEmpty(fieldsSet.Heading))
                 {
-                    result.AppendLine(INDENT + "<h2>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(fieldsSet.Heading, CurrentRequest.Language) + "</h2>");
+                    string heading = fieldsSet.Heading.Replace("[INSTANCE]", UI_ApplicationCache_Gateway.Settings.System.System_Abbreviation);
+                    result.AppendLine(INDENT + "<h2>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(heading, CurrentRequest.Language) + "</h2>");
                 }
                 result.AppendLine(INDENT + "  <dl>");
 
@@ -449,22 +450,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                valueArray.Add(display_text_from_value(thisValue.Value));
+                                                valueArray.Add(display_text_from_value(thisValue.Value, thisValue.URIs));
                                             }
                                             else
                                             {
-                                                valueArray.Add(display_text_from_value(thisValue.Value) + " ( " + thisValue.Language + " )");
+                                                valueArray.Add(display_text_from_value(thisValue.Value, thisValue.URIs) + " ( " + thisValue.Language + " )");
                                             }
                                         }
                                         else
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                valueArray.Add(display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + " )");
+                                                valueArray.Add(display_text_from_value(thisValue.Value, thisValue.URIs) + " ( " + thisValue.Authority + " )");
                                             }
                                             else
                                             {
-                                                valueArray.Add(display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
+                                                valueArray.Add(display_text_from_value(thisValue.Value, thisValue.URIs) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )");
                                             }
                                         }
 
@@ -475,22 +476,22 @@ namespace SobekCM.Library.ItemViewer.Viewers
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + "</span>");
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value, thisValue.URIs) + "</span>");
                                             }
                                             else
                                             {
-                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + " ( " + thisValue.Language + " )" + "</span>");
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value, thisValue.URIs) + " ( " + thisValue.Language + " )" + "</span>");
                                             }
                                         }
                                         else
                                         {
                                             if (String.IsNullOrEmpty(thisValue.Language))
                                             {
-                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + " )" + "</span>");
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value, thisValue.URIs) + " ( " + thisValue.Authority + " )" + "</span>");
                                             }
                                             else
                                             {
-                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>");
+                                                valueArray.Add("<span itemprop=\"" + thisField.ItemProp + "\">" + display_text_from_value(thisValue.Value, thisValue.URIs) + " ( " + thisValue.Authority + ", " + thisValue.Language + " )" + "</span>");
                                             }
                                         }
                                     }
@@ -731,6 +732,14 @@ namespace SobekCM.Library.ItemViewer.Viewers
         private static string display_text_from_value(string Value)
         {
             return HttpUtility.HtmlEncode(Value).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>");
+        }
+
+        private static string display_text_from_value(string Value, List<string> URIs )
+        {
+            if ((URIs == null) || (URIs.Count == 0))
+                return display_text_from_value(Value);
+
+            return "<a href=\"" + URIs[0] + "\">" + HttpUtility.HtmlEncode(Value).Replace("&lt;i&gt;", "<i>").Replace("&lt;/i&gt;", "</i>") + "</a>";
         }
 
         private static string search_link_from_value(string Value)

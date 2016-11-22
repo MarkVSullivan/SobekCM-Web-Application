@@ -41,7 +41,9 @@ namespace SobekCM.Library.Citation.SectionWriter
 
             bool first_creator = true;
 
-            Output.AppendLine("        <dt class=\"sbk_CivCREATOR_Element\" style=\"width:" + LeftColumnWidth + "px;\" >Creators: </dt>");
+            string displayLabel = (String.IsNullOrEmpty(ElementInfo.DisplayTerm)) ? "Creators" : ElementInfo.DisplayTerm;
+
+            Output.AppendLine("        <dt class=\"sbk_CivCREATOR_Element\" style=\"width:" + LeftColumnWidth + "px;\" >" + displayLabel + ": </dt>");
             Output.Append("        <dd class=\"sbk_CivCREATOR_Element\" style=\"margin-left:" + LeftColumnWidth + "px;\" >");
 
             // Determine if ths standard itemprop was overriden

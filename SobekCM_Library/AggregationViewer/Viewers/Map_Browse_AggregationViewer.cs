@@ -217,9 +217,10 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             StringBuilder contentBuilder = new StringBuilder(2000);
 			contentBuilder.Append(DatarowsInThisPoint.Count <= 2 ? "<div class=\"sbkMbav_InfoDivSmall\">" : "<div class=\"sbkMbav_InfoDiv\">");
             contentBuilder.Append("<table><tr style=\"vertical-align:top;\">");
+            string thisBibId = String.Empty;
             foreach (DataRow thisRow in DatarowsInThisPoint)
             {
-                string thisBibId = thisRow[2].ToString();
+                thisBibId = thisRow[2].ToString();
                 string groupTitle = thisRow[3].ToString();
                 string groupThumbnail = thisBibId.Substring(0,2) + "/" + thisBibId.Substring(2,2) + "/" + thisBibId.Substring(4,2) + "/" + thisBibId.Substring(6,2) + "/" + thisBibId.Substring(8) + "/" + thisRow[4];
                 int itemCount = Convert.ToInt32(thisRow[5]);
@@ -251,8 +252,8 @@ namespace SobekCM.Library.AggregationViewer.Viewers
             contentBuilder.Append("</tr></table>");
             contentBuilder.Append("</div>");
 
-            if (DatarowsInThisPoint.Count < 2)
-                contentBuilder.Append("<center><a href=\"" + Current_Mode.Base_URL + Current_Mode.Aggregation + "/results?coord=" + Latitude + "," + Longitude + ",,\">Click here for more information about this title</a></center><br/>");
+            if ((DatarowsInThisPoint.Count < 2) && ( !String.IsNullOrEmpty(thisBibId)))
+                contentBuilder.Append("<center><a href=\"" + Current_Mode.Base_URL + thisBibId + "\">Click here for more information about this title</a></center><br/>");
             else
                 contentBuilder.Append("<center><a href=\"" + Current_Mode.Base_URL + Current_Mode.Aggregation + "/results?coord=" + Latitude + "," + Longitude + ",,\">Click here for more information about these " + DatarowsInThisPoint.Count + " titles</a></center><br/>");
 

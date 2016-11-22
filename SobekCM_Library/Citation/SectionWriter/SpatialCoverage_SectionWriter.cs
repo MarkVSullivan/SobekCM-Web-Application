@@ -35,7 +35,9 @@ namespace SobekCM.Library.Citation.SectionWriter
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
         public void Write_Citation_Section(CitationElement ElementInfo, StringBuilder Output, BriefItemInfo Item, int LeftColumnWidth, string SearchLink, string SearchLinkEnd, Custom_Tracer Tracer)
         {
-            Output.AppendLine("        <dt class=\"sbk_CivSPATIAL_COVERAGE_Element\" style=\"width:" + LeftColumnWidth + "px;\" >Spatial Coverage: </dt>");
+            string displayLabel = (String.IsNullOrEmpty(ElementInfo.DisplayTerm)) ? "Spatial Coverage" : ElementInfo.DisplayTerm;
+
+            Output.AppendLine("        <dt class=\"sbk_CivSPATIAL_COVERAGE_Element\" style=\"width:" + LeftColumnWidth + "px;\" >" + displayLabel + ": </dt>");
             Output.Append("        <dd class=\"sbk_CivSPATIAL_COVERAGE_Element\" style=\"margin-left:" + LeftColumnWidth + "px;\">");
 
             int spatial_count = 1;

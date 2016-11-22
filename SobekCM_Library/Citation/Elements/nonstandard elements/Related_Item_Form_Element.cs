@@ -219,7 +219,7 @@ namespace SobekCM.Library.Citation.Elements
 
 					// Finish the popup form and add the CLOSE button
 					PopupFormBuilder.AppendLine("    <tr style=\"height:35px; text-align: center; vertical-align: bottom;\">");
-					PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\return close_related_item_form('form_related_item_" + item_index + "');\">CLOSE</button></td>");
+					PopupFormBuilder.AppendLine("      <td colspan=\"3\"><button title=\"Close\" class=\"sbkMetadata_RoundButton\" onclick=\"return close_related_item_form('form_related_item_" + item_index + "');\">CLOSE</button></td>");
 					PopupFormBuilder.AppendLine("    </tr>");
 					PopupFormBuilder.AppendLine("  </table>");
 					PopupFormBuilder.AppendLine("</div>");

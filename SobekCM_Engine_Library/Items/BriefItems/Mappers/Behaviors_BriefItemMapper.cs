@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SobekCM.Core.Aggregations;
 using SobekCM.Core.BriefItem;
+using SobekCM.Engine_Library.ApplicationState;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Behaviors;
 
@@ -22,11 +24,25 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             if (New.Behaviors == null) New.Behaviors = new BriefItem_Behaviors();
 
             // Copy aggregation codes over
-            New.Behaviors.Aggregation_Code_List = Original.Behaviors.Aggregation_Code_List.ToList();
+            if (Original.Behaviors.Aggregation_Code_List != null)
+            {
+                New.Behaviors.Aggregation_Code_List = Original.Behaviors.Aggregation_Code_List.ToList();
+
+                // Add the collections as well
+                foreach (string aggrCode in Original.Behaviors.Aggregation_Code_List)
+                {
+                    Item_Aggregation_Related_Aggregations thisAggr = Engine_ApplicationCache_Gateway.Codes[aggrCode];
+                    if ((thisAggr != null) && (thisAggr.Active))
+                    {
+                        New.Add_Description("Aggregation", thisAggr.Name).Add_URI(Engine_ApplicationCache_Gateway.Settings.Servers.Base_URL + thisAggr.Code);
+                    }
+                }
+            }
+
+            // Copy over the source and holing
             New.Behaviors.Holding_Location_Aggregation = Original.Bib_Info.HoldingCode;
             if (Original.Bib_Info.Source != null)
                 New.Behaviors.Source_Institution_Aggregation = Original.Bib_Info.Source.Code;
-
 
             // Copy the behavior information
             New.Behaviors.Dark_Flag = Original.Behaviors.Dark_Flag;

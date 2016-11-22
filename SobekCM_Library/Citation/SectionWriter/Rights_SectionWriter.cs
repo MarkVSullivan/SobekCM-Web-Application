@@ -84,7 +84,9 @@ namespace SobekCM.Library.Citation.SectionWriter
                 }
             }
 
-            Output.AppendLine("        <dt class=\"sbk_CivRIGHTS_Element\" style=\"width:" + LeftColumnWidth + "px;\" >Rights Management: </dt>");
+            string displayLabel = (String.IsNullOrEmpty(ElementInfo.DisplayTerm)) ? "Rights Management" : ElementInfo.DisplayTerm;
+
+            Output.AppendLine("        <dt class=\"sbk_CivRIGHTS_Element\" style=\"width:" + LeftColumnWidth + "px;\" >" + displayLabel + ": </dt>");
             Output.Append("        <dd class=\"sbk_CivRIGHTS_Element\" style=\"margin-left:" + LeftColumnWidth + "px;\"><span itemprop=\"rights\">");
 
             if ((rights_statement.IndexOf("http://") == 0) || (rights_statement.IndexOf("https://") == 0))

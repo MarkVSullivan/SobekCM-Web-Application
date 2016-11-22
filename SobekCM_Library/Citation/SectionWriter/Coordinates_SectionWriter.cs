@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using System.Web;
 using SobekCM.Core.BriefItem;
@@ -33,7 +34,9 @@ namespace SobekCM.Library.Citation.SectionWriter
         {
             bool first_coordinate = true;
 
-            Output.AppendLine("        <dt class=\"sbk_CivCOORDINATES_Element\" style=\"width:" + LeftColumnWidth + "px;\" >Coordinates: </dt>");
+            string displayLabel = ( String.IsNullOrEmpty(ElementInfo.DisplayTerm )) ? "Coordinates" : ElementInfo.DisplayTerm;
+
+            Output.AppendLine("        <dt class=\"sbk_CivCOORDINATES_Element\" style=\"width:" + LeftColumnWidth + "px;\" >" + displayLabel + ": </dt>");
             Output.Append("        <dd class=\"sbk_CivCOORDINATES_Element\" style=\"margin-left:" + LeftColumnWidth + "px;\" >");
 
             // Add the points first

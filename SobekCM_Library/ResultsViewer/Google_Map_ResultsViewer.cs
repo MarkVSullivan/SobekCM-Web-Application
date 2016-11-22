@@ -87,7 +87,7 @@ namespace SobekCM.Library.ResultsViewer
             // Start to create the first map html
             mapScriptHtml = new StringBuilder();
 
-            mapScriptHtml.AppendLine("<script async defer src=\"https://maps.googleapis.com/maps/api/js?key=AIzaSyBhi16V5mDGfvvmPkAwNxdjweZ54Mt4ku8&callback=initMap\" type=\"text/javascript\"></script>");
+            mapScriptHtml.AppendLine("<script async defer src=\"https://maps.googleapis.com/maps/api/js?key=" + UI_ApplicationCache_Gateway.Settings.System.Google_Map_API_Key + "&callback=initMap\" type=\"text/javascript\"></script>");
 
 
 
