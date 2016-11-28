@@ -335,7 +335,18 @@ namespace SobekCM.Library.HTML
 					case Aggregation_Type_Enum.Home_Edit:
 				        if (!hierarchyObject.Custom_Home_Page)
 				        {
-                            collectionViewer = AggregationViewer_Factory.Get_Viewer(hierarchyObject.Views_And_Searches[0], RequestSpecificValues, viewBag);
+                            // Are there tiles here?
+				            string aggregation_tile_directory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, hierarchyObject.ObjDirectory, "images", "tiles");
+				            if (Directory.Exists(aggregation_tile_directory))
+				            {
+				                string[] jpeg_tiles = Directory.GetFiles(aggregation_tile_directory, "*.jpg");
+                                if (jpeg_tiles.Length > 0)
+                                    collectionViewer = new Tiles_Home_AggregationViewer(RequestSpecificValues, viewBag);
+				            }
+
+                            // If the tiles home page as not built, build the standard viewer
+                            if ( collectionViewer == null )
+                                collectionViewer = AggregationViewer_Factory.Get_Viewer(hierarchyObject.Views_And_Searches[0], RequestSpecificValues, viewBag);
 				        }
 				        else
 				        {
@@ -1264,70 +1275,10 @@ namespace SobekCM.Library.HTML
 	            }
 
 
-	            // If there are sub aggregationPermissions here, show them
+	            // If there are sub aggregations here, show them
 	            if (hierarchyObject.Children_Count > 0)
 	            {
-		            // Verify some of the children are active and not hidden
-		            // Keep the last aggregation alias
-		            string lastAlias = RequestSpecificValues.Current_Mode.Aggregation_Alias;
-		            RequestSpecificValues.Current_Mode.Aggregation_Alias = String.Empty;
-
-		            // Collect the html to write (this alphabetizes the children)
-		            List<string> html_list = new List<string>();
-	                int aggreCount = -1;
-		            foreach (Item_Aggregation_Related_Aggregations childAggr in hierarchyObject.Children)
-		            {
-                        children_icons_added = true;
-		                aggreCount++;
-			            Item_Aggregation_Related_Aggregations latest = UI_ApplicationCache_Gateway.Aggregations[childAggr.Code];
-						if ((latest != null ) && (!latest.Hidden) && (latest.Active))
-			            {
-				            string name = childAggr.Name;
-                            string thisDescription = latest.Description;
-
-				            if (name.ToUpper() == "ADDED AUTOMATICALLY")
-					            name = childAggr.Code + " ( Added Automatically )";
-
-				            RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
-				            string image_url = RequestSpecificValues.Current_Mode.Base_URL + "design/aggregations/" + childAggr.Code + "/images/buttons/coll.gif";
-				            if ((name.IndexOf("The ") == 0) && (name.Length > 4))
-				            {
-                                html_list.Add("  <li class=\"sbkAghsw_CollectionButton\">" + Environment.NewLine + "      <span id=\"sbkAghsw_CollectionButtonImg" + aggreCount + "\" class=\"sbkAghsw_CollectionButtonImg\"><span class=\"spanHoverText\" style=\"display:none\">" + thisDescription + "</span><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + image_url + "\" alt=\"" + UI_ApplicationCache_Gateway.Translation.Get_Translation(name, RequestSpecificValues.Current_Mode.Language).Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(name, RequestSpecificValues.Current_Mode.Language).Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></span>" + Environment.NewLine + "  </li>");
-				            }
-				            else
-				            {
-                                html_list.Add("  <li class=\"sbkAghsw_CollectionButton\">" + Environment.NewLine + "      <span id=\"sbkAghsw_CollectionButtonImg" + aggreCount + "\" class=\"sbkAghsw_CollectionButtonImg\"><span class=\"spanHoverText\" style=\"display:none\">" + thisDescription + "</span><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + image_url + "\" alt=\"" + UI_ApplicationCache_Gateway.Translation.Get_Translation(name, RequestSpecificValues.Current_Mode.Language).Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(name, RequestSpecificValues.Current_Mode.Language).Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></span>" + Environment.NewLine + "  </li>");
-				            }
-			            }
-		            }
-
-	                if ((html_list.Count > 0) && ( String.Compare(hierarchyObject.Code, "all", StringComparison.OrdinalIgnoreCase) != 0 ))
-	                {
-	                    string childTypes = hierarchyObject.Child_Types.Trim();
-	                    if (childTypes.IndexOf(" ") > 0)
-	                    {
-	                        TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
-	                        childTypes = textInfo.ToTitleCase(childTypes);
-	                    }
-
-	                    string translatedChild = UI_ApplicationCache_Gateway.Translation.Get_Translation(childTypes, RequestSpecificValues.Current_Mode.Language);
-	                    Output.WriteLine("<section id=\"sbkAghsw_Children\" role=\"navigation\" aria-label=\"" + translatedChild + "\">");
-	                    Output.WriteLine("<h2 id=\"subcolls\">" + translatedChild  + "</h2>");
-			            
-
-						Output.WriteLine("<ul class=\"sbkAghsw_CollectionButtonList\">");
-
-			            foreach (string thisHtml in html_list)
-                        {
-				            Output.WriteLine(thisHtml);
-			            }
-
-			            Output.WriteLine("</ul>");
-                        Output.WriteLine("</section>");
-
-			            // Restore the old alias
-			            RequestSpecificValues.Current_Mode.Aggregation_Alias = lastAlias;
-		            }
+	                children_icons_added = Add_SubCollection_Buttons(Output, RequestSpecificValues, hierarchyObject);
 	            }
                 RequestSpecificValues.Current_Mode.Aggregation = hierarchyObject.Code;
             }
@@ -1590,6 +1541,77 @@ namespace SobekCM.Library.HTML
 
 			Output.WriteLine("</div>");
             return true;
+        }
+
+        public static bool Add_SubCollection_Buttons(TextWriter Output, RequestCache RequestSpecificValues, Item_Aggregation hierarchyObject)
+        {
+            bool children_icons_added = false;
+
+            // Verify some of the children are active and not hidden
+            // Keep the last aggregation alias
+            string lastAlias = RequestSpecificValues.Current_Mode.Aggregation_Alias;
+            RequestSpecificValues.Current_Mode.Aggregation_Alias = String.Empty;
+
+            // Collect the html to write (this alphabetizes the children)
+            List<string> html_list = new List<string>();
+            int aggreCount = -1;
+            foreach (Item_Aggregation_Related_Aggregations childAggr in hierarchyObject.Children)
+            {
+                children_icons_added = true;
+                aggreCount++;
+                Item_Aggregation_Related_Aggregations latest = UI_ApplicationCache_Gateway.Aggregations[childAggr.Code];
+                if ((latest != null) && (!latest.Hidden) && (latest.Active))
+                {
+                    string name = childAggr.Name;
+                    string thisDescription = latest.Description;
+
+                    if (name.ToUpper() == "ADDED AUTOMATICALLY")
+                        name = childAggr.Code + " ( Added Automatically )";
+
+                    RequestSpecificValues.Current_Mode.Aggregation = childAggr.Code.ToLower();
+                    string image_url = RequestSpecificValues.Current_Mode.Base_URL + "design/aggregations/" + childAggr.Code + "/images/buttons/coll.gif";
+                    if ((name.IndexOf("The ") == 0) && (name.Length > 4))
+                    {
+                        html_list.Add("  <li class=\"sbkAghsw_CollectionButton\">" + Environment.NewLine + "      <span id=\"sbkAghsw_CollectionButtonImg" + aggreCount + "\" class=\"sbkAghsw_CollectionButtonImg\"><span class=\"spanHoverText\" style=\"display:none\">" + thisDescription + "</span><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + image_url + "\" alt=\"" + UI_ApplicationCache_Gateway.Translation.Get_Translation(name, RequestSpecificValues.Current_Mode.Language).Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(name, RequestSpecificValues.Current_Mode.Language).Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></span>" + Environment.NewLine + "  </li>");
+                    }
+                    else
+                    {
+                        html_list.Add("  <li class=\"sbkAghsw_CollectionButton\">" + Environment.NewLine + "      <span id=\"sbkAghsw_CollectionButtonImg" + aggreCount + "\" class=\"sbkAghsw_CollectionButtonImg\"><span class=\"spanHoverText\" style=\"display:none\">" + thisDescription + "</span><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\"><img src=\"" + image_url + "\" alt=\"" + UI_ApplicationCache_Gateway.Translation.Get_Translation(name, RequestSpecificValues.Current_Mode.Language).Replace("&", "&amp;").Replace("\"", "&quot;") + "\" /></a></span>" + Environment.NewLine + "      <span class=\"sbkAghsw_CollectionButtonTxt\"><a href=\"" + UrlWriterHelper.Redirect_URL(RequestSpecificValues.Current_Mode) + "\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation(name, RequestSpecificValues.Current_Mode.Language).Replace("&", "&amp;").Replace("\"", "&quot;") + "</a></span>" + Environment.NewLine + "  </li>");
+                    }
+                }
+            }
+
+            if ((html_list.Count > 0) && (String.Compare(hierarchyObject.Code, "all", StringComparison.OrdinalIgnoreCase) != 0))
+            {
+                string childTypes = hierarchyObject.Child_Types.Trim();
+                if (childTypes.IndexOf(" ") > 0)
+                {
+                    TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+                    childTypes = textInfo.ToTitleCase(childTypes);
+                }
+
+                string translatedChild = UI_ApplicationCache_Gateway.Translation.Get_Translation(childTypes, RequestSpecificValues.Current_Mode.Language);
+                Output.WriteLine("<section id=\"sbkAghsw_Children\" role=\"navigation\" aria-label=\"" + translatedChild + "\">");
+                Output.WriteLine("<h2 id=\"subcolls\">" + translatedChild + "</h2>");
+
+
+                Output.WriteLine("<ul class=\"sbkAghsw_CollectionButtonList\">");
+
+                foreach (string thisHtml in html_list)
+                {
+                    Output.WriteLine(thisHtml);
+                }
+
+                Output.WriteLine("</ul>");
+                Output.WriteLine("</section>");
+
+                // Restore the old alias
+                RequestSpecificValues.Current_Mode.Aggregation_Alias = lastAlias;
+            }
+
+            RequestSpecificValues.Current_Mode.Aggregation = hierarchyObject.Code;
+
+            return children_icons_added;
         }
 
         private string Int_To_Comma_String(int Value)

@@ -118,6 +118,7 @@
     <Compile Include="AggregationViewer\Viewers\Map_Browse_AggregationViewer_Beta.cs" />
     <Compile Include="AggregationViewer\Viewers\Map_Search_AggregationViewer_Beta.cs" />
     <Compile Include="AggregationViewer\Viewers\Rotating_Highlight_MimeType_AggregationViewer.cs" />
+    <Compile Include="AggregationViewer\Viewers\Tiles_Home_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\User_Permissions_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Work_History_AggregationViewer.cs" />
     <Compile Include="Citation\Elements\base types\checkBox_Element.cs" />

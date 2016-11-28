@@ -190,74 +190,10 @@ namespace SobekCM.Library.HTML
 
 
             // Create the mySobek text
-            string mySobekLinks = String.Empty;
-            if (!RequestSpecificValues.Current_Mode.Is_Robot)
-            {
-                string mySobekText = "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
-                string mySobekOptions = url_options;
-                string mySobekLogoutOptions = url_options;
-                string return_url = String.Empty;
-                if ((HttpContext.Current != null) && (HttpContext.Current.Items["Original_URL"] != null))
-                    return_url = HttpContext.Current.Items["Original_URL"].ToString().ToLower().Replace(RequestSpecificValues.Current_Mode.Base_URL.ToLower(), "");
-                if (return_url.IndexOf("?") > 0)
-                    return_url = return_url.Substring(0, return_url.IndexOf("?"));
-                if (return_url.IndexOf("my/") == 0)
-                    return_url = String.Empty;
-                string logout_return_url = return_url;
-                if (logout_return_url.IndexOf("l/") == 0)
-                    logout_return_url = logout_return_url.Substring(2);
+            string mySobekLinks = create_mysobek_link(RequestSpecificValues, url_options, null);
 
-                return_url = HttpUtility.UrlEncode(return_url);
-                logout_return_url = HttpUtility.UrlEncode(logout_return_url);
-
-                if ((url_options.Length > 0) || (return_url.Length > 0))
-                {
-                    if ((url_options.Length > 0) && (return_url.Length > 0))
-                    {
-                        mySobekOptions = "?" + mySobekOptions + "&return=" + return_url;
-                    }
-                    else
-                    {
-                        if (url_options.Length > 0)
-                            mySobekOptions = "?" + mySobekOptions;
-                        else
-                            mySobekOptions = "?return=" + return_url;
-                    }
-                }
-
-                if ((url_options.Length > 0) || (logout_return_url.Length > 0))
-                {
-                    if ((url_options.Length > 0) && (logout_return_url.Length > 0))
-                    {
-                        mySobekLogoutOptions = "?" + mySobekOptions + "&return=" + logout_return_url;
-                    }
-                    else
-                    {
-                        if (url_options.Length > 0)
-                            mySobekLogoutOptions = "?" + mySobekOptions;
-                        else
-                            mySobekLogoutOptions = "?return=" + logout_return_url;
-                    }
-                }
-
-                if ((HttpContext.Current != null) && (HttpContext.Current.Session["user"] == null))
-                {
-                    mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logon" + mySobekOptions + "\">" + mySobekText + " Home</a>";
-                }
-                else
-                {
-                    User_Object tempObject = ((User_Object)HttpContext.Current.Session["user"]);
-                    if (tempObject.Nickname.Length > 0)
-                    {
-                        mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my" + mySobekOptions + "\">" + tempObject.Nickname + "'s " + mySobekText + "</a>&nbsp; | &nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logout" + mySobekLogoutOptions + "\">Log Out</a>";
-                    }
-                    else
-                    {
-                        mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my" + mySobekOptions + "\">" + tempObject.Given_Name + "'s " + mySobekText + "</a>&nbsp; | &nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logout" + mySobekLogoutOptions + "\">Log Out</a>";
-                    }
-                }
-            }
-
+            // Look for the collection code
+            string collection_code = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Aggregation) ? String.Empty : RequestSpecificValues.Current_Mode.Aggregation;
 
             // Get the language selections
             Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
@@ -332,7 +268,7 @@ namespace SobekCM.Library.HTML
             {
                 try
                 {
-                    Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid));
+                    Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_Item_HTML.Replace("<%COLLCODE%>",collection_code).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid));
                 }
                 catch (Exception ee)
                 {
@@ -348,16 +284,16 @@ namespace SobekCM.Library.HTML
                 if (container_inner.Length == 0)
                 {
                     if ((RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.Value))
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", String.Empty).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid));
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%COLLCODE%>", collection_code).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", String.Empty).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid));
                     else
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid));
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%COLLCODE%>", collection_code).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid));
                 }
                 else
                 {
                     if ((RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.Value))
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "<div id=\"" + container_inner + "\">").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid));
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%COLLCODE%>", collection_code).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "<div id=\"" + container_inner + "\">").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid));
                     else
-                        Output.WriteLine("<div id=\"" + container_inner + "\">" + Environment.NewLine + RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid));
+                        Output.WriteLine("<div id=\"" + container_inner + "\">" + Environment.NewLine + RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%COLLCODE%>", collection_code).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid));
 
                 }
             }
@@ -392,6 +328,9 @@ namespace SobekCM.Library.HTML
                 urlOptions2 = "&" + url_options;
             }
 
+            // Create the mySobek text
+            string mySobekLinks = create_mysobek_link(RequestSpecificValues, url_options, "staff login");
+
             // Get the base url
             string base_url = RequestSpecificValues.Current_Mode.Base_URL;
             if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
@@ -413,25 +352,102 @@ namespace SobekCM.Library.HTML
 
             if (useItemFooter)
             {
-                Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_Item_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid).Trim());
+                Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_Item_HTML.Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid).Trim());
             }
             else
             {
                 if (( RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.Value))
                 {
                     if (!end_div)
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid).Trim());
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid).Trim());
                     else
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "</div>").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid).Trim());
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "</div>").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid).Trim());
                 }
                 else
                 {
                     if (!end_div)
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid).Trim());
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid).Trim());
                     else
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid).Trim() + Environment.NewLine + "</div>");
+                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid).Trim() + Environment.NewLine + "</div>");
                 }
             }
+        }
+
+        private static string create_mysobek_link( RequestCache RequestSpecificValues, string url_options, string login_text )
+        {
+            string mySobekLinks = String.Empty;
+            if (!RequestSpecificValues.Current_Mode.Is_Robot)
+            {
+                string mySobekText = "my" + RequestSpecificValues.Current_Mode.Instance_Abbreviation;
+                string mySobekOptions = url_options;
+                string mySobekLogoutOptions = url_options;
+                string return_url = String.Empty;
+                if ((HttpContext.Current != null) && (HttpContext.Current.Items["Original_URL"] != null))
+                    return_url = HttpContext.Current.Items["Original_URL"].ToString().ToLower().Replace(RequestSpecificValues.Current_Mode.Base_URL.ToLower(), "");
+                if (return_url.IndexOf("?") > 0)
+                    return_url = return_url.Substring(0, return_url.IndexOf("?"));
+                if (return_url.IndexOf("my/") == 0)
+                    return_url = String.Empty;
+                string logout_return_url = return_url;
+                if (logout_return_url.IndexOf("l/") == 0)
+                    logout_return_url = logout_return_url.Substring(2);
+
+                return_url = HttpUtility.UrlEncode(return_url);
+                logout_return_url = HttpUtility.UrlEncode(logout_return_url);
+
+                if ((url_options.Length > 0) || (return_url.Length > 0))
+                {
+                    if ((url_options.Length > 0) && (return_url.Length > 0))
+                    {
+                        mySobekOptions = "?" + mySobekOptions + "&return=" + return_url;
+                    }
+                    else
+                    {
+                        if (url_options.Length > 0)
+                            mySobekOptions = "?" + mySobekOptions;
+                        else
+                            mySobekOptions = "?return=" + return_url;
+                    }
+                }
+
+                if ((url_options.Length > 0) || (logout_return_url.Length > 0))
+                {
+                    if ((url_options.Length > 0) && (logout_return_url.Length > 0))
+                    {
+                        mySobekLogoutOptions = "?" + mySobekOptions + "&return=" + logout_return_url;
+                    }
+                    else
+                    {
+                        if (url_options.Length > 0)
+                            mySobekLogoutOptions = "?" + mySobekOptions;
+                        else
+                            mySobekLogoutOptions = "?return=" + logout_return_url;
+                    }
+                }
+
+                if ((HttpContext.Current != null) && (HttpContext.Current.Session["user"] == null))
+                {
+                    if (!String.IsNullOrEmpty(login_text))
+                        mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logon" + mySobekOptions + "\">" + login_text + "</a>";
+                    else
+                        mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logon" + mySobekOptions + "\">" + mySobekText + " Home</a>";
+
+                }
+                else
+                {
+                    User_Object tempObject = ((User_Object)HttpContext.Current.Session["user"]);
+                    if (tempObject.Nickname.Length > 0)
+                    {
+                        mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my" + mySobekOptions + "\">" + tempObject.Nickname + "'s " + mySobekText + "</a>&nbsp; | &nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logout" + mySobekLogoutOptions + "\">Log Out</a>";
+                    }
+                    else
+                    {
+                        mySobekLinks = "<a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my" + mySobekOptions + "\">" + tempObject.Given_Name + "'s " + mySobekText + "</a>&nbsp; | &nbsp; <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "my/logout" + mySobekLogoutOptions + "\">Log Out</a>";
+                    }
+                }
+            }
+
+            return mySobekLinks;
         }
     }
 }
