@@ -616,17 +616,20 @@ namespace SobekCM.Builder_Library
                 if (!Directory.Exists(DestinationDirectory))
                     Directory.CreateDirectory(DestinationDirectory);
 
-                // Determine if this directory needs to be flattened.
+                // Determine the new folder for this
                 DirectoryInfo dirInfo = new DirectoryInfo(resourceFolder);
                 string destFolder = DestinationDirectory + dirInfo.Name;
 
-                // Does this directory appear to be a VID folder?
-                if (dirInfo.Name.ToUpper().Replace("VID", "").Length == 5)
+                // Does this directory appear to be a VID folder, with a BibID folder above it?
+                // If so, we will flatten this folder structure
+                string thisDirName = dirInfo.Name.ToUpper().Replace("VID", "");
+                if ((thisDirName.Length == 5) && ( SobekCM_Item.is_vids_format(thisDirName)))
                 {
-                    // Is the parent directory 10 characters long, which would imply a Bib ID?
+                    // Is the parent directory is a bibid format, we will flatten this a Bib ID?
                     string bibidCheck = Directory.GetParent(resourceFolder).Name;
-                    if (bibidCheck.Length == 10)
+                    if ( SobekCM_Item.is_bibid_format(bibidCheck))
                     {
+                        // Flatten this bibi/vid structure then and make the new destination folder bibid_vid
                         destFolder = DestinationDirectory + bibidCheck + "_" + dirInfo.Name.ToUpper().Replace("VID", "");
                     }
                     else if (bibidCheck.Length == 2)

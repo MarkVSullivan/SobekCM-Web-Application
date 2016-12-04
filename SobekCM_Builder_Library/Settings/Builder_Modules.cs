@@ -229,8 +229,8 @@ namespace SobekCM.Builder_Library.Settings
                                     thisModule = new ValidateAndClassifyModule();
                                     break;
 
-                                case "SobekCM.Builder_Library.Modules.Folders.WolfsonianProcessorModule":
-                                    thisModule = new WolfsonianLibraryProcessorModule();
+                                case "SobekCM.Builder_Library.Modules.Folders.WolfsonianObjectProcessorModule":
+                                    thisModule = new WolfsonianObjectProcessorModule();
                                     break;
 
                                 case "SobekCM.Builder_Library.Modules.Folders.UpdateNonBibFolders":

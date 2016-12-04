@@ -9,6 +9,7 @@ using SobekCM.Builder_Library.Settings;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Settings;
 using SobekCM.Engine_Library.ApplicationState;
+using SobekCM.Tools;
 
 #endregion
 
@@ -68,7 +69,7 @@ namespace SobekCM.Builder_Library
                 // Make sure the inbound directory exists
                 if (Directory.Exists(inboundFolder))
                 {
-                    if ((Directory.GetDirectories(inboundFolder).Length > 0) || (Directory.GetFiles(inboundFolder, "*.mets*").Length > 0))
+                    if ((Directory.GetDirectories(inboundFolder).Length > 0) || (SobekCM_File_Utilities.GetFiles(inboundFolder, "*.mets*|*.xml").Length > 0))
                         return true;
                 }
 
@@ -158,6 +159,7 @@ namespace SobekCM.Builder_Library
                 }
                 catch
                 {
+
                     Message = "Unable to create the non-existent inbound folder " + inboundFolder;
                     return false;
                 }
@@ -194,17 +196,17 @@ namespace SobekCM.Builder_Library
             // If there are loose METS here, move them into flat folders of the same name
             try
             {
-                string[] looseMets = Directory.GetFiles(inboundFolder, "*.mets*");
-                foreach (string thisLooseMets in looseMets)
+                string[] looseMets = SobekCM_File_Utilities.GetFiles(inboundFolder, "*.mets*|*.xml");
+                foreach (string thisLooseMetsXml in looseMets)
                 {
-                    string filename = (new FileInfo(thisLooseMets)).Name;
-                    string[] filenameSplitter = filename.Split(".".ToCharArray());
-                    if (!Directory.Exists(inboundFolder + "\\" + filenameSplitter[0]))
-                        Directory.CreateDirectory(inboundFolder + "\\" + filenameSplitter[0]);
-                    if (File.Exists(inboundFolder + "\\" + filenameSplitter[0] + "\\" + filename))
-                        File.Delete(thisLooseMets);
+                    string filename = Path.GetFileName(thisLooseMetsXml);
+                    string filenameSplitter = Path.GetFileNameWithoutExtension(thisLooseMetsXml);
+                    if (!Directory.Exists(inboundFolder + "\\" + filenameSplitter))
+                        Directory.CreateDirectory(inboundFolder + "\\" + filenameSplitter);
+                    if (File.Exists(inboundFolder + "\\" + filenameSplitter + "\\" + filename))
+                        File.Delete(thisLooseMetsXml);
                     else
-                        File.Move(thisLooseMets, inboundFolder + "\\" + filenameSplitter[0] + "\\" + filename);
+                        File.Move(thisLooseMetsXml, inboundFolder + "\\" + filenameSplitter + "\\" + filename);
                 }
             }
             catch (Exception ee)

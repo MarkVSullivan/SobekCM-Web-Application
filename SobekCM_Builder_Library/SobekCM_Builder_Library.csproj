@@ -50,6 +50,7 @@
     <Compile Include="Abort_Database_Mechanism.cs" />
     <Compile Include="Actionable_Builder_Source_Folder.cs" />
     <Compile Include="Modules\Folders\ConvertLargeJpegsModule.cs" />
+    <Compile Include="Modules\Folders\WolfsonianObjectProcessorModule.cs" />
     <Compile Include="Modules\Items\AttachImagesAllModule.cs" />
     <Compile Include="Modules\Items\CreateImageDerivativesLegacyModule.cs" />
     <Compile Include="Modules\Items\TesseractOcrModule.cs" />
@@ -66,7 +67,6 @@
     <Compile Include="Modules\Folders\iFolderModule.cs" />
     <Compile Include="Modules\Folders\MoveAgedPackagesToProcessModule.cs" />
     <Compile Include="Modules\Folders\ValidateAndClassifyModule.cs" />
-    <Compile Include="Modules\Folders\WolfsonianLibraryProcessorModule.cs" />
     <Compile Include="Modules\Items\abstractSubmissionPackageModule.cs" />
     <Compile Include="Modules\Items\AddNewImagesAndViewsModule.cs" />
     <Compile Include="Modules\Items\AddTrackingWorkflowModule.cs" />

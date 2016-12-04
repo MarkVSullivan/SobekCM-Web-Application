@@ -76,7 +76,14 @@ namespace SobekCM.Tools
 			foreach (string fileFilter in multipleFilters)
 			{
 				// add found file names to array list
-				alFiles.AddRange(Directory.GetFiles(SourceFolder, fileFilter, SearchOption));
+			    string[] theseFiles = Directory.GetFiles(SourceFolder, fileFilter, SearchOption);
+
+                // Add each file, if not alreay present ( a file may appear in multiple filters )
+			    foreach (string thisFile in theseFiles)
+			    {
+			        if (!alFiles.Contains(thisFile))
+			            alFiles.Add(thisFile);
+			    }
 			}
 
 			// returns string array of relevant file names
