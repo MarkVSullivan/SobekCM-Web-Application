@@ -154,6 +154,7 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Configuration\Metadata_Mapping_Config.cs" />
     <Compile Include="Configuration\ResourceObjectSettings.cs" />
     <Compile Include="Database\DataSets\SobekCM_All_Items.cs">
       <SubType>Component</SubType>
