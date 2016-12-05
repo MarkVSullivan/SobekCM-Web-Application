@@ -1247,7 +1247,7 @@ namespace SobekCM.Library.MySobekViewer
                     else
                     {
                         // Create the mapper to map these values into the SobekCM object
-                        Standard_Bibliographic_Mapping mappingObject = new Standard_Bibliographic_Mapping();
+                        Standard_Bibliographic_Mapper mappingObject = new Standard_Bibliographic_Mapper();
 
                         // Add all this information
                         foreach (MappedValue mappedValue in returnValue.MappedValues)
