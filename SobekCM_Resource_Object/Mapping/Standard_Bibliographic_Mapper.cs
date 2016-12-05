@@ -12,9 +12,21 @@ namespace SobekCM.Resource_Object.Mapping
 {
     /// <summary> Standard bibliographic mapping which takes data and field name and maps that data into the SobekCM field
     /// within the main SobekCM Item package </summary>
-    /// <remarks> This class implements the <see cref="iBibliographicMapping" /> interface </remarks>
-    public class Standard_Bibliographic_Mapping: iBibliographicMapping
+    /// <remarks> This class implements the <see cref="iBibliographicMapper" /> interface </remarks>
+    public class Standard_Bibliographic_Mapper: iBibliographicMapper
     {
+        /// <summary> Name of this bibliographic mapper, used for logging mapping </summary>
+        public string Name { get { return "Standard Mapper"; } }
+
+        /// <summary> Returns the list of preferred mappings for the elements handled
+        /// by this mapper </summary>
+        /// <remarks> For example this might just return 'title', 'creator', 'subject', etc.. </remarks>
+        public List<string> Preferred_Mappings
+        {
+            get { return null; }
+        }
+
+
         // declare static class variables
         private string month;
         private string day;

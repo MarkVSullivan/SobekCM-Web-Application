@@ -177,8 +177,9 @@
     <Compile Include="Configuration\Metadata_File_ReaderWriter_Config.cs" />
     <Compile Include="Configuration\METS_Section_ReaderWriter_Config.cs" />
     <Compile Include="Configuration\METS_Writing_Profile.cs" />
-    <Compile Include="Mapping\iBibliographicMapping.cs" />
-    <Compile Include="Mapping\Standard_Bibliographic_Mapping.cs" />
+    <Compile Include="Mapping\Bibliographic_Mapping.cs" />
+    <Compile Include="Mapping\iBibliographicMapper.cs" />
+    <Compile Include="Mapping\Standard_Bibliographic_Mapper.cs" />
     <Compile Include="Metadata_File_ReaderWriters\MARC\ErrorHandling\MARC_Record_Parsing_Error.cs" />
     <Compile Include="Metadata_File_ReaderWriters\MARC\ErrorHandling\MARC_Record_Parsing_Warning.cs" />
     <Compile Include="Metadata_File_ReaderWriters\MARC\MARC_Field.cs" />
@@ -293,7 +294,7 @@
     <Compile Include="Solr\SolrPage.cs" />
     <Compile Include="Testing\Test_Bib_Package.cs" />
     <Compile Include="Behaviors\View_Object.cs" />
-    <Compile Include="Bibliographic_Mapping.cs">
+    <Compile Include="Bibliographic_Mapping_Deprecated.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bib_Info\MODS_Info\Part_Info.cs" />

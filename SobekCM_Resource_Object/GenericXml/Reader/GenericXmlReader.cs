@@ -55,7 +55,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 }
 
             }
-            catch (Exception ee)
+            catch 
             {
                // MessageBox.Show(ee.Message);
             }
@@ -226,7 +226,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 }
 
             }
-            catch (Exception ee)
+            catch
             {
                 // MessageBox.Show(ee.Message);
             }
@@ -393,7 +393,7 @@ namespace SobekCM.Resource_Object.GenericXml.Reader
                 }
 
             }
-            catch (Exception ee)
+            catch 
             {
                // MessageBox.Show(ee.Message);
             }

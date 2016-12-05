@@ -1988,6 +1988,10 @@ namespace SobekCM.Engine_Library.Configuration
                             case "additional_metadata_modules":
                                 read_metadata_modules_config(ReaderXml.ReadSubtree(), Config.Metadata);
                                 break;
+
+                            case "metadata_mappers":
+                                read_metadata_mappers_config(ReaderXml.ReadSubtree(), Config.Metadata);
+                                break;
                         }
                     }
                 }
@@ -2234,6 +2238,37 @@ namespace SobekCM.Engine_Library.Configuration
                     if ((module.Key.Length > 0) && (module.Code_Class.Length > 0) && (module.Code_Namespace.Length > 0))
                     {
                         Config.Add_Metadata_Module_Config(module);
+                    }
+                }
+            }
+        }
+
+        private static void read_metadata_mappers_config(XmlReader ReaderXml, Metadata_Configuration Config)
+        {
+            while (ReaderXml.Read())
+            {
+                if ((ReaderXml.NodeType == XmlNodeType.Element) && (ReaderXml.Name.ToLower() == "clear"))
+                {
+                    Config.Clear_Metadata_Mappers();
+                }
+
+                if ((ReaderXml.NodeType == XmlNodeType.Element) && (ReaderXml.Name.ToLower() == "mapper"))
+                {
+                    // read all the values
+                    Metadata_Mapping_Config module = new Metadata_Mapping_Config();
+                    if (ReaderXml.MoveToAttribute("name"))
+                        module.Name = ReaderXml.Value.Trim();
+                    if (ReaderXml.MoveToAttribute("assembly"))
+                        module.Code_Assembly = ReaderXml.Value;
+                    if (ReaderXml.MoveToAttribute("namespace"))
+                        module.Code_Namespace = ReaderXml.Value;
+                    if (ReaderXml.MoveToAttribute("class"))
+                        module.Code_Class = ReaderXml.Value;
+
+                    // Only add if valid
+                    if ((module.Code_Class.Length > 0) && (module.Code_Namespace.Length > 0))
+                    {
+                        Config.Add_Metadata_Mapper(module);
                     }
                 }
             }

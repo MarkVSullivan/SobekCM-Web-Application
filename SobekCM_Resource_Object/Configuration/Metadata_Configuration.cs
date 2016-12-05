@@ -24,7 +24,6 @@ namespace SobekCM.Resource_Object.Configuration
         private Dictionary<string, METS_Writing_Profile> metsWritingProfilesDictionary;
         private METS_Writing_Profile defaultWritingProfile;
 
-
         private readonly Dictionary<Tuple<string, string>, iPackage_amdSec_ReaderWriter> packageAmdSecDictionary;
         private readonly Dictionary<Tuple<string, string>, iPackage_dmdSec_ReaderWriter> packageDmdSecDictionary;
         private readonly Dictionary<Tuple<string, string>, iDivision_dmdSec_ReaderWriter> divisionDmdSecDictionary;
@@ -34,9 +33,11 @@ namespace SobekCM.Resource_Object.Configuration
 
         private readonly List<string> errorsEncountered;
 
+
         /// <summary> constructor for the Metadata_Configuration class </summary>
         public Metadata_Configuration()
         {
+            // Create the collections
             METS_Section_File_ReaderWriter_Configs = new List<METS_Section_ReaderWriter_Config>();
             Metadata_File_ReaderWriter_Configs = new List<Metadata_File_ReaderWriter_Config>();
             Metadata_Modules_To_Include = new List<Additional_Metadata_Module_Config>();
@@ -54,6 +55,8 @@ namespace SobekCM.Resource_Object.Configuration
 
             // Set some default values
             errorsEncountered = new List<string>();
+
+            Mapping_Configs = new List<Metadata_Mapping_Config>();
         }
 
         /// <summary> Clear all the current metadata configuration information </summary>
@@ -74,6 +77,8 @@ namespace SobekCM.Resource_Object.Configuration
             fileAmdSecDictionary.Clear();
 
             errorsEncountered.Clear();
+
+            Mapping_Configs.Clear();
 
             isDefault = false;
         }
@@ -416,6 +421,31 @@ namespace SobekCM.Resource_Object.Configuration
             return fileDmdSecDictionary.ContainsKey(thisMappingKey) ? fileDmdSecDictionary[thisMappingKey] : null;
         }
 
+        #region Code regarding the metadata mapping configuration
+
+        /// <summary> Collection of all the METS section reader/writer configurations </summary>
+        [DataMember(Name = "metadataMappers")]
+        [XmlArray("metadataMappers")]
+        [XmlArrayItem("metadataMapper", typeof(Metadata_Mapping_Config))]
+        [ProtoMember(5)]
+        public List<Metadata_Mapping_Config> Mapping_Configs { get; set; }
+
+        /// <summary> Add a new metadata mapping configuration object </summary>
+        /// <param name="Mapper"> All the information needed to create a new instance of the mapper </param>
+        public void Add_Metadata_Mapper(Metadata_Mapping_Config Mapper)
+        {
+            Mapping_Configs.Add(Mapper);
+        }
+
+        /// <summary> Clear the metadata mapper configurations </summary>
+        public void Clear_Metadata_Mappers()
+        {
+            Mapping_Configs.Clear();
+        }
+
+
+        #endregion
+
         #region Code to set the default values
 
         /// <summary> Clears the current metadata configuration and restores all the values
@@ -573,7 +603,8 @@ namespace SobekCM.Resource_Object.Configuration
             dcProfile.Add_File_Level_DmdSec_Writer_Config(dcSection);
             Add_METS_Writing_Profile(dcProfile);
 
-
+            // Add the standard metadata mapper
+            Mapping_Configs.Add(new Metadata_Mapping_Config("Standard Mapper", "SobekCM.Resource_Object.Mapping", "Standard_Bibliographic_Mapper", null ));
         }
 
         #endregion

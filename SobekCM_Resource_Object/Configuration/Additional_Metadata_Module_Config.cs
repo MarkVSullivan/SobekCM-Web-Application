@@ -75,8 +75,17 @@ namespace SobekCM.Resource_Object.Configuration
             try
             {
                 // Using reflection, create an object from the class namespace/name
-                //     System.Reflection.Assembly dllAssembly = System.Reflection.Assembly.LoadFrom("SobekCM_Bib_Package_3_0_5.dll");
                 Assembly dllAssembly = Assembly.GetExecutingAssembly();
+                if (Code_Assembly.Length > 0)
+                {
+                    // Try to find the file/path for this assembly then
+                    string assemblyFilePath = ResourceObjectSettings.Get_Assembly(Code_Assembly);
+                    if (assemblyFilePath != null)
+                    {
+                        dllAssembly = Assembly.LoadFrom(assemblyFilePath);
+                    }
+                }
+
                 //  Assembly dllAssembly = Assembly..LoadFrom( Code_Assembly );
                 Type readerWriterType = dllAssembly.GetType(Code_Namespace + "." + Code_Class);
                 object possibleModule = Activator.CreateInstance(readerWriterType);

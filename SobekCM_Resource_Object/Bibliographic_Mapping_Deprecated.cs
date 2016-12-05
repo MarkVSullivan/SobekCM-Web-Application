@@ -337,7 +337,7 @@ namespace SobekCM.Resource_Object
     /// <summary> This object allows data to be dynamically mapped to the correct fields
     /// in a Bibliographic Package. </summary>
     /// <remarks> Object created by Mark V Sullivan (2006) for University of Florida's Digital Library Center.</remarks>
-    public class Bibliographic_Mapping
+    public class Bibliographic_Mapping_Deprecated
     {
         // declare static class variables
         private static string month;
@@ -347,7 +347,7 @@ namespace SobekCM.Resource_Object
 
 
         /// <summary> Constructor for a new instance of the Bibliographic_Mapping class </summary>
-        public Bibliographic_Mapping()
+        public Bibliographic_Mapping_Deprecated()
         {
             // Empty constructor
         }
