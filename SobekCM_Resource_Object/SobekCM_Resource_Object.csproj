@@ -154,6 +154,8 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Bib_Info\MODS_Info\Origin_Info_Other_Date.cs" />
+    <Compile Include="Bib_Info\MODS_Info\TableOfContents_Info.cs" />
     <Compile Include="Configuration\Metadata_Mapping_Config.cs" />
     <Compile Include="Configuration\ResourceObjectSettings.cs" />
     <Compile Include="Database\DataSets\SobekCM_All_Items.cs">
@@ -178,6 +180,7 @@
     <Compile Include="Configuration\METS_Section_ReaderWriter_Config.cs" />
     <Compile Include="Configuration\METS_Writing_Profile.cs" />
     <Compile Include="Mapping\Bibliographic_Mapping.cs" />
+    <Compile Include="Mapping\Henderson_Bibliographic_Mapper.cs" />
     <Compile Include="Mapping\iBibliographicMapper.cs" />
     <Compile Include="Mapping\Standard_Bibliographic_Mapper.cs" />
     <Compile Include="Metadata_File_ReaderWriters\MARC\ErrorHandling\MARC_Record_Parsing_Error.cs" />

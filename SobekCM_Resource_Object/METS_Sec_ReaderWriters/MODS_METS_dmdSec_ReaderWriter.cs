@@ -532,12 +532,23 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                                         case "mods:dateOther":
                                         case "dateOther":
-                                            if ((R.MoveToAttribute("type")) && (R.Value == "reprint"))
+                                            string dateType = null;
+                                            bool keyDate = false;
+                                            if (R.MoveToAttribute("type")) dateType = R.Value;
+                                            if ((R.MoveToAttribute("keyDate")) && (R.Value == "yes")) keyDate = true;
+
+                                            // Read the date main node
+                                            R.Read();
+                                            if (R.NodeType == XmlNodeType.Text)
                                             {
-                                                R.Read();
-                                                if (R.NodeType == XmlNodeType.Text)
+                                                // Keeping the special spot for the reprint date still
+                                                if ((!String.IsNullOrWhiteSpace(dateType)) && (dateType == "reprint"))
                                                 {
                                                     ThisBibInfo.Origin_Info.Date_Reprinted = R.Value;
+                                                }
+                                                else
+                                                {
+                                                    ThisBibInfo.Origin_Info.Add_Date_Other(R.Value, dateType).KeyDate = keyDate;
                                                 }
                                             }
                                             break;
@@ -1021,10 +1032,13 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
 
                         case "mods:tableOfContents":
                         case "tableOfContents":
+                            string displayLabel = null;
+                            if (R.MoveToAttribute("displayLabel"))
+                                displayLabel = R.Value;
                             R.Read();
                             if (R.NodeType == XmlNodeType.Text)
                             {
-                                ThisBibInfo.TableOfContents = R.Value;
+                                ThisBibInfo.Add_TableOfContents(R.Value, displayLabel);
                             }
                             break;
 

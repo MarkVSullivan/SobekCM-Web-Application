@@ -80,8 +80,8 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <summary> Protected field contains the collection of subjects associated with this digital resource </summary>
         protected List<Subject_Info> subjects;
 
-        /// <summary> Protected field contains the table of contents value in this MODS portion of the metadata file </summary>
-        protected string tableOfContents;
+        /// <summary> Protected field contains the lists of table of contents value in this MODS portion of the metadata file </summary>
+        protected List<TableOfContents_Info> tableOfContents;
 
         /// <summary> Protected field contains the collection of subjects associated with this digital resource </summary>
         protected List<TargetAudience_Info> targetAudiences;
@@ -151,12 +151,86 @@ namespace SobekCM.Resource_Object.Bib_Info
             get { return accessCondition; }
         }
 
-        /// <summary> Gets or sets the table of contents value in this MODS portion of the metadata file </summary>
-        /// <remarks>This is used for retaining the original TOC from an existing catalog record.</remarks>
-        public string TableOfContents
+        /// <summary> The number of table of contents associated with this digital resource </summary>
+        /// <remarks> This should be used rather than the Count property of the <see cref="TableOfContents"/> property.  Even if 
+        /// there are no abstracts, the TableOfContents property creates a readonly collection to pass back out.</remarks>
+        public int TableOfContents_Count
         {
-            get { return tableOfContents ?? String.Empty; }
-            set { tableOfContents = value; }
+            get
+            {
+                return tableOfContents == null ? 0 : tableOfContents.Count;
+            }
+        }
+
+        /// <summary> Collection of all the table of contents associated with this item </summary>
+        /// <remarks> You should check the count of table of contents first using the <see cref="TableOfContents_Count"/> property before using this property.
+        /// Even if there are no abstracts, this property creates a readonly collection to pass back out.</remarks>
+        public ReadOnlyCollection<TableOfContents_Info> TableOfContents
+        {
+            get
+            {
+                return tableOfContents == null ? new ReadOnlyCollection<TableOfContents_Info>(new List<TableOfContents_Info>()) : new ReadOnlyCollection<TableOfContents_Info>(tableOfContents);
+            }
+        }
+
+        /// <summary> Clears all the table of contents assocaited with this item </summary>
+        public void Clear_TableOfContents()
+        {
+            if (tableOfContents != null)
+                tableOfContents.Clear();
+        }
+
+        /// <summary> Add a new top-level table of contents object </summary>
+        /// <param name="Text"> Text of the table of contents </param>
+        /// <returns> Returns the table of contents object created and added </returns>
+        public TableOfContents_Info Add_TableOfContents(string Text)
+        {
+            if (tableOfContents == null) tableOfContents = new List<TableOfContents_Info>();
+
+            TableOfContents_Info returnValue = new TableOfContents_Info(Text);
+            tableOfContents.Add(returnValue);
+            return returnValue;
+        }
+
+        /// <summary> Add a new top-level table of contents object </summary>
+        /// <param name="Text"> Text of the table of contents </param>
+        /// <param name="DisplayLabel"> Display label associated with this table of contents </param>
+        /// <returns> Returns the table of contents object created and added </returns>
+        public TableOfContents_Info Add_TableOfContents(string Text, string DisplayLabel)
+        {
+            if (tableOfContents == null) tableOfContents = new List<TableOfContents_Info>();
+
+            TableOfContents_Info returnValue = new TableOfContents_Info(Text, DisplayLabel);
+            tableOfContents.Add(returnValue);
+            return returnValue;
+        }
+
+        /// <summary> Gets an existing TOC, or adds a TOC with the provided display label and returns it </summary>
+        /// <param name="DisplayLabel"> Display label associated with this table of contents </param>
+        /// <returns> Existing or newly created TOC object with the provided DisplayLabel </returns>
+        public TableOfContents_Info Get_TableOfContents(string DisplayLabel)
+        {
+            // If there are NO tocs, add this and return it
+            if ((tableOfContents == null) || (tableOfContents.Count == 0))
+            {
+                // Add it then
+                return Add_TableOfContents(String.Empty, DisplayLabel);
+            }
+
+            // Look for an existing TOC with that display label
+            foreach (TableOfContents_Info thisToc in tableOfContents)
+            {
+                // If the provided display label is empty, and so is this TOC, then return the TOC
+                if (( String.IsNullOrEmpty(thisToc.DisplayLabel)) && ( String.IsNullOrEmpty(DisplayLabel)))
+                    return thisToc;
+
+                // If the display label matches, return it
+                if (String.Equals(thisToc.DisplayLabel, DisplayLabel, StringComparison.OrdinalIgnoreCase))
+                    return thisToc;
+            }
+
+            // Not found, so add and return it.
+            return Add_TableOfContents(String.Empty, DisplayLabel);
         }
 
         /// <summary> The number of abstracts associated with this digital resource </summary>
@@ -1773,9 +1847,22 @@ namespace SobekCM.Resource_Object.Bib_Info
                 }
             }
 
-            if (!String.IsNullOrEmpty(tableOfContents))
+            if ( TableOfContents_Count > 0 )
             {
-                Results.Write("<mods:tableOfContents type=\"original catalog\">" + Convert_String_To_XML_Safe(tableOfContents) + "</mods:tableOfContents>\r\n");
+                foreach (TableOfContents_Info thisToc in TableOfContents)
+                {
+                    if (String.IsNullOrEmpty(thisToc.Text))
+                        continue;
+
+                    if (!String.IsNullOrEmpty(thisToc.DisplayLabel))
+                    {
+                        Results.Write("<mods:tableOfContents type=\"original catalog\" displayLabel=\"" + Convert_String_To_XML_Safe(thisToc.DisplayLabel) + "\">" + Convert_String_To_XML_Safe(thisToc.Text) + "</mods:tableOfContents>\r\n");
+                    }
+                    else
+                    {
+                        Results.Write("<mods:tableOfContents type=\"original catalog\">" + Convert_String_To_XML_Safe(thisToc.Text) + "</mods:tableOfContents>\r\n");
+                    }
+                }
             }
 
             // Write the target audiences

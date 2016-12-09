@@ -121,6 +121,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         private string marcDateIssuedStart;
         private List<Origin_Info_Place> places;
         private List<string> publishers;
+        private List<Origin_Info_Other_Date> otherDates;
 
         /// <summary> Constructor creates a new instance of the MODS_Origin_Info class </summary>
         public MODS_Origin_Info()
@@ -264,6 +265,57 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             get { return dateReprinted ?? String.Empty; }
             set { dateReprinted = value; }
+        }
+
+        /// <summary> Get the number of other dates associated with this material </summary>
+        /// <remarks>This should be used rather than the Count property of the <see cref="Dates_Other"/> property.  Even if 
+        /// there are no other dates, the Dates_Other property creates a readonly collection to pass back out.</remarks>
+        public int Dates_Other_Count
+        {
+            get
+            {
+                return otherDates == null ? 0 : otherDates.Count;
+            }
+        }
+
+        /// <summary> Gets the collection of other dates </summary>
+        /// <remarks> You should check the count of other dates first using the <see cref="Dates_Other_Count"/> property before using this property.
+        /// Even if there are no other dates, this property creates a readonly collection to pass back out.</remarks>
+        public ReadOnlyCollection<Origin_Info_Other_Date> Dates_Other
+        {
+            get
+            {
+                return otherDates == null ? new ReadOnlyCollection<Origin_Info_Other_Date>(new List<Origin_Info_Other_Date>()) : new ReadOnlyCollection<Origin_Info_Other_Date>(otherDates);
+            }
+        }
+
+        /// <summary> Add a new other date to this origination information </summary>
+        /// <param name="Value"> Date value for this other date </param>
+        /// <param name="Type"> Type of date ( or display label ) </param>
+        public Origin_Info_Other_Date Add_Date_Other(string Value, string Type)
+        {
+            if (otherDates == null)
+                otherDates = new List<Origin_Info_Other_Date>();
+
+            Origin_Info_Other_Date newOtherDate = new Origin_Info_Other_Date(Value, Type);
+            otherDates.Add(newOtherDate);
+            return newOtherDate;
+        }
+
+        /// <summary> Add a new frequency to this origination information </summary>
+        /// <param name="OtherDate"> Other date object to add </param>
+        public void Add_Date_Other(Origin_Info_Other_Date OtherDate )
+        {
+            if (otherDates == null)
+                otherDates = new List<Origin_Info_Other_Date>();
+
+            otherDates.Add(OtherDate);
+        }
+
+        /// <summary> Clear all the other dates associated with this material </summary>
+        public void Clear_Date_Others()
+        {
+            if (otherDates != null) otherDates.Clear();
         }
 
         #region Internal Methods and Properties
@@ -455,6 +507,25 @@ namespace SobekCM.Resource_Object.Bib_Info
             if ((!String.IsNullOrEmpty(dateCopyrighted)) && (dateCopyrighted != "-1"))
                 Results.Write("<mods:copyrightDate>" + Convert_String_To_XML_Safe(dateCopyrighted) + "</mods:copyrightDate>\r\n");
 
+            // Add the other dates
+            if ((otherDates != null) && (otherDates.Count > 0))
+            {
+                foreach (Origin_Info_Other_Date thisOtherDate in otherDates)
+                {
+                    // Skip empty dates
+                    if (String.IsNullOrWhiteSpace(thisOtherDate.Value))
+                        continue;
+
+                    // Add this other date
+                    Results.Write("<mods:dateOther");
+                    if (!String.IsNullOrWhiteSpace(thisOtherDate.Type))
+                        Results.Write(" type=\"" + Convert_String_To_XML_Safe(thisOtherDate.Type) + "\"");
+                    if (thisOtherDate.KeyDate)
+                        Results.Write(" keyDate=\"yes\"");
+                    Results.Write(">" + Convert_String_To_XML_Safe(thisOtherDate.Value) + "</mods:dateOther>\r\n");
+                }
+            }
+
             // Does the edition exist?
             if (!String.IsNullOrEmpty(edition))
                 Results.Write("<mods:edition>" + Convert_String_To_XML_Safe(edition) + "</mods:edition>\r\n");
@@ -527,6 +598,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         {
             if (publishers != null) publishers.Clear();
             if (places != null) places.Clear();
+            if (otherDates != null) otherDates.Clear();
 
             dateIssued = null;
             marcDateIssued = null;
@@ -551,6 +623,7 @@ namespace SobekCM.Resource_Object.Bib_Info
             if (places != null) places.Clear();
             if (frequencies != null) frequencies.Clear();
             if (issuances != null) issuances.Clear();
+            if (otherDates != null) otherDates.Clear();
             dateIssued = null;
             marcDateIssued = null;
             marcDateIssuedEnd = null;

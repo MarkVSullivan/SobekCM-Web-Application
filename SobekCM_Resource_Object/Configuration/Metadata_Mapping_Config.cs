@@ -9,6 +9,8 @@ namespace SobekCM.Resource_Object.Configuration
 {
     /// <summary> Configuration information for a single metadata mapping object used to map
     /// field/value metadata pairs into a digital resource object </summary>
+    [Serializable, DataContract, ProtoContract]
+    [XmlRoot("MetadataMappingConfig")]
     public class Metadata_Mapping_Config
     {
         /// <summary> Name used for identifying this metadata mapping configuration </summary>
@@ -71,7 +73,7 @@ namespace SobekCM.Resource_Object.Configuration
             {
                 // Using reflection, create an object from the class namespace/name
                 Assembly dllAssembly = Assembly.GetExecutingAssembly();
-                if (Code_Assembly.Length > 0)
+                if ( !String.IsNullOrWhiteSpace(Code_Assembly))
                 {
                     // Try to find the file/path for this assembly then
                     string assemblyFilePath = ResourceObjectSettings.Get_Assembly(Code_Assembly);

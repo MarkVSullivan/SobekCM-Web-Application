@@ -194,7 +194,7 @@ namespace SobekCM.Resource_Object.METS_Sec_ReaderWriters
             // Add the contents (505)
             if (record.Get_Data_Subfield(505, 'a').Length > 2)
             {
-                thisBibInfo.TableOfContents = record.Get_Data_Subfield(505, 'a');
+                thisBibInfo.Add_TableOfContents(record.Get_Data_Subfield(505, 'a'));
             }
 
             // Get the scale information (034)

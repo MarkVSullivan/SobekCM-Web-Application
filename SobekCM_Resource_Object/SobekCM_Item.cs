@@ -2221,9 +2221,13 @@ namespace SobekCM.Resource_Object
             }
 
             // ADD THE TABLE OF CONTENTS
-            if (Bib_Info.TableOfContents.Length > 0)
+            if (Bib_Info.TableOfContents_Count > 0 )
             {
-                tags.Add_Field(505, "0 ", "|a " + Bib_Info.TableOfContents);
+                foreach (TableOfContents_Info thisToc in Bib_Info.TableOfContents)
+                {
+                    if ( !String.IsNullOrEmpty(thisToc.Text))
+                        tags.Add_Field(505, "0 ", "|a " + thisToc.Text);
+                }
             }
 
             // ADD THE RIGHTS 
