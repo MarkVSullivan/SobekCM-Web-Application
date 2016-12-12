@@ -1,9 +1,9 @@
 
 declare @institution_code varchar(20);
-set @institution_code = 'SU';
+set @institution_code = 'SAIC';
 
 declare @institution_name varchar(50);
-set @institution_name = 'South University';
+set @institution_name = 'School of the Art Institute of Chicago';
 
 -- Add new web skin for code
 if ( not exists ( select * from SobekCM_Web_Skin where WebSkinCode=@institution_code )) 
