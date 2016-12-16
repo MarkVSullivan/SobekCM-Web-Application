@@ -64,6 +64,7 @@ namespace SobekCM.Engine_Library.Items.BriefItems
                 Tracer.Add_Trace("BriefItem_Factory.Create", "...." + thisMapper.GetType().ToString().Replace("SobekCM.Engine_Library.Items.BriefItems.Mappers.",""));
                 thisMapper.MapToBriefItem(Original, newItem);
             }
+            Tracer.Add_Trace("BriefItem_Factory.Create", "Finished using all instatiated and configued mappers");
 
             return newItem;
         }

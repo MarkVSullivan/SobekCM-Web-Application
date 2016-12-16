@@ -697,7 +697,8 @@ namespace SobekCM.Engine_Library.Endpoints
                 BriefItemInfo item = BriefItem_Factory.Create(currentItem, Tracer);
                 return item;
             }
-
+            
+            
             Tracer.Add_Trace("ItemServices.getBriefTitle", "Map to the brief item, using mapping set '" + MappingSet + "'");
             BriefItemInfo item2 = BriefItem_Factory.Create(currentItem, MappingSet, Tracer);
             return item2;

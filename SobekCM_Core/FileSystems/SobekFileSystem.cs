@@ -39,6 +39,15 @@ namespace SobekCM.Core.FileSystems
             return fileSystem.Resource_Web_Uri(DigitalResource);
         }
 
+        /// <summary> Return the WEB uri for a digital resource </summary>
+        /// <param name="BibID"> Bibliographic identifier for the resource in question </param>
+        /// <param name="VID"> Volume identifier for the resource in question </param>
+        /// <returns> URI for the web resource </returns>
+        public static string Resource_Web_Uri(string BibID, string VID)
+        {
+            return fileSystem.Resource_Web_Uri(BibID, VID);
+        }
+
         /// <summary> Return the WEB uri for a file within the digital resource </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <param name="FileName"> Name of the resource file </param>
@@ -101,9 +110,21 @@ namespace SobekCM.Core.FileSystems
         /// path that appears UNDER the root imaging spot </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <returns> Part of the file path, derived from the BibID and VID </returns>
+        /// <remarks>Why is this temporary?</remarks>
         public static string AssociFilePath(BriefItemInfo DigitalResource)
         {
             return fileSystem.AssociFilePath(DigitalResource);
+        }
+
+        /// <summary> [TEMPORARY] Get the associated file path (which is essentially the part of the 
+        /// path that appears UNDER the root imaging spot </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <returns> Part of the file path, derived from the BibID and VID </returns>
+        /// <remarks>Why is this temporary?</remarks>
+        public static string AssociFilePath(string BibID, string VID)
+        {
+            return fileSystem.AssociFilePath(BibID, VID);
         }
 
         /// <summary> Gets the list of all the files associated with this digital resource </summary>

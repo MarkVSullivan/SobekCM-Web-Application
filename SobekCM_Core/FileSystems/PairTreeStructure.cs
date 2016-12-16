@@ -70,6 +70,18 @@ namespace SobekCM.Core.FileSystems
             return rootWebUri + "/" + DigitalResource.BibID.Substring(0, 2) + "/" + DigitalResource.BibID.Substring(2, 2) + "/" + DigitalResource.BibID.Substring(4, 2) + "/" + DigitalResource.BibID.Substring(6, 2) + "/" + DigitalResource.BibID.Substring(8, 2) + "/" + DigitalResource.VID + "/";
         }
 
+        /// <summary> Return the WEB uri for a digital resource </summary>
+        /// <param name="BibID"> Bibliographic identifier for the resource in question </param>
+        /// <param name="VID"> Volume identifier for the resource in question </param>
+        /// <returns> URI for the web resource </returns>
+        public string Resource_Web_Uri(string BibID, string VID)
+        {
+            if (rootWebUri[rootWebUri.Length - 1] == '/')
+                return rootWebUri + BibID.Substring(0, 2) + "/" + BibID.Substring(2, 2) + "/" + BibID.Substring(4, 2) + "/" + BibID.Substring(6, 2) + "/" + BibID.Substring(8, 2) + "/" + VID + "/";
+
+            return rootWebUri + "/" + BibID.Substring(0, 2) + "/" + BibID.Substring(2, 2) + "/" + BibID.Substring(4, 2) + "/" + BibID.Substring(6, 2) + "/" + BibID.Substring(8, 2) + "/" + VID + "/";
+        }
+
         /// <summary> Return the WEB uri for a file within the digital resource </summary>
         /// <param name="DigitalResource"> The digital resource object </param>
         /// <param name="FileName"> Name of the resource file </param>
@@ -137,6 +149,17 @@ namespace SobekCM.Core.FileSystems
         public string AssociFilePath(BriefItemInfo DigitalResource)
         {
             return DigitalResource.BibID.Substring(0, 2) + dirSeperator + DigitalResource.BibID.Substring(2, 2) + dirSeperator + DigitalResource.BibID.Substring(4, 2) + dirSeperator + DigitalResource.BibID.Substring(6, 2) + dirSeperator + DigitalResource.BibID.Substring(8, 2) + dirSeperator + DigitalResource.VID + dirSeperator;
+        }
+
+        /// <summary> [TEMPORARY] Get the associated file path (which is essentially the part of the 
+        /// path that appears UNDER the root imaging spot </summary>
+        /// <param name="BibID"> Bibliographic identifier (BibID) for a title within a SobekCM instance </param>
+        /// <param name="VID"> Volume identifier (VID) for an item within a SobekCM title </param>
+        /// <returns> Part of the file path, derived from the BibID and VID </returns>
+        /// <remarks>Why is this temporary?</remarks>
+        public string AssociFilePath(string BibID, string VID)
+        {
+            return BibID.Substring(0, 2) + dirSeperator + BibID.Substring(2, 2) + dirSeperator + BibID.Substring(4, 2) + dirSeperator + BibID.Substring(6, 2) + dirSeperator + BibID.Substring(8, 2) + dirSeperator + VID + dirSeperator;
         }
 
         /// <summary> Gets the list of all the files associated with this digital resource </summary>
