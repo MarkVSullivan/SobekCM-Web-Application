@@ -187,19 +187,111 @@ namespace SobekCM.Library.ItemViewer
         private static iItemViewerPrototyper configurePrototyper( string assembly, string className )
         {
             // Was an assembly indicated
-            if (!String.IsNullOrEmpty(assembly))
+            if (String.IsNullOrEmpty(assembly))
             {
+
+                // Return a standard class
+                switch (className)
+                {
+                        //case "SobekCM.Library.ItemViewer.Viewers.GIF_ItemViewer_Prototyper":
+                        //    return new GIF_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.Citation_MARC_ItemViewer_Prototyper":
+                        return new Citation_MARC_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.Citation_Standard_ItemViewer_Prototyper":
+                        return new Citation_Standard_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.Directory_ItemViewer_Prototyper":
+                        return new Directory_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.Downloads_ItemViewer_Prototyper":
+                        return new Downloads_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.EmbeddedVideo_ItemViewer_Prototyper":
+                        return new EmbeddedVideo_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.Flash_ItemViewer_Prototyper":
+                        return new Flash_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.GnuBooks_PageTurner_ItemViewer_Prototyper":
+                        return new GnuBooks_PageTurner_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.Google_Map_ItemViewer_Prototyper":
+                        return new Google_Map_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.Google_Coordinate_Entry_ItemViewer_Prototyper":
+                        return new Google_Coordinate_Entry_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.HTML_ItemViewer_Prototyper":
+                        return new HTML_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.JPEG_ItemViewer_Prototyper":
+                        return new JPEG_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.JPEG2000_ItemViewer_Prototyper":
+                        return new JPEG2000_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.ManageMenu_ItemViewer_Prototyper":
+                        return new ManageMenu_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.Metadata_Links_ItemViewer_Prototyper":
+                        return new Metadata_Links_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.Milestones_ItemViewer_Prototyper":
+                        return new Milestones_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.MultiVolumes_ItemViewer_Prototyper":
+                        return new MultiVolumes_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.PDF_ItemViewer_Prototyper":
+                        return new PDF_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.QC_ItemViewer_Prototyper":
+                        return new QC_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.Related_Images_ItemViewer_Prototyper":
+                        return new Related_Images_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.Restricted_ItemViewer_Prototyper":
+                        return new Restricted_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.TEI_ItemViewer_Prototyper":
+                        return new TEI_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.Text_ItemViewer_Prototyper":
+                        return new Text_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.Text_Search_ItemViewer_Prototyper":
+                        return new Text_Search_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.TrackingSheet_ItemViewer_Prototyper":
+                        return new TrackingSheet_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.Tracking_ItemViewer_Prototyper":
+                        return new Tracking_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.Usage_Stats_ItemViewer_Prototyper":
+                        return new Usage_Stats_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.Video_ItemViewer_Prototyper":
+                        return new Video_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.UF_Archives_ItemViewer_Prototyper":
+                        return new UF_Archives_ItemViewer_Prototyper();
+
+                    case "SobekCM.Library.ItemViewer.Viewers.UF_Media_ItemViewer_Prototyper":
+                        return new UF_Media_ItemViewer_Prototyper();
+                }
+
+                // If it made it here, there is no assembly, but it is an unexpected type.  
+                // Just create it from the same assembly then
                 try
                 {
-                    // Try to find the file/path for this assembly then
-                    string assemblyFilePath = Engine_ApplicationCache_Gateway.Configuration.Extensions.Get_Assembly(assembly);
-                    if (assemblyFilePath != null)
-                    {
-                        Assembly dllAssembly = Assembly.LoadFrom(assemblyFilePath);
-                        Type readerWriterType = dllAssembly.GetType(className);
-                        iItemViewerPrototyper returnObj = (iItemViewerPrototyper) Activator.CreateInstance(readerWriterType);
-                        return returnObj;
-                    }
+                    Assembly dllAssembly = Assembly.GetCallingAssembly();
+                    Type prototyperType = dllAssembly.GetType(className);
+                    iItemViewerPrototyper returnObj = (iItemViewerPrototyper) Activator.CreateInstance(prototyperType);
+                    return returnObj;
                 }
                 catch (Exception)
                 {
@@ -208,98 +300,27 @@ namespace SobekCM.Library.ItemViewer
                 }
             }
 
-            // Return a standard class
-            switch (className)
+
+            // An assembly was indicated
+            try
             {
-                //case "SobekCM.Library.ItemViewer.Viewers.GIF_ItemViewer_Prototyper":
-                //    return new GIF_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.Citation_MARC_ItemViewer_Prototyper":
-                    return new Citation_MARC_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.Citation_Standard_ItemViewer_Prototyper":
-                    return new Citation_Standard_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.Directory_ItemViewer_Prototyper":
-                    return new Directory_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.Downloads_ItemViewer_Prototyper":
-                    return new Downloads_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.EmbeddedVideo_ItemViewer_Prototyper":
-                    return new EmbeddedVideo_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.Flash_ItemViewer_Prototyper":
-                    return new Flash_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.GnuBooks_PageTurner_ItemViewer_Prototyper":
-                    return new GnuBooks_PageTurner_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.Google_Map_ItemViewer_Prototyper":
-                    return new Google_Map_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.Google_Coordinate_Entry_ItemViewer_Prototyper":
-                    return new Google_Coordinate_Entry_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.HTML_ItemViewer_Prototyper":
-                    return new HTML_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.JPEG_ItemViewer_Prototyper":
-                    return new JPEG_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.JPEG2000_ItemViewer_Prototyper":
-                    return new JPEG2000_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.ManageMenu_ItemViewer_Prototyper":
-                    return new ManageMenu_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.Metadata_Links_ItemViewer_Prototyper":
-                    return new Metadata_Links_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.Milestones_ItemViewer_Prototyper":
-                    return new Milestones_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.MultiVolumes_ItemViewer_Prototyper":
-                    return new MultiVolumes_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.PDF_ItemViewer_Prototyper":
-                    return new PDF_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.QC_ItemViewer_Prototyper":
-                    return new QC_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.Related_Images_ItemViewer_Prototyper":
-                    return new Related_Images_ItemViewer_Prototyper();
-                    
-                case "SobekCM.Library.ItemViewer.Viewers.Restricted_ItemViewer_Prototyper":
-                    return new Restricted_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.TEI_ItemViewer_Prototyper":
-                    return new TEI_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.Text_ItemViewer_Prototyper":
-                    return new Text_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.Text_Search_ItemViewer_Prototyper":
-                    return new Text_Search_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.TrackingSheet_ItemViewer_Prototyper":
-                    return new TrackingSheet_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.Tracking_ItemViewer_Prototyper":
-                    return new Tracking_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.Usage_Stats_ItemViewer_Prototyper":
-                    return new Usage_Stats_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.Video_ItemViewer_Prototyper":
-                    return new Video_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.UF_Archives_ItemViewer_Prototyper":
-                    return new UF_Archives_ItemViewer_Prototyper();
-
-                case "SobekCM.Library.ItemViewer.Viewers.UF_Media_ItemViewer_Prototyper":
-                    return new UF_Media_ItemViewer_Prototyper();
+                // Try to find the file/path for this assembly then
+                Assembly dllAssembly = null;
+                string assemblyFilePath = Engine_ApplicationCache_Gateway.Configuration.Extensions.Get_Assembly(assembly);
+                if (assemblyFilePath != null)
+                {
+                    dllAssembly = Assembly.LoadFrom(assemblyFilePath);
+                }
+                Type prototyperType = dllAssembly.GetType(className);
+                iItemViewerPrototyper returnObj = (iItemViewerPrototyper) Activator.CreateInstance(prototyperType);
+                return returnObj;
+            }
+            catch (Exception ee)
+            {
+                // Not sure exactly what to do here, honestly
+                if (ee.Message.Length > 0)
+                    return null;
+                return null;
             }
 
             return null;

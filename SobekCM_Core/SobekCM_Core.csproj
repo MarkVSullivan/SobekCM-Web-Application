@@ -117,6 +117,7 @@
     <Compile Include="Configuration\Extensions\ExtensionAdminInfo.cs" />
     <Compile Include="Configuration\Extensions\ExtensionAssembly.cs" />
     <Compile Include="Message\EnableExtensionMessage.cs" />
+    <Compile Include="Plugins\PluginInstaller.cs" />
     <Compile Include="Settings\DbItemViewers\DbItemViewerTypes.cs" />
     <Compile Include="Configuration\Extensions\ExtensionCssInfo.cs" />
     <Compile Include="Configuration\Extensions\ExtensionInfo.cs" />

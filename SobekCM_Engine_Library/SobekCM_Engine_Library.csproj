@@ -79,7 +79,6 @@
     <Compile Include="Endpoints\CacheServices.cs" />
     <Compile Include="Endpoints\CustomServices.cs" />
     <Compile Include="Endpoints\DataServices.cs" />
-    <Compile Include="Endpoints\EbscoServices.cs" />
     <Compile Include="Endpoints\EndpointBase.cs" />
     <Compile Include="Endpoints\ItemServices.cs" />
     <Compile Include="Endpoints\NavigationServices.cs" />

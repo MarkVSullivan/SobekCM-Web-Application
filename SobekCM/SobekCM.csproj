@@ -959,7 +959,6 @@
     <Content Include="default\includes\jstree\3.0.9\README.md" />
     <Content Include="default\includes\superfish\1.7.4\superfish.js.orig" />
     <Content Include="config\sobekcm.config.template" />
-    <Content Include="config\user\sobekcm_contactform_example.config" />
     <Content Include="config\default\sobekcm_static_resources_cdn.config">
       <SubType>Designer</SubType>
     </Content>
@@ -984,6 +983,7 @@
     <Content Include="config\samples\sobekcm_engine_example.config" />
     <Content Include="config\samples\sobekcm_shibboleth_example.config" />
     <Content Include="config\samples\sobekcm_static_resources_example.config" />
+    <Content Include="plugins\EbscoServices\sobekcm_engine.config" />
     <None Include="Properties\PublishProfiles\U262189 USF SobekCM local instance.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -1019,6 +1019,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="config\user\" />
     <Folder Include="default\includes\datatables\1.11.1\scroller\css\" />
     <Folder Include="default\includes\datatables\1.11.1\scroller\images\" />
     <Folder Include="default\includes\datatables\1.11.1\scroller\js\" />

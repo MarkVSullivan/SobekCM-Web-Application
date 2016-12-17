@@ -20,6 +20,13 @@ namespace SobekCM.Builder_Library.Modules.Items
             // Save this to the Solr/Lucene database
             if ( !String.IsNullOrEmpty(Settings.Servers.Document_Solr_Index_URL))
             {
+                if (((!Resource.Metadata.Behaviors.IP_Restriction_Membership_Is_Null) && (Resource.Metadata.Behaviors.IP_Restriction_Membership < 0)) ||
+                    ((!Resource.Metadata.Behaviors.Dark_Flag_Is_Null) && (Resource.Metadata.Behaviors.Dark_Flag)))
+                {
+                    Solr_Controller.Delete_Resource_From_Index(Settings.Servers.Document_Solr_Index_URL, Settings.Servers.Page_Solr_Index_URL, Resource.BibID, Resource.VID);
+                    return true;
+                }
+
                 try
                 {
                     Solr_Controller.Update_Index(Settings.Servers.Document_Solr_Index_URL, Settings.Servers.Page_Solr_Index_URL, Resource.Metadata, true);

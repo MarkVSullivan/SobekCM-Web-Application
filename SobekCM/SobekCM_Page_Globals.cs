@@ -1247,6 +1247,8 @@ namespace SobekCM
 
             UI_ApplicationCache_Gateway.ResetAll();
 
+		    MicroserviceHandler.Clear();
+
 			// Since this reset, send to the admin, memory management portion
 			currentMode.Mode = Display_Mode_Enum.Internal;
 			currentMode.Internal_Type = Internal_Type_Enum.Cache;

@@ -29,6 +29,13 @@ namespace SobekCM.Engine_Library
             restApiObjectsDictionary = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
             restApiMethodDictionary = new Dictionary<string, MethodInfo>();
         }
+
+        /// <summary> Clear the collection dictionaries used to save having to reload objects, etc.. </summary>
+        public static void Clear()
+        {
+            restApiObjectsDictionary = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+            restApiMethodDictionary = new Dictionary<string, MethodInfo>();
+        }
        
         /// <summary> Processes the request </summary>
         /// <param name="Context">The context for the current request </param>
