@@ -561,9 +561,15 @@ namespace SobekCM.Library.MainWriters
                 subwriter.Write_Within_HTML_Head(Output, RequestSpecificValues.Tracer);
 
             // Include the interface's style sheet if it has one
-            if (((RequestSpecificValues.HTML_Skin != null) && (RequestSpecificValues.HTML_Skin.CSS_Style.Length > 0)) && ( RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Simple_HTML_CMS ))
+            if ((RequestSpecificValues.HTML_Skin != null) && ( !String.IsNullOrEmpty(RequestSpecificValues.HTML_Skin.CSS_Style)) && ( RequestSpecificValues.Current_Mode.Mode != Display_Mode_Enum.Simple_HTML_CMS ))
             {
                 Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.HTML_Skin.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            }
+
+            // Include the interface's javascript file if it has one
+            if ((RequestSpecificValues.HTML_Skin != null) && (!String.IsNullOrEmpty(RequestSpecificValues.HTML_Skin.Javascript)))
+            {
+                Output.WriteLine("  <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.HTML_Skin.Javascript + "\"  id=\"SobekCmWebSkinJavascript\" ></script>");
             }
 
             // Any final override from the html writer?

@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.SessionState;
-using SobekCM.Library.UploadiFive;
+using SobekCM.Library.Helpers.UploadiFive;
 
 #endregion
 

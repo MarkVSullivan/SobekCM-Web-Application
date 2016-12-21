@@ -20,6 +20,7 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
 
             // Set the default values, using the CDN
             Sixteen_Px_Feed_Img = "http://cdn.sobekrepository.org/images/misc/16px-Feed-icon.svg.png";
+            Ace_Js = "http://cdn.sobekrepository.org/includes/ace/1.2.5/ace.js";
             Add_Geospatial_Img = "http://cdn.sobekrepository.org/images/misc/add_geospatial_icon.png";
             Add_Volume_Img = "http://cdn.sobekrepository.org/images/misc/add_volume_icon.png";
             Admin_View_Img = "http://cdn.sobekrepository.org/images/misc/admin_view.png";
@@ -401,6 +402,12 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
         [XmlElement]
         [ProtoMember(2)]
         public string Sixteen_Px_Feed_Img { get; set; }
+
+        /// <summary> URL for the ACE editor javascript library 'ace.js' file ( http://cdn.sobekrepository.org/includes/ace/1.2.5/ace.js by default)</summary>
+        [DataMember]
+        [XmlElement]
+        [ProtoMember(374)]
+        public string Ace_Js { get; set; }
 
         /// <summary> URL for the default resource 'add_geospatial_icon.png' file ( http://cdn.sobekrepository.org/images/misc/add_geospatial_icon.png by default)</summary>
         [DataMember]
@@ -2630,6 +2637,10 @@ namespace SobekCM.Core.UI_Configuration.StaticResources
             {
                 case "16px-feed-icon.svg_img":
                     Sixteen_Px_Feed_Img = Source;
+                    break;
+
+                case "ace.js":
+                    Ace_Js = Source;
                     break;
 
                 case "add_geospatial_icon_img":

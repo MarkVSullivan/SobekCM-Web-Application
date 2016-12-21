@@ -85,6 +85,7 @@ namespace SobekCM.Engine_Library.Skins
             string banner_link = Skin_Row["BannerLink"].ToString();
             string notes = Skin_Row["Notes"].ToString();
             string this_style = code + ".css";
+	        string this_javascript = code + ".js";
 
             if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin_Complete", "Verifying existence of the CSS file");
 
@@ -92,12 +93,17 @@ namespace SobekCM.Engine_Library.Skins
             if (!File.Exists(style_file))
                 this_style = String.Empty;
 
+            string javascript_file = Path.Combine(Engine_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, "skins", code, this_javascript);
+            if (!File.Exists(javascript_file))
+                this_javascript = String.Empty;
+
             // Create the web skin object
             Complete_Web_Skin_Object completeSkin = new Complete_Web_Skin_Object(code, this_style)
             {
                 Override_Banner = override_banner, 
                 Suppress_Top_Navigation = Convert.ToBoolean(Skin_Row["SuppressTopNavigation"]),
-                Notes = notes
+                Notes = notes,
+                Javascript_File = this_javascript 
             };
 
             // Assign the optional values
@@ -417,7 +423,11 @@ namespace SobekCM.Engine_Library.Skins
             if (Tracer != null) Tracer.Add_Trace("Web_Skin_Utilities.Build_Skin", "Web skin not found in the memory cache, so building it now");
 
             // Build this then
-            Web_Skin_Object returnValue = new Web_Skin_Object(CompleteSkin.Skin_Code, CompleteSkin.Base_Skin_Code, "design/skins/" + CompleteSkin.Skin_Code + "/" + CompleteSkin.CSS_Style);
+            Web_Skin_Object returnValue = new Web_Skin_Object(CompleteSkin.Skin_Code, CompleteSkin.Base_Skin_Code);
+            if (!String.IsNullOrEmpty(CompleteSkin.CSS_Style))
+                returnValue.CSS_Style = "design/skins/" + CompleteSkin.Skin_Code + "/" + CompleteSkin.CSS_Style;
+	        if (!String.IsNullOrEmpty(CompleteSkin.Javascript_File))
+	            returnValue.Javascript = "design/skins/" + CompleteSkin.Skin_Code + "/" + CompleteSkin.Javascript_File;
 
             // Set the language code
             if ( language == Web_Language_Enum.DEFAULT )

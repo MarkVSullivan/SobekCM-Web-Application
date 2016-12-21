@@ -24,9 +24,9 @@ using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.SectionWriter;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.Database;
+using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
-using SobekCM.Library.UploadiFive;
 using SobekCM.Resource_Object;
 using SobekCM.Resource_Object.Bib_Info;
 using SobekCM.Resource_Object.Divisions;
@@ -1186,7 +1186,7 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("</pre>  ");
                 Output.WriteLine("</div>");
 
-                Output.WriteLine("<script src=\"http://localhost:52468/default/includes/ace/1.2.5/ace.js\" type=\"text/javascript\" charset=\"utf-8\"></script>  ");
+                Output.WriteLine("<script src=\"" + UI_ApplicationCache_Gateway.Configuration.UI.StaticResources.Ace_Js + "\" type=\"text/javascript\" charset=\"utf-8\"></script>  ");
                 Output.WriteLine("<script>  ");
                 Output.WriteLine("    var editor = ace.edit(\"sbkEtmv_TeiEditor\");  ");
                 Output.WriteLine("    editor.setTheme(\"ace/theme/chrome\");  ");

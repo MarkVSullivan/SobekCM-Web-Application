@@ -167,6 +167,7 @@ textarea.preference_rights_input { width: 450px; margin-bottom: 6px; }
 .sbkTi_tblRow_ItemInfoLabel{color:Gray; font-weight: bold; font-size: 1.0em;}
 .sbkTi_tblRow_ItemInfoText{ font-size: 1.0em;}
 
+/** Editing a single web skin viewer **/
 .sbkSaav_Table th{ text-align: center; padding-left: 5px;padding-right: 5px;}
 .sbkSaav_Table td{ text-align: center;padding-left: 5px;padding-right: 5px;}
 

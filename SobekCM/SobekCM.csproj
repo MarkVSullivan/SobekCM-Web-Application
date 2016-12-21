@@ -817,25 +817,23 @@
     <Content Include="iipimage\openseadragon\LICENSE.txt" />
     <Content Include="iipimage\openseadragon\openseadragon.js" />
     <Content Include="iipimage\openseadragon\openseadragon.min.js" />
-    <Content Include="mySobek\templates\defaults\addvolume.xml" />
-    <Content Include="mySobek\templates\defaults\groupbehaviors.xml" />
-    <Content Include="mySobek\templates\defaults\itembehaviors.xml" />
-    <Content Include="mySobek\templates\defaults\massupdate.xml" />
-    <Content Include="mySobek\templates\dloc.xml" />
-    <Content Include="mySobek\templates\edit\edit.xml" />
-    <Content Include="mySobek\templates\edit\editmarc.xml" />
-    <Content Include="mySobek\templates\edit\editmarc_catalog.xml" />
-    <Content Include="mySobek\templates\edit\editmarc_internal.xml" />
-    <Content Include="mySobek\templates\edit\edit_catalog.xml" />
-    <Content Include="mySobek\templates\edit\edit_internal.xml" />
-    <Content Include="mySobek\templates\govdocs.xml" />
-    <Content Include="mySobek\templates\hnc.xml" />
-    <Content Include="mySobek\templates\images\oral.jpg" />
-    <Content Include="mySobek\templates\internal.xml" />
-    <Content Include="mySobek\templates\ir.xml" />
-    <Content Include="mySobek\templates\oral.xml" />
-    <Content Include="mySobek\templates\vodou.xml" />
-    <Content Include="mySobek\templates\vodou2.xml" />
+    <Content Include="mySobek\templates\default\dloc.xml" />
+    <Content Include="mySobek\templates\default\edit\edit.xml" />
+    <Content Include="mySobek\templates\default\edit\editmarc.xml" />
+    <Content Include="mySobek\templates\default\edit\editmarc_catalog.xml" />
+    <Content Include="mySobek\templates\default\edit\editmarc_internal.xml" />
+    <Content Include="mySobek\templates\default\edit\edit_catalog.xml" />
+    <Content Include="mySobek\templates\default\edit\edit_internal.xml" />
+    <Content Include="mySobek\templates\default\internal.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="mySobek\templates\default\ir.xml" />
+    <Content Include="mySobek\templates\default\standard\addvolume.xml" />
+    <Content Include="mySobek\templates\default\standard\addvolume_notracking.xml" />
+    <Content Include="mySobek\templates\default\standard\groupbehaviors.xml" />
+    <Content Include="mySobek\templates\default\standard\itembehaviors.xml" />
+    <Content Include="mySobek\templates\default\standard\massupdate.xml" />
+    <Content Include="mySobek\templates\default\standard\project.xml" />
     <Content Include="oai2.xsl" />
     <Content Include="plugins\PostcardCore\PostcardCore.xml">
       <SubType>Designer</SubType>
@@ -1024,6 +1022,9 @@
     <Folder Include="default\includes\datatables\1.11.1\scroller\images\" />
     <Folder Include="default\includes\datatables\1.11.1\scroller\js\" />
     <Folder Include="default\js\sobekcm-full\4.10.0\" />
+    <Folder Include="mySobek\templates\user\edit\" />
+    <Folder Include="mySobek\templates\user\images\" />
+    <Folder Include="mySobek\templates\user\standard\" />
     <Folder Include="plugins\TEI\CSS\" />
     <Folder Include="plugins\TEI\Mapping\" />
     <Folder Include="plugins\TEI\XSLT\" />

@@ -25,6 +25,7 @@ using SobekCM.Library.AggregationViewer;
 using SobekCM.Library.AggregationViewer.Viewers;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
+using SobekCM.Library.Helpers.CKEditor;
 using SobekCM.Library.UI;
 using SobekCM.Tools;
 
@@ -531,7 +532,7 @@ namespace SobekCM.Library.HTML
                 string aggregation_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/aggregations/" + hierarchyObject.Code + "/uploads/";
 
                 // Create the CKEditor object
-                CKEditor.CKEditor editor = new CKEditor.CKEditor
+                CKEditor editor = new CKEditor
                 {
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL, 
                     Language = RequestSpecificValues.Current_Mode.Language, 
@@ -564,7 +565,7 @@ namespace SobekCM.Library.HTML
 			    string aggregation_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/aggregations/" + hierarchyObject.Code + "/uploads/";
 
                 // Create the CKEditor object
-                CKEditor.CKEditor editor = new CKEditor.CKEditor
+                CKEditor editor = new CKEditor
                 {
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
                     Language = RequestSpecificValues.Current_Mode.Language,

@@ -4,7 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Web;
 using System.Web.SessionState;
-using SobekCM.Library.CKEditor;
+using SobekCM.Library.Helpers.CKEditor;
 
 namespace SobekCM
 {

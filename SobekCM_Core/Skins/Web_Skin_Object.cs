@@ -33,6 +33,12 @@ namespace SobekCM.Core.Skins
         [ProtoMember(2)]
         public string CSS_Style { get; set; }
 
+        /// <summary> Additional Javascript file to be included for this skin </summary>
+        [DataMember(Name = "javascript")]
+        [XmlElement("javascript")]
+        [ProtoMember(15)]
+        public string Javascript { get; set; }
+
         /// <summary> Code for this skin </summary>
         /// <remarks> This also corresponds to the location of the main interface files under the design folder.  (i.e., '\design\skins\[CODE]' ) </remarks>
         [DataMember(Name = "code")]
@@ -56,11 +62,9 @@ namespace SobekCM.Core.Skins
 		/// <summary> Constructor for a new instance of the Web_Skin_Object class </summary>
         /// <param name="Skin_Code"> Code for this HTML skin</param>
         /// <param name="Base_Skin_Code"> Code for the base HTML skin which this skin derives from</param>
-        /// <param name="CSS_Style"> Additional CSS Stylesheet to be included for this HTML skin</param>
-        public Web_Skin_Object(string Skin_Code, string Base_Skin_Code, string CSS_Style)
+        public Web_Skin_Object(string Skin_Code, string Base_Skin_Code)
         {
             // Save the parameters
-            this.CSS_Style = CSS_Style;
             this.Skin_Code = Skin_Code;
 
             this.Base_Skin_Code = String.IsNullOrEmpty(Base_Skin_Code) ? Skin_Code : Base_Skin_Code;
@@ -76,12 +80,10 @@ namespace SobekCM.Core.Skins
         /// <summary> Constructor for a new instance of the Web_Skin_Object class </summary>
         /// <param name="Skin_Code"> Code for this HTML skin</param>
         /// <param name="Base_Skin_Code"> Code for the base HTML skin which this skin derives from</param>
-        /// <param name="CSS_Style"> Additional CSS Stylesheet to be included for this HTML skin</param>
         /// <param name="Banner_HTML"> Code for the banner to use, if this is set to override the banner</param>
-        public Web_Skin_Object(string Skin_Code, string Base_Skin_Code, string CSS_Style, string Banner_HTML)
+        public Web_Skin_Object(string Skin_Code, string Base_Skin_Code, string Banner_HTML)
         {
             // Save the parameters
-            this.CSS_Style = CSS_Style;
             this.Skin_Code = Skin_Code;
             this.Banner_HTML = Banner_HTML;
 

@@ -79,5 +79,10 @@ namespace SobekCM.Core.Skins
         [ProtoMember(9)]
         public string Exception { get; set; }
 
+        /// <summary> Additional Javascript file to be included for this skin </summary>
+        [DataMember(Name = "cssStyle")]
+        [ProtoMember(10)]
+        public string Javascript_File;
+
     }
 }

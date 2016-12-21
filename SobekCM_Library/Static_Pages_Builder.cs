@@ -486,7 +486,7 @@ namespace SobekCM.Library
             allListWriter.WriteLine();
             allListWriter.WriteLine("  <meta name=\"robots\" content=\"index, follow\">");
             allListWriter.WriteLine("  <link href=\"" + primaryWebServerUrl + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
-			if (defaultSkinObject.CSS_Style.Length > 0)
+			if (!String.IsNullOrEmpty(defaultSkinObject.CSS_Style))
 			{
 				allListWriter.WriteLine("  <link href=\"" + UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + defaultSkinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
 			}
@@ -542,7 +542,7 @@ namespace SobekCM.Library
                 writer.WriteLine();
                 writer.WriteLine("  <meta name=\"robots\" content=\"index, follow\">");
                 writer.WriteLine("  <link href=\"" + primaryWebServerUrl + "default/SobekCM.css\" rel=\"stylesheet\" type=\"text/css\" title=\"standard\" />");
-				if (defaultSkinObject.CSS_Style.Length > 0)
+                if (!String.IsNullOrEmpty(defaultSkinObject.CSS_Style))
 				{
 					writer.WriteLine("  <link href=\"" + UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + defaultSkinObject.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
 				}

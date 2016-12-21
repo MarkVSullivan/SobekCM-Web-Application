@@ -19,10 +19,12 @@ using SobekCM.Core.UI_Configuration.StaticResources;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Skins;
 using SobekCM.Library.Database;
+using SobekCM.Library.Helpers.AceEditor;
+using SobekCM.Library.Helpers.CKEditor;
+using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.UI;
-using SobekCM.Library.UploadiFive;
 using SobekCM.Tools;
 
 #endregion
@@ -80,6 +82,8 @@ namespace SobekCM.Library.AdminViewer
                 page = 4;
             else if (page_code == "e")
                 page = 5;
+            else if (page_code == "f")
+                page = 6;
 
             // If the user cannot edit this, go back
             if ((!RequestSpecificValues.Current_User.Is_Portal_Admin ) && ( !RequestSpecificValues.Current_User.Is_System_Admin ))
@@ -162,6 +166,10 @@ namespace SobekCM.Library.AdminViewer
                         case 5:
                             Save_Page_Uploads_Postback(form);
                             break;
+
+                        case 6:
+                            Save_Page_6_Postback(form);
+                            break;
                     }
 
                     // Should this be saved to the database?
@@ -177,13 +185,87 @@ namespace SobekCM.Library.AdminViewer
                         string css_backup_folder = skinDirectory + "\\backup\\css";
                         if (!Directory.Exists(css_backup_folder))
                             Directory.CreateDirectory(css_backup_folder);
+                        string javascript_backup_folder = skinDirectory + "\\backup\\js";
+                        if (!Directory.Exists(javascript_backup_folder))
+                            Directory.CreateDirectory(javascript_backup_folder); 
 
                         // Also, save all the updated files
                         foreach (KeyValuePair<string, string> pairs in updatedSourceFiles)
                         {
                             try
                             {
-                                if (pairs.Key != "CSS")
+                                if ( pairs.Key == "CSS" )
+                                {
+                                    string new_skin_file = Path.Combine(skinDirectory, webSkin.Skin_Code + ".css");
+                                    if (File.Exists(new_skin_file))
+                                    {
+                                        StreamReader reader = new StreamReader(new_skin_file);
+                                        string current_contents = reader.ReadToEnd();
+                                        reader.Close();
+
+                                        if (String.CompareOrdinal(pairs.Value, current_contents) != 0)
+                                        {
+                                            // Use the last modified date as the name of the backup
+                                            DateTime lastModifiedDate = (new FileInfo(new_skin_file)).LastWriteTime;
+                                            string backup_name = Path.GetFileName(new_skin_file).Replace(Path.GetExtension(new_skin_file), "") + lastModifiedDate.Year + lastModifiedDate.Month.ToString().PadLeft(2, '0') + lastModifiedDate.Day.ToString().PadLeft(2, '0') + lastModifiedDate.Hour.ToString().PadLeft(2, '0') + lastModifiedDate.Minute.ToString().PadLeft(2, '0') + Path.GetExtension(new_skin_file);
+                                            if (!File.Exists(css_backup_folder + "\\" + backup_name))
+                                                File.Copy(new_skin_file, css_backup_folder + "\\" + backup_name, false);
+
+                                            StreamWriter writer = new StreamWriter(new_skin_file, false);
+                                            writer.Write(pairs.Value);
+                                            writer.Flush();
+                                            writer.Close();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        StreamWriter writer = new StreamWriter(new_skin_file, false);
+                                        writer.Write(pairs.Value.Replace("[%", "<%").Replace("%]", "%>"));
+                                        writer.Flush();
+                                        writer.Close();
+                                    }
+                                }
+                                else if ( pairs.Key == "Javascript" )
+                                {
+                                    string new_javascript_file = Path.Combine(skinDirectory, webSkin.Skin_Code + ".js");
+                                    if (File.Exists(new_javascript_file))
+                                    {
+                                        StreamReader reader = new StreamReader(new_javascript_file);
+                                        string current_contents = reader.ReadToEnd();
+                                        reader.Close();
+
+                                        if (String.CompareOrdinal(pairs.Value, current_contents) != 0)
+                                        {
+                                            // Use the last modified date as the name of the backup
+                                            DateTime lastModifiedDate = (new FileInfo(new_javascript_file)).LastWriteTime;
+                                            string backup_name = Path.GetFileName(new_javascript_file).Replace(Path.GetExtension(new_javascript_file), "") + lastModifiedDate.Year + lastModifiedDate.Month.ToString().PadLeft(2, '0') + lastModifiedDate.Day.ToString().PadLeft(2, '0') + lastModifiedDate.Hour.ToString().PadLeft(2, '0') + lastModifiedDate.Minute.ToString().PadLeft(2, '0') + Path.GetExtension(new_javascript_file);
+                                            if (!File.Exists(new_javascript_file + "\\" + backup_name))
+                                                File.Copy(new_javascript_file, javascript_backup_folder + "\\" + backup_name, false);
+
+                                            StreamWriter writer = new StreamWriter(new_javascript_file, false);
+                                            writer.Write(pairs.Value);
+                                            writer.Flush();
+                                            writer.Close();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // You can actually delete the javascript by clearing it out
+                                        if (String.IsNullOrWhiteSpace(new_javascript_file))
+                                        {
+                                            File.Delete(new_javascript_file);
+                                        }
+                                        else
+                                        {
+                                            StreamWriter writer = new StreamWriter(new_javascript_file, false);
+                                            writer.Write(pairs.Value.Replace("[%", "<%").Replace("%]", "%>"));
+                                            writer.Flush();
+                                            writer.Close();
+                                        }
+
+                                    }
+                                }
+                                else // Neither the CSS nor javascript
                                 {
                                     string filename = Path.Combine(skinDirectory, pairs.Key);
                                     if (String.IsNullOrEmpty(pairs.Value))
@@ -230,37 +312,6 @@ namespace SobekCM.Library.AdminViewer
                                             writer.Flush();
                                             writer.Close();
                                         }
-                                    }
-                                }
-                                else
-                                {
-                                    string new_skin_file = Path.Combine(skinDirectory, webSkin.CSS_Style);
-                                    if (File.Exists(new_skin_file))
-                                    {
-                                        StreamReader reader = new StreamReader(new_skin_file);
-                                        string current_contents = reader.ReadToEnd();
-                                        reader.Close();
-
-                                        if (String.CompareOrdinal(pairs.Value, current_contents) != 0)
-                                        {
-                                            // Use the last modified date as the name of the backup
-                                            DateTime lastModifiedDate = (new FileInfo(new_skin_file)).LastWriteTime;
-                                            string backup_name = Path.GetFileName(new_skin_file).Replace(Path.GetExtension(new_skin_file), "") + lastModifiedDate.Year + lastModifiedDate.Month.ToString().PadLeft(2, '0') + lastModifiedDate.Day.ToString().PadLeft(2, '0') + lastModifiedDate.Hour.ToString().PadLeft(2, '0') + lastModifiedDate.Minute.ToString().PadLeft(2, '0') + Path.GetExtension(new_skin_file);
-                                            if (!File.Exists(css_backup_folder + "\\" + backup_name))
-                                                File.Copy(new_skin_file, css_backup_folder + "\\" + backup_name, false);
-
-                                            StreamWriter writer = new StreamWriter(new_skin_file, false);
-                                            writer.Write(pairs.Value);
-                                            writer.Flush();
-                                            writer.Close();
-                                        }
-                                    }
-                                    else
-                                    {
-                                        StreamWriter writer = new StreamWriter(new_skin_file, false);
-                                        writer.Write(pairs.Value.Replace("[%", "<%").Replace("%]", "%>"));
-                                        writer.Flush();
-                                        writer.Close();
                                     }
                                 }
                             }
@@ -449,7 +500,7 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("<div id=\"sbkSaav_PageContainer\">");
 
-            // Add the buttons
+            // Add the TOP buttons
             string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
             RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
             Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
@@ -491,6 +542,7 @@ namespace SobekCM.Library.AdminViewer
             const string STYLESHEET = "CSS Stylesheet";
             const string HTML = "HTML (Headers/Footers)";
             const string UPLOADS = "Uploads";
+            const string JAVASCRIPT = "Javascript";
 
             // Draw all the page tabs for this form
             if (page == 1)
@@ -513,29 +565,38 @@ namespace SobekCM.Library.AdminViewer
 
             if (page == 3)
             {
-                Output.WriteLine("    <li id=\"tabHeader_2\" class=\"tabActiveHeader\">" + HTML + "</li>");
+                Output.WriteLine("    <li id=\"tabHeader_3\" class=\"tabActiveHeader\">" + HTML + "</li>");
             }
             else
             {
-                Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_skin_edit_page('c');\">" + HTML + "</li>");
+                Output.WriteLine("    <li id=\"tabHeader_3\" onclick=\"return new_skin_edit_page('c');\">" + HTML + "</li>");
+            }
+
+            if (page == 6)
+            {
+                Output.WriteLine("    <li id=\"tabHeader_6\" class=\"tabActiveHeader\">" + JAVASCRIPT + "</li>");
+            }
+            else
+            {
+                Output.WriteLine("    <li id=\"tabHeader_6\" onclick=\"return new_skin_edit_page('f');\">" + JAVASCRIPT + "</li>");
             }
 
             //if (page == 4)
             //{
-            //    Output.WriteLine("    <li id=\"tabHeader_3\" class=\"tabActiveHeader\">" + BANNERS + "</li>");
+            //    Output.WriteLine("    <li id=\"tabHeader_4\" class=\"tabActiveHeader\">" + BANNERS + "</li>");
             //}
             //else
             //{
-            //    Output.WriteLine("    <li id=\"tabHeader_3\" onclick=\"return new_skin_edit_page('d');\">" + BANNERS + "</li>");
+            //    Output.WriteLine("    <li id=\"tabHeader_4\" onclick=\"return new_skin_edit_page('d');\">" + BANNERS + "</li>");
             //}
 
             if (page == 5)
             {
-                Output.WriteLine("    <li id=\"tabHeader_2\" class=\"tabActiveHeader\">" + UPLOADS + "</li>");
+                Output.WriteLine("    <li id=\"tabHeader_5\" class=\"tabActiveHeader\">" + UPLOADS + "</li>");
             }
             else
             {
-                Output.WriteLine("    <li id=\"tabHeader_2\" onclick=\"return new_skin_edit_page('e');\">" + UPLOADS + "</li>");
+                Output.WriteLine("    <li id=\"tabHeader_5\" onclick=\"return new_skin_edit_page('e');\">" + UPLOADS + "</li>");
             }
 
             Output.WriteLine("      </ul>");
@@ -568,6 +629,10 @@ namespace SobekCM.Library.AdminViewer
                 case 5:
                     Add_Page_Uploads(Output);
                     break;
+
+                case 6:
+                    Add_Page_6(Output);
+                    break;
             }
         }
 
@@ -594,6 +659,34 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("    </div>");
             Output.WriteLine("  </div>");
+
+            // Add the BOTTOM buttons
+            string last_mode = RequestSpecificValues.Current_Mode.My_Sobek_SubMode;
+            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = String.Empty;
+            Output.WriteLine("  <div class=\"sbkSaav_ButtonsDiv\">");
+            Output.WriteLine("    <button title=\"Do not apply changes\" class=\"sbkAdm_RoundButton\" onclick=\"return new_skin_edit_page('z');\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkAdm_RoundButton_LeftImg\" alt=\"\" /> CANCEL</button> &nbsp; &nbsp; ");
+
+
+            // If this page has CKEDITOR fields, ensure they are all committed before saving
+            if (page == 3)
+            {
+                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); } return save_skin_edits(false);\"> SAVE </button>  &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"for(var i in CKEDITOR.instances) { CKEDITOR.instances[i].updateElement(); } return save_skin_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+
+            }
+            else
+            {
+                Output.WriteLine("    <button title=\"Save changes to this web skin\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(false);\"> SAVE </button>  &nbsp; &nbsp; ");
+                Output.WriteLine("    <button title=\"Save changes to this web skin and exist the admin screen\" class=\"sbkAdm_RoundButton\" onclick=\"return save_skin_edits(true);\">SAVE & EXIT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkAdm_RoundButton_RightImg\" alt=\"\" /></button>");
+
+            }
+            Output.WriteLine("  </div>");
+            Output.WriteLine();
+            RequestSpecificValues.Current_Mode.My_Sobek_SubMode = last_mode;
+
+            Output.WriteLine("<br />");
+            Output.WriteLine("<br />");
+
             Output.WriteLine("</div>");
             Output.WriteLine("<br />");
         }
@@ -737,7 +830,7 @@ namespace SobekCM.Library.AdminViewer
         private void Save_Page_2_Postback(NameValueCollection Form)
         {
             // Check for action flag
-            string css_contents = Form["admin_skin_css_edit"].Trim();
+            string css_contents = Form["css_source_content"].Trim();
             if (css_contents.Length == 0)
                 css_contents = "/**  CSS for " + webSkin.Skin_Code + " web skin **/";
 
@@ -767,21 +860,27 @@ namespace SobekCM.Library.AdminViewer
                 }
             }
 
-            Output.WriteLine("<table class=\"sbkAdm_PopupTable\">");
+            Output.WriteLine("<table class=\"sbkSSav_PopupTable\">");
 
             Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Web Skin Custom Stylesheet (CSS)</td></tr>");
-            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>You can edit the contents of the web skin stylesheet (css) file here.</p><p>Your changes will not take affect until you actually click SAVE when you are done making all your changes.</p><p>NOTE: You may need to refresh your browser when you are all done for your changes to take affect.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleskin\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>You can edit the contents of the web skin stylesheet (css) file here.</p><p>Your changes will not take affect until you actually click SAVE when you are done making all your changes.</p><p>NOTE: You may need to hard refresh your browser when you are all done for your changes to take affect.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleskin\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
 
             // Add the css edit textarea code
             Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\" >");
             Output.WriteLine("    <td style=\"width:40px;\">&nbsp;</td>");
             Output.WriteLine("    <td>");
-            Output.WriteLine("      <textarea class=\"sbkSaav_EditCssTextarea sbkAdmin_Focusable\" id=\"admin_skin_css_edit\" name=\"admin_skin_css_edit\">");
-            Output.WriteLine(css_contents);
-            Output.WriteLine("      </textarea>");
+
+            // Add the ACE editor
+            AceEditor editor = new AceEditor(AceEditor_Mode.CSS)
+            {
+                ContentsId = "css_source_content", 
+                EditorId = "sbkSsav_CssEditor", 
+                BaseUrl = RequestSpecificValues.Current_Mode.Base_URL
+            };
+            editor.Add_To_Stream(Output,css_contents);
+            
             Output.WriteLine("     </td>");
             Output.WriteLine("  </tr>");
-
             Output.WriteLine("</table>");
             Output.WriteLine("<br />");
 
@@ -1051,7 +1150,7 @@ namespace SobekCM.Library.AdminViewer
                 string skin_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/skins/" + webSkin.Skin_Code + "/uploads/";
 
                 // Create the CKEditor objects
-                CKEditor.CKEditor editor1 = new CKEditor.CKEditor
+                CKEditor editor1 = new CKEditor
                 {
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
                     Language = RequestSpecificValues.Current_Mode.Language,
@@ -1061,7 +1160,7 @@ namespace SobekCM.Library.AdminViewer
                     UploadURL = skin_upload_url,
                     Start_In_Source_Mode = true
                 };
-                CKEditor.CKEditor editor2 = new CKEditor.CKEditor
+                CKEditor editor2 = new CKEditor
                 {
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
                     Language = RequestSpecificValues.Current_Mode.Language,
@@ -1071,7 +1170,7 @@ namespace SobekCM.Library.AdminViewer
                     UploadURL = skin_upload_url,
                     Start_In_Source_Mode = true
                 };
-                CKEditor.CKEditor editor3 = new CKEditor.CKEditor
+                CKEditor editor3 = new CKEditor
                 {
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
                     Language = RequestSpecificValues.Current_Mode.Language,
@@ -1081,7 +1180,7 @@ namespace SobekCM.Library.AdminViewer
                     UploadURL = skin_upload_url,
                     Start_In_Source_Mode = true
                 };
-                CKEditor.CKEditor editor4 = new CKEditor.CKEditor
+                CKEditor editor4 = new CKEditor
                 {
                     BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
                     Language = RequestSpecificValues.Current_Mode.Language,
@@ -1478,6 +1577,61 @@ namespace SobekCM.Library.AdminViewer
                 }
             }
 
+            Output.WriteLine("</table>");
+            Output.WriteLine("<br />");
+        }
+
+        #endregion
+
+        #region Methods to render (and parse) page 6 - Javascript
+
+        private void Save_Page_6_Postback(NameValueCollection Form)
+        {
+            // Check for action flag
+            string javascript_contents = Form["javascript_source_content"].Trim();
+            updatedSourceFiles["Javascript"] = javascript_contents;
+        }
+
+        private void Add_Page_6(TextWriter Output)
+        {
+            // Get the javascript file's contents
+            string javascript_contents = String.Empty;
+
+            // Is an updated version in the cache?
+            if (updatedSourceFiles.ContainsKey("Javascript"))
+                javascript_contents = updatedSourceFiles["Javascript"];
+            else
+            {
+                string file = skinDirectory + "\\" + webSkin.Javascript_File;
+                if (File.Exists(file))
+                {
+                    StreamReader reader = new StreamReader(file);
+                    javascript_contents = reader.ReadToEnd();
+                    reader.Close();
+                }
+            }
+
+            Output.WriteLine("<table class=\"sbkSSav_PopupTable\">");
+
+            Output.WriteLine("  <tr class=\"sbkSaav_TitleRow\"><td colspan=\"3\">Web Skin Custom Javascript</td></tr>");
+            Output.WriteLine("  <tr class=\"sbkSaav_TextRow\"><td colspan=\"3\"><p>You can add and edit javascript methods which will be used in this web skin.</p><p>To remove the javascript file completely, just remove all the javascript code from the box below.<p>Your changes will not take affect until you actually click SAVE when you are done making all your changes.</p><p>NOTE: You may need to hard refresh your browser when you are all done for your changes to take affect.</p><p>For more information about the settings on this tab, <a href=\"" + UI_ApplicationCache_Gateway.Settings.System.Help_URL(RequestSpecificValues.Current_Mode.Base_URL) + "adminhelp/singleskin\" target=\"ADMIN_USER_HELP\" >click here to view the help page</a>.</p></td></tr>");
+
+            // Add the css edit textarea code
+            Output.WriteLine("  <tr class=\"sbkSaav_SingleRow\" >");
+            Output.WriteLine("    <td style=\"width:40px;\">&nbsp;</td>");
+            Output.WriteLine("    <td>");
+
+            // Add the ACE editor
+            AceEditor editor = new AceEditor(AceEditor_Mode.Javascript)
+            {
+                ContentsId = "javascript_source_content",
+                EditorId = "sbkSsav_JsEditor",
+                BaseUrl = RequestSpecificValues.Current_Mode.Base_URL
+            };
+            editor.Add_To_Stream(Output, javascript_contents);
+
+            Output.WriteLine("     </td>");
+            Output.WriteLine("  </tr>");
             Output.WriteLine("</table>");
             Output.WriteLine("<br />");
         }

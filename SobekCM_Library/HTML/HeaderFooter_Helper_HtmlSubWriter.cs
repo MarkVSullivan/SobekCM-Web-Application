@@ -192,8 +192,9 @@ namespace SobekCM.Library.HTML
             // Create the mySobek text
             string mySobekLinks = create_mysobek_link(RequestSpecificValues, url_options, null);
 
-            // Look for the collection code
+            // Look for the collection code and name
             string collection_code = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Aggregation) ? String.Empty : RequestSpecificValues.Current_Mode.Aggregation;
+       //     string collection_name = RequestSpecificValues. ? String.Empty : RequestSpecificValues.Current_Mode.Aggregation;
 
             // Get the language selections
             Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
@@ -264,39 +265,57 @@ namespace SobekCM.Library.HTML
             string userid = ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.UserID > 0)) ? RequestSpecificValues.Current_User.UserID.ToString() : String.Empty;
 
             // Add the appropriate header
-            if (useItemHeader)
+            StringBuilder headerBuilder = new StringBuilder();
+            try
             {
-                try
+                if (useItemHeader)
                 {
-                    Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_Item_HTML.Replace("<%COLLCODE%>",collection_code).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid));
-                }
-                catch (Exception ee)
-                {
-                   RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "EXCEPTION CAUGHT while trying to write the header.");
-                   if (RequestSpecificValues.HTML_Skin == null)
-                       RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "HTML Skin was NULL");
-                   else if ( RequestSpecificValues.HTML_Skin.Header_Item_HTML == null )
-                       RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "HTML Skin was not NULL, but Header_Item_HTML property was NULL");
-                }
-            }
-            else
-            {
-                if (container_inner.Length == 0)
-                {
-                    if ((RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.Value))
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%COLLCODE%>", collection_code).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", String.Empty).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid));
-                    else
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%COLLCODE%>", collection_code).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid));
+                    headerBuilder.Append(RequestSpecificValues.HTML_Skin.Header_Item_HTML);
                 }
                 else
                 {
-                    if ((RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.Value))
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%COLLCODE%>", collection_code).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "<div id=\"" + container_inner + "\">").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid));
-                    else
-                        Output.WriteLine("<div id=\"" + container_inner + "\">" + Environment.NewLine + RequestSpecificValues.HTML_Skin.Header_HTML.Replace("<%COLLCODE%>", collection_code).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%BREADCRUMBS%>", breadcrumbs).Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%ENGLISH%>", english).Replace("<%FRENCH%>", french).Replace("<%SPANISH%>", spanish).Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL).Replace("\"container-inner\"", "\"" + container_inner + "\"").Replace("<%BANNER%>", banner).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid));
+                    headerBuilder.Append(RequestSpecificValues.HTML_Skin.Header_HTML);
 
+                    if ((!String.IsNullOrEmpty(container_inner)) && ((!RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.HasValue) || (!RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.Value)))
+                        headerBuilder.Insert(0, "<div id=\"" + container_inner + "\">" + Environment.NewLine);
                 }
+
+                // Do all the replacements
+                headerBuilder.Replace("<%COLLCODE%>", collection_code);
+  //              headerBuilder.Replace("<%COLLNAME%>", collection_name);
+                headerBuilder.Replace("<%CONTACT%>", contact);
+                headerBuilder.Replace("<%URLOPTS%>", url_options);
+                headerBuilder.Replace("<%?URLOPTS%>", urlOptions1);
+                headerBuilder.Replace("<%&URLOPTS%>", urlOptions2);
+                headerBuilder.Replace("<%BREADCRUMBS%>", breadcrumbs);
+                headerBuilder.Replace("<%MYSOBEK%>", mySobekLinks);
+                headerBuilder.Replace("<%ENGLISH%>", english);
+                headerBuilder.Replace("<%FRENCH%>", french);
+                headerBuilder.Replace("<%SPANISH%>", spanish);
+                headerBuilder.Replace("<%BASEURL%>", RequestSpecificValues.Current_Mode.Base_URL);
+                headerBuilder.Replace("\"container-inner\"", "\"" + container_inner + "\"");
+                headerBuilder.Replace("<%BANNER%>", banner);
+                headerBuilder.Replace("<%SKINURL%>", skin_url);
+                if (( !useItemHeader) && ( !String.IsNullOrEmpty(container_inner)) && (RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Header_Has_Container_Directive.Value))
+                    headerBuilder.Replace("<%CONTAINER%>", "<div id=\"" + container_inner + "\">");
+                else
+                    headerBuilder.Replace("<%CONTAINER%>", String.Empty);
+                headerBuilder.Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name);
+                headerBuilder.Replace("<%SESSIONID%>", sessionId);
+                headerBuilder.Replace("<%USERID%>", userid);
             }
+            catch (Exception ee)
+            {
+                RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "EXCEPTION CAUGHT while trying to write the header.");
+                if (RequestSpecificValues.HTML_Skin == null)
+                    RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "HTML Skin was NULL");
+                else if (RequestSpecificValues.HTML_Skin.Header_Item_HTML == null)
+                    RequestSpecificValues.Tracer.Add_Trace("HeaderFooter_Helper_HtmlSubWriter.Add_Header", "HTML Skin was not NULL, but Header_Item_HTML property was NULL");
+            }
+
+            // Write the header
+            Output.WriteLine(headerBuilder.ToString());
+
         }
 
         /// <summary> Add the header to the output </summary>
@@ -349,28 +368,40 @@ namespace SobekCM.Library.HTML
             string sessionId = HttpContext.Current.Session.SessionID ?? String.Empty;
             string userid = ((RequestSpecificValues.Current_User != null) && (RequestSpecificValues.Current_User.UserID > 0)) ? RequestSpecificValues.Current_User.UserID.ToString() : String.Empty;
 
-
+            StringBuilder footerBuilder = new StringBuilder();
             if (useItemFooter)
             {
-                Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_Item_HTML.Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid).Trim());
+                footerBuilder.Append(RequestSpecificValues.HTML_Skin.Footer_Item_HTML);
             }
             else
             {
                 if (( RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.Value))
                 {
-                    if (!end_div)
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid).Trim());
-                    else
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%CONTAINER%>", "</div>").Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid).Trim());
+                    footerBuilder.Append(RequestSpecificValues.HTML_Skin.Footer_HTML);
                 }
                 else
                 {
-                    if (!end_div)
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid).Trim());
-                    else
-                        Output.WriteLine(RequestSpecificValues.HTML_Skin.Footer_HTML.Replace("<%MYSOBEK%>", mySobekLinks).Replace("<%CONTACT%>", contact).Replace("<%URLOPTS%>", url_options).Replace("<%?URLOPTS%>", urlOptions1).Replace("<%&URLOPTS%>", urlOptions2).Replace("<%VERSION%>", version).Replace("<%BASEURL%>", base_url).Replace("<%SKINURL%>", skin_url).Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name).Replace("<%SESSIONID%>", sessionId).Replace("<%USERID%>", userid).Trim() + Environment.NewLine + "</div>");
+                    footerBuilder.Append(RequestSpecificValues.HTML_Skin.Footer_HTML + Environment.NewLine + "</div>");
                 }
             }
+
+            // Make all the replacements
+            footerBuilder.Replace("<%MYSOBEK%>", mySobekLinks);
+            footerBuilder.Replace("<%CONTACT%>", contact);
+            footerBuilder.Replace("<%URLOPTS%>", url_options);
+            footerBuilder.Replace("<%?URLOPTS%>", urlOptions1);
+            footerBuilder.Replace("<%&URLOPTS%>", urlOptions2);
+            footerBuilder.Replace("<%VERSION%>", version);
+            footerBuilder.Replace("<%BASEURL%>", base_url);
+            footerBuilder.Replace("<%SKINURL%>", skin_url);
+            footerBuilder.Replace("<%INSTANCENAME%>", RequestSpecificValues.Current_Mode.Instance_Name);
+            footerBuilder.Replace("<%SESSIONID%>", sessionId);
+            footerBuilder.Replace("<%USERID%>", userid);
+            if ((!useItemFooter) && ( RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.HasValue) && (RequestSpecificValues.HTML_Skin.Footer_Has_Container_Directive.Value))
+                footerBuilder.Replace("<%CONTAINER%>", "</div>");
+
+            // Write this to the stream
+            Output.WriteLine(footerBuilder.ToString().Trim());
         }
 
         private static string create_mysobek_link( RequestCache RequestSpecificValues, string url_options, string login_text )

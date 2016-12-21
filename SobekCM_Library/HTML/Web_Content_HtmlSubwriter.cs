@@ -20,6 +20,7 @@ using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.SiteMap;
+using SobekCM.Library.Helpers.CKEditor;
 using SobekCM.Library.UI;
 using SobekCM.Library.WebContentViewer;
 using SobekCM.Library.WebContentViewer.Viewers;
@@ -1025,9 +1026,15 @@ namespace SobekCM.Library.HTML
             }
 
             // Include the interface's style sheet if it has one
-            if ((RequestSpecificValues.HTML_Skin != null) && (RequestSpecificValues.HTML_Skin.CSS_Style.Length > 0)) 
+            if ((RequestSpecificValues.HTML_Skin != null) && ( !String.IsNullOrEmpty(RequestSpecificValues.HTML_Skin.CSS_Style)))
             {
                 Output.WriteLine("  <link href=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.HTML_Skin.CSS_Style + "\" rel=\"stylesheet\" type=\"text/css\" />");
+            }
+
+            // Include the interface's javascript file if it has one
+            if ((RequestSpecificValues.HTML_Skin != null) && (!String.IsNullOrEmpty(RequestSpecificValues.HTML_Skin.Javascript)))
+            {
+                Output.WriteLine("   <script type=\"text/javascript\" src=\"" + RequestSpecificValues.Current_Mode.Base_URL + RequestSpecificValues.HTML_Skin.Javascript + "\"  id=\"SobekCmWebSkinJavascript\" ></script>");
             }
 
             // Add the special CSS here
@@ -1061,7 +1068,7 @@ namespace SobekCM.Library.HTML
                     string webcontent_upload_url = UI_ApplicationCache_Gateway.Settings.Servers.System_Base_URL + "design/webcontent/" + urlSegments.Replace("\\","/") + "/";
 
                     // Create the CKEditor object
-                    CKEditor.CKEditor editor = new CKEditor.CKEditor
+                    CKEditor editor = new CKEditor
                     {
                         BaseUrl = RequestSpecificValues.Current_Mode.Base_URL,
                         Language = RequestSpecificValues.Current_Mode.Language,
@@ -1084,6 +1091,8 @@ namespace SobekCM.Library.HTML
 
                     if ((staticWebContent.Content.IndexOf("<script", StringComparison.OrdinalIgnoreCase) >= 0) || (staticWebContent.Content.IndexOf("<input", StringComparison.OrdinalIgnoreCase) >= 0))
                         editor.Start_In_Source_Mode = true;
+                    else 
+                        editor.Start_In_Source_Mode = false;
 
                     // Add the HTML from the CKEditor object
                     editor.Add_To_Stream(Output);
