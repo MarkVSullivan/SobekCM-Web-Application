@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Reflection;
 using SobekCM.Builder_Library.Modules.Folders;
 using SobekCM.Builder_Library.Modules.Items;
@@ -55,8 +56,9 @@ namespace SobekCM.Builder_Library.Settings
         }
 
         /// <summary> Build the modules for the non-folder specific builder modules </summary>
+        /// <param name="InstanceName"> Name of the current instance, which tells where the plug-in assemblies may be located </param>
         /// <returns> Either null, or a list of errors encountered </returns>
-        public List<string> Builder_Modules_From_Settings( )
+        public List<string> Builder_Modules_From_Settings( string InstanceName )
         {
             // Build the return value
             List<string> errors = new List<string>();
@@ -93,7 +95,7 @@ namespace SobekCM.Builder_Library.Settings
                     }
                 }
 
-                object preAsObj = Get_Module(preSetting, out errorMessage);
+                object preAsObj = Get_Module(preSetting, InstanceName, out errorMessage);
                 if ((preAsObj == null) && (errorMessage.Length > 0))
                 {
                     errors.Add(errorMessage);
@@ -144,7 +146,7 @@ namespace SobekCM.Builder_Library.Settings
                     }
                 }
 
-                object postAsObj = Get_Module(postSetting, out errorMessage);
+                object postAsObj = Get_Module(postSetting, InstanceName, out errorMessage);
                 if ((postAsObj == null) && (errorMessage.Length > 0))
                 {
                     errors.Add(errorMessage);
@@ -175,7 +177,7 @@ namespace SobekCM.Builder_Library.Settings
             // Create all the item processing modules (for new or updated item)
             foreach (Builder_Module_Setting itemSetting in settings.ItemProcessModulesSettings)
             {
-                iSubmissionPackageModule itemModule = Get_Submission_Module(itemSetting, out errorMessage);
+                iSubmissionPackageModule itemModule = Get_Submission_Module(itemSetting, InstanceName, out errorMessage);
                 if ((itemModule == null) && (!String.IsNullOrEmpty(errorMessage)))
                     errors.Add(errorMessage);
                 else
@@ -185,7 +187,7 @@ namespace SobekCM.Builder_Library.Settings
             // Create all the item processing modules (for deleting items)
             foreach (Builder_Module_Setting itemSetting in settings.ItemDeleteModulesSettings)
             {
-                iSubmissionPackageModule itemModule = Get_Submission_Module(itemSetting, out errorMessage);
+                iSubmissionPackageModule itemModule = Get_Submission_Module(itemSetting, InstanceName, out errorMessage);
                 if ((itemModule == null) && (!String.IsNullOrEmpty(errorMessage)))
                     errors.Add(errorMessage);
                 else
@@ -229,10 +231,6 @@ namespace SobekCM.Builder_Library.Settings
                                     thisModule = new ValidateAndClassifyModule();
                                     break;
 
-                                case "SobekCM.Builder_Library.Modules.Folders.WolfsonianObjectProcessorModule":
-                                    thisModule = new WolfsonianObjectProcessorModule();
-                                    break;
-
                                 case "SobekCM.Builder_Library.Modules.Folders.UpdateNonBibFolders":
                                     thisModule = new UpdateNonBibFolders();
                                     break;
@@ -256,7 +254,7 @@ namespace SobekCM.Builder_Library.Settings
                             }
                         }
 
-                        object folderAsObj = Get_Module(folderSetting, out errorMessage);
+                        object folderAsObj = Get_Module(folderSetting, InstanceName, out errorMessage);
                         if ((folderAsObj == null) && (errorMessage.Length > 0))
                         {
                             errors.Add(errorMessage);
@@ -291,7 +289,7 @@ namespace SobekCM.Builder_Library.Settings
             return errors;
         }
 
-        private iSubmissionPackageModule Get_Submission_Module(Builder_Module_Setting ItemSetting, out string ErrorMessage)
+        private iSubmissionPackageModule Get_Submission_Module(Builder_Module_Setting ItemSetting, string InstanceName, out string ErrorMessage)
         {
             ErrorMessage = String.Empty;
 
@@ -428,7 +426,7 @@ namespace SobekCM.Builder_Library.Settings
                 }
             }
 
-            object itemAsObj = Get_Module(ItemSetting, out ErrorMessage);
+            object itemAsObj = Get_Module(ItemSetting, InstanceName, out ErrorMessage);
             if ((itemAsObj == null) && (ErrorMessage.Length > 0))
             {
                 return null;
@@ -454,7 +452,7 @@ namespace SobekCM.Builder_Library.Settings
 
         }
 
-        private object Get_Module(Builder_Module_Setting Settings, out string ErrorMessage )
+        private object Get_Module(Builder_Module_Setting Settings, string InstanceName, out string ErrorMessage )
         {
             ErrorMessage = String.Empty;
 
@@ -464,7 +462,63 @@ namespace SobekCM.Builder_Library.Settings
                 Assembly dllAssembly = Assembly.GetExecutingAssembly();
                 if (!String.IsNullOrEmpty(Settings.Assembly))
                 {
-                    dllAssembly = Assembly.LoadFrom(Settings.Assembly);
+                    string base_dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location).Replace("file:///", "");
+                    string assembly_network = Path.Combine(base_dir, "plugins", InstanceName, Settings.Assembly);
+                    if ((assembly_network.IndexOf(".dll", StringComparison.InvariantCultureIgnoreCase) < 0) && ( File.Exists(assembly_network + ".dl;l")))
+                        assembly_network = assembly_network + ".dll";
+
+                    // Is this file present?
+                    if (File.Exists(assembly_network))
+                        dllAssembly = Assembly.LoadFrom(assembly_network);
+                    else if ( Directory.Exists(Path.Combine(base_dir, "plugins", InstanceName)))
+                    {
+                        // Did the assembly include a .dll?
+                        string assembly_name = Settings.Assembly;
+                        if (assembly_name.IndexOf(".dll", StringComparison.InvariantCultureIgnoreCase) < 0) assembly_name = assembly_name + ".dll";
+
+                        // File was not present, so look around a bit
+                        string found_assembly = null;
+                        string[] subdirs = Directory.GetDirectories(Path.Combine(base_dir, "plugins", InstanceName));
+                        foreach (string thisSubDir in subdirs)
+                        {
+                            // Look for the assembly here
+                            string possible_assembly = Path.Combine(thisSubDir, assembly_name);
+                            if (File.Exists(possible_assembly))
+                            {
+                                found_assembly = possible_assembly;
+                                break;
+                            }
+
+                            // Look a little bit deeper
+                            string[] subsubdirs = Directory.GetDirectories(thisSubDir);
+                            foreach (string thisSubSubDir in subsubdirs)
+                            {
+                                // Look for the assembly here
+                                possible_assembly = Path.Combine(thisSubSubDir, assembly_name);
+                                if (File.Exists(possible_assembly))
+                                {
+                                    found_assembly = possible_assembly;
+                                    break;
+                                }
+                            }
+
+                            // If found, break
+                            if (!String.IsNullOrEmpty(found_assembly))
+                                break;
+                        }
+
+                        // Was the assembly found?
+                        if (!String.IsNullOrEmpty(found_assembly))
+                        {
+                            dllAssembly = Assembly.LoadFrom(found_assembly);
+                        }
+                        else
+                        {
+                            ErrorMessage = "Unable to find the assembly referenced in a builder setting ( " + Settings.Assembly + " ).";
+                            return null;
+                        }
+                    }
+
                 }
                 
                 Type readerWriterType = dllAssembly.GetType(Settings.Class);

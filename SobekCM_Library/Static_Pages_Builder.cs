@@ -1519,7 +1519,7 @@ namespace SobekCM.Library
             }
             catch
             {
-                Console.WriteLine(@"ERROR BUILDING RSS FEED {0}", Collection_Code);
+               // Console.WriteLine(@"ERROR BUILDING RSS FEED {0}", Collection_Code);
                 return false;
             }
         }

@@ -558,7 +558,7 @@ namespace SobekCM.Builder_Library
 
             // Build the modules
 		    builderModules = new Builder_Modules(builderSettings);
-            List<string> errors = builderModules.Builder_Modules_From_Settings();
+            List<string> errors = builderModules.Builder_Modules_From_Settings(instanceInfo.Name);
 
             if (( errors != null ) && ( errors.Count > 0 ))
             {

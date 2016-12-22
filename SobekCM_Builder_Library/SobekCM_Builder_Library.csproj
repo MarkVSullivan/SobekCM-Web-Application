@@ -50,7 +50,6 @@
     <Compile Include="Abort_Database_Mechanism.cs" />
     <Compile Include="Actionable_Builder_Source_Folder.cs" />
     <Compile Include="Modules\Folders\ConvertLargeJpegsModule.cs" />
-    <Compile Include="Modules\Folders\WolfsonianObjectProcessorModule.cs" />
     <Compile Include="Modules\Items\AttachImagesAllModule.cs" />
     <Compile Include="Modules\Items\CreateImageDerivativesLegacyModule.cs" />
     <Compile Include="Modules\Items\TesseractOcrModule.cs" />

@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using SobekCM.Core.Aggregations;
 using SobekCM.Core.BriefItem;
 using SobekCM.Core.Client;
 using SobekCM.Core.FileSystems;
@@ -24,6 +21,7 @@ using SobekCM.Library.Citation;
 using SobekCM.Library.Citation.SectionWriter;
 using SobekCM.Library.Citation.Template;
 using SobekCM.Library.Database;
+using SobekCM.Library.Helpers.AceEditor;
 using SobekCM.Library.Helpers.UploadiFive;
 using SobekCM.Library.HTML;
 using SobekCM.Library.UI;
@@ -54,7 +52,6 @@ namespace SobekCM.Library.MySobekViewer
         private readonly int currentProcessStep;
         private SobekCM_Item item;
         private readonly CompleteTemplate completeTemplate;
-        private readonly string templateCode = "ir";
         private readonly string toolTitle;
         private readonly int totalTemplatePages;
         private readonly string userInProcessDirectory;
@@ -422,7 +419,9 @@ namespace SobekCM.Library.MySobekViewer
                     RequestSpecificValues.Current_User.Current_Template = null;
 
                     // Forward back to my Sobek home
-                    RequestSpecificValues.Current_Mode.My_Sobek_Type = My_Sobek_Type_Enum.Home;
+                    RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                    RequestSpecificValues.Current_Mode.BibID = bibid;
+                    RequestSpecificValues.Current_Mode.VID = vid;
                     UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
                 }
 
@@ -817,7 +816,6 @@ namespace SobekCM.Library.MySobekViewer
 
             if (currentProcessStep == 1)
             {
-                Output.WriteLine("<script src=\"" + Static_Resources_Gateway.Sobekcm_Metadata_Js + "\" type=\"text/javascript\"></script>");
                 Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
                 Output.Write("<h2>Step 1 of " + totalTemplatePages + ": Upload TEI and Confirm Mapping, XSLT, and CSS </h2>");
 
@@ -1178,28 +1176,21 @@ namespace SobekCM.Library.MySobekViewer
                     throw;
                 }
 
-                Output.WriteLine("<input type=\"hidden\" id=\"tei_source_content\" name=\"tei_source_content\" value=\"\" />");
-
-                Output.WriteLine("<div id=\"sbkEtmv_TeiEditorDiv\">");
-                Output.WriteLine("<pre id=\"sbkEtmv_TeiEditor\">");
-                Output.WriteLine(HttpUtility.HtmlEncode(tei_source_content));
-                Output.WriteLine("</pre>  ");
-                Output.WriteLine("</div>");
-
-                Output.WriteLine("<script src=\"" + UI_ApplicationCache_Gateway.Configuration.UI.StaticResources.Ace_Js + "\" type=\"text/javascript\" charset=\"utf-8\"></script>  ");
-                Output.WriteLine("<script>  ");
-                Output.WriteLine("    var editor = ace.edit(\"sbkEtmv_TeiEditor\");  ");
-                Output.WriteLine("    editor.setTheme(\"ace/theme/chrome\");  ");
-                Output.WriteLine("    editor.session.setMode(\"ace/mode/xml\");  ");
-                Output.WriteLine("    editor.setOptions({ enableBasicAutocompletion: true, enableSnippets: true, enableLiveAutocompletion: false });");
-                Output.WriteLine("</script>  ");
+                // Add the ACE editor
+                AceEditor editor = new AceEditor(AceEditor_Mode.XML)
+                {
+                    ContentsId = "tei_source_content",
+                    EditorId = "sbkEtmv_TeiEditor",
+                    BaseUrl = RequestSpecificValues.Current_Mode.Base_URL
+                };
+                editor.Add_To_Stream(Output, tei_source_content);
 
                 // Add the bottom buttons
                 Output.WriteLine("<div class=\"sbkMySobek_HomeText\">");
                 Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
                 Output.WriteLine("        <button onclick=\"return new_item_cancel();\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> CANCEL </button> &nbsp; &nbsp; ");
-                Output.WriteLine("        <button onclick=\"return new_item_next_phase_ace_editor(2);\" class=\"sbkMySobek_BigButton\"> SAVE </button> &nbsp; &nbsp; ");
-                Output.WriteLine("        <button onclick=\"return new_item_next_phase_ace_editor(3);\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("        <button onclick=\"return new_item_next_phase(2);\" class=\"sbkMySobek_BigButton\"> SAVE </button> &nbsp; &nbsp; ");
+                Output.WriteLine("        <button onclick=\"return new_item_next_phase(3);\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("      </div>");
 
                 Output.WriteLine("<br /><br /><br />");

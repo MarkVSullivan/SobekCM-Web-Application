@@ -175,28 +175,6 @@ function new_item_next_phase( next_phase )
     return false;
 }
 
-// Go to a particular phase during new item entry, and save the 
-// final value from the ACE Editor into a hidden value in the page before postback
-function new_item_next_phase_ace_editor( next_phase )
-{
-    // Populate the hidden value this data
-    var hiddenfield = document.getElementById('action');
-    hiddenfield.value = 'next_phase';
-    var hiddenfield2 = document.getElementById('phase');
-    hiddenfield2.value = next_phase;
-	
-	// Get the output of the ace editor
-	var editor_output = editor.getValue();
-	
-	// Save the output of the ace editor
-	var content_hiddenfield = document.getElementById('tei_source_content');
-    content_hiddenfield.value = editor_output;
-    
-    // Submit this
-    document.itemNavForm.submit();    
-    return false;
-}
-
 // Go to a particular phase during new item entry
 function new_upload_next_phase( next_phase )
 {

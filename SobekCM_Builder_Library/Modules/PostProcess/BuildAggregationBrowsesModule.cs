@@ -96,12 +96,12 @@ namespace SobekCM.Builder_Library.Modules.PostProcess
                             }
                             catch (Exception ee)
                             {
-                                OnError("........Error in copying RSS feed for " + display_code + " to " + Settings.Servers.Static_Pages_Location + "\n" + ee.Message, String.Empty, String.Empty, updatedId);
+                               // OnError("........Error in copying RSS feed for " + display_code + " to " + Settings.Servers.Static_Pages_Location + "\n" + ee.Message, String.Empty, String.Empty, updatedId);
                             }
                         }
                         catch (Exception ee)
                         {
-                            OnError("........Error in building RSS feed for " + display_code + "\n" + ee.Message, String.Empty, String.Empty, updatedId);
+                           // OnError("........Error in building RSS feed for " + display_code + "\n" + ee.Message, String.Empty, String.Empty, updatedId);
                         }
 
                         OnProcess("........Building static HTML browse page of links for " + display_code, "Aggregation Updates", String.Empty, String.Empty, updatedId);
