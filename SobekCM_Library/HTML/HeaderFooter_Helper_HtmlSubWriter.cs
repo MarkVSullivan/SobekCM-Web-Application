@@ -355,6 +355,9 @@ namespace SobekCM.Library.HTML
             if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
                 base_url = base_url + "l/";
 
+            // Look for the collection code and name
+            string collection_code = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Aggregation) ? String.Empty : RequestSpecificValues.Current_Mode.Aggregation;
+
             // Get the skin url
             string skin_url = RequestSpecificValues.Current_Mode.Base_Design_URL + "skins/" + RequestSpecificValues.HTML_Skin.Skin_Code + "/";
 
@@ -386,6 +389,7 @@ namespace SobekCM.Library.HTML
             }
 
             // Make all the replacements
+            footerBuilder.Replace("<%COLLCODE%>", collection_code);
             footerBuilder.Replace("<%MYSOBEK%>", mySobekLinks);
             footerBuilder.Replace("<%CONTACT%>", contact);
             footerBuilder.Replace("<%URLOPTS%>", url_options);

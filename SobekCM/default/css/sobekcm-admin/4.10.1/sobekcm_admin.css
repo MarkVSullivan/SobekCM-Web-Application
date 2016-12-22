@@ -472,7 +472,9 @@ input.sbkSeav_CustomValue_Input { width: 300px; }
 
 #sbkSeav_SmallerPageWrapper { width: 1000px; }
 .sbkSeav_ButtonsDiv { margin-right: 100px; }
-#sbkSeav_HtmlEdit { width: 900px !important; height: 700px !important; margin-bottom: 12px; }
+
+#sbkSeav_HtmlEditDiv { margin-bottom: 20px;  position: relative; min-height: 620px; border-top: 1px solid #cccccc;  border-bottom: 1px solid #cccccc;}
+#sbkSeav_HtmlEdit { margin: 0; position: absolute; top: 0; bottom: 0; left: 0; right: 0; min-height: 500px; }
 
 #sbkSeav_ConfigFilesTable { margin-left: 50px; margin-top: 40px; }
 #sbkSeav_ConfigReadingLog { border: 1px solid #cccccc; width: 1100px; margin-left: 30px; }
@@ -486,7 +488,11 @@ input.sbkSeav_CustomValue_Input { width: 300px; }
 .sbkSeav_MetsProfileTable_LevelRow { background-color: #eeeeee; }
 
 .sbkSeav_QcToolProfileTable { margin-left: 30px; max-width: 1250px;  }
-      
+
+.sbkSeav_ExtensionTable { margin-right: 50px; }
+#sbkSeav_ExtensionEnableDiv { float: right; }
+#sbkSeav_ExtensionEnableDiv span { font-size: 0.9em;font-style: italic;color: #333333;padding-right: 50px;padding-left: 50px;}
+#sbkSeav_ExtensionEnableDiv button { margin-right: 200px; }   
 
 #sbkBav_SchedTaskTable { margin-left: 30px; max-width: 960px; }
 

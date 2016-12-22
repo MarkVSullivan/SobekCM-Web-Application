@@ -4,12 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Windows.Forms;
 using SobekCM.Core.Builder;
 using SobekCM.Core.Client;
 using SobekCM.Core.Configuration;
@@ -32,6 +32,7 @@ using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.Database;
+using SobekCM.Library.Helpers.AceEditor;
 using SobekCM.Library.HTML;
 using SobekCM.Library.MainWriters;
 using SobekCM.Library.ResultsViewer;
@@ -179,7 +180,9 @@ namespace SobekCM.Library.AdminViewer
 
             Missing_Page,
 
-            No_Results
+            No_Results,
+
+            Usage_Email
         }
 
 		#endregion
@@ -392,6 +395,10 @@ namespace SobekCM.Library.AdminViewer
                                 case "noresults":
                                     htmlSubEnum = Settings_HTML_SubMode_Enum.No_Results;
                                     break;
+
+                                case "usageemail":
+                                    htmlSubEnum = Settings_HTML_SubMode_Enum.Usage_Email;
+                                    break;
                             }
                         }
                         break;
@@ -481,8 +488,72 @@ namespace SobekCM.Library.AdminViewer
                             actionMessage = actionMessage + "</ul>";
                         }
                     }
+			    }
+			    if (mainMode == Settings_Mode_Enum.HTML) 
+			    {
+                    if (htmlSubEnum == Settings_HTML_SubMode_Enum.Missing_Page)
+			        {
+			            try
+			            {
+			                string missing_contents = form["missing_page_content"].Trim();
+			                string file_name = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "design", "webcontent", "missing.html");
+			                StreamWriter writer = new StreamWriter(file_name, false);
+			                writer.Write(missing_contents);
+			                writer.Flush();
+			                writer.Close();
+
+                            SobekEngineClient.WebContent.Clear_Special_Missing_Page(RequestSpecificValues.Tracer);
+			            }
+			            catch
+			            {
+			                actionMessage = "ERROR: Unable to write the new missing page HTML to the file.";
+			            }
+			        }
+
+
+			        if (htmlSubEnum == Settings_HTML_SubMode_Enum.No_Results)
+			        {
+                        try
+                        {
+                            string no_results_content = form["no_results_content"].Trim();
+                            string file_name = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "design", "webcontent", "noresults.html");
+                            StreamWriter writer = new StreamWriter(file_name, false);
+                            writer.Write(no_results_content);
+                            writer.Flush();
+                            writer.Close();
+
+                            HttpContext.Current.Application["NORESULTS"] = null;
+                        }
+                        catch
+                        {
+                            actionMessage = "ERROR: Unable to write the no results page HTML to the file.";
+                        }
+			        }
+
+                    if (htmlSubEnum == Settings_HTML_SubMode_Enum.Usage_Email)
+                    {
+                        try
+                        {
+                            string usage_email_content = form["usage_email_content"].Trim();
+                            string file_name = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "design", "extra", "stats", "stats_email_body.txt");
+                            StreamWriter writer = new StreamWriter(file_name, false);
+                            writer.Write(usage_email_content.Replace("[%", "<%").Replace("%]", "%>"));
+                            writer.Flush();
+                            writer.Close();
+
+                            actionMessage = "Updated the statistics usage email body text.";
+
+
+                        }
+                        catch
+                        {
+                            actionMessage = "ERROR: Unable to write the usage email body to the file.";
+                        }
+                    }
+
 
 			    }
+
 			}
 		}
 
@@ -734,6 +805,7 @@ namespace SobekCM.Library.AdminViewer
 			Output.WriteLine("        <ul>");
 			Output.WriteLine(add_leftnav_li_link("Missing page", "html/missing", redirectUrl, currentViewerCode));
 			Output.WriteLine(add_leftnav_li_link("No results", "html/noresults", redirectUrl, currentViewerCode));
+            Output.WriteLine(add_leftnav_li_link("Usage Email", "html/usageemail", redirectUrl, currentViewerCode));
 			Output.WriteLine("        </ul>");
 
 			Output.WriteLine(add_leftnav_h2_link("Extensions", "extensions", redirectUrl, currentViewerCode));
@@ -1282,24 +1354,79 @@ namespace SobekCM.Library.AdminViewer
 
 					Output.WriteLine("                    <select id=\"setting" + Value.SettingID + "\" name=\"setting" + Value.SettingID + "\" class=\"sbkSeav_select\" >");
 
-					bool option_found = false;
-					foreach (string thisValue in Value.Options)
-					{
-						if (String.Compare(thisValue, setting_value, StringComparison.OrdinalIgnoreCase) == 0)
-						{
-							option_found = true;
-							Output.WriteLine("                      <option selected=\"selected\">" + setting_value + "</option>");
-						}
-						else
-						{
-							Output.WriteLine("                      <option>" + thisValue + "</option>");
-						}
-					}
+                    // Some special options here
+                    bool option_found = false;
+				    if (Value.Options[0] == "{ACE_THEMES}")
+				    {
+                        string indent = "                      ";
+                        string setting_value_no_space = setting_value.Replace(" ", "").Replace("_", "");
 
-					if (!option_found)
-					{
-						Output.WriteLine("                      <option selected=\"selected\">" + setting_value + "</option>");
-					}
+
+                        Output.WriteLine(indent + "<optgroup label=\"Bright\">");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "chrome", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"chrome\" selected=\"selected\">Chrome</option>" : indent + "  <option value=\"chrome\">Chrome</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "clouds", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"clouds\" selected=\"selected\">Clouds</option>" : indent + "  <option value=\"clouds\">Clouds</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "crimsoneditor", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"crimson_editor\" selected=\"selected\">Crimson Editor</option>" : indent + "  <option value=\"crimson_editor\">Crimson Editor</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "dawn", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"dawn\" selected=\"selected\">Dawn</option>" : indent + "  <option value=\"dawn\">Dawn</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "dreamweaver", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"dreamweaver\" selected=\"selected\">Dreamweaver</option>" : indent + "  <option value=\"dreamweaver\">Dreamweaver</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "eclipse", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"eclipse\" selected=\"selected\">Eclipse</option>" : indent + "  <option value=\"eclipse\">Eclipse</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "github", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"github\" selected=\"selected\">GitHub</option>" : indent + "  <option value=\"github\">GitHub</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "iplastic", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"iplastic\" selected=\"selected\">IPlastic</option>" : indent + "  <option value=\"iplastic\">IPlastic</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "solarizedlight", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"solarized_light\" selected=\"selected\">Solarized Light</option>" : indent + "  <option value=\"solarized_light\">Solarized Light</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "textmate", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"textmate\" selected=\"selected\">TextMate</option>" : indent + "  <option value=\"textmate\">TextMate</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "tomorrow", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"tomorrow\" selected=\"selected\">Tomorrow</option>" : indent + "  <option value=\"tomorrow\">Tomorrow</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "xcode", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"xcode\" selected=\"selected\">XCode</option>" : indent + "  <option value=\"xcode\">XCode</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "kuroir", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"kuroir\" selected=\"selected\">Kuroir</option>" : indent + "  <option value=\"kuroir\">Kuroir</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "katzenmilch", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"katzenmilch\" selected=\"selected\">KatzenMilch</option>" : indent + "  <option value=\"katzenmilch\">KatzenMilch</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "sqlserver", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"sqlserver\" selected=\"selected\">SQL Server</option>" : indent + "  <option value=\"sqlserver\">SQL Server</option>");
+                        Output.WriteLine(indent + "</optgroup>");
+
+                        Output.WriteLine(indent + "<optgroup label=\"Dark\">");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "ambiance", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"ambiance\" selected=\"selected\">Ambiance</option>" : indent + "  <option value=\"ambiance\">Ambiance</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "chaos", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"chaos\" selected=\"selected\">Chaos</option>" : indent + "  <option value=\"chaos\">Chaos</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "cloudsmidnight", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"clouds_midnight\" selected=\"selected\">Clouds Midnight</option>" : indent + "  <option value=\"clouds_midnight\">Clouds Midnight</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "cobalt", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"cobalt\" selected=\"selected\">Cobalt</option>" : indent + "  <option value=\"cobalt\">Cobalt</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "gruvbox", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"gruvbox\" selected=\"selected\">Gruvbox</option>" : indent + "  <option value=\"gruvbox\">Gruvbox</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "idlefingers", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"idle_fingers\" selected=\"selected\">Idle Fingers</option>" : indent + "  <option value=\"idle_fingers\">Idle Fingers</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "krtheme", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"kr_theme\" selected=\"selected\">krTheme</option>" : indent + "  <option value=\"kr_theme\">krTheme</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "merbivore", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"merbivore\" selected=\"selected\">Merbivore</option>" : indent + "  <option value=\"merbivore\">Merbivore</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "merbivoresoft", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"merbivore_soft\" selected=\"selected\">Merbivore Soft</option>" : indent + "  <option value=\"merbivore_soft\">Merbivore Soft</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "monoindustrial", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"mono_industrial\" selected=\"selected\">Mono Industrial</option>" : indent + "  <option value=\"mono_industrial\">Mono Industrial</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "monokai", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"monokai\" selected=\"selected\">Monokai</option>" : indent + "  <option value=\"monokai\">Monokai</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "pastelondark", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"pastel_on_dark\" selected=\"selected\">Pastel on dark</option>" : indent + "  <option value=\"pastel_on_dark\">Pastel on dark</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "solarizeddark", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"solarized_dark\" selected=\"selected\">Solarized Dark</option>" : indent + "  <option value=\"solarized_dark\">Solarized Dark</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "terminal", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"terminal\" selected=\"selected\">Terminal</option>" : indent + "  <option value=\"terminal\">Terminal</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "tomorrownight", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"tomorrow_night\" selected=\"selected\">Tomorrow Night</option>" : indent + "  <option value=\"tomorrow_night\">Tomorrow Night</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "tomorrownightblue", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"tomorrow_night_blue\" selected=\"selected\">Tomorrow Night Blue</option>" : indent + "  <option value=\"tomorrow_night_blue\">Tomorrow Night Blue</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "tomorrownightbright", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"tomorrow_night_bright\" selected=\"selected\">Tomorrow Night Bright</option>" : indent + "  <option value=\"tomorrow_night_bright\">Tomorrow Night Bright</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "tomorrownighteighties", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"tomorrow_night_eighties\" selected=\"selected\">Tomorrow Night 80s</option>" : indent + "  <option value=\"tomorrow_night_eighties\">Tomorrow Night 80s</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "twilight", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"twilight\" selected=\"selected\">Twilight</option>" : indent + "  <option value=\"twilight\">Twilight</option>");
+                        Output.WriteLine(String.Compare(setting_value_no_space, "vibrantink", StringComparison.InvariantCultureIgnoreCase) == 0 ? indent + "  <option value=\"vibrant_ink\" selected=\"selected\">Vibrant Ink</option>" : indent + "  <option value=\"vibrant_ink\">Vibrant Ink</option>");                      
+                        Output.WriteLine(indent + "</optgroup>");
+
+				    }
+				    else
+				    {
+                        foreach (string thisValue in Value.Options)
+                        {
+                            if (String.Compare(thisValue, setting_value, StringComparison.OrdinalIgnoreCase) == 0)
+                            {
+                                option_found = true;
+                                Output.WriteLine("                      <option selected=\"selected\">" + setting_value + "</option>");
+                            }
+                            else
+                            {
+                                Output.WriteLine("                      <option>" + thisValue + "</option>");
+                            }
+                        }
+
+                        if (!option_found)
+                        {
+                            Output.WriteLine("                      <option selected=\"selected\">" + setting_value + "</option>");
+                        } 
+				    }
+
+
+
 					Output.WriteLine("                    </select>");
 				}
 				else
@@ -3778,6 +3905,10 @@ namespace SobekCM.Library.AdminViewer
                     add_html_no_results_info(Output);
                     break;
 
+                case Settings_HTML_SubMode_Enum.Usage_Email:
+                    add_html_usage_email_info(Output);
+                    break;
+
                 default:
                     add_html_toplevel_info(Output);
                     break;
@@ -3809,11 +3940,16 @@ namespace SobekCM.Library.AdminViewer
             else
             {
                 string snippet = missingContent.Content;
-                Output.WriteLine("  <textarea id=\"sbkSeav_HtmlEdit\" name=\"sbkSeav_NoResultsHtmlEdit\" style=\"width:800px; height:400px\" >");
-                Output.WriteLine(snippet.Replace("<%", "[%").Replace("%>", "%]"));
-                Output.WriteLine("  </textarea>");
-            }
 
+                // Add the ace editor for editing this HTML
+                AceEditor aceEditor = new AceEditor(AceEditor_Mode.HTML)
+                {
+                    ContentsId = "missing_page_content",
+                    EditorId = "sbkSeav_HtmlEdit",
+                    BaseUrl = RequestSpecificValues.Current_Mode.Base_URL
+                };
+                aceEditor.Add_To_Stream(Output, snippet.Replace("<%", "[%").Replace("%>", "%]"));
+            }
 
             Output.WriteLine("<br />");
             Output.WriteLine();
@@ -3839,9 +3975,15 @@ namespace SobekCM.Library.AdminViewer
             Output.WriteLine();
 
             string noResultsSnippet = No_Results_ResultsViewer.Get_NoResults_Text();
-            Output.WriteLine("  <textarea id=\"sbkSeav_HtmlEdit\" name=\"sbkSeav_NoResultsHtmlEdit\" style=\"width:800px; height:400px\" >");
-            Output.WriteLine(noResultsSnippet.Replace("<%", "[%").Replace("%>", "%]"));
-            Output.WriteLine("  </textarea>");
+
+            // Add the ace editor for editing this HTML
+            AceEditor aceEditor = new AceEditor(AceEditor_Mode.HTML)
+            {
+                ContentsId = "no_results_content",
+                EditorId = "sbkSeav_HtmlEdit",
+                BaseUrl = RequestSpecificValues.Current_Mode.Base_URL
+            };
+            aceEditor.Add_To_Stream(Output, noResultsSnippet.Replace("<%", "[%").Replace("%>", "%]"));
 
             Output.WriteLine("<br />");
             Output.WriteLine();
@@ -3851,6 +3993,43 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("  </div>");
         }
+
+	    private void add_html_usage_email_info(TextWriter Output)
+	    {
+            Output.WriteLine("  <h2>Usage Statistics Email Body</h2>");
+            Output.WriteLine("  <p>The system can be configured to email submittors with their month usage statistics on a monthly basis.  This HTML snippet is the body of the usage email that is sent.</p>");
+            Output.WriteLine("  <p>This email contains many very specific directives as well.</p>");
+
+
+            Output.WriteLine("  <div id=\"sbkSeav_SmallerPageWrapper\">");
+
+            // Add the buttons
+            add_buttons(Output);
+
+            Output.WriteLine();
+            Output.WriteLine("<br /><br />");
+            Output.WriteLine();
+
+            string file_name = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Application_Server_Network, "design", "extra", "stats", "stats_email_body.txt");
+	        string noResultsSnippet = File.ReadAllText(file_name);
+
+            // Add the ace editor for editing this HTML
+            AceEditor aceEditor = new AceEditor(AceEditor_Mode.HTML)
+            {
+                ContentsId = "usage_email_content",
+                EditorId = "sbkSeav_HtmlEdit",
+                BaseUrl = RequestSpecificValues.Current_Mode.Base_URL
+            };
+            aceEditor.Add_To_Stream(Output, noResultsSnippet.Replace("<%", "[%").Replace("%>", "%]"));
+
+            Output.WriteLine("<br />");
+            Output.WriteLine();
+
+            // Add final buttons
+            add_buttons(Output);
+
+            Output.WriteLine("  </div>");
+	    }
 
         private void add_html_toplevel_info(TextWriter Output)
         {
@@ -3869,7 +4048,10 @@ namespace SobekCM.Library.AdminViewer
 
             Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "html/noresults") + "\">No Results</a></h4>");
             Output.WriteLine("    <p>This special HTML snippet is used to provide users's a customized message when no results are found for a search (or a browse).  This message is used in place of the generic 'Your search returned no results' message.</p>");
-             
+
+            Output.WriteLine("    <h4><a href=\"" + redirectUrl.Replace("%SETTINGSCODE%", "html/usageemail") + "\">Usage Email</a></h4>");
+            Output.WriteLine("    <p>The system can be configured to email submittors with their month usage statistics on a monthly basis.  This HTML snippet is the body of the usage email that is sent.</p>");            
+
             Output.WriteLine("  </div>");
         }
 
@@ -3946,15 +4128,34 @@ namespace SobekCM.Library.AdminViewer
 
                 Output.WriteLine("  <p>The information below is for a plug-in that is installed on this system.");
 
+
                 // Add the button
-		        Output.WriteLine("  <div style=\"float: right;\">");
+		        Output.WriteLine("  <div id=\"sbkSeav_ExtensionEnableDiv\">");
 
-                if ( extension.Enabled )
-                    Output.WriteLine("    <button title=\"Disable this plug-in\" class=\"sbkAdm_RoundButton\" onclick=\"if ( confirm('Are you sure you want to disable this currently active plug-in?  This may result in loss of metadata or functionality.') == true ) { set_hidden_value_postback('admin_settings_action','disable_plugin'); } return false; \">DISABLE</button>");
-                else
-                    Output.WriteLine("    <button title=\"Enable this plug-in\" class=\"sbkAdm_RoundButton\" onclick=\"if ( confirm('Are you sure you want to enable this plug-in?') == true ) { set_hidden_value_postback('admin_settings_action','enable_plugin'); } return false;\">ENABLE</button>");
+		        if (extension.Enabled)
+		        {
+		            if ((extension.HighestRightsRequired) && (UI.UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && (!RequestSpecificValues.Current_User.Is_Host_Admin))
+		            {
+		                Output.WriteLine("    <span>Only the host admin can disable this plug-in</span>");
+		            }
+		            else
+		            {
+		                Output.WriteLine("    <button title=\"Disable this plug-in\" class=\"sbkAdm_RoundButton\" onclick=\"if ( confirm('Are you sure you want to disable this currently active plug-in?  This may result in loss of metadata or functionality.') == true ) { set_hidden_value_postback('admin_settings_action','disable_plugin'); } return false; \">DISABLE</button>");
+		            }
+		        }
+		        else
+		        {
+                    if ((extension.HighestRightsRequired) && (UI.UI_ApplicationCache_Gateway.Settings.Servers.isHosted) && (!RequestSpecificValues.Current_User.Is_Host_Admin))
+                    {
+                        Output.WriteLine("    <span>Only the host admin can enable this plug-in</span>");
+                    }
+                    else
+                    {
+                        Output.WriteLine("    <button title=\"Enable this plug-in\" class=\"sbkAdm_RoundButton\" onclick=\"if ( confirm('Are you sure you want to enable this plug-in?') == true ) { set_hidden_value_postback('admin_settings_action','enable_plugin'); } return false;\">ENABLE</button>");
+                    }
+		        }
 
-                Output.WriteLine("  </div>");
+		        Output.WriteLine("  </div>");
 
                 if ( extension.Enabled)
                     Output.WriteLine("  <p>This plug-in is currently enabled and in use by this system.  Press the button to the right to disable this plug-in completely.</p>");

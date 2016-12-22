@@ -335,6 +335,30 @@ namespace SobekCM.Core.Client
             return returnValue;
         }
 
+        /// <summary> Gets the special missing web content page, used when a requested resource is missing </summary>
+        /// <param name="Tracer"></param>
+        /// <returns> Object with all the information and source text for the special top-level missing web content page </returns>
+        public void Clear_Special_Missing_Page(Custom_Tracer Tracer)
+        {
+            // Add a beginning trace
+            Tracer.Add_Trace("SobekEngineClient_WebContentServices.Clear_Special_Missing_Page", "Clear the special missing page");
+
+            // Clear the local cache
+            CachedDataManager.WebContent.Clear_Special_Missing_Page(Tracer);
+            
+            //// Get the endpoint
+            //MicroservicesClient_Endpoint endpoint = GetEndpointConfig("WebContent.Clear_Special_Missing_Page", Tracer);
+
+            //// Call out to the endpoint and deserialize the object
+            //string returnValue = Deserialize<string>(endpoint.URL, endpoint.Protocol, Tracer);
+
+            //// Add the message to the trace
+            //Tracer.Add_Trace("SobekEngineClient_ItemEndpoints.Clear_Special_Missing_Page", "Response: " + returnValue);
+
+            //// Return the object
+            //return returnValue;
+        }
+
         /// <summary> Get the list of milestones affecting a single (non aggregation affiliated) static web content page </summary>
         /// <param name="WebContentID"> Primary key to the web page in question </param>
         /// <param name="Tracer"></param>

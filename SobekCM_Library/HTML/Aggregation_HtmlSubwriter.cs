@@ -2394,6 +2394,9 @@ namespace SobekCM.Library.HTML
 		{
 			get
 			{
+			    if (collectionViewer is Tiles_Home_AggregationViewer)
+			        return "container-tiles";
+
 				switch (RequestSpecificValues.Current_Mode.Aggregation_Type)
 				{
 					case Aggregation_Type_Enum.Browse_By:

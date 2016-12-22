@@ -71,7 +71,7 @@ namespace SobekCM.Core.Settings
             Servers = new Server_Settings();
             Static = new Static_Settings();
             System = new System_Settings();
-
+            UI = new UI_Settings();
 
         }
 
@@ -137,10 +137,16 @@ namespace SobekCM.Core.Settings
         [ProtoMember(10)]
         public System_Settings System { get; set; }
 
+        /// <summary> Top-level settings that UI elements, such as themes for helper libraries, etc..  </summary>
+        [DataMember(Name = "ui", EmitDefaultValue = false)]
+        [XmlElement("ui")]
+        [ProtoMember(11)]
+        public UI_Settings UI { get; set; }
+
         /// <summary> Database connection string built from the system config file (usually sits in a config subfolder)</summary>
         [DataMember(Name = "dbConnection", EmitDefaultValue = false)]
         [XmlElement("dbConnection")]
-        [ProtoMember(11)]
+        [ProtoMember(12)]
         public Database_Instance_Configuration Database_Connection { get; set; }
 
         /// <summary> All the item viewer information from the database,
@@ -148,7 +154,7 @@ namespace SobekCM.Core.Settings
         /// to which each individual digital resource is attached </summary>
         [DataMember(Name = "dbItemViewers", EmitDefaultValue = false)]
         [XmlElement("dbItemViewers")]
-        [ProtoMember(12)]
+        [ProtoMember(13)]
         public DbItemViewerTypes DbItemViewers { get; set; }
 
         #region Methods related to the workflow types and disposition types
@@ -157,14 +163,14 @@ namespace SobekCM.Core.Settings
         [DataMember(Name = "workflowTypes", EmitDefaultValue = false)]
         [XmlArray("workflowTypes")]
         [XmlArrayItem("workflowType", typeof(Workflow_Type))]
-        [ProtoMember(13)]
+        [ProtoMember(14)]
         public List<Workflow_Type> Workflow_Types { get; set; }
 
         /// <summary> Gets the list of all possible dispositions </summary>
         [DataMember(Name = "dispositionOptions", EmitDefaultValue = false)]
         [XmlArray("dispositionOptions")]
         [XmlArrayItem("dispositionOption", typeof(Disposition_Option))]
-        [ProtoMember(14)]
+        [ProtoMember(15)]
         public List<Disposition_Option> Disposition_Options { get; set; }
 
         /// <summary> Gets the disposition term, in past tense, by primary key </summary>
@@ -262,7 +268,7 @@ namespace SobekCM.Core.Settings
         [DataMember(Name = "metdataSearchFields", EmitDefaultValue = false)]
         [XmlArray("metdataSearchFields")]
         [XmlArrayItem("metdataSearchField", typeof(Metadata_Search_Field))]
-        [ProtoMember(15)]
+        [ProtoMember(16)]
         public List<Metadata_Search_Field> Metadata_Search_Fields { get; set; }
 
         /// <summary> Gets a single metadata search field, by SobekCM web code </summary>

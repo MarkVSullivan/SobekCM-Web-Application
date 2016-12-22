@@ -34,10 +34,10 @@ namespace SobekCM.Engine_Library.Settings
 
         /// <summary> Current version number associated with this SobekCM digital repository web application </summary>
         // DO NOT CHANGE THIS LINE.. THIS IS READ BY THE CODE DOCUMENTATION BUILDING TASK
-        private const string CURRENT_WEB_VERSION = "4.10.0";
+        private const string CURRENT_WEB_VERSION = "4.10.1";
 
         /// <summary> Current version number associated with this SobekCM builder application </summary>
-        private const string CURRENT_BUILDER_VERSION = "4.10.0"; 
+        private const string CURRENT_BUILDER_VERSION = "4.10.1"; 
 
         /// <summary> Number of ticks that a complete package must age before being processed </summary>
         /// <value> This is currently set to 15 minutes (in ticks) </value>
@@ -145,6 +145,7 @@ namespace SobekCM.Engine_Library.Settings
                 }
 
                 // Pull all of the builder settings value ( from UFDC_Builder_Settings )
+                Get_String_Value(settingsDictionary, "Ace Editor Theme", SettingsObject.UI, X => X.Ace_Editor_Theme, ref error);
                 Get_String_Value(settingsDictionary, "Application Server Network", SettingsObject.Servers, X => X.Application_Server_Network, ref error);
                 Get_String_Value(settingsDictionary, "Application Server URL", SettingsObject.Servers, X => X.Application_Server_URL, ref error);
                 Get_String_Value(settingsDictionary, "Archive DropBox", SettingsObject.Archive, X => X.Archive_DropBox, ref error);

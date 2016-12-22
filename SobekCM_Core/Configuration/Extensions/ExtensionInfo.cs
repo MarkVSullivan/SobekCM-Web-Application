@@ -108,10 +108,17 @@ namespace SobekCM.Core.Configuration.Extensions
         [ProtoMember(12)]
         public ExtensionAdminInfo AdminInfo { get; set; }
 
+        /// <summary> Flag indicates if the highest rights are required to enable/disable this plug-in </summary>
+        [DataMember(Name = "highestRightsRequired")]
+        [XmlAttribute("highestRightsRequired")]
+        [ProtoMember(13)]
+        public bool HighestRightsRequired { get; set; }
+
         /// <summary> Constructor for a new instance of the <see cref="ExtensionInfo"/> class </summary>
         public ExtensionInfo()
         {
             // Do nothing?   
+            HighestRightsRequired = false;
         }
 
         #region Methods that controls XML serialization

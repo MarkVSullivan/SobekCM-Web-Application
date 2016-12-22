@@ -2940,7 +2940,15 @@ namespace SobekCM.Engine_Library.Configuration
                         config.Source.Add_Log("           WARNING: Code in the extension config ( " + code + " ) does not match directory name ( " + SourceDirectoryName + " )");
                 }
             }
-        
+
+            // Check to see if a user with the HIGHEST rights is only that can disable ( i.e., the HOST ADMIN if hosted )
+            if (readerXml.MoveToAttribute("canDisable"))
+            {
+                string whoDisable = readerXml.Value.Trim();
+                if (String.Compare(whoDisable, "host", StringComparison.InvariantCultureIgnoreCase) == 0)
+                    thisExtension.HighestRightsRequired = true;
+            }
+
 
             // Just step through the subtree of this
             readerXml.MoveToElement();

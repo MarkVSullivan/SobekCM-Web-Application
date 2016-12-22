@@ -167,6 +167,15 @@ namespace SobekCM.Core.MemoryMgmt
             HttpContext.Current.Cache.Insert(KEY, StoreObject, null, Cache.NoAbsoluteExpiration, TimeSpan.FromMinutes(LOCAL_EXPIRATION));
         }
 
+        /// <summary> Clear the special missing page from the cache </summary>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
+        public void Clear_Special_Missing_Page(Custom_Tracer Tracer)
+        {
+            // Determine the key
+            string key = "WEBCONTENT|DETAILS|!MISSING!";
+            HttpContext.Current.Cache.Remove(key);
+        }
+
         /// <summary> Clears a single web content page (or redirect) detail objects that is currently cached (engine and client side) </summary>
         /// <param name="WebContentID"> Primary key for the web content page to clear</param>
         public void Clear_Page_Details(int WebContentID)

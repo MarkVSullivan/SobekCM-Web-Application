@@ -146,6 +146,7 @@
     <Compile Include="MemoryMgmt\CachedDataManager_BuilderServices.cs" />
     <Compile Include="MemoryMgmt\CachedDataManager_ItemServices.cs" />
     <Compile Include="Builder\Builder_Module_Set_Info.cs" />
+    <Compile Include="Settings\UI_Settings.cs" />
     <Compile Include="UI_Configuration\StaticResources\StaticResources_Configuration.cs" />
     <Compile Include="UI_Configuration\Viewers\AggregationWriterConfig.cs" />
     <Compile Include="UI_Configuration\Viewers\ClassAssemblyConfig.cs" />

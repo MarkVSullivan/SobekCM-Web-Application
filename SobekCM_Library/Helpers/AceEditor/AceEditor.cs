@@ -115,7 +115,13 @@ namespace SobekCM.Library.Helpers.AceEditor
 
             Output.WriteLine("<script>  ");
             Output.WriteLine("    var " + js_editor_id + " = ace.edit(\"" + EditorId + "\");  ");
-            Output.WriteLine("    " + js_editor_id + ".setTheme(\"ace/theme/chrome\");  ");
+
+            // Get the theme
+            string theme = UI_ApplicationCache_Gateway.Settings.UI.Ace_Editor_Theme;
+            if (String.IsNullOrEmpty(theme))
+                theme = "chrome";
+
+            Output.WriteLine("    " + js_editor_id + ".setTheme(\"ace/theme/" + theme + "\");  ");
 
             // Add the mode information
             switch (Mode)
