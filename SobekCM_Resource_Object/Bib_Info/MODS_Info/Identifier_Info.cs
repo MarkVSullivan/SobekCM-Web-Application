@@ -79,10 +79,7 @@ namespace SobekCM.Resource_Object.Bib_Info
         /// <returns>TRUE if the two objects are sufficiently similar</returns>
         public bool Equals(Identifier_Info other)
         {
-            if (Identifier == other.Identifier)
-                return true;
-            else
-                return false;
+            return (Identifier == other.Identifier) && (String.Compare(Type, other.Type, StringComparison.InvariantCultureIgnoreCase) == 0);
         }
 
         #endregion
