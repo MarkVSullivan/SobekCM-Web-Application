@@ -15,6 +15,7 @@ using SobekCM.Core.Navigation;
 using SobekCM.Core.UI_Configuration.Citation;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Engine_Library.Email;
+using SobekCM.Engine_Library.Items;
 using SobekCM.Engine_Library.Items.BriefItems;
 using SobekCM.Library.AdminViewer;
 using SobekCM.Library.Citation;
@@ -46,7 +47,7 @@ using Image = System.Drawing.Image;
 
 namespace SobekCM.Library.MySobekViewer
 {
-    public class Edit_TEI_Item_MySobekViewer2 : abstract_MySobekViewer
+    public class Edit_TEI_Item_MySobekViewer : abstract_MySobekViewer
     {
         private bool criticalErrorEncountered;
         private readonly int currentProcessStep;
@@ -76,7 +77,7 @@ namespace SobekCM.Library.MySobekViewer
 
         /// <summary> Constructor for a new instance of the Edit_TEI_Item_MySobekViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
-        public Edit_TEI_Item_MySobekViewer2(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
+        public Edit_TEI_Item_MySobekViewer(RequestCache RequestSpecificValues) : base(RequestSpecificValues)
         {
             RequestSpecificValues.Tracer.Add_Trace("Edit_TEI_Item_MySobekViewer.Constructor", String.Empty);
 
@@ -198,14 +199,14 @@ namespace SobekCM.Library.MySobekViewer
             if (HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".XSLT_File"] != null)
                 xslt_file = HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".XSLT_File"] as string;
             if (HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".CSS_File"] != null)
-                css_file = HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".CSS_File"] as string;
+                css_file = HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".CSS_File"] as string;
             if (HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] != null)
-                original_tei_file = HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] as string;
+                original_tei_file = HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] as string;
 
             // Pull the current item beig edited
             editingItem = null;
             if (HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] != null)
-                editingItem = HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".New_Item"] as SobekCM_Item;
+                editingItem = HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] as SobekCM_Item;
             
             // If any are null or blank, pull from the item
             if ((String.IsNullOrEmpty(mapping_file)) || (String.IsNullOrEmpty(xslt_file)) || (String.IsNullOrEmpty(original_tei_file)) || (editingItem == null))
@@ -335,17 +336,17 @@ namespace SobekCM.Library.MySobekViewer
                         if (thisKey.IndexOf("mapping_select") == 0)
                         {
                             mapping_file = HttpContext.Current.Request.Form[thisKey];
-                            HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".Mapping_File"] = mapping_file;
+                            HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Mapping_File"] = mapping_file;
                         }
                         if (thisKey.IndexOf("xslt_select") == 0)
                         {
                             xslt_file = HttpContext.Current.Request.Form[thisKey];
-                            HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".XSLT_File"] = xslt_file;
+                            HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".XSLT_File"] = xslt_file;
                         }
                         if (thisKey.IndexOf("css_select") == 0)
                         {
                             css_file = HttpContext.Current.Request.Form[thisKey];
-                            HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".CSS_File"] = css_file;
+                            HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".CSS_File"] = css_file;
                         }
                     }
                 }
@@ -407,18 +408,17 @@ namespace SobekCM.Library.MySobekViewer
 
                     // Clear all the information in memory
                     HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] = null;
-
-                    HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".Mapping_File"] = null;
-                    HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".XSLT_File"] = null;
-                    HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".CSS_File"] = null;
-                    HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] = null;
+                    HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Mapping_File"] = null;
+                    HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".XSLT_File"] = null;
+                    HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".CSS_File"] = null;
+                    HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] = null;
 
 
                     // Clear any temporarily assigned current project and CompleteTemplate
                     RequestSpecificValues.Current_User.Current_Default_Metadata = null;
                     RequestSpecificValues.Current_User.Current_Template = null;
 
-                    // Forward back to my Sobek home
+                    // Forward back to item page
                     RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
                     RequestSpecificValues.Current_Mode.BibID = bibid;
                     RequestSpecificValues.Current_Mode.VID = vid;
@@ -468,7 +468,7 @@ namespace SobekCM.Library.MySobekViewer
 
 
                     // If this is going from a step that includes the metadata entry portion, save this to the item
-                    if ((currentProcessStep > 4) && (currentProcessStep < 8))
+                    if ((currentProcessStep >= 4) && (currentProcessStep < 8))
                     {
                         // Save to the item
                         completeTemplate.Save_To_Bib(editingItem, RequestSpecificValues.Current_User, currentProcessStep - 4);
@@ -531,7 +531,7 @@ namespace SobekCM.Library.MySobekViewer
             if (currentProcessStep == 9)
             {
                 // Complete the item submission
-                complete_item_submission(item, RequestSpecificValues.Tracer);
+                complete_item_submission(editingItem, RequestSpecificValues.Tracer);
             }
 
             #endregion
@@ -566,8 +566,6 @@ namespace SobekCM.Library.MySobekViewer
 
         private bool complete_item_submission(SobekCM_Item Item_To_Complete, Custom_Tracer Tracer)
         {
-            return false;
-
             // Set an initial flag 
             criticalErrorEncountered = false;
             bool xml_found = false;
@@ -578,17 +576,20 @@ namespace SobekCM.Library.MySobekViewer
                 // Save the METS file to the database and back to the directory
                 Item_To_Complete.Source_Directory = userInProcessDirectory;
 
-
-                    // Now, add the TEI file
-                    SobekCM_File_Info tei_newFile = new SobekCM_File_Info(new_tei_file);
-                    string tei_label = new_tei_file + " (TEI)";
-                    Item_To_Complete.Divisions.Download_Tree.Add_File(tei_newFile, tei_label);
-
+                // Now, add the TEI file
+                SobekCM_File_Info tei_newFile = new SobekCM_File_Info(Path.GetFileName(new_tei_file));
+                string tei_label = Path.GetFileName(new_tei_file) + " (TEI)";
+                Item_To_Complete.Divisions.Download_Tree.Add_File(tei_newFile, tei_label);
 
                 // Save to the database
                 try
                 {
-                    SobekCM_Item_Database.Save_New_Digital_Resource(Item_To_Complete, false, true, RequestSpecificValues.Current_User.UserName, String.Empty, RequestSpecificValues.Current_User.UserID);
+                    SobekCM_Item_Updater.Update_Item(Item_To_Complete, RequestSpecificValues.Current_User, out error_message);
+
+                    CachedDataManager.Items.Remove_Digital_Resource_Object(RequestSpecificValues.Current_User.UserID, Item_To_Complete.BibID, Item_To_Complete.VID, null);
+
+                    // Also clear the engine
+                    SobekEngineClient.Items.Clear_Item_Cache(Item_To_Complete.BibID, Item_To_Complete.VID, RequestSpecificValues.Tracer);
                 }
                 catch (Exception ee)
                 {
@@ -603,13 +604,12 @@ namespace SobekCM.Library.MySobekViewer
                     throw;
                 }
 
-
                 // Assign the file root and assoc file path
                 Item_To_Complete.Web.File_Root = Item_To_Complete.BibID.Substring(0, 2) + "\\" + Item_To_Complete.BibID.Substring(2, 2) + "\\" + Item_To_Complete.BibID.Substring(4, 2) + "\\" + Item_To_Complete.BibID.Substring(6, 2) + "\\" + Item_To_Complete.BibID.Substring(8, 2);
                 Item_To_Complete.Web.AssocFilePath = Item_To_Complete.Web.File_Root + "\\" + Item_To_Complete.VID + "\\";
 
                 // Save the item settings
-                SobekCM_Item_Database.Set_Item_Setting_Value(Item_To_Complete.Web.ItemID, "TEI.Source_File", new_tei_file);
+                SobekCM_Item_Database.Set_Item_Setting_Value(Item_To_Complete.Web.ItemID, "TEI.Source_File", Path.GetFileName(new_tei_file));
                 SobekCM_Item_Database.Set_Item_Setting_Value(Item_To_Complete.Web.ItemID, "TEI.CSS", css_file);
                 SobekCM_Item_Database.Set_Item_Setting_Value(Item_To_Complete.Web.ItemID, "TEI.Mapping", mapping_file);
 
@@ -690,10 +690,10 @@ namespace SobekCM.Library.MySobekViewer
                     Directory.CreateDirectory(serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name);
 
                 // Copy the static HTML page over first
-                if (File.Exists(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html"))
+                if (File.Exists(userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html"))
                 {
-                    File.Copy(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html", serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + item.BibID + "_" + item.VID + ".html", true);
-                    File.Delete(userInProcessDirectory + "\\" + item.BibID + "_" + item.VID + ".html");
+                    File.Copy(userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html", serverNetworkFolder + "\\" + UI_ApplicationCache_Gateway.Settings.Resources.Backup_Files_Folder_Name + "\\" + item.BibID + "_" + item.VID + ".html", true);
+                    File.Delete(userInProcessDirectory + "\\" + Item_To_Complete.BibID + "_" + Item_To_Complete.VID + ".html");
                 }
 
                 // Copy all the files
@@ -717,12 +717,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Always set the additional work needed flag, to give the builder a  chance to look at it
                 SobekCM_Database.Update_Additional_Work_Needed_Flag(Item_To_Complete.Web.ItemID, true, Tracer);
 
-                // Also clear some values from the session
-                HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".Mapping_File"] = null;
-                HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".XSLT_File"] = null;
-                HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".CSS_File"] = null;
-                HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] = null;
-                HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] = null;
+
 
             }
             catch (Exception ee)
@@ -741,28 +736,24 @@ namespace SobekCM.Library.MySobekViewer
                 Email_Helper.SendEmail(email_to, error_subject, error_body, true, RequestSpecificValues.Current_Mode.Instance_Name);
             }
 
+            // Also clear some values from the session
+            HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".Mapping_File"] = null;
+            HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".XSLT_File"] = null;
+            HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".CSS_File"] = null;
+            HttpContext.Current.Session["Edit_TEI_Item_MySobekViewer." + bibid + "_" + vid + ".Original_TEI_File"] = null;
+            HttpContext.Current.Session["Edit_TEI_mySobekViewer." + bibid + "_" + vid + ".New_Item"] = null;
+
             if (!criticalErrorEncountered)
             {
-                // Send email to the email from the CompleteTemplate, if one was provided
-                if (completeTemplate.Email_Upon_Receipt.Length > 0)
-                {
-                    string body = "New item submission complete!<br /><br /><blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Submittor: " + RequestSpecificValues.Current_User.Full_Name + " ( " + RequestSpecificValues.Current_User.Email + " )<br />Link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + Item_To_Complete.BibID + ":" + Item_To_Complete.VID + "</a></blockquote>";
-                    string subject = "Item submission complete for '" + Item_To_Complete.Bib_Info.Main_Title.Title + "'";
-                    Email_Helper.SendEmail(completeTemplate.Email_Upon_Receipt, subject, body, true, RequestSpecificValues.Current_Mode.Instance_Name);
-                }
-
-                // If the RequestSpecificValues.Current_User wants to have a message sent, send one
-                if (RequestSpecificValues.Current_User.Send_Email_On_Submission)
-                {
-                    // Create the mail message
-                    string body2 = "<strong>CONGRATULATIONS!</strong><br /><br />Your item has been successfully added to the digital library and will appear immediately.  Search indexes may take a couple minutes to build, at which time this item will be discoverable through the search interface. <br /><br /><blockquote>Title: " + Item_To_Complete.Bib_Info.Main_Title.Title + "<br />Permanent Link: <a href=\"" + RequestSpecificValues.Current_Mode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "\">" + RequestSpecificValues.Current_Mode.Base_URL + "/" + Item_To_Complete.BibID + "/" + Item_To_Complete.VID + "</a></blockquote>";
-                    string subject2 = "Item submission complete for '" + Item_To_Complete.Bib_Info.Main_Title.Title + "'";
-                    Email_Helper.SendEmail(RequestSpecificValues.Current_User.Email, subject2, body2, true, RequestSpecificValues.Current_Mode.Instance_Name);
-                }
-
                 // Also clear any searches or browses ( in the future could refine this to only remove those
                 // that are impacted by this save... but this is good enough for now )
                 CachedDataManager.Clear_Search_Results_Browses();
+
+                // Redirect to the item page
+                RequestSpecificValues.Current_Mode.Mode = Display_Mode_Enum.Item_Display;
+                RequestSpecificValues.Current_Mode.BibID = bibid;
+                RequestSpecificValues.Current_Mode.VID = vid;
+                UrlWriterHelper.Redirect(RequestSpecificValues.Current_Mode);
             }
 
             return criticalErrorEncountered;
@@ -1383,10 +1374,14 @@ namespace SobekCM.Library.MySobekViewer
                 Output.WriteLine("  <div class=\"graytabscontent\">");
                 Output.WriteLine("    <div class=\"tabpage\" id=\"tabpage_1\">");
 
+                string next_button_text = "NEXT";
+                if (currentProcessStep <= (completeTemplate.InputPages_Count + 3))
+                    next_button_text = "COMPLETE";
+
                 // Add the top buttons
                 Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
                 Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
-                Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + next_step + ");\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + next_step + ");\" class=\"sbkMySobek_BigButton\"> " + next_button_text + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("      </div>");
                 Output.WriteLine("      <br /><br />");
                 Output.WriteLine();
@@ -1399,7 +1394,7 @@ namespace SobekCM.Library.MySobekViewer
                 // Add the bottom buttons
                 Output.WriteLine("      <div class=\"sbkMySobek_RightButtons\">");
                 Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + (currentProcessStep - 1) + ");\" class=\"sbkMySobek_BigButton\"><img src=\"" + Static_Resources_Gateway.Button_Previous_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_LeftImg\" alt=\"\" /> BACK </button> &nbsp; &nbsp; ");
-                Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + next_step + ");\" class=\"sbkMySobek_BigButton\"> NEXT <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
+                Output.WriteLine("        <button onclick=\"return new_item_next_phase(" + next_step + ");\" class=\"sbkMySobek_BigButton\"> " + next_button_text + " <img src=\"" + Static_Resources_Gateway.Button_Next_Arrow_Png + "\" class=\"sbkMySobek_RoundButton_RightImg\" alt=\"\" /></button>");
                 Output.WriteLine("      </div>");
                 Output.WriteLine("      <br />");
                 Output.WriteLine();

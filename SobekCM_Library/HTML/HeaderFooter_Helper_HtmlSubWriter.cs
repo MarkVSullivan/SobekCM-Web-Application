@@ -192,9 +192,27 @@ namespace SobekCM.Library.HTML
             // Create the mySobek text
             string mySobekLinks = create_mysobek_link(RequestSpecificValues, url_options, null);
 
-            // Look for the collection code and name
+            // Look for some basic mode data
             string collection_code = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Aggregation) ? String.Empty : RequestSpecificValues.Current_Mode.Aggregation;
-       //     string collection_name = RequestSpecificValues. ? String.Empty : RequestSpecificValues.Current_Mode.Aggregation;
+            string bibid = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.BibID) ? String.Empty : RequestSpecificValues.Current_Mode.BibID;
+            string vid = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.BibID) ? String.Empty : RequestSpecificValues.Current_Mode.BibID;
+            string mode = String.Empty;
+            switch (RequestSpecificValues.Current_Mode.Mode)
+            {
+                case Display_Mode_Enum.Item_Display:
+                    mode = "item";
+                    break;
+
+                case Display_Mode_Enum.Aggregation:
+                case Display_Mode_Enum.Search:
+                    mode = "aggregation";
+                    break;
+
+                case Display_Mode_Enum.Results:
+                    mode = "results";
+                    break;
+            }
+
 
             // Get the language selections
             Web_Language_Enum language = RequestSpecificValues.Current_Mode.Language;
@@ -282,6 +300,9 @@ namespace SobekCM.Library.HTML
 
                 // Do all the replacements
                 headerBuilder.Replace("<%COLLCODE%>", collection_code);
+                headerBuilder.Replace("<%BIBID%>", bibid);
+                headerBuilder.Replace("<%VID%>", vid);
+                headerBuilder.Replace("<%MODE%>", mode);
   //              headerBuilder.Replace("<%COLLNAME%>", collection_name);
                 headerBuilder.Replace("<%CONTACT%>", contact);
                 headerBuilder.Replace("<%URLOPTS%>", url_options);
@@ -357,6 +378,24 @@ namespace SobekCM.Library.HTML
 
             // Look for the collection code and name
             string collection_code = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.Aggregation) ? String.Empty : RequestSpecificValues.Current_Mode.Aggregation;
+            string bibid = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.BibID) ? String.Empty : RequestSpecificValues.Current_Mode.BibID;
+            string vid = String.IsNullOrEmpty(RequestSpecificValues.Current_Mode.BibID) ? String.Empty : RequestSpecificValues.Current_Mode.BibID;
+            string mode = String.Empty;
+            switch (RequestSpecificValues.Current_Mode.Mode)
+            {
+                case Display_Mode_Enum.Item_Display:
+                    mode = "item";
+                    break;
+
+                case Display_Mode_Enum.Aggregation:
+                case Display_Mode_Enum.Search:
+                    mode = "aggregation";
+                    break;
+
+                case Display_Mode_Enum.Results:
+                    mode = "results";
+                    break;
+            }
 
             // Get the skin url
             string skin_url = RequestSpecificValues.Current_Mode.Base_Design_URL + "skins/" + RequestSpecificValues.HTML_Skin.Skin_Code + "/";
@@ -390,6 +429,9 @@ namespace SobekCM.Library.HTML
 
             // Make all the replacements
             footerBuilder.Replace("<%COLLCODE%>", collection_code);
+            footerBuilder.Replace("<%BIBID%>", bibid);
+            footerBuilder.Replace("<%VID%>", vid);
+            footerBuilder.Replace("<%MODE%>", mode);
             footerBuilder.Replace("<%MYSOBEK%>", mySobekLinks);
             footerBuilder.Replace("<%CONTACT%>", contact);
             footerBuilder.Replace("<%URLOPTS%>", url_options);

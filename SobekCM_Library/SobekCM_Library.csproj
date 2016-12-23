@@ -336,7 +336,7 @@
     <Compile Include="Localization\SobekCM_LocalizationInfo.cs" />
     <Compile Include="MainWriters\DataProvider_MainWriter.cs" />
     <Compile Include="MySobekViewer\Edit_Item_Permissions_MySobekViewer.cs" />
-    <Compile Include="MySobekViewer\Edit_TEI_Item_MySobekViewer2.cs" />
+    <Compile Include="MySobekViewer\Edit_TEI_Item_MySobekViewer.cs" />
     <Compile Include="MySobekViewer\MySobekViewer_Factory.cs" />
     <Compile Include="MySobekViewer\New_TEI_MySobekViewer.cs" />
     <Compile Include="RequestCache.cs" />
