@@ -81,7 +81,7 @@ namespace SobekCM.Core.Aggregations
         [ProtoMember(4)]
         public string Parent_Code { get; set; }
 
-        /// <summary> Gets the complete dictionary of labels and languages </summary>
+        /// <summary> Label for this child page, in the current language </summary>
         [DataMember(Name = "label", EmitDefaultValue = false)]
         [XmlAttribute("label")]
         [ProtoMember(5)]

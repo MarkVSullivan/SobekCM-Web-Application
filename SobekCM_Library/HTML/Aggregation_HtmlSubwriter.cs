@@ -22,6 +22,7 @@ using SobekCM.Core.Users;
 using SobekCM.Core.WebContent;
 using SobekCM.Engine_Library.Configuration;
 using SobekCM.Library.AggregationViewer;
+using SobekCM.Library.AggregationViewer.HtmlHeadWriters;
 using SobekCM.Library.AggregationViewer.Viewers;
 using SobekCM.Library.Database;
 using SobekCM.Library.Email;
@@ -336,14 +337,14 @@ namespace SobekCM.Library.HTML
 					case Aggregation_Type_Enum.Home_Edit:
 				        if (!hierarchyObject.Custom_Home_Page)
 				        {
-                            // Are there tiles here?
-				            string aggregation_tile_directory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, hierarchyObject.ObjDirectory, "images", "tiles");
-				            if (Directory.Exists(aggregation_tile_directory))
-				            {
-				                string[] jpeg_tiles = Directory.GetFiles(aggregation_tile_directory, "*.jpg");
-                                if (jpeg_tiles.Length > 0)
-                                    collectionViewer = new Tiles_Home_AggregationViewer(RequestSpecificValues, viewBag);
-				            }
+                            //// Are there tiles here?
+                            //string aggregation_tile_directory = Path.Combine(UI_ApplicationCache_Gateway.Settings.Servers.Base_Design_Location, hierarchyObject.ObjDirectory, "images", "tiles");
+                            //if (Directory.Exists(aggregation_tile_directory))
+                            //{
+                            //    string[] jpeg_tiles = Directory.GetFiles(aggregation_tile_directory, "*.jpg");
+                            //    if (jpeg_tiles.Length > 0)
+                            //        collectionViewer = new Tiles_Home_AggregationViewer(RequestSpecificValues, viewBag);
+                            //}
 
                             // If the tiles home page as not built, build the standard viewer
                             if ( collectionViewer == null )
@@ -618,6 +619,17 @@ namespace SobekCM.Library.HTML
                 Output.WriteLine("  <link href=\"" + Static_Resources_Gateway.Sobekcm_Datatables_Css + "\" rel=\"stylesheet\" type=\"text/css\" />");
                 Output.WriteLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Jquery_Datatables_Js + "\" ></script>");
             }
+
+            Output.WriteLine();
+
+            // Add the aggregation html head writers
+            DublinCore_AggregationHtmlHeadWriter dcWriter = new DublinCore_AggregationHtmlHeadWriter();
+            dcWriter.Write_Within_HTML_Head(Output, hierarchyObject, RequestSpecificValues);
+            Output.WriteLine();
+
+            JSON_AggregationHtmlHeadWriter jsonWriter = new JSON_AggregationHtmlHeadWriter();
+            jsonWriter.Write_Within_HTML_Head(Output, hierarchyObject, RequestSpecificValues);
+            Output.WriteLine();
         }
 
 

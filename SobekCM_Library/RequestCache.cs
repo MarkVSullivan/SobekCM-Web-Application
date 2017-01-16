@@ -48,6 +48,8 @@ namespace SobekCM.Library
             this.Public_Folder = Public_Folder;
             this.Top_Collection = Top_Collection;
             this.Tracer = Tracer;
+
+            Flags = new RequestCache_RequestFlags();
         }
 
         /// <summary> Constructor for a new instance of the RequestCache class </summary>
@@ -74,6 +76,8 @@ namespace SobekCM.Library
             this.Public_Folder = Public_Folder;
             this.Top_Collection = Top_Collection;
             this.Tracer = Tracer;
+
+            Flags = new RequestCache_RequestFlags();
         }
 
         /// <summary> Mode / navigation information for the current request </summary>
@@ -100,5 +104,31 @@ namespace SobekCM.Library
 
         /// <summary>  Trace object keeps a list of each method executed and important milestones in rendering  </summary>
         public readonly Custom_Tracer Tracer;
+
+        /// <summary> Flags for this individual execution, used for cross-class communication
+        /// and to stop the saem sort of calculation from being completed multiple times 
+        /// within a single request  </summary>
+        public RequestCache_RequestFlags Flags { get; private set; }
+    }
+
+    /// <summary> Flags for this individual execution, used for cross-class communication
+    /// and to stop the saem sort of calculation from being completed multiple times 
+    /// within a single request </summary>
+    public class RequestCache_RequestFlags
+    {
+        /// <summary> Constructor for a new instance of the RequestCache_RequestFlags class </summary>
+        public RequestCache_RequestFlags()
+        {
+            ItemCheckedOutByOtherUser = false;
+            ItemCheckedOutByOtherUser = false;
+        }
+
+        /// <summary> Flag indicates if the current item is restricted from the
+        /// current user by IP address </summary>
+        public bool ItemRestrictedFromUserByIp { get; set; }
+
+        /// <summary> Flag indicates if the current item is checked out by 
+        /// another user and is a single-use item </summary>
+        public bool ItemCheckedOutByOtherUser { get; set; }
     }
 }

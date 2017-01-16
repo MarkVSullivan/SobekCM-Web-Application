@@ -36,17 +36,6 @@ namespace SobekCM.Library.MainWriters
         }
 
 
-        /// <summary> Returns a flag indicating whether the additional table of contents place holder ( &quot;tocPlaceHolder&quot; ) in the itemNavForm form will be utilized 
-        /// for the current request, or if it can be hidden. </summary>
-        /// <value> This value can be override by child classes, but by default this returns FALSE </value>
-        public virtual bool Include_TOC_Place_Holder
-        {
-            get
-            {
-                return false;
-            }
-        }
-
         /// <summary> Returns a flag indicating whether the additional place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form will be utilized 
         /// for the current request, or if it can be hidden. </summary>
         /// <value> This value can be override by child classes, but by default this returns FALSE </value>
@@ -76,10 +65,9 @@ namespace SobekCM.Library.MainWriters
         public abstract void Write_Html(TextWriter Output, Custom_Tracer Tracer);
 
         /// <summary> Perform all the work of adding to the response stream back to the web user </summary>
-        /// <param name="TOC_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
         /// <param name="Main_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public virtual void Add_Controls(PlaceHolder TOC_Place_Holder, PlaceHolder Main_Place_Holder, Custom_Tracer Tracer)
+        public virtual void Add_Controls( PlaceHolder Main_Place_Holder, Custom_Tracer Tracer)
         {
             // Do nothing
         }

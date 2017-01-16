@@ -1,0 +1,38 @@
+
+<!-- Unstyled div placed around entire item information to support schema.org microdata -->
+<section itemscope itemtype="http:schema.org/ItemPage">
+    
+    [%SECTION:TOP%]
+
+    <!-- Presentation table to enforce layout -->
+    <table role="presentation" id="sbkIsw_PresentationTable">
+        <tr style="vertical-align: top;">
+            <td id="sbkIsw_LeftnavbarTd_hack">
+                
+                [%SECTION:LEFTNAV%]
+                
+                <!-- Add javascript here to squish this column if it is empty -->
+
+                <!-- Presentation table first cell ends and next will begin-->
+            </td>
+            <td>
+                <!-- Begin the main item viewing area -->
+                <section id="main-content" role="main" class="sbkIsw_MainContentSection">
+                    
+                    [%SECTION:VIEWER%]
+                            
+                    [%SECTION:POSTVIEWER%]
+
+                </section>
+
+                <!-- Close the presentation table -->
+            </td>
+        </tr>
+    </table>
+
+    <!-- Hidden field is used for postbacks to indicate what to save and reset -->
+    <input type="hidden" id="item_action" name="item_action" value="" />
+
+    <!-- Close microdata itemscope div -->
+</section>
+

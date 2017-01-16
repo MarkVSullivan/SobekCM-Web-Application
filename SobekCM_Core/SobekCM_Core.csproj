@@ -69,6 +69,8 @@
     <Compile Include="Aggregations\Item_Aggregation_Related_Aggregations.cs" />
     <Compile Include="Aggregations\Item_Aggregation_Statistics.cs" />
     <Compile Include="Aggregations\New_Aggregation_Arguments.cs" />
+    <Compile Include="Aggregations\Simple_Aggregation.cs" />
+    <Compile Include="Aggregations\Simple_Aggregation_Child_Page.cs" />
     <Compile Include="Aggregations\Thematic_Heading.cs" />
     <Compile Include="ApplicationState\Aggregation_Code_Manager.cs" />
     <Compile Include="ApplicationState\Default_Metadata.cs" />

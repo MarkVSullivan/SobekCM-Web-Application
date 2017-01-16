@@ -221,13 +221,13 @@ namespace SobekCM.Library.HTML
 			// Do nothing by default
 		}
 
-		/// <summary> Writes additional HTML to the output stream just before the main place holder but after the TocPlaceHolder in the itemNavForm form.  </summary>
-		/// <param name="Output">Stream to directly write to</param>
-		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public virtual void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
-		{
-			// Do nothing by default
-		}
+        ///// <summary> Writes additional HTML to the output stream just before the main place holder but after the TocPlaceHolder in the itemNavForm form.  </summary>
+        ///// <param name="Output">Stream to directly write to</param>
+        ///// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        //public virtual void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
+        //{
+        //    // Do nothing by default
+        //}
 
 		/// <summary> Writes final HTML to the output stream after all the placeholders and just before the itemNavForm is closed.  </summary>
 		/// <param name="Output"> Stream to which to write the text for this main writer </param>

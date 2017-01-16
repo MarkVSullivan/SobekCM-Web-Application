@@ -15,8 +15,7 @@
 
 <form id="itemNavForm" runat="server">
 <%Write_ItemNavForm_Opening();%>
-    <asp:PlaceHolder id="tocPlaceHolder" runat="server"></asp:PlaceHolder>
-<%Write_ItemNavForm_Additional_HTML();%>
+
     <asp:PlaceHolder id="mainPlaceHolder" runat="server"></asp:PlaceHolder>
 <%Write_ItemNavForm_Closing();%>
 </form>

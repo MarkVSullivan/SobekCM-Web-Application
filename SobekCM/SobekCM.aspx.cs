@@ -106,8 +106,6 @@ namespace SobekCM
 				{
 					if (!pageGlobals.mainWriter.Include_Main_Place_Holder)
 						mainPlaceHolder.Visible = false;
-					if (!pageGlobals.mainWriter.Include_TOC_Place_Holder)
-						tocPlaceHolder.Visible = false;
 				}
 
 				// The file upload form is only shown in these cases
@@ -117,7 +115,7 @@ namespace SobekCM
 				}
 
 				// Add the controls now
-				pageGlobals.mainWriter.Add_Controls(tocPlaceHolder, mainPlaceHolder, pageGlobals.tracer);
+				pageGlobals.mainWriter.Add_Controls( mainPlaceHolder, pageGlobals.tracer);
 			}
 			catch (OutOfMemoryException ee)
 			{
@@ -247,18 +245,6 @@ namespace SobekCM
 			}
 		}
 
-		protected void Write_ItemNavForm_Additional_HTML()
-		{
-			// If the was a very basic error, or the request was complete, do nothing here
-			if ((pageGlobals.currentMode == null) || (pageGlobals.currentMode.Request_Completed))
-				return;
-
-			if ((pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML) || (pageGlobals.mainWriter.Writer_Type == Writer_Type_Enum.HTML_LoggedIn))
-			{
-				pageGlobals.tracer.Add_Trace("sobekcm(.aspx).Write_Additional_HTML", String.Empty);
-				((Html_MainWriter)pageGlobals.mainWriter).Write_Additional_HTML(Response.Output, pageGlobals.tracer);
-			}
-		}
 
 		protected void Write_ItemNavForm_Closing()
 		{

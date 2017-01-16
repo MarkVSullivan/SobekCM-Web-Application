@@ -308,18 +308,6 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
-
-        /// <summary> Returns a flag indicating whether the additional table of contents place holder ( &quot;tocPlaceHolder&quot; ) in the itemNavForm form will be utilized 
-        /// for the current request, or if it can be hidden. </summary>
-        /// <value> This property always returns TRUE for the Html_MainWriter </value>
-        public override bool Include_TOC_Place_Holder
-        {
-            get
-            {
-                return true;
-            }
-        }
-
         /// <summary> Returns a flag indicating whether the additional place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form will be utilized 
         /// for the current request, or if it can be hidden. </summary>
         /// <value> This property always returns TRUE for the Html_MainWriter </value>
@@ -347,11 +335,10 @@ namespace SobekCM.Library.MainWriters
         public override Writer_Type_Enum Writer_Type { get { return Writer_Type_Enum.HTML; } }
 
         /// <summary> Perform all the work of adding to the response stream back to the web user </summary>
-        /// <param name="TOC_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
         /// <param name="Main_Place_Holder"> Place holder is used to add more complex server-side objects during execution</param>
         /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering</param>
         /// <remarks> Since this class writes all the output directly to the response stream, this method simply returns, without doing anything</remarks>
-        public override void Add_Controls( PlaceHolder TOC_Place_Holder, PlaceHolder Main_Place_Holder, Custom_Tracer Tracer)
+        public override void Add_Controls(  PlaceHolder Main_Place_Holder, Custom_Tracer Tracer)
         {
             // If execution should end, do it now
             if (RequestSpecificValues.Current_Mode.Request_Completed)
@@ -476,7 +463,6 @@ namespace SobekCM.Library.MainWriters
                     {
                         // Add the TOC section
                         Tracer.Add_Trace("Html_MainWriter.Add_Controls", "Allowing item viewer to add table of contents to <i>tocPlaceHolder</i>");
-                        itemWriter.Add_Standard_TOC(TOC_Place_Holder, Tracer);
 
                         // Add the main viewer section
                         itemWriter.Add_Main_Viewer_Section(Main_Place_Holder, Tracer);
@@ -674,7 +660,7 @@ namespace SobekCM.Library.MainWriters
             }
         }
 
-        /// <summary> Writes the html to the output stream open the itemNavForm, which appears just before the TocPlaceHolder </summary>
+        /// <summary> Writes the html to the output stream open the itemNavForm </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
@@ -685,18 +671,7 @@ namespace SobekCM.Library.MainWriters
             subwriter.Write_ItemNavForm_Opening(Output, Tracer);
         }
 
-        /// <summary> Writes additional HTML to the output stream just before the main place holder but after the TocPlaceHolder in the itemNavForm form.  </summary>
-        /// <param name="Output"> Stream to which to write the text for this main writer </param>
-        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-        public void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
-        {
-            if (subwriter == null) return;
-            Tracer.Add_Trace("Html_MainWriter.Write_Additional_HTML", "Allowing html subwriter to write to the page");
- 
-            subwriter.Write_Additional_HTML(Output, Tracer);
-        }
-
-        /// <summary> Writes final HTML to the output stream after all the placeholders and just before the itemNavForm is closed.  </summary>
+        /// <summary> Writes final HTML to the output stream after the placeholder and just before the itemNavForm is closed.  </summary>
         /// <param name="Output"> Stream to which to write the text for this main writer </param>
         /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
         public void Write_ItemNavForm_Closing(TextWriter Output, Custom_Tracer Tracer)

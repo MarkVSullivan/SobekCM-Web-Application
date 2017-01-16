@@ -108,6 +108,9 @@
     <Compile Include="AdminViewer\WebContent_Single_AdminViewer.cs" />
     <Compile Include="AdminViewer\WebContent_Usage_AdminViewer.cs" />
     <Compile Include="AggregationViewBag.cs" />
+    <Compile Include="AggregationViewer\HtmlHeadWriters\DublinCore_AggregationHtmlHeadWriter.cs" />
+    <Compile Include="AggregationViewer\HtmlHeadWriters\iAggregationHtmlHeadWriter.cs" />
+    <Compile Include="AggregationViewer\HtmlHeadWriters\JSON_AggregationHtmlHeadWriter.cs" />
     <Compile Include="AggregationViewer\Viewers\Basic_Text_Search_Combined_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Manage_Menu_AggregationViewer.cs" />
     <Compile Include="AggregationViewer\Viewers\Advanced_Search_MimeType_AggregationViewer.cs" />
@@ -190,7 +193,18 @@
     <Compile Include="HTML\Admin_HtmlSubwriter.cs" />
     <Compile Include="HTML\HeaderFooter_Helper_HtmlSubWriter.cs" />
     <Compile Include="HTML\HtmlSubwriter_Behaviors_Enum.cs" />
+    <Compile Include="HTML\Item_HtmlSubwriter_Legacy.cs" />
     <Compile Include="HTML\MainMenus_Helper_HtmlSubWriter.cs" />
+    <Compile Include="ItemViewer\HtmlHeadWriters\DublinCore_ItemHtmlHeadWriter.cs" />
+    <Compile Include="ItemViewer\HtmlHeadWriters\iItemHtmlHeadWriter.cs" />
+    <Compile Include="ItemViewer\HtmlHeadWriters\MODS_ItemHtmlHeadWriter.cs" />
+    <Compile Include="ItemViewer\HtmlHeadWriters\OpenGraph_ItemHtmlHeadWriter.cs" />
+    <Compile Include="ItemViewer\HtmlSectionWriters\iItemSectionWriter.cs" />
+    <Compile Include="ItemViewer\HtmlSectionWriters\StandardMenu_ItemSectionWriter.cs" />
+    <Compile Include="ItemViewer\HtmlSectionWriters\TitleBar_ItemSectionWriter.cs" />
+    <Compile Include="ItemViewer\HtmlSectionWriters\TOC_ItemSectionWriter.cs" />
+    <Compile Include="ItemViewer\HtmlSectionWriters\ViewerNav_ItemSectionWriter.cs" />
+    <Compile Include="ItemViewer\HtmlSectionWriters\Wordmarks_ItemSectionWriter.cs" />
     <Compile Include="ItemViewer\Menu\Item_MenuItem.cs" />
     <Compile Include="ItemViewer\Menu\iItemMenuProvider.cs" />
     <Compile Include="ItemViewer\Menu\StandardItemMenuProvider.cs" />
@@ -198,6 +212,7 @@
     <Compile Include="ItemViewer\Viewers\abstractItemViewerPrototyper.cs" />
     <Compile Include="ItemViewer\Viewers\abstractNoPaginationItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\abstractPageFilesItemViewer.cs" />
+    <Compile Include="ItemViewer\Viewers\SearchEngineIndexing_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\TEI_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\UF_Archives_ItemViewer.cs" />
     <Compile Include="ItemViewer\Viewers\Citation_MARC_ItemViewer.cs" />

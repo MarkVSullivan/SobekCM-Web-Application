@@ -48,6 +48,15 @@
 		/// item viewer could write the jquery reference in the HTML head itself </value>
 		Item_Subwriter_Full_JQuery_UI,
 
+        /// <summary> This item view requests that the TOC writer does not include links
+        /// to the individual pages </summary>
+        /// <remarks> This is used by the search engine indexing item viewer </remarks>
+        Item_Subwriter_Suppress_TOC_Links,
+
+        /// <summary> This item view requests the citation viewer does not include links
+        /// to the search URLs </summary>
+        Item_Subwriter_Supress_Citation_Search_Links,
+
 		/// <summary> This mySobek viewer should mimic the item subwriter, since it mostly
 		/// allows a logged on user to edit something about a single item </summary>
         MySobek_Subwriter_Mimic_Item_Subwriter,

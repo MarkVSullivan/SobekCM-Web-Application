@@ -244,29 +244,21 @@ namespace SobekCM.Library.HTML
             return false;
         }
 
-
-
-		/// <summary> Writes the html to the output stream open the itemNavForm, which appears just before the TocPlaceHolder </summary>
-		/// <param name="Output"> Stream to which to write the text for this main writer </param>
-		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
+        /// <summary> Writes the html to the output stream within the main form, before the ASP.net placeholder for controls </summary>
+        /// <param name="Output">Stream to directly write to</param>
+        /// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
 		public override void Write_ItemNavForm_Opening(TextWriter Output, Custom_Tracer Tracer)
 		{
 			Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_ItemNavForm_Closing", "");
 
 			// Also, add any additional stuff here
 			mySobekViewer.Write_ItemNavForm_Opening(Output, Tracer);
-		}
 
-		/// <summary> Writes additional HTML needed in the main form before the main place holder but after the other place holders.  </summary>
-		/// <param name="Output">Stream to directly write to</param>
-		/// <param name="Tracer">Trace object keeps a list of each method executed and important milestones in rendering</param>
-		public override void Write_Additional_HTML(TextWriter Output, Custom_Tracer Tracer)
-		{
-			Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_Additional_HTML", "Adding any form elements popup divs");
-			if ((RequestSpecificValues.Current_Mode.Logon_Required) || (mySobekViewer.Contains_Popup_Forms))
-			{
-				mySobekViewer.Add_Popup_HTML(Output, Tracer);
-			}
+            Tracer.Add_Trace("MySobek_HtmlSubwriter.Write_Additional_HTML", "Adding any form elements popup divs");
+            if ((RequestSpecificValues.Current_Mode.Logon_Required) || (mySobekViewer.Contains_Popup_Forms))
+            {
+                mySobekViewer.Add_Popup_HTML(Output, Tracer);
+            }
 		}
 
 
