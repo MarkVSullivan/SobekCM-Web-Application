@@ -22,6 +22,7 @@ namespace SobekCM.Library.ResultsViewer
     /// <see cref="iResultsViewer" /> interface. </remarks>
     public class Thumbnail_ResultsViewer : abstract_ResultsViewer
     {
+
         /// <summary> Constructor for a new instance of the Thumbnail_ResultsViewer class </summary>
         /// <param name="RequestSpecificValues"> All the necessary, non-global data specific to the current request </param>
         /// <param name="ResultsStats"> Statistics about the results to display including the facets </param>
@@ -62,7 +63,6 @@ namespace SobekCM.Library.ResultsViewer
             //Add the necessary JavaScript, CSS files
             resultsBldr.AppendLine("  <script type=\"text/javascript\" src=\"" + Static_Resources_Gateway.Sobekcm_Thumb_Results_Js + "\"></script>");
 
-
             // Start this table
             resultsBldr.AppendLine("<table align=\"center\" width=\"100%\" cellspacing=\"15px\">");
             resultsBldr.AppendLine("\t<tr>");
@@ -72,6 +72,28 @@ namespace SobekCM.Library.ResultsViewer
             resultsBldr.AppendLine("\t\t<td width=\"25%\">&nbsp;</td>");
             resultsBldr.AppendLine("\t</tr>");
             resultsBldr.AppendLine("\t<tr valign=\"top\">");
+
+            // For UFDC IR Elsevier, first loop through all result firstItem bibs, setting up information 
+            // for each Elsevier bibID (starts with "LS"). Note. All Elsevier bibs use only vid 00001.
+            Elsevier_Entitlements_Cache e_cache = new Elsevier_Entitlements_Cache("LS", "");
+            foreach (iSearch_Title_Result titleResult in RequestSpecificValues.Paged_Results)
+            {
+                iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
+                e_cache.Add_Article(titleResult.BibID, firstItemResult.Link);
+            }
+            // Until CORS is tested OK, 
+            // Call e_cache.update_from_entitlements_api()
+            // after the foreach to more quickly query all entitlements info at once.
+            // This saves several valuable seconds versus doing one entitlement api 
+            // call per Elsevier article. 
+            // e_cache.update_from_entitlements_api();
+
+            Elsevier_Article elsevier_article;
+            if (e_cache.d_bib_article.Count > 0)
+            {   // Add html or javascript for Elsevier results
+                resultsBldr.AppendLine(Elsevier_Entitlements_Cache.javascript_cors_entitlement);
+            } 
+            // end Elsevier setup for 'preview' results loop.
 
             // Step through all the results
             int col = 0;
@@ -94,15 +116,45 @@ namespace SobekCM.Library.ResultsViewer
 
                 // Always get the first item for things like the main link and thumbnail
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
+                string title_link = "";
+                string internal_citation_link = "";
 
-                // Determine the internal link to the first (possibly only) item
-                string internal_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
+                // Set Elsevier indicators to manage html construction.
+                bool isElsevier = e_cache.d_bib_article.TryGetValue(titleResult.BibID, out elsevier_article);
+                // Initialize Elsevier indicators for this bibid
+                bool isOpenAccess = false;
+                bool entitlement = true;
 
-                // For browses, just point to the title
-                if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) && ( RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info ))
-                    internal_link = base_url + titleResult.BibID + textRedirectStem;
+                if (isElsevier)
+                {
+                    // Workaround for builder error failures to delete obsolete Elsevier articles. Do not show results for them.
+                    if (elsevier_article.is_obsolete == true)
+                    {
+                        continue;
+                    }
 
-                resultsBldr.AppendLine("\t\t<td align=\"center\" onmouseover=\"this.className='tableRowHighlight'\" onmouseout=\"this.className='tableRowNormal'\" onclick=\"window.location.href='" + internal_link + "';\" >");
+                    entitlement = elsevier_article.is_entitled;
+                    isOpenAccess = elsevier_article.is_open_access;
+                    title_link = elsevier_article.title_url;
+                    internal_citation_link = base_url + titleResult.BibID + textRedirectStem;
+                }
+                else
+                {
+                    // This not an Elsevier article. Determine the internal link to the first (possibly only) item
+                    internal_citation_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
+
+                    // For browses, just point to the title
+                    if ((RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation)
+                       && (RequestSpecificValues.Current_Mode.Aggregation_Type == Aggregation_Type_Enum.Browse_Info))
+                        internal_citation_link = base_url + titleResult.BibID + textRedirectStem;
+
+                    title_link = internal_citation_link;
+                }
+
+                // Set href to the title link 
+                resultsBldr.AppendLine("\t\t<td align=\"center\" onmouseover=\"this.className='tableRowHighlight'\" "
+                    + "onmouseout=\"this.className='tableRowNormal'\" onclick=\"window.location.href='"
+                    + title_link + "';\" >");
 
                 string title;
                 if (multiple_title)
@@ -155,7 +207,7 @@ namespace SobekCM.Library.ResultsViewer
                 }
 
                 // Start the HTML for this item
-                resultsBldr.AppendLine("<table width=\"150px\">");
+                resultsBldr.AppendLine("<table >");
 
                 //// Is this restricted?
                 bool restricted_by_ip = false;
@@ -168,30 +220,65 @@ namespace SobekCM.Library.ResultsViewer
                     }
                 }
 
-                // Calculate the thumbnail
-
                 // Add the thumbnail
-                if ((firstItemResult.MainThumbnail.ToUpper().IndexOf(".JPG") < 0) && (firstItemResult.MainThumbnail.ToUpper().IndexOf(".GIF") < 0))
+                if (isElsevier) 
                 {
-                    resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan"+title_count+"\"><a href=\"" + internal_link + "\"><img id=\"sbkThumbnailImg" + title_count + "\" src=\"" + Static_Resources_Gateway.Nothumb_Jpg + "\" alt=\"MISSING THUMBNAIL\" /></a></span></td></tr>");
+                    // Elsevier Published Journal Article Generic Image
+                   resultsBldr.AppendLine("<tr><td>" 
+                       + "<a href=\"" 
+                       + title_link  + "\"\n><img " 
+                       + " id=\"sbkThumbnailImg" + title_count + "\""
+                       + " src=\"http://ufdcimages.uflib.ufl.edu/LS/00/00/00/00/thumb150_189.png\"\n"
+                       + " alt=\"Elsevier Journal Article\" />"
+                       + "</a>" 
+                       + "</td></tr>");
+                   if (!elsevier_article.is_open_access)
+                   {
+                       // Use image supplied by Elsevier for Message about user access to this article.
+                       // CSS Class 'elsevier_access' and attribute pii are used by e_cache's javascript 
+                       // to adjust access messages by client-requested entitlements via CORS feedback 
+                       // on user article access permission.
+
+                       resultsBldr.AppendLine("<tr><td>"
+                           + " <img width='150' height='60'"
+                           + " src='http://ufdcimages.uflib.ufl.edu/LS/00/00/00/00/access_check.png'"
+                           + " alt=\"Elsevier Check Access\""
+                           + " id='" + elsevier_article.pii + "' class='elsevier_access'"
+                           + "/>"
+                           + "</td></tr>");
+                   } else { // Open Access - we must not use CSS class elsevier_access here.
+                       resultsBldr.AppendLine("<tr><td>"
+                           + " <img width='160' height='60'"
+                           + " src='http://ufdcimages.uflib.ufl.edu/LS/00/00/00/00/PublisherVersion_OpenAccess.png'"
+                           + " alt='Elsevier Open Access'"
+                           + " id='" + elsevier_article.pii + "'"
+                           + "/>"
+                           + "</td></tr>" 
+                           );
+                   }
+                } // end if isElsevier
+                else if ((firstItemResult.MainThumbnail.ToUpper().IndexOf(".JPG") < 0)
+                   && (firstItemResult.MainThumbnail.ToUpper().IndexOf(".GIF") < 0))
+                {
+                    resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan"+title_count+"\"><a href=\"" + title_link + "\"><img id=\"sbkThumbnailImg" + title_count + "\" src=\"" + Static_Resources_Gateway.Nothumb_Jpg + "\" alt=\"MISSING THUMBNAIL\" /></a></span></td></tr>");
                 }
                 else
                 {
                     string thumb = UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + titleResult.BibID.Substring(0, 2) + "/" + titleResult.BibID.Substring(2, 2) + "/" + titleResult.BibID.Substring(4, 2) + "/" + titleResult.BibID.Substring(6, 2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" + (firstItemResult.MainThumbnail).Replace("\\", "/").Replace("//", "/");
-                    resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan" + title_count + "\"><a href=\"" + internal_link + "\"><img id=\"sbkThumbnailImg" + title_count + "\"src=\"" + thumb + "\" alt=\"" + title.Replace("\"","") + "\" /></a></span></td></tr>");
+                    resultsBldr.AppendLine("<tr><td><span id=\"sbkThumbnailSpan" + title_count + "\"><a href=\"" + title_link + "\"><img id=\"sbkThumbnailImg" + title_count + "\"src=\"" + thumb + "\" alt=\"" + title.Replace("\"","") + "\" /></a></span></td></tr>");
                 }
 
                 #region Add the div displayed as a tooltip for this thumbnail on hover
-             
+
                 const string VARIES_STRING = "<span style=\"color:Gray\">( varies )</span>";
                 //Add the hidden item values for display in the tooltip
                 resultsBldr.AppendLine("<tr style=\"display:none;\"><td colspan=\"100%\"><div  id=\"descThumbnail" + title_count + "\" >");
-                   // Add each element to this table
+                // Add each element to this table
                 resultsBldr.AppendLine("\t\t\t<table cellspacing=\"0px\">");
 
                 if (multiple_title)
                 {
-                    //<a href=\"" + internal_link + "\">
+                    //<a href=\"" + internal_citation_link + "\">
                     resultsBldr.AppendLine("\t\t\t\t<tr style=\"height:40px;\" valign=\"middle\"><td colspan=\"3\"><span class=\"qtip_BriefTitle\" style=\"color: #a5a5a5;font-weight: bold;font-size:13px;\">" + titleResult.GroupTitle.Replace("<", "&lt;").Replace(">", "&gt;") + "</span> &nbsp; </td></tr>");
                     resultsBldr.AppendLine("<tr><td colspan=\"100%\"><br/></td></tr>");
                 }
@@ -214,7 +301,7 @@ namespace SobekCM.Library.ResultsViewer
 
                     if (titleResult.OPAC_Number > 1)
                     {
-                        resultsBldr.AppendLine("\t\t\t\t<tr><td>OPAC:</td><td>&nbsp;</td><td>" +titleResult.OPAC_Number + "</td></tr>");
+                        resultsBldr.AppendLine("\t\t\t\t<tr><td>OPAC:</td><td>&nbsp;</td><td>" + titleResult.OPAC_Number + "</td></tr>");
                     }
 
                     if (titleResult.OCLC_Number > 1)
@@ -232,91 +319,64 @@ namespace SobekCM.Library.ResultsViewer
                     if ((titleResult.Metadata_Display_Values == null) || (titleResult.Metadata_Display_Values.Length <= i))
                         break;
 
-					string value = titleResult.Metadata_Display_Values[i];
-					Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Name(field);
-					string display_field = string.Empty;
-					if ( thisField != null )
-						display_field = thisField.Display_Term;
-					if (display_field.Length == 0)
-						display_field = field.Replace("_", " ");
+                    string value = titleResult.Metadata_Display_Values[i];
+                    Metadata_Search_Field thisField = UI_ApplicationCache_Gateway.Settings.Metadata_Search_Field_By_Name(field);
+                    string display_field = string.Empty;
+                    if (thisField != null)
+                        display_field = thisField.Display_Term;
+                    if (display_field.Length == 0)
+                        display_field = field.Replace("_", " ");
 
-					if (value == "*")
-					{
+                    if (value == "*")
+                    {
                         resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + HttpUtility.HtmlDecode(VARIES_STRING) + "</td></tr>");
-					}
-					else if ( value.Trim().Length > 0 )
-					{
-						if (value.IndexOf("|") > 0)
-						{
-							bool value_found = false;
-							string[] value_split = value.Split("|".ToCharArray());
+                    }
+                    else if (value.Trim().Length > 0)
+                    {
+                        if (value.IndexOf("|") > 0)
+                        {
+                            bool value_found = false;
+                            string[] value_split = value.Split("|".ToCharArray());
 
-							foreach (string thisValue in value_split)
-							{
-								if (thisValue.Trim().Trim().Length > 0)
-								{
-									if (!value_found)
-									{
-										resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>");
-										value_found = true;
-									}
-									resultsBldr.Append(HttpUtility.HtmlDecode(thisValue) + "<br />");
-								}
-							}
+                            foreach (string thisValue in value_split)
+                            {
+                                if (thisValue.Trim().Trim().Length > 0)
+                                {
+                                    if (!value_found)
+                                    {
+                                        resultsBldr.AppendLine("\t\t\t\t<tr valign=\"top\"><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>");
+                                        value_found = true;
+                                    }
+                                    resultsBldr.Append(HttpUtility.HtmlDecode(thisValue) + "<br />");
+                                }
+                            }
 
-							if (value_found)
-							{
-								resultsBldr.AppendLine("</td></tr>");
-							}
-						}
-						else
-						{
-							resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + HttpUtility.HtmlDecode(value) + "</td></tr>");
-						}
-					}
-				}
+                            if (value_found)
+                            {
+                                resultsBldr.AppendLine("</td></tr>");
+                            }
+                        }
+                        else
+                        {
+                            resultsBldr.AppendLine("\t\t\t\t<tr><td>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</td><td>&nbsp;</td><td>" + HttpUtility.HtmlDecode(value) + "</td></tr>");
+                        }
+                    }
+                }
 
-	
                 if (titleResult.Snippet.Length > 0)
                 {
-                    resultsBldr.AppendLine("\t\t\t\t<tr><td colspan=\"3\"><br />&ldquo;..." + titleResult.Snippet.Replace("<em>", "<span class=\"texthighlight\">").Replace ("</em>", "</span>") + "...&rdquo;</td></tr>");
+                    resultsBldr.AppendLine("\t\t\t\t<tr><td colspan=\"3\"><br />&ldquo;..." + titleResult.Snippet.Replace("<em>", "<span class=\"texthighlight\">").Replace("</em>", "</span>") + "...&rdquo;</td></tr>");
                 }
 
                 resultsBldr.AppendLine("\t\t\t</table>");
-
-                // End this row
-     //           resultsBldr.AppendLine("\t\t<br />");
-
-                //// Add children, if there are some
-                //if (multiple_title)
-                //{
-                //    // Add this to the place holder
-                //    Literal thisLiteral = new Literal
-                //                              { Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>") };
-                //    MainPlaceHolder.Controls.Add(thisLiteral);
-                //    resultsBldr.Remove(0, resultsBldr.Length);
-
-                //    Add_Issue_Tree(MainPlaceHolder, titleResult, current_row, textRedirectStem, base_url);
-                //}
-
-                //resultsBldr.AppendLine("\t\t</td>");
-                //resultsBldr.AppendLine("\t</tr>");
-
-                // Add a horizontal line
-         //       resultsBldr.AppendLine("\t<tr><td bgcolor=\"#e7e7e7\" colspan=\"3\"></td></tr>");
-
- 
-       
-            // End this table
- //           resultsBldr.AppendLine("</table>");
-            resultsBldr.AppendLine("</div></td></tr>");
-
+                resultsBldr.AppendLine("</div></td></tr>");
 
                 #endregion
 
-
                 // Add the title
-                resultsBldr.AppendLine("<tr><td align=\"center\"><span class=\"SobekThumbnailText\">" + title + "</span></td></tr>");
+                resultsBldr.AppendLine("<tr><td align=\"center\"><span class=\"SobekThumbnailText\">" + title);
+                // End the title's cell and row
+                resultsBldr.AppendLine("</span></td></tr>");
 
                 // If this was access restricted, add that
                 if (restricted_by_ip)
