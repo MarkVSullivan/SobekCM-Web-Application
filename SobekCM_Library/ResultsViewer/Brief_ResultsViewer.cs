@@ -33,9 +33,12 @@ namespace SobekCM.Library.ResultsViewer
         }
 
         /// <summary> Adds the controls for this result viewer to the place holder on the main form </summary>
-        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm form into which the the bulk of the result viewer's output is displayed</param>
-        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones in rendering </param>
-        /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the titles and sorted by serial hierarchy </returns>
+        /// <param name="MainPlaceHolder"> Main place holder ( &quot;mainPlaceHolder&quot; ) in the itemNavForm 
+        /// form into which the the bulk of the result viewer's output is displayed</param>
+        /// <param name="Tracer"> Trace object keeps a list of each method executed and important milestones 
+        /// in rendering </param>
+        /// <returns> Sorted tree with the results in hierarchical structure with volumes and issues under the 
+        /// titles and sorted by serial hierarchy </returns>
         public override void Add_HTML(PlaceHolder MainPlaceHolder, Custom_Tracer Tracer)
         {
             if (Tracer != null)
@@ -46,7 +49,6 @@ namespace SobekCM.Library.ResultsViewer
             // If results are null, or no results, return empty string
             if ((PagedResults == null) || (ResultsStats == null) || (ResultsStats.Total_Items <= 0))
                 return;
-
             const string VARIES_STRING = "<span style=\"color:Gray\">( varies )</span>";
 
             // Get the text search redirect stem and (writer-adjusted) base url 
@@ -55,7 +57,7 @@ namespace SobekCM.Library.ResultsViewer
             if (RequestSpecificValues.Current_Mode.Writer_Type == Writer_Type_Enum.HTML_LoggedIn)
                 base_url = RequestSpecificValues.Current_Mode.Base_URL + "l/";
 
-            // Start the results
+            // Start building the html to display the results
             StringBuilder resultsBldr = new StringBuilder(2000);
             resultsBldr.AppendLine("<section class=\"sbkBrv_Results\">");
 
@@ -63,7 +65,25 @@ namespace SobekCM.Library.ResultsViewer
             int current_page = RequestSpecificValues.Current_Mode.Page.HasValue ? RequestSpecificValues.Current_Mode.Page.Value : 1;
             int result_counter = ((current_page - 1) * Results_Per_Page) + 1;
 
-            // Step through all the results
+            // For UFDC IR Elsevier, first loop through all result firstItem bibs, setting up information 
+            // for each Elsevier bibID (starts with "LS"). Note. All Elsevier bibs use only vid 00001.
+            Elsevier_Entitlements_Cache e_cache = new Elsevier_Entitlements_Cache("LS","");
+            foreach (iSearch_Title_Result titleResult in RequestSpecificValues.Paged_Results)
+            {
+                iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
+                // Add_Article silently ignores bibs that do not start with "LS" 
+                e_cache.Add_Article(titleResult.BibID, firstItemResult.Link);
+            }
+
+            Elsevier_Article elsevier_article;
+            if (e_cache.d_bib_article.Count > 0)
+            {   // Add html or javascript for Elsevier results
+                // resultsBldr.AppendLine(Elsevier_Entitlements_Cache.svg_access_symbols);
+                resultsBldr.AppendLine(Elsevier_Entitlements_Cache.javascript_cors_entitlement);
+            }
+            // end Elsevier setup for 'preview' results loop.
+
+            // Step through all the results and build the HTML page
             int current_row = 0;
             foreach (iSearch_Title_Result titleResult in PagedResults)
             {
@@ -72,12 +92,35 @@ namespace SobekCM.Library.ResultsViewer
 	            // Always get the first item for things like the main link and thumbnail
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
 
-                // Determine the internal link to the first (possibly only) item
-                string internal_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
+                // Set Elsevier indicators to manage html construction.
+                bool isElsevier = e_cache.d_bib_article.TryGetValue(titleResult.BibID, out elsevier_article);
+                // Initialize Elsevier indicators for this bibid
+                bool isOpenAccess = false;
+                string title_link = "";
+                string internal_citation_link = "";
+                bool entitlement = true;
 
-                // For browses, just point to the title
-				if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) // browse info only
-                    internal_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
+               if (isElsevier)
+               {
+                   // Workaround for builder errors while deleting obsolete Elsevier articles. Do not show results for them.
+                   if (elsevier_article.is_obsolete == true)
+                   {
+                       continue;
+                   }
+                   entitlement = elsevier_article.is_entitled;
+                   isOpenAccess = elsevier_article.is_open_access;
+                   title_link = elsevier_article.title_url;
+                   internal_citation_link = base_url + titleResult.BibID + textRedirectStem;
+               }
+               else // This bib title is not an Elsevier Article
+               {
+                    // Determine the internal link to the first (possibly only) item
+                    title_link = base_url + titleResult.BibID + "/" + firstItemResult.VID + textRedirectStem;
+
+                    // For browses, just point to the title
+                    if (RequestSpecificValues.Current_Mode.Mode == Display_Mode_Enum.Aggregation) // browse info only
+                        title_link = base_url + titleResult.BibID + textRedirectStem;
+                }
 
                 // Start this row
                 string title = firstItemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;");
@@ -85,11 +128,12 @@ namespace SobekCM.Library.ResultsViewer
                 {
                     title = titleResult.GroupTitle.Replace("<", "&lt;").Replace(">", "&gt;");
                     resultsBldr.AppendLine("\t<section class=\"sbkBrv_SingleResult\">");
-
                 }
                 else
-                    resultsBldr.AppendLine("\t<section class=\"sbkBrv_SingleResult\" onclick=\"window.location.href='" + internal_link + "';\" >");
-
+                {
+                    resultsBldr.AppendLine("\t<section class=\"sbkBrv_SingleResult\" onclick=\"window.location.href='" 
+                        + title_link + "';\" >");
+                }
 
                 // Add the counter as the first column
                 resultsBldr.AppendLine("\t\t<div class=\"sbkBrv_SingleResultNum\">" + result_counter + "</div>");
@@ -106,50 +150,104 @@ namespace SobekCM.Library.ResultsViewer
                 }
 
                 // Calculate the thumbnail
-                string thumb = titleResult.BibID.Substring(0, 2) + "/" + titleResult.BibID.Substring(2, 2) + "/" +titleResult.BibID.Substring(4, 2) + "/" + titleResult.BibID.Substring(6, 2) + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" + (firstItemResult.MainThumbnail).Replace("\\", "/").Replace("//", "/");
+                string thumb = titleResult.BibID.Substring(0, 2) + "/" + titleResult.BibID.Substring(2, 2) 
+                    + "/" +titleResult.BibID.Substring(4, 2) + "/" + titleResult.BibID.Substring(6, 2) 
+                    + "/" + titleResult.BibID.Substring(8) + "/" + firstItemResult.VID + "/" 
+                    + (firstItemResult.MainThumbnail).Replace("\\", "/").Replace("//", "/");
 
                 // Draw the thumbnail 
-                if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
+                if (isElsevier)
                 {
-                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" + Static_Resources_Gateway.Nothumb_Jpg + "\" border=\"0px\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a></div>");
+                    // Elsevier Published Journal Article Generic Image
+                    //resultsBldr.AppendLine("<table width='150px'>");
+                    resultsBldr.AppendLine(""
+                        + "<a href=\""
+                        + title_link + "\"\n><img"
+                        + " src=\"http://ufdcimages.uflib.ufl.edu/LS/00/00/00/00/thumb150_189.png\"\n"              
+                        + " alt=\"Elsevier Journal Article\" />\n"
+                        );
+                    if (!elsevier_article.is_open_access)
+                    {
+                        // SVG has image supplied by Elsevier for Message about user access to this article.
+                        // Class elsevier_access and attribute pii are used by e_cache's javascript 
+                        // to adjust access messages by client-requested entitlements via CORS feedback 
+                        // on user article access permission.
+                        resultsBldr.AppendLine(""
+                           + " <img width='160' height='60'"
+                           + " src='http://ufdcimages.uflib.ufl.edu/LS/00/00/00/00/access_check.png'"
+                           + " alt=\"Elsevier Check Access\""
+                           + " id='" + elsevier_article.pii + "' class='elsevier_access'"
+                           + "/>" 
+                           ); 
+                    } else { // Open Access article
+                        // Use Elsevier "thumbnail caption image"  for Open Access.
+                        // This is not class 'elsevier_access' so this image will remain unchanged as needed.
+                        resultsBldr.AppendLine("</br>"
+                           + " <img width='160' height='60'"
+                           + " src='http://ufdcimages.uflib.ufl.edu/LS/00/00/00/00/PublisherVersion_OpenAccess.png'"
+                           + " alt='Elsevier Open Access'"
+                           + " id='" + elsevier_article.pii +"'"
+                           + "/>" 
+                           );
+                    }
+                    resultsBldr.AppendLine("</a>");
+                }
+                else if ((thumb.ToUpper().IndexOf(".JPG") < 0) && (thumb.ToUpper().IndexOf(".GIF") < 0))
+                {
+                    resultsBldr.AppendLine("<a href=\"" + title_link + "\"><img src=\"" + Static_Resources_Gateway.Nothumb_Jpg 
+                        + "\" border=\"0px\" class=\"resultsThumbnail\" alt=\"MISSING THUMBNAIL\" /></a>");
                 }
                 else
                 {
-                    resultsBldr.AppendLine("<a href=\"" + internal_link + "\"><img src=\"" +UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + thumb + "\" class=\"resultsThumbnail\" alt=\"" + title.Replace("\"","") + "\" /></a></div>");
+                    resultsBldr.AppendLine("<a href=\"" + title_link + "\"><img src=\"" 
+                        + UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + thumb + "\" class=\"resultsThumbnail\" alt=\"" 
+                        + title.Replace("\"","") + "\" /></a></div>");
                 }
 
-
-                resultsBldr.AppendLine("\t\t<div class=\"sbkBrv_SingleResultDesc\">");
+                resultsBldr.AppendLine("</div>\t\t<div class=\"sbkBrv_SingleResultDesc\">");
 
                 // If this was access restricted, add that
                 if (restricted_by_ip)
                 {
-                    resultsBldr.AppendLine("\t\t\t<span class=\"RestrictedItemText\">" + UI_ApplicationCache_Gateway.Translation.Get_Translation("Access Restricted", RequestSpecificValues.Current_Mode.Language) + "</span>");
+                    resultsBldr.AppendLine("\t\t\t<span class=\"RestrictedItemText\">" 
+                        + UI_ApplicationCache_Gateway.Translation.Get_Translation(
+                        "Access Restricted", RequestSpecificValues.Current_Mode.Language) + "</span>");
                 }
 
                 if (multiple_title)
                 {
-                    resultsBldr.AppendLine("\t\t\t<span class=\"briefResultsTitle\"><a href=\"" + internal_link + "\">" + titleResult.GroupTitle.Replace("<", "&lt;").Replace(">", "&gt;") + "</a></span>");
+                    resultsBldr.AppendLine("\t\t\t<span class=\"briefResultsTitle\"><a href=\"" + title_link 
+                        + "\">" + titleResult.GroupTitle.Replace("<", "&lt;").Replace(">", "&gt;") + "</a></span>");
                 }
                 else
                 {
                     resultsBldr.AppendLine(
                         "\t\t\t<span class=\"briefResultsTitle\"><a href=\"" +
-                        internal_link + "\" onclick=\"cancelPropagation(event);\">" + firstItemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;") +
+                        title_link + "\" onclick=\"cancelPropagation(event);\">" + firstItemResult.Title.Replace("<", "&lt;").Replace(">", "&gt;") +
                         "</a></span>");
                 }
 
                 // Add each element to this table
                 resultsBldr.AppendLine("\t\t\t<dl class=\"sbkBrv_SingleResultDescList\">");
 
-
-
                 if ((titleResult.Primary_Identifier_Type.Length > 0) && (titleResult.Primary_Identifier.Length > 0))
                 {
-                    resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(titleResult.Primary_Identifier_Type, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + titleResult.Primary_Identifier + "</dd>");
+                    resultsBldr.AppendLine("\t\t\t\t<dt>" 
+                        + UI_ApplicationCache_Gateway.Translation.Get_Translation(titleResult.Primary_Identifier_Type, 
+                          RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" 
+                        + titleResult.Primary_Identifier + "</dd>");
+                }
+                if (isElsevier)
+                {
+                    // Show pair of external and internal citation links, basically same as shown in Table_ResultsViewer
+                    resultsBldr.AppendLine("\t\t\t\t<dt>Links:</dt><dd> ( <a href=\"" + title_link 
+                            + "\">external resource</a> | <a href=\"" 
+                            + internal_citation_link + "\">internal citation</a> )</dd>");
                 }
 
-                if ((RequestSpecificValues.Current_User != null ) && ( RequestSpecificValues.Current_User.LoggedOn ) && ( RequestSpecificValues.Current_User.Is_Internal_User ))
+                if (  ( RequestSpecificValues.Current_User != null ) 
+                   && ( RequestSpecificValues.Current_User.LoggedOn ) 
+                   && ( RequestSpecificValues.Current_User.Is_Internal_User ))
                 {
                     resultsBldr.AppendLine("\t\t\t\t<dt>BibID:</dt><dd>" + titleResult.BibID + "</dd>");
 
@@ -183,7 +281,10 @@ namespace SobekCM.Library.ResultsViewer
 
 					if (value == "*")
 					{
-						resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + HttpUtility.HtmlDecode(VARIES_STRING) + "</dd>");
+						resultsBldr.AppendLine("\t\t\t\t<dt>" 
+                            + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, 
+                              RequestSpecificValues.Current_Mode.Language) 
+                            + ":</dt><dd>" + HttpUtility.HtmlDecode(VARIES_STRING) + "</dd>");
 					}
 					else if ( value.Trim().Length > 0 )
 					{
@@ -198,7 +299,8 @@ namespace SobekCM.Library.ResultsViewer
 								{
 									if (!value_found)
 									{
-										resultsBldr.Append("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt>");
+										resultsBldr.Append("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(
+                                            display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt>");
 										value_found = true;
 									}
 									resultsBldr.Append("<dd>" + HttpUtility.HtmlDecode(thisValue) + "</dd>");
@@ -212,7 +314,9 @@ namespace SobekCM.Library.ResultsViewer
 						}
 						else
 						{
-							resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" + HttpUtility.HtmlDecode(value) + "</dd>");
+							resultsBldr.AppendLine("\t\t\t\t<dt>" + UI_ApplicationCache_Gateway.Translation.Get_Translation(
+                                display_field, RequestSpecificValues.Current_Mode.Language) + ":</dt><dd>" 
+                                + HttpUtility.HtmlDecode(value) + "</dd>");
 						}
 					}
 				}
@@ -221,7 +325,9 @@ namespace SobekCM.Library.ResultsViewer
 
                 if (titleResult.Snippet.Length > 0)
                 {
-                    resultsBldr.AppendLine("\t\t\t<div class=\"sbkBrv_SearchResultSnippet\">&ldquo;..." + titleResult.Snippet.Replace("<em>", "<span class=\"texthighlight\">").Replace ("</em>", "</span>") + "...&rdquo;</div>");
+                    resultsBldr.AppendLine("\t\t\t<div class=\"sbkBrv_SearchResultSnippet\">&ldquo;..." 
+                        + titleResult.Snippet.Replace("<em>", "<span class=\"texthighlight\">").Replace ("</em>", "</span>") 
+                        + "...&rdquo;</div>");
                 }
                 
                 // Add children, if there are some
@@ -229,7 +335,7 @@ namespace SobekCM.Library.ResultsViewer
                 {
                     // Add this to the place holder
                     Literal thisLiteral = new Literal
-                                              { Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>") };
+                        { Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>") };
                     MainPlaceHolder.Controls.Add(thisLiteral);
                     resultsBldr.Remove(0, resultsBldr.Length);
 
@@ -251,7 +357,7 @@ namespace SobekCM.Library.ResultsViewer
 
             // Add this to the HTML page
             Literal mainLiteral = new Literal
-                                      { Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>") };
+                { Text = resultsBldr.ToString().Replace("&lt;role&gt;", "<i>").Replace( "&lt;/role&gt;", "</i>") };
             MainPlaceHolder.Controls.Add(mainLiteral);
         }
     }

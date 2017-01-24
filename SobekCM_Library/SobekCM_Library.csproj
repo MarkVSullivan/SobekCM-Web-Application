@@ -340,6 +340,7 @@
     <Compile Include="MySobekViewer\MySobekViewer_Factory.cs" />
     <Compile Include="MySobekViewer\New_TEI_MySobekViewer.cs" />
     <Compile Include="RequestCache.cs" />
+    <Compile Include="ResultsViewer\Elsevier_Entitlements_Cache.cs" />
     <Compile Include="ResultsViewer\Google_Map_ResultsViewer_Beta.cs" />
     <Compile Include="TEI\TEI_Configuration.cs" />
     <Compile Include="UI\UI_ApplicationCache_Gateway.cs" />
