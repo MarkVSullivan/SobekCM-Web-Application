@@ -201,7 +201,7 @@ namespace SobekCM.Library.ResultsViewer
                 {
                     resultsBldr.AppendLine("<a href=\"" + title_link + "\"><img src=\"" 
                         + UI_ApplicationCache_Gateway.Settings.Servers.Image_URL + thumb + "\" class=\"resultsThumbnail\" alt=\"" 
-                        + title.Replace("\"","") + "\" /></a></div>");
+                        + title.Replace("\"","") + "\" /></a>");
                 }
 
                 resultsBldr.AppendLine("</div>\t\t<div class=\"sbkBrv_SingleResultDesc\">");
