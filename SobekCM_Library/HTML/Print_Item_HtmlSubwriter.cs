@@ -321,9 +321,7 @@ namespace SobekCM.Library.HTML
             get
             {
                 List<Tuple<string, string>> returnValue = new List<Tuple<string, string>>();
-                // Simplifying this to just onload="window.print(); window.close();" will close the window too early for some versions of Chrome
-                returnValue.Add(new Tuple<string, string>("onload"
-                    , "window.print(); setTimeout(function () { window.close(); }, 500);")); 
+                returnValue.Add(new Tuple<string, string>("onload", "window.print();window.close();"));
                 return returnValue;
             }
         }

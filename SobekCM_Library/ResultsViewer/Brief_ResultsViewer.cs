@@ -68,7 +68,7 @@ namespace SobekCM.Library.ResultsViewer
             // For UFDC IR Elsevier, first loop through all result firstItem bibs, setting up information 
             // for each Elsevier bibID (starts with "LS"). Note. All Elsevier bibs use only vid 00001.
             Elsevier_Entitlements_Cache e_cache = new Elsevier_Entitlements_Cache("LS","");
-            foreach (iSearch_Title_Result titleResult in RequestSpecificValues.Paged_Results)
+            foreach (iSearch_Title_Result titleResult in PagedResults)
             {
                 iSearch_Item_Result firstItemResult = titleResult.Get_Item(0);
                 // Add_Article silently ignores bibs that do not start with "LS" 
