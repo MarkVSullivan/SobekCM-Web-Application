@@ -251,9 +251,12 @@ namespace SobekCM.Library.Citation.Elements
         {
             // Build a dictionary of the current views
             Dictionary<string, View_Object> typeToViewObjectDictionary = new Dictionary<string,View_Object>(StringComparer.OrdinalIgnoreCase);
-            foreach (View_Object thisView in Bib.Behaviors.Views)
+            if (Bib.Behaviors.Views != null)
             {
-                typeToViewObjectDictionary[thisView.View_Type] = thisView;
+                foreach (View_Object thisView in Bib.Behaviors.Views)
+                {
+                    typeToViewObjectDictionary[thisView.View_Type] = thisView;
+                }
             }
 
             // Clear the viewers

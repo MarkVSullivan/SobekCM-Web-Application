@@ -1774,13 +1774,16 @@ namespace SobekCM_Resource_Database
                 List<string> view_labels = new List<string>();
                 List<string> view_attributes = new List<string>();
 
-                foreach (View_Object thisView in ThisPackage.Behaviors.Views)
+                if (ThisPackage.Behaviors.Views != null)
                 {
-                    if (!view_types.Contains(thisView.View_Type))
+                    foreach (View_Object thisView in ThisPackage.Behaviors.Views)
                     {
-                        view_types.Add(thisView.View_Type);
-                        view_labels.Add(thisView.Label);
-                        view_attributes.Add(thisView.Attributes);
+                        if (!view_types.Contains(thisView.View_Type))
+                        {
+                            view_types.Add(thisView.View_Type);
+                            view_labels.Add(thisView.Label);
+                            view_attributes.Add(thisView.Attributes);
+                        }
                     }
                 }
 
