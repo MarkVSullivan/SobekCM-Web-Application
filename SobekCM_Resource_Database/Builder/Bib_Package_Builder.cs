@@ -606,7 +606,7 @@ namespace SobekCM_Resource_Database.Builder
                     }
 
                     // Add the views
-                    if (projectMETS.Behaviors.Views.Count > 0)
+                    if ((projectMETS.Behaviors.Views != null) && (projectMETS.Behaviors.Views.Count > 0))
                     {
                         foreach (View_Object thisView in projectMETS.Behaviors.Views)
                         {

@@ -1865,38 +1865,40 @@ namespace SobekCM_Resource_Database
                     {
                         currentViewTypeToIndex[currentViews[i].View_Type] = i;
                     }
-
-                    // Now, step through all the views in the object to save
-                    foreach (View_Object thisView in ThisPackage.Behaviors.Views)
+                    if (ThisPackage.Behaviors.Views != null)
                     {
-                        // If this view is present only as an exclusion, skip it.  
-                        // If it is removing an existing view, that will be handled in the next FOR anyway
-                        if (thisView.Exclude) continue;
-
-                        // Does this view already exists?
-                        if (currentViewTypeToIndex.ContainsKey(thisView.View_Type))
+                        // Now, step through all the views in the object to save
+                        foreach (View_Object thisView in ThisPackage.Behaviors.Views)
                         {
-                            // Get the index
-                            int viewIndex = currentViewTypeToIndex[thisView.View_Type];
-                            View_Object currentView = currentViews[viewIndex];
+                            // If this view is present only as an exclusion, skip it.  
+                            // If it is removing an existing view, that will be handled in the next FOR anyway
+                            if (thisView.Exclude) continue;
 
-                            // Compare the label and attribute.. is there a change there?
-                            if ((String.Compare(thisView.Attributes, currentView.Attributes, StringComparison.Ordinal) != 0) ||
-                                (String.Compare(thisView.Label, currentView.Label, StringComparison.Ordinal) != 0) ||
-                                (currentView.Exclude))
+                            // Does this view already exists?
+                            if (currentViewTypeToIndex.ContainsKey(thisView.View_Type))
                             {
-                                // Even though this existed, since the label or attribute are different, this 
-                                // view will be sent to the 'add view' method
+                                // Get the index
+                                int viewIndex = currentViewTypeToIndex[thisView.View_Type];
+                                View_Object currentView = currentViews[viewIndex];
+
+                                // Compare the label and attribute.. is there a change there?
+                                if ((String.Compare(thisView.Attributes, currentView.Attributes, StringComparison.Ordinal) != 0) ||
+                                    (String.Compare(thisView.Label, currentView.Label, StringComparison.Ordinal) != 0) ||
+                                    (currentView.Exclude))
+                                {
+                                    // Even though this existed, since the label or attribute are different, this 
+                                    // view will be sent to the 'add view' method
+                                    addViews.Add(thisView);
+                                }
+
+                                // This existing view was handled already
+                                foundFlag[viewIndex] = true;
+                            }
+                            else
+                            {
+                                // This is a new view type, so it will be added, assuming it is not an exclusion
                                 addViews.Add(thisView);
                             }
-
-                            // This existing view was handled already
-                            foundFlag[viewIndex] = true;
-                        }
-                        else
-                        {
-                            // This is a new view type, so it will be added, assuming it is not an exclusion
-                            addViews.Add(thisView);
                         }
                     }
 

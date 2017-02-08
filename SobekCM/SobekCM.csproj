@@ -779,7 +779,9 @@
     <Content Include="default\js\sobekcm-qc\4.8.8\sobekcm_qc.min.js" />
     <Content Include="default\js\sobekcm-thumb-results\4.8.4\sobekcm_thumb_results.js" />
     <Content Include="default\js\sobekcm-track-item\4.8.4\sobekcm_track_item.js" />
-    <Content Include="default\localization\en.xml" />
+    <Content Include="default\localization\en.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="default\callbacks\CallBacks.aspx" />
     <Content Include="default\opensearch.xml" />
     <Content Include="default\sobekcm_default.xsl" />

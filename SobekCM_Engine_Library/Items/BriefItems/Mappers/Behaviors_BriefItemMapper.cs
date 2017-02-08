@@ -55,9 +55,12 @@ namespace SobekCM.Engine_Library.Items.BriefItems.Mappers
             New.Behaviors.Full_Text_Searchable = Original.Behaviors.Text_Searchable;
 
             // Copy over the viewers
-            foreach (View_Object origView in Original.Behaviors.Views)
+            if (Original.Behaviors.Views != null)
             {
-                New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer(origView.View_Type, origView.MenuOrder, origView.Exclude, origView.Label ));
+                foreach (View_Object origView in Original.Behaviors.Views)
+                {
+                    New.Behaviors.Viewers.Add(new BriefItem_BehaviorViewer(origView.View_Type, origView.MenuOrder, origView.Exclude, origView.Label));
+                }
             }
 
             // Copy over the wordmarks

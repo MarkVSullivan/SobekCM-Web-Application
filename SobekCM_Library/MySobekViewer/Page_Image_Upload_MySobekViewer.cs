@@ -398,15 +398,17 @@ namespace SobekCM.Library.MySobekViewer
 				{
 					// Is a JPEG view already existing?
 					bool jpeg_viewer_already_exists = false;
-                    foreach (View_Object thisViewer in currentItem.Behaviors.Views)
-					{
-						if (thisViewer.View_Type == "JPEG")
-						{
-							jpeg_viewer_already_exists = true;
-							break;
-						}
-					}
-
+                    if (currentItem.Behaviors.Views != null)
+                    {
+                        foreach (View_Object thisViewer in currentItem.Behaviors.Views)
+                        {
+                            if (thisViewer.View_Type == "JPEG")
+                            {
+                                jpeg_viewer_already_exists = true;
+                                break;
+                            }
+                        }
+                    }
 					// Add the JPEG view if it did not already exists
 					if ( !jpeg_viewer_already_exists )
 						currentItem.Behaviors.Add_View("JPEG");
@@ -417,13 +419,16 @@ namespace SobekCM.Library.MySobekViewer
 				{
 					// Is a JPEG view already existing?
 					bool jpg2000_viewer_already_exists = false;
-					foreach (View_Object thisViewer in currentItem.Behaviors.Views)
-					{
-						if (thisViewer.View_Type == "JPEG2000" )
-						{
-							jpg2000_viewer_already_exists = true;
-							break;
-						}
+                    if (currentItem.Behaviors.Views != null)
+                    {
+                        foreach (View_Object thisViewer in currentItem.Behaviors.Views)
+                        {
+                            if (thisViewer.View_Type == "JPEG2000")
+                            {
+                                jpg2000_viewer_already_exists = true;
+                                break;
+                            }
+                        }
 					}
 
 					// Add the JPEG2000 view if it did not already exists
